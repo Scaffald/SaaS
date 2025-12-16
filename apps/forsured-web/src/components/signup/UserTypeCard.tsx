@@ -1,8 +1,8 @@
 /**
  * UserTypeCard - User type selection card using Tamagui
  */
-import React from 'react';
-import { YStack, XStack, Text, Button, styled } from '@unicornlove/ui';
+import { useState, useEffect } from 'react';
+import { YStack, XStack, Text, Button, View, styled } from '@unicornlove/ui';
 import { Loader2 } from 'lucide-react';
 
 interface UserTypeCardProps {
@@ -51,6 +51,17 @@ function UserTypeCard({
   onSelect,
   loading = false
 }: UserTypeCardProps) {
+  const [rotation, setRotation] = useState(0);
+
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => {
+        setRotation((prev) => (prev + 30) % 360);
+      }, 50);
+      return () => clearInterval(interval);
+    }
+  }, [loading]);
+
   return (
     <CardButton
       onPress={onSelect}
@@ -69,7 +80,9 @@ function UserTypeCard({
         <YStack marginTop="$2">
           {loading ? (
             <XStack alignItems="center" gap="$2">
-              <Loader2 size={16} className="animate-spin" />
+              <View animation="quick" rotate={`${rotation}deg`}>
+                <Loader2 size={16} />
+              </View>
               <Text fontSize="$2">Loading...</Text>
             </XStack>
           ) : (

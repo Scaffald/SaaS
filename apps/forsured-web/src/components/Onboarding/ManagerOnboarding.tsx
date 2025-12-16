@@ -86,7 +86,7 @@ export default function ManagerOnboarding() {
 
         <YStack alignItems="center" marginBottom="$8">
           <YStack alignItems="center" marginBottom="$6">
-            <ForsuredLogo className="h-8" />
+            <ForsuredLogo />
           </YStack>
           <H1 fontSize="$8" fontWeight="bold" marginBottom="$2" textAlign="center">
             Welcome, General Contractor

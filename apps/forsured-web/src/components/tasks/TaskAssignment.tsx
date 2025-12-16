@@ -3,18 +3,17 @@
  * TaskAssignment component for user picker with search and filtering
  */
 
-import { useState, useMemo, useRef, useEffect } from 'react';
-import { User, UserRole } from '../../types';
-import { Search, User as UserIcon, ChevronDown, Check } from 'lucide-react';
-import { YStack, XStack, Text, Input, Button, Card, SizableText, Spinner } from '@unicornlove/ui';
+import { useState, useMemo, useRef, useEffect } from 'react'
+import type { User, UserRole } from '../../types'
+import { User as UserIcon, ChevronDown, Check } from 'lucide-react'
+import { YStack, XStack, Text, Input, Button, Card, SizableText, Spinner } from '@unicornlove/ui'
 
 interface TaskAssignmentProps {
-  users: User[];
-  assignedUserId?: string;
-  onAssign: (userId: string) => void;
-  allowedRoles?: UserRole[];
-  loading?: boolean;
-  className?: string;
+  users: User[]
+  assignedUserId?: string
+  onAssign: (userId: string) => void
+  allowedRoles?: UserRole[]
+  loading?: boolean
 }
 
 export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
@@ -23,74 +22,73 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
   onAssign,
   allowedRoles,
   loading = false,
-  className = '',
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
+    }
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
 
-  const assignedUser = users.find((u) => u.id === assignedUserId);
+  const assignedUser = users.find((u) => u.id === assignedUserId)
 
   const filteredUsers = useMemo(() => {
-    let filtered = users;
+    let filtered = users
 
     // Filter by allowed roles
     if (allowedRoles && allowedRoles.length > 0) {
-      filtered = filtered.filter((user) => allowedRoles.includes(user.role));
+      filtered = filtered.filter((user) => allowedRoles.includes(user.role))
     }
 
     // Filter by search query
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (user) =>
           user.name.toLowerCase().includes(query) ||
           user.email.toLowerCase().includes(query) ||
           user.company.toLowerCase().includes(query)
-      );
+      )
     }
 
-    return filtered;
-  }, [users, allowedRoles, searchQuery]);
+    return filtered
+  }, [users, allowedRoles, searchQuery])
 
   const handleUserSelect = (userId: string) => {
-    onAssign(userId);
-    setIsOpen(false);
-    setSearchQuery('');
-  };
+    onAssign(userId)
+    setIsOpen(false)
+    setSearchQuery('')
+  }
 
   const handleToggle = () => {
     if (!loading) {
-      setIsOpen(!isOpen);
+      setIsOpen(!isOpen)
     }
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleToggle();
+      e.preventDefault()
+      handleToggle()
     }
-  };
+  }
 
   return (
-    <YStack ref={dropdownRef} position="relative" className={className}>
+    <YStack ref={dropdownRef} position="relative">
       <Button
         type="button"
         onPress={handleToggle}
@@ -229,7 +227,12 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                       </SizableText>
                     </YStack>
                     <YStack flex={1} minWidth={0}>
-                      <SizableText fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
+                      <SizableText
+                        fontSize="$3"
+                        fontWeight="500"
+                        color="$color12"
+                        numberOfLines={1}
+                      >
                         {user.name}
                       </SizableText>
                       <SizableText fontSize="$1" color="$color10" numberOfLines={1}>
@@ -239,9 +242,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                         {user.role}
                       </SizableText>
                     </YStack>
-                    {user.id === assignedUserId && (
-                      <Check size={20} color="var(--blue10)" />
-                    )}
+                    {user.id === assignedUserId && <Check size={20} color="var(--blue10)" />}
                   </XStack>
                 </Button>
               ))
@@ -250,5 +251,5 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
         </Card>
       )}
     </YStack>
-  );
-};
+  )
+}

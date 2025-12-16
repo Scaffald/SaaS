@@ -161,7 +161,7 @@ CREATE POLICY compliance_requirements_select_policy
   FOR SELECT
   USING (
     organization_id IN (
-      SELECT organization_id FROM core.role_assignments
+      SELECT scope_org_id FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
   );
@@ -172,7 +172,7 @@ CREATE POLICY compliance_requirements_insert_policy
   FOR INSERT
   WITH CHECK (
     organization_id IN (
-      SELECT ra.organization_id
+      SELECT ra.scope_org_id
       FROM core.role_assignments ra
       JOIN core.roles r ON r.id = ra.role_id
       WHERE ra.user_id = auth.uid()
@@ -186,7 +186,7 @@ CREATE POLICY compliance_requirements_update_policy
   FOR UPDATE
   USING (
     organization_id IN (
-      SELECT ra.organization_id
+      SELECT ra.scope_org_id
       FROM core.role_assignments ra
       JOIN core.roles r ON r.id = ra.role_id
       WHERE ra.user_id = auth.uid()
@@ -195,7 +195,7 @@ CREATE POLICY compliance_requirements_update_policy
   )
   WITH CHECK (
     organization_id IN (
-      SELECT ra.organization_id
+      SELECT ra.scope_org_id
       FROM core.role_assignments ra
       JOIN core.roles r ON r.id = ra.role_id
       WHERE ra.user_id = auth.uid()
@@ -209,7 +209,7 @@ CREATE POLICY compliance_requirements_delete_policy
   FOR DELETE
   USING (
     organization_id IN (
-      SELECT ra.organization_id
+      SELECT ra.scope_org_id
       FROM core.role_assignments ra
       JOIN core.roles r ON r.id = ra.role_id
       WHERE ra.user_id = auth.uid()

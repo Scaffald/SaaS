@@ -1,8 +1,8 @@
 /**
  * SyncStatus - Sync status indicator using Tamagui
  */
-import React from 'react';
-import { XStack, Text } from '@unicornlove/ui';
+import { useState, useEffect } from 'react';
+import { XStack, Text, View } from '@unicornlove/ui';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 interface SyncStatusProps {
@@ -13,12 +13,27 @@ interface SyncStatusProps {
 }
 
 function SyncStatus({ entityType, status, lastSyncedAt, errorMessage }: SyncStatusProps) {
+  const [rotation, setRotation] = useState(0);
+
+  useEffect(() => {
+    if (status === 'pending') {
+      const interval = setInterval(() => {
+        setRotation((prev) => (prev + 30) % 360);
+      }, 50);
+      return () => clearInterval(interval);
+    }
+  }, [status]);
+
   const renderIcon = () => {
     switch (status) {
       case 'synced':
         return <CheckCircle size={16} color="currentColor" />;
       case 'pending':
-        return <Loader2 size={16} className="animate-spin" color="currentColor" />;
+        return (
+          <View animation="quick" rotate={`${rotation}deg`}>
+            <Loader2 size={16} color="currentColor" />
+          </View>
+        );
       case 'error':
         return <XCircle size={16} color="currentColor" />;
       default:

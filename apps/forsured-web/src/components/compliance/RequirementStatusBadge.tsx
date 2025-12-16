@@ -3,6 +3,7 @@
  * REQ-2, TASK-13: Visual status indicator for compliance requirements
  */
 
+import { XStack, Text } from 'tamagui';
 import type { RequirementStatus } from '../../server/schemas/forsured/compliance-requirements.schema';
 
 interface RequirementStatusBadgeProps {
@@ -10,44 +11,75 @@ interface RequirementStatusBadgeProps {
   size?: 'xs' | 'sm' | 'md';
 }
 
-const statusConfig: Record<RequirementStatus, { label: string; className: string }> = {
+const statusConfig: Record<RequirementStatus, { label: string; backgroundColor: string; textColor: string; borderColor: string }> = {
   draft: {
     label: 'Draft',
-    className: 'bg-gray-100 text-gray-700 border-gray-200',
+    backgroundColor: '$gray4',
+    textColor: '$gray11',
+    borderColor: '$gray6',
   },
   active: {
     label: 'Active',
-    className: 'bg-success-50 text-success-700 border-success-200',
+    backgroundColor: '$green4',
+    textColor: '$green11',
+    borderColor: '$green6',
   },
   pending_approval: {
     label: 'Pending Approval',
-    className: 'bg-warning-50 text-warning-700 border-warning-200',
+    backgroundColor: '$yellow4',
+    textColor: '$yellow11',
+    borderColor: '$yellow6',
   },
   deprecated: {
     label: 'Deprecated',
-    className: 'bg-orange-50 text-orange-700 border-orange-200',
+    backgroundColor: '$orange4',
+    textColor: '$orange11',
+    borderColor: '$orange6',
   },
   archived: {
     label: 'Archived',
-    className: 'bg-gray-100 text-gray-500 border-gray-200',
+    backgroundColor: '$gray4',
+    textColor: '$gray10',
+    borderColor: '$gray6',
   },
 };
 
-const sizeClasses = {
-  xs: 'px-1.5 py-0.5 text-xs',
-  sm: 'px-2 py-0.5 text-xs',
-  md: 'px-2.5 py-1 text-sm',
+const sizeConfig = {
+  xs: {
+    paddingHorizontal: '$1.5',
+    paddingVertical: '$0.5',
+    fontSize: '$2',
+  },
+  sm: {
+    paddingHorizontal: '$2',
+    paddingVertical: '$0.5',
+    fontSize: '$2',
+  },
+  md: {
+    paddingHorizontal: '$2.5',
+    paddingVertical: '$1',
+    fontSize: '$3',
+  },
 };
 
 export function RequirementStatusBadge({ status, size = 'sm' }: RequirementStatusBadgeProps) {
   const config = statusConfig[status] || statusConfig.draft;
+  const sizeProps = sizeConfig[size];
 
   return (
-    <span
-      className={`inline-flex items-center font-medium rounded border ${config.className} ${sizeClasses[size]}`}
+    <XStack
+      alignItems="center"
+      borderRadius="$2"
+      borderWidth={1}
+      backgroundColor={config.backgroundColor}
+      borderColor={config.borderColor}
+      paddingHorizontal={sizeProps.paddingHorizontal}
+      paddingVertical={sizeProps.paddingVertical}
     >
-      {config.label}
-    </span>
+      <Text fontSize={sizeProps.fontSize} fontWeight="500" color={config.textColor}>
+        {config.label}
+      </Text>
+    </XStack>
   );
 }
 

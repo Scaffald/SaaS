@@ -1,5 +1,6 @@
 // src/pages/docs/components/Modal.tsx
 import React from 'react';
+import { View, Text } from '@unicornlove/ui';
 import ComponentDocumentationTemplate from '../Components';
 
 function ModalDoc() {
@@ -16,20 +17,26 @@ function ModalDoc() {
     {
       title: 'Basic Modal',
       code: `
-        const [isOpen, setIsOpen] = useState(false);
-        return (
-          <>
-            <Button onClick={() => setIsOpen(true)}>Open Modal</Button>
-            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Example Modal">
-              <p>This is the content of the modal.</p>
-            </Modal>
-          </>
-        );
+const [isOpen, setIsOpen] = useState(false);
+return (
+  <>
+    <Button onClick={() => setIsOpen(true)}>Open Modal</Button>
+    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Example Modal">
+      <p>This is the content of the modal.</p>
+    </Modal>
+  </>
+);
       `,
       render: (
-        <div className="relative p-4 border rounded">
-          <p>Modal content would be here (simulated open).</p>
-        </div>
+        <View
+          padding="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          borderRadius="$4"
+          backgroundColor="$background"
+        >
+          <Text color="$color11">Modal content would be here (simulated open).</Text>
+        </View>
       ),
     },
   ];

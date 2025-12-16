@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { YStack, XStack, View, Text, H2, H3 } from '@unicornlove/ui';
 import ComponentShowcase from '../ComponentShowcase';
 import Input from '../../Common/Input';
 import Select from '../../Common/Select';
@@ -41,21 +42,21 @@ export default function PatternsSection() {
   };
 
   return (
-    <section className="space-y-8 mb-12">
-      <div className="flex items-center space-x-3 mb-6">
-        <LayoutGrid className="text-primary-500" size={32} />
-        <h2 className="text-3xl font-display font-bold text-text-primary">
+    <YStack gap="$8" marginBottom="$12">
+      <XStack alignItems="center" gap="$3" marginBottom="$6">
+        <LayoutGrid color="var(--blue10)" size={32} />
+        <H2 fontSize="$9" fontWeight="bold" color="$color12">
           Patterns
-        </h2>
-      </div>
+        </H2>
+      </XStack>
 
-      <div id="form-patterns">
+      <View id="form-patterns">
         <ComponentShowcase
           title="Form Validation Pattern"
           description="Complete form with validation, error states, and success feedback"
         >
-          <div className="w-full max-w-2xl">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <View width="100%" maxWidth={672}>
+            <YStack tag="form" onSubmit={handleSubmit} gap="$4">
               {showSuccess && (
                 <Alert
                   variant="success"
@@ -129,80 +130,84 @@ export default function PatternsSection() {
                 required
               />
 
-              <div className="flex justify-end space-x-3 pt-4">
+              <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
                 <Button variant="ghost" type="button">
                   Cancel
                 </Button>
                 <Button variant="primary" type="submit">
                   Submit Form
                 </Button>
-              </div>
-            </form>
-          </div>
+              </XStack>
+            </YStack>
+          </View>
         </ComponentShowcase>
-      </div>
+      </View>
 
-      <div id="layout-patterns">
+      <View id="layout-patterns">
         <ComponentShowcase
           title="Dashboard Layout Pattern"
           description="Typical dashboard layout with stats, charts, and lists"
         >
-          <div className="w-full">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-surface border border-border rounded-lg p-4">
-                <p className="text-sm text-text-secondary mb-1">
+          <View width="100%">
+            <XStack flexWrap="wrap" gap="$4" marginBottom="$6">
+              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+                <Text fontSize="$3" color="$color11" marginBottom="$1">
                   Total Projects
-                </p>
-                <p className="text-3xl font-bold text-text-primary">24</p>
-                <p className="text-xs text-success-600 mt-1">
+                </Text>
+                <Text fontSize="$9" fontWeight="bold" color="$color12">24</Text>
+                <Text fontSize="$2" color="$green11" marginTop="$1">
                   +12% from last month
-                </p>
-              </div>
-              <div className="bg-surface border border-border rounded-lg p-4">
-                <p className="text-sm text-text-secondary mb-1">Active Tasks</p>
-                <p className="text-3xl font-bold text-text-primary">156</p>
-                <p className="text-xs text-warning-600 mt-1">8 overdue</p>
-              </div>
-              <div className="bg-surface border border-border rounded-lg p-4">
-                <p className="text-sm text-text-secondary mb-1">
+                </Text>
+              </View>
+              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+                <Text fontSize="$3" color="$color11" marginBottom="$1">Active Tasks</Text>
+                <Text fontSize="$9" fontWeight="bold" color="$color12">156</Text>
+                <Text fontSize="$2" color="$yellow11" marginTop="$1">8 overdue</Text>
+              </View>
+              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+                <Text fontSize="$3" color="$color11" marginBottom="$1">
                   Compliance Score
-                </p>
-                <p className="text-3xl font-bold text-text-primary">94%</p>
-                <p className="text-xs text-success-600 mt-1">+2% improvement</p>
-              </div>
-            </div>
+                </Text>
+                <Text fontSize="$9" fontWeight="bold" color="$color12">94%</Text>
+                <Text fontSize="$2" color="$green11" marginTop="$1">+2% improvement</Text>
+              </View>
+            </XStack>
 
-            <div className="bg-surface border border-border rounded-lg p-6">
-              <h4 className="font-semibold text-text-primary mb-4">
+            <View backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
+              <Text fontWeight="600" color="$color12" marginBottom="$4">
                 Recent Activity
-              </h4>
-              <div className="space-y-3">
+              </Text>
+              <YStack gap="$3">
                 {[1, 2, 3].map((i) => (
-                  <div
+                  <XStack
                     key={i}
-                    className="flex items-center space-x-3 py-2 border-b border-border last:border-0"
+                    alignItems="center"
+                    gap="$3"
+                    paddingVertical="$2"
+                    borderBottomWidth={i < 3 ? 1 : 0}
+                    borderBottomColor="$borderColor"
                   >
-                    <div className="w-2 h-2 rounded-full bg-primary-500" />
-                    <div className="flex-1">
-                      <p className="text-sm text-text-primary">
+                    <View width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
+                    <View flex={1}>
+                      <Text fontSize="$3" color="$color12">
                         Activity item {i}
-                      </p>
-                      <p className="text-xs text-text-tertiary">2 hours ago</p>
-                    </div>
-                  </div>
+                      </Text>
+                      <Text fontSize="$2" color="$color10">2 hours ago</Text>
+                    </View>
+                  </XStack>
                 ))}
-              </div>
-            </div>
-          </div>
+              </YStack>
+            </View>
+          </View>
         </ComponentShowcase>
-      </div>
+      </View>
 
-      <div id="feedback-patterns">
+      <View id="feedback-patterns">
         <ComponentShowcase
           title="Feedback Patterns"
           description="Different ways to provide user feedback"
         >
-          <div className="w-full space-y-4">
+          <YStack width="100%" gap="$4">
             <Alert variant="info" title="Pro Tip">
               Use keyboard shortcuts to navigate faster through the application.
             </Alert>
@@ -220,9 +225,9 @@ export default function PatternsSection() {
             >
               Your session is about to expire. Please save your work.
             </Alert>
-          </div>
+          </YStack>
         </ComponentShowcase>
-      </div>
-    </section>
+      </View>
+    </YStack>
   );
 }

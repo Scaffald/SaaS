@@ -8,10 +8,22 @@
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabaseServiceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+// Environment variables - support both Vite client (import.meta.env) and Node server (process.env)
+const getEnvVar = (viteKey: string, processKey?: string): string | undefined => {
+  // Check Vite client-side env first
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[viteKey];
+  }
+  // Fall back to process.env for server-side (tRPC middleware)
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[processKey || viteKey];
+  }
+  return undefined;
+};
+
+const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
+const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
+const supabaseServiceRoleKey = getEnvVar('VITE_SUPABASE_SERVICE_ROLE_KEY');
 
 // Check for missing env vars - warn instead of throw for E2E testing with mocks
 const isMissingEnvVars = !supabaseUrl || !supabaseAnonKey;

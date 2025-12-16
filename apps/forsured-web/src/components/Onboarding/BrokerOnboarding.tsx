@@ -276,9 +276,9 @@ export default function BrokerOnboarding() {
         </TamaguiButton>
 
         <YStack alignItems="center" marginBottom="$8">
-          <XStack justifyContent="center" marginBottom="$6">
-            <ForsuredLogo className="h-8" />
-          </XStack>
+          <YStack marginBottom="$6">
+            <ForsuredLogo />
+          </YStack>
           <H1 fontSize="$8" fontWeight="bold" color="$color12" marginBottom="$2">
             Welcome, Insurance Broker
           </H1>

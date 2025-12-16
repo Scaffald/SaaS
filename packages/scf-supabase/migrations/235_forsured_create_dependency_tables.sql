@@ -220,7 +220,7 @@ CREATE POLICY dependencies_select_policy
     requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT organization_id FROM core.role_assignments
+        SELECT scope_org_id FROM core.role_assignments
         WHERE user_id = auth.uid()
       )
     )
@@ -233,7 +233,7 @@ CREATE POLICY dependencies_insert_policy
     requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()
@@ -249,7 +249,7 @@ CREATE POLICY dependencies_update_policy
     requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()
@@ -265,7 +265,7 @@ CREATE POLICY dependencies_delete_policy
     requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()
@@ -284,7 +284,7 @@ CREATE POLICY umbrella_schedule_select_policy
     umbrella_requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT organization_id FROM core.role_assignments
+        SELECT scope_org_id FROM core.role_assignments
         WHERE user_id = auth.uid()
       )
     )
@@ -297,7 +297,7 @@ CREATE POLICY umbrella_schedule_insert_policy
     umbrella_requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()
@@ -313,7 +313,7 @@ CREATE POLICY umbrella_schedule_update_policy
     umbrella_requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()
@@ -329,7 +329,7 @@ CREATE POLICY umbrella_schedule_delete_policy
     umbrella_requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()
@@ -348,7 +348,7 @@ CREATE POLICY rules_select_policy
     requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT organization_id FROM core.role_assignments
+        SELECT scope_org_id FROM core.role_assignments
         WHERE user_id = auth.uid()
       )
     )
@@ -361,7 +361,7 @@ CREATE POLICY rules_insert_policy
     requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()
@@ -377,7 +377,7 @@ CREATE POLICY rules_update_policy
     requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()
@@ -393,7 +393,7 @@ CREATE POLICY rules_delete_policy
     requirement_id IN (
       SELECT cr.id FROM forsured.compliance_requirements cr
       WHERE cr.organization_id IN (
-        SELECT ra.organization_id
+        SELECT ra.scope_org_id
         FROM core.role_assignments ra
         JOIN core.roles r ON r.id = ra.role_id
         WHERE ra.user_id = auth.uid()

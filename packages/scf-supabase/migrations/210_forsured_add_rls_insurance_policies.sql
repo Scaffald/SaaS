@@ -17,7 +17,7 @@ CREATE POLICY "Users can view own organization policies"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -30,7 +30,7 @@ CREATE POLICY "Users can create own organization policies"
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -43,7 +43,7 @@ CREATE POLICY "Users can update own organization policies"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -57,10 +57,11 @@ CREATE POLICY "Admins can delete policies"
   USING (
     EXISTS (
       SELECT 1
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND organization_id = forsured.insurance_policies.organization_id
-        AND role_type IN ('owner', 'admin')
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND ra.scope_org_id = forsured.insurance_policies.organization_id
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -85,7 +86,7 @@ CREATE POLICY "Users can view own organization provisions"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -98,7 +99,7 @@ CREATE POLICY "Users can create own organization provisions"
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -111,7 +112,7 @@ CREATE POLICY "Users can update own organization provisions"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -125,10 +126,11 @@ CREATE POLICY "Admins can delete provisions"
   USING (
     EXISTS (
       SELECT 1
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND organization_id = forsured.policy_provisions.organization_id
-        AND role_type IN ('owner', 'admin')
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND ra.scope_org_id = forsured.policy_provisions.organization_id
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -153,7 +155,7 @@ CREATE POLICY "Users can view own organization endorsements"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -166,7 +168,7 @@ CREATE POLICY "Users can create own organization endorsements"
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -179,7 +181,7 @@ CREATE POLICY "Users can update own organization endorsements"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -193,10 +195,11 @@ CREATE POLICY "Admins can delete endorsements"
   USING (
     EXISTS (
       SELECT 1
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND organization_id = forsured.policy_endorsements.organization_id
-        AND role_type IN ('owner', 'admin')
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND ra.scope_org_id = forsured.policy_endorsements.organization_id
+        AND r.name IN ('owner', 'admin')
     )
   );
 

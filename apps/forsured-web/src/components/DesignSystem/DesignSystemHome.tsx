@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { YStack, XStack, View, Text, H1, H2 } from '@unicornlove/ui';
 import NavigationDrawer, { DrawerToggle } from './NavigationDrawer';
 import ThemeSwitcher from '../Common/ThemeSwitcher';
 import FoundationsSection from './sections/FoundationsSection';
@@ -10,54 +11,79 @@ export default function DesignSystemHome() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-bg-secondary">
+    <View minHeight="100vh" backgroundColor="$backgroundSecondary">
       <NavigationDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
 
-      <div className="lg:ml-72">
+      <View
+        $gtLg={{ marginLeft: 288 }}
+      >
         <DrawerToggle onClick={() => setDrawerOpen(true)} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-700 dark:to-primary-900 rounded-2xl p-8 mb-8 text-white shadow-xl">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="bg-white/20 p-4 rounded-xl backdrop-blur-sm">
-                  <Palette size={32} />
-                </div>
-                <div>
-                  <h1 className="font-display text-4xl font-bold mb-2">
+        <View maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8">
+          <View
+            borderRadius="$6"
+            padding="$8"
+            marginBottom="$8"
+            shadowRadius={12}
+            shadowColor="$shadowColor"
+            shadowOffset={{ width: 0, height: 4 }}
+            style={{
+              background: 'linear-gradient(to right, var(--color-primary-600), var(--color-primary-800))',
+            }}
+          >
+            <XStack alignItems="center" justifyContent="space-between">
+              <XStack alignItems="center" gap="$4">
+                <View
+                  padding="$4"
+                  borderRadius="$6"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                >
+                  <Palette size={32} color="white" />
+                </View>
+                <YStack>
+                  <H1 fontFamily="$display" fontSize="$9" fontWeight="bold" marginBottom="$2" color="white">
                     Design System
-                  </h1>
-                  <p className="text-primary-100 text-lg">
+                  </H1>
+                  <Text fontSize="$5" style={{ color: 'var(--color-primary-100)' }}>
                     Complete UI component library and design foundations
-                  </p>
-                </div>
-              </div>
+                  </Text>
+                </YStack>
+              </XStack>
               <ThemeSwitcher />
-            </div>
-          </div>
+            </XStack>
+          </View>
 
-          <div className="mb-8">
-            <div className="bg-surface rounded-xl border border-border p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-text-primary mb-2">
+          <View marginBottom="$8">
+            <View
+              backgroundColor="$background"
+              borderRadius="$6"
+              borderWidth={1}
+              borderColor="$borderColor"
+              padding="$6"
+              shadowRadius={2}
+              shadowColor="$shadowColor"
+              shadowOffset={{ width: 0, height: 1 }}
+            >
+              <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
                 About This System
-              </h2>
-              <p className="text-text-secondary">
+              </H2>
+              <Text color="$color11">
                 This design system provides a comprehensive collection of
                 reusable components, design foundations, and patterns to ensure
                 consistency across all interfaces. Each component is built with
                 accessibility, theming, and responsive design in mind.
-              </p>
-            </div>
-          </div>
+              </Text>
+            </View>
+          </View>
 
           <FoundationsSection />
           <ComponentsSection />
           <PatternsSection />
-        </div>
-      </div>
-    </div>
+        </View>
+      </View>
+    </View>
   );
 }

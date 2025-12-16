@@ -1,50 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import type React from 'react'
+import { useState, useEffect } from 'react'
 import {
   X,
   Clock,
   CheckCircle,
-  AlertCircle,
-  MessageSquare,
   FileText,
-  User,
   Calendar,
   Building,
   Upload,
   Download,
   Edit,
   History,
-  AtSign,
-  Paperclip,
   Block,
-} from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card } from 'tamagui';
-import {
-  Task,
-  User as UserType,
-  Comment,
-  Attachment,
-  StatusHistory,
-  EntityType,
-} from '../../types';
-import Modal from './Modal';
-import Button from './Button';
-import Input from './Input';
-import Textarea from './Textarea';
-import Select from './Select';
-import { useComments } from '../../hooks/useComments';
-import { useAttachments } from '../../hooks/useAttachments';
-import { useStatusHistory } from '../../hooks/useStatusHistory';
-import { useTasks } from '../../hooks/useTasks';
-import { useUsers } from '../../hooks/useUsers';
-import COIComparisonViewer from '../Document/COIComparisonViewer';
+} from 'lucide-react'
+import { YStack, XStack, Text, H2 } from 'tamagui'
+import type { Task, User as UserType, EntityType } from '../../types'
+import Modal from './Modal'
+import Button from './Button'
+import Input from './Input'
+import Textarea from './Textarea'
+import Select from './Select'
+import { useComments } from '../../hooks/useComments'
+import { useAttachments } from '../../hooks/useAttachments'
+import { useStatusHistory } from '../../hooks/useStatusHistory'
+import { useUsers } from '../../hooks/useUsers'
+import COIComparisonViewer from '../Document/COIComparisonViewer'
 
 interface UnifiedTaskDetailModalProps {
-  task: Task;
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdateTask: (taskId: string, updates: Partial<Task>) => Promise<void>;
-  currentUser: UserType;
-  availableUsers?: UserType[];
+  task: Task
+  isOpen: boolean
+  onClose: () => void
+  onUpdateTask: (taskId: string, updates: Partial<Task>) => Promise<void>
+  currentUser: UserType
+  availableUsers?: UserType[]
 }
 
 export default function UnifiedTaskDetailModal({
@@ -55,22 +43,20 @@ export default function UnifiedTaskDetailModal({
   currentUser,
   availableUsers = [],
 }: UnifiedTaskDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<
-    'details' | 'comments' | 'attachments' | 'history'
-  >('details');
-  const [showReassignModal, setShowReassignModal] = useState(false);
-  const [showBlockModal, setShowBlockModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [commentText, setCommentText] = useState('');
-  const [blockReason, setBlockReason] = useState('');
-  const [selectedAssignee, setSelectedAssignee] = useState(
-    task.assigned_to_user_id || ''
-  );
-  const [newDueDate, setNewDueDate] = useState(task.due_date || '');
-  const [newPriority, setNewPriority] = useState(task.priority || 'medium');
-  const [mentionQuery, setMentionQuery] = useState('');
-  const [showMentions, setShowMentions] = useState(false);
-  const [showCOIComparison, setShowCOIComparison] = useState(false);
+  const [activeTab, setActiveTab] = useState<'details' | 'comments' | 'attachments' | 'history'>(
+    'details'
+  )
+  const [showReassignModal, setShowReassignModal] = useState(false)
+  const [showBlockModal, setShowBlockModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [commentText, setCommentText] = useState('')
+  const [blockReason, setBlockReason] = useState('')
+  const [selectedAssignee, setSelectedAssignee] = useState(task.assigned_to_user_id || '')
+  const [newDueDate, setNewDueDate] = useState(task.due_date || '')
+  const [newPriority, setNewPriority] = useState(task.priority || 'medium')
+  const [mentionQuery, setMentionQuery] = useState('')
+  const [showMentions, setShowMentions] = useState(false)
+  const [showCOIComparison, setShowCOIComparison] = useState(false)
 
   // Hooks for data fetching
   const {
@@ -80,7 +66,7 @@ export default function UnifiedTaskDetailModal({
   } = useComments({
     entityType: 'task' as EntityType,
     entityId: task.id,
-  });
+  })
 
   const {
     attachments,
@@ -90,7 +76,7 @@ export default function UnifiedTaskDetailModal({
   } = useAttachments({
     entityType: 'task' as EntityType,
     entityId: task.id,
-  });
+  })
 
   const {
     history,
@@ -99,94 +85,90 @@ export default function UnifiedTaskDetailModal({
   } = useStatusHistory({
     entityType: 'task' as EntityType,
     entityId: task.id,
-  });
+  })
 
-  const { users } = useUsers();
-  const allUsers = availableUsers.length > 0 ? availableUsers : users;
+  const { users } = useUsers()
+  const allUsers = availableUsers.length > 0 ? availableUsers : users
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedAssignee(task.assigned_to_user_id || '');
-      setNewDueDate(task.due_date || '');
-      setNewPriority(task.priority || 'medium');
+      setSelectedAssignee(task.assigned_to_user_id || '')
+      setNewDueDate(task.due_date || '')
+      setNewPriority(task.priority || 'medium')
     }
-  }, [isOpen, task]);
+  }, [isOpen, task])
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityStyles = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'text-error-600 bg-error-50 border-error-200';
+        return { color: '$red11', backgroundColor: '$red3', borderColor: '$red6' }
       case 'high':
-        return 'text-warning-600 bg-warning-50 border-warning-200';
+        return { color: '$orange11', backgroundColor: '$orange3', borderColor: '$orange6' }
       case 'medium':
-        return 'text-primary-600 bg-primary-50 border-primary-200';
+        return { color: '$blue11', backgroundColor: '$blue3', borderColor: '$blue6' }
       case 'low':
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return { color: '$gray11', backgroundColor: '$gray3', borderColor: '$gray6' }
       default:
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return { color: '$gray11', backgroundColor: '$gray3', borderColor: '$gray6' }
     }
-  };
+  }
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyles = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'bg-primary-100 text-primary-700';
+        return { backgroundColor: '$blue3', color: '$blue11' }
       case 'in_progress':
-        return 'bg-blue-100 text-blue-700';
+        return { backgroundColor: '$blue3', color: '$blue11' }
       case 'blocked':
-        return 'bg-error-100 text-error-700';
+        return { backgroundColor: '$red3', color: '$red11' }
       case 'completed':
-        return 'bg-success-100 text-success-700';
+        return { backgroundColor: '$green3', color: '$green11' }
       case 'cancelled':
-        return 'bg-text-tertiary text-text-secondary';
+        return { backgroundColor: '$gray3', color: '$gray11' }
       default:
-        return 'bg-bg-secondary text-text-secondary';
+        return { backgroundColor: '$gray3', color: '$gray11' }
     }
-  };
+  }
 
   const formatDueDate = (dueDate?: string) => {
     if (!dueDate)
       return {
         text: 'No due date',
-        color: 'text-text-tertiary',
+        color: '$gray11',
         isOverdue: false,
-      };
-    const date = new Date(dueDate);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      }
+    const date = new Date(dueDate)
+    const now = new Date()
+    const diffTime = date.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)} days overdue`,
-        color: 'text-error-600',
+        color: '$red11',
         isOverdue: true,
-      };
-    if (diffDays === 0)
-      return { text: 'Due today', color: 'text-warning-600', isOverdue: false };
+      }
+    if (diffDays === 0) return { text: 'Due today', color: '$orange11', isOverdue: false }
     if (diffDays === 1)
       return {
         text: 'Due tomorrow',
-        color: 'text-warning-600',
+        color: '$orange11',
         isOverdue: false,
-      };
+      }
     return {
       text: `Due in ${diffDays} days`,
-      color: 'text-text-secondary',
+      color: '$gray11',
       isOverdue: false,
-    };
-  };
+    }
+  }
 
-  const dueDate = formatDueDate(task.due_date);
+  const dueDate = formatDueDate(task.due_date)
 
-  const handleStatusChange = async (
-    newStatus: Task['status'],
-    reason?: string
-  ) => {
-    const oldStatus = task.status;
+  const handleStatusChange = async (newStatus: Task['status'], reason?: string) => {
+    const oldStatus = task.status
 
     try {
-      await onUpdateTask(task.id, { status: newStatus });
+      await onUpdateTask(task.id, { status: newStatus })
 
       // Record status change in history
       await createHistoryEntry({
@@ -196,57 +178,55 @@ export default function UnifiedTaskDetailModal({
         new_status: newStatus as string,
         changed_by: currentUser.id,
         reason: reason,
-      });
+      })
 
       if (newStatus === 'blocked') {
-        setShowBlockModal(false);
-        setBlockReason('');
+        setShowBlockModal(false)
+        setBlockReason('')
       }
     } catch (error) {
-      console.error('Failed to update task status:', error);
+      console.error('Failed to update task status:', error)
     }
-  };
+  }
 
   const handleReassign = async () => {
     if (selectedAssignee && selectedAssignee !== task.assigned_to_user_id) {
       try {
-        await onUpdateTask(task.id, { assigned_to_user_id: selectedAssignee });
-        setShowReassignModal(false);
-        setSelectedAssignee('');
+        await onUpdateTask(task.id, { assigned_to_user_id: selectedAssignee })
+        setShowReassignModal(false)
+        setSelectedAssignee('')
       } catch (error) {
-        console.error('Failed to reassign task:', error);
+        console.error('Failed to reassign task:', error)
       }
     }
-  };
+  }
 
   const handleEditTask = async () => {
     try {
       await onUpdateTask(task.id, {
         due_date: newDueDate || undefined,
         priority: newPriority as Task['priority'],
-      });
-      setShowEditModal(false);
+      })
+      setShowEditModal(false)
     } catch (error) {
-      console.error('Failed to update task:', error);
+      console.error('Failed to update task:', error)
     }
-  };
+  }
 
   const handleAddComment = async () => {
-    if (!commentText.trim()) return;
+    if (!commentText.trim()) return
 
     // Extract mentions from comment text
-    const mentionMatches = commentText.match(/@(\w+)/g);
+    const mentionMatches = commentText.match(/@(\w+)/g)
     const mentions = mentionMatches
       ? (mentionMatches
           .map((m) => m.substring(1))
           .map((username) => {
-            const user = allUsers.find((u) =>
-              u.name.toLowerCase().includes(username.toLowerCase())
-            );
-            return user?.id;
+            const user = allUsers.find((u) => u.name.toLowerCase().includes(username.toLowerCase()))
+            return user?.id
           })
           .filter(Boolean) as string[])
-      : [];
+      : []
 
     try {
       await createComment({
@@ -255,20 +235,18 @@ export default function UnifiedTaskDetailModal({
         user_id: currentUser.id,
         content: commentText,
         mentions: mentions.length > 0 ? mentions : undefined,
-      });
-      setCommentText('');
-      setMentionQuery('');
-      setShowMentions(false);
+      })
+      setCommentText('')
+      setMentionQuery('')
+      setShowMentions(false)
     } catch (error) {
-      console.error('Failed to add comment:', error);
+      console.error('Failed to add comment:', error)
     }
-  };
+  }
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
 
     try {
       await createAttachment({
@@ -279,50 +257,47 @@ export default function UnifiedTaskDetailModal({
         file_type: file.type,
         file_url: URL.createObjectURL(file), // Mock URL
         uploaded_by: currentUser.id,
-      });
+      })
     } catch (error) {
-      console.error('Failed to upload attachment:', error);
+      console.error('Failed to upload attachment:', error)
     }
 
     // Reset input
-    event.target.value = '';
-  };
+    event.target.value = ''
+  }
 
   const handleDeleteAttachment = async (attachmentId: string) => {
     try {
-      await deleteAttachment(attachmentId);
+      await deleteAttachment(attachmentId)
     } catch (error) {
-      console.error('Failed to delete attachment:', error);
+      console.error('Failed to delete attachment:', error)
     }
-  };
+  }
 
   const handleCommentInputChange = (value: string) => {
-    setCommentText(value);
+    setCommentText(value)
 
     // Check for @ mentions
-    const lastAt = value.lastIndexOf('@');
-    if (
-      lastAt !== -1 &&
-      (value.length === lastAt + 1 || value[lastAt + 1] === ' ')
-    ) {
-      setShowMentions(true);
-      setMentionQuery(value.substring(lastAt + 1));
+    const lastAt = value.lastIndexOf('@')
+    if (lastAt !== -1 && (value.length === lastAt + 1 || value[lastAt + 1] === ' ')) {
+      setShowMentions(true)
+      setMentionQuery(value.substring(lastAt + 1))
     } else {
-      setShowMentions(false);
-      setMentionQuery('');
+      setShowMentions(false)
+      setMentionQuery('')
     }
-  };
+  }
 
   const insertMention = (user: UserType) => {
-    const lastAt = commentText.lastIndexOf('@');
+    const lastAt = commentText.lastIndexOf('@')
     if (lastAt !== -1) {
-      const before = commentText.substring(0, lastAt);
-      const after = commentText.substring(lastAt + 1);
-      setCommentText(`${before}@${user.name} ${after}`);
-      setShowMentions(false);
-      setMentionQuery('');
+      const before = commentText.substring(0, lastAt)
+      const after = commentText.substring(lastAt + 1)
+      setCommentText(`${before}@${user.name} ${after}`)
+      setShowMentions(false)
+      setMentionQuery('')
     }
-  };
+  }
 
   const filteredUsers = mentionQuery
     ? allUsers.filter(
@@ -330,30 +305,30 @@ export default function UnifiedTaskDetailModal({
           u.name.toLowerCase().includes(mentionQuery.toLowerCase()) ||
           u.email.toLowerCase().includes(mentionQuery.toLowerCase())
       )
-    : allUsers.slice(0, 5);
+    : allUsers.slice(0, 5)
 
   const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     return date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-    });
-  };
+    })
+  }
 
   const getUserName = (userId: string) => {
-    return allUsers.find((u) => u.id === userId)?.name || 'Unknown User';
-  };
+    return allUsers.find((u) => u.id === userId)?.name || 'Unknown User'
+  }
 
-  if (!task) return null;
+  if (!task) return null
 
   return (
     <>
@@ -373,7 +348,7 @@ export default function UnifiedTaskDetailModal({
                   fontWeight="500"
                   borderRadius="$2"
                   borderWidth={1}
-                  className={getPriorityColor(task.priority)}
+                  {...getPriorityStyles(task.priority)}
                 >
                   {task.priority.toUpperCase()}
                 </Text>
@@ -383,25 +358,33 @@ export default function UnifiedTaskDetailModal({
                   fontSize="$1"
                   fontWeight="500"
                   borderRadius="$2"
-                  className={getStatusColor(task.status)}
+                  {...getStatusStyles(task.status)}
                 >
                   {task.status.replace('_', ' ').toUpperCase()}
                 </Text>
               </XStack>
-              {task.description && (
-                <Text color="$color11">{task.description}</Text>
-              )}
+              {task.description && <Text color="$color11">{task.description}</Text>}
             </YStack>
           </XStack>
 
           {/* Task Info */}
           <XStack gap="$4" flexWrap="wrap">
-            <XStack alignItems="center" gap="$3" padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth={200}>
+            <XStack
+              alignItems="center"
+              gap="$3"
+              padding="$3"
+              backgroundColor="$backgroundHover"
+              borderRadius="$4"
+              flex={1}
+              minWidth={200}
+            >
               <Calendar color="$color10" size={20} />
               <YStack>
-                <Text fontSize="$1" color="$color10">Due Date</Text>
+                <Text fontSize="$1" color="$color10">
+                  Due Date
+                </Text>
                 <XStack alignItems="center" gap="$2">
-                  <Text fontSize="$3" fontWeight="500" className={dueDate.color}>
+                  <Text fontSize="$3" fontWeight="500" color={dueDate.color}>
                     {dueDate.text}
                   </Text>
                   {dueDate.isOverdue && <Text marginLeft="$2">⚠️</Text>}
@@ -409,10 +392,20 @@ export default function UnifiedTaskDetailModal({
               </YStack>
             </XStack>
             {task.project_id && (
-              <XStack alignItems="center" gap="$3" padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth={200}>
+              <XStack
+                alignItems="center"
+                gap="$3"
+                padding="$3"
+                backgroundColor="$backgroundHover"
+                borderRadius="$4"
+                flex={1}
+                minWidth={200}
+              >
                 <Building color="$color10" size={20} />
                 <YStack>
-                  <Text fontSize="$1" color="$color10">Project</Text>
+                  <Text fontSize="$1" color="$color10">
+                    Project
+                  </Text>
                   <Text fontSize="$3" fontWeight="500" color="$color12">
                     {task.project_name || 'Project'}
                   </Text>
@@ -438,7 +431,13 @@ export default function UnifiedTaskDetailModal({
                   Reassign
                 </Button>
               </XStack>
-              <XStack alignItems="center" gap="$3" padding="$3" backgroundColor="$backgroundHover" borderRadius="$4">
+              <XStack
+                alignItems="center"
+                gap="$3"
+                padding="$3"
+                backgroundColor="$backgroundHover"
+                borderRadius="$4"
+              >
                 <XStack
                   width={40}
                   height={40}
@@ -459,8 +458,7 @@ export default function UnifiedTaskDetailModal({
                     {getUserName(task.assigned_to_user_id)}
                   </Text>
                   <Text fontSize="$1" color="$color10">
-                    {allUsers.find((u) => u.id === task.assigned_to_user_id)
-                      ?.email || ''}
+                    {allUsers.find((u) => u.id === task.assigned_to_user_id)?.email || ''}
                   </Text>
                 </YStack>
               </XStack>
@@ -470,20 +468,20 @@ export default function UnifiedTaskDetailModal({
           {/* Tabs */}
           <YStack borderBottomWidth={1} borderColor="$borderColor">
             <XStack gap="$6">
-              {['details', 'comments', 'attachments', 'history'].map((tab) => (
+              {(['details', 'comments', 'attachments', 'history'] as const).map((tab) => (
                 <Button
                   key={tab}
-                  onPress={() => setActiveTab(tab as any)}
+                  onPress={() => setActiveTab(tab)}
                   variant="ghost"
                   paddingBottom="$3"
                   paddingHorizontal="$1"
                   fontSize="$3"
                   fontWeight="500"
                   borderBottomWidth={2}
-                  borderBottomColor={activeTab === tab ? "$blue9" : "transparent"}
-                  color={activeTab === tab ? "$blue9" : "$color10"}
+                  borderBottomColor={activeTab === tab ? '$blue9' : 'transparent'}
+                  color={activeTab === tab ? '$blue9' : '$color10'}
                   hoverStyle={{
-                    color: "$color12"
+                    color: '$color12',
                   }}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -522,17 +520,16 @@ export default function UnifiedTaskDetailModal({
                         Complete Task
                       </Button>
                     )}
-                    {task.status !== 'blocked' &&
-                      task.status !== 'completed' && (
-                        <Button
-                          variant="danger"
-                          onClick={() => setShowBlockModal(true)}
-                          leftIcon={Block}
-                          fullWidth
-                        >
-                          Block Task
-                        </Button>
-                      )}
+                    {task.status !== 'blocked' && task.status !== 'completed' && (
+                      <Button
+                        variant="danger"
+                        onClick={() => setShowBlockModal(true)}
+                        leftIcon={Block}
+                        fullWidth
+                      >
+                        Block Task
+                      </Button>
+                    )}
                     <Button
                       variant="secondary"
                       onClick={() => setShowEditModal(true)}
@@ -545,16 +542,18 @@ export default function UnifiedTaskDetailModal({
 
                   {/* Quick Actions from task */}
                   {task.quick_actions && task.quick_actions.length > 0 && (
-                    <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                    <YStack
+                      marginTop="$4"
+                      paddingTop="$4"
+                      borderTopWidth={1}
+                      borderColor="$borderColor"
+                    >
                       <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
                         Additional Actions
                       </Text>
                       <XStack flexWrap="wrap" gap="$2">
                         {task.quick_actions.map((action) => {
-                          if (
-                            action === 'open_coi' ||
-                            action === 'compare_to_req'
-                          ) {
+                          if (action === 'open_coi' || action === 'compare_to_req') {
                             return (
                               <Button
                                 key={action}
@@ -562,13 +561,11 @@ export default function UnifiedTaskDetailModal({
                                 onPress={() => setShowCOIComparison(true)}
                                 leftIcon={FileText}
                               >
-                                {action === 'open_coi'
-                                  ? 'Open COI'
-                                  : 'Compare To Req'}
+                                {action === 'open_coi' ? 'Open COI' : 'Compare To Req'}
                               </Button>
-                            );
+                            )
                           }
-                          return null;
+                          return null
                         })}
                       </XStack>
                     </YStack>
@@ -628,24 +625,23 @@ export default function UnifiedTaskDetailModal({
                             <Text fontSize="$3" color="$color11" whiteSpace="pre-wrap">
                               {comment.content}
                             </Text>
-                            {comment.mentions &&
-                              comment.mentions.length > 0 && (
-                                <XStack marginTop="$2" flexWrap="wrap" gap="$1">
-                                  {comment.mentions.map((userId) => (
-                                    <Text
-                                      key={userId}
-                                      fontSize="$1"
-                                      paddingHorizontal="$2"
-                                      paddingVertical="$0.5"
-                                      backgroundColor="$blue3"
-                                      color="$blue10"
-                                      borderRadius="$2"
-                                    >
-                                      @{getUserName(userId)}
-                                    </Text>
-                                  ))}
-                                </XStack>
-                              )}
+                            {comment.mentions && comment.mentions.length > 0 && (
+                              <XStack marginTop="$2" flexWrap="wrap" gap="$1">
+                                {comment.mentions.map((userId) => (
+                                  <Text
+                                    key={userId}
+                                    fontSize="$1"
+                                    paddingHorizontal="$2"
+                                    paddingVertical="$0.5"
+                                    backgroundColor="$blue3"
+                                    color="$blue10"
+                                    borderRadius="$2"
+                                  >
+                                    @{getUserName(userId)}
+                                  </Text>
+                                ))}
+                              </XStack>
+                            )}
                           </YStack>
                         </XStack>
                       ))}
@@ -690,7 +686,7 @@ export default function UnifiedTaskDetailModal({
                             justifyContent="flex-start"
                             alignItems="center"
                             gap="$2"
-                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                            hoverStyle={{ backgroundColor: '$backgroundHover' }}
                           >
                             <XStack
                               width={32}
@@ -721,10 +717,7 @@ export default function UnifiedTaskDetailModal({
                     )}
                   </YStack>
                   <XStack marginTop="$3" justifyContent="flex-end">
-                    <Button
-                      onPress={handleAddComment}
-                      disabled={!commentText.trim()}
-                    >
+                    <Button onPress={handleAddComment} disabled={!commentText.trim()}>
                       Add Comment
                     </Button>
                   </XStack>
@@ -740,11 +733,7 @@ export default function UnifiedTaskDetailModal({
                       Attachments
                     </Text>
                     <label style={{ cursor: 'pointer' }}>
-                      <input
-                        type="file"
-                        style={{ display: 'none' }}
-                        onChange={handleFileUpload}
-                      />
+                      <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
                       <Button variant="secondary" leftIcon={Upload} size="sm">
                         Upload File
                       </Button>
@@ -789,25 +778,20 @@ export default function UnifiedTaskDetailModal({
                                 variant="ghost"
                                 color="$blue9"
                                 padding="$2"
-                                hoverStyle={{ backgroundColor: "$blue3" }}
+                                hoverStyle={{ backgroundColor: '$blue3' }}
                               >
-                                <a
-                                  href={attachment.file_url}
-                                  download={attachment.file_name}
-                                >
+                                <a href={attachment.file_url} download={attachment.file_name}>
                                   <Download size={16} />
                                 </a>
                               </Button>
                             )}
                             <Button
-                              onPress={() =>
-                                handleDeleteAttachment(attachment.id)
-                              }
+                              onPress={() => handleDeleteAttachment(attachment.id)}
                               size="$2"
                               variant="ghost"
                               color="$red9"
                               padding="$2"
-                              hoverStyle={{ backgroundColor: "$red3" }}
+                              hoverStyle={{ backgroundColor: '$red3' }}
                             >
                               <X size={16} />
                             </Button>
@@ -869,7 +853,7 @@ export default function UnifiedTaskDetailModal({
                               paddingHorizontal="$2"
                               paddingVertical="$0.5"
                               borderRadius="$2"
-                              className={getStatusColor(entry.new_status)}
+                              {...getStatusStyles(entry.new_status)}
                             >
                               {entry.new_status}
                             </Text>
@@ -912,11 +896,7 @@ export default function UnifiedTaskDetailModal({
             fullWidth
           />
           <XStack gap="$3">
-            <Button
-              variant="secondary"
-              onPress={() => setShowReassignModal(false)}
-              fullWidth
-            >
+            <Button variant="secondary" onPress={() => setShowReassignModal(false)} fullWidth>
               Cancel
             </Button>
             <Button variant="primary" onPress={handleReassign} fullWidth>
@@ -930,8 +910,8 @@ export default function UnifiedTaskDetailModal({
       <Modal
         isOpen={showBlockModal}
         onClose={() => {
-          setShowBlockModal(false);
-          setBlockReason('');
+          setShowBlockModal(false)
+          setBlockReason('')
         }}
         title="Block Task"
         size="sm"
@@ -950,8 +930,8 @@ export default function UnifiedTaskDetailModal({
             <Button
               variant="secondary"
               onPress={() => {
-                setShowBlockModal(false);
-                setBlockReason('');
+                setShowBlockModal(false)
+                setBlockReason('')
               }}
               fullWidth
             >
@@ -980,12 +960,10 @@ export default function UnifiedTaskDetailModal({
           <Input
             label="Due Date"
             type="datetime-local"
-            value={
-              newDueDate ? new Date(newDueDate).toISOString().slice(0, 16) : ''
-            }
+            value={newDueDate ? new Date(newDueDate).toISOString().slice(0, 16) : ''}
             onChange={(e) => {
-              const value = e.target.value;
-              setNewDueDate(value ? new Date(value).toISOString() : '');
+              const value = e.target.value
+              setNewDueDate(value ? new Date(value).toISOString() : '')
             }}
             fullWidth
           />
@@ -1002,11 +980,7 @@ export default function UnifiedTaskDetailModal({
             fullWidth
           />
           <XStack gap="$3">
-            <Button
-              variant="secondary"
-              onPress={() => setShowEditModal(false)}
-              fullWidth
-            >
+            <Button variant="secondary" onPress={() => setShowEditModal(false)} fullWidth>
               Cancel
             </Button>
             <Button variant="primary" onPress={handleEditTask} fullWidth>
@@ -1026,19 +1000,19 @@ export default function UnifiedTaskDetailModal({
           isOpen={showCOIComparison}
           onClose={() => setShowCOIComparison(false)}
           onApprove={() => {
-            console.log('Document approved');
+            console.log('Document approved')
             // Could update task status here
           }}
           onRequestChanges={(comments) => {
-            console.log('Request changes:', comments);
+            console.log('Request changes:', comments)
             // Could create a comment or task here
           }}
           onOverride={(reason) => {
-            console.log('Override with reason:', reason);
+            console.log('Override with reason:', reason)
             // Could update task/document status here
           }}
         />
       )}
     </>
-  );
+  )
 }

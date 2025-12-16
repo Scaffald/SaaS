@@ -1,52 +1,59 @@
-/**
- * ForsuredLogo - Logo component using Tamagui theme
- */
-import React from 'react';
-import { useTheme } from '@unicornlove/ui';
+import { useTheme, styled } from '@unicornlove/ui'
+import type { GetProps } from '@unicornlove/ui'
 
-interface ForsuredLogoProps {
-  className?: string;
-  height?: number;
-  color?: 'blue' | 'white' | 'auto';
+const SvgContainer = styled('svg', {
+  name: 'ForsuredLogoSvg',
+})
+
+type SvgContainerProps = GetProps<typeof SvgContainer>
+
+interface ForsuredLogoProps extends Omit<SvgContainerProps, 'height' | 'width'> {
+  height?: number
+  width?: number
+  color?: 'blue' | 'white' | 'auto'
+  marginBottom?: SvgContainerProps['marginBottom']
 }
 
 export default function ForsuredLogo({
-  className = '',
   height = 20,
+  width,
   color = 'auto',
+  marginBottom,
+  ...props
 }: ForsuredLogoProps) {
-  const theme = useTheme();
+  const theme = useTheme()
 
   const getLogoColor = () => {
-    if (color === 'blue') return '#0166FF';
-    if (color === 'white') return '#F9FAFB';
+    if (color === 'blue') return '#0166FF'
+    if (color === 'white') return '#F9FAFB'
 
     // Use Tamagui theme colors
-    const themeName = theme?.name || 'light';
+    const themeName = theme?.name || 'light'
     switch (themeName) {
       case 'light':
-        return '#0166FF';
+        return '#0166FF'
       case 'dark':
-        return '#60A5FA';
+        return '#60A5FA'
       case 'earth':
-        return '#8B6944';
+        return '#8B6944'
       default:
-        return '#0166FF';
+        return '#0166FF'
     }
-  };
+  }
 
-  const fillColor = getLogoColor();
-  const aspectRatio = 151 / 30;
-  const width = height * aspectRatio;
+  const fillColor = getLogoColor()
+  const aspectRatio = 151 / 30
+  const calculatedWidth = width ?? height * aspectRatio
 
   return (
-    <svg
-      width={width}
+    <SvgContainer
+      width={calculatedWidth}
       height={height}
       viewBox="0 0 151 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      marginBottom={marginBottom}
+      {...props}
     >
       <path
         d="M0 0.576735H19.3945V4.61392H4.69658V13.3329H17.4348V17.3701H4.69658V29.1085H0V0.576735Z"
@@ -80,6 +87,6 @@ export default function ForsuredLogo({
         d="M45.9522 29.0745V16.8951L50.0068 12.7561H52.4395L56.3252 8.78681H48.9931L45.6143 12.2473V8.78681H41.357V29.0745H45.9522Z"
         fill={fillColor}
       />
-    </svg>
-  );
+    </SvgContainer>
+  )
 }

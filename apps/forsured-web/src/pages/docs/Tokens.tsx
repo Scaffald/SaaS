@@ -1,55 +1,59 @@
 // src/pages/docs/Tokens.tsx
 import React from 'react';
+import { YStack, XStack, View, Text, H1, H2 } from '@unicornlove/ui';
 
 function TokensDoc() {
   return (
-    <div className="tokens-doc p-6">
-      <h1 className="text-3xl font-bold mb-4">Design Tokens</h1>
-      <p className="text-lg text-gray-700 mb-6">
+    <View padding="$6">
+      <H1 fontSize="$9" fontWeight="bold" marginBottom="$4" color="$color12">Design Tokens</H1>
+      <Text fontSize="$5" color="$color11" marginBottom="$6">
         Our design tokens are the visual atoms of our design system. They represent the smallest, indivisible pieces of design information that are used to build our UI.
-      </p>
+      </Text>
 
-      <h2 className="text-2xl font-semibold mb-3">Colors</h2>
-      <p className="mb-4">
+      <H2 fontSize="$7" fontWeight="600" marginBottom="$3" color="$color12">Colors</H2>
+      <Text marginBottom="$4" color="$color11">
         We use a semantic color palette to ensure consistent meaning and usage across the application.
-      </p>
-      {/* Example of color display */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        <div className="p-4 border rounded shadow-sm">
-          <div className="w-24 h-24 bg-primary-500 rounded mb-2"></div>
-          <p className="font-medium">Primary 500</p>
-          <p className="text-sm text-gray-600">#4F46E5</p>
-        </div>
-        <div className="p-4 border rounded shadow-sm">
-          <div className="w-24 h-24 bg-green-500 rounded mb-2"></div>
-          <p className="font-medium">Success 500</p>
-          <p className="text-sm text-gray-600">#22C55E</p>
-        </div>
-      </div>
+      </Text>
+      <XStack flexWrap="wrap" gap="$4" marginBottom="$6">
+        <View padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" shadowRadius={2} shadowColor="$shadowColor" shadowOffset={{ width: 0, height: 1 }} backgroundColor="$background">
+          <View width={96} height={96} backgroundColor="$blue9" borderRadius="$3" marginBottom="$2" />
+          <Text fontWeight="500" color="$color12">Primary 500</Text>
+          <Text fontSize="$2" color="$color11">#4F46E5</Text>
+        </View>
+        <View padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" shadowRadius={2} shadowColor="$shadowColor" shadowOffset={{ width: 0, height: 1 }} backgroundColor="$background">
+          <View width={96} height={96} backgroundColor="$green9" borderRadius="$3" marginBottom="$2" />
+          <Text fontWeight="500" color="$color12">Success 500</Text>
+          <Text fontSize="$2" color="$color11">#22C55E</Text>
+        </View>
+      </XStack>
 
-      <h2 className="text-2xl font-semibold mb-3">Typography</h2>
-      <p className="mb-4">
+      <H2 fontSize="$7" fontWeight="600" marginBottom="$3" color="$color12">Typography</H2>
+      <Text marginBottom="$4" color="$color11">
         Our typography scale defines consistent font sizes, weights, and line heights.
-      </p>
-      {/* Example of typography display */}
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold mb-2">Heading 1 (text-4xl font-bold)</h1>
-        <h2 className="text-3xl font-semibold mb-2">Heading 2 (text-3xl font-semibold)</h2>
-        <p className="text-base mb-2">Body (text-base)</p>
-        <p className="text-sm text-gray-600">Small text (text-sm)</p>
-      </div>
+      </Text>
+      <YStack marginBottom="$6" gap="$2">
+        <Text fontSize="$9" fontWeight="bold" marginBottom="$2" color="$color12">Heading 1 (text-4xl font-bold)</Text>
+        <Text fontSize="$8" fontWeight="600" marginBottom="$2" color="$color12">Heading 2 (text-3xl font-semibold)</Text>
+        <Text fontSize="$4" marginBottom="$2" color="$color12">Body (text-base)</Text>
+        <Text fontSize="$2" color="$color11">Small text (text-sm)</Text>
+      </YStack>
 
-      <h2 className="text-2xl font-semibold mb-3">Spacing</h2>
-      <p className="mb-4">
+      <H2 fontSize="$7" fontWeight="600" marginBottom="$3" color="$color12">Spacing</H2>
+      <Text marginBottom="$4" color="$color11">
         Our spacing scale ensures consistent visual rhythm and hierarchy.
-      </p>
-      {/* Example of spacing display */}
-      <div className="flex items-end mb-6">
-        <div className="bg-blue-100 p-2 mr-2">Small (p-2)</div>
-        <div className="bg-blue-100 p-4 mr-2">Medium (p-4)</div>
-        <div className="bg-blue-100 p-8">Large (p-8)</div>
-      </div>
-    </div>
+      </Text>
+      <XStack alignItems="flex-end" marginBottom="$6" gap="$2">
+        <View backgroundColor="$blue4" padding="$2">
+          <Text fontSize="$2" color="$color11">Small (p-2)</Text>
+        </View>
+        <View backgroundColor="$blue4" padding="$4">
+          <Text fontSize="$2" color="$color11">Medium (p-4)</Text>
+        </View>
+        <View backgroundColor="$blue4" padding="$8">
+          <Text fontSize="$2" color="$color11">Large (p-8)</Text>
+        </View>
+      </XStack>
+    </View>
   );
 }
 

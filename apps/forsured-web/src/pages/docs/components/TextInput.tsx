@@ -1,6 +1,7 @@
 // src/pages/docs/components/TextInput.tsx
 import React from 'react';
 import ComponentDocumentationTemplate from '../Components';
+import Input from '../../../components/Common/Input';
 
 function TextInputDoc() {
   const props = [
@@ -17,13 +18,13 @@ function TextInputDoc() {
   const examples = [
     {
       title: 'Basic Text Input',
-      code: `<TextInput label="Username" value={username} onChange={setUsername} placeholder="Enter your username" />`,
-      render: <input type="text" placeholder="Enter your username" className="border p-2 rounded" />,
+      code: `<Input label="Username" placeholder="Enter your username" />`,
+      render: <Input label="Username" placeholder="Enter your username" />,
     },
     {
       title: 'Password Input',
-      code: `<TextInput label="Password" type="password" value={password} onChange={setPassword} />`,
-      render: <input type="password" placeholder="Enter your password" className="border p-2 rounded" />,
+      code: `<Input label="Password" type="password" placeholder="Enter your password" />`,
+      render: <Input label="Password" type="password" placeholder="Enter your password" />,
     },
   ];
 

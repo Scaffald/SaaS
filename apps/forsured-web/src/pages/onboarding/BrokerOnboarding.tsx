@@ -1,6 +1,7 @@
 // src/pages/onboarding/BrokerOnboarding.tsx
 // REQ-126: Broker Onboarding Page
 import React from 'react';
+import { View } from 'tamagui';
 import { useOnboarding } from '../../hooks/useOnboarding';
 import OnboardingWizard from '../../components/Onboarding/OnboardingWizard';
 import BrokerInfoStep from '../../components/Onboarding/steps/broker/BrokerInfoStep';
@@ -66,7 +67,7 @@ function BrokerOnboarding() {
   };
 
   return (
-    <div className="broker-onboarding-page">
+    <View flex={1}>
       <OnboardingWizard
         userType="broker"
         currentStep={currentStep}
@@ -79,7 +80,7 @@ function BrokerOnboarding() {
       >
         {renderStepContent()}
       </OnboardingWizard>
-    </div>
+    </View>
   );
 }
 

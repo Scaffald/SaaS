@@ -1,4 +1,4 @@
--- Migration: 235_forsured_refactor_user_type_enum.sql
+-- Migration: 239_forsured_refactor_user_type_enum.sql
 -- REQ-4: Refactor user type enum from 'gc' to 'manager'
 -- TASK-11: Update database enum values for generic terminology
 --
@@ -21,7 +21,7 @@ ADD CONSTRAINT user_profiles_user_type_check
 CHECK (user_type IN ('manager', 'contractor', 'broker', 'admin'));
 
 -- Step 4: Update the seed data migration reference
--- (This is informational - the seed migration 234 references 'gc'/'contractor'
+-- (This is informational - the seed migration 238 references 'gc'/'contractor'
 --  for user_set_type assignment, but those records are already migrated above)
 
 COMMENT ON TABLE forsured.user_profiles IS

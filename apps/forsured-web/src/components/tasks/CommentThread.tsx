@@ -3,142 +3,141 @@
  * CommentThread component with rich text, mentions, and real-time updates
  */
 
-import { useState, useEffect } from 'react';
-import { User } from '../../types';
-import { TaskComment } from '../../lib/api/taskService';
-import { User as UserIcon, AtSign } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, SizableText, TextArea, Spinner } from '@unicornlove/ui';
+import { useState, useEffect } from 'react'
+import type { User } from '../../types'
+import type { TaskComment } from '../../lib/api/taskService'
+import { YStack, XStack, Button, Card, SizableText, TextArea, Spinner } from '@unicornlove/ui'
 
 interface CommentThreadProps {
-  taskId: string;
-  comments: TaskComment[];
-  currentUserId: string;
-  users: User[];
-  onAddComment: (content: string, mentions: string[]) => Promise<void>;
-  className?: string;
+  taskId: string
+  comments: TaskComment[]
+  currentUserId: string
+  users: User[]
+  onAddComment: (content: string, mentions: string[]) => Promise<void>
 }
 
 export const CommentThread: React.FC<CommentThreadProps> = ({
   taskId,
   comments,
-  currentUserId,
+  currentUserId: _currentUserId,
   users,
   onAddComment,
-  className = '',
 }) => {
-  const [newComment, setNewComment] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [showMentions, setShowMentions] = useState(false);
-  const [mentionQuery, setMentionQuery] = useState('');
-  const [draft, setDraft] = useState('');
+  const [newComment, setNewComment] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [showMentions, setShowMentions] = useState(false)
+  const [mentionQuery, setMentionQuery] = useState('')
+  const [_draft, _setDraft] = useState('')
 
-  const CHARACTER_LIMIT = 5000;
+  const CHARACTER_LIMIT = 5000
 
   // Auto-save draft every 30s
   useEffect(() => {
     const interval = setInterval(() => {
       if (newComment.trim()) {
-        localStorage.setItem(`task-comment-draft-${taskId}`, newComment);
+        localStorage.setItem(`task-comment-draft-${taskId}`, newComment)
       }
-    }, 30000);
+    }, 30000)
 
-    return () => clearInterval(interval);
-  }, [newComment, taskId]);
+    return () => clearInterval(interval)
+  }, [newComment, taskId])
 
   // Load draft on mount
   useEffect(() => {
-    const savedDraft = localStorage.getItem(`task-comment-draft-${taskId}`);
+    const savedDraft = localStorage.getItem(`task-comment-draft-${taskId}`)
     if (savedDraft) {
-      setNewComment(savedDraft);
+      setNewComment(savedDraft)
     }
-  }, [taskId]);
+  }, [taskId])
 
   const extractMentions = (text: string): string[] => {
-    const mentionRegex = /@(\w+)/g;
-    const mentions: string[] = [];
-    let match;
+    const mentionRegex = /@(\w+)/g
+    const mentions: string[] = []
+    let match: RegExpExecArray | null = null
 
-    while ((match = mentionRegex.exec(text)) !== null) {
-      const username = match[1];
-      const user = users.find((u) => u.name.toLowerCase().includes(username.toLowerCase()));
+    match = mentionRegex.exec(text)
+    while (match !== null) {
+      const username = match[1]
+      const user = users.find((u) => u.name.toLowerCase().includes(username.toLowerCase()))
       if (user) {
-        mentions.push(user.id);
+        mentions.push(user.id)
       }
+      match = mentionRegex.exec(text)
     }
 
-    return mentions;
-  };
+    return mentions
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if (!newComment.trim() || submitting) return;
+    if (!newComment.trim() || submitting) return
 
     try {
-      setSubmitting(true);
-      const mentions = extractMentions(newComment);
-      await onAddComment(newComment, mentions);
+      setSubmitting(true)
+      const mentions = extractMentions(newComment)
+      await onAddComment(newComment, mentions)
 
-      setNewComment('');
-      localStorage.removeItem(`task-comment-draft-${taskId}`);
+      setNewComment('')
+      localStorage.removeItem(`task-comment-draft-${taskId}`)
     } catch (error) {
-      console.error('Failed to add comment:', error);
+      console.error('Failed to add comment:', error)
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   const handleTextChange = (value: string) => {
     if (value.length <= CHARACTER_LIMIT) {
-      setNewComment(value);
+      setNewComment(value)
 
       // Check for @ mention trigger
-      const lastAtIndex = value.lastIndexOf('@');
+      const lastAtIndex = value.lastIndexOf('@')
       if (lastAtIndex !== -1) {
-        const queryAfterAt = value.substring(lastAtIndex + 1);
+        const queryAfterAt = value.substring(lastAtIndex + 1)
         if (!queryAfterAt.includes(' ')) {
-          setMentionQuery(queryAfterAt);
-          setShowMentions(true);
+          setMentionQuery(queryAfterAt)
+          setShowMentions(true)
         } else {
-          setShowMentions(false);
+          setShowMentions(false)
         }
       } else {
-        setShowMentions(false);
+        setShowMentions(false)
       }
     }
-  };
+  }
 
   const insertMention = (user: User) => {
-    const lastAtIndex = newComment.lastIndexOf('@');
-    const beforeMention = newComment.substring(0, lastAtIndex);
-    const afterMention = newComment.substring(lastAtIndex + mentionQuery.length + 1);
+    const lastAtIndex = newComment.lastIndexOf('@')
+    const beforeMention = newComment.substring(0, lastAtIndex)
+    const afterMention = newComment.substring(lastAtIndex + mentionQuery.length + 1)
 
-    setNewComment(`${beforeMention}@${user.name} ${afterMention}`);
-    setShowMentions(false);
-  };
+    setNewComment(`${beforeMention}@${user.name} ${afterMention}`)
+    setShowMentions(false)
+  }
 
   const filteredUsers = users.filter((u) =>
     u.name.toLowerCase().includes(mentionQuery.toLowerCase())
-  );
+  )
 
   const getUserById = (userId: string): User | undefined => {
-    return users.find((u) => u.id === userId);
-  };
+    return users.find((u) => u.id === userId)
+  }
 
   const formatTimestamp = (timestamp: string): string => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
+    const date = new Date(timestamp)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
 
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
-    return date.toLocaleDateString();
-  };
+    if (diffMins < 1) return 'just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`
+    return date.toLocaleDateString()
+  }
 
   return (
-    <YStack gap="$6" className={className}>
+    <YStack gap="$6">
       {/* Comment List */}
       <YStack gap="$4">
         {comments.length === 0 ? (
@@ -149,7 +148,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
           </YStack>
         ) : (
           comments.map((comment) => {
-            const user = getUserById(comment.user_id);
+            const user = getUserById(comment.user_id)
             return (
               <XStack key={comment.id} gap="$3">
                 <YStack
@@ -180,7 +179,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
                   {comment.mentions.length > 0 && (
                     <XStack marginTop="$2" flexWrap="wrap" gap="$1">
                       {comment.mentions.map((mentionId) => {
-                        const mentionedUser = getUserById(mentionId);
+                        const mentionedUser = getUserById(mentionId)
                         return (
                           <YStack
                             key={mentionId}
@@ -194,13 +193,13 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
                               @{mentionedUser?.name || 'Unknown'}
                             </SizableText>
                           </YStack>
-                        );
+                        )
                       })}
                     </XStack>
                   )}
                 </YStack>
               </XStack>
-            );
+            )
           })
         )}
       </YStack>
@@ -331,5 +330,5 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
         </SizableText>
       </YStack>
     </YStack>
-  );
-};
+  )
+}

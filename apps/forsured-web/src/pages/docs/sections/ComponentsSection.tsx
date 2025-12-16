@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { YStack, XStack, View, Text, H2, H3 } from '@unicornlove/ui';
 import ComponentShowcase from '../../../components/DesignSystem/ComponentShowcase';
 import Button from '../../../components/Common/Button';
 import Badge from '../../../components/Common/Badge';
@@ -17,7 +18,7 @@ import { Alert } from '@unicornlove/ui';
 import Tooltip from '../../../ui/Tooltip';
 import Progress, { CircularProgress } from '../../../ui/Progress';
 import Avatar, { AvatarGroup } from '../../../ui/Avatar';
-import { TabsCustom, TabsList, TabsTrigger, TabsContent } from '@unicornlove/ui';
+import { TabsCustom as Tabs, TabsList, TabsTrigger, TabsContent } from '@unicornlove/ui';
 import Accordion from '../../../ui/Accordion';
 import Divider from '../../../ui/Divider';
 import { EmptyState } from '@unicornlove/ui';
@@ -39,15 +40,15 @@ export default function ComponentsSection() {
   const [currentPage, setCurrentPage] = useState(1);
 
   return (
-    <section className="space-y-8 mb-12">
-      <div className="flex items-center space-x-3 mb-6">
-        <Box className="text-primary-500" size={32} />
-        <h2 className="text-3xl font-display font-bold text-text-primary">
+    <YStack gap="$8" marginBottom="$12">
+      <XStack alignItems="center" gap="$3" marginBottom="$6">
+        <Box color="var(--blue10)" size={32} />
+        <H2 fontSize="$9" fontWeight="bold" color="$color12">
           Components
-        </h2>
-      </div>
+        </H2>
+      </XStack>
 
-      <div id="buttons">
+      <View id="buttons">
         <ComponentShowcase
           title="Buttons"
           description="Buttons with multiple variants, sizes, and states"
@@ -64,19 +65,19 @@ export default function ComponentsSection() {
           <Button loading>Loading</Button>
           <Button disabled>Disabled</Button>
         </ComponentShowcase>
-      </div>
+      </View>
 
-      <div id="forms">
-        <h3 className="text-2xl font-semibold text-text-primary mb-4">
+      <View id="forms">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
           Form Controls
-        </h3>
+        </H3>
 
-        <div className="space-y-6">
+        <YStack gap="$6">
           <ComponentShowcase
             title="Input Fields"
             description="Text inputs with labels, errors, and helper text"
           >
-            <div className="w-full max-w-md space-y-4">
+            <YStack width="100%" maxWidth={448} gap="$4">
               <Input
                 label="Email"
                 type="email"
@@ -93,14 +94,14 @@ export default function ComponentsSection() {
                 helperText="Optional helper text"
               />
               <Input label="Required Field" required placeholder="Required" />
-            </div>
+            </YStack>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Select Dropdowns"
             description="Dropdown select with options"
           >
-            <div className="w-full max-w-md">
+            <View width="100%" maxWidth={448}>
               <Select
                 label="Choose an option"
                 options={[
@@ -110,27 +111,27 @@ export default function ComponentsSection() {
                   { value: 'option3', label: 'Option 3' },
                 ]}
               />
-            </div>
+            </View>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Textarea"
             description="Multi-line text input"
           >
-            <div className="w-full max-w-md">
+            <View width="100%" maxWidth={448}>
               <Textarea
                 label="Description"
                 rows={4}
                 placeholder="Enter a description..."
               />
-            </div>
+            </View>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Checkboxes"
             description="Single and grouped checkboxes"
           >
-            <div className="w-full max-w-md space-y-3">
+            <YStack width="100%" maxWidth={448} gap="$3">
               <Checkbox label="Default checkbox" />
               <Checkbox label="Checked checkbox" checked />
               <Checkbox label="Small size" size="sm" />
@@ -139,40 +140,40 @@ export default function ComponentsSection() {
                 label="With helper text"
                 helperText="This is helper text"
               />
-            </div>
+            </YStack>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Radio Buttons"
             description="Single-choice radio buttons"
           >
-            <div className="w-full max-w-md space-y-3">
+            <YStack width="100%" maxWidth={448} gap="$3">
               <Radio name="demo" label="Option 1" />
               <Radio name="demo" label="Option 2" checked />
               <Radio name="demo" label="Option 3" />
-            </div>
+            </YStack>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Switches"
             description="Toggle switches for binary choices"
           >
-            <div className="w-full max-w-md space-y-3">
+            <YStack width="100%" maxWidth={448} gap="$3">
               <Switch label="Enable notifications" />
               <Switch label="Auto-save" checked />
               <Switch label="Small size" size="sm" />
               <Switch label="Large size" size="lg" />
-            </div>
+            </YStack>
           </ComponentShowcase>
-        </div>
-      </div>
+        </YStack>
+      </View>
 
-      <div id="display">
-        <h3 className="text-2xl font-semibold text-text-primary mb-4">
+      <View id="display">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
           Display Components
-        </h3>
+        </H3>
 
-        <div className="space-y-6">
+        <YStack gap="$6">
           <ComponentShowcase
             title="Badges"
             description="Small status indicators and labels"
@@ -236,23 +237,23 @@ export default function ComponentsSection() {
             title="Cards"
             description="Container components with shadow and padding options"
           >
-            <Card padding="sm" className="w-48">
-              <h4 className="font-semibold text-text-primary mb-1">
+            <Card padding="sm" width={192}>
+              <Text fontWeight="600" color="$color12" marginBottom="$1">
                 Small Padding
-              </h4>
-              <p className="text-sm text-text-secondary">Card content</p>
+              </Text>
+              <Text fontSize="$3" color="$color11">Card content</Text>
             </Card>
-            <Card padding="md" className="w-48">
-              <h4 className="font-semibold text-text-primary mb-1">
+            <Card padding="md" width={192}>
+              <Text fontWeight="600" color="$color12" marginBottom="$1">
                 Medium Padding
-              </h4>
-              <p className="text-sm text-text-secondary">Card content</p>
+              </Text>
+              <Text fontSize="$3" color="$color11">Card content</Text>
             </Card>
-            <Card padding="lg" hover className="w-48">
-              <h4 className="font-semibold text-text-primary mb-1">
+            <Card padding="lg" hover width={192}>
+              <Text fontWeight="600" color="$color12" marginBottom="$1">
                 With Hover
-              </h4>
-              <p className="text-sm text-text-secondary">Hover over me</p>
+              </Text>
+              <Text fontSize="$3" color="$color11">Hover over me</Text>
             </Card>
           </ComponentShowcase>
 
@@ -269,20 +270,20 @@ export default function ComponentsSection() {
             <IconButton icon={Bell} badge badgeContent="3" />
             <IconButton icon={Settings} shape="round" />
           </ComponentShowcase>
-        </div>
-      </div>
+        </YStack>
+      </View>
 
-      <div id="feedback">
-        <h3 className="text-2xl font-semibold text-text-primary mb-4">
+      <View id="feedback">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
           Feedback Components
-        </h3>
+        </H3>
 
-        <div className="space-y-6">
+        <YStack gap="$6">
           <ComponentShowcase
             title="Alerts"
             description="Informational messages with variants"
           >
-            <div className="w-full space-y-4">
+            <YStack width="100%" gap="$4">
               <Alert variant="info" title="Information">
                 This is an informational message.
               </Alert>
@@ -300,7 +301,7 @@ export default function ComponentsSection() {
               <Alert variant="error" title="Error" closable onClose={() => {}}>
                 An error occurred while processing your request.
               </Alert>
-            </div>
+            </YStack>
           </ComponentShowcase>
 
           <ComponentShowcase
@@ -314,18 +315,18 @@ export default function ComponentsSection() {
               title="Example Modal"
               size="md"
             >
-              <p className="text-text-secondary">
+              <Text color="$color11">
                 This is an example modal dialog. It can contain any content you
                 need.
-              </p>
-              <div className="mt-4 flex justify-end space-x-3">
+              </Text>
+              <XStack marginTop="$4" justifyContent="flex-end" gap="$3">
                 <Button variant="ghost" onClick={() => setModalOpen(false)}>
                   Cancel
                 </Button>
                 <Button variant="primary" onClick={() => setModalOpen(false)}>
                   Confirm
                 </Button>
-              </div>
+              </XStack>
             </Modal>
           </ComponentShowcase>
 
@@ -351,7 +352,7 @@ export default function ComponentsSection() {
             title="Progress Bars"
             description="Linear and circular progress indicators"
           >
-            <div className="w-full space-y-4">
+            <YStack width="100%" gap="$4">
               <Progress value={25} variant="primary" showLabel />
               <Progress
                 value={50}
@@ -361,13 +362,13 @@ export default function ComponentsSection() {
               />
               <Progress value={75} variant="warning" showLabel />
               <Progress value={90} variant="error" showLabel />
-              <div className="flex justify-center space-x-4 pt-4">
+              <XStack justifyContent="center" gap="$4" paddingTop="$4">
                 <CircularProgress value={25} variant="primary" size={80} />
                 <CircularProgress value={50} variant="success" size={80} />
                 <CircularProgress value={75} variant="warning" size={80} />
                 <CircularProgress value={90} variant="error" size={80} />
-              </div>
-            </div>
+              </XStack>
+            </YStack>
           </ComponentShowcase>
 
           <ComponentShowcase
@@ -382,20 +383,20 @@ export default function ComponentsSection() {
               secondaryAction={{ label: 'Learn More', onClick: () => {} }}
             />
           </ComponentShowcase>
-        </div>
-      </div>
+        </YStack>
+      </View>
 
-      <div id="navigation">
-        <h3 className="text-2xl font-semibold text-text-primary mb-4">
+      <View id="navigation">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
           Navigation Components
-        </h3>
+        </H3>
 
-        <div className="space-y-6">
+        <YStack gap="$6">
           <ComponentShowcase
             title="Tabs"
             description="Tabbed navigation with multiple variants"
           >
-            <div className="w-full space-y-6">
+            <YStack width="100%" gap="$6">
               <Tabs
                 variant="line"
                 tabs={[
@@ -403,27 +404,27 @@ export default function ComponentsSection() {
                     id: 'overview',
                     label: 'Overview',
                     content: (
-                      <div className="p-4 text-text-secondary">
-                        Overview content
-                      </div>
+                      <View padding="$4">
+                        <Text color="$color11">Overview content</Text>
+                      </View>
                     ),
                   },
                   {
                     id: 'details',
                     label: 'Details',
                     content: (
-                      <div className="p-4 text-text-secondary">
-                        Details content
-                      </div>
+                      <View padding="$4">
+                        <Text color="$color11">Details content</Text>
+                      </View>
                     ),
                   },
                   {
                     id: 'settings',
                     label: 'Settings',
                     content: (
-                      <div className="p-4 text-text-secondary">
-                        Settings content
-                      </div>
+                      <View padding="$4">
+                        <Text color="$color11">Settings content</Text>
+                      </View>
                     ),
                     badge: '3',
                   },
@@ -436,16 +437,18 @@ export default function ComponentsSection() {
                     id: 'all',
                     label: 'All',
                     content: (
-                      <div className="p-4 text-text-secondary">All items</div>
+                      <View padding="$4">
+                        <Text color="$color11">All items</Text>
+                      </View>
                     ),
                   },
                   {
                     id: 'active',
                     label: 'Active',
                     content: (
-                      <div className="p-4 text-text-secondary">
-                        Active items
-                      </div>
+                      <View padding="$4">
+                        <Text color="$color11">Active items</Text>
+                      </View>
                     ),
                     badge: '12',
                   },
@@ -453,21 +456,21 @@ export default function ComponentsSection() {
                     id: 'archived',
                     label: 'Archived',
                     content: (
-                      <div className="p-4 text-text-secondary">
-                        Archived items
-                      </div>
+                      <View padding="$4">
+                        <Text color="$color11">Archived items</Text>
+                      </View>
                     ),
                   },
                 ]}
               />
-            </div>
+            </YStack>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Breadcrumbs"
             description="Hierarchical navigation trail"
           >
-            <div className="w-full">
+            <View width="100%">
               <Breadcrumbs
                 showHome
                 items={[
@@ -476,7 +479,7 @@ export default function ComponentsSection() {
                   { label: 'Details' },
                 ]}
               />
-            </div>
+            </View>
           </ComponentShowcase>
 
           <ComponentShowcase
@@ -495,68 +498,69 @@ export default function ComponentsSection() {
             title="Accordion"
             description="Collapsible content panels"
           >
-            <div className="w-full max-w-2xl">
+            <View width="100%" maxWidth={672}>
               <Accordion
                 items={[
                   {
                     id: '1',
                     title: 'What is included?',
                     content: (
-                      <p className="text-text-secondary">
+                      <Text color="$color11">
                         All features are included in every plan.
-                      </p>
+                      </Text>
                     ),
                   },
                   {
                     id: '2',
                     title: 'How does billing work?',
                     content: (
-                      <p className="text-text-secondary">
+                      <Text color="$color11">
                         You are billed monthly based on your usage.
-                      </p>
+                      </Text>
                     ),
                   },
                   {
                     id: '3',
                     title: 'Can I cancel anytime?',
                     content: (
-                      <p className="text-text-secondary">
+                      <Text color="$color11">
                         Yes, you can cancel your subscription at any time.
-                      </p>
+                      </Text>
                     ),
                   },
                 ]}
                 defaultOpen={['1']}
               />
-            </div>
+            </View>
           </ComponentShowcase>
-        </div>
-      </div>
+        </YStack>
+      </View>
 
-      <div id="layout">
-        <h3 className="text-2xl font-semibold text-text-primary mb-4">
+      <View id="layout">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
           Layout Components
-        </h3>
+        </H3>
 
         <ComponentShowcase
           title="Dividers"
           description="Visual separators for content"
         >
-          <div className="w-full space-y-6">
+          <YStack width="100%" gap="$6">
             <Divider />
             <Divider label="OR" />
             <Divider label="Section Break" />
-            <div
-              className="flex items-center space-x-4"
-              style={{ height: '100px' }}
+            <XStack
+              alignItems="center"
+              gap="$4"
+              height={100}
             >
-              <div className="flex-1 bg-bg-tertiary rounded-lg h-full" />
+              <View flex={1} backgroundColor="$backgroundTertiary" borderRadius="$4" height="100%" />
               <Divider orientation="vertical" />
-              <div className="flex-1 bg-bg-tertiary rounded-lg h-full" />
-            </div>
-          </div>
+              <View flex={1} backgroundColor="$backgroundTertiary" borderRadius="$4" height="100%" />
+            </XStack>
+          </YStack>
         </ComponentShowcase>
-      </div>
-    </section>
+      </View>
+    </YStack>
   );
 }

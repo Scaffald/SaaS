@@ -103,14 +103,14 @@ CREATE POLICY compliance_flags_select_policy ON forsured.compliance_flags
         project_id IN (
             SELECT p.id FROM forsured.projects p
             WHERE p.organization_id IN (
-                SELECT organization_id FROM core.role_assignments
+                SELECT scope_org_id FROM core.role_assignments
                 WHERE user_id = auth.uid()
             )
         )
         OR subcontractor_id IN (
             SELECT s.id FROM forsured.subcontractors s
             WHERE s.organization_id IN (
-                SELECT organization_id FROM core.role_assignments
+                SELECT scope_org_id FROM core.role_assignments
                 WHERE user_id = auth.uid()
             )
         )
@@ -124,14 +124,14 @@ CREATE POLICY compliance_flags_insert_policy ON forsured.compliance_flags
         project_id IN (
             SELECT p.id FROM forsured.projects p
             WHERE p.organization_id IN (
-                SELECT organization_id FROM core.role_assignments
+                SELECT scope_org_id FROM core.role_assignments
                 WHERE user_id = auth.uid()
             )
         )
         OR subcontractor_id IN (
             SELECT s.id FROM forsured.subcontractors s
             WHERE s.organization_id IN (
-                SELECT organization_id FROM core.role_assignments
+                SELECT scope_org_id FROM core.role_assignments
                 WHERE user_id = auth.uid()
             )
         )
@@ -145,14 +145,14 @@ CREATE POLICY compliance_flags_update_policy ON forsured.compliance_flags
         project_id IN (
             SELECT p.id FROM forsured.projects p
             WHERE p.organization_id IN (
-                SELECT organization_id FROM core.role_assignments
+                SELECT scope_org_id FROM core.role_assignments
                 WHERE user_id = auth.uid()
             )
         )
         OR subcontractor_id IN (
             SELECT s.id FROM forsured.subcontractors s
             WHERE s.organization_id IN (
-                SELECT organization_id FROM core.role_assignments
+                SELECT scope_org_id FROM core.role_assignments
                 WHERE user_id = auth.uid()
             )
         )
@@ -166,14 +166,14 @@ CREATE POLICY compliance_flags_delete_policy ON forsured.compliance_flags
         project_id IN (
             SELECT p.id FROM forsured.projects p
             WHERE p.organization_id IN (
-                SELECT organization_id FROM core.role_assignments
+                SELECT scope_org_id FROM core.role_assignments
                 WHERE user_id = auth.uid()
             )
         )
         OR subcontractor_id IN (
             SELECT s.id FROM forsured.subcontractors s
             WHERE s.organization_id IN (
-                SELECT organization_id FROM core.role_assignments
+                SELECT scope_org_id FROM core.role_assignments
                 WHERE user_id = auth.uid()
             )
         )

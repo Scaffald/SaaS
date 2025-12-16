@@ -56,7 +56,7 @@ ALTER TABLE forsured.task_history ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view task history in their organization" ON forsured.task_history
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 -- Task history is insert-only from triggers (no manual insert/update/delete)

@@ -1,6 +1,8 @@
 // src/pages/docs/components/Button.tsx
 import React from 'react';
+import { View } from '@unicornlove/ui';
 import ComponentDocumentationTemplate from '../Components';
+import Button from '../../../components/Common/Button';
 
 function ButtonDoc() {
   const props = [
@@ -16,12 +18,20 @@ function ButtonDoc() {
     {
       title: 'Primary Button',
       code: `<Button variant="primary" onClick={() => alert('Clicked!')}>Click Me</Button>`,
-      render: <button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={() => alert('Clicked!')}>Click Me</button>,
+      render: (
+        <Button variant="primary" onClick={() => alert('Clicked!')}>
+          Click Me
+        </Button>
+      ),
     },
     {
       title: 'Secondary Button',
       code: `<Button variant="secondary" onClick={() => alert('Clicked!')}>Click Me</Button>`,
-      render: <button className="px-4 py-2 border border-gray-300 rounded" onClick={() => alert('Clicked!')}>Click Me</button>,
+      render: (
+        <Button variant="secondary" onClick={() => alert('Clicked!')}>
+          Click Me
+        </Button>
+      ),
     },
   ];
 

@@ -34,16 +34,17 @@ ALTER TABLE forsured.relationships ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view relationships in their organization" ON forsured.relationships
     FOR SELECT TO authenticated
     USING (
-        manager_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
-        OR subcontractor_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        manager_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
+        OR subcontractor_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
     );
 
 CREATE POLICY "Managers can create relationships" ON forsured.relationships
     FOR INSERT TO authenticated
     WITH CHECK (
         manager_org_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
     );
 
@@ -51,8 +52,9 @@ CREATE POLICY "Managers can update relationships" ON forsured.relationships
     FOR UPDATE TO authenticated
     USING (
         manager_org_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
     );
 
@@ -114,9 +116,9 @@ ALTER TABLE forsured.broker_acknowledgements ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view acknowledgements in their organization" ON forsured.broker_acknowledgements
     FOR SELECT TO authenticated
     USING (
-        subcontractor_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
-        OR broker_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
-        OR manager_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        subcontractor_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
+        OR broker_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
+        OR manager_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
     );
 
 CREATE POLICY "Users can create acknowledgements" ON forsured.broker_acknowledgements
@@ -124,16 +126,16 @@ CREATE POLICY "Users can create acknowledgements" ON forsured.broker_acknowledge
     WITH CHECK (
         created_by_user_id = auth.uid()
         AND (
-            broker_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
-            OR manager_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+            broker_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
+            OR manager_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
         )
     );
 
 CREATE POLICY "Users can update acknowledgements" ON forsured.broker_acknowledgements
     FOR UPDATE TO authenticated
     USING (
-        broker_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
-        OR manager_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        broker_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
+        OR manager_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
     );
 
 CREATE POLICY "Service role bypass" ON forsured.broker_acknowledgements
@@ -180,16 +182,17 @@ ALTER TABLE forsured.manager_acknowledgements ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view manager acknowledgements in their organization" ON forsured.manager_acknowledgements
     FOR SELECT TO authenticated
     USING (
-        gc_company_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
-        OR broker_company_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        gc_company_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
+        OR broker_company_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
     );
 
 CREATE POLICY "Managers can create acknowledgements" ON forsured.manager_acknowledgements
     FOR INSERT TO authenticated
     WITH CHECK (
         gc_company_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
     );
 
@@ -197,8 +200,9 @@ CREATE POLICY "Managers can update acknowledgements" ON forsured.manager_acknowl
     FOR UPDATE TO authenticated
     USING (
         gc_company_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
     );
 
@@ -239,11 +243,11 @@ ALTER TABLE forsured.bids ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view bids for their projects" ON forsured.bids
     FOR SELECT TO authenticated
     USING (
-        subcontractor_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        subcontractor_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
         OR project_id IN (
             SELECT id FROM forsured.projects
             WHERE organization_id IN (
-                SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+                SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
             )
         )
     );
@@ -251,13 +255,13 @@ CREATE POLICY "Users can view bids for their projects" ON forsured.bids
 CREATE POLICY "Subcontractors can create bids" ON forsured.bids
     FOR INSERT TO authenticated
     WITH CHECK (
-        subcontractor_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        subcontractor_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
     );
 
 CREATE POLICY "Subcontractors can update own bids" ON forsured.bids
     FOR UPDATE TO authenticated
     USING (
-        subcontractor_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        subcontractor_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
     );
 
 CREATE POLICY "Service role bypass" ON forsured.bids
@@ -300,21 +304,22 @@ ALTER TABLE forsured.approvals ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view approvals in their organization" ON forsured.approvals
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Users can create approvals" ON forsured.approvals
     FOR INSERT TO authenticated
     WITH CHECK (
-        organization_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        organization_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
         AND requested_by = auth.uid()
     );
 
 CREATE POLICY "Managers can update approvals" ON forsured.approvals
     FOR UPDATE TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments
-        WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+        SELECT ra.scope_org_id FROM core.role_assignments ra
+        JOIN core.roles r ON ra.role_id = r.id
+        WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
     ));
 
 CREATE POLICY "Service role bypass" ON forsured.approvals
@@ -351,13 +356,13 @@ ALTER TABLE forsured.ai_extractions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view AI extractions in their organization" ON forsured.ai_extractions
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "System can create AI extractions" ON forsured.ai_extractions
     FOR INSERT TO authenticated
     WITH CHECK (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Service role bypass" ON forsured.ai_extractions
@@ -393,16 +398,17 @@ ALTER TABLE forsured.broker_delegations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view delegations for their organization" ON forsured.broker_delegations
     FOR SELECT TO authenticated
     USING (
-        broker_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
-        OR client_org_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        broker_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
+        OR client_org_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
     );
 
 CREATE POLICY "Managers can create delegations" ON forsured.broker_delegations
     FOR INSERT TO authenticated
     WITH CHECK (
         client_org_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
         AND granted_by_user_id = auth.uid()
     );
@@ -411,8 +417,9 @@ CREATE POLICY "Managers can update delegations" ON forsured.broker_delegations
     FOR UPDATE TO authenticated
     USING (
         client_org_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
     );
 
@@ -449,13 +456,13 @@ ALTER TABLE forsured.document_versions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view document versions in their organization" ON forsured.document_versions
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Users can create document versions" ON forsured.document_versions
     FOR INSERT TO authenticated
     WITH CHECK (
-        organization_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        organization_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
         AND uploaded_by = auth.uid()
     );
 
@@ -501,19 +508,19 @@ ALTER TABLE forsured.compliance_issues ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view compliance issues in their organization" ON forsured.compliance_issues
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Users can create compliance issues" ON forsured.compliance_issues
     FOR INSERT TO authenticated
     WITH CHECK (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Users can update compliance issues" ON forsured.compliance_issues
     FOR UPDATE TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Service role bypass" ON forsured.compliance_issues
@@ -555,8 +562,9 @@ CREATE POLICY "Users can view own integration connections" ON forsured.integrati
     USING (
         user_id = auth.uid()
         OR organization_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
     );
 
@@ -564,7 +572,7 @@ CREATE POLICY "Users can create own integration connections" ON forsured.integra
     FOR INSERT TO authenticated
     WITH CHECK (
         user_id = auth.uid()
-        AND organization_id IN (SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid())
+        AND organization_id IN (SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid())
     );
 
 CREATE POLICY "Users can update own integration connections" ON forsured.integration_connections

@@ -1,4 +1,5 @@
 import React from 'react';
+import { YStack, XStack, View, Text, H1, H2, H3 } from '@unicornlove/ui';
 import ComponentShowcase from '../ComponentShowcase';
 import { Palette, Box as BoxIcon, Sun } from 'lucide-react';
 
@@ -32,156 +33,172 @@ export default function FoundationsSection() {
   ];
 
   return (
-    <section className="space-y-8 mb-12">
-      <div className="flex items-center space-x-3 mb-6">
-        <Palette className="text-primary-500" size={32} />
-        <h2 className="text-3xl font-display font-bold text-text-primary">
+    <YStack gap="$8" marginBottom="$12">
+      <XStack alignItems="center" gap="$3" marginBottom="$6">
+        <Palette color="var(--blue10)" size={32} />
+        <H2 fontSize="$9" fontWeight="bold" color="$color12">
           Foundations
-        </h2>
-      </div>
+        </H2>
+      </XStack>
 
       <ComponentShowcase
         title="Colors"
         description="Complete color palette with 100-900 weight scales for all brand colors"
       >
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <XStack width="100%" flexWrap="wrap" gap="$6">
           {colorRamps.map((color) => (
-            <div key={color.var} className="space-y-2">
-              <div className="font-semibold text-text-primary mb-3 flex items-center space-x-2">
-                <div
-                  className="w-6 h-6 rounded shadow-sm"
+            <YStack key={color.var} gap="$2" flex={1} minWidth={200}>
+              <XStack fontWeight="600" color="$color12" marginBottom="$3" alignItems="center" gap="$2">
+                <View
+                  width={24}
+                  height={24}
+                  borderRadius="$2"
+                  shadowRadius={2}
                   style={{ backgroundColor: color.base }}
                 />
-                <span>{color.name}</span>
-              </div>
-              <div className="space-y-1">
+                <Text>{color.name}</Text>
+              </XStack>
+              <YStack gap="$1">
                 {[100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
-                  <div key={weight} className="flex items-center space-x-2">
-                    <div
-                      className="w-16 h-8 rounded shadow-sm border border-border"
+                  <XStack key={weight} alignItems="center" gap="$2">
+                    <View
+                      width={64}
+                      height={32}
+                      borderRadius="$2"
+                      shadowRadius={2}
+                      borderWidth={1}
+                      borderColor="$borderColor"
                       style={{
                         backgroundColor: `rgb(var(--color-${color.var}-${weight}))`,
                       }}
                     />
-                    <span className="text-xs font-mono text-text-secondary">
+                    <Text fontSize="$2" fontFamily="$mono" color="$color11">
                       {weight}
-                    </span>
-                  </div>
+                    </Text>
+                  </XStack>
                 ))}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           ))}
-        </div>
+        </XStack>
       </ComponentShowcase>
 
       <ComponentShowcase
         title="Typography"
         description="Font families, sizes, and weights used throughout the system"
       >
-        <div className="w-full space-y-6">
-          <div>
-            <p className="text-sm font-semibold text-text-secondary mb-3">
+        <YStack width="100%" gap="$6">
+          <View>
+            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$3">
               Display Font (Rokkitt)
-            </p>
-            <h1 className="font-display text-5xl font-bold text-text-primary">
+            </Text>
+            <H1 fontFamily="$display" fontSize="$10" fontWeight="bold" color="$color12">
               The quick brown fox
-            </h1>
-            <h2 className="font-display text-4xl font-bold text-text-primary mt-2">
+            </H1>
+            <H2 fontFamily="$display" fontSize="$9" fontWeight="bold" color="$color12" marginTop="$2">
               The quick brown fox
-            </h2>
-            <h3 className="font-display text-3xl font-bold text-text-primary mt-2">
+            </H2>
+            <H3 fontFamily="$display" fontSize="$8" fontWeight="bold" color="$color12" marginTop="$2">
               The quick brown fox
-            </h3>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-text-secondary mb-3">
+            </H3>
+          </View>
+          <View>
+            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$3">
               Body Font (Inter)
-            </p>
-            <p className="text-xl text-text-primary">
+            </Text>
+            <Text fontSize="$6" color="$color12">
               The quick brown fox jumps over the lazy dog
-            </p>
-            <p className="text-base text-text-primary mt-2">
+            </Text>
+            <Text fontSize="$4" color="$color12" marginTop="$2">
               The quick brown fox jumps over the lazy dog
-            </p>
-            <p className="text-sm text-text-primary mt-2">
+            </Text>
+            <Text fontSize="$3" color="$color12" marginTop="$2">
               The quick brown fox jumps over the lazy dog
-            </p>
-            <p className="text-xs text-text-primary mt-2">
+            </Text>
+            <Text fontSize="$2" color="$color12" marginTop="$2">
               The quick brown fox jumps over the lazy dog
-            </p>
-          </div>
-        </div>
+            </Text>
+          </View>
+        </YStack>
       </ComponentShowcase>
 
       <ComponentShowcase
         title="Spacing System"
         description="8px-based spacing scale for consistent layouts"
       >
-        <div className="w-full space-y-2">
+        <YStack width="100%" gap="$2">
           {spacingScale.map((space) => (
-            <div key={space.size} className="flex items-center space-x-4">
-              <span className="text-sm font-mono text-text-secondary w-12">
+            <XStack key={space.size} alignItems="center" gap="$4">
+              <Text fontSize="$3" fontFamily="$mono" color="$color11" width={48}>
                 {space.class}
-              </span>
-              <div
-                className="bg-primary-100 dark:bg-primary-900"
-                style={{ width: space.value, height: '32px' }}
+              </Text>
+              <View
+                backgroundColor="$blue4"
+                style={{ width: space.value, height: 32 }}
               />
-              <span className="text-sm text-text-tertiary">{space.value}</span>
-            </div>
+              <Text fontSize="$3" color="$color10">{space.value}</Text>
+            </XStack>
           ))}
-        </div>
+        </YStack>
       </ComponentShowcase>
 
       <ComponentShowcase
         title="Shadows"
         description="Elevation system using box shadows"
       >
-        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-6">
-          {shadows.map((shadow) => (
-            <div key={shadow.name} className="text-center">
-              <div
-                className={`w-full h-24 bg-surface rounded-lg ${shadow.class} flex items-center justify-center`}
+        <XStack width="100%" flexWrap="wrap" gap="$6">
+          {shadows.map((shadow, index) => (
+            <YStack key={shadow.name} alignItems="center" flex={1} minWidth={140}>
+              <View
+                width="100%"
+                height={96}
+                backgroundColor="$background"
+                borderRadius="$4"
+                shadowRadius={index === 0 ? 2 : index === 1 ? 4 : index === 2 ? 8 : 12}
+                shadowColor="$shadowColor"
+                shadowOffset={{ width: 0, height: index + 1 }}
+                alignItems="center"
+                justifyContent="center"
               >
-                <span className="text-sm font-medium text-text-primary">
+                <Text fontSize="$3" fontWeight="500" color="$color12">
                   {shadow.name}
-                </span>
-              </div>
-              <p className="text-xs text-text-secondary mt-2 font-mono">
+                </Text>
+              </View>
+              <Text fontSize="$2" color="$color11" marginTop="$2" fontFamily="$mono">
                 {shadow.class}
-              </p>
-            </div>
+              </Text>
+            </YStack>
           ))}
-        </div>
+        </XStack>
       </ComponentShowcase>
 
       <ComponentShowcase
         title="Themes"
         description="Light, Dark, and Earth theme variations"
       >
-        <div className="w-full space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-              <Sun className="mx-auto mb-2 text-yellow-500" size={32} />
-              <p className="font-semibold text-gray-900">Light Theme</p>
-              <p className="text-xs text-gray-600 mt-1">Clean and bright</p>
-            </div>
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-center">
-              <Sun className="mx-auto mb-2 text-blue-400" size={32} />
-              <p className="font-semibold text-white">Dark Theme</p>
-              <p className="text-xs text-gray-400 mt-1">Low-light optimized</p>
-            </div>
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
-              <Sun className="mx-auto mb-2 text-orange-600" size={32} />
-              <p className="font-semibold text-orange-900">Earth Theme</p>
-              <p className="text-xs text-orange-700 mt-1">Warm and natural</p>
-            </div>
-          </div>
-          <p className="text-sm text-text-secondary text-center">
+        <YStack width="100%" gap="$4">
+          <XStack flexWrap="wrap" gap="$4">
+            <View flex={1} minWidth={180} backgroundColor="white" borderWidth={1} borderColor="$gray6" borderRadius="$4" padding="$4" alignItems="center">
+              <Sun color="#eab308" size={32} />
+              <Text fontWeight="600" color="$gray12" marginTop="$2">Light Theme</Text>
+              <Text fontSize="$2" color="$gray11" marginTop="$1">Clean and bright</Text>
+            </View>
+            <View flex={1} minWidth={180} backgroundColor="$gray12" borderWidth={1} borderColor="$gray10" borderRadius="$4" padding="$4" alignItems="center">
+              <Sun color="#60a5fa" size={32} />
+              <Text fontWeight="600" color="white" marginTop="$2">Dark Theme</Text>
+              <Text fontSize="$2" color="$gray8" marginTop="$1">Low-light optimized</Text>
+            </View>
+            <View flex={1} minWidth={180} backgroundColor="$orange2" borderWidth={1} borderColor="$orange6" borderRadius="$4" padding="$4" alignItems="center">
+              <Sun color="#ea580c" size={32} />
+              <Text fontWeight="600" color="$orange12" marginTop="$2">Earth Theme</Text>
+              <Text fontSize="$2" color="$orange11" marginTop="$1">Warm and natural</Text>
+            </View>
+          </XStack>
+          <Text fontSize="$3" color="$color11" textAlign="center">
             Use the theme switcher in the top right to preview all themes
-          </p>
-        </div>
+          </Text>
+        </YStack>
       </ComponentShowcase>
-    </section>
+    </YStack>
   );
 }

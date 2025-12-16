@@ -15,10 +15,11 @@ CREATE POLICY "Admins can delete compliance issues"
   USING (
     EXISTS (
       SELECT 1
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND organization_id = forsured.compliance_issues.organization_id
-        AND role_type IN ('owner', 'admin')
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND ra.scope_org_id = forsured.compliance_issues.organization_id
+        AND r.name IN ('owner', 'admin')
     )
   );
 

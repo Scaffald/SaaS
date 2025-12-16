@@ -263,9 +263,9 @@ export default function SubcontractorPrequalificationWizard({
         )}
 
         <YStack alignItems="center" marginBottom="$8">
-          <XStack justifyContent="center" marginBottom="$6">
-            <ForsuredLogo className="h-8" />
-          </XStack>
+          <YStack justifyContent="center" marginBottom="$6">
+            <ForsuredLogo />
+          </YStack>
           {invitationData ? (
             <YStack alignItems="center">
               <H1 fontSize="$9" fontWeight="700" color="$color12" marginBottom="$2">

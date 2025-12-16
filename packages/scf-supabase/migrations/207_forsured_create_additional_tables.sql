@@ -32,14 +32,14 @@ ALTER TABLE forsured.comments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view comments in their organization" ON forsured.comments
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Users can create comments" ON forsured.comments
     FOR INSERT TO authenticated
     WITH CHECK (
         organization_id IN (
-            SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+            SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
         )
         AND user_id = auth.uid()
     );
@@ -53,8 +53,9 @@ CREATE POLICY "Users can delete own comments or managers can delete any" ON fors
     USING (
         user_id = auth.uid()
         OR organization_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
     );
 
@@ -91,28 +92,31 @@ ALTER TABLE forsured.project_participants ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view participants in their projects" ON forsured.project_participants
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Managers can add participants" ON forsured.project_participants
     FOR INSERT TO authenticated
     WITH CHECK (organization_id IN (
-        SELECT organization_id FROM core.role_assignments
-        WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+        SELECT ra.scope_org_id FROM core.role_assignments ra
+        JOIN core.roles r ON ra.role_id = r.id
+        WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
     ));
 
 CREATE POLICY "Managers can update participants" ON forsured.project_participants
     FOR UPDATE TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments
-        WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+        SELECT ra.scope_org_id FROM core.role_assignments ra
+        JOIN core.roles r ON ra.role_id = r.id
+        WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
     ));
 
 CREATE POLICY "Managers can remove participants" ON forsured.project_participants
     FOR DELETE TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments
-        WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+        SELECT ra.scope_org_id FROM core.role_assignments ra
+        JOIN core.roles r ON ra.role_id = r.id
+        WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
     ));
 
 CREATE POLICY "Service role bypass" ON forsured.project_participants
@@ -151,14 +155,15 @@ ALTER TABLE forsured.user_invitations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view invitations in their organization" ON forsured.user_invitations
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Managers can create invitations" ON forsured.user_invitations
     FOR INSERT TO authenticated
     WITH CHECK (organization_id IN (
-        SELECT organization_id FROM core.role_assignments
-        WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+        SELECT ra.scope_org_id FROM core.role_assignments ra
+        JOIN core.roles r ON ra.role_id = r.id
+        WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
     ));
 
 CREATE POLICY "Service role bypass" ON forsured.user_invitations
@@ -195,13 +200,13 @@ ALTER TABLE forsured.attachments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view attachments in their organization" ON forsured.attachments
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Users can upload attachments" ON forsured.attachments
     FOR INSERT TO authenticated
     WITH CHECK (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Users can update own attachments or managers can update any" ON forsured.attachments
@@ -209,8 +214,9 @@ CREATE POLICY "Users can update own attachments or managers can update any" ON f
     USING (
         uploaded_by = auth.uid()
         OR organization_id IN (
-            SELECT organization_id FROM core.role_assignments
-            WHERE user_id = auth.uid() AND role_type IN ('owner', 'admin')
+            SELECT ra.scope_org_id FROM core.role_assignments ra
+            JOIN core.roles r ON ra.role_id = r.id
+            WHERE ra.user_id = auth.uid() AND r.name IN ('owner', 'admin')
         )
     );
 
@@ -246,7 +252,7 @@ ALTER TABLE forsured.status_history ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view status history in their organization" ON forsured.status_history
     FOR SELECT TO authenticated
     USING (organization_id IN (
-        SELECT organization_id FROM core.role_assignments WHERE user_id = auth.uid()
+        SELECT scope_org_id FROM core.role_assignments WHERE user_id = auth.uid()
     ));
 
 CREATE POLICY "Service role bypass" ON forsured.status_history

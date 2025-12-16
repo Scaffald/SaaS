@@ -50,7 +50,7 @@ CREATE POLICY "Users can view projects in their organization"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -63,10 +63,11 @@ CREATE POLICY "Managers can create projects"
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -77,10 +78,11 @@ CREATE POLICY "Managers can update projects"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -91,10 +93,11 @@ CREATE POLICY "Managers can delete projects"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -109,7 +112,7 @@ CREATE POLICY "Users can view subcontractors in their organization"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -122,10 +125,11 @@ CREATE POLICY "Managers can add subcontractors"
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -136,10 +140,11 @@ CREATE POLICY "Managers can update subcontractors"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -154,7 +159,7 @@ CREATE POLICY "Users can view documents in their organization"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -167,7 +172,7 @@ CREATE POLICY "Users can upload documents"
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -181,10 +186,11 @@ CREATE POLICY "Users can update own documents or managers can update any"
   USING (
     uploader_id = auth.uid()
     OR organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -196,10 +202,11 @@ CREATE POLICY "Users can delete own documents or managers can delete any"
   USING (
     uploader_id = auth.uid()
     OR organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -214,7 +221,7 @@ CREATE POLICY "Users can view policies in their organization"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -234,7 +241,7 @@ CREATE POLICY "Users can view endorsements in their organization"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -254,7 +261,7 @@ CREATE POLICY "Users can view requirements in their organization"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -267,10 +274,11 @@ CREATE POLICY "Managers can create requirements"
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -281,10 +289,11 @@ CREATE POLICY "Managers can update requirements"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -295,10 +304,11 @@ CREATE POLICY "Managers can delete requirements"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -313,7 +323,7 @@ CREATE POLICY "Users can view compliance scores in their organization"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -333,7 +343,7 @@ CREATE POLICY "Users can view tasks in their organization"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
+      SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
     )
@@ -347,10 +357,11 @@ CREATE POLICY "Managers can create tasks"
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -362,10 +373,11 @@ CREATE POLICY "Users can update assigned tasks, managers can update any"
   USING (
     assigned_to_user_id = auth.uid()
     OR organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 
@@ -376,10 +388,11 @@ CREATE POLICY "Managers can delete tasks"
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.role_assignments
-      WHERE user_id = auth.uid()
-        AND role_type IN ('owner', 'admin')
+      SELECT ra.scope_org_id
+      FROM core.role_assignments ra
+      JOIN core.roles r ON ra.role_id = r.id
+      WHERE ra.user_id = auth.uid()
+        AND r.name IN ('owner', 'admin')
     )
   );
 

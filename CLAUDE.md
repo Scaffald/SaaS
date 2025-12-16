@@ -630,6 +630,15 @@ pnpm exec playwright test --ui
 - **Admin**: `ewongagent@gmail.com`
 - **Super Admin**: `zach@unicorn.love`
 
+### Testing Policy
+
+**If we own it or write it, we test it directly - we do NOT mock it in tests.**
+
+- Do NOT mock the database or the internal API
+- Use a real database instance and real HTTP calls
+- Mocks are only allowed for external third-party services
+- Tables, code, configuration, and definitions that we own and that affect the code we own inside of 3rd party systems should be tested because we own it
+
 ## UI Package Hybrid Maintenance (CRITICAL)
 
 **The `@unicornlove/ui` package uses a special hybrid maintenance approach:**

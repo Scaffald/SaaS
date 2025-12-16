@@ -254,7 +254,7 @@ export default function EnhancedManagerDashboard() {
     return (
       <YStack alignItems="center" justifyContent="center" minHeight={400}>
         <YStack alignItems="center" gap="$4">
-          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Loader2 size={32} color="$blue10" style={{ animation: 'spin 1s linear infinite' }} />
           <Text color="$color11">Loading dashboard...</Text>
         </YStack>
       </YStack>
@@ -266,7 +266,9 @@ export default function EnhancedManagerDashboard() {
     return (
       <YStack alignItems="center" justifyContent="center" minHeight={400}>
         <YStack alignItems="center">
-          <AlertTriangle size={48} color="$red10" style={{ marginBottom: 16 }} />
+          <YStack marginBottom="$4">
+            <AlertTriangle size={48} color="$red10" />
+          </YStack>
           <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             Failed to load dashboard
           </H3>
@@ -557,21 +559,21 @@ export default function EnhancedManagerDashboard() {
                         {task.description}
                       </Text>
                       <XStack alignItems="center" gap="$3">
-                        <XStack alignItems="center">
-                          <Building size={12} style={{ marginRight: 4 }} color="$color10" />
+                        <XStack alignItems="center" gap="$1">
+                          <Building size={12} color="$color10" />
                           <Text fontSize="$2" color="$color10">
                             {projectName}
                           </Text>
                         </XStack>
-                        <XStack alignItems="center">
-                          <Calendar size={12} style={{ marginRight: 4 }} color="$color10" />
+                        <XStack alignItems="center" gap="$1">
+                          <Calendar size={12} color="$color10" />
                           <Text fontSize="$2" color={dueDate.color}>
                             {dueDate.text}
                           </Text>
                         </XStack>
                         {blockers.length > 0 && (
-                          <XStack alignItems="center">
-                            <AlertTriangle size={12} style={{ marginRight: 4 }} color="$red10" />
+                          <XStack alignItems="center" gap="$1">
+                            <AlertTriangle size={12} color="$red10" />
                             <Text fontSize="$2" color="$red10">
                               {blockers.length} blocker{blockers.length > 1 ? 's' : ''}
                             </Text>
@@ -666,14 +668,14 @@ export default function EnhancedManagerDashboard() {
                       {item.subcontractor}
                     </Text>
                     <XStack alignItems="center" gap="$3">
-                      <XStack alignItems="center">
-                        <Building size={12} style={{ marginRight: 4 }} color="$color10" />
+                      <XStack alignItems="center" gap="$1">
+                        <Building size={12} color="$color10" />
                         <Text fontSize="$2" color="$color10">
                           {item.project}
                         </Text>
                       </XStack>
-                      <XStack alignItems="center">
-                        <Calendar size={12} style={{ marginRight: 4 }} color="$color10" />
+                      <XStack alignItems="center" gap="$1">
+                        <Calendar size={12} color="$color10" />
                         <Text fontSize="$2" color="$color10">
                           Due {item.dueDate}
                         </Text>

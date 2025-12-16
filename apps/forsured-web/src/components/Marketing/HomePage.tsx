@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 import {
   Shield,
   Users,
   TrendingUp,
   CheckCircle,
   ArrowRight,
-  FileText,
   AlertTriangle,
   DollarSign,
   Building,
@@ -13,16 +12,16 @@ import {
   Clock,
   BarChart3,
   Handshake,
-} from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Card, Button as TamaguiButton } from '@unicornlove/ui';
-import ForsuredLogo from '../Common/ForsuredLogo';
-import Button from '../Common/Button';
-import { useUser } from '../../contexts/UserContext';
-import { User } from '../../types';
+} from 'lucide-react'
+import { YStack, XStack, Text, H1, H2, H3, Card, Button as TamaguiButton } from '@unicornlove/ui'
+import ForsuredLogo from '../Common/ForsuredLogo'
+import Button from '../Common/Button'
+import { useUser } from '../../contexts/UserContext'
+import type { User } from '../../types'
 
 export default function HomePage() {
-  const navigate = useNavigate();
-  const { setCurrentUser } = useUser();
+  const navigate = useNavigate()
+  const { setCurrentUser } = useUser()
 
   const handleGetStarted = (role: 'manager' | 'subcontractor' | 'broker') => {
     const mockUser: User = {
@@ -47,11 +46,11 @@ export default function HomePage() {
             ? 'Rodriguez Construction LLC'
             : 'Walsh Insurance Partners',
       avatar: '',
-    };
+    }
 
-    setCurrentUser(mockUser);
-    navigate(`/${role}/onboarding`);
-  };
+    setCurrentUser(mockUser)
+    navigate(`/${role}/onboarding`)
+  }
   const features = [
     {
       icon: Shield,
@@ -62,41 +61,36 @@ export default function HomePage() {
     {
       icon: TrendingUp,
       title: 'Real-Time Risk Monitoring',
-      description:
-        'Live compliance dashboards with renewal alerts and safety record tracking',
+      description: 'Live compliance dashboards with renewal alerts and safety record tracking',
     },
     {
       icon: DollarSign,
       title: 'Embedded Insurance Marketplace',
-      description:
-        'Purchase coverage directly in-platform with instant COI issuance',
+      description: 'Purchase coverage directly in-platform with instant COI issuance',
     },
     {
       icon: AlertTriangle,
       title: 'Predictive Alerts',
-      description:
-        'AI notifications for policy expirations and regulatory changes',
+      description: 'AI notifications for policy expirations and regulatory changes',
     },
     {
       icon: Building,
       title: 'Construction Tech Integration',
-      description:
-        'Seamless sync with Procore, Autodesk, Sage, and accounting platforms',
+      description: 'Seamless sync with Procore, Autodesk, Sage, and accounting platforms',
     },
     {
       icon: BarChart3,
       title: 'Advanced Analytics',
-      description:
-        'Compliance heatmaps, risk trends, and exportable audit reports',
+      description: 'Compliance heatmaps, risk trends, and exportable audit reports',
     },
-  ];
+  ]
 
   const stats = [
     { value: '500+', label: 'Construction Companies' },
     { value: '10,000+', label: 'Contractors Verified' },
     { value: '99.8%', label: 'Accuracy Rate' },
     { value: '60%', label: 'Time Savings' },
-  ];
+  ]
 
   return (
     <YStack minHeight="100vh" backgroundColor="$backgroundHover">
@@ -109,10 +103,22 @@ export default function HomePage() {
         elevation={1}
         opacity={0.9}
       >
-        <XStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+        <XStack
+          maxWidth={1280}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
+        >
           <XStack alignItems="center" justifyContent="space-between" height={80}>
-            <ForsuredLogo className="h-7" />
-            <XStack as="nav" display="none" $gtMd={{ display: 'flex' }} alignItems="center" gap="$8">
+            <ForsuredLogo height={28} />
+            <XStack
+              as="nav"
+              display="none"
+              $gtMd={{ display: 'flex' }}
+              alignItems="center"
+              gap="$8"
+            >
               <TamaguiButton
                 unstyled
                 href="#features"
@@ -140,13 +146,14 @@ export default function HomePage() {
               >
                 About
               </TamaguiButton>
-              <Button
-                onClick={() => navigate('/colors')}
-                variant="ghost"
-                className="text-primary-500 hover:text-primary-600"
+              <TamaguiButton
+                unstyled
+                onPress={() => navigate('/colors')}
+                color="$blue10"
+                hoverStyle={{ color: '$blue11' }}
               >
                 Design System
-              </Button>
+              </TamaguiButton>
             </XStack>
           </XStack>
         </XStack>
@@ -154,99 +161,160 @@ export default function HomePage() {
 
       {/* Quick Testing Links - Development Helper */}
       <YStack backgroundColor="$yellow2" borderBottomWidth={1} borderColor="$yellow6">
-        <XStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }} paddingVertical="$3">
+        <XStack
+          maxWidth={1280}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
+          paddingVertical="$3"
+        >
           <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$2">
             <Text fontSize="$3" fontWeight="500" color="$yellow12">
               Quick Links:
             </Text>
             <XStack flexWrap="wrap" gap="$2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => navigate('/manager/onboarding')}
-                className="text-xs"
+              <TamaguiButton
+                unstyled
+                size="$2"
+                onPress={() => navigate('/manager/onboarding')}
+                fontSize="$2"
+                color="$yellow12"
+                hoverStyle={{ color: '$yellow11' }}
               >
                 Manager Onboarding
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => navigate('/subcontractor/onboarding')}
-                className="text-xs"
+              </TamaguiButton>
+              <TamaguiButton
+                unstyled
+                size="$2"
+                onPress={() => navigate('/subcontractor/onboarding')}
+                fontSize="$2"
+                color="$yellow12"
+                hoverStyle={{ color: '$yellow11' }}
               >
                 Subcontractor Onboarding
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => navigate('/broker/onboarding')}
-                className="text-xs"
+              </TamaguiButton>
+              <TamaguiButton
+                unstyled
+                size="$2"
+                onPress={() => navigate('/broker/onboarding')}
+                fontSize="$2"
+                color="$yellow12"
+                hoverStyle={{ color: '$yellow11' }}
               >
                 Broker Onboarding
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => navigate('/manager/dashboard')}
-                className="text-xs"
+              </TamaguiButton>
+              <TamaguiButton
+                unstyled
+                size="$2"
+                onPress={() => navigate('/manager/dashboard')}
+                fontSize="$2"
+                color="$yellow12"
+                hoverStyle={{ color: '$yellow11' }}
               >
                 Manager Dashboard
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => navigate('/subcontractor/dashboard')}
-                className="text-xs"
+              </TamaguiButton>
+              <TamaguiButton
+                unstyled
+                size="$2"
+                onPress={() => navigate('/subcontractor/dashboard')}
+                fontSize="$2"
+                color="$yellow12"
+                hoverStyle={{ color: '$yellow11' }}
               >
                 Subcontractor Dashboard
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => navigate('/broker/dashboard')}
-                className="text-xs"
+              </TamaguiButton>
+              <TamaguiButton
+                unstyled
+                size="$2"
+                onPress={() => navigate('/broker/dashboard')}
+                fontSize="$2"
+                color="$yellow12"
+                hoverStyle={{ color: '$yellow11' }}
               >
                 Broker Dashboard
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => navigate('/colors')}
-                className="text-xs"
+              </TamaguiButton>
+              <TamaguiButton
+                unstyled
+                size="$2"
+                onPress={() => navigate('/colors')}
+                fontSize="$2"
+                color="$yellow12"
+                hoverStyle={{ color: '$yellow11' }}
               >
                 Colors/UI Kit
-              </Button>
+              </TamaguiButton>
             </XStack>
           </XStack>
         </XStack>
       </YStack>
 
       {/* Hero Section - Dynamic theme-aware backgrounds */}
-      <YStack
-        as="section"
-        position="relative"
-        paddingVertical="$12"
-        backgroundColor="$blue12"
-      >
+      <YStack as="section" position="relative" paddingVertical="$12" backgroundColor="$blue12">
         <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
-          <YStack position="absolute" top={0} right={0} width="33%" height="33%" backgroundColor="$blue9" opacity={0.5} />
-          <YStack position="absolute" bottom={0} left={0} width="33%" height="33%" backgroundColor="$blue10" opacity={0.5} />
+          <YStack
+            position="absolute"
+            top={0}
+            right={0}
+            width="33%"
+            height="33%"
+            backgroundColor="$blue9"
+            opacity={0.5}
+          />
+          <YStack
+            position="absolute"
+            bottom={0}
+            left={0}
+            width="33%"
+            height="33%"
+            backgroundColor="$blue10"
+            opacity={0.5}
+          />
         </YStack>
-        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }} position="relative">
+        <YStack
+          maxWidth={1280}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
+          position="relative"
+        >
           <YStack alignItems="center">
-            <H1 fontSize="$10" $gtMd={{ fontSize: '$12' }} fontWeight="700" color="white" marginBottom="$6" letterSpacing="-0.02em">
+            <H1
+              fontSize="$10"
+              $gtMd={{ fontSize: '$12' }}
+              fontWeight="700"
+              color="white"
+              marginBottom="$6"
+              letterSpacing="-0.02em"
+            >
               Construction Compliance
               <Text display="block" color="$blue4">
                 Built for the Field
               </Text>
             </H1>
-            <Text fontSize="$6" $gtMd={{ fontSize: '$8' }} color="rgba(255,255,255,0.9)" marginBottom="$12" maxWidth={768} marginHorizontal="auto" lineHeight={1.6}>
-              AI-powered contractor vetting, real-time risk monitoring, and
-              instant insurance coverage. From the job site to the back office.
+            <Text
+              fontSize="$6"
+              $gtMd={{ fontSize: '$8' }}
+              color="rgba(255,255,255,0.9)"
+              marginBottom="$12"
+              maxWidth={768}
+              marginHorizontal="auto"
+              lineHeight={1.6}
+            >
+              AI-powered contractor vetting, real-time risk monitoring, and instant insurance
+              coverage. From the job site to the back office.
             </Text>
 
             {/* Primary CTAs */}
-            <XStack flexDirection="column" $gtSm={{ flexDirection: 'row' }} gap="$4" justifyContent="center" alignItems="center" marginBottom="$10">
+            <XStack
+              flexDirection="column"
+              $gtSm={{ flexDirection: 'row' }}
+              gap="$4"
+              justifyContent="center"
+              alignItems="center"
+              marginBottom="$10"
+            >
               <Button
                 onClick={() => handleGetStarted('manager')}
                 variant="primary"
@@ -254,7 +322,9 @@ export default function HomePage() {
                 leftIcon={Users}
                 rightIcon={ArrowRight}
                 iconSize={24}
-                className="min-w-64 transform hover:scale-105 hover:-translate-y-1"
+                minWidth={256}
+                hoverStyle={{ scale: 1.05, y: -4 }}
+                animation="quick"
               >
                 For Managers
               </Button>
@@ -265,7 +335,9 @@ export default function HomePage() {
                 leftIcon={Award}
                 rightIcon={ArrowRight}
                 iconSize={24}
-                className="min-w-64 transform hover:scale-105 hover:-translate-y-1"
+                minWidth={256}
+                hoverStyle={{ scale: 1.05, y: -4 }}
+                animation="quick"
               >
                 For Subcontractors
               </Button>
@@ -275,7 +347,10 @@ export default function HomePage() {
                 leftIcon={Handshake}
                 rightIcon={ArrowRight}
                 iconSize={24}
-                className="bg-text-primary hover:bg-text-primary min-w-64 transform hover:scale-105 hover:-translate-y-1"
+                minWidth={256}
+                backgroundColor="$color12"
+                hoverStyle={{ scale: 1.05, y: -4, backgroundColor: '$color12' }}
+                animation="quick"
               >
                 For Brokers
               </Button>
@@ -283,32 +358,59 @@ export default function HomePage() {
 
             {/* Value Props */}
             <XStack flexWrap="wrap" gap="$6" maxWidth={1024} marginHorizontal="auto">
-              <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={2} borderWidth={1} borderColor="$borderColor" hoverStyle={{ elevation: 4, borderColor: '$blue6' }} flex={1} minWidth="45%" $gtMd={{ minWidth: '30%' }}>
+              <Card
+                backgroundColor="$background"
+                padding="$8"
+                borderRadius="$4"
+                elevation={2}
+                borderWidth={1}
+                borderColor="$borderColor"
+                hoverStyle={{ elevation: 4, borderColor: '$blue6' }}
+                flex={1}
+                minWidth="45%"
+                $gtMd={{ minWidth: '30%' }}
+              >
                 <Shield size={40} color="$blue10" marginBottom="$4" />
                 <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
                   Automated Verification
                 </H3>
-                <Text color="$color11">
-                  AI-powered document verification with 99.8% accuracy
-                </Text>
+                <Text color="$color11">AI-powered document verification with 99.8% accuracy</Text>
               </Card>
-              <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={2} borderWidth={1} borderColor="$borderColor" hoverStyle={{ elevation: 4, borderColor: '$gray6' }} flex={1} minWidth="45%" $gtMd={{ minWidth: '30%' }}>
+              <Card
+                backgroundColor="$background"
+                padding="$8"
+                borderRadius="$4"
+                elevation={2}
+                borderWidth={1}
+                borderColor="$borderColor"
+                hoverStyle={{ elevation: 4, borderColor: '$gray6' }}
+                flex={1}
+                minWidth="45%"
+                $gtMd={{ minWidth: '30%' }}
+              >
                 <Clock size={40} color="$gray10" marginBottom="$4" />
                 <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
                   Save 60% Time
                 </H3>
-                <Text color="$color11">
-                  Reduce compliance management from hours to minutes
-                </Text>
+                <Text color="$color11">Reduce compliance management from hours to minutes</Text>
               </Card>
-              <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={2} borderWidth={1} borderColor="$borderColor" hoverStyle={{ elevation: 4, borderColor: '$yellow6' }} flex={1} minWidth="45%" $gtMd={{ minWidth: '30%' }}>
+              <Card
+                backgroundColor="$background"
+                padding="$8"
+                borderRadius="$4"
+                elevation={2}
+                borderWidth={1}
+                borderColor="$borderColor"
+                hoverStyle={{ elevation: 4, borderColor: '$yellow6' }}
+                flex={1}
+                minWidth="45%"
+                $gtMd={{ minWidth: '30%' }}
+              >
                 <DollarSign size={40} color="$yellow10" marginBottom="$4" />
                 <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
                   Instant Coverage
                 </H3>
-                <Text color="$color11">
-                  Purchase insurance and get COIs issued immediately
-                </Text>
+                <Text color="$color11">Purchase insurance and get COIs issued immediately</Text>
               </Card>
             </XStack>
           </YStack>
@@ -325,23 +427,59 @@ export default function HomePage() {
         overflow="hidden"
       >
         <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
-          <YStack position="absolute" top={0} left="25%" width={384} height={384} backgroundColor="$blue10" borderRadius={9999} opacity={0.5} />
-          <YStack position="absolute" bottom={0} right="25%" width={384} height={384} backgroundColor="$gray10" borderRadius={9999} opacity={0.5} />
+          <YStack
+            position="absolute"
+            top={0}
+            left="25%"
+            width={384}
+            height={384}
+            backgroundColor="$blue10"
+            borderRadius={9999}
+            opacity={0.5}
+          />
+          <YStack
+            position="absolute"
+            bottom={0}
+            right="25%"
+            width={384}
+            height={384}
+            backgroundColor="$gray10"
+            borderRadius={9999}
+            opacity={0.5}
+          />
         </YStack>
-        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }} position="relative">
+        <YStack
+          maxWidth={1280}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
+          position="relative"
+        >
           <YStack alignItems="center" marginBottom="$10">
             <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" marginBottom="$4">
               Trusted by Construction Leaders
             </H2>
             <Text fontSize="$6" color="rgba(255,255,255,0.7)">
-              Join thousands of construction professionals building with
-              confidence
+              Join thousands of construction professionals building with confidence
             </Text>
           </YStack>
           <XStack flexWrap="wrap" gap="$8">
             {stats.map((stat, index) => (
-              <YStack key={index} alignItems="center" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <Text fontSize="$10" $gtMd={{ fontSize: '$11' }} fontWeight="700" color="$blue9" marginBottom="$2">
+              <YStack
+                key={index}
+                alignItems="center"
+                flex={1}
+                minWidth="45%"
+                $gtMd={{ minWidth: '22%' }}
+              >
+                <Text
+                  fontSize="$10"
+                  $gtMd={{ fontSize: '$11' }}
+                  fontWeight="700"
+                  color="$blue9"
+                  marginBottom="$2"
+                >
                   {stat.value}
                 </Text>
                 <Text fontSize="$6" color="rgba(255,255,255,0.6)">
@@ -355,21 +493,38 @@ export default function HomePage() {
 
       {/* Features Section */}
       <YStack as="section" id="features" paddingVertical="$12" backgroundColor="$background">
-        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+        <YStack
+          maxWidth={1280}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
+        >
           <YStack alignItems="center" marginBottom="$10">
-            <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" color="$color12" marginBottom="$6">
+            <H2
+              fontSize="$9"
+              $gtMd={{ fontSize: '$10' }}
+              fontWeight="700"
+              color="$color12"
+              marginBottom="$6"
+            >
               Built for Construction
             </H2>
-            <Text fontSize="$6" color="$color11" maxWidth={768} marginHorizontal="auto" lineHeight={1.6}>
-              From automated document verification to predictive risk
-              monitoring, Forsured delivers comprehensive compliance management
-              designed for the field.
+            <Text
+              fontSize="$6"
+              color="$color11"
+              maxWidth={768}
+              marginHorizontal="auto"
+              lineHeight={1.6}
+            >
+              From automated document verification to predictive risk monitoring, Forsured delivers
+              comprehensive compliance management designed for the field.
             </Text>
           </YStack>
 
           <XStack flexWrap="wrap" gap="$8">
             {features.map((feature, index) => {
-              const Icon = feature.icon;
+              const Icon = feature.icon
               return (
                 <Card
                   key={index}
@@ -402,7 +557,7 @@ export default function HomePage() {
                     {feature.description}
                   </Text>
                 </Card>
-              );
+              )
             })}
           </XStack>
         </YStack>
@@ -410,10 +565,27 @@ export default function HomePage() {
 
       {/* Use Cases Section */}
       <YStack as="section" paddingVertical="$12" backgroundColor="$backgroundHover">
-        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+        <YStack
+          maxWidth={1280}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
+        >
           <XStack flexWrap="wrap" gap="$8">
             {/* Construction Managers */}
-            <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={3} borderWidth={2} borderColor="$borderColor" hoverStyle={{ borderColor: '$blue10' }} flex={1} minWidth="45%" $gtLg={{ minWidth: '30%' }}>
+            <Card
+              backgroundColor="$background"
+              padding="$8"
+              borderRadius="$4"
+              elevation={3}
+              borderWidth={2}
+              borderColor="$borderColor"
+              hoverStyle={{ borderColor: '$blue10' }}
+              flex={1}
+              minWidth="45%"
+              $gtLg={{ minWidth: '30%' }}
+            >
               <XStack alignItems="center" gap="$3" marginBottom="$6">
                 <XStack backgroundColor="$blue2" padding="$3" borderRadius="$4">
                   <Users size={28} color="$blue11" />
@@ -426,15 +598,12 @@ export default function HomePage() {
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
                   <Text color="$color11">
-                    Automatically verify subcontractor compliance across all
-                    projects
+                    Automatically verify subcontractor compliance across all projects
                   </Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
-                  <Text color="$color11">
-                    Real-time risk monitoring with predictive alerts
-                  </Text>
+                  <Text color="$color11">Real-time risk monitoring with predictive alerts</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
@@ -461,7 +630,18 @@ export default function HomePage() {
             </Card>
 
             {/* Subcontractors */}
-            <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={3} borderWidth={2} borderColor="$borderColor" hoverStyle={{ borderColor: '$gray10' }} flex={1} minWidth="45%" $gtLg={{ minWidth: '30%' }}>
+            <Card
+              backgroundColor="$background"
+              padding="$8"
+              borderRadius="$4"
+              elevation={3}
+              borderWidth={2}
+              borderColor="$borderColor"
+              hoverStyle={{ borderColor: '$gray10' }}
+              flex={1}
+              minWidth="45%"
+              $gtLg={{ minWidth: '30%' }}
+            >
               <XStack alignItems="center" gap="$3" marginBottom="$6">
                 <XStack backgroundColor="$gray2" padding="$3" borderRadius="$4">
                   <Award size={28} color="$gray11" />
@@ -473,27 +653,19 @@ export default function HomePage() {
               <YStack gap="$4" marginBottom="$8">
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
-                  <Text color="$color11">
-                    Upload documents and get instant compliance scoring
-                  </Text>
+                  <Text color="$color11">Upload documents and get instant compliance scoring</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
-                  <Text color="$color11">
-                    Receive personalized insurance recommendations
-                  </Text>
+                  <Text color="$color11">Receive personalized insurance recommendations</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
-                  <Text color="$color11">
-                    Purchase coverage and get COIs issued instantly
-                  </Text>
+                  <Text color="$color11">Purchase coverage and get COIs issued instantly</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
-                  <Text color="$color11">
-                    Track renewal dates and maintain compliance status
-                  </Text>
+                  <Text color="$color11">Track renewal dates and maintain compliance status</Text>
                 </XStack>
               </YStack>
               <Button
@@ -508,7 +680,18 @@ export default function HomePage() {
             </Card>
 
             {/* Insurance Brokers */}
-            <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={3} borderWidth={2} borderColor="$borderColor" hoverStyle={{ borderColor: '$gray11' }} flex={1} minWidth="45%" $gtLg={{ minWidth: '30%' }}>
+            <Card
+              backgroundColor="$background"
+              padding="$8"
+              borderRadius="$4"
+              elevation={3}
+              borderWidth={2}
+              borderColor="$borderColor"
+              hoverStyle={{ borderColor: '$gray11' }}
+              flex={1}
+              minWidth="45%"
+              $gtLg={{ minWidth: '30%' }}
+            >
               <XStack alignItems="center" gap="$3" marginBottom="$6">
                 <XStack backgroundColor="$gray2" padding="$3" borderRadius="$4">
                   <Handshake size={28} color="$gray11" />
@@ -526,21 +709,15 @@ export default function HomePage() {
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
-                  <Text color="$color11">
-                    Streamline quote generation and policy management
-                  </Text>
+                  <Text color="$color11">Streamline quote generation and policy management</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
-                  <Text color="$color11">
-                    Automated COI generation and compliance tracking
-                  </Text>
+                  <Text color="$color11">Automated COI generation and compliance tracking</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
-                  <Text color="$color11">
-                    Expand your construction industry client base
-                  </Text>
+                  <Text color="$color11">Expand your construction industry client base</Text>
                 </XStack>
               </YStack>
               <Button
@@ -548,7 +725,8 @@ export default function HomePage() {
                 rightIcon={ArrowRight}
                 iconSize={18}
                 fullWidth
-                className="bg-text-primary hover:bg-text-primary"
+                backgroundColor="$color12"
+                hoverStyle={{ backgroundColor: '$color12' }}
               >
                 Get Started
               </Button>
@@ -566,34 +744,71 @@ export default function HomePage() {
         overflow="hidden"
       >
         <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
-          <YStack position="absolute" top={0} right={0} width={384} height={384} backgroundColor="$gray10" borderRadius={9999} opacity={0.5} />
-          <YStack position="absolute" bottom={0} left={0} width={384} height={384} backgroundColor="$yellow10" borderRadius={9999} opacity={0.5} />
+          <YStack
+            position="absolute"
+            top={0}
+            right={0}
+            width={384}
+            height={384}
+            backgroundColor="$gray10"
+            borderRadius={9999}
+            opacity={0.5}
+          />
+          <YStack
+            position="absolute"
+            bottom={0}
+            left={0}
+            width={384}
+            height={384}
+            backgroundColor="$yellow10"
+            borderRadius={9999}
+            opacity={0.5}
+          />
         </YStack>
-        <YStack maxWidth={896} marginHorizontal="auto" alignItems="center" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }} position="relative">
-          <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" color="white" marginBottom="$6">
+        <YStack
+          maxWidth={896}
+          marginHorizontal="auto"
+          alignItems="center"
+          paddingHorizontal="$4"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
+          position="relative"
+        >
+          <H2
+            fontSize="$9"
+            $gtMd={{ fontSize: '$10' }}
+            fontWeight="700"
+            color="white"
+            marginBottom="$6"
+          >
             Ready to Build with Confidence?
           </H2>
-          <Text fontSize="$6" $gtMd={{ fontSize: '$8' }} color="rgba(255,255,255,0.9)" marginBottom="$12" lineHeight={1.6}>
-            Join thousands of construction professionals managing compliance the
-            modern way.
+          <Text
+            fontSize="$6"
+            $gtMd={{ fontSize: '$8' }}
+            color="rgba(255,255,255,0.9)"
+            marginBottom="$12"
+            lineHeight={1.6}
+          >
+            Join thousands of construction professionals managing compliance the modern way.
           </Text>
         </YStack>
       </YStack>
 
       {/* Footer - Theme-aware dark backgrounds */}
-      <YStack
-        as="footer"
-        backgroundColor="$gray12"
-        color="white"
-        paddingVertical="$8"
-      >
-        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+      <YStack as="footer" backgroundColor="$gray12" color="white" paddingVertical="$8">
+        <YStack
+          maxWidth={1280}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
+        >
           <XStack flexWrap="wrap" gap="$12">
             <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <ForsuredLogo className="h-8 mb-6" color="white" />
+              <ForsuredLogo height={32} marginBottom="$6" color="white" />
               <Text color="rgba(255,255,255,0.6)" lineHeight={1.6}>
-                AI-powered compliance and insurance management for the
-                construction industry.
+                AI-powered compliance and insurance management for the construction industry.
               </Text>
             </YStack>
             <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
@@ -601,16 +816,36 @@ export default function HomePage() {
                 Product
               </H3>
               <YStack gap="$3">
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Features
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Features
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Pricing
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Pricing
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Integrations
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Integrations
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
                   API
                 </TamaguiButton>
               </YStack>
@@ -620,16 +855,36 @@ export default function HomePage() {
                 Company
               </H3>
               <YStack gap="$3">
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    About
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  About
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Careers
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Careers
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Contact
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Contact
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
                   Blog
                 </TamaguiButton>
               </YStack>
@@ -639,28 +894,52 @@ export default function HomePage() {
                 Support
               </H3>
               <YStack gap="$3">
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Help Center
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Help Center
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Documentation
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Documentation
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Status
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Status
                 </TamaguiButton>
-                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
-                    Security
+                <TamaguiButton
+                  unstyled
+                  href="#"
+                  color="rgba(255,255,255,0.6)"
+                  hoverStyle={{ color: '$blue9' }}
+                >
+                  Security
                 </TamaguiButton>
               </YStack>
             </YStack>
           </XStack>
-          <YStack borderTopWidth={1} borderColor="$gray11" marginTop="$12" paddingTop="$8" alignItems="center">
-            <Text color="rgba(255,255,255,0.6)">
-              &copy; 2024 Forsured. All rights reserved.
-            </Text>
+          <YStack
+            borderTopWidth={1}
+            borderColor="$gray11"
+            marginTop="$12"
+            paddingTop="$8"
+            alignItems="center"
+          >
+            <Text color="rgba(255,255,255,0.6)">&copy; 2024 Forsured. All rights reserved.</Text>
           </YStack>
         </YStack>
       </YStack>
     </YStack>
-  );
+  )
 }

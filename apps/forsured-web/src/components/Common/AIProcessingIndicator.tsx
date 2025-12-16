@@ -1,21 +1,12 @@
-/**
- * AIProcessingIndicator - AI processing indicator using Tamagui
- */
-import React from 'react';
-import { XStack, YStack, Text, styled } from '@unicornlove/ui';
-import { Loader2, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import { XStack, YStack, Text, styled, Spinner } from '@unicornlove/ui'
+import { CheckCircle, AlertCircle, Sparkles } from 'lucide-react'
 
-export type AIProcessingState =
-  | 'analyzing'
-  | 'processing'
-  | 'complete'
-  | 'error';
+export type AIProcessingState = 'analyzing' | 'processing' | 'complete' | 'error'
 
 interface AIProcessingIndicatorProps {
-  state: AIProcessingState;
-  message?: string;
-  progress?: number; // 0-100
-  className?: string;
+  state: AIProcessingState
+  message?: string
+  progress?: number // 0-100
 }
 
 const Container = styled(YStack, {
@@ -23,7 +14,7 @@ const Container = styled(YStack, {
   padding: '$4',
   borderRadius: '$md',
   borderWidth: 1,
-  
+
   variants: {
     state: {
       analyzing: {
@@ -44,7 +35,7 @@ const Container = styled(YStack, {
       },
     },
   } as const,
-});
+})
 
 const ProgressBar = styled(YStack, {
   name: 'ProgressBar',
@@ -53,7 +44,7 @@ const ProgressBar = styled(YStack, {
   borderRadius: '$10',
   height: 8,
   overflow: 'hidden',
-});
+})
 
 const ProgressFill = styled(YStack, {
   name: 'ProgressFill',
@@ -61,61 +52,48 @@ const ProgressFill = styled(YStack, {
   backgroundColor: '$blue9',
   borderRadius: '$10',
   transition: 'width 300ms',
-});
+})
 
 export default function AIProcessingIndicator({
   state,
   message,
   progress,
-  className = '',
 }: AIProcessingIndicatorProps) {
   const getDefaultMessage = () => {
     switch (state) {
       case 'analyzing':
-        return 'AI analyzing...';
+        return 'AI analyzing...'
       case 'processing':
-        return 'AI processing...';
+        return 'AI processing...'
       case 'complete':
-        return 'Analysis complete';
+        return 'Analysis complete'
       case 'error':
-        return 'Analysis failed, please retry';
+        return 'Analysis failed, please retry'
     }
-  };
+  }
 
-  const displayMessage = message || getDefaultMessage();
+  const displayMessage = message || getDefaultMessage()
 
   return (
     <Container state={state}>
       <XStack alignItems="center" gap="$3">
         {state === 'analyzing' && (
-          <YStack position="relative">
+          <YStack position="relative" width={20} height={20}>
             <Sparkles size={20} color="currentColor" />
             <YStack position="absolute" top={0} left={0}>
-              <Loader2 size={20} className="animate-spin" color="currentColor" />
+              <Spinner size="small" color="$blue9" />
             </YStack>
           </YStack>
         )}
-        {state === 'processing' && (
-          <Loader2 size={20} className="animate-spin" color="currentColor" />
-        )}
-        {state === 'complete' && (
-          <CheckCircle size={20} color="currentColor" />
-        )}
-        {state === 'error' && (
-          <AlertCircle size={20} color="currentColor" />
-        )}
+        {state === 'processing' && <Spinner size="small" color="$blue9" />}
+        {state === 'complete' && <CheckCircle size={20} color="currentColor" />}
+        {state === 'error' && <AlertCircle size={20} color="currentColor" />}
 
         <YStack flex={1} gap="$2">
           <Text
             fontSize="$2"
             fontWeight="500"
-            color={
-              state === 'complete'
-                ? '$green11'
-                : state === 'error'
-                  ? '$red11'
-                  : '$blue11'
-            }
+            color={state === 'complete' ? '$green11' : state === 'error' ? '$red11' : '$blue11'}
           >
             {displayMessage}
           </Text>
@@ -127,5 +105,5 @@ export default function AIProcessingIndicator({
         </YStack>
       </XStack>
     </Container>
-  );
+  )
 }

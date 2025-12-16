@@ -1,4 +1,4 @@
--- Migration: 233_forsured_user_set_types.sql
+-- Migration: 237_forsured_user_set_types.sql
 -- REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
 --
 -- Creates tables for managing user set types (industry verticals) and their
