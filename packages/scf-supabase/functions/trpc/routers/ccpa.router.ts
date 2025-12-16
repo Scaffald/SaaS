@@ -12,9 +12,11 @@
  * OAuth app endpoints for multi-app data coordination.
  */
 import { TRPCError } from '@trpc/server'
+import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
 import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
+import { supabaseServiceKey, supabaseUrl } from '../context.ts'
 import { collectCoreUserData } from './ccpa/data-collector.ts'
 import { getDeadlineMetrics as getDeadlineMetricsUtil } from './ccpa/deadline-tracker.ts'
 import {
@@ -96,6 +98,14 @@ import {
 const ALL_OPT_OUT_CATEGORIES = ['sale', 'sharing', 'targeted_advertising', 'profiling'] as const
 
 /**
+ * Create a service client for OAuth app endpoints that need admin access
+ * These endpoints are called server-to-server and don't have user context
+ */
+function createServiceClient() {
+  return createClient(supabaseUrl, supabaseServiceKey)
+}
+
+/**
  * Check if user has an active request of the same type
  * (prevents duplicate requests within 30 days)
  */
@@ -148,7 +158,7 @@ export const ccpaRouter = t.router({
 
       // Check for duplicate active requests
       const hasActiveRequest = await checkForActiveRequest(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         ctx.user.id,
         'access'
       )
@@ -161,7 +171,7 @@ export const ccpaRouter = t.router({
       }
 
       // Insert new request (deadline is auto-calculated by trigger)
-      const { data: request, error } = await ctx.supabaseAdmin
+      const { data: request, error } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .insert({
@@ -202,7 +212,7 @@ export const ccpaRouter = t.router({
       }
 
       const hasActiveRequest = await checkForActiveRequest(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         ctx.user.id,
         'deletion'
       )
@@ -214,7 +224,7 @@ export const ccpaRouter = t.router({
         })
       }
 
-      const { data: request, error } = await ctx.supabaseAdmin
+      const { data: request, error } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .insert({
@@ -257,7 +267,7 @@ export const ccpaRouter = t.router({
       }
 
       const hasActiveRequest = await checkForActiveRequest(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         ctx.user.id,
         'correction'
       )
@@ -269,7 +279,7 @@ export const ccpaRouter = t.router({
         })
       }
 
-      const { data: request, error } = await ctx.supabaseAdmin
+      const { data: request, error } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .insert({
@@ -312,7 +322,7 @@ export const ccpaRouter = t.router({
       }
 
       const hasActiveRequest = await checkForActiveRequest(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         ctx.user.id,
         'portability'
       )
@@ -324,7 +334,7 @@ export const ccpaRouter = t.router({
         })
       }
 
-      const { data: request, error } = await ctx.supabaseAdmin
+      const { data: request, error } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .insert({
@@ -367,7 +377,7 @@ export const ccpaRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const { data: request, error } = await ctx.supabaseAdmin
+      const { data: request, error } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('*')
@@ -384,7 +394,7 @@ export const ccpaRouter = t.router({
       // Verify ownership or admin access
       if (request.user_id !== ctx.user.id) {
         // Check for admin role
-        const { data: adminCheck } = await ctx.supabaseAdmin
+        const { data: adminCheck } = await ctx.supabase
           .schema('core')
           .from('role_assignments')
           .select('role_id')
@@ -432,7 +442,7 @@ export const ccpaRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const { data: request, error: fetchError } = await ctx.supabaseAdmin
+      const { data: request, error: fetchError } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('id, user_id, status')
@@ -460,7 +470,7 @@ export const ccpaRouter = t.router({
         })
       }
 
-      const { error: updateError } = await ctx.supabaseAdmin
+      const { error: updateError } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .update({
@@ -496,7 +506,7 @@ export const ccpaRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      let query = ctx.supabaseAdmin
+      let query = ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('*', { count: 'exact' })
@@ -561,7 +571,7 @@ export const ccpaRouter = t.router({
       }))
 
       // Use upsert to handle existing opt-outs
-      const { error } = await ctx.supabaseAdmin
+      const { error } = await ctx.supabase
         .schema('core')
         .from('ccpa_opt_outs')
         .upsert(insertData, {
@@ -592,7 +602,7 @@ export const ccpaRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const { error } = await ctx.supabaseAdmin
+      const { error } = await ctx.supabase
         .schema('core')
         .from('ccpa_opt_outs')
         .delete()
@@ -620,7 +630,7 @@ export const ccpaRouter = t.router({
       throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
 
-    const { data, error } = await ctx.supabaseAdmin
+    const { data, error } = await ctx.supabase
       .schema('core')
       .from('ccpa_opt_outs')
       .select('category, opted_out_at, source')
@@ -676,7 +686,7 @@ export const ccpaRouter = t.router({
       }
 
       // Get request and verify ownership
-      const { data: request, error: fetchError } = await ctx.supabaseAdmin
+      const { data: request, error: fetchError } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('id, user_id, verification_method, verification_completed_at')
@@ -704,9 +714,8 @@ export const ccpaRouter = t.router({
         })
       }
 
-      // Get user email
-      const { data: userData } = await ctx.supabaseAdmin.auth.admin.getUserById(ctx.user.id)
-      const userEmail = userData?.user?.email
+      // Get user email from context (already authenticated)
+      const userEmail = ctx.user.email
 
       if (!userEmail) {
         throw new TRPCError({
@@ -718,7 +727,7 @@ export const ccpaRouter = t.router({
       // Initiate based on verification method
       if (request.verification_method === 'enhanced') {
         const result = await initiateEnhancedVerification(
-          ctx.supabaseAdmin,
+          ctx.supabase,
           input.requestId,
           ctx.user.id
         )
@@ -740,7 +749,7 @@ export const ccpaRouter = t.router({
 
       // Default to email verification
       const result = await initiateEmailVerification(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         input.requestId,
         userEmail
       )
@@ -770,7 +779,7 @@ export const ccpaRouter = t.router({
       }
 
       // Verify ownership
-      const { data: request } = await ctx.supabaseAdmin
+      const { data: request } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('user_id')
@@ -784,7 +793,7 @@ export const ccpaRouter = t.router({
         })
       }
 
-      const result = await verifyEmailOTP(ctx.supabaseAdmin, input.requestId, input.code)
+      const result = await verifyEmailOTP(ctx.supabase, input.requestId, input.code)
 
       if (!result.success) {
         throw new TRPCError({
@@ -810,7 +819,7 @@ export const ccpaRouter = t.router({
       }
 
       // Verify ownership
-      const { data: request } = await ctx.supabaseAdmin
+      const { data: request } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('user_id')
@@ -825,7 +834,7 @@ export const ccpaRouter = t.router({
       }
 
       const result = await completeEnhancedVerification(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         input.requestId,
         input.token
       )
@@ -854,7 +863,7 @@ export const ccpaRouter = t.router({
       }
 
       // Verify ownership
-      const { data: request } = await ctx.supabaseAdmin
+      const { data: request } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('user_id')
@@ -868,9 +877,8 @@ export const ccpaRouter = t.router({
         })
       }
 
-      // Get user email
-      const { data: userData } = await ctx.supabaseAdmin.auth.admin.getUserById(ctx.user.id)
-      const userEmail = userData?.user?.email
+      // Get user email from context (already authenticated)
+      const userEmail = ctx.user.email
 
       if (!userEmail) {
         throw new TRPCError({
@@ -880,7 +888,7 @@ export const ccpaRouter = t.router({
       }
 
       const result = await resendVerificationCode(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         input.requestId,
         userEmail
       )
@@ -909,7 +917,7 @@ export const ccpaRouter = t.router({
       }
 
       // Verify ownership or admin
-      const { data: request } = await ctx.supabaseAdmin
+      const { data: request } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('user_id')
@@ -925,7 +933,7 @@ export const ccpaRouter = t.router({
 
       if (request.user_id !== ctx.user.id) {
         // Check for admin role
-        const { data: adminCheck } = await ctx.supabaseAdmin
+        const { data: adminCheck } = await ctx.supabase
           .schema('core')
           .from('role_assignments')
           .select('role_id')
@@ -940,7 +948,7 @@ export const ccpaRouter = t.router({
         }
       }
 
-      const status = await getVerificationStatus(ctx.supabaseAdmin, input.requestId)
+      const status = await getVerificationStatus(ctx.supabase, input.requestId)
 
       if (!status) {
         throw new TRPCError({
@@ -969,7 +977,7 @@ export const ccpaRouter = t.router({
       }
 
       // Verify ownership
-      const { data: request } = await ctx.supabaseAdmin
+      const { data: request } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('user_id')
@@ -987,7 +995,7 @@ export const ccpaRouter = t.router({
       const complianceAdminId = Deno.env.get('CCPA_COMPLIANCE_ADMIN_ID')
 
       const result = await requestManualVerification(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         input.requestId,
         input.reason,
         complianceAdminId
@@ -1048,8 +1056,9 @@ export const ccpaRouter = t.router({
    */
   registerDataCategory: publicProcedure
     .input(registerDataCategoryInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { error } = await ctx.supabaseAdmin
+    .mutation(async ({ input }) => {
+      const serviceClient = createServiceClient()
+      const { error } = await serviceClient
         .schema('core')
         .from('ccpa_oauth_app_registry')
         .upsert({
@@ -1084,9 +1093,10 @@ export const ccpaRouter = t.router({
    */
   contributeExportData: publicProcedure
     .input(contributeExportDataInputSchema)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
+      const serviceClient = createServiceClient()
       // Verify the request exists and is in progress
-      const { data: request, error: fetchError } = await ctx.supabaseAdmin
+      const { data: request, error: fetchError } = await serviceClient
         .schema('core')
         .from('ccpa_requests')
         .select('id, status')
@@ -1109,7 +1119,7 @@ export const ccpaRouter = t.router({
 
       // Store the contributed data in metadata
       // In production, this would be stored in a separate table or S3
-      const { error: updateError } = await ctx.supabaseAdmin
+      const { error: updateError } = await serviceClient
         .schema('core')
         .from('ccpa_requests')
         .update({
@@ -1144,8 +1154,9 @@ export const ccpaRouter = t.router({
    */
   confirmDeletion: publicProcedure
     .input(confirmDeletionInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { data: request, error: fetchError } = await ctx.supabaseAdmin
+    .mutation(async ({ input }) => {
+      const serviceClient = createServiceClient()
+      const { data: request, error: fetchError } = await serviceClient
         .schema('core')
         .from('ccpa_requests')
         .select('id, status, request_type, metadata')
@@ -1170,7 +1181,7 @@ export const ccpaRouter = t.router({
       const existingMetadata = (request.metadata as Record<string, unknown>) ?? {}
       const oauthConfirmations = (existingMetadata.oauth_deletion_confirmations as Record<string, unknown>) ?? {}
 
-      const { error: updateError } = await ctx.supabaseAdmin
+      const { error: updateError } = await serviceClient
         .schema('core')
         .from('ccpa_requests')
         .update({
@@ -1806,7 +1817,7 @@ export const ccpaRouter = t.router({
       }
 
       // Check request ownership
-      const { data: request, error: requestError } = await ctx.supabaseAdmin
+      const { data: request, error: requestError } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('user_id, status, request_type')
@@ -1835,7 +1846,7 @@ export const ccpaRouter = t.router({
       }
 
       // Get the download record
-      const { data: download, error: downloadError } = await ctx.supabaseAdmin
+      const { data: download, error: downloadError } = await ctx.supabase
         .schema('core')
         .from('ccpa_export_downloads')
         .select('*')
@@ -1866,7 +1877,7 @@ export const ccpaRouter = t.router({
       }
 
       // Increment download count
-      await ctx.supabaseAdmin
+      await ctx.supabase
         .schema('core')
         .from('ccpa_export_downloads')
         .update({
@@ -1965,8 +1976,7 @@ export const ccpaRouter = t.router({
       // Collect data to generate summary
       const result = await collectCoreUserData(
         ctx.supabase,
-        ctx.user.id,
-        ctx.supabaseAdmin
+        ctx.user.id
       )
 
       if (!result.data) {
@@ -2044,7 +2054,7 @@ export const ccpaRouter = t.router({
       }
 
       // Check request ownership
-      const { data: request, error: requestError } = await ctx.supabaseAdmin
+      const { data: request, error: requestError } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('user_id, status, request_type')
@@ -2066,7 +2076,7 @@ export const ccpaRouter = t.router({
       }
 
       // Get the download record
-      const downloadRecord = await getDownloadRecord(ctx.supabaseAdmin, input.requestId)
+      const downloadRecord = await getDownloadRecord(ctx.supabase, input.requestId)
 
       if (!downloadRecord) {
         return {
@@ -2205,7 +2215,7 @@ export const ccpaRouter = t.router({
       }
 
       // Verify request ownership
-      const { data: request, error: requestError } = await ctx.supabaseAdmin
+      const { data: request, error: requestError } = await ctx.supabase
         .schema('core')
         .from('ccpa_requests')
         .select('user_id')
@@ -2227,7 +2237,7 @@ export const ccpaRouter = t.router({
       }
 
       // Track the download
-      const trackResult = await trackDownload(ctx.supabaseAdmin, input.requestId)
+      const trackResult = await trackDownload(ctx.supabase, input.requestId)
 
       if (!trackResult.success) {
         throw new TRPCError({
@@ -2474,7 +2484,7 @@ export const ccpaRouter = t.router({
       }
 
       // Process the GPC signal
-      const result = await processGPCSignal(ctx.supabaseAdmin, ctx.user.id, signal)
+      const result = await processGPCSignal(ctx.supabase, ctx.user.id, signal)
 
       if (!result.success) {
         throw new TRPCError({
@@ -2495,7 +2505,7 @@ export const ccpaRouter = t.router({
       // Send opt-out confirmation if categories were processed
       if (result.processed && result.categories.length > 0) {
         // Get user profile for notification
-        const { data: profile } = await ctx.supabaseAdmin
+        const { data: profile } = await ctx.supabase
           .schema('core')
           .from('profile')
           .select('email, first_name, last_name')
@@ -2504,7 +2514,7 @@ export const ccpaRouter = t.router({
 
         if (profile?.email) {
           await notifyOptOutConfirmed(
-            ctx.supabaseAdmin,
+            ctx.supabase,
             {
               requestId: '', // GPC-based, no specific request
               requestType: 'opt_out',
@@ -2540,7 +2550,7 @@ export const ccpaRouter = t.router({
       throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
 
-    const status = await getGPCStatus(ctx.supabaseAdmin, ctx.user.id)
+    const status = await getGPCStatus(ctx.supabase, ctx.user.id)
 
     return {
       hasGPCOptOut: status.hasGPCOptOut,
@@ -2591,7 +2601,7 @@ export const ccpaRouter = t.router({
       const userId = ctx.user?.id ?? null
 
       const status = await getDoNotSellPageStatus(
-        ctx.supabaseAdmin,
+        ctx.supabase,
         userId,
         headers
       )

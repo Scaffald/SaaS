@@ -88,18 +88,35 @@ export function isVerificationExpired(expiresAt: Date | string): boolean {
 
 /**
  * Initiate email verification for a CCPA request
+ * Note: Uses service client for privileged operations (storing OTP, history)
+ * The user client is not needed here since ownership is verified in the router
  */
 export async function initiateEmailVerification(
-  supabase: DbClient,
+  _supabase: DbClient,
   requestId: string,
   userEmail: string
 ): Promise<{ success: boolean; expiresAt: Date; error?: string }> {
+  // Use service client for privileged operations
+  const serviceClient = createServiceSupabaseClient()
+
   // Generate OTP
   const otp = generateOTP()
   const expiresAt = calculateOTPExpiry(EMAIL_OTP_EXPIRY_MINUTES)
 
-  // Store verification data in request metadata
-  const { error: updateError } = await supabase
+  // Fetch request to get user_id for notification
+  const { data: request, error: fetchError } = await serviceClient
+    .schema('core')
+    .from('ccpa_requests')
+    .select('user_id')
+    .eq('id', requestId)
+    .single()
+
+  if (fetchError || !request) {
+    return { success: false, expiresAt, error: 'Request not found' }
+  }
+
+  // Store verification data in request metadata (requires service client due to RLS)
+  const { error: updateError } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .update({
@@ -122,9 +139,9 @@ export async function initiateEmailVerification(
   // Send verification email via notification system
   // In production, this would use a dedicated email service
   await insertNotification(
-    supabase,
+    serviceClient,
     {
-      user_id: '', // Will be set by the caller
+      user_id: request.user_id,
       title: 'CCPA Verification Code',
       message: `Your verification code is: ${otp}. This code expires in ${EMAIL_OTP_EXPIRY_MINUTES} minutes.`,
       type: 'ccpa_verification',
@@ -138,8 +155,8 @@ export async function initiateEmailVerification(
     `ccpa_verification_${requestId}`
   )
 
-  // Record in history
-  await supabase
+  // Record in history (requires service client per RLS policy)
+  await serviceClient
     .schema('core')
     .from('ccpa_request_history')
     .insert({
@@ -154,14 +171,18 @@ export async function initiateEmailVerification(
 
 /**
  * Verify an email OTP code
+ * Note: Uses service client for privileged operations
  */
 export async function verifyEmailOTP(
-  supabase: DbClient,
+  _supabase: DbClient,
   requestId: string,
   providedCode: string
 ): Promise<{ success: boolean; error?: string }> {
+  // Use service client for privileged operations
+  const serviceClient = createServiceSupabaseClient()
+
   // Get the request with verification data
-  const { data: request, error: fetchError } = await supabase
+  const { data: request, error: fetchError } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .select('id, metadata, status')
@@ -196,7 +217,7 @@ export async function verifyEmailOTP(
   // Verify the code
   if (verification.code !== providedCode) {
     // Increment attempt count
-    await supabase
+    await serviceClient
       .schema('core')
       .from('ccpa_requests')
       .update({
@@ -218,7 +239,7 @@ export async function verifyEmailOTP(
 
   // Verification successful
   const now = new Date().toISOString()
-  await supabase
+  await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .update({
@@ -235,7 +256,7 @@ export async function verifyEmailOTP(
     .eq('id', requestId)
 
   // Record in history
-  await supabase
+  await serviceClient
     .schema('core')
     .from('ccpa_request_history')
     .insert({
@@ -251,17 +272,21 @@ export async function verifyEmailOTP(
 /**
  * Initiate enhanced verification (for deletion requests)
  * This requires additional steps like re-authentication or ID verification
+ * Note: Uses service client for privileged operations
  */
 export async function initiateEnhancedVerification(
-  supabase: DbClient,
+  _supabase: DbClient,
   requestId: string,
   userId: string
 ): Promise<{ success: boolean; token: string; expiresAt: Date; error?: string }> {
+  // Use service client for privileged operations
+  const serviceClient = createServiceSupabaseClient()
+
   const token = generateVerificationToken()
   const expiresAt = calculateOTPExpiry(ENHANCED_EXPIRY_MINUTES)
 
   // Store enhanced verification data
-  const { data: request, error: fetchError } = await supabase
+  const { data: request, error: fetchError } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .select('metadata')
@@ -274,7 +299,7 @@ export async function initiateEnhancedVerification(
 
   const metadata = (request.metadata as Record<string, unknown>) ?? {}
 
-  const { error: updateError } = await supabase
+  const { error: updateError } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .update({
@@ -296,7 +321,7 @@ export async function initiateEnhancedVerification(
   }
 
   // Record in history
-  await supabase
+  await serviceClient
     .schema('core')
     .from('ccpa_request_history')
     .insert({
@@ -311,13 +336,17 @@ export async function initiateEnhancedVerification(
 
 /**
  * Complete enhanced verification with the token
+ * Note: Uses service client for privileged operations
  */
 export async function completeEnhancedVerification(
-  supabase: DbClient,
+  _supabase: DbClient,
   requestId: string,
   providedToken: string
 ): Promise<{ success: boolean; error?: string }> {
-  const { data: request, error: fetchError } = await supabase
+  // Use service client for privileged operations
+  const serviceClient = createServiceSupabaseClient()
+
+  const { data: request, error: fetchError } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .select('id, metadata, status')
@@ -349,7 +378,7 @@ export async function completeEnhancedVerification(
 
   // Mark as verified
   const now = new Date().toISOString()
-  await supabase
+  await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .update({
@@ -366,7 +395,7 @@ export async function completeEnhancedVerification(
     .eq('id', requestId)
 
   // Record in history
-  await supabase
+  await serviceClient
     .schema('core')
     .from('ccpa_request_history')
     .insert({
@@ -381,14 +410,18 @@ export async function completeEnhancedVerification(
 
 /**
  * Request manual verification (admin review)
+ * Note: Uses service client for privileged operations
  */
 export async function requestManualVerification(
-  supabase: DbClient,
+  _supabase: DbClient,
   requestId: string,
   reason: string,
   adminUserId?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const { data: request, error: fetchError } = await supabase
+  // Use service client for privileged operations
+  const serviceClient = createServiceSupabaseClient()
+
+  const { data: request, error: fetchError } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .select('id, metadata, status, user_id')
@@ -401,7 +434,7 @@ export async function requestManualVerification(
 
   const metadata = (request.metadata as Record<string, unknown>) ?? {}
 
-  const { error: updateError } = await supabase
+  const { error: updateError } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .update({
@@ -424,7 +457,7 @@ export async function requestManualVerification(
   // Notify admin if configured
   if (adminUserId) {
     await insertNotification(
-      supabase,
+      serviceClient,
       {
         user_id: adminUserId,
         title: 'Manual CCPA Verification Required',
@@ -443,7 +476,7 @@ export async function requestManualVerification(
   }
 
   // Record in history
-  await supabase
+  await serviceClient
     .schema('core')
     .from('ccpa_request_history')
     .insert({
@@ -549,9 +582,10 @@ export async function completeManualVerification(
 
 /**
  * Get verification status for a request
+ * Note: Uses service client to access verification metadata
  */
 export async function getVerificationStatus(
-  supabase: DbClient,
+  _supabase: DbClient,
   requestId: string
 ): Promise<{
   method: VerificationLevel
@@ -560,7 +594,10 @@ export async function getVerificationStatus(
   attemptsRemaining?: number
   expiresAt?: Date
 } | null> {
-  const { data: request, error } = await supabase
+  // Use service client for privileged access to verification data
+  const serviceClient = createServiceSupabaseClient()
+
+  const { data: request, error } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .select('verification_method, verification_completed_at, metadata')
@@ -630,14 +667,18 @@ export async function getVerificationStatus(
 
 /**
  * Resend verification code (for email verification)
+ * Note: Uses service client for privileged operations
  */
 export async function resendVerificationCode(
-  supabase: DbClient,
+  _supabase: DbClient,
   requestId: string,
   userEmail: string
 ): Promise<{ success: boolean; expiresAt?: Date; error?: string }> {
+  // Use service client for privileged operations
+  const serviceClient = createServiceSupabaseClient()
+
   // Check if we can resend (not too many resends)
-  const { data: request, error: fetchError } = await supabase
+  const { data: request, error: fetchError } = await serviceClient
     .schema('core')
     .from('ccpa_requests')
     .select('metadata, verification_method, verification_completed_at')
@@ -656,6 +697,6 @@ export async function resendVerificationCode(
     return { success: false, error: 'Can only resend for email verification' }
   }
 
-  // Generate new OTP and initiate
-  return await initiateEmailVerification(supabase, requestId, userEmail)
+  // Generate new OTP and initiate (initiateEmailVerification uses service client internally)
+  return await initiateEmailVerification(serviceClient as unknown as DbClient, requestId, userEmail)
 }

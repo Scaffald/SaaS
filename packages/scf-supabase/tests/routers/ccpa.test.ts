@@ -112,10 +112,10 @@ Deno.test({
       { type: 'mutation', authToken: token }
     )
 
-    // Should get a CONFLICT error
+    // Should get a CONFLICT error (tRPC CONFLICT maps to code -32009)
     const error = response[0]?.error
     assertExists(error, 'Should return an error for duplicate request')
-    assertEquals(error.code, -32000, 'Should be a tRPC error')
+    assertEquals(error.code, -32009, 'Should be a CONFLICT error')
   },
 })
 
