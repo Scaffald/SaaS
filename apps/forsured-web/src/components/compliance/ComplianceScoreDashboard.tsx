@@ -3,8 +3,9 @@
  * Compliance Score Dashboard Component
  */
 
-import React from 'react';
-import { EvaluationResult, ComplianceStatus } from '../../lib/compliance/evaluator';
+import { YStack, XStack, Text, H2, Card } from '@unicornlove/ui';
+import type { EvaluationResult } from '../../lib/compliance/evaluator';
+import { ComplianceStatus } from '../../lib/compliance/evaluator/types';
 
 interface ComplianceScoreDashboardProps {
   evaluation: EvaluationResult;
@@ -13,19 +14,35 @@ interface ComplianceScoreDashboardProps {
 /**
  * Display compliance score with visual indicators
  */
-export const ComplianceScoreDashboard: React.FC<ComplianceScoreDashboardProps> = ({
+export const ComplianceScoreDashboard = ({
   evaluation
-}) => {
-  const getStatusColor = (status: ComplianceStatus): string => {
+}: ComplianceScoreDashboardProps) => {
+  const getStatusColorProps = (status: ComplianceStatus) => {
     switch (status) {
       case ComplianceStatus.COMPLIANT:
-        return 'text-green-600 bg-green-50 border-green-200';
+        return {
+          color: '$green10',
+          backgroundColor: '$green2',
+          borderColor: '$green6',
+        };
       case ComplianceStatus.WARNING:
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+        return {
+          color: '$yellow10',
+          backgroundColor: '$yellow2',
+          borderColor: '$yellow6',
+        };
       case ComplianceStatus.CRITICAL:
-        return 'text-red-600 bg-red-50 border-red-200';
+        return {
+          color: '$red10',
+          backgroundColor: '$red2',
+          borderColor: '$red6',
+        };
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return {
+          color: '$gray10',
+          backgroundColor: '$gray2',
+          borderColor: '$gray6',
+        };
     }
   };
 
@@ -42,79 +59,96 @@ export const ComplianceScoreDashboard: React.FC<ComplianceScoreDashboardProps> =
     }
   };
 
-  const getScoreColor = (score: number): string => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 70) return 'text-yellow-600';
-    return 'text-red-600';
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return '$green10';
+    if (score >= 70) return '$yellow10';
+    return '$red10';
   };
 
+  const statusColorProps = getStatusColorProps(evaluation.status);
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Compliance Score</h2>
-        <div
-          className={`px-4 py-2 rounded-full border-2 font-semibold ${getStatusColor(
-            evaluation.status
-          )}`}
+    <Card padding="$6" elevation={2} borderRadius="$4">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <H2 fontSize="$8" fontWeight="bold" color="$color12">
+          Compliance Score
+        </H2>
+        <XStack
+          paddingHorizontal="$4"
+          paddingVertical="$2"
+          borderRadius={9999}
+          borderWidth={2}
+          fontWeight="600"
+          {...statusColorProps}
         >
-          {getStatusLabel(evaluation.status)}
-        </div>
-      </div>
+          <Text {...statusColorProps} fontWeight="600">
+            {getStatusLabel(evaluation.status)}
+          </Text>
+        </XStack>
+      </XStack>
 
       {/* Score Display */}
-      <div className="text-center mb-8">
-        <div className={`text-6xl font-bold ${getScoreColor(evaluation.score)}`}>
+      <YStack alignItems="center" marginBottom="$8">
+        <Text fontSize="$10" fontWeight="bold" color={getScoreColor(evaluation.score)}>
           {evaluation.score}
-        </div>
-        <div className="text-gray-500 text-sm mt-2">out of 100</div>
-      </div>
+        </Text>
+        <Text color="$color10" fontSize="$2" marginTop="$2">
+          out of 100
+        </Text>
+      </YStack>
 
       {/* Score Breakdown */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center border-t pt-4">
-          <span className="text-gray-600">Total Gaps Identified:</span>
-          <span className="font-semibold text-gray-900">{evaluation.gaps.length}</span>
-        </div>
+      <YStack gap="$4">
+        <XStack justifyContent="space-between" alignItems="center" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+          <Text color="$color10">Total Gaps Identified:</Text>
+          <Text fontWeight="600" color="$color12">
+            {evaluation.gaps.length}
+          </Text>
+        </XStack>
 
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Critical Issues:</span>
-          <span className="font-semibold text-red-600">
+        <XStack justifyContent="space-between" alignItems="center">
+          <Text color="$color10">Critical Issues:</Text>
+          <Text fontWeight="600" color="$red10">
             {evaluation.gaps.filter((g) => g.severity === 'critical').length}
-          </span>
-        </div>
+          </Text>
+        </XStack>
 
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Warnings:</span>
-          <span className="font-semibold text-yellow-600">
+        <XStack justifyContent="space-between" alignItems="center">
+          <Text color="$color10">Warnings:</Text>
+          <Text fontWeight="600" color="$yellow10">
             {evaluation.gaps.filter((g) => g.severity === 'warning').length}
-          </span>
-        </div>
+          </Text>
+        </XStack>
 
-        <div className="flex justify-between items-center border-t pt-4">
-          <span className="text-gray-600">Coverage Types Evaluated:</span>
-          <span className="font-semibold text-gray-900">
+        <XStack justifyContent="space-between" alignItems="center" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+          <Text color="$color10">Coverage Types Evaluated:</Text>
+          <Text fontWeight="600" color="$color12">
             {evaluation.metadata.coverage_types_evaluated.length}
-          </span>
-        </div>
+          </Text>
+        </XStack>
 
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Requirements Checked:</span>
-          <span className="font-semibold text-gray-900">
+        <XStack justifyContent="space-between" alignItems="center">
+          <Text color="$color10">Requirements Checked:</Text>
+          <Text fontWeight="600" color="$color12">
             {evaluation.metadata.total_requirements_checked}
-          </span>
-        </div>
-      </div>
+          </Text>
+        </XStack>
+      </YStack>
 
       {/* Evaluation Metadata */}
-      <div className="mt-6 pt-6 border-t text-xs text-gray-500">
-        <div className="flex justify-between">
-          <span>Evaluated: {new Date(evaluation.evaluated_at).toLocaleString()}</span>
-          <span>Duration: {evaluation.metadata.evaluation_duration_ms}ms</span>
-        </div>
-        <div className="mt-1">
+      <YStack marginTop="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
+        <XStack justifyContent="space-between">
+          <Text fontSize="$1" color="$color10">
+            Evaluated: {new Date(evaluation.evaluated_at).toLocaleString()}
+          </Text>
+          <Text fontSize="$1" color="$color10">
+            Duration: {evaluation.metadata.evaluation_duration_ms}ms
+          </Text>
+        </XStack>
+        <Text fontSize="$1" color="$color10" marginTop="$1">
           Engine Version: {evaluation.metadata.rule_engine_version}
-        </div>
-      </div>
-    </div>
+        </Text>
+      </YStack>
+    </Card>
   );
 };
