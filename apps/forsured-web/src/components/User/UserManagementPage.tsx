@@ -76,11 +76,11 @@ export default function UserManagementPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'active':
-        return <CheckCircle className="text-success-600" size={16} />;
+        return <CheckCircle color="var(--green10)" size={16} />;
       case 'inactive':
-        return <XCircle className="text-error-600" size={16} />;
+        return <XCircle color="var(--red10)" size={16} />;
       default:
-        return <Clock className="text-warning-600" size={16} />;
+        return <Clock color="var(--yellow10)" size={16} />;
     }
   };
 
@@ -511,6 +511,6 @@ export default function UserManagementPage() {
           // Refresh would happen automatically via hooks
         }}
       />
-    </div>
+    </YStack>
   );
 }
