@@ -1,11 +1,5 @@
-import React from 'react';
-import {
-  Users,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  XCircle,
-} from 'lucide-react';
+import { Users, CheckCircle, Clock, AlertTriangle, XCircle } from 'lucide-react';
+import { YStack, XStack, Text } from '@unicornlove/ui';
 import StatusBadge from '../Common/StatusBadge';
 import ComplianceScore from '../Common/ComplianceScore';
 
@@ -33,109 +27,146 @@ export default function ProjectParticipantsList({
     switch (status) {
       case 'active':
       case 'completed':
-        return <CheckCircle className="text-success-600" size={16} />;
+        return <CheckCircle color="$green10" size={16} />;
       case 'invited':
       case 'accepted':
-        return <Clock className="text-primary-600" size={16} />;
+        return <Clock color="$blue10" size={16} />;
       case 'removed':
-        return <XCircle className="text-error-600" size={16} />;
+        return <XCircle color="$red10" size={16} />;
       default:
-        return <AlertTriangle className="text-warning-600" size={16} />;
+        return <AlertTriangle color="$yellow10" size={16} />;
     }
   };
 
   const getComplianceColor = (status: string) => {
     switch (status) {
       case 'compliant':
-        return 'text-success-600';
+        return '$green10';
       case 'warning':
-        return 'text-warning-600';
+        return '$yellow10';
       case 'critical':
-        return 'text-error-600';
+        return '$red10';
       default:
-        return 'text-neutral-600';
+        return '$color10';
     }
   };
 
   return (
-    <div className="bg-surface rounded-lg shadow-sm border border-border">
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center space-x-2">
-          <Users className="text-text-secondary" size={20} />
-          <h3 className="text-lg font-semibold text-text-primary">
+    <YStack
+      backgroundColor="$background"
+      borderRadius="$4"
+      elevation={1}
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
+      <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+        <XStack alignItems="center" gap="$2">
+          <Users color="$color11" size={20} />
+          <Text fontSize="$6" fontWeight="600" color="$color12">
             Project Participants
-          </h3>
-          <span className="text-sm text-text-secondary">
+          </Text>
+          <Text fontSize="$3" color="$color11">
             ({participants.length})
-          </span>
-        </div>
-      </div>
+          </Text>
+        </XStack>
+      </YStack>
 
-      <div className="divide-y divide-border">
-        {participants.map((participant) => (
-          <div
+      <YStack>
+        {participants.map((participant, index) => (
+          <YStack
             key={participant.id}
-            className={`p-6 hover:bg-surface-hover transition-colors ${
-              onParticipantClick ? 'cursor-pointer' : ''
-            }`}
-            onClick={() => onParticipantClick?.(participant)}
+            padding="$6"
+            borderTopWidth={index > 0 ? 1 : 0}
+            borderColor="$borderColor"
+            hoverStyle={{ backgroundColor: '$backgroundHover' }}
+            cursor={onParticipantClick ? 'pointer' : 'default'}
+            onPress={() => onParticipantClick?.(participant)}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4 flex-1">
-                <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-semibold text-primary-600">
+            <XStack alignItems="center" justifyContent="space-between">
+              <XStack alignItems="center" gap="$4" flex={1}>
+                <XStack
+                  width={48}
+                  height={48}
+                  backgroundColor="$blue3"
+                  borderRadius={9999}
+                  alignItems="center"
+                  justifyContent="center"
+                  flexShrink={0}
+                >
+                  <Text fontSize="$3" fontWeight="600" color="$blue10">
                     {participant.organizationName
                       .split(' ')
                       .map((n) => n[0])
                       .join('')
                       .substring(0, 2)}
-                  </span>
-                </div>
+                  </Text>
+                </XStack>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <h4 className="text-sm font-semibold text-text-primary truncate">
+                <YStack flex={1} minWidth={0}>
+                  <XStack alignItems="center" gap="$2" marginBottom="$1">
+                    <Text
+                      fontSize="$3"
+                      fontWeight="600"
+                      color="$color12"
+                      numberOfLines={1}
+                    >
                       {participant.organizationName}
-                    </h4>
+                    </Text>
                     {getStatusIcon(participant.status)}
-                  </div>
-                  <div className="flex items-center space-x-3 text-xs text-text-secondary">
-                    <span>{participant.name}</span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded bg-bg-tertiary text-text-secondary">
-                      {participant.role}
-                    </span>
+                  </XStack>
+                  <XStack alignItems="center" gap="$3">
+                    <Text fontSize="$1" color="$color11">
+                      {participant.name}
+                    </Text>
+                    <XStack
+                      alignItems="center"
+                      paddingHorizontal="$2"
+                      paddingVertical="$0.5"
+                      borderRadius="$2"
+                      backgroundColor="$color3"
+                    >
+                      <Text fontSize="$1" color="$color11">
+                        {participant.role}
+                      </Text>
+                    </XStack>
                     <StatusBadge status={participant.status} size="sm" />
-                  </div>
-                </div>
-              </div>
+                  </XStack>
+                </YStack>
+              </XStack>
 
-              <div className="flex items-center space-x-6 ml-4">
+              <XStack alignItems="center" gap="$6" marginLeft="$4">
                 {participant.complianceScore !== undefined && (
-                  <div className="text-center">
-                    <p className="text-xs text-text-secondary mb-1">
+                  <YStack alignItems="center">
+                    <Text fontSize="$1" color="$color11" marginBottom="$1">
                       Compliance
-                    </p>
+                    </Text>
                     <ComplianceScore
                       score={participant.complianceScore}
                       size="sm"
                       showTrend={false}
                     />
-                  </div>
+                  </YStack>
                 )}
 
-                <div className="text-center">
-                  <p className="text-xs text-text-secondary mb-1">Status</p>
-                  <span
-                    className={`text-sm font-medium ${getComplianceColor(participant.complianceStatus)}`}
+                <YStack alignItems="center">
+                  <Text fontSize="$1" color="$color11" marginBottom="$1">
+                    Status
+                  </Text>
+                  <Text
+                    fontSize="$3"
+                    fontWeight="500"
+                    color={getComplianceColor(participant.complianceStatus)}
                   >
                     {participant.complianceStatus}
-                  </span>
-                </div>
+                  </Text>
+                </YStack>
 
                 {participant.joinedDate && (
-                  <div className="text-center">
-                    <p className="text-xs text-text-secondary mb-1">Joined</p>
-                    <span className="text-sm text-text-primary">
+                  <YStack alignItems="center">
+                    <Text fontSize="$1" color="$color11" marginBottom="$1">
+                      Joined
+                    </Text>
+                    <Text fontSize="$3" color="$color12">
                       {new Date(participant.joinedDate).toLocaleDateString(
                         'en-US',
                         {
@@ -143,26 +174,26 @@ export default function ProjectParticipantsList({
                           day: 'numeric',
                         }
                       )}
-                    </span>
-                  </div>
+                    </Text>
+                  </YStack>
                 )}
-              </div>
-            </div>
-          </div>
+              </XStack>
+            </XStack>
+          </YStack>
         ))}
-      </div>
+      </YStack>
 
       {participants.length === 0 && (
-        <div className="p-12 text-center">
-          <Users className="mx-auto text-text-tertiary mb-4" size={48} />
-          <p className="text-text-primary font-medium mb-2">
+        <YStack padding="$12" alignItems="center">
+          <Users color="$color10" size={48} marginBottom="$4" />
+          <Text color="$color12" fontWeight="500" marginBottom="$2">
             No participants yet
-          </p>
-          <p className="text-text-secondary text-sm">
+          </Text>
+          <Text color="$color11" fontSize="$3">
             Invite contractors to join this project
-          </p>
-        </div>
+          </Text>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
