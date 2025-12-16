@@ -1,6 +1,7 @@
 // src/components/onboarding/steps/contractor/COIUploadStep.tsx
 // REQ-126: Contractor Onboarding - COI Upload Step (Optional)
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { YStack, XStack, Text } from 'tamagui';
 import { Button } from '@unicornlove/ui';
 import { Heading2, BodyText, Label } from '@unicornlove/ui';
 import { Upload, FileText } from '@unicornlove/ui';
@@ -37,81 +38,117 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
   };
 
   return (
-    <div className="coi-upload-step">
-      <Heading2 className="mb-2">Upload Certificates of Insurance (Optional)</Heading2>
-      <BodyText className="mb-6 text-gray-600">
+    <YStack>
+      <Heading2 marginBottom="$2">Upload Certificates of Insurance (Optional)</Heading2>
+      <BodyText marginBottom="$6" color="$color10">
         You can skip this step and upload certificates later. PDF files only.
       </BodyText>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <Label className="mb-2 block">General Liability COI</Label>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                <Upload className="w-4 h-4" />
-                <span>{glCoi ? glCoi.name : 'Choose PDF file'}</span>
+      <YStack tag="form" onSubmit={handleSubmit} gap="$6">
+        <YStack gap="$4">
+          <YStack>
+            <Label marginBottom="$2" display="block">General Liability COI</Label>
+            <XStack alignItems="center" gap="$4">
+              <XStack
+                tag="label"
+                flexDirection="row"
+                alignItems="center"
+                gap="$2"
+                paddingHorizontal="$4"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderColor="$gray8"
+                borderRadius="$4"
+                cursor="pointer"
+                hoverStyle={{ backgroundColor: '$gray3' }}
+              >
+                <Upload size={16} />
+                <Text>{glCoi ? glCoi.name : 'Choose PDF file'}</Text>
                 <input
                   type="file"
                   accept=".pdf"
-                  className="hidden"
+                  style={{ display: 'none' }}
                   onChange={(e) => handleFileChange(e, setGlCoi)}
                 />
-              </label>
+              </XStack>
               {glCoi && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <FileText className="w-4 h-4" />
-                  <span>{glCoi.name}</span>
-                </div>
+                <XStack alignItems="center" gap="$2">
+                  <FileText size={16} color="$color10" />
+                  <Text fontSize="$3" color="$color10">{glCoi.name}</Text>
+                </XStack>
               )}
-            </div>
-          </div>
+            </XStack>
+          </YStack>
 
-          <div>
-            <Label className="mb-2 block">Workers Compensation COI</Label>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                <Upload className="w-4 h-4" />
-                <span>{wcCoi ? wcCoi.name : 'Choose PDF file'}</span>
+          <YStack>
+            <Label marginBottom="$2" display="block">Workers Compensation COI</Label>
+            <XStack alignItems="center" gap="$4">
+              <XStack
+                tag="label"
+                flexDirection="row"
+                alignItems="center"
+                gap="$2"
+                paddingHorizontal="$4"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderColor="$gray8"
+                borderRadius="$4"
+                cursor="pointer"
+                hoverStyle={{ backgroundColor: '$gray3' }}
+              >
+                <Upload size={16} />
+                <Text>{wcCoi ? wcCoi.name : 'Choose PDF file'}</Text>
                 <input
                   type="file"
                   accept=".pdf"
-                  className="hidden"
+                  style={{ display: 'none' }}
                   onChange={(e) => handleFileChange(e, setWcCoi)}
                 />
-              </label>
+              </XStack>
               {wcCoi && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <FileText className="w-4 h-4" />
-                  <span>{wcCoi.name}</span>
-                </div>
+                <XStack alignItems="center" gap="$2">
+                  <FileText size={16} color="$color10" />
+                  <Text fontSize="$3" color="$color10">{wcCoi.name}</Text>
+                </XStack>
               )}
-            </div>
-          </div>
+            </XStack>
+          </YStack>
 
-          <div>
-            <Label className="mb-2 block">Auto Liability COI</Label>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                <Upload className="w-4 h-4" />
-                <span>{autoCoi ? autoCoi.name : 'Choose PDF file'}</span>
+          <YStack>
+            <Label marginBottom="$2" display="block">Auto Liability COI</Label>
+            <XStack alignItems="center" gap="$4">
+              <XStack
+                tag="label"
+                flexDirection="row"
+                alignItems="center"
+                gap="$2"
+                paddingHorizontal="$4"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderColor="$gray8"
+                borderRadius="$4"
+                cursor="pointer"
+                hoverStyle={{ backgroundColor: '$gray3' }}
+              >
+                <Upload size={16} />
+                <Text>{autoCoi ? autoCoi.name : 'Choose PDF file'}</Text>
                 <input
                   type="file"
                   accept=".pdf"
-                  className="hidden"
+                  style={{ display: 'none' }}
                   onChange={(e) => handleFileChange(e, setAutoCoi)}
                 />
-              </label>
+              </XStack>
               {autoCoi && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <FileText className="w-4 h-4" />
-                  <span>{autoCoi.name}</span>
-                </div>
+                <XStack alignItems="center" gap="$2">
+                  <FileText size={16} color="$color10" />
+                  <Text fontSize="$3" color="$color10">{autoCoi.name}</Text>
+                </XStack>
               )}
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </YStack>
+        </YStack>
 
-        <div className="mt-6">
+        <YStack marginTop="$6">
           <Button
             type="submit"
             variant="primary"
@@ -119,9 +156,9 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
           >
             {isLoading ? 'Saving...' : 'Continue'}
           </Button>
-        </div>
-      </form>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 
