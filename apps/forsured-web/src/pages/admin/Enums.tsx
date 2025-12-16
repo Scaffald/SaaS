@@ -11,6 +11,8 @@ import {
   X,
   RotateCcw,
 } from 'lucide-react';
+import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label } from 'tamagui';
+import { EmptyState } from '@unicornlove/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEnumsAdmin, EnumValue, invalidateAllEnumCaches } from '../../hooks/useEnums';
 import {
@@ -210,31 +212,40 @@ function AdminEnums() {
 
   if (isLoadingTypes) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
-        <span className="ml-2">Loading enum types...</span>
-      </div>
+      <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
+        <XStack alignItems="center" gap="$2">
+          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Text>Loading enum types...</Text>
+        </XStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="admin-enums-page">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Enum Management</h1>
-        <div className="flex items-center space-x-3">
-          <label className="flex items-center text-sm text-gray-600">
+    <YStack>
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <H1 fontSize="$8" fontWeight="700">Enum Management</H1>
+        <XStack alignItems="center" gap="$3">
+          <XStack alignItems="center" gap="$2">
             <input
               type="checkbox"
               checked={showDeleted}
               onChange={(e) => setShowDeleted(e.target.checked)}
-              className="mr-2"
+              style={{ marginRight: 8 }}
             />
-            Show inactive
-          </label>
+            <Label fontSize="$3" color="$color11">Show inactive</Label>
+          </XStack>
           <select
             value={selectedEnumType}
             onChange={(e) => setSelectedEnumType(e.target.value)}
-            className="p-2 border rounded-md"
+            style={{
+              padding: '8px',
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'var(--borderColor)',
+              borderRadius: '12px',
+              fontSize: 14,
+            }}
           >
             {enumTypes.map((type) => (
               <option key={type.type} value={type.type}>
@@ -242,253 +253,332 @@ function AdminEnums() {
               </option>
             ))}
           </select>
-          <button
-            onClick={handleRefresh}
+          <Button
+            onPress={handleRefresh}
             disabled={isLoadingValues}
-            className="flex items-center px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
+            icon={isLoadingValues ? <RefreshCcw size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            borderWidth={1}
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+            opacity={isLoadingValues ? 0.5 : 1}
           >
-            <RefreshCcw size={16} className={`mr-2 ${isLoadingValues ? 'animate-spin' : ''}`} />
             Refresh
-          </button>
-        </div>
-      </div>
+          </Button>
+        </XStack>
+      </XStack>
 
       {valuesError && (
-        <div className="p-4 mb-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-600">Error: {valuesError.message}</p>
-        </div>
+        <XStack
+          padding="$4"
+          marginBottom="$4"
+          backgroundColor="$red4"
+          borderWidth={1}
+          borderColor="$red8"
+          borderRadius="$4"
+        >
+          <Text color="$red11">Error: {valuesError.message}</Text>
+        </XStack>
       )}
 
-      <div className="bg-white p-6 rounded-lg shadow mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">
+      <Card padding="$6" borderRadius="$4" elevation={1} backgroundColor="$background" marginBottom="$6">
+        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+          <H2 fontSize="$7" fontWeight="600">
             {ENUM_TYPE_LABELS[selectedEnumType] || selectedEnumType} Values
-          </h2>
-          <button
-            onClick={openAddModal}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          </H2>
+          <Button
+            onPress={openAddModal}
+            icon={<PlusCircle size={16} />}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            backgroundColor="$blue10"
+            color="white"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: "$blue11" }}
           >
-            <PlusCircle size={16} className="mr-2" />
             Add Value
-          </button>
-        </div>
+          </Button>
+        </XStack>
 
         {isLoadingValues ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="animate-spin h-6 w-6 text-blue-500" />
-            <span className="ml-2">Loading values...</span>
-          </div>
+          <YStack alignItems="center" justifyContent="center" paddingVertical="$8">
+            <XStack alignItems="center" gap="$2">
+              <Loader2 size={24} className="animate-spin" color="$blue10" />
+              <Text>Loading values...</Text>
+            </XStack>
+          </YStack>
         ) : displayedValues.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            No enum values found for this type.
-          </div>
+          <YStack alignItems="center" paddingVertical="$8">
+            <Text color="$color11">No enum values found for this type.</Text>
+          </YStack>
         ) : (
-          <table className="min-w-full bg-white">
+          <table style={{ width: '100%', minWidth: '100%' }}>
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b text-left">Value</th>
-                <th className="py-2 px-4 border-b text-left">Display Name</th>
-                <th className="py-2 px-4 border-b text-left">Description</th>
-                <th className="py-2 px-4 border-b text-left">Order</th>
-                <th className="py-2 px-4 border-b text-left">Status</th>
-                <th className="py-2 px-4 border-b text-left">Actions</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Value</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Display Name</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Description</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Order</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Status</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {displayedValues.map((enumItem) => (
                 <tr
                   key={enumItem.id}
-                  className={!enumItem.is_active ? 'bg-gray-50 opacity-60' : ''}
+                  style={{
+                    backgroundColor: !enumItem.is_active ? 'var(--backgroundHover)' : 'transparent',
+                    opacity: !enumItem.is_active ? 0.6 : 1,
+                  }}
                 >
-                  <td className="py-2 px-4 border-b font-mono text-sm">
-                    {enumItem.value}
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text fontFamily="$mono" fontSize="$3">
+                      {enumItem.value}
+                    </Text>
                   </td>
-                  <td className="py-2 px-4 border-b">{enumItem.display_name}</td>
-                  <td className="py-2 px-4 border-b text-sm text-gray-600">
-                    {enumItem.description || '—'}
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text>{enumItem.display_name}</Text>
                   </td>
-                  <td className="py-2 px-4 border-b">{enumItem.sort_order}</td>
-                  <td className="py-2 px-4 border-b">
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        enumItem.is_active
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text fontSize="$3" color="$color11">
+                      {enumItem.description || '—'}
+                    </Text>
+                  </td>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text>{enumItem.sort_order}</Text>
+                  </td>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <XStack
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      borderRadius="$2"
+                      backgroundColor={enumItem.is_active ? '$green4' : '$backgroundHover'}
                     >
-                      {enumItem.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                      <Text fontSize="$1" color={enumItem.is_active ? '$green11' : '$color11'}>
+                        {enumItem.is_active ? 'Active' : 'Inactive'}
+                      </Text>
+                    </XStack>
                   </td>
-                  <td className="py-2 px-4 border-b">
-                    <div className="flex items-center space-x-1">
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <XStack alignItems="center" gap="$1">
                       {enumItem.is_active ? (
                         <>
-                          <button
-                            onClick={() => openEditModal(enumItem)}
+                          <Button
+                            onPress={() => openEditModal(enumItem)}
                             disabled={actionInProgress === enumItem.id}
-                            className="p-1 text-blue-500 hover:text-blue-700 disabled:opacity-50"
-                            title="Edit"
+                            padding="$1"
+                            backgroundColor="transparent"
+                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
                           >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(enumItem.id)}
+                            <Edit size={16} color="$blue10" />
+                          </Button>
+                          <Button
+                            onPress={() => handleDelete(enumItem.id)}
                             disabled={actionInProgress === enumItem.id}
-                            className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50"
-                            title="Deactivate"
+                            padding="$1"
+                            backgroundColor="transparent"
+                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
                           >
                             {actionInProgress === enumItem.id ? (
-                              <Loader2 size={16} className="animate-spin" />
+                              <Loader2 size={16} className="animate-spin" color="$red10" />
                             ) : (
-                              <Trash2 size={16} />
+                              <Trash2 size={16} color="$red10" />
                             )}
-                          </button>
-                          <button
-                            onClick={() => handleReorder(enumItem.id, 'up')}
+                          </Button>
+                          <Button
+                            onPress={() => handleReorder(enumItem.id, 'up')}
                             disabled={actionInProgress === enumItem.id}
-                            className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-50"
-                            title="Move up"
+                            padding="$1"
+                            backgroundColor="transparent"
+                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
                           >
-                            <ArrowUp size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleReorder(enumItem.id, 'down')}
+                            <ArrowUp size={16} color="$color11" />
+                          </Button>
+                          <Button
+                            onPress={() => handleReorder(enumItem.id, 'down')}
                             disabled={actionInProgress === enumItem.id}
-                            className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-50"
-                            title="Move down"
+                            padding="$1"
+                            backgroundColor="transparent"
+                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
                           >
-                            <ArrowDown size={16} />
-                          </button>
+                            <ArrowDown size={16} color="$color11" />
+                          </Button>
                         </>
                       ) : (
-                        <button
-                          onClick={() => handleRestore(enumItem.id)}
+                        <Button
+                          onPress={() => handleRestore(enumItem.id)}
                           disabled={actionInProgress === enumItem.id}
-                          className="p-1 text-green-500 hover:text-green-700 disabled:opacity-50"
-                          title="Restore"
+                          padding="$1"
+                          backgroundColor="transparent"
+                          hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                          opacity={actionInProgress === enumItem.id ? 0.5 : 1}
                         >
                           {actionInProgress === enumItem.id ? (
-                            <Loader2 size={16} className="animate-spin" />
+                            <Loader2 size={16} className="animate-spin" color="$green10" />
                           ) : (
-                            <RotateCcw size={16} />
+                            <RotateCcw size={16} color="$green10" />
                           )}
-                        </button>
+                        </Button>
                       )}
-                    </div>
+                    </XStack>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
-      </div>
+      </Card>
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-semibold">
+        <YStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={50}
+        >
+          <Card
+            backgroundColor="$background"
+            borderRadius="$4"
+            elevation={4}
+            width="100%"
+            maxWidth={448}
+            marginHorizontal="$4"
+          >
+            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderBottomWidth={1} borderColor="$borderColor">
+              <H3 fontSize="$6" fontWeight="600">
                 {modalMode === 'add' ? 'Add Enum Value' : 'Edit Enum Value'}
-              </h3>
-              <button
-                onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700"
+              </H3>
+              <Button
+                onPress={closeModal}
+                backgroundColor="transparent"
+                padding="$1"
+                hoverStyle={{ backgroundColor: "$backgroundHover" }}
               >
-                <X size={20} />
-              </button>
-            </div>
+                <X size={20} color="$color11" />
+              </Button>
+            </XStack>
 
-            <form onSubmit={handleSubmit} className="p-4 space-y-4">
-              {formError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
-                  {formError}
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Value (code)
-                </label>
-                <input
-                  type="text"
-                  value={formData.value}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, value: e.target.value }))
-                  }
-                  disabled={modalMode === 'edit'}
-                  className="w-full p-2 border rounded-md disabled:bg-gray-100"
-                  placeholder="e.g., pending, approved"
-                  required
-                />
-                {modalMode === 'edit' && (
-                  <p className="mt-1 text-xs text-gray-500">
-                    Value cannot be changed after creation
-                  </p>
+            <form onSubmit={handleSubmit}>
+              <YStack padding="$4" gap="$4">
+                {formError && (
+                  <XStack
+                    padding="$3"
+                    backgroundColor="$red4"
+                    borderWidth={1}
+                    borderColor="$red8"
+                    borderRadius="$2"
+                  >
+                    <Text fontSize="$3" color="$red11">{formError}</Text>
+                  </XStack>
                 )}
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Display Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.display_name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      display_name: e.target.value,
-                    }))
-                  }
-                  className="w-full p-2 border rounded-md"
-                  placeholder="e.g., Pending Approval"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description (optional)
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Brief description of this value"
-                  rows={2}
-                />
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 border rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center"
-                >
-                  {isSubmitting && (
-                    <Loader2 size={16} className="animate-spin mr-2" />
+                <YStack gap="$1">
+                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                    Value (code)
+                  </Label>
+                  <Input
+                    value={formData.value}
+                    onChangeText={(value) => setFormData((prev) => ({ ...prev, value }))}
+                    disabled={modalMode === 'edit'}
+                    width="100%"
+                    padding="$2"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    backgroundColor={modalMode === 'edit' ? '$backgroundHover' : '$background'}
+                    placeholder="e.g., pending, approved"
+                    required
+                  />
+                  {modalMode === 'edit' && (
+                    <Text fontSize="$1" color="$color11" marginTop="$1">
+                      Value cannot be changed after creation
+                    </Text>
                   )}
-                  {modalMode === 'add' ? 'Add Value' : 'Save Changes'}
-                </button>
-              </div>
+                </YStack>
+
+                <YStack gap="$1">
+                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                    Display Name
+                  </Label>
+                  <Input
+                    value={formData.display_name}
+                    onChangeText={(value) => setFormData((prev) => ({ ...prev, display_name: value }))}
+                    width="100%"
+                    padding="$2"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    placeholder="e.g., Pending Approval"
+                    required
+                  />
+                </YStack>
+
+                <YStack gap="$1">
+                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                    Description (optional)
+                  </Label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      borderWidth: 1,
+                      borderStyle: 'solid',
+                      borderColor: 'var(--borderColor)',
+                      borderRadius: '12px',
+                      fontSize: 14,
+                      fontFamily: 'inherit',
+                    }}
+                    placeholder="Brief description of this value"
+                    rows={2}
+                  />
+                </YStack>
+
+                <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+                  <Button
+                    type="button"
+                    onPress={closeModal}
+                    paddingHorizontal="$4"
+                    paddingVertical="$2"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    backgroundColor="transparent"
+                    hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    paddingHorizontal="$4"
+                    paddingVertical="$2"
+                    backgroundColor="$blue10"
+                    color="white"
+                    borderRadius="$4"
+                    hoverStyle={{ backgroundColor: "$blue11" }}
+                    opacity={isSubmitting ? 0.5 : 1}
+                    icon={isSubmitting ? <Loader2 size={16} className="animate-spin" /> : undefined}
+                  >
+                    {modalMode === 'add' ? 'Add Value' : 'Save Changes'}
+                  </Button>
+                </XStack>
+              </YStack>
             </form>
-          </div>
-        </div>
+          </Card>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
