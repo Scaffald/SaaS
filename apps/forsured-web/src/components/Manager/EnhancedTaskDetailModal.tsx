@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   X,
   AlertCircle,
@@ -14,6 +14,7 @@ import {
   Edit,
   Loader2,
 } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import Modal from '../Common/Modal';
 import { useMockDatabase } from '../../contexts/DatabaseContext';
@@ -147,33 +148,33 @@ export default function EnhancedTaskDetailModal({
   const tags = task.metadata?.tags || [];
   const related = task.metadata?.related;
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColorProps = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'text-error-600 bg-error-50 border-error-200';
+        return { color: '$red10', backgroundColor: '$red2', borderColor: '$red8' };
       case 'high':
-        return 'text-warning-600 bg-warning-50 border-warning-200';
+        return { color: '$orange10', backgroundColor: '$orange2', borderColor: '$orange8' };
       case 'medium':
-        return 'text-primary-600 bg-primary-50 border-primary-200';
+        return { color: '$blue10', backgroundColor: '$blue2', borderColor: '$blue8' };
       case 'low':
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
       default:
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColorProps = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'bg-primary-100 text-primary-700';
+        return { backgroundColor: '$blue2', color: '$blue10' };
       case 'in_progress':
-        return 'bg-blue-100 text-blue-700';
+        return { backgroundColor: '$blue2', color: '$blue10' };
       case 'completed':
-        return 'bg-success-100 text-success-700';
+        return { backgroundColor: '$green2', color: '$green10' };
       case 'cancelled':
-        return 'bg-gray-100 text-gray-700';
+        return { backgroundColor: '$gray2', color: '$gray10' };
       default:
-        return 'bg-primary-100 text-primary-700';
+        return { backgroundColor: '$blue2', color: '$blue10' };
     }
   };
 
@@ -191,20 +192,20 @@ export default function EnhancedTaskDetailModal({
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)} days overdue`,
-        color: 'text-error-600',
+        color: '$red10',
         isOverdue: true,
       };
     if (diffDays === 0)
-      return { text: 'Due today', color: 'text-warning-600', isOverdue: false };
+      return { text: 'Due today', color: '$orange10', isOverdue: false };
     if (diffDays === 1)
       return {
         text: 'Due tomorrow',
-        color: 'text-warning-600',
+        color: '$orange10',
         isOverdue: false,
       };
     return {
       text: `Due in ${diffDays} days`,
-      color: 'text-text-secondary',
+      color: '$color11',
       isOverdue: false,
     };
   };
@@ -245,164 +246,235 @@ export default function EnhancedTaskDetailModal({
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="" size="lg">
-        <div className="space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
-                <h2 className="text-2xl font-bold text-text-primary">
+        <YStack gap="$6">
+          <XStack alignItems="flex-start" justifyContent="space-between">
+            <YStack flex={1}>
+              <XStack alignItems="center" gap="$3" marginBottom="$2">
+                <H2 fontSize="$9" fontWeight="700" color="$color12">
                   {task.title}
-                </h2>
-                <span
-                  className={`px-2.5 py-1 text-xs font-medium rounded border ${getPriorityColor(task.priority)}`}
+                </H2>
+                <Text
+                  paddingHorizontal="$2.5"
+                  paddingVertical="$1"
+                  fontSize="$1"
+                  fontWeight="500"
+                  borderRadius="$2"
+                  borderWidth={1}
+                  {...getPriorityColorProps(task.priority)}
                 >
                   {task.priority}
-                </span>
-                <span
-                  className={`px-2.5 py-1 text-xs font-medium rounded ${getStatusColor(task.status)}`}
+                </Text>
+                <Text
+                  paddingHorizontal="$2.5"
+                  paddingVertical="$1"
+                  fontSize="$1"
+                  fontWeight="500"
+                  borderRadius="$2"
+                  {...getStatusColorProps(task.status)}
                 >
                   {formatStatus(task.status)}
-                </span>
-              </div>
-              <p className="text-text-secondary">{task.description}</p>
-            </div>
-          </div>
+                </Text>
+              </XStack>
+              <Text color="$color11">{task.description}</Text>
+            </YStack>
+          </XStack>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center space-x-3 p-3 bg-bg-secondary rounded-lg">
-              <Calendar className="text-text-tertiary" size={20} />
-              <div>
-                <p className="text-xs text-text-tertiary">Due Date</p>
-                <p className={`text-sm font-medium ${dueDate.color}`}>
-                  {dueDate.text}
-                  {dueDate.isOverdue && <span className="ml-2">⚠️</span>}
-                </p>
-              </div>
-            </div>
+          <XStack flexWrap="wrap" gap="$4">
+            <Card
+              alignItems="center"
+              gap="$3"
+              padding="$3"
+              backgroundColor="$backgroundHover"
+              borderRadius="$4"
+              flex={1}
+              minWidth="calc(50% - 8px)"
+            >
+              <Calendar color="$color10" size={20} />
+              <YStack>
+                <Text fontSize="$1" color="$color10">Due Date</Text>
+                <XStack alignItems="center" gap="$2">
+                  <Text fontSize="$3" fontWeight="500" color={dueDate.color}>
+                    {dueDate.text}
+                  </Text>
+                  {dueDate.isOverdue && <Text fontSize="$3">⚠️</Text>}
+                </XStack>
+              </YStack>
+            </Card>
 
-            <div className="flex items-center space-x-3 p-3 bg-bg-secondary rounded-lg">
-              <Building className="text-text-tertiary" size={20} />
-              <div>
-                <p className="text-xs text-text-tertiary">Project</p>
-                <p className="text-sm font-medium text-text-primary">
+            <Card
+              alignItems="center"
+              gap="$3"
+              padding="$3"
+              backgroundColor="$backgroundHover"
+              borderRadius="$4"
+              flex={1}
+              minWidth="calc(50% - 8px)"
+            >
+              <Building color="$color10" size={20} />
+              <YStack>
+                <Text fontSize="$1" color="$color10">Project</Text>
+                <Text fontSize="$3" fontWeight="500" color="$color12">
                   {projectName}
-                </p>
-              </div>
-            </div>
-          </div>
+                </Text>
+              </YStack>
+            </Card>
+          </XStack>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-text-primary">
+          <YStack gap="$3">
+            <XStack alignItems="center" justifyContent="space-between">
+              <H3 fontSize="$3" fontWeight="600" color="$color12">
                 Assigned To
-              </h3>
-              <button
-                onClick={() => setShowReassignModal(true)}
-                className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+              </H3>
+              <XStack
+                onPress={() => setShowReassignModal(true)}
+                cursor="pointer"
+                hoverStyle={{ opacity: 0.8 }}
               >
-                Reassign
-              </button>
-            </div>
-            <div className="space-y-2">
+                <Text fontSize="$1" color="$blue10" fontWeight="500">
+                  Reassign
+                </Text>
+              </XStack>
+            </XStack>
+            <YStack gap="$2">
               {assigneeDetails.map((person) => (
-                <div
+                <XStack
                   key={person?.id}
-                  className="flex items-center space-x-3 p-3 bg-bg-secondary rounded-lg"
+                  alignItems="center"
+                  gap="$3"
+                  padding="$3"
+                  backgroundColor="$backgroundHover"
+                  borderRadius="$4"
                 >
-                  <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-semibold text-white">
+                  <YStack
+                    width={40}
+                    height={40}
+                    backgroundColor="$blue10"
+                    borderRadius={9999}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Text fontSize="$3" fontWeight="600" color="white">
                       {person?.name
                         .split(' ')
                         .map((n) => n[0])
                         .join('')}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-text-primary">
+                    </Text>
+                  </YStack>
+                  <YStack>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {person?.name}
-                    </p>
-                    <p className="text-xs text-text-tertiary">
+                    </Text>
+                    <Text fontSize="$1" color="$color10">
                       {person?.email}
-                    </p>
-                  </div>
-                </div>
+                    </Text>
+                  </YStack>
+                </XStack>
               ))}
-            </div>
-          </div>
+            </YStack>
+          </YStack>
 
           {blockers.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="text-error-600" size={18} />
-                <h3 className="text-sm font-semibold text-error-600">
+            <YStack gap="$3">
+              <XStack alignItems="center" gap="$2">
+                <AlertCircle color="$red10" size={18} />
+                <H3 fontSize="$3" fontWeight="600" color="$red10">
                   Blockers
-                </h3>
-              </div>
-              <div className="space-y-2">
+                </H3>
+              </XStack>
+              <YStack gap="$2">
                 {blockers.map((blocker, index) => (
-                  <div
+                  <XStack
                     key={index}
-                    className="flex items-start space-x-2 p-3 bg-error-50 border border-error-200 rounded-lg"
+                    alignItems="flex-start"
+                    gap="$2"
+                    padding="$3"
+                    backgroundColor="$red2"
+                    borderWidth={1}
+                    borderColor="$red8"
+                    borderRadius="$4"
                   >
-                    <div className="w-2 h-2 bg-error-500 rounded-full mt-1.5"></div>
-                    <p className="text-sm text-error-900">{blocker}</p>
-                  </div>
+                    <Circle size={8} backgroundColor="$red10" marginTop="$1.5" />
+                    <Text fontSize="$3" color="$red12">{blocker}</Text>
+                  </XStack>
                 ))}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           )}
 
           {tags.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-text-primary">Tags</h3>
-              <div className="flex flex-wrap gap-2">
+            <YStack gap="$3">
+              <H3 fontSize="$3" fontWeight="600" color="$color12">Tags</H3>
+              <XStack flexWrap="wrap" gap="$2">
                 {tags.map((tag) => (
-                  <span
+                  <Text
                     key={tag}
-                    className="px-3 py-1.5 bg-bg-secondary text-text-secondary text-xs font-medium rounded-full border border-border"
+                    paddingHorizontal="$3"
+                    paddingVertical="$1.5"
+                    backgroundColor="$backgroundHover"
+                    color="$color11"
+                    fontSize="$1"
+                    fontWeight="500"
+                    borderRadius={9999}
+                    borderWidth={1}
+                    borderColor="$borderColor"
                   >
                     {tag}
-                  </span>
+                  </Text>
                 ))}
-              </div>
-            </div>
+              </XStack>
+            </YStack>
           )}
 
           {quickActions.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-text-primary">
+            <YStack gap="$3">
+              <H3 fontSize="$3" fontWeight="600" color="$color12">
                 Quick Actions
-              </h3>
-              <div className="flex flex-wrap gap-2">
+              </H3>
+              <XStack flexWrap="wrap" gap="$2">
                 {quickActions.map((action) => (
-                  <button
+                  <XStack
                     key={action}
-                    onClick={() => {
+                    onPress={() => {
                       if (action === 'add_note') setShowAddNoteModal(true);
                       else if (action === 'send_invite') setShowInviteModal(true);
                       else console.log('Action:', action);
                     }}
-                    className="px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 border border-primary-200 rounded-lg hover:bg-primary-100 transition-colors"
+                    paddingHorizontal="$4"
+                    paddingVertical="$2"
+                    fontSize="$3"
+                    fontWeight="500"
+                    color="$blue10"
+                    backgroundColor="$blue2"
+                    borderWidth={1}
+                    borderColor="$blue8"
+                    borderRadius="$4"
+                    hoverStyle={{ backgroundColor: '$blue3' }}
+                    cursor="pointer"
                   >
-                    {action
-                      .replace(/_/g, ' ')
-                      .replace(/\b\w/g, (l) => l.toUpperCase())}
-                  </button>
+                    <Text fontSize="$3" fontWeight="500" color="$blue10">
+                      {action
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    </Text>
+                  </XStack>
                 ))}
-              </div>
-            </div>
+              </XStack>
+            </YStack>
           )}
 
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-text-primary">
+          <YStack gap="$3">
+            <H3 fontSize="$3" fontWeight="600" color="$color12">
               Update Status
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
+            </H3>
+            <XStack flexWrap="wrap" gap="$2">
               <Button
                 variant={
                   task.status === 'in_progress' ? 'primary' : 'secondary'
                 }
                 onClick={() => handleStatusChange('in_progress')}
                 icon={Clock}
+                flex={1}
+                minWidth="calc(50% - 4px)"
               >
                 Start Working
               </Button>
@@ -410,6 +482,8 @@ export default function EnhancedTaskDetailModal({
                 variant={task.status === 'pending' ? 'primary' : 'secondary'}
                 onClick={() => handleStatusChange('pending')}
                 icon={AlertCircle}
+                flex={1}
+                minWidth="calc(50% - 4px)"
               >
                 Mark Pending
               </Button>
@@ -417,6 +491,8 @@ export default function EnhancedTaskDetailModal({
                 variant={task.status === 'completed' ? 'success' : 'secondary'}
                 onClick={() => handleStatusChange('completed')}
                 icon={CheckCircle}
+                flex={1}
+                minWidth="calc(50% - 4px)"
               >
                 Mark Complete
               </Button>
@@ -424,35 +500,41 @@ export default function EnhancedTaskDetailModal({
                 variant="secondary"
                 onClick={() => setShowAddNoteModal(true)}
                 icon={MessageSquare}
+                flex={1}
+                minWidth="calc(50% - 4px)"
               >
                 Add Note
               </Button>
-            </div>
-          </div>
+            </XStack>
+          </YStack>
 
           {related && Object.keys(related).length > 0 && (
-            <div className="space-y-3 border-t border-border pt-4">
-              <h3 className="text-sm font-semibold text-text-primary">
+            <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+              <H3 fontSize="$3" fontWeight="600" color="$color12">
                 Related Items
-              </h3>
-              <div className="space-y-2">
+              </H3>
+              <YStack gap="$2">
                 {Object.entries(related).map(([key, value]) => (
-                  <div
+                  <XStack
                     key={key}
-                    className="flex items-center justify-between p-2 bg-bg-secondary rounded"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    padding="$2"
+                    backgroundColor="$backgroundHover"
+                    borderRadius="$2"
                   >
-                    <span className="text-xs text-text-tertiary capitalize">
+                    <Text fontSize="$1" color="$color10" textTransform="capitalize">
                       {key.replace(/_/g, ' ')}
-                    </span>
-                    <span className="text-xs font-mono text-text-secondary">
-                      {Array.isArray(value) ? value.join(', ') : value}
-                    </span>
-                  </div>
+                    </Text>
+                    <Text fontSize="$1" fontFamily="$mono" color="$color11">
+                      {Array.isArray(value) ? value.join(', ') : String(value)}
+                    </Text>
+                  </XStack>
                 ))}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           )}
-        </div>
+        </YStack>
       </Modal>
 
       <Modal
@@ -461,15 +543,31 @@ export default function EnhancedTaskDetailModal({
         title="Reassign Task"
         size="sm"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+        <YStack gap="$4">
+          <YStack>
+            <Text
+              as="label"
+              display="block"
+              fontSize="$3"
+              fontWeight="500"
+              color="$color11"
+              marginBottom="$2"
+            >
               Select Assignee
-            </label>
+            </Text>
             <select
               value={selectedAssignee}
               onChange={(e) => setSelectedAssignee(e.target.value)}
-              className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--borderColor)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: 'var(--color12)',
+                fontFamily: 'inherit',
+              }}
             >
               <option value="">Choose a person...</option>
               {availablePeople.map((person) => (
@@ -478,24 +576,24 @@ export default function EnhancedTaskDetailModal({
                 </option>
               ))}
             </select>
-          </div>
-          <div className="flex space-x-3">
+          </YStack>
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => setShowReassignModal(false)}
-              className="flex-1"
+              flex={1}
             >
               Cancel
             </Button>
             <Button
               variant="primary"
               onClick={handleReassign}
-              className="flex-1"
+              flex={1}
             >
               Reassign
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       <Modal
@@ -504,36 +602,52 @@ export default function EnhancedTaskDetailModal({
         title="Add Note"
         size="sm"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+        <YStack gap="$4">
+          <YStack>
+            <Text
+              as="label"
+              display="block"
+              fontSize="$3"
+              fontWeight="500"
+              color="$color11"
+              marginBottom="$2"
+            >
               Note
-            </label>
+            </Text>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={4}
               placeholder="Enter your note here..."
-              className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--borderColor)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: 'var(--color12)',
+                fontFamily: 'inherit',
+              }}
             />
-          </div>
-          <div className="flex space-x-3">
+          </YStack>
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => setShowAddNoteModal(false)}
-              className="flex-1"
+              flex={1}
             >
               Cancel
             </Button>
             <Button
               variant="primary"
               onClick={handleAddNote}
-              className="flex-1"
+              flex={1}
             >
               Add Note
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       <Modal
@@ -542,42 +656,58 @@ export default function EnhancedTaskDetailModal({
         title="Send Invitation"
         size="sm"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+        <YStack gap="$4">
+          <YStack>
+            <Text
+              as="label"
+              display="block"
+              fontSize="$3"
+              fontWeight="500"
+              color="$color11"
+              marginBottom="$2"
+            >
               Email Address
-            </label>
+            </Text>
             <input
               type="email"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="email@example.com"
-              className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--borderColor)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: 'var(--color12)',
+                fontFamily: 'inherit',
+              }}
             />
-          </div>
-          <div className="p-3 bg-primary-50 border border-primary-200 rounded-lg">
-            <p className="text-xs text-primary-900">
+          </YStack>
+          <Card padding="$3" backgroundColor="$blue2" borderWidth={1} borderColor="$blue8" borderRadius="$4">
+            <Text fontSize="$1" color="$blue12">
               This will send an invitation to join the project and complete
               onboarding requirements.
-            </p>
-          </div>
-          <div className="flex space-x-3">
+            </Text>
+          </Card>
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => setShowInviteModal(false)}
-              className="flex-1"
+              flex={1}
             >
               Cancel
             </Button>
             <Button
               variant="primary"
               onClick={handleSendInvite}
-              className="flex-1"
+              flex={1}
             >
               Send Invite
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
     </>
   );
