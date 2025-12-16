@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -12,7 +12,7 @@ import {
   Loader2,
   UserPlus,
 } from 'lucide-react';
-import EmptyState from '../../ui/EmptyState';
+import { EmptyState, YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import SubcontractorDetailModal from './SubcontractorDetailModal';
 import { useMockDatabase } from '../../contexts/DatabaseContext';
@@ -161,67 +161,67 @@ export default function SubcontractorsPage() {
     };
   }, [subcontractorsWithStatus]);
 
-  const getStatusColor = (status: 'compliant' | 'warning' | 'critical') => {
+  const getStatusColorProps = (status: 'compliant' | 'warning' | 'critical') => {
     switch (status) {
       case 'compliant':
-        return 'border-success-200 bg-success-50';
+        return { borderColor: '$green8', backgroundColor: '$green2' };
       case 'warning':
-        return 'border-warning-200 bg-warning-50';
+        return { borderColor: '$orange8', backgroundColor: '$orange2' };
       case 'critical':
-        return 'border-error-200 bg-error-50';
+        return { borderColor: '$red8', backgroundColor: '$red2' };
     }
   };
 
   const getStatusIcon = (status: 'compliant' | 'warning' | 'critical') => {
     switch (status) {
       case 'compliant':
-        return <CheckCircle className="text-success-600" size={20} />;
+        return <CheckCircle color="$green10" size={20} />;
       case 'warning':
-        return <AlertTriangle className="text-warning-600" size={20} />;
+        return <AlertTriangle color="$orange10" size={20} />;
       case 'critical':
-        return <AlertTriangle className="text-error-600" size={20} />;
+        return <AlertTriangle color="$red10" size={20} />;
     }
   };
 
   // Show loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-          <p className="text-text-secondary">Loading subcontractors...</p>
-        </div>
-      </div>
+      <YStack alignItems="center" justifyContent="center" minHeight={400}>
+        <YStack alignItems="center" gap="$4">
+          <Spinner size="large" color="$blue10" />
+          <Text color="$color11">Loading subcontractors...</Text>
+        </YStack>
+      </YStack>
     );
   }
 
   // Show error state
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <AlertTriangle className="mx-auto text-error-500 mb-4" size={48} />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+      <YStack alignItems="center" justifyContent="center" minHeight={400}>
+        <YStack alignItems="center">
+          <AlertTriangle color="$red10" size={48} marginBottom="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             Failed to load subcontractors
-          </h3>
-          <p className="text-text-secondary">{error.message}</p>
-        </div>
-      </div>
+          </H3>
+          <Text color="$color11">{error.message}</Text>
+        </YStack>
+      </YStack>
     );
   }
 
   // Show empty state when no subcontractors exist
   if (subcontractors.length === 0) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-text-primary">
+      <YStack gap="$6">
+        <YStack>
+          <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
             Subcontractors
-          </h1>
-          <p className="text-text-secondary text-lg mt-1">
+          </H1>
+          <Text color="$color11" fontSize="$6" marginTop="$1">
             Manage your project subcontractors
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <EmptyState
           icon={UserPlus}
           title="No Subcontractors Yet"
@@ -231,106 +231,151 @@ export default function SubcontractorsPage() {
             onClick: () => navigate('/manager/subcontractors/new'),
           }}
         />
-      </div>
+      </YStack>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-text-primary">
+    <YStack gap="$6">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
             Subcontractors
-          </h1>
-          <p className="text-text-secondary text-lg mt-1">
+          </H1>
+          <Text color="$color11" fontSize="$6" marginTop="$1">
             Manage {subcontractors.length} subcontractors across your projects
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <Button variant="primary" icon={Plus}>
           Add Subcontractor
         </Button>
-      </div>
+      </XStack>
 
-      <div className="flex items-center space-x-4 text-sm">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-success-500"></div>
-          <span className="font-semibold text-text-primary">
+      <XStack alignItems="center" gap="$4" fontSize="$3">
+        <XStack alignItems="center" gap="$2">
+          <Circle size={12} backgroundColor="$green10" />
+          <Text fontWeight="600" color="$color12">
             {statusCounts.compliant}
-          </span>
-          <span className="text-text-secondary">Compliant</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-warning-500"></div>
-          <span className="font-semibold text-text-primary">
+          </Text>
+          <Text color="$color11">Compliant</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center" gap="$2">
+          <Circle size={12} backgroundColor="$orange10" />
+          <Text fontWeight="600" color="$color12">
             {statusCounts.warning}
-          </span>
-          <span className="text-text-secondary">Issues</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-error-500"></div>
-          <span className="font-semibold text-text-primary">
+          </Text>
+          <Text color="$color11">Issues</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center" gap="$2">
+          <Circle size={12} backgroundColor="$red10" />
+          <Text fontWeight="600" color="$color12">
             {statusCounts.critical}
-          </span>
-          <span className="text-text-secondary">Critical</span>
-        </div>
-      </div>
+          </Text>
+          <Text color="$color11">Critical</Text>
+        </XStack>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-4 space-y-4">
-        <div className="flex items-center space-x-3">
-          <div className="flex-1 relative">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
-              size={20}
-            />
+      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$4" elevation={1} gap="$4">
+        <XStack alignItems="center" gap="$3">
+          <YStack flex={1} position="relative">
+            <YStack position="absolute" left="$3" top="50%" transform="translateY(-50%)" zIndex={1}>
+              <Search
+                color="$color10"
+                size={20}
+              />
+            </YStack>
             <input
               type="text"
               placeholder="Search subcontractors..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              style={{
+                width: '100%',
+                paddingLeft: '40px',
+                paddingRight: '16px',
+                paddingTop: '10px',
+                paddingBottom: '10px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: 'var(--color-12)',
+              }}
             />
-          </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center space-x-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition-colors ${
-              showFilters
-                ? 'bg-primary-50 border-primary-500 text-primary-700'
-                : 'bg-surface border-border text-text-secondary hover:bg-bg-secondary'
-            }`}
+          </YStack>
+          <XStack
+            onPress={() => setShowFilters(!showFilters)}
+            alignItems="center"
+            gap="$2"
+            paddingHorizontal="$4"
+            paddingVertical="$2.5"
+            borderWidth={1}
+            borderRadius="$4"
+            fontSize="$3"
+            fontWeight="500"
+            backgroundColor={showFilters ? '$blue2' : '$background'}
+            borderColor={showFilters ? '$blue10' : '$borderColor'}
+            color={showFilters ? '$blue10' : '$color11'}
+            hoverStyle={{ backgroundColor: '$backgroundHover' }}
+            cursor="pointer"
           >
             <Filter size={18} />
-            <span>Filters</span>
-          </button>
-        </div>
+            <Text fontSize="$3" fontWeight="500" color={showFilters ? '$blue10' : '$color11'}>
+              Filters
+            </Text>
+          </XStack>
+        </XStack>
 
         {showFilters && (
-          <div className="border-t border-border pt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
+          <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" gap="$4">
+            <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
+              <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
+                <Text
+                  as="label"
+                  display="block"
+                  fontSize="$1"
+                  fontWeight="500"
+                  color="$color11"
+                  marginBottom="$2"
+                >
                   Status
-                </label>
+                </Text>
                 <select
                   value={selectedStatus}
                   onChange={(e) =>
                     setSelectedStatus(e.target.value as ComplianceStatus)
                   }
-                  className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: 'var(--color-12)',
+                  }}
                 >
                   <option value="all">All Statuses</option>
                   <option value="compliant">Compliant</option>
                   <option value="warning">Has Issues</option>
                   <option value="critical">Critical Issues</option>
                 </select>
-              </div>
+              </YStack>
 
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
+              <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
+                <Text
+                  as="label"
+                  display="block"
+                  fontSize="$1"
+                  fontWeight="500"
+                  color="$color11"
+                  marginBottom="$2"
+                >
                   Sort By
-                </label>
-                <div className="flex space-x-2">
+                </Text>
+                <XStack gap="$2">
                   <select
                     value={sortBy}
                     onChange={(e) =>
@@ -338,123 +383,152 @@ export default function SubcontractorsPage() {
                         e.target.value as 'name' | 'compliance' | 'issues'
                       )
                     }
-                    className="flex-1 px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color-12)',
+                    }}
                   >
                     <option value="name">Name</option>
                     <option value="compliance">Compliance Score</option>
                     <option value="issues">Issues</option>
                   </select>
-                  <button
-                    onClick={() =>
+                  <XStack
+                    onPress={() =>
                       setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
                     }
-                    className="p-2 border border-border rounded-lg hover:bg-bg-secondary transition-colors"
+                    padding="$2"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                    cursor="pointer"
                   >
                     <ChevronDown
                       size={16}
-                      className={`text-text-secondary transform transition-transform ${
-                        sortOrder === 'desc' ? 'rotate-180' : ''
-                      }`}
+                      color="$color11"
+                      style={{
+                        transform: sortOrder === 'desc' ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.2s',
+                      }}
                     />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </XStack>
+                </XStack>
+              </YStack>
+            </XStack>
+          </YStack>
         )}
 
-        <div className="text-sm text-text-secondary">
+        <Text fontSize="$3" color="$color11">
           Showing{' '}
-          <span className="font-semibold text-text-primary">
+          <Text fontWeight="600" color="$color12">
             {filteredAndSortedSubs.length}
-          </span>{' '}
+          </Text>{' '}
           of {subcontractors.length} subcontractors
-        </div>
-      </div>
+        </Text>
+      </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }} $gtLg={{ flexWrap: 'wrap' }}>
         {filteredAndSortedSubs.map((sub) => (
-          <div
+          <Card
             key={sub.id}
-            onClick={() => setSelectedSubcontractor(sub.id)}
-            className={`bg-surface rounded-lg shadow-sm border-2 ${getStatusColor(sub.complianceStatus)} hover:border-primary-300 transition-all cursor-pointer group`}
+            onPress={() => setSelectedSubcontractor(sub.id)}
+            borderWidth={2}
+            {...getStatusColorProps(sub.complianceStatus)}
+            hoverStyle={{ borderColor: '$blue8' }}
+            cursor="pointer"
+            borderRadius="$4"
+            elevation={1}
+            flex={1}
+            minWidth="calc(100% - 16px)"
+            $gtMd={{ minWidth: 'calc(50% - 8px)' }}
+            $gtLg={{ minWidth: 'calc(33.333% - 11px)' }}
           >
-            <div className="p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-text-primary group-hover:text-primary-600 transition-colors mb-1">
+            <YStack padding="$5">
+              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+                <YStack flex={1}>
+                  <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$1">
                     {sub.company_name}
-                  </h3>
-                  <p className="text-sm text-text-tertiary">{sub.trade_type}</p>
-                </div>
+                  </H3>
+                  <Text fontSize="$3" color="$color10">{sub.trade_type}</Text>
+                </YStack>
                 {getStatusIcon(sub.complianceStatus)}
-              </div>
+              </XStack>
 
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-text-tertiary">
+              <YStack marginBottom="$4">
+                <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+                  <Text fontSize="$1" color="$color10">
                     Compliance Score
-                  </span>
-                  <span className="text-xs font-semibold text-text-primary">
+                  </Text>
+                  <Text fontSize="$1" fontWeight="600" color="$color12">
                     {Math.round(sub.compliance_score)}%
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full transition-all ${
+                  </Text>
+                </XStack>
+                <YStack width="100%" height={8} backgroundColor="$gray8" borderRadius={9999}>
+                  <YStack
+                    height="100%"
+                    borderRadius={9999}
+                    backgroundColor={
                       sub.compliance_score >= 90
-                        ? 'bg-success-500'
+                        ? '$green10'
                         : sub.compliance_score >= 70
-                          ? 'bg-warning-500'
-                          : 'bg-error-500'
-                    }`}
-                    style={{ width: `${sub.compliance_score}%` }}
-                  ></div>
-                </div>
-              </div>
+                          ? '$orange10'
+                          : '$red10'
+                    }
+                    width={`${sub.compliance_score}%`}
+                  />
+                </YStack>
+              </YStack>
 
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="p-2 bg-bg-secondary rounded">
-                  <div className="text-lg font-bold text-text-primary capitalize">
+              <XStack flexWrap="wrap" gap="$3">
+                <Card padding="$2" backgroundColor="$backgroundHover" borderRadius="$2" flex={1} minWidth="calc(50% - 6px)" alignItems="center">
+                  <Text fontSize="$7" fontWeight="700" color="$color12" textTransform="capitalize">
                     {sub.risk_level}
-                  </div>
-                  <div className="text-xs text-text-tertiary">Risk Level</div>
-                </div>
-                <div className="p-2 bg-bg-secondary rounded">
-                  <div className={`text-lg font-bold capitalize ${
-                    sub.status === 'active' ? 'text-success-600' : 'text-text-secondary'
-                  }`}>
+                  </Text>
+                  <Text fontSize="$1" color="$color10">Risk Level</Text>
+                </Card>
+                <Card padding="$2" backgroundColor="$backgroundHover" borderRadius="$2" flex={1} minWidth="calc(50% - 6px)" alignItems="center">
+                  <Text
+                    fontSize="$7"
+                    fontWeight="700"
+                    color={sub.status === 'active' ? '$green10' : '$color11'}
+                    textTransform="capitalize"
+                  >
                     {sub.status}
-                  </div>
-                  <div className="text-xs text-text-tertiary">Status</div>
-                </div>
-              </div>
+                  </Text>
+                  <Text fontSize="$1" color="$color10">Status</Text>
+                </Card>
+              </XStack>
 
               {sub.contact_name && (
-                <div className="mt-3 pt-3 border-t border-border">
-                  <div className="flex items-center space-x-2">
-                    <Users size={14} className="text-text-tertiary" />
-                    <span className="text-xs text-text-secondary">
+                <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
+                  <XStack alignItems="center" gap="$2">
+                    <Users size={14} color="$color10" />
+                    <Text fontSize="$1" color="$color11">
                       {sub.contact_name}
-                    </span>
-                  </div>
-                </div>
+                    </Text>
+                  </XStack>
+                </YStack>
               )}
-            </div>
-          </div>
+            </YStack>
+          </Card>
         ))}
-      </div>
+      </XStack>
 
       {filteredAndSortedSubs.length === 0 && (
-        <div className="text-center py-16 bg-surface rounded-lg border border-border">
-          <Building className="mx-auto text-text-tertiary mb-4" size={64} />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+        <Card alignItems="center" paddingVertical="$16" backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
+          <Building color="$color10" size={64} marginBottom="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             No subcontractors found
-          </h3>
-          <p className="text-text-secondary">
+          </H3>
+          <Text color="$color11">
             Try adjusting your filters or search criteria
-          </p>
-        </div>
+          </Text>
+        </Card>
       )}
 
       <SubcontractorDetailModal
@@ -462,6 +536,6 @@ export default function SubcontractorsPage() {
         isOpen={!!selectedSubcontractor}
         onClose={() => setSelectedSubcontractor(null)}
       />
-    </div>
+    </YStack>
   );
 }
