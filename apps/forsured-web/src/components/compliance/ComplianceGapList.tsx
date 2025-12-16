@@ -3,7 +3,7 @@
  * Compliance Gap List Component
  */
 
-import React from 'react';
+import { YStack, XStack, Text } from '@unicornlove/ui';
 import { ComplianceGap, GapType, GapSeverity } from '../../lib/compliance/evaluator';
 
 interface ComplianceGapListProps {
@@ -16,15 +16,24 @@ interface ComplianceGapListProps {
 export const ComplianceGapList: React.FC<ComplianceGapListProps> = ({ gaps }) => {
   if (gaps.length === 0) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-        <div className="text-4xl mb-2">✓</div>
-        <div className="text-green-800 font-semibold">
+      <YStack
+        backgroundColor="$green2"
+        borderWidth={1}
+        borderColor="$green6"
+        borderRadius="$4"
+        padding="$6"
+        alignItems="center"
+      >
+        <Text fontSize="$10" marginBottom="$2">
+          ✓
+        </Text>
+        <Text color="$green11" fontWeight="600">
           No Compliance Gaps Identified
-        </div>
-        <div className="text-green-600 text-sm mt-1">
+        </Text>
+        <Text color="$green10" fontSize="$3" marginTop="$1">
           This policy meets all project requirements
-        </div>
-      </div>
+        </Text>
+      </YStack>
     );
   }
 
@@ -34,56 +43,58 @@ export const ComplianceGapList: React.FC<ComplianceGapListProps> = ({ gaps }) =>
   const infoGaps = gaps.filter((g) => g.severity === 'info');
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Compliance Gaps</h2>
-        <div className="text-sm text-gray-500">
+    <YStack gap="$6">
+      <XStack alignItems="center" justifyContent="space-between">
+        <Text fontSize="$8" fontWeight="700" color="$color12">
+          Compliance Gaps
+        </Text>
+        <Text fontSize="$3" color="$color10">
           {gaps.length} {gaps.length === 1 ? 'issue' : 'issues'} found
-        </div>
-      </div>
+        </Text>
+      </XStack>
 
       {/* Critical Gaps */}
       {criticalGaps.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-red-700 mb-3">
+        <YStack>
+          <Text fontSize="$6" fontWeight="600" color="$red11" marginBottom="$3">
             Critical Issues ({criticalGaps.length})
-          </h3>
-          <div className="space-y-3">
+          </Text>
+          <YStack gap="$3">
             {criticalGaps.map((gap) => (
               <GapCard key={gap.id} gap={gap} />
             ))}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       )}
 
       {/* Warning Gaps */}
       {warningGaps.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-yellow-700 mb-3">
+        <YStack>
+          <Text fontSize="$6" fontWeight="600" color="$yellow11" marginBottom="$3">
             Warnings ({warningGaps.length})
-          </h3>
-          <div className="space-y-3">
+          </Text>
+          <YStack gap="$3">
             {warningGaps.map((gap) => (
               <GapCard key={gap.id} gap={gap} />
             ))}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       )}
 
       {/* Info Gaps */}
       {infoGaps.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-blue-700 mb-3">
+        <YStack>
+          <Text fontSize="$6" fontWeight="600" color="$blue11" marginBottom="$3">
             Information ({infoGaps.length})
-          </h3>
-          <div className="space-y-3">
+          </Text>
+          <YStack gap="$3">
             {infoGaps.map((gap) => (
               <GapCard key={gap.id} gap={gap} />
             ))}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 };
 
@@ -104,16 +115,16 @@ const GapCard: React.FC<{ gap: ComplianceGap }> = ({ gap }) => {
     }
   };
 
-  const getSeverityColor = (severity: GapSeverity): string => {
+  const getSeverityColors = (severity: GapSeverity) => {
     switch (severity) {
       case 'critical':
-        return 'border-red-300 bg-red-50';
+        return { border: '$red6', bg: '$red2' };
       case 'warning':
-        return 'border-yellow-300 bg-yellow-50';
+        return { border: '$yellow6', bg: '$yellow2' };
       case 'info':
-        return 'border-blue-300 bg-blue-50';
+        return { border: '$blue6', bg: '$blue2' };
       default:
-        return 'border-gray-300 bg-gray-50';
+        return { border: '$borderColor', bg: '$color2' };
     }
   };
 
@@ -153,47 +164,55 @@ const GapCard: React.FC<{ gap: ComplianceGap }> = ({ gap }) => {
     return value.toString();
   };
 
+  const colors = getSeverityColors(gap.severity);
+
   return (
-    <div
-      className={`border-2 rounded-lg p-4 ${getSeverityColor(gap.severity)}`}
+    <YStack
+      borderWidth={2}
+      borderRadius="$4"
+      padding="$4"
+      borderColor={colors.border}
+      backgroundColor={colors.bg}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex items-start space-x-3 flex-1">
-          <div className="text-2xl">{getSeverityIcon(gap.severity)}</div>
-          <div className="flex-1">
-            <div className="font-semibold text-gray-900">
+      <XStack alignItems="flex-start" justifyContent="space-between">
+        <XStack alignItems="flex-start" gap="$3" flex={1}>
+          <Text fontSize="$8">{getSeverityIcon(gap.severity)}</Text>
+          <YStack flex={1}>
+            <Text fontWeight="600" color="$color12">
               {getGapTypeLabel(gap.type)}
-            </div>
+            </Text>
             {gap.coverage_type && (
-              <div className="text-sm text-gray-600 mt-1">
+              <Text fontSize="$3" color="$color10" marginTop="$1">
                 Coverage: {gap.coverage_type.replace(/_/g, ' ')}
-              </div>
+              </Text>
             )}
             {gap.endorsement && (
-              <div className="text-sm text-gray-600 mt-1">
+              <Text fontSize="$3" color="$color10" marginTop="$1">
                 Endorsement: {gap.endorsement.replace(/_/g, ' ')}
-              </div>
+              </Text>
             )}
             {gap.current_value !== undefined && gap.current_value !== null && (
-              <div className="text-sm text-gray-600 mt-1">
+              <Text fontSize="$3" color="$color10" marginTop="$1">
                 Current: {formatValue(gap.current_value)} → Required:{' '}
                 {formatValue(gap.required_value)}
-              </div>
+              </Text>
             )}
-          </div>
-        </div>
-        <div className="text-sm font-semibold text-gray-700">
+          </YStack>
+        </XStack>
+        <Text fontSize="$3" fontWeight="600" color="$color11">
           -{gap.points_deducted} pts
-        </div>
-      </div>
+        </Text>
+      </XStack>
 
       {/* Remediation */}
-      <div className="mt-3 pt-3 border-t border-gray-300">
-        <div className="text-xs font-semibold text-gray-700 mb-1">
+      <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
+        <Text fontSize="$1" fontWeight="600" color="$color11" marginBottom="$1">
           How to Fix:
-        </div>
-        <div className="text-sm text-gray-800">{gap.remediation}</div>
-      </div>
-    </div>
+        </Text>
+        <Text fontSize="$3" color="$color12">
+          {gap.remediation}
+        </Text>
+      </YStack>
+    </YStack>
   );
 };
