@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Search,
   ShoppingCart,
@@ -8,6 +8,7 @@ import {
   Eye,
   Plus,
 } from 'lucide-react';
+import { XStack, YStack, Text, H1, SizableText, Card } from 'tamagui';
 import Button from '../Common/Button';
 import IconButton from '../Common/IconButton';
 
@@ -110,183 +111,234 @@ export default function InsuranceMarketplace() {
   });
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">
-            Insurance Marketplace
-          </h1>
-          <p className="text-text-secondary">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1>Insurance Marketplace</H1>
+          <SizableText color="$color11">
             Find and purchase insurance coverage for your projects
-          </p>
-        </div>
-        <Button
-          onClick={() => setShowCart(!showCart)}
-          variant="primary"
-          leftIcon={ShoppingCart}
-          iconSize={16}
-          className="relative bg-blue-600 hover:bg-blue-700"
-        >
-          Cart
-          <span className="absolute -top-2 -right-2 bg-error-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-            2
-          </span>
-        </Button>
-      </div>
+          </SizableText>
+        </YStack>
+        <XStack position="relative">
+          <Button
+            onPress={() => setShowCart(!showCart)}
+            variant="primary"
+          >
+            <XStack alignItems="center" gap="$2">
+              <ShoppingCart size={16} />
+              <Text>Cart</Text>
+            </XStack>
+          </Button>
+          <XStack
+            position="absolute"
+            top={-8}
+            right={-8}
+            backgroundColor="$red9"
+            width={20}
+            height={20}
+            borderRadius={9999}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <SizableText size="$1" color="white">
+              2
+            </SizableText>
+          </XStack>
+        </XStack>
+      </XStack>
 
       {/* Search and Filters */}
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
-              size={20}
-            />
+      <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
+        <YStack gap="$4" $gtMd={{ flexDirection: 'row' }}>
+          <XStack flex={1} position="relative" alignItems="center">
+            <XStack
+              position="absolute"
+              left="$3"
+              zIndex={1}
+            >
+              <Search color="$color10" size={20} />
+            </XStack>
             <input
               type="text"
               placeholder="Search insurance types or providers..."
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              style={{
+                width: '100%',
+                paddingLeft: '2.5rem',
+                paddingRight: '1rem',
+                paddingTop: '0.5rem',
+                paddingBottom: '0.5rem',
+                borderWidth: 1,
+                borderColor: 'var(--borderColor)',
+                borderRadius: 'var(--radius4)',
+              }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div>
-          <div className="flex flex-wrap gap-2">
+          </XStack>
+          <XStack flexWrap="wrap" gap="$2">
             {categories.map((category) => (
               <Button
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
+                onPress={() => setSelectedCategory(category.id)}
                 variant={selectedCategory === category.id ? 'primary' : 'ghost'}
-                className={
-                  selectedCategory === category.id ? 'bg-blue-600' : ''
-                }
               >
                 {category.name}
               </Button>
             ))}
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </YStack>
+      </Card>
 
       {/* Featured Recommendations */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
-        <div className="flex items-center space-x-2 mb-4">
-          <Award className="text-primary-600" size={20} />
-          <h2 className="text-lg font-semibold text-text-primary">
+      <Card
+        padding="$6"
+        borderWidth={1}
+        borderColor="$blue5"
+        borderRadius="$4"
+        backgroundColor="$blue2"
+      >
+        <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <Award color="$blue9" size={20} />
+          <Text fontSize="$6" fontWeight="600" color="$color12">
             Recommended for Construction Projects
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          </Text>
+        </XStack>
+        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
           {insuranceProducts
             .filter((p) => p.recommended)
             .map((product) => (
-              <div
+              <Card
                 key={product.id}
-                className="bg-surface p-4 rounded-lg border border-blue-200"
+                backgroundColor="$background"
+                padding="$4"
+                borderRadius="$4"
+                borderWidth={1}
+                borderColor="$blue5"
+                flex={1}
+                minWidth="200px"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-text-primary">
+                <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                  <Text fontWeight="500" color="$color12">
                     {product.type}
-                  </h3>
-                  <div className="flex items-center space-x-1">
-                    <Star className="text-yellow-400 fill-current" size={14} />
-                    <span className="text-sm text-text-secondary">
+                  </Text>
+                  <XStack alignItems="center" gap="$1">
+                    <Star color="$yellow9" fill="currentColor" size={14} />
+                    <SizableText size="$3" color="$color11">
                       {product.rating}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-sm text-text-secondary mb-3">
+                    </SizableText>
+                  </XStack>
+                </XStack>
+                <SizableText size="$3" color="$color11" marginBottom="$3">
                   {product.provider}
-                </p>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-lg font-bold text-text-primary">
+                </SizableText>
+                <XStack alignItems="center" justifyContent="space-between">
+                  <YStack>
+                    <Text fontSize="$6" fontWeight="700" color="$color12">
                       ${product.price.toLocaleString()}/yr
-                    </p>
-                    <p className="text-xs text-text-secondary">
+                    </Text>
+                    <SizableText size="$1" color="$color11">
                       ${product.coverage.toLocaleString()} coverage
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                    </SizableText>
+                  </YStack>
+                  <Button size="$3" variant="primary">
                     Add to Cart
                   </Button>
-                </div>
-              </div>
+                </XStack>
+              </Card>
             ))}
-        </div>
-      </div>
+        </XStack>
+      </Card>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <XStack flexWrap="wrap" gap="$6" $gtLg={{ flexDirection: 'row' }}>
         {filteredProducts.map((product) => (
-          <div
+          <Card
             key={product.id}
-            className="bg-surface rounded-lg shadow-sm border border-border hover:shadow-md transition-shadow"
+            backgroundColor="$background"
+            borderRadius="$4"
+            borderWidth={1}
+            borderColor="$borderColor"
+            hoverStyle={{
+              elevation: 2,
+            }}
+            flex={1}
+            minWidth="300px"
+            maxWidth="400px"
           >
-            <div className="p-6">
+            <YStack padding="$6">
               {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <div className="flex items-center space-x-2 mb-1">
-                    <h3 className="text-lg font-semibold text-text-primary">
+              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+                <YStack>
+                  <XStack alignItems="center" gap="$2" marginBottom="$1">
+                    <Text fontSize="$6" fontWeight="600" color="$color12">
                       {product.type}
-                    </h3>
+                    </Text>
                     {product.popular && (
-                      <span className="bg-success-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                        Popular
-                      </span>
+                      <XStack
+                        backgroundColor="$green2"
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                      >
+                        <SizableText size="$1" color="$green11">
+                          Popular
+                        </SizableText>
+                      </XStack>
                     )}
-                  </div>
-                  <p className="text-text-secondary">{product.provider}</p>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="text-yellow-400 fill-current" size={16} />
-                  <span className="text-sm font-medium">{product.rating}</span>
-                </div>
-              </div>
+                  </XStack>
+                  <SizableText color="$color11">{product.provider}</SizableText>
+                </YStack>
+                <XStack alignItems="center" gap="$1">
+                  <Star color="$yellow9" fill="currentColor" size={16} />
+                  <SizableText size="$3" fontWeight="500">
+                    {product.rating}
+                  </SizableText>
+                </XStack>
+              </XStack>
 
               {/* Pricing */}
-              <div className="mb-4">
-                <div className="flex items-baseline space-x-2">
-                  <span className="text-2xl font-bold text-text-primary">
+              <YStack marginBottom="$4">
+                <XStack alignItems="baseline" gap="$2">
+                  <Text fontSize="$9" fontWeight="700" color="$color12">
                     ${product.price.toLocaleString()}
-                  </span>
-                  <span className="text-text-secondary">/year</span>
-                </div>
-                <p className="text-sm text-text-secondary">
+                  </Text>
+                  <SizableText color="$color11">/year</SizableText>
+                </XStack>
+                <SizableText size="$3" color="$color11">
                   Up to ${product.coverage.toLocaleString()} coverage
-                </p>
-              </div>
+                </SizableText>
+              </YStack>
 
               {/* Features */}
-              <div className="mb-6">
-                <ul className="space-y-2">
+              <YStack marginBottom="$6">
+                <YStack gap="$2">
                   {product.features.map((feature, index) => (
-                    <li
-                      key={index}
-                      className="text-sm text-text-secondary flex items-center space-x-2"
-                    >
-                      <div className="w-1.5 h-1.5 bg-success-500 rounded-full"></div>
-                      <span>{feature}</span>
-                    </li>
+                    <XStack key={index} alignItems="center" gap="$2">
+                      <XStack
+                        width={6}
+                        height={6}
+                        backgroundColor="$green9"
+                        borderRadius={9999}
+                      />
+                      <SizableText size="$3" color="$color11">
+                        {feature}
+                      </SizableText>
+                    </XStack>
                   ))}
-                </ul>
-              </div>
+                </YStack>
+              </YStack>
 
               {/* Actions */}
-              <div className="flex space-x-2">
+              <XStack gap="$2">
                 <Button
-                  fullWidth
+                  flex={1}
                   variant="primary"
-                  leftIcon={Plus}
-                  iconSize={16}
-                  className="bg-blue-600 hover:bg-blue-700"
                 >
-                  Add to Cart
+                  <XStack alignItems="center" gap="$2">
+                    <Plus size={16} />
+                    <Text>Add to Cart</Text>
+                  </XStack>
                 </Button>
                 <IconButton
                   icon={Eye}
@@ -294,78 +346,123 @@ export default function InsuranceMarketplace() {
                   variant="outline"
                   tooltip="View details"
                 />
-              </div>
-            </div>
-          </div>
+              </XStack>
+            </YStack>
+          </Card>
         ))}
-      </div>
+      </XStack>
 
       {/* Shopping Cart Sidebar */}
       {showCart && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-          <div className="absolute right-0 top-0 h-full w-96 bg-surface shadow-2xl">
-            <div className="p-6 border-b border-border">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-text-primary">
+        <XStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          zIndex={50}
+        >
+          <XStack
+            position="absolute"
+            right={0}
+            top={0}
+            height="100%"
+            width={384}
+            backgroundColor="$background"
+            elevation={10}
+          >
+            <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$6" fontWeight="600" color="$color12">
                   Shopping Cart
-                </h2>
+                </Text>
                 <Button
-                  onClick={() => setShowCart(false)}
+                  onPress={() => setShowCart(false)}
                   variant="ghost"
-                  size="sm"
+                  size="$3"
                 >
                   ×
                 </Button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-                  <div>
-                    <p className="font-medium">General Liability</p>
-                    <p className="text-sm text-text-secondary">State Farm</p>
-                  </div>
-                  <p className="font-bold">$2,400/yr</p>
-                </div>
-                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-                  <div>
-                    <p className="font-medium">Workers Compensation</p>
-                    <p className="text-sm text-text-secondary">Travelers</p>
-                  </div>
-                  <p className="font-bold">$3,200/yr</p>
-                </div>
-              </div>
-              <div className="mt-6 pt-4 border-t border-border">
-                <div className="flex items-center justify-between text-lg font-bold">
-                  <span>Total:</span>
-                  <span>$5,600/yr</span>
-                </div>
+              </XStack>
+            </YStack>
+            <YStack padding="$6" flex={1}>
+              <YStack gap="$4">
+                <XStack
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="$3"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                >
+                  <YStack>
+                    <Text fontWeight="500">General Liability</Text>
+                    <SizableText size="$3" color="$color11">
+                      State Farm
+                    </SizableText>
+                  </YStack>
+                  <Text fontWeight="700">$2,400/yr</Text>
+                </XStack>
+                <XStack
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="$3"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                >
+                  <YStack>
+                    <Text fontWeight="500">Workers Compensation</Text>
+                    <SizableText size="$3" color="$color11">
+                      Travelers
+                    </SizableText>
+                  </YStack>
+                  <Text fontWeight="700">$3,200/yr</Text>
+                </XStack>
+              </YStack>
+              <YStack marginTop="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                <XStack alignItems="center" justifyContent="space-between">
+                  <Text fontSize="$6" fontWeight="700">
+                    Total:
+                  </Text>
+                  <Text fontSize="$6" fontWeight="700">
+                    $5,600/yr
+                  </Text>
+                </XStack>
                 <Button
-                  fullWidth
-                  size="lg"
+                  flex={1}
+                  size="$5"
                   variant="primary"
-                  className="mt-4 bg-blue-600 hover:bg-blue-700"
+                  marginTop="$4"
                 >
                   Proceed to Checkout
                 </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+              </YStack>
+            </YStack>
+          </XStack>
+        </XStack>
       )}
 
       {/* Empty State */}
       {filteredProducts.length === 0 && (
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-12 text-center">
-          <Search size={48} className="mx-auto mb-4 text-gray-300" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$12"
+          alignItems="center"
+        >
+          <Search size={48} color="$color6" marginBottom="$4" />
+          <Text fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
             No insurance products found
-          </h3>
-          <p className="text-text-secondary">
+          </Text>
+          <SizableText color="$color11">
             Try adjusting your search terms or category filters
-          </p>
-        </div>
+          </SizableText>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }
