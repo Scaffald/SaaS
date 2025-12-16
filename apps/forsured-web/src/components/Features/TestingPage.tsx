@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TestTube, MessageSquare } from 'lucide-react';
+import { XStack, YStack, Text, H1, H2, SizableText, Card, Button as TamaguiButton } from 'tamagui';
 import Accordion, { AccordionItem } from '../../ui/Accordion';
 import NavigationDrawer, { DrawerToggle } from '../DesignSystem/NavigationDrawer';
 import Modal from '../Common/Modal';
+import Button from '../Common/Button';
 
 interface JTBDItem {
   id: string;
@@ -113,41 +115,41 @@ export default function TestingPage() {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   const formatJTBDContent = (item: JTBDItem) => (
-    <div className="space-y-4">
-      <div>
-        <h3 className="font-semibold text-text-primary mb-2">Functional Job</h3>
-        <p className="text-text-secondary">{item.functionalJob}</p>
-      </div>
+    <YStack gap="$4">
+      <YStack>
+        <Text fontWeight="600" color="$color12" marginBottom="$2">Functional Job</Text>
+        <SizableText color="$color11">{item.functionalJob}</SizableText>
+      </YStack>
 
-      <div>
-        <h3 className="font-semibold text-text-primary mb-2">Emotional & Social Jobs</h3>
-        <p className="text-text-secondary mb-1"><strong>Emotional:</strong> {item.emotionalJob}</p>
-        <p className="text-text-secondary"><strong>Social:</strong> {item.socialJob}</p>
-      </div>
+      <YStack>
+        <Text fontWeight="600" color="$color12" marginBottom="$2">Emotional & Social Jobs</Text>
+        <SizableText color="$color11" marginBottom="$1"><Text fontWeight="600">Emotional:</Text> {item.emotionalJob}</SizableText>
+        <SizableText color="$color11"><Text fontWeight="600">Social:</Text> {item.socialJob}</SizableText>
+      </YStack>
 
-      <div>
-        <h3 className="font-semibold text-text-primary mb-2">Key Struggles</h3>
-        <ul className="list-disc list-inside space-y-1 text-text-secondary">
+      <YStack>
+        <Text fontWeight="600" color="$color12" marginBottom="$2">Key Struggles</Text>
+        <YStack gap="$1" paddingLeft="$4">
           {item.struggles.map((struggle, idx) => (
-            <li key={idx}>{struggle}</li>
+            <SizableText key={idx} color="$color11">• {struggle}</SizableText>
           ))}
-        </ul>
-      </div>
+        </YStack>
+      </YStack>
 
-      <div>
-        <h3 className="font-semibold text-text-primary mb-2">Desired Outcomes</h3>
-        <ul className="list-disc list-inside space-y-1 text-text-secondary">
+      <YStack>
+        <Text fontWeight="600" color="$color12" marginBottom="$2">Desired Outcomes</Text>
+        <YStack gap="$1" paddingLeft="$4">
           {item.outcomes.map((outcome, idx) => (
-            <li key={idx}>{outcome}</li>
+            <SizableText key={idx} color="$color11">• {outcome}</SizableText>
           ))}
-        </ul>
-      </div>
+        </YStack>
+      </YStack>
 
-      <div className="bg-primary-50 border-l-4 border-primary-500 p-4 rounded">
-        <h3 className="font-semibold text-primary-700 mb-2">JTBD Statement</h3>
-        <p className="text-primary-900 italic">{item.statement}</p>
-      </div>
-    </div>
+      <Card backgroundColor="$blue2" borderLeftWidth={4} borderLeftColor="$blue9" padding="$4" borderRadius="$4">
+        <Text fontWeight="600" color="$blue11" marginBottom="$2">JTBD Statement</Text>
+        <SizableText color="$blue12" fontStyle="italic">{item.statement}</SizableText>
+      </Card>
+    </YStack>
   );
 
   const accordionItems: AccordionItem[] = jtbdData.map(item => ({
@@ -157,53 +159,73 @@ export default function TestingPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-bg-secondary">
+    <YStack minHeight="100vh" backgroundColor="$color2">
       <NavigationDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <div className="lg:ml-72">
+      <YStack $gtLg={{ marginLeft: 288 }}>
         <DrawerToggle onClick={() => setDrawerOpen(true)} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl p-8 text-white shadow-xl">
-              <div className="flex items-center space-x-4">
-                <div className="bg-white/20 p-4 rounded-xl backdrop-blur-sm">
-                  <TestTube size={32} />
-                </div>
-                <div>
-                  <h1 className="font-display text-3xl font-bold">Testing & Feedback</h1>
-                  <p className="text-white/90 text-lg mt-1">
+        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $sm={{ paddingHorizontal: '$6' }} $lg={{ paddingHorizontal: '$8' }} paddingVertical="$8">
+          <YStack gap="$6">
+            <Card
+              borderRadius="$6"
+              padding="$8"
+              backgroundColor="$blue9"
+              elevation={10}
+            >
+              <XStack alignItems="center" gap="$4">
+                <XStack backgroundColor="rgba(255,255,255,0.2)" padding="$4" borderRadius="$6" backdropFilter="blur(10px)">
+                  <TestTube size={32} color="white" />
+                </XStack>
+                <YStack>
+                  <H1 color="white">Testing & Feedback</H1>
+                  <SizableText size="$6" color="rgba(255,255,255,0.9)" marginTop="$1">
                     Help us build a better product for you. We've identified five key jobs that insurance professionals need to accomplish. Review these and share your feedback to help us prioritize what matters most.
-                  </p>
-                </div>
-              </div>
-            </div>
+                  </SizableText>
+                </YStack>
+              </XStack>
+            </Card>
 
-            <div className="bg-surface rounded-xl shadow-lg border border-border p-6">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">Jobs-to-be-Done</h2>
-              <p className="text-text-secondary mb-6">
+            <Card backgroundColor="$background" borderRadius="$6" elevation={5} borderWidth={1} borderColor="$borderColor" padding="$6">
+              <H2 marginBottom="$4">Jobs-to-be-Done</H2>
+              <SizableText color="$color11" marginBottom="$6">
                 Below are five key jobs that insurance professionals need to accomplish. Click on each to learn more about the functional, emotional, and social aspects of these jobs, along with the struggles and desired outcomes.
-              </p>
-              <Accordion
-                items={accordionItems}
-                allowMultiple={false}
-                defaultOpen={[]}
-                className="max-w-4xl mx-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+              </SizableText>
+              <YStack maxWidth={896} marginHorizontal="auto">
+                <Accordion
+                  items={accordionItems}
+                  allowMultiple={false}
+                  defaultOpen={[]}
+                />
+              </YStack>
+            </Card>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* Floating Feedback Button */}
-      <button
-        onClick={() => setShowFeedbackModal(true)}
-        className="fixed bottom-6 right-6 bg-primary-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-primary-600 transition-all hover:scale-105 flex items-center space-x-2 z-50"
+      <TamaguiButton
+        position="fixed"
+        bottom="$6"
+        right="$6"
+        backgroundColor="$blue9"
+        color="white"
+        paddingHorizontal="$6"
+        paddingVertical="$3"
+        borderRadius={9999}
+        elevation={5}
+        hoverStyle={{
+          backgroundColor: '$blue10',
+          scale: 1.05,
+        }}
+        onPress={() => setShowFeedbackModal(true)}
         aria-label="Share feedback"
       >
-        <MessageSquare size={20} />
-        <span>Share Feedback</span>
-      </button>
+        <XStack alignItems="center" gap="$2">
+          <MessageSquare size={20} />
+          <Text>Share Feedback</Text>
+        </XStack>
+      </TamaguiButton>
 
       {/* Feedback Modal */}
       <Modal
@@ -212,7 +234,7 @@ export default function TestingPage() {
         title="Share Your Feedback"
         size="xl"
       >
-        <div className="w-full h-[600px]">
+        <YStack width="100%" height={600}>
           <iframe
             src="https://docs.google.com/forms/d/e/placeholder/viewform?embedded=true"
             width="100%"
@@ -221,13 +243,13 @@ export default function TestingPage() {
             marginHeight={0}
             marginWidth={0}
             title="Feedback Form"
-            className="rounded-lg"
+            style={{ borderRadius: 'var(--radius4)' }}
           >
             Loading…
           </iframe>
-        </div>
+        </YStack>
       </Modal>
-    </div>
+    </YStack>
   );
 }
 
