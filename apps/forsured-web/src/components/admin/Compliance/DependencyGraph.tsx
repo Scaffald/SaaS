@@ -12,6 +12,14 @@
 import { useState, useMemo } from 'react'
 import { ChevronRight, ChevronDown, GitBranch, AlertTriangle, Info, Search } from 'lucide-react'
 import {
+  YStack,
+  XStack,
+  Text,
+  Input,
+  Button,
+  H3,
+} from '@unicornlove/ui'
+import {
   useComplianceRequirements,
   type ComplianceRequirement,
 } from '../../../hooks/useComplianceRequirements'
@@ -42,12 +50,6 @@ interface DependencyNode {
 // Constants
 // =============================================================================
 
-const DEPENDENCY_TYPE_COLORS = {
-  requires: 'text-red-600 bg-red-50 border-red-200',
-  recommended: 'text-yellow-600 bg-yellow-50 border-yellow-200',
-  alternative: 'text-blue-600 bg-blue-50 border-blue-200',
-}
-
 const DEPENDENCY_TYPE_LABELS = {
   requires: 'Required',
   recommended: 'Recommended',
@@ -68,53 +70,90 @@ function TreeNode({ node, level, onSelect }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(level < 2)
   const hasChildren = node.children.length > 0
 
+  const getDependencyColor = (type: string) => {
+    switch (type) {
+      case 'requires':
+        return { bg: '$red2', color: '$red10', border: '$red6' }
+      case 'recommended':
+        return { bg: '$yellow2', color: '$yellow10', border: '$yellow6' }
+      case 'alternative':
+        return { bg: '$blue2', color: '$blue10', border: '$blue6' }
+      default:
+        return { bg: '$gray2', color: '$gray10', border: '$gray6' }
+    }
+  }
+
+  const depColors = getDependencyColor(node.dependency_type)
+
   return (
-    <div className="select-none">
-      <div
-        className={`flex items-center gap-2 py-2 px-3 rounded-lg cursor-pointer hover:bg-gray-50 ${
-          level === 0 ? 'bg-blue-50 border border-blue-200' : ''
-        }`}
-        style={{ marginLeft: `${level * 24}px` }}
-        onClick={() => onSelect(node.requirement_id)}
+    <YStack>
+      <XStack
+        alignItems="center"
+        gap="$2"
+        paddingVertical="$2"
+        paddingHorizontal="$3"
+        borderRadius="$4"
+        cursor="pointer"
+        hoverStyle={{ backgroundColor: '$gray2' }}
+        backgroundColor={level === 0 ? '$blue2' : 'transparent'}
+        borderWidth={level === 0 ? 1 : 0}
+        borderColor={level === 0 ? '$blue6' : 'transparent'}
+        marginLeft={level * 24}
+        onPress={() => onSelect(node.requirement_id)}
+        userSelect="none"
       >
         {hasChildren ? (
-          <button
-            onClick={(e) => {
+          <Button
+            unstyled
+            padding="$1"
+            hoverStyle={{ backgroundColor: '$gray4' }}
+            borderRadius="$2"
+            onPress={(e) => {
               e.stopPropagation()
               setIsExpanded(!isExpanded)
             }}
-            className="p-0.5 hover:bg-gray-200 rounded"
           >
             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-          </button>
+          </Button>
         ) : (
-          <span className="w-5" />
+          <XStack width={20} />
         )}
 
-        <GitBranch size={16} className="text-gray-400" />
+        <YStack>
+          <GitBranch size={16} style={{ color: 'var(--color-gray-10)' }} />
+        </YStack>
 
-        <span className="font-mono text-xs text-gray-500">{node.code}</span>
-        <span className="font-medium text-sm">{node.name}</span>
+        <Text fontFamily="$mono" fontSize="$1" color="$gray11">
+          {node.code}
+        </Text>
+        <Text fontWeight="600" fontSize="$3">
+          {node.name}
+        </Text>
 
         {level > 0 && (
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full border ${
-              DEPENDENCY_TYPE_COLORS[node.dependency_type]
-            }`}
+          <Text
+            fontSize="$1"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius={9999}
+            borderWidth={1}
+            backgroundColor={depColors.bg}
+            color={depColors.color}
+            borderColor={depColors.border}
           >
             {DEPENDENCY_TYPE_LABELS[node.dependency_type]}
-          </span>
+          </Text>
         )}
-      </div>
+      </XStack>
 
       {isExpanded && hasChildren && (
-        <div className="ml-2 border-l border-gray-200">
+        <YStack marginLeft="$2" borderLeftWidth={1} borderColor="$gray6">
           {node.children.map((child) => (
             <TreeNode key={child.id} node={child} level={level + 1} onSelect={onSelect} />
           ))}
-        </div>
+        </YStack>
       )}
-    </div>
+    </YStack>
   )
 }
 
@@ -191,109 +230,181 @@ export function DependencyGraph({
   }
 
   return (
-    <div className="bg-white rounded-lg border">
-      <div className="grid grid-cols-3 divide-x h-[600px]">
+    <YStack backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
+      <XStack height={600}>
         {/* Requirement Selector */}
-        <div className="p-4 overflow-y-auto">
-          <h3 className="font-semibold text-gray-900 mb-3">Select Requirement</h3>
+        <YStack padding="$4" overflow="scroll" flex={1} borderRightWidth={1} borderColor="$borderColor">
+          <H3 fontWeight="600" color="$color12" marginBottom="$3">
+            Select Requirement
+          </H3>
 
           {/* Search */}
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="text"
+          <XStack position="relative" marginBottom="$3">
+            <YStack
+              position="absolute"
+              left="$3"
+              top="50%"
+              zIndex={1}
+              pointerEvents="none"
+            >
+              <Search size={16} style={{ color: 'var(--color-gray-10)' }} />
+            </YStack>
+            <Input
+              flex={1}
+              paddingLeft="$9"
+              paddingRight="$3"
+              paddingVertical="$2"
+              fontSize="$3"
+              borderWidth={1}
+              borderColor="$gray8"
+              borderRadius="$4"
               placeholder="Search requirements..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
+          </XStack>
 
           {/* Requirements List */}
           {isLoadingRequirements ? (
-            <div className="flex items-center justify-center py-8">
+            <YStack alignItems="center" justifyContent="center" paddingVertical="$8">
               <LoadingSpinner size="sm" />
-            </div>
+            </YStack>
           ) : (
-            <div className="space-y-1">
+            <YStack gap="$1">
               {filteredRequirements.map((req) => (
-                <button
+                <Button
                   key={req.id}
-                  onClick={() => onSelectRequirement(req)}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-                    selectedRequirement?.id === req.id
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'hover:bg-gray-50'
-                  }`}
+                  unstyled
+                  width="100%"
+                  textAlign="left"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
+                  borderRadius="$4"
+                  backgroundColor={
+                    selectedRequirement?.id === req.id ? '$blue3' : 'transparent'
+                  }
+                  hoverStyle={{ backgroundColor: '$gray2' }}
+                  onPress={() => onSelectRequirement(req)}
                 >
-                  <div className="font-medium">{req.name}</div>
-                  <div className="text-xs text-gray-500">{req.code}</div>
-                </button>
+                  <YStack>
+                    <Text fontWeight="600" fontSize="$3" color={selectedRequirement?.id === req.id ? '$blue11' : '$color12'}>
+                      {req.name}
+                    </Text>
+                    <Text fontSize="$1" color="$gray11">
+                      {req.code}
+                    </Text>
+                  </YStack>
+                </Button>
               ))}
               {filteredRequirements.length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-4">No requirements found</p>
+                <Text fontSize="$3" color="$gray11" textAlign="center" paddingVertical="$4">
+                  No requirements found
+                </Text>
               )}
-            </div>
+            </YStack>
           )}
-        </div>
+        </YStack>
 
         {/* Dependency Tree */}
-        <div className="col-span-2 p-4 overflow-y-auto">
-          <h3 className="font-semibold text-gray-900 mb-3">Dependency Tree</h3>
+        <YStack flex={2} padding="$4" overflow="scroll">
+          <H3 fontWeight="600" color="$color12" marginBottom="$3">
+            Dependency Tree
+          </H3>
 
           {!selectedRequirement ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500">
-              <Info size={48} className="mb-4 text-gray-300" />
-              <p>Select a requirement to view its dependencies</p>
-            </div>
+            <YStack
+              flex={1}
+              alignItems="center"
+              justifyContent="center"
+              color="$gray11"
+            >
+              <YStack marginBottom="$4">
+                <Info size={48} style={{ color: 'var(--color-gray-8)' }} />
+              </YStack>
+              <Text color="$gray11">Select a requirement to view its dependencies</Text>
+            </YStack>
           ) : dependencyTreeQuery.isLoading ? (
-            <div className="flex items-center justify-center h-full">
+            <YStack flex={1} alignItems="center" justifyContent="center">
               <LoadingSpinner />
-              <span className="ml-2 text-gray-500">Loading dependencies...</span>
-            </div>
+              <Text marginLeft="$2" color="$gray11">
+                Loading dependencies...
+              </Text>
+            </YStack>
           ) : dependencyTreeQuery.isError ? (
-            <div className="flex flex-col items-center justify-center h-full text-red-500">
-              <AlertTriangle size={48} className="mb-4" />
-              <p>Failed to load dependencies</p>
-              <p className="text-sm text-gray-500 mt-1">{dependencyTreeQuery.error?.message}</p>
-            </div>
+            <YStack
+              flex={1}
+              alignItems="center"
+              justifyContent="center"
+              color="$red10"
+            >
+              <YStack marginBottom="$4">
+                <AlertTriangle size={48} style={{ color: 'var(--color-red-10)' }} />
+              </YStack>
+              <Text color="$red10">Failed to load dependencies</Text>
+              <Text fontSize="$3" color="$gray11" marginTop="$1">
+                {dependencyTreeQuery.error?.message}
+              </Text>
+            </YStack>
           ) : dependencyTree ? (
-            <div className="space-y-1">
+            <YStack gap="$1">
               <TreeNode node={dependencyTree} level={0} onSelect={handleTreeSelect} />
               {dependencyTree.children.length === 0 && (
-                <p className="text-sm text-gray-500 ml-6 mt-4">
+                <Text fontSize="$3" color="$gray11" marginLeft="$6" marginTop="$4">
                   This requirement has no dependencies
-                </p>
+                </Text>
               )}
-            </div>
+            </YStack>
           ) : null}
 
           {/* Legend */}
           {selectedRequirement && dependencyTree && dependencyTree.children.length > 0 && (
-            <div className="mt-6 pt-4 border-t">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Legend</h4>
-              <div className="flex items-center gap-4 text-xs">
-                <span
-                  className={`px-2 py-1 rounded-full border ${DEPENDENCY_TYPE_COLORS.requires}`}
+            <YStack marginTop="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$2">
+                Legend
+              </Text>
+              <XStack alignItems="center" gap="$4" flexWrap="wrap">
+                <Text
+                  fontSize="$1"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  borderRadius={9999}
+                  borderWidth={1}
+                  backgroundColor="$red2"
+                  color="$red10"
+                  borderColor="$red6"
                 >
                   Required - Must be present
-                </span>
-                <span
-                  className={`px-2 py-1 rounded-full border ${DEPENDENCY_TYPE_COLORS.recommended}`}
+                </Text>
+                <Text
+                  fontSize="$1"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  borderRadius={9999}
+                  borderWidth={1}
+                  backgroundColor="$yellow2"
+                  color="$yellow10"
+                  borderColor="$yellow6"
                 >
                   Recommended - Should have
-                </span>
-                <span
-                  className={`px-2 py-1 rounded-full border ${DEPENDENCY_TYPE_COLORS.alternative}`}
+                </Text>
+                <Text
+                  fontSize="$1"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  borderRadius={9999}
+                  borderWidth={1}
+                  backgroundColor="$blue2"
+                  color="$blue10"
+                  borderColor="$blue6"
                 >
                   Alternative - One of many
-                </span>
-              </div>
-            </div>
+                </Text>
+              </XStack>
+            </YStack>
           )}
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   )
 }
 
