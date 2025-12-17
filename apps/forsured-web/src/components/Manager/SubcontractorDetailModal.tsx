@@ -29,7 +29,7 @@ import { useAttachments } from '../../hooks/useAttachments';
 import { useComplianceIssues } from '../../hooks/useComplianceIssues';
 import { EntityType, SeverityLevel } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';
-import { useMockDatabase } from '../../contexts/DatabaseContext';
+import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 
 // Type definitions for database schema
@@ -90,7 +90,7 @@ export default function SubcontractorDetailModal({
   isOpen,
   onClose,
 }: SubcontractorDetailModalProps) {
-  const db = useMockDatabase();
+  const { db } = useDatabase();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'policies' | 'documents' | 'issues'
   >('overview');

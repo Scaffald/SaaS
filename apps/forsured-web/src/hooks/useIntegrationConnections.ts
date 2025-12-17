@@ -19,7 +19,6 @@
 import { useState, useEffect } from 'react';
 import { IntegrationConnection, ConnectionStatus } from '../types';
 import { useDatabase } from '../contexts/DatabaseContext';
-import MockDatabase from '../utils/mockDataStore';
 import { formatSupabaseError } from '../lib/database/formatSupabaseError';
 
 interface UseIntegrationConnectionsOptions {
@@ -34,7 +33,7 @@ export function useIntegrationConnections(
   const [connections, setConnections] = useState<IntegrationConnection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { useMockData, supabase } = useDatabase();
+  const { supabase } = useDatabase();
 
   useEffect(() => {
     fetchConnections();
@@ -45,54 +44,29 @@ export function useIntegrationConnections(
     try {
       setLoading(true);
 
-      if (useMockData) {
-        // Use mock database
-        const filters: Record<string, unknown> = {};
+      let query = supabase.schema('forsured').from('integration_connections').select('*');
 
-        if (options.userId) {
-          filters.user_id = options.userId;
-        }
-
-        if (options.integrationId) {
-          filters.integration_id = options.integrationId;
-        }
-
-        if (options.status) {
-          filters.status = options.status;
-        }
-
-        const data = await MockDatabase.query<IntegrationConnection>(
-          'integration_connections',
-          filters,
-          { column: 'created_at', ascending: false }
-        );
-        setConnections(data);
-      } else {
-        // Use real Supabase
-        let query = supabase.schema('forsured').from('integration_connections').select('*');
-
-        if (options.userId) {
-          query = query.eq('user_id', options.userId);
-        }
-
-        if (options.integrationId) {
-          query = query.eq('integration_id', options.integrationId);
-        }
-
-        if (options.status) {
-          query = query.eq('status', options.status);
-        }
-
-        query = query.order('created_at', { ascending: false });
-
-        const { data, error: supabaseError } = await query;
-
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'fetching integration connections');
-        }
-
-        setConnections(data || []);
+      if (options.userId) {
+        query = query.eq('user_id', options.userId);
       }
+
+      if (options.integrationId) {
+        query = query.eq('integration_id', options.integrationId);
+      }
+
+      if (options.status) {
+        query = query.eq('status', options.status);
+      }
+
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error: supabaseError } = await query;
+
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'fetching integration connections');
+      }
+
+      setConnections(data || []);
     } catch (err) {
       console.error('[useIntegrationConnections] Error fetching connections:', err);
       setError(err as Error);
@@ -105,29 +79,19 @@ export function useIntegrationConnections(
     connection: Omit<IntegrationConnection, 'id' | 'created_at' | 'updated_at'>
   ) => {
     try {
-      if (useMockData) {
-        const data = await MockDatabase.insert<IntegrationConnection>(
-          'integration_connections',
-          connection
-        );
-        await fetchConnections();
-        return data;
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('integration_connections')
-          .insert(connection)
-          .select()
-          .single();
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('integration_connections')
+        .insert(connection)
+        .select()
+        .single();
 
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'creating integration connection');
-        }
-
-        await fetchConnections();
-        return data;
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'creating integration connection');
       }
+
+      await fetchConnections();
+      return data;
     } catch (err) {
       console.error('[useIntegrationConnections] Error creating connection:', err);
       throw err;
@@ -139,31 +103,20 @@ export function useIntegrationConnections(
     updates: Partial<IntegrationConnection>
   ) => {
     try {
-      if (useMockData) {
-        const data = await MockDatabase.update<IntegrationConnection>(
-          'integration_connections',
-          id,
-          updates
-        );
-        await fetchConnections();
-        return data;
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('integration_connections')
-          .update(updates)
-          .eq('id', id)
-          .select()
-          .single();
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('integration_connections')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
 
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'updating integration connection');
-        }
-
-        await fetchConnections();
-        return data;
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'updating integration connection');
       }
+
+      await fetchConnections();
+      return data;
     } catch (err) {
       console.error('[useIntegrationConnections] Error updating connection:', err);
       throw err;
@@ -172,23 +125,17 @@ export function useIntegrationConnections(
 
   const deleteConnection = async (id: string) => {
     try {
-      if (useMockData) {
-        await MockDatabase.delete('integration_connections', id);
-        await fetchConnections();
-      } else {
-        // Use real Supabase
-        const { error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('integration_connections')
-          .delete()
-          .eq('id', id);
+      const { error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('integration_connections')
+        .delete()
+        .eq('id', id);
 
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'deleting integration connection');
-        }
-
-        await fetchConnections();
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'deleting integration connection');
       }
+
+      await fetchConnections();
     } catch (err) {
       console.error('[useIntegrationConnections] Error deleting connection:', err);
       throw err;

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { EmptyState, YStack, XStack, Text, Button, Circle, Card, H1, H2, H3 } from '@unicornlove/ui'
 import StatusBadge from '../Common/StatusBadge'
-import { useMockDatabase } from '../../contexts/DatabaseContext'
+import { useDatabase } from '../../contexts/DatabaseContext'
 import { toast } from 'sonner'
 import EnhancedTaskDetailModal from '../Manager/EnhancedTaskDetailModal'
 import { useLexicon } from '../../contexts/LexiconContext'
@@ -105,7 +105,7 @@ interface Project {
 }
 
 export default function EnhancedManagerDashboard() {
-  const db = useMockDatabase()
+  const { db } = useDatabase()
   const navigate = useNavigate()
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 

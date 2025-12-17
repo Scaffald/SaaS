@@ -19,7 +19,6 @@
 import { useState, useEffect } from 'react';
 import { AIExtractedFields } from '../types';
 import { useDatabase } from '../contexts/DatabaseContext';
-import MockDatabase from '../utils/mockDataStore';
 import { formatSupabaseError } from '../lib/database/formatSupabaseError';
 
 interface UseAIExtractionsOptions {
@@ -30,7 +29,7 @@ export function useAIExtractions(options: UseAIExtractionsOptions = {}) {
   const [extractions, setExtractions] = useState<AIExtractedFields[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { useMockData, supabase } = useDatabase();
+  const { supabase } = useDatabase();
 
   useEffect(() => {
     if (options.documentId) {
@@ -45,38 +44,21 @@ export function useAIExtractions(options: UseAIExtractionsOptions = {}) {
     try {
       setLoading(true);
 
-      if (useMockData) {
-        // Use mock database
-        const filters: Record<string, unknown> = {};
+      let query = supabase.schema('forsured').from('ai_extractions').select('*');
 
-        if (options.documentId) {
-          filters.document_id = options.documentId;
-        }
-
-        const data = await MockDatabase.query<AIExtractedFields>(
-          'ai_extractions',
-          filters,
-          { column: 'created_at', ascending: false }
-        );
-        setExtractions(data);
-      } else {
-        // Use real Supabase
-        let query = supabase.schema('forsured').from('ai_extractions').select('*');
-
-        if (options.documentId) {
-          query = query.eq('document_id', options.documentId);
-        }
-
-        query = query.order('created_at', { ascending: false });
-
-        const { data, error: supabaseError } = await query;
-
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'fetching AI extractions');
-        }
-
-        setExtractions(data || []);
+      if (options.documentId) {
+        query = query.eq('document_id', options.documentId);
       }
+
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error: supabaseError } = await query;
+
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'fetching AI extractions');
+      }
+
+      setExtractions(data || []);
     } catch (err) {
       console.error('[useAIExtractions] Error fetching extractions:', err);
       setError(err as Error);
@@ -89,29 +71,19 @@ export function useAIExtractions(options: UseAIExtractionsOptions = {}) {
     extraction: Omit<AIExtractedFields, 'id' | 'created_at' | 'updated_at'>
   ) => {
     try {
-      if (useMockData) {
-        const data = await MockDatabase.insert<AIExtractedFields>(
-          'ai_extractions',
-          extraction
-        );
-        await fetchExtractions();
-        return data;
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('ai_extractions')
-          .insert(extraction)
-          .select()
-          .single();
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('ai_extractions')
+        .insert(extraction)
+        .select()
+        .single();
 
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'creating AI extraction');
-        }
-
-        await fetchExtractions();
-        return data;
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'creating AI extraction');
       }
+
+      await fetchExtractions();
+      return data;
     } catch (err) {
       console.error('[useAIExtractions] Error creating extraction:', err);
       throw err;
@@ -123,31 +95,20 @@ export function useAIExtractions(options: UseAIExtractionsOptions = {}) {
     updates: Partial<AIExtractedFields>
   ) => {
     try {
-      if (useMockData) {
-        const data = await MockDatabase.update<AIExtractedFields>(
-          'ai_extractions',
-          id,
-          updates
-        );
-        await fetchExtractions();
-        return data;
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('ai_extractions')
-          .update(updates)
-          .eq('id', id)
-          .select()
-          .single();
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('ai_extractions')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
 
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'updating AI extraction');
-        }
-
-        await fetchExtractions();
-        return data;
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'updating AI extraction');
       }
+
+      await fetchExtractions();
+      return data;
     } catch (err) {
       console.error('[useAIExtractions] Error updating extraction:', err);
       throw err;
@@ -156,23 +117,17 @@ export function useAIExtractions(options: UseAIExtractionsOptions = {}) {
 
   const deleteExtraction = async (id: string) => {
     try {
-      if (useMockData) {
-        await MockDatabase.delete('ai_extractions', id);
-        await fetchExtractions();
-      } else {
-        // Use real Supabase
-        const { error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('ai_extractions')
-          .delete()
-          .eq('id', id);
+      const { error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('ai_extractions')
+        .delete()
+        .eq('id', id);
 
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'deleting AI extraction');
-        }
-
-        await fetchExtractions();
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'deleting AI extraction');
       }
+
+      await fetchExtractions();
     } catch (err) {
       console.error('[useAIExtractions] Error deleting extraction:', err);
       throw err;

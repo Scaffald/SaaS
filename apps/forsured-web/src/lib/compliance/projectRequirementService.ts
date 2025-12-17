@@ -3,26 +3,26 @@
  * Service for managing project-requirement associations
  */
 
-import mockDatabase from '../../utils/mockDataStore';
+import { forsured } from '@scf/supabase/forsured-client'
 import {
-  ProjectRequirement,
-  CreateProjectRequirementInput,
-  ComplianceRequirement,
-  RequirementStatus
-} from './types';
-import { getRequirement } from './requirementService';
+  type ProjectRequirement,
+  type CreateProjectRequirementInput,
+  type ComplianceRequirement,
+  RequirementStatus,
+} from './types'
+import { getRequirement } from './requirementService'
 
 /**
  * Extended project requirement with full requirement details
  */
 export interface ProjectRequirementWithDetails {
-  id: string;
-  project_id: string;
-  requirement_id: string;
-  is_mandatory: boolean;
-  assigned_at: string;
-  assigned_by: string;
-  requirement: ComplianceRequirement;
+  id: string
+  project_id: string
+  requirement_id: string
+  is_mandatory: boolean
+  assigned_at: string
+  assigned_by: string
+  requirement: ComplianceRequirement
 }
 
 /**
@@ -35,39 +35,40 @@ export async function associateRequirementWithProject(
   input: CreateProjectRequirementInput
 ): Promise<ProjectRequirement> {
   // Get the requirement to validate
-  const requirement = await getRequirement(input.requirement_id);
+  const requirement = await getRequirement(input.requirement_id)
   if (!requirement) {
-    throw new Error('Requirement not found');
+    throw new Error('Requirement not found')
   }
 
   // Draft requirements cannot be assigned to projects
   if (requirement.status === RequirementStatus.DRAFT) {
-    throw new Error('Cannot assign draft requirements to projects');
+    throw new Error('Cannot assign draft requirements to projects')
   }
 
   // Check for existing association
-  const existing = await mockDatabase.query<ProjectRequirement>(
-    'project_requirements',
-    {
-      project_id: input.project_id,
-      requirement_id: input.requirement_id
-    }
-  );
+  const { data: existing } = await forsured('project_requirements')
+    .select('*')
+    .eq('project_id', input.project_id)
+    .eq('requirement_id', input.requirement_id)
 
-  if (existing.length > 0) {
-    throw new Error('Requirement is already associated with this project');
+  if (existing && existing.length > 0) {
+    throw new Error('Requirement is already associated with this project')
   }
 
   // Create the association
-  const association = await mockDatabase.insert<ProjectRequirement>(
-    'project_requirements',
-    {
+  const { data: association, error } = await forsured('project_requirements')
+    .insert({
       ...input,
-      assigned_at: new Date().toISOString()
-    }
-  );
+      assigned_at: new Date().toISOString(),
+    })
+    .select()
+    .single()
 
-  return association;
+  if (error) {
+    throw new Error(`Failed to create association: ${error.message}`)
+  }
+
+  return association
 }
 
 /**
@@ -80,22 +81,24 @@ export async function getProjectRequirements(
   projectId: string,
   mandatoryOnly: boolean = false
 ): Promise<ProjectRequirementWithDetails[]> {
-  const filters: Record<string, string | boolean> = { project_id: projectId };
+  let query = forsured('project_requirements').select('*').eq('project_id', projectId)
+
   if (mandatoryOnly) {
-    filters.is_mandatory = true;
+    query = query.eq('is_mandatory', true)
   }
 
-  const associations = await mockDatabase.query<ProjectRequirement>(
-    'project_requirements',
-    filters
-  );
+  const { data: associations } = await query
+
+  if (!associations) {
+    return []
+  }
 
   // Fetch full requirement details for each association
   const requirementsWithDetails = await Promise.all(
     associations.map(async (assoc) => {
-      const requirement = await getRequirement(assoc.requirement_id);
+      const requirement = await getRequirement(assoc.requirement_id)
       if (!requirement) {
-        throw new Error(`Requirement ${assoc.requirement_id} not found`);
+        throw new Error(`Requirement ${assoc.requirement_id} not found`)
       }
 
       return {
@@ -105,22 +108,24 @@ export async function getProjectRequirements(
         is_mandatory: assoc.is_mandatory,
         assigned_at: assoc.assigned_at,
         assigned_by: assoc.assigned_by,
-        requirement
-      };
+        requirement,
+      }
     })
-  );
+  )
 
-  return requirementsWithDetails;
+  return requirementsWithDetails
 }
 
 /**
  * Removes a requirement from a project
  * @param associationId The ID of the project-requirement association
  */
-export async function removeRequirementFromProject(
-  associationId: string
-): Promise<void> {
-  await mockDatabase.delete('project_requirements', associationId);
+export async function removeRequirementFromProject(associationId: string): Promise<void> {
+  const { error } = await forsured('project_requirements').delete().eq('id', associationId)
+
+  if (error) {
+    throw new Error(`Failed to remove requirement from project: ${error.message}`)
+  }
 }
 
 /**
@@ -133,11 +138,17 @@ export async function updateProjectRequirement(
   associationId: string,
   updates: { is_mandatory?: boolean }
 ): Promise<ProjectRequirement> {
-  return await mockDatabase.update<ProjectRequirement>(
-    'project_requirements',
-    associationId,
-    updates
-  );
+  const { data, error } = await forsured('project_requirements')
+    .update(updates)
+    .eq('id', associationId)
+    .select()
+    .single()
+
+  if (error) {
+    throw new Error(`Failed to update project requirement: ${error.message}`)
+  }
+
+  return data
 }
 
 /**
@@ -145,15 +156,12 @@ export async function updateProjectRequirement(
  * @param requirementId The requirement ID
  * @returns True if requirement is not assigned to any projects
  */
-export async function canDeleteRequirement(
-  requirementId: string
-): Promise<boolean> {
-  const associations = await mockDatabase.query<ProjectRequirement>(
-    'project_requirements',
-    { requirement_id: requirementId }
-  );
+export async function canDeleteRequirement(requirementId: string): Promise<boolean> {
+  const { data: associations } = await forsured('project_requirements')
+    .select('*')
+    .eq('requirement_id', requirementId)
 
-  return associations.length === 0;
+  return !associations || associations.length === 0
 }
 
 /**
@@ -161,13 +169,10 @@ export async function canDeleteRequirement(
  * @param requirementId The requirement ID
  * @returns Array of project IDs
  */
-export async function getProjectsUsingRequirement(
-  requirementId: string
-): Promise<string[]> {
-  const associations = await mockDatabase.query<ProjectRequirement>(
-    'project_requirements',
-    { requirement_id: requirementId }
-  );
+export async function getProjectsUsingRequirement(requirementId: string): Promise<string[]> {
+  const { data: associations } = await forsured('project_requirements')
+    .select('*')
+    .eq('requirement_id', requirementId)
 
-  return associations.map(assoc => assoc.project_id);
+  return associations?.map((assoc) => assoc.project_id) || []
 }

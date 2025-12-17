@@ -19,7 +19,6 @@
 import { useState, useEffect } from 'react';
 import { Attachment, EntityType } from '../types';
 import { useDatabase } from '../contexts/DatabaseContext';
-import MockDatabase from '../utils/mockDataStore';
 import { formatSupabaseError } from '../lib/database/formatSupabaseError';
 
 interface UseAttachmentsOptions {
@@ -32,7 +31,7 @@ export function useAttachments(options: UseAttachmentsOptions = {}) {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { useMockData, supabase } = useDatabase();
+  const { supabase } = useDatabase();
 
   useEffect(() => {
     fetchAttachments();
@@ -42,47 +41,25 @@ export function useAttachments(options: UseAttachmentsOptions = {}) {
     try {
       setLoading(true);
 
-      if (useMockData) {
-        // Use mock database
-        const filters: Record<string, unknown> = {};
+      let query = supabase.schema('forsured').from('attachments').select('*');
 
-        if (options.entityType && options.entityId) {
-          filters.entity_type = options.entityType;
-          filters.entity_id = options.entityId;
-        }
-
-        if (options.uploadedBy) {
-          filters.uploaded_by = options.uploadedBy;
-        }
-
-        const data = await MockDatabase.query<Attachment>(
-          'attachments',
-          filters,
-          { column: 'created_at', ascending: false }
-        );
-        setAttachments(data);
-      } else {
-        // Use real Supabase
-        let query = supabase.schema('forsured').from('attachments').select('*');
-
-        if (options.entityType && options.entityId) {
-          query = query.eq('entity_type', options.entityType).eq('entity_id', options.entityId);
-        }
-
-        if (options.uploadedBy) {
-          query = query.eq('uploaded_by', options.uploadedBy);
-        }
-
-        query = query.order('created_at', { ascending: false });
-
-        const { data, error: supabaseError } = await query;
-
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'fetching attachments');
-        }
-
-        setAttachments(data || []);
+      if (options.entityType && options.entityId) {
+        query = query.eq('entity_type', options.entityType).eq('entity_id', options.entityId);
       }
+
+      if (options.uploadedBy) {
+        query = query.eq('uploaded_by', options.uploadedBy);
+      }
+
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error: supabaseError } = await query;
+
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'fetching attachments');
+      }
+
+      setAttachments(data || []);
     } catch (err) {
       console.error('[useAttachments] Error fetching attachments:', err);
       setError(err as Error);
@@ -95,29 +72,19 @@ export function useAttachments(options: UseAttachmentsOptions = {}) {
     attachment: Omit<Attachment, 'id' | 'created_at' | 'updated_at'>
   ) => {
     try {
-      if (useMockData) {
-        const data = await MockDatabase.insert<Attachment>(
-          'attachments',
-          attachment
-        );
-        await fetchAttachments();
-        return data;
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('attachments')
-          .insert(attachment)
-          .select()
-          .single();
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('attachments')
+        .insert(attachment)
+        .select()
+        .single();
 
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'creating attachment');
-        }
-
-        await fetchAttachments();
-        return data;
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'creating attachment');
       }
+
+      await fetchAttachments();
+      return data;
     } catch (err) {
       console.error('[useAttachments] Error creating attachment:', err);
       throw err;
@@ -126,23 +93,17 @@ export function useAttachments(options: UseAttachmentsOptions = {}) {
 
   const deleteAttachment = async (id: string) => {
     try {
-      if (useMockData) {
-        await MockDatabase.delete('attachments', id);
-        await fetchAttachments();
-      } else {
-        // Use real Supabase
-        const { error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('attachments')
-          .delete()
-          .eq('id', id);
+      const { error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('attachments')
+        .delete()
+        .eq('id', id);
 
-        if (supabaseError) {
-          throw formatSupabaseError(supabaseError, 'deleting attachment');
-        }
-
-        await fetchAttachments();
+      if (supabaseError) {
+        throw formatSupabaseError(supabaseError, 'deleting attachment');
       }
+
+      await fetchAttachments();
     } catch (err) {
       console.error('[useAttachments] Error deleting attachment:', err);
       throw err;

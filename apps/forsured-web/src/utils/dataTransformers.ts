@@ -3,7 +3,7 @@
  * REQ-196: Frontend Data Layer Migration
  *
  * Provides utilities to transform data between old JSON structures (mockManagerTasks.json, mockMaster.json)
- * and new MockDatabase schema.
+ * and new database schema.
  */
 
 // ============================================================================
@@ -47,7 +47,7 @@ export interface OldTaskStructure {
   tags?: string[];
 }
 
-/** New task structure matching MockDatabase schema */
+/** New task structure matching database schema */
 export interface NewTaskStructure {
   id: string;
   project_id: string;

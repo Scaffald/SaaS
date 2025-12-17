@@ -144,7 +144,7 @@ export interface MockACORD25Template {
 }
 
 /**
- * Policy data structure matching MockDatabase schema (REQ-106)
+ * Policy data structure matching database schema (REQ-106)
  */
 export interface PolicyData {
   id?: string;

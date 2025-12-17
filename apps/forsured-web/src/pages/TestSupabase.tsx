@@ -8,12 +8,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTasks } from '../hooks/useTasks';
-import { useDatabase } from '../contexts/DatabaseContext';
 import { supabaseServiceRole, forsured as forsuredQuery, core as coreQuery } from '../lib/supabase';
 
 export default function TestSupabase() {
-  const { tasks, loading, error, createTask, updateTask, deleteTask } = useTasks();
-  const { useMockData, supabase } = useDatabase();
+  const { tasks, loading, error, createTask, updateTask } = useTasks();
   const [testResults, setTestResults] = useState<string[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<'testing' | 'success' | 'error'>('testing');
 
@@ -30,68 +28,66 @@ export default function TestSupabase() {
 
   const testConnection = async () => {
     try {
-      addResult(`Mode: ${useMockData ? 'MockDatabase' : 'Real Supabase'}`);
+      addResult('Mode: Real Supabase');
 
-      if (!useMockData) {
-        // Test 1: Check Supabase client
-        addResult('Supabase client initialized');
+      // Test 1: Check Supabase client
+      addResult('Supabase client initialized');
 
-        // Check if service role client is available for testing
-        if (!supabaseServiceRole) {
-          addResult('Service role key not configured - tests will fail due to RLS', true);
-          setConnectionStatus('error');
-          return;
-        }
+      // Check if service role client is available for testing
+      if (!supabaseServiceRole) {
+        addResult('Service role key not configured - tests will fail due to RLS', true);
+        setConnectionStatus('error');
+        return;
+      }
 
-        addResult('Using service role client (bypasses RLS for testing)');
+      addResult('Using service role client (bypasses RLS for testing)');
 
-        // Test 2: Check schemas exist by trying to query them
-        let schemasFound = 0;
+      // Test 2: Check schemas exist by trying to query them
+      let schemasFound = 0;
 
-        // Try forsured schema
-        const { error: forsuredError } = await forsuredQuery('tasks', supabaseServiceRole)
-          .select('id', { count: 'exact', head: true });
-        if (!forsuredError) {
-          schemasFound++;
-          addResult('Schema forsured accessible');
-        } else {
-          addResult(`forsured schema error: ${forsuredError.message}`, true);
-        }
+      // Try forsured schema
+      const { error: forsuredError } = await forsuredQuery('tasks', supabaseServiceRole)
+        .select('id', { count: 'exact', head: true });
+      if (!forsuredError) {
+        schemasFound++;
+        addResult('Schema forsured accessible');
+      } else {
+        addResult(`forsured schema error: ${forsuredError.message}`, true);
+      }
 
-        // Try core schema
-        const { error: coreError } = await coreQuery('users', supabaseServiceRole)
-          .select('id', { count: 'exact', head: true });
-        if (!coreError) {
-          schemasFound++;
-          addResult('Schema core accessible');
-        } else {
-          addResult(`core schema error: ${coreError.message}`, true);
-        }
+      // Try core schema
+      const { error: coreError } = await coreQuery('users', supabaseServiceRole)
+        .select('id', { count: 'exact', head: true });
+      if (!coreError) {
+        schemasFound++;
+        addResult('Schema core accessible');
+      } else {
+        addResult(`core schema error: ${coreError.message}`, true);
+      }
 
-        addResult(`Schemas accessible: ${schemasFound}/2`);
+      addResult(`Schemas accessible: ${schemasFound}/2`);
 
-        // Test 3: Check forsured.tasks table exists
-        const { count, error: countError } = await forsuredQuery('tasks', supabaseServiceRole)
-          .select('*', { count: 'exact', head: true });
+      // Test 3: Check forsured.tasks table exists
+      const { count, error: countError } = await forsuredQuery('tasks', supabaseServiceRole)
+        .select('*', { count: 'exact', head: true });
 
-        if (countError) {
-          addResult(`Tasks table check failed: ${countError.message}`, true);
-          setConnectionStatus('error');
-        } else {
-          addResult(`Tasks table exists (${count} rows)`);
-          setConnectionStatus('success');
-        }
+      if (countError) {
+        addResult(`Tasks table check failed: ${countError.message}`, true);
+        setConnectionStatus('error');
+      } else {
+        addResult(`Tasks table exists (${count} rows)`);
+        setConnectionStatus('success');
+      }
 
-        // Test 4: Check core.users table exists (read-only)
-        const { data: coreUsers, error: coreUsersError } = await coreQuery('users', supabaseServiceRole)
-          .select('id, name, email')
-          .limit(1);
+      // Test 4: Check core.users table exists (read-only)
+      const { data: coreUsers, error: coreUsersError } = await coreQuery('users', supabaseServiceRole)
+        .select('id, name, email')
+        .limit(1);
 
-        if (coreUsersError) {
-          addResult(`Core users table check failed: ${coreUsersError.message}`, true);
-        } else {
-          addResult(`Core users table accessible (sample: ${coreUsers?.length || 0} rows)`);
-        }
+      if (coreUsersError) {
+        addResult(`Core users table check failed: ${coreUsersError.message}`, true);
+      } else {
+        addResult(`Core users table accessible (sample: ${coreUsers?.length || 0} rows)`);
       }
     } catch (err) {
       addResult(`Connection test error: ${(err as Error).message}`, true);
@@ -160,7 +156,7 @@ export default function TestSupabase() {
               <span className="text-red-600 dark:text-red-400">❌ Connection Failed</span>
             )}
             <span className="text-gray-600 dark:text-gray-400">
-              Mode: {useMockData ? 'Mock Database' : 'Real Supabase'}
+              Mode: Real Supabase
             </span>
           </div>
         </div>
@@ -214,7 +210,7 @@ export default function TestSupabase() {
         {/* Tasks List */}
         <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-            Tasks from {useMockData ? 'Mock Database' : 'forsured.tasks'}
+            Tasks from forsured.tasks
           </h2>
 
           {loading && (

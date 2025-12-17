@@ -6,19 +6,19 @@
  * Supports both org-level and project-level coverage requirements.
  */
 
-import {
+import type {
   CoverageLimitRequirement,
   CoverageRequirementLevel,
   CoverageLimitType,
   CreateCoverageLimitRequirementRequest,
   UpdateCoverageLimitRequirementRequest,
-} from '../../types';
-import MockDatabase from '../../utils/mockDataStore';
+} from '../../types'
+import { forsured } from '@scf/supabase/forsured-client'
 
 /**
  * Valid coverage requirement levels
  */
-export const VALID_LEVELS: CoverageRequirementLevel[] = ['org', 'project'];
+export const VALID_LEVELS: CoverageRequirementLevel[] = ['org', 'project']
 
 /**
  * Valid coverage types for limit requirements
@@ -32,64 +32,64 @@ export const VALID_COVERAGE_TYPES: CoverageLimitType[] = [
   'pollution_liability',
   'builders_risk',
   'equipment_floater',
-];
+]
 
 /**
  * User role for authorization
  */
-export type UserRole = 'admin' | 'broker' | 'gc' | 'subcontractor' | 'project_manager';
+export type UserRole = 'admin' | 'broker' | 'gc' | 'subcontractor' | 'project_manager'
 
 /**
  * User context for authorization
  */
 export interface UserContext {
-  id: string;
-  role: UserRole;
-  organization_id?: string;
-  project_ids?: string[];
+  id: string
+  role: UserRole
+  organization_id?: string
+  project_ids?: string[]
 }
 
 /**
  * API response structure
  */
 export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  statusCode: number;
+  success: boolean
+  data?: T
+  error?: string
+  statusCode: number
 }
 
 /**
  * Validation error details
  */
 export interface ValidationError {
-  field: string;
-  message: string;
+  field: string
+  message: string
 }
 
 /**
  * Check if user is an admin
  */
 export function isAdmin(user: UserContext): boolean {
-  return user.role === 'admin';
+  return user.role === 'admin'
 }
 
 /**
  * Check if user can manage org-level requirements (admin only)
  */
 export function canManageOrgLevel(user: UserContext): boolean {
-  return user.role === 'admin';
+  return user.role === 'admin'
 }
 
 /**
  * Check if user can manage project-level requirements (admin or project manager)
  */
 export function canManageProjectLevel(user: UserContext, projectId: string): boolean {
-  if (user.role === 'admin') return true;
+  if (user.role === 'admin') return true
   if (user.role === 'project_manager' || user.role === 'gc') {
-    return user.project_ids?.includes(projectId) ?? false;
+    return user.project_ids?.includes(projectId) ?? false
   }
-  return false;
+  return false
 }
 
 /**
@@ -100,9 +100,9 @@ export function validateLevel(level: string): ValidationError | undefined {
     return {
       field: 'level',
       message: `Invalid level. Must be one of: ${VALID_LEVELS.join(', ')}`,
-    };
+    }
   }
-  return undefined;
+  return undefined
 }
 
 /**
@@ -113,9 +113,9 @@ export function validateCoverageType(coverageType: string): ValidationError | un
     return {
       field: 'coverage_type',
       message: `Invalid coverage type. Must be one of: ${VALID_COVERAGE_TYPES.join(', ')}`,
-    };
+    }
   }
-  return undefined;
+  return undefined
 }
 
 /**
@@ -126,9 +126,9 @@ export function validateMinimumLimit(limit: number): ValidationError | undefined
     return {
       field: 'minimum_limit',
       message: 'Minimum limit must be a non-negative number',
-    };
+    }
   }
-  return undefined;
+  return undefined
 }
 
 /**
@@ -144,15 +144,15 @@ export function validateLevelProjectIdConsistency(
     return {
       field: 'project_id',
       message: 'Org-level requirements must not have a project_id',
-    };
+    }
   }
   if (level === 'project' && !projectId) {
     return {
       field: 'project_id',
       message: 'Project-level requirements must have a project_id',
-    };
+    }
   }
-  return undefined;
+  return undefined
 }
 
 /**
@@ -161,38 +161,38 @@ export function validateLevelProjectIdConsistency(
 export async function validateCreateInput(
   input: CreateCoverageLimitRequirementRequest
 ): Promise<ValidationError[]> {
-  const errors: ValidationError[] = [];
+  const errors: ValidationError[] = []
 
   // Required fields
   if (!input.name || input.name.trim() === '') {
-    errors.push({ field: 'name', message: 'Name is required' });
+    errors.push({ field: 'name', message: 'Name is required' })
   } else if (input.name.length > 200) {
-    errors.push({ field: 'name', message: 'Name must be 200 characters or less' });
+    errors.push({ field: 'name', message: 'Name must be 200 characters or less' })
   }
 
   if (!input.level) {
-    errors.push({ field: 'level', message: 'Level is required' });
+    errors.push({ field: 'level', message: 'Level is required' })
   } else {
-    const levelError = validateLevel(input.level);
-    if (levelError) errors.push(levelError);
+    const levelError = validateLevel(input.level)
+    if (levelError) errors.push(levelError)
   }
 
   if (!input.organization_id) {
-    errors.push({ field: 'organization_id', message: 'Organization ID is required' });
+    errors.push({ field: 'organization_id', message: 'Organization ID is required' })
   }
 
   if (!input.coverage_type) {
-    errors.push({ field: 'coverage_type', message: 'Coverage type is required' });
+    errors.push({ field: 'coverage_type', message: 'Coverage type is required' })
   } else {
-    const coverageTypeError = validateCoverageType(input.coverage_type);
-    if (coverageTypeError) errors.push(coverageTypeError);
+    const coverageTypeError = validateCoverageType(input.coverage_type)
+    if (coverageTypeError) errors.push(coverageTypeError)
   }
 
   if (input.minimum_limit === undefined || input.minimum_limit === null) {
-    errors.push({ field: 'minimum_limit', message: 'Minimum limit is required' });
+    errors.push({ field: 'minimum_limit', message: 'Minimum limit is required' })
   } else {
-    const limitError = validateMinimumLimit(input.minimum_limit);
-    if (limitError) errors.push(limitError);
+    const limitError = validateMinimumLimit(input.minimum_limit)
+    if (limitError) errors.push(limitError)
   }
 
   // Level/project_id consistency
@@ -200,11 +200,11 @@ export async function validateCreateInput(
     const consistencyError = validateLevelProjectIdConsistency(
       input.level as CoverageRequirementLevel,
       input.project_id
-    );
-    if (consistencyError) errors.push(consistencyError);
+    )
+    if (consistencyError) errors.push(consistencyError)
   }
 
-  return errors;
+  return errors
 }
 
 /**
@@ -213,27 +213,27 @@ export async function validateCreateInput(
 export async function validateUpdateInput(
   input: UpdateCoverageLimitRequirementRequest
 ): Promise<ValidationError[]> {
-  const errors: ValidationError[] = [];
+  const errors: ValidationError[] = []
 
   if (input.name !== undefined) {
     if (input.name.trim() === '') {
-      errors.push({ field: 'name', message: 'Name cannot be empty' });
+      errors.push({ field: 'name', message: 'Name cannot be empty' })
     } else if (input.name.length > 200) {
-      errors.push({ field: 'name', message: 'Name must be 200 characters or less' });
+      errors.push({ field: 'name', message: 'Name must be 200 characters or less' })
     }
   }
 
   if (input.coverage_type !== undefined) {
-    const coverageTypeError = validateCoverageType(input.coverage_type);
-    if (coverageTypeError) errors.push(coverageTypeError);
+    const coverageTypeError = validateCoverageType(input.coverage_type)
+    if (coverageTypeError) errors.push(coverageTypeError)
   }
 
   if (input.minimum_limit !== undefined) {
-    const limitError = validateMinimumLimit(input.minimum_limit);
-    if (limitError) errors.push(limitError);
+    const limitError = validateMinimumLimit(input.minimum_limit)
+    if (limitError) errors.push(limitError)
   }
 
-  return errors;
+  return errors
 }
 
 /**
@@ -253,51 +253,54 @@ export async function getCoverageLimitRequirements(
         success: false,
         error: 'Organization ID is required',
         statusCode: 400,
-      };
+      }
     }
 
-    let requirements: CoverageLimitRequirement[];
+    let requirements: CoverageLimitRequirement[]
 
     if (projectId) {
       // Get combined org-level + project-level requirements
-      const orgRequirements = await MockDatabase.query<CoverageLimitRequirement>(
-        'coverage_limit_requirements',
-        { organization_id: organizationId, level: 'org' }
-      );
+      const { data: orgRequirements } = await forsured('coverage_limit_requirements')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .eq('level', 'org')
 
-      const projectRequirements = await MockDatabase.query<CoverageLimitRequirement>(
-        'coverage_limit_requirements',
-        { organization_id: organizationId, project_id: projectId, level: 'project' }
-      );
+      const { data: projectRequirements } = await forsured('coverage_limit_requirements')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .eq('project_id', projectId)
+        .eq('level', 'project')
 
-      requirements = [...orgRequirements, ...projectRequirements];
+      requirements = [...(orgRequirements || []), ...(projectRequirements || [])]
     } else {
       // Get only org-level requirements
-      requirements = await MockDatabase.query<CoverageLimitRequirement>(
-        'coverage_limit_requirements',
-        { organization_id: organizationId, level: 'org' }
-      );
+      const { data } = await forsured('coverage_limit_requirements')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .eq('level', 'org')
+
+      requirements = data || []
     }
 
     // Sort by coverage_type then name
     requirements.sort((a, b) => {
       if (a.coverage_type !== b.coverage_type) {
-        return a.coverage_type.localeCompare(b.coverage_type);
+        return a.coverage_type.localeCompare(b.coverage_type)
       }
-      return a.name.localeCompare(b.name);
-    });
+      return a.name.localeCompare(b.name)
+    })
 
     return {
       success: true,
       data: requirements,
       statusCode: 200,
-    };
+    }
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch coverage requirements',
       statusCode: 500,
-    };
+    }
   }
 }
 
@@ -309,30 +312,30 @@ export async function getCoverageLimitRequirementById(
   id: string
 ): Promise<ApiResponse<CoverageLimitRequirement>> {
   try {
-    const requirement = MockDatabase.findById<CoverageLimitRequirement>(
-      'coverage_limit_requirements',
-      id
-    );
+    const { data: requirement } = await forsured('coverage_limit_requirements')
+      .select('*')
+      .eq('id', id)
+      .single()
 
     if (!requirement) {
       return {
         success: false,
         error: 'Coverage requirement not found',
         statusCode: 404,
-      };
+      }
     }
 
     return {
       success: true,
       data: requirement,
       statusCode: 200,
-    };
+    }
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch coverage requirement',
       statusCode: 500,
-    };
+    }
   }
 }
 
@@ -349,13 +352,13 @@ export async function createCoverageLimitRequirement(
   user: UserContext
 ): Promise<ApiResponse<CoverageLimitRequirement>> {
   // Validation
-  const errors = await validateCreateInput(input);
+  const errors = await validateCreateInput(input)
   if (errors.length > 0) {
     return {
       success: false,
       error: errors.map((e) => `${e.field}: ${e.message}`).join('; '),
       statusCode: 400,
-    };
+    }
   }
 
   // Authorization check
@@ -365,22 +368,22 @@ export async function createCoverageLimitRequirement(
         success: false,
         error: 'Unauthorized. Admin access required for org-level requirements.',
         statusCode: 403,
-      };
+      }
     }
-  } else if (input.level === 'project') {
-    if (!canManageProjectLevel(user, input.project_id!)) {
+  } else if (input.level === 'project' && input.project_id) {
+    if (!canManageProjectLevel(user, input.project_id)) {
       return {
         success: false,
-        error: 'Unauthorized. Admin or project manager access required for project-level requirements.',
+        error:
+          'Unauthorized. Admin or project manager access required for project-level requirements.',
         statusCode: 403,
-      };
+      }
     }
   }
 
   try {
-    const requirement = await MockDatabase.insert<CoverageLimitRequirement>(
-      'coverage_limit_requirements',
-      {
+    const { data: requirement, error } = await forsured('coverage_limit_requirements')
+      .insert({
         name: input.name,
         level: input.level,
         organization_id: input.organization_id,
@@ -388,20 +391,29 @@ export async function createCoverageLimitRequirement(
         coverage_type: input.coverage_type,
         minimum_limit: input.minimum_limit,
         required: input.required ?? true,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      return {
+        success: false,
+        error: `Failed to create coverage requirement: ${error.message}`,
+        statusCode: 500,
       }
-    );
+    }
 
     return {
       success: true,
       data: requirement,
       statusCode: 201,
-    };
+    }
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create coverage requirement',
       statusCode: 500,
-    };
+    }
   }
 }
 
@@ -417,16 +429,17 @@ export async function updateCoverageLimitRequirement(
   user: UserContext
 ): Promise<ApiResponse<CoverageLimitRequirement>> {
   // Check requirement exists
-  const existing = MockDatabase.findById<CoverageLimitRequirement>(
-    'coverage_limit_requirements',
-    id
-  );
+  const { data: existing } = await forsured('coverage_limit_requirements')
+    .select('*')
+    .eq('id', id)
+    .single()
+
   if (!existing) {
     return {
       success: false,
       error: 'Coverage requirement not found',
       statusCode: 404,
-    };
+    }
   }
 
   // Authorization check based on existing level
@@ -436,46 +449,55 @@ export async function updateCoverageLimitRequirement(
         success: false,
         error: 'Unauthorized. Admin access required for org-level requirements.',
         statusCode: 403,
-      };
+      }
     }
   } else if (existing.level === 'project') {
     if (!canManageProjectLevel(user, existing.project_id!)) {
       return {
         success: false,
-        error: 'Unauthorized. Admin or project manager access required for project-level requirements.',
+        error:
+          'Unauthorized. Admin or project manager access required for project-level requirements.',
         statusCode: 403,
-      };
+      }
     }
   }
 
   // Validation
-  const errors = await validateUpdateInput(input);
+  const errors = await validateUpdateInput(input)
   if (errors.length > 0) {
     return {
       success: false,
       error: errors.map((e) => `${e.field}: ${e.message}`).join('; '),
       statusCode: 400,
-    };
+    }
   }
 
   try {
-    const updated = await MockDatabase.update<CoverageLimitRequirement>(
-      'coverage_limit_requirements',
-      id,
-      input
-    );
+    const { data: updated, error } = await forsured('coverage_limit_requirements')
+      .update(input)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      return {
+        success: false,
+        error: `Failed to update coverage requirement: ${error.message}`,
+        statusCode: 500,
+      }
+    }
 
     return {
       success: true,
       data: updated,
       statusCode: 200,
-    };
+    }
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update coverage requirement',
       statusCode: 500,
-    };
+    }
   }
 }
 
@@ -488,16 +510,17 @@ export async function deleteCoverageLimitRequirement(
   user: UserContext
 ): Promise<ApiResponse<void>> {
   // Check requirement exists
-  const existing = MockDatabase.findById<CoverageLimitRequirement>(
-    'coverage_limit_requirements',
-    id
-  );
+  const { data: existing } = await forsured('coverage_limit_requirements')
+    .select('*')
+    .eq('id', id)
+    .single()
+
   if (!existing) {
     return {
       success: false,
       error: 'Coverage requirement not found',
       statusCode: 404,
-    };
+    }
   }
 
   // Authorization check based on level
@@ -507,31 +530,40 @@ export async function deleteCoverageLimitRequirement(
         success: false,
         error: 'Unauthorized. Admin access required to delete org-level requirements.',
         statusCode: 403,
-      };
+      }
     }
-  } else if (existing.level === 'project') {
-    if (!canManageProjectLevel(user, existing.project_id!)) {
+  } else if (existing.level === 'project' && existing.project_id) {
+    if (!canManageProjectLevel(user, existing.project_id)) {
       return {
         success: false,
-        error: 'Unauthorized. Admin or project manager access required to delete project-level requirements.',
+        error:
+          'Unauthorized. Admin or project manager access required to delete project-level requirements.',
         statusCode: 403,
-      };
+      }
     }
   }
 
   try {
-    await MockDatabase.delete('coverage_limit_requirements', id);
+    const { error } = await forsured('coverage_limit_requirements').delete().eq('id', id)
+
+    if (error) {
+      return {
+        success: false,
+        error: `Failed to delete coverage requirement: ${error.message}`,
+        statusCode: 500,
+      }
+    }
 
     return {
       success: true,
       statusCode: 200,
-    };
+    }
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete coverage requirement',
       statusCode: 500,
-    };
+    }
   }
 }
 
@@ -542,24 +574,23 @@ export async function getOrgLevelRequirements(
   organizationId: string
 ): Promise<ApiResponse<CoverageLimitRequirement[]>> {
   try {
-    const requirements = await MockDatabase.query<CoverageLimitRequirement>(
-      'coverage_limit_requirements',
-      { organization_id: organizationId, level: 'org' }
-    );
-
-    requirements.sort((a, b) => a.name.localeCompare(b.name));
+    const { data: requirements } = await forsured('coverage_limit_requirements')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .eq('level', 'org')
+      .order('name', { ascending: true })
 
     return {
       success: true,
-      data: requirements,
+      data: requirements || [],
       statusCode: 200,
-    };
+    }
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch org-level requirements',
       statusCode: 500,
-    };
+    }
   }
 }
 
@@ -570,24 +601,23 @@ export async function getProjectLevelRequirements(
   projectId: string
 ): Promise<ApiResponse<CoverageLimitRequirement[]>> {
   try {
-    const requirements = await MockDatabase.query<CoverageLimitRequirement>(
-      'coverage_limit_requirements',
-      { project_id: projectId, level: 'project' }
-    );
-
-    requirements.sort((a, b) => a.name.localeCompare(b.name));
+    const { data: requirements } = await forsured('coverage_limit_requirements')
+      .select('*')
+      .eq('project_id', projectId)
+      .eq('level', 'project')
+      .order('name', { ascending: true })
 
     return {
       success: true,
-      data: requirements,
+      data: requirements || [],
       statusCode: 200,
-    };
+    }
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch project-level requirements',
       statusCode: 500,
-    };
+    }
   }
 }
 
@@ -615,4 +645,4 @@ export const coverageLimitRequirementService = {
   // Constants
   VALID_LEVELS,
   VALID_COVERAGE_TYPES,
-};
+}

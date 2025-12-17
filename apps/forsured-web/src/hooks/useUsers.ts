@@ -8,66 +8,53 @@
  * For now, role parameter is ignored when using real Supabase.
  */
 
-import { useState, useEffect } from 'react';
-import { User } from '../types';
-import { useDatabase } from '../contexts/DatabaseContext';
-import { supabaseServiceRole, core as coreQuery } from '../lib/supabase';
-import MockDatabase from '../utils/mockDataStore';
+import { useState, useEffect } from 'react'
+import type { User } from '../types'
+import { supabaseServiceRole, core as coreQuery } from '../lib/supabase'
 
 export function useUsers(role?: 'broker' | 'manager' | 'subcontractor') {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const { useMockData } = useDatabase();
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    fetchUsers();
-  }, [role]);
+    fetchUsers()
+  }, [role])
 
   const fetchUsers = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
 
-      if (useMockData) {
-        // Use mock database
-        const filters = role ? { role } : {};
-        const data = await MockDatabase.query<User>('users', filters, {
-          column: 'name',
-          ascending: true,
-        });
-        setUsers(data);
-      } else {
-        // Use real Supabase with core schema
-        const client = supabaseServiceRole || null;
+      // Use real Supabase with core schema
+      const client = supabaseServiceRole || null
 
-        if (!client) {
-          throw new Error('Supabase service role client not configured');
-        }
-
-        // TODO: Add role filtering via join with core.role_assignments
-        // For now, fetch all users ordered by name
-        const { data, error: queryError } = await coreQuery('users', client)
-          .select('*')
-          .order('name', { ascending: true, nullsFirst: false });
-
-        if (queryError) {
-          throw queryError;
-        }
-
-        setUsers(data || []);
+      if (!client) {
+        throw new Error('Supabase service role client not configured')
       }
+
+      // TODO: Add role filtering via join with core.role_assignments
+      // For now, fetch all users ordered by name
+      const { data, error: queryError } = await coreQuery('users', client)
+        .select('*')
+        .order('name', { ascending: true, nullsFirst: false })
+
+      if (queryError) {
+        throw queryError
+      }
+
+      setUsers(data || [])
     } catch (err) {
-      console.error('[useUsers] Error fetching users:', err);
-      setError(err as Error);
+      console.error('[useUsers] Error fetching users:', err)
+      setError(err as Error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return {
     users,
     loading,
     error,
     fetchUsers,
-  };
+  }
 }

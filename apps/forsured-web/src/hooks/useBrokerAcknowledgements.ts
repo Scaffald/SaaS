@@ -44,7 +44,6 @@ import {
   AcknowledgementSignature,
 } from '../types';
 import { useDatabase } from '../contexts/DatabaseContext';
-import MockDatabase from '../utils/mockDataStore';
 import { formatSupabaseError } from '../lib/database/formatSupabaseError';
 
 interface UseBrokerAcknowledgementsOptions {
@@ -62,7 +61,7 @@ export function useBrokerAcknowledgements(
     useState<BrokerAcknowledgementForm | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { useMockData, supabase } = useDatabase();
+  const { supabase } = useDatabase();
 
   useEffect(() => {
     if (options.formId) {
@@ -81,52 +80,35 @@ export function useBrokerAcknowledgements(
     try {
       setLoading(true);
 
-      if (useMockData) {
-        // Use mock database
-        const filters: Record<string, unknown> = {};
-        if (options.subcontractorOrgId)
-          filters.subcontractor_org_id = options.subcontractorOrgId;
-        if (options.projectId) filters.project_id = options.projectId;
-        if (options.status) filters.status = options.status;
+      let query = supabase
+        .schema('forsured')
+        .from('broker_acknowledgements')
+        .select('*');
 
-        const data = await MockDatabase.query<BrokerAcknowledgementForm>(
-          'broker_acknowledgement_forms',
-          filters,
-          { column: 'created_at', ascending: false }
-        );
-        setForms(data);
-      } else {
-        // Use real Supabase
-        let query = supabase
-          .schema('forsured')
-          .from('broker_acknowledgements')
-          .select('*');
-
-        if (options.subcontractorOrgId) {
-          query = query.eq('subcontractor_org_id', options.subcontractorOrgId);
-        }
-
-        if (options.projectId) {
-          query = query.eq('project_id', options.projectId);
-        }
-
-        if (options.status) {
-          query = query.eq('status', options.status);
-        }
-
-        query = query.order('created_at', { ascending: false });
-
-        const { data, error: supabaseError } = await query;
-
-        if (supabaseError) {
-          throw formatSupabaseError(
-            supabaseError,
-            'fetching broker acknowledgements'
-          );
-        }
-
-        setForms(data || []);
+      if (options.subcontractorOrgId) {
+        query = query.eq('subcontractor_org_id', options.subcontractorOrgId);
       }
+
+      if (options.projectId) {
+        query = query.eq('project_id', options.projectId);
+      }
+
+      if (options.status) {
+        query = query.eq('status', options.status);
+      }
+
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error: supabaseError } = await query;
+
+      if (supabaseError) {
+        throw formatSupabaseError(
+          supabaseError,
+          'fetching broker acknowledgements'
+        );
+      }
+
+      setForms(data || []);
     } catch (err) {
       console.error('[useBrokerAcknowledgements] Error fetching forms:', err);
       setError(err as Error);
@@ -139,31 +121,21 @@ export function useBrokerAcknowledgements(
     try {
       setLoading(true);
 
-      if (useMockData) {
-        // Use mock database
-        const formData = await MockDatabase.findById<BrokerAcknowledgementForm>(
-          'broker_acknowledgement_forms',
-          formId
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('broker_acknowledgements')
+        .select('*')
+        .eq('id', formId)
+        .single();
+
+      if (supabaseError) {
+        throw formatSupabaseError(
+          supabaseError,
+          'fetching broker acknowledgement by ID'
         );
-        setCurrentForm(formData);
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('broker_acknowledgements')
-          .select('*')
-          .eq('id', formId)
-          .single();
-
-        if (supabaseError) {
-          throw formatSupabaseError(
-            supabaseError,
-            'fetching broker acknowledgement by ID'
-          );
-        }
-
-        setCurrentForm(data);
       }
+
+      setCurrentForm(data);
     } catch (err) {
       console.error('[useBrokerAcknowledgements] Error fetching form:', err);
       setError(err as Error);
@@ -174,33 +146,22 @@ export function useBrokerAcknowledgements(
 
   const createForm = async (formData: Partial<BrokerAcknowledgementForm>) => {
     try {
-      if (useMockData) {
-        // Use mock database
-        const data = await MockDatabase.insert<BrokerAcknowledgementForm>(
-          'broker_acknowledgement_forms',
-          formData
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('broker_acknowledgements')
+        .insert(formData)
+        .select()
+        .single();
+
+      if (supabaseError) {
+        throw formatSupabaseError(
+          supabaseError,
+          'creating broker acknowledgement'
         );
-        await fetchForms();
-        return data;
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('broker_acknowledgements')
-          .insert(formData)
-          .select()
-          .single();
-
-        if (supabaseError) {
-          throw formatSupabaseError(
-            supabaseError,
-            'creating broker acknowledgement'
-          );
-        }
-
-        await fetchForms();
-        return data;
       }
+
+      await fetchForms();
+      return data;
     } catch (err) {
       console.error('[useBrokerAcknowledgements] Error creating form:', err);
       throw err;
@@ -212,43 +173,27 @@ export function useBrokerAcknowledgements(
     updates: Partial<BrokerAcknowledgementForm>
   ) => {
     try {
-      if (useMockData) {
-        // Use mock database
-        const data = await MockDatabase.update<BrokerAcknowledgementForm>(
-          'broker_acknowledgement_forms',
-          formId,
-          updates
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('broker_acknowledgements')
+        .update(updates)
+        .eq('id', formId)
+        .select()
+        .single();
+
+      if (supabaseError) {
+        throw formatSupabaseError(
+          supabaseError,
+          'updating broker acknowledgement'
         );
-        if (options.formId === formId) {
-          await fetchFormById(formId);
-        } else {
-          await fetchForms();
-        }
-        return data;
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('broker_acknowledgements')
-          .update(updates)
-          .eq('id', formId)
-          .select()
-          .single();
-
-        if (supabaseError) {
-          throw formatSupabaseError(
-            supabaseError,
-            'updating broker acknowledgement'
-          );
-        }
-
-        if (options.formId === formId) {
-          await fetchFormById(formId);
-        } else {
-          await fetchForms();
-        }
-        return data;
       }
+
+      if (options.formId === formId) {
+        await fetchFormById(formId);
+      } else {
+        await fetchForms();
+      }
+      return data;
     } catch (err) {
       console.error('[useBrokerAcknowledgements] Error updating form:', err);
       throw err;
@@ -280,35 +225,23 @@ export function useBrokerAcknowledgements(
         date_submitted: new Date().toISOString().split('T')[0], // Format as date
       };
 
-      if (useMockData) {
-        // Use mock database
-        const data = await MockDatabase.update<BrokerAcknowledgementForm>(
-          'broker_acknowledgement_forms',
-          formId,
-          updates
+      const { data, error: supabaseError } = await supabase
+        .schema('forsured')
+        .from('broker_acknowledgements')
+        .update(updates)
+        .eq('id', formId)
+        .select()
+        .single();
+
+      if (supabaseError) {
+        throw formatSupabaseError(
+          supabaseError,
+          'submitting broker acknowledgement'
         );
-        await fetchFormById(formId);
-        return data;
-      } else {
-        // Use real Supabase
-        const { data, error: supabaseError } = await supabase
-          .schema('forsured')
-          .from('broker_acknowledgements')
-          .update(updates)
-          .eq('id', formId)
-          .select()
-          .single();
-
-        if (supabaseError) {
-          throw formatSupabaseError(
-            supabaseError,
-            'submitting broker acknowledgement'
-          );
-        }
-
-        await fetchFormById(formId);
-        return data;
       }
+
+      await fetchFormById(formId);
+      return data;
     } catch (err) {
       console.error('[useBrokerAcknowledgements] Error submitting form:', err);
       throw err;

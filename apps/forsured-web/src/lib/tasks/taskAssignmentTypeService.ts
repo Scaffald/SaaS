@@ -8,7 +8,6 @@
  */
 
 import { Task } from '../../types';
-import MockDatabase from '../../utils/mockDataStore';
 
 /**
  * Task assignment type enum
@@ -190,43 +189,7 @@ export async function assignTask(
   assigneeId: string,
   currentUserId: string
 ): Promise<TaskAssignmentTypeResult> {
-  try {
-    // Get the task
-    const task = MockDatabase.findById('tasks', taskId) as Task | null;
-    if (!task) {
-      return {
-        success: false,
-        assignmentType: 'unassigned',
-        viewType: 'all',
-        error: `Task not found: ${taskId}`,
-      };
-    }
-
-    // Update the task with the new assignee
-    const updatedTask = await MockDatabase.update<Task>('tasks', taskId, {
-      assigned_to_user_id: assigneeId,
-      updated_at: new Date().toISOString(),
-    });
-
-    // Determine assignment type based on who assigned it
-    const isSelfAssignment = assigneeId === currentUserId;
-    const assignmentType: TaskAssignmentType = isSelfAssignment ? 'self_assigned' : 'delegated';
-    const viewType: TaskViewType = isSelfAssignment ? 'inbox' : 'assigned_by_me';
-
-    return {
-      success: true,
-      assignmentType,
-      viewType,
-      task: updatedTask,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      assignmentType: 'unassigned',
-      viewType: 'all',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
+  throw new Error('assignTask not implemented with Supabase');
 }
 
 /**
@@ -254,36 +217,7 @@ export async function reassignTask(
  * @returns Result with unassigned status
  */
 export async function unassignTask(taskId: string): Promise<TaskAssignmentTypeResult> {
-  try {
-    const task = MockDatabase.findById('tasks', taskId) as Task | null;
-    if (!task) {
-      return {
-        success: false,
-        assignmentType: 'unassigned',
-        viewType: 'all',
-        error: `Task not found: ${taskId}`,
-      };
-    }
-
-    const updatedTask = await MockDatabase.update<Task>('tasks', taskId, {
-      assigned_to_user_id: undefined,
-      updated_at: new Date().toISOString(),
-    });
-
-    return {
-      success: true,
-      assignmentType: 'unassigned',
-      viewType: 'inbox', // Unassigned tasks go back to creator's inbox
-      task: updatedTask,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      assignmentType: 'unassigned',
-      viewType: 'all',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
+  throw new Error('unassignTask not implemented with Supabase');
 }
 
 /**

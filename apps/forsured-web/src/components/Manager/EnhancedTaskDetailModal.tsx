@@ -17,7 +17,7 @@ import {
 import { YStack, XStack, Text, H2, H3, Card, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import Modal from '../Common/Modal';
-import { useMockDatabase } from '../../contexts/DatabaseContext';
+import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 
 // New database schema types
@@ -81,7 +81,7 @@ export default function EnhancedTaskDetailModal({
   onClose,
   onUpdateTask,
 }: EnhancedTaskDetailModalProps) {
-  const db = useMockDatabase();
+  const { db } = useDatabase();
   const [showReassignModal, setShowReassignModal] = useState(false);
   const [showAddNoteModal, setShowAddNoteModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);

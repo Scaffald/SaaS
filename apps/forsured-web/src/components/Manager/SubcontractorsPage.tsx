@@ -15,7 +15,7 @@ import {
 import { EmptyState, YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import SubcontractorDetailModal from './SubcontractorDetailModal';
-import { useMockDatabase } from '../../contexts/DatabaseContext';
+import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 
 type ComplianceStatus = 'compliant' | 'warning' | 'critical' | 'all';
@@ -47,7 +47,7 @@ interface Subcontractor {
 }
 
 export default function SubcontractorsPage() {
-  const db = useMockDatabase();
+  const { db } = useDatabase();
   const navigate = useNavigate();
 
   // State for data fetching

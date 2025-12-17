@@ -7,7 +7,6 @@
  */
 
 import { Task, DueDateSource, TaskDueDateHistory, User } from '../../types';
-import MockDatabase from '../../utils/mockDataStore';
 import {
   recalculateDueDate,
   formatDueDateForStorage,
@@ -119,23 +118,7 @@ export async function createDueDateHistoryRecord(
   source: DueDateSource,
   user: UserContext
 ): Promise<TaskDueDateHistory> {
-  const now = new Date().toISOString();
-
-  const historyRecord = await MockDatabase.insert<TaskDueDateHistory>('task_due_date_history', {
-    task_id: taskId,
-    old_due_date: oldDueDate,
-    new_due_date: newDueDate,
-    source,
-    changed_by_user_id: user.id,
-    changed_by: {
-      id: user.id,
-      name: user.name || 'Unknown User',
-      email: user.email,
-    },
-    changed_at: now,
-  });
-
-  return historyRecord;
+  throw new Error('createDueDateHistoryRecord not implemented with Supabase');
 }
 
 /**
@@ -155,82 +138,7 @@ export async function updateTaskDueDate(
   user: UserContext,
   context?: TaskDueDateContext
 ): Promise<UpdateDueDateResult> {
-  // Find the task
-  const task = MockDatabase.findById('tasks', taskId) as Task | null;
-
-  if (!task) {
-    return {
-      success: false,
-      error: 'Task not found',
-      statusCode: 404,
-    };
-  }
-
-  // Check authorization
-  if (!canUpdateDueDate(task, user)) {
-    return {
-      success: false,
-      error: 'Unauthorized to modify due date',
-      statusCode: 403,
-    };
-  }
-
-  // Validate date format if provided
-  if (request.due_date !== null && !isValidISODate(request.due_date)) {
-    return {
-      success: false,
-      error: 'Invalid date format',
-      statusCode: 400,
-    };
-  }
-
-  // Determine the new due date and source
-  let newDueDate: string | undefined;
-  let newSource: DueDateSource;
-
-  if (request.due_date === null) {
-    // Clear manual override - revert to auto-calculated
-    const inferredResult = recalculateDueDate(task, context || {});
-
-    if (inferredResult) {
-      newDueDate = formatDueDateForStorage(inferredResult.dueDate);
-      newSource = inferredResult.source;
-    } else {
-      // No context available for auto-calculation, just clear the date
-      newDueDate = undefined;
-      newSource = request.source;
-    }
-  } else {
-    // Set manual due date
-    newDueDate = request.due_date;
-    newSource = request.source;
-  }
-
-  // Get old due date for history
-  const oldDueDate = task.due_date;
-
-  // Create history record
-  const historyRecord = await createDueDateHistoryRecord(
-    taskId,
-    oldDueDate,
-    newDueDate,
-    newSource,
-    user
-  );
-
-  // Update the task
-  const updatedTask = await MockDatabase.update<Task>('tasks', taskId, {
-    due_date: newDueDate,
-    due_date_source: newSource,
-    updated_at: new Date().toISOString(),
-  });
-
-  return {
-    success: true,
-    task: updatedTask,
-    historyRecord,
-    statusCode: 200,
-  };
+  throw new Error('updateTaskDueDate not implemented with Supabase');
 }
 
 /**
@@ -251,38 +159,7 @@ export async function getTaskDueDateHistory(
   error?: string;
   statusCode: number;
 }> {
-  // Find the task
-  const task = MockDatabase.findById('tasks', taskId) as Task | null;
-
-  if (!task) {
-    return {
-      success: false,
-      error: 'Task not found',
-      statusCode: 404,
-    };
-  }
-
-  // Check authorization (same rules as update)
-  if (!canUpdateDueDate(task, user)) {
-    return {
-      success: false,
-      error: 'Unauthorized to view task history',
-      statusCode: 403,
-    };
-  }
-
-  // Query history ordered by changed_at descending
-  const history = await MockDatabase.query<TaskDueDateHistory>(
-    'task_due_date_history',
-    { task_id: taskId },
-    { column: 'changed_at', ascending: false }
-  );
-
-  return {
-    success: true,
-    history,
-    statusCode: 200,
-  };
+  throw new Error('getTaskDueDateHistory not implemented with Supabase');
 }
 
 /**

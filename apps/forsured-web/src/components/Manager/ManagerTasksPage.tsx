@@ -13,7 +13,7 @@ import {
 import { YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
-import { useMockDatabase } from '../../contexts/DatabaseContext';
+import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 import { useEnums } from '../../hooks/useEnums';
 
@@ -47,7 +47,7 @@ interface Task {
 }
 
 export default function ManagerTasksPage() {
-  const db = useMockDatabase();
+  const { db } = useDatabase();
 
   // Fetch enums
   const { data: taskStatuses, isLoading: loadingStatuses } = useEnums('task_status');

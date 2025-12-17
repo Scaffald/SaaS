@@ -146,7 +146,7 @@ export function useManagerAcknowledgements(
     useState<BrokerAcknowledgementPacket | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { useMockData, supabase } = useDatabase();
+  const { supabase } = useDatabase();
 
   useEffect(() => {
     loadPackets();
@@ -157,66 +157,40 @@ export function useManagerAcknowledgements(
       setLoading(true);
       setError(null);
 
-      if (useMockData) {
-        // Use mock data
-        let filteredPackets = mockManagerAck.mocks
-          .packets as BrokerAcknowledgementPacket[];
+      let query = supabase
+        .schema('forsured')
+        .from('manager_acknowledgements')
+        .select('*');
 
-        if (options.packetId) {
-          const packet = filteredPackets.find((p) => p.id === options.packetId);
-          setCurrentPacket(packet || null);
-        }
-
-        if (options.projectId) {
-          filteredPackets = filteredPackets.filter(
-            (p) => p.project_id === options.projectId
-          );
-        }
-
-        if (options.status) {
-          filteredPackets = filteredPackets.filter(
-            (p) => p.status === options.status
-          );
-        }
-
-        setPackets(filteredPackets);
-      } else {
-        // Use real Supabase
-        let query = supabase
-          .schema('forsured')
-          .from('manager_acknowledgements')
-          .select('*');
-
-        if (options.packetId) {
-          query = query.eq('id', options.packetId);
-        }
-
-        if (options.projectId) {
-          query = query.eq('project_id', options.projectId);
-        }
-
-        if (options.status) {
-          query = query.eq('status', options.status);
-        }
-
-        query = query.order('effective_at', { ascending: false });
-
-        const { data, error: supabaseError } = await query;
-
-        if (supabaseError) {
-          throw formatSupabaseError(
-            supabaseError,
-            'fetching manager acknowledgements'
-          );
-        }
-
-        // If fetching a specific packet, set currentPacket
-        if (options.packetId && data && data.length > 0) {
-          setCurrentPacket(data[0] as BrokerAcknowledgementPacket);
-        }
-
-        setPackets((data || []) as BrokerAcknowledgementPacket[]);
+      if (options.packetId) {
+        query = query.eq('id', options.packetId);
       }
+
+      if (options.projectId) {
+        query = query.eq('project_id', options.projectId);
+      }
+
+      if (options.status) {
+        query = query.eq('status', options.status);
+      }
+
+      query = query.order('effective_at', { ascending: false });
+
+      const { data, error: supabaseError } = await query;
+
+      if (supabaseError) {
+        throw formatSupabaseError(
+          supabaseError,
+          'fetching manager acknowledgements'
+        );
+      }
+
+      // If fetching a specific packet, set currentPacket
+      if (options.packetId && data && data.length > 0) {
+        setCurrentPacket(data[0] as BrokerAcknowledgementPacket);
+      }
+
+      setPackets((data || []) as BrokerAcknowledgementPacket[]);
     } catch (err) {
       console.error(
         '[useManagerAcknowledgements] Error fetching packets:',

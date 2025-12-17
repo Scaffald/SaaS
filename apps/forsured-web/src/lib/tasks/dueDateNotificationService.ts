@@ -7,7 +7,6 @@
  */
 
 import { Task, DueDateSource, Notification } from '../../types';
-import MockDatabase from '../../utils/mockDataStore';
 
 /**
  * User info for notification purposes
@@ -168,21 +167,7 @@ export async function sendNotificationToUser(
   userId: string,
   notification: DueDateChangeNotification
 ): Promise<void> {
-  await MockDatabase.insert<Notification>('notifications', {
-    user_id: userId,
-    type: notification.type,
-    title: `Due Date Changed: ${notification.taskTitle}`,
-    message: notification.message,
-    data: {
-      taskId: notification.taskId,
-      oldDueDate: notification.oldDueDate,
-      newDueDate: notification.newDueDate,
-      source: notification.source,
-      changedBy: notification.changedBy,
-    },
-    read: false,
-    created_at: notification.timestamp,
-  });
+  throw new Error('sendNotificationToUser not implemented with Supabase');
 }
 
 /**

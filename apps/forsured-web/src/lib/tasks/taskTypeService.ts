@@ -6,7 +6,6 @@
  */
 
 import { TaskType, TaskTypeCategory, TaskPriority } from '../../types';
-import MockDatabase from '../../utils/mockDataStore';
 
 /**
  * Valid task type categories
@@ -183,17 +182,7 @@ export async function validateUniqueName(
   name: string,
   excludeId?: string
 ): Promise<ValidationError | undefined> {
-  const existing = await MockDatabase.query<TaskType>('task_types', {});
-  const duplicate = existing.find(
-    (t) => t.name.toLowerCase() === name.toLowerCase() && t.id !== excludeId
-  );
-  if (duplicate) {
-    return {
-      field: 'name',
-      message: 'A task type with this name already exists',
-    };
-  }
-  return undefined;
+  throw new Error('validateUniqueName not implemented with Supabase');
 }
 
 /**
@@ -295,39 +284,7 @@ export async function validateUpdateInput(
  * @returns API response with task types
  */
 export async function getAllTaskTypes(category?: TaskTypeCategory): Promise<ApiResponse<TaskType[]>> {
-  try {
-    let taskTypes: TaskType[];
-
-    if (category) {
-      // Validate category filter
-      const categoryError = validateCategory(category);
-      if (categoryError) {
-        return {
-          success: false,
-          error: categoryError.message,
-          statusCode: 400,
-        };
-      }
-      taskTypes = await MockDatabase.query<TaskType>('task_types', { category });
-    } else {
-      taskTypes = await MockDatabase.query<TaskType>('task_types', {});
-    }
-
-    // Sort by name
-    taskTypes.sort((a, b) => a.name.localeCompare(b.name));
-
-    return {
-      success: true,
-      data: taskTypes,
-      statusCode: 200,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch task types',
-      statusCode: 500,
-    };
-  }
+  throw new Error('getAllTaskTypes not implemented with Supabase');
 }
 
 /**
@@ -337,29 +294,7 @@ export async function getAllTaskTypes(category?: TaskTypeCategory): Promise<ApiR
  * @returns API response with task type
  */
 export async function getTaskTypeById(id: string): Promise<ApiResponse<TaskType>> {
-  try {
-    const taskType = MockDatabase.findById<TaskType>('task_types', id);
-
-    if (!taskType) {
-      return {
-        success: false,
-        error: 'Task type not found',
-        statusCode: 404,
-      };
-    }
-
-    return {
-      success: true,
-      data: taskType,
-      statusCode: 200,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch task type',
-      statusCode: 500,
-    };
-  }
+  throw new Error('getTaskTypeById not implemented with Supabase');
 }
 
 /**
@@ -373,51 +308,7 @@ export async function createTaskType(
   input: CreateTaskTypeInput,
   user: UserContext
 ): Promise<ApiResponse<TaskType>> {
-  // Authorization check
-  if (!isAdmin(user)) {
-    return {
-      success: false,
-      error: 'Unauthorized. Admin access required.',
-      statusCode: 403,
-    };
-  }
-
-  // Validation
-  const errors = await validateCreateInput(input);
-  if (errors.length > 0) {
-    return {
-      success: false,
-      error: errors.map((e) => `${e.field}: ${e.message}`).join('; '),
-      statusCode: 400,
-    };
-  }
-
-  try {
-    const taskType = await MockDatabase.insert<TaskType>('task_types', {
-      name: input.name,
-      description: input.description,
-      default_priority: input.default_priority || 'medium',
-      default_due_date_offset: input.default_due_date_offset ?? 7,
-      category: input.category,
-      icon: input.icon,
-      color: input.color,
-      default_assignee_role: input.default_assignee_role,
-      auto_assignment_rules: input.auto_assignment_rules,
-      is_active: input.is_active ?? true,
-    });
-
-    return {
-      success: true,
-      data: taskType,
-      statusCode: 201,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to create task type',
-      statusCode: 500,
-    };
-  }
+  throw new Error('createTaskType not implemented with Supabase');
 }
 
 /**
@@ -433,50 +324,7 @@ export async function updateTaskType(
   input: UpdateTaskTypeInput,
   user: UserContext
 ): Promise<ApiResponse<TaskType>> {
-  // Authorization check
-  if (!isAdmin(user)) {
-    return {
-      success: false,
-      error: 'Unauthorized. Admin access required.',
-      statusCode: 403,
-    };
-  }
-
-  // Check task type exists
-  const existing = MockDatabase.findById<TaskType>('task_types', id);
-  if (!existing) {
-    return {
-      success: false,
-      error: 'Task type not found',
-      statusCode: 404,
-    };
-  }
-
-  // Validation
-  const errors = await validateUpdateInput(input, id);
-  if (errors.length > 0) {
-    return {
-      success: false,
-      error: errors.map((e) => `${e.field}: ${e.message}`).join('; '),
-      statusCode: 400,
-    };
-  }
-
-  try {
-    const updatedTaskType = await MockDatabase.update<TaskType>('task_types', id, input);
-
-    return {
-      success: true,
-      data: updatedTaskType,
-      statusCode: 200,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to update task type',
-      statusCode: 500,
-    };
-  }
+  throw new Error('updateTaskType not implemented with Supabase');
 }
 
 /**
@@ -490,39 +338,7 @@ export async function deleteTaskType(
   id: string,
   user: UserContext
 ): Promise<ApiResponse<void>> {
-  // Authorization check
-  if (!isAdmin(user)) {
-    return {
-      success: false,
-      error: 'Unauthorized. Admin access required.',
-      statusCode: 403,
-    };
-  }
-
-  // Check task type exists
-  const existing = MockDatabase.findById<TaskType>('task_types', id);
-  if (!existing) {
-    return {
-      success: false,
-      error: 'Task type not found',
-      statusCode: 404,
-    };
-  }
-
-  try {
-    await MockDatabase.delete('task_types', id);
-
-    return {
-      success: true,
-      statusCode: 200,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete task type',
-      statusCode: 500,
-    };
-  }
+  throw new Error('deleteTaskType not implemented with Supabase');
 }
 
 /**
@@ -534,35 +350,7 @@ export async function deleteTaskType(
 export async function getActiveTaskTypes(
   category?: TaskTypeCategory
 ): Promise<ApiResponse<TaskType[]>> {
-  try {
-    const filter: Partial<TaskType> = { is_active: true };
-    if (category) {
-      const categoryError = validateCategory(category);
-      if (categoryError) {
-        return {
-          success: false,
-          error: categoryError.message,
-          statusCode: 400,
-        };
-      }
-      filter.category = category;
-    }
-
-    const taskTypes = await MockDatabase.query<TaskType>('task_types', filter);
-    taskTypes.sort((a, b) => a.name.localeCompare(b.name));
-
-    return {
-      success: true,
-      data: taskTypes,
-      statusCode: 200,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch task types',
-      statusCode: 500,
-    };
-  }
+  throw new Error('getActiveTaskTypes not implemented with Supabase');
 }
 
 /**

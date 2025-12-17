@@ -11,7 +11,6 @@ import { Search } from 'lucide-react';
 import { Task, TaskStatus, TaskPriority, User } from '../../../types';
 import { TaskList } from '../../../components/tasks/TaskList';
 import { taskService, TaskFilters } from '../../../lib/api/taskService';
-import MockDatabase from '../../../utils/mockDataStore';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -36,21 +35,16 @@ export default function TasksPage() {
     }
   }, [filters, searchQuery]);
 
-  const loadUsers = useCallback(async () => {
-    await MockDatabase.query<User>('users', {}, { column: 'name', ascending: true });
-  }, []);
-
   // Real-time polling (30s interval as per requirements)
   useEffect(() => {
     loadTasks();
-    loadUsers();
 
     const interval = setInterval(() => {
       loadTasks();
     }, 30000); // Poll every 30 seconds
 
     return () => clearInterval(interval);
-  }, [loadTasks, loadUsers]);
+  }, [loadTasks]);
 
   const handleFilterChange = (key: keyof TaskFilters, value: TaskStatus[] | TaskPriority[] | string[] | undefined) => {
     setFilters((prev) => ({

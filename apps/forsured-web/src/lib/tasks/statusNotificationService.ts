@@ -10,7 +10,6 @@
  */
 
 import { Task, TaskStatus } from '../../types';
-import MockDatabase from '../../utils/mockDataStore';
 import {
   findStatusTransitionConfig,
   formatNotificationMessage,
@@ -107,40 +106,7 @@ async function createNotificationRecord(
   newStatus: TaskStatus,
   changerId?: string
 ): Promise<NotificationRecord> {
-  const title = formatNotificationMessage(config.titleTemplate, {
-    taskTitle: task.title,
-    oldStatus: oldStatus ? getStatusLabel(oldStatus) : undefined,
-    newStatus: getStatusLabel(newStatus),
-    changedBy: changerId,
-  });
-
-  const message = formatNotificationMessage(config.messageTemplate, {
-    taskTitle: task.title,
-    oldStatus: oldStatus ? getStatusLabel(oldStatus) : undefined,
-    newStatus: getStatusLabel(newStatus),
-    changedBy: changerId,
-  });
-
-  const notification: Omit<NotificationRecord, 'id' | 'created_at'> = {
-    user_id: recipientId,
-    organization_id: task.project_id, // Use project_id as org context
-    type: config.notificationType,
-    title,
-    message,
-    entity_type: 'task',
-    entity_id: task.id,
-    triggered_by: changerId,
-    is_read: false,
-    read_at: null,
-    metadata: {
-      old_status: oldStatus,
-      new_status: newStatus,
-      task_title: task.title,
-      high_priority: config.highPriority || false,
-    },
-  };
-
-  return MockDatabase.insert<NotificationRecord>('notifications', notification);
+  throw new Error('createNotificationRecord not implemented with Supabase');
 }
 
 /**

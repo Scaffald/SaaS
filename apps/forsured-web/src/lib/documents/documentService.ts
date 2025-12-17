@@ -14,7 +14,6 @@
  * Users can configure their preferred backend in Settings > Document Storage.
  */
 
-import mockDatabase from '../../utils/mockDataStore'
 import { scaffaldClient } from '../scaffald/client'
 import type {
   Document,
@@ -30,6 +29,7 @@ import {
   ALLOWED_FILE_EXTENSION,
 } from '../../types/document'
 import type { DocumentCategory, UploadDocumentResponse } from '../scaffald/types'
+import { forsured } from '@scf/supabase/forsured-client'
 
 console.log('[DocumentService] Mode: Scaffald')
 
@@ -229,34 +229,44 @@ export class DocumentService {
 
   /**
    * Get documents with optional filtering
-   *
-   * Note: For development/testing, this still uses MockDatabase for read operations.
-   * In production, use scaffaldClient.documents.list() for Scaffald-stored documents.
    */
   async getDocuments(filters: DocumentFilter = {}): Promise<Document[]> {
-    const documents = await mockDatabase.query<Document>('documents', filters, {
-      column: 'upload_date',
-      ascending: false,
-    })
+    let query = forsured('documents').select('*').order('uploaded_at', { ascending: false })
 
-    return documents
+    // Apply filters if provided
+    if (filters.clientId) {
+      query = query.eq('clientId', filters.clientId)
+    }
+    if (filters.projectId) {
+      query = query.eq('projectId', filters.projectId)
+    }
+    if (filters.status) {
+      query = query.eq('status', filters.status)
+    }
+    if (filters.docType) {
+      query = query.eq('docType', filters.docType)
+    }
+
+    const { data, error } = await query
+    if (error) throw error
+    return data || []
   }
 
   /**
    * Get a single document by ID
-   *
-   * Note: For development/testing, this still uses MockDatabase for read operations.
-   * In production, use scaffaldClient.documents.get() for Scaffald-stored documents.
    */
   async getDocumentById(id: string): Promise<Document | null> {
-    return await mockDatabase.queryOne<Document>('documents', { id })
+    const { data, error } = await forsured('documents').select('*').eq('id', id).single()
+
+    if (error) {
+      if (error.code === 'PGRST116') return null // Not found
+      throw error
+    }
+    return data
   }
 
   /**
    * Update document status
-   *
-   * Note: For development/testing, this still uses MockDatabase for read operations.
-   * In production, use scaffaldClient.documents.update() for Scaffald-stored documents.
    */
   async updateDocumentStatus(
     id: string,
@@ -271,28 +281,31 @@ export class DocumentService {
       updates.error_message = errorMessage
     }
 
-    return await mockDatabase.update<Document>('documents', id, updates)
+    const { data, error } = await forsured('documents')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
   }
 
   /**
    * Delete a document
-   *
-   * Note: For development/testing, this still uses MockDatabase for read operations.
-   * In production, use scaffaldClient.documents.delete() for Scaffald-stored documents.
    */
   async deleteDocument(id: string): Promise<void> {
-    await mockDatabase.delete('documents', id)
+    const { error } = await forsured('documents').delete().eq('id', id)
+
+    if (error) throw error
   }
 
   /**
    * Delete multiple documents
-   *
-   * Note: For development/testing, this still uses MockDatabase for read operations.
-   * In production, use scaffaldClient.documents.delete() for each Scaffald-stored document.
    */
   async deleteDocuments(ids: string[]): Promise<void> {
-    for (const id of ids) {
-      await mockDatabase.delete('documents', id)
-    }
+    const { error } = await forsured('documents').delete().in('id', ids)
+
+    if (error) throw error
   }
 }

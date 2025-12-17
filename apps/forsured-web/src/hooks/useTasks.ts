@@ -6,197 +6,146 @@
  * references to scaffald.users for assignment tracking.
  */
 
-import { useState, useEffect } from 'react';
-import { Task, TaskStatus } from '../types';
-import { useDatabase } from '../contexts/DatabaseContext';
-import { supabaseServiceRole, forsured as forsuredQuery } from '../lib/supabase';
-import MockDatabase from '../utils/mockDataStore';
+import { useState, useEffect } from 'react'
+import type { Task, TaskStatus } from '../types'
+import { supabaseServiceRole, forsured as forsuredQuery } from '../lib/supabase'
 
 interface UseTasksOptions {
-  userId?: string;
-  status?: TaskStatus;
-  role?: 'created' | 'assigned';
+  userId?: string
+  status?: TaskStatus
+  role?: 'created' | 'assigned'
 }
 
 export function useTasks(options: UseTasksOptions = {}) {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const { useMockData } = useDatabase();
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    fetchTasks();
-  }, [options.userId, options.status, options.role]);
+    fetchTasks()
+  }, [options.userId, options.status, options.role])
 
   const fetchTasks = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
 
-      if (useMockData) {
-        // Use mock database
-        let data = await MockDatabase.query<Task>(
-          'tasks',
-          {},
-          { column: 'created_at', ascending: false }
-        );
+      // Use real Supabase with forsured schema
+      // NOTE: Using service role client for testing (bypasses RLS)
+      // TODO: Replace with proper authentication once OAuth is set up
+      const client = supabaseServiceRole || null
 
-        if (options.userId) {
-          if (options.role === 'created') {
-            data = data.filter((t) => t.created_by_user_id === options.userId);
-          } else if (options.role === 'assigned') {
-            data = data.filter((t) => t.assigned_to_user_id === options.userId);
-          } else {
-            data = data.filter(
-              (t) =>
-                t.created_by_user_id === options.userId ||
-                t.assigned_to_user_id === options.userId
-            );
-          }
-        }
-
-        if (options.status) {
-          data = data.filter((t) => t.status === options.status);
-        }
-
-        setTasks(data);
-      } else {
-        // Use real Supabase with forsured schema
-        // NOTE: Using service role client for testing (bypasses RLS)
-        // TODO: Replace with proper authentication once OAuth is set up
-        const client = supabaseServiceRole || null;
-
-        if (!client) {
-          throw new Error('Supabase service role client not configured');
-        }
-
-        // NOTE: Cross-schema joins to scaffald.users are not yet supported
-        // For now, just fetch task data without joined fields
-        let query = forsuredQuery('tasks', client)
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        // Apply user filters
-        if (options.userId && options.role === 'created') {
-          query = query.eq('created_by_user_id', options.userId);
-        } else if (options.userId && options.role === 'assigned') {
-          query = query.eq('assigned_to_user_id', options.userId);
-        } else if (options.userId) {
-          query = query.or(
-            `created_by_user_id.eq.${options.userId},assigned_to_user_id.eq.${options.userId}`
-          );
-        }
-
-        // Apply status filter
-        if (options.status) {
-          query = query.eq('status', options.status);
-        }
-
-        const { data, error: queryError } = await query;
-
-        if (queryError) {
-          throw queryError;
-        }
-
-        setTasks(data || []);
+      if (!client) {
+        throw new Error('Supabase service role client not configured')
       }
+
+      // NOTE: Cross-schema joins to scaffald.users are not yet supported
+      // For now, just fetch task data without joined fields
+      let query = forsuredQuery('tasks', client)
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      // Apply user filters
+      if (options.userId && options.role === 'created') {
+        query = query.eq('created_by_user_id', options.userId)
+      } else if (options.userId && options.role === 'assigned') {
+        query = query.eq('assigned_to_user_id', options.userId)
+      } else if (options.userId) {
+        query = query.or(
+          `created_by_user_id.eq.${options.userId},assigned_to_user_id.eq.${options.userId}`
+        )
+      }
+
+      // Apply status filter
+      if (options.status) {
+        query = query.eq('status', options.status)
+      }
+
+      const { data, error: queryError } = await query
+
+      if (queryError) {
+        throw queryError
+      }
+
+      setTasks(data || [])
     } catch (err) {
-      setError(err as Error);
-      console.error('[useTasks] Error fetching tasks:', err);
+      setError(err as Error)
+      console.error('[useTasks] Error fetching tasks:', err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const createTask = async (
-    task: Omit<Task, 'id' | 'created_at' | 'updated_at'>
-  ) => {
+  const createTask = async (task: Omit<Task, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      if (useMockData) {
-        const data = await MockDatabase.insert<Task>('tasks', task);
-        await fetchTasks();
-        return data;
-      } else {
-        const client = supabaseServiceRole || null;
+      const client = supabaseServiceRole || null
 
-        if (!client) {
-          throw new Error('Supabase service role client not configured');
-        }
-
-        const { data, error: insertError } = await forsuredQuery('tasks', client)
-          .insert(task)
-          .select()
-          .single();
-
-        if (insertError) {
-          throw insertError;
-        }
-
-        await fetchTasks();
-        return data;
+      if (!client) {
+        throw new Error('Supabase service role client not configured')
       }
+
+      const { data, error: insertError } = await forsuredQuery('tasks', client)
+        .insert(task)
+        .select()
+        .single()
+
+      if (insertError) {
+        throw insertError
+      }
+
+      await fetchTasks()
+      return data
     } catch (err) {
-      console.error('[useTasks] Error creating task:', err);
-      throw err;
+      console.error('[useTasks] Error creating task:', err)
+      throw err
     }
-  };
+  }
 
   const updateTask = async (id: string, updates: Partial<Task>) => {
     try {
-      if (useMockData) {
-        const data = await MockDatabase.update<Task>('tasks', id, updates);
-        await fetchTasks();
-        return data;
-      } else {
-        const client = supabaseServiceRole || null;
+      const client = supabaseServiceRole || null
 
-        if (!client) {
-          throw new Error('Supabase service role client not configured');
-        }
-
-        const { data, error: updateError } = await forsuredQuery('tasks', client)
-          .update(updates)
-          .eq('id', id)
-          .select()
-          .single();
-
-        if (updateError) {
-          throw updateError;
-        }
-
-        await fetchTasks();
-        return data;
+      if (!client) {
+        throw new Error('Supabase service role client not configured')
       }
+
+      const { data, error: updateError } = await forsuredQuery('tasks', client)
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single()
+
+      if (updateError) {
+        throw updateError
+      }
+
+      await fetchTasks()
+      return data
     } catch (err) {
-      console.error('[useTasks] Error updating task:', err);
-      throw err;
+      console.error('[useTasks] Error updating task:', err)
+      throw err
     }
-  };
+  }
 
   const deleteTask = async (id: string) => {
     try {
-      if (useMockData) {
-        await MockDatabase.delete('tasks', id);
-      } else {
-        const client = supabaseServiceRole || null;
+      const client = supabaseServiceRole || null
 
-        if (!client) {
-          throw new Error('Supabase service role client not configured');
-        }
-
-        const { error: deleteError } = await forsuredQuery('tasks', client)
-          .delete()
-          .eq('id', id);
-
-        if (deleteError) {
-          throw deleteError;
-        }
+      if (!client) {
+        throw new Error('Supabase service role client not configured')
       }
-      await fetchTasks();
+
+      const { error: deleteError } = await forsuredQuery('tasks', client).delete().eq('id', id)
+
+      if (deleteError) {
+        throw deleteError
+      }
+
+      await fetchTasks()
     } catch (err) {
-      console.error('[useTasks] Error deleting task:', err);
-      throw err;
+      console.error('[useTasks] Error deleting task:', err)
+      throw err
     }
-  };
+  }
 
   return {
     tasks,
@@ -206,5 +155,5 @@ export function useTasks(options: UseTasksOptions = {}) {
     createTask,
     updateTask,
     deleteTask,
-  };
+  }
 }

@@ -7,7 +7,6 @@
  */
 
 import { Task, TaskStatus } from '../../types';
-import MockDatabase from '../../utils/mockDataStore';
 
 /**
  * Status transitions that potentially affect compliance
@@ -112,46 +111,7 @@ export function shouldUpdateComplianceScore(
 export async function calculateProjectComplianceScore(
   projectId: string
 ): Promise<number> {
-  // Get all tasks for the project
-  const allTasks = await MockDatabase.query<Task>('tasks', {});
-  const projectTasks = allTasks.filter(
-    (t) => t.project_id === projectId && isComplianceRelatedTask(t)
-  );
-
-  if (projectTasks.length === 0) {
-    // No compliance tasks = fully compliant
-    return 100;
-  }
-
-  // Calculate weighted score based on task completion and severity
-  const severityWeights: Record<string, number> = {
-    critical: 30,
-    high: 20,
-    medium: 10,
-    low: 5,
-    info: 2,
-  };
-
-  let totalWeight = 0;
-  let completedWeight = 0;
-
-  for (const task of projectTasks) {
-    const weight = severityWeights[task.severity || 'info'] || 2;
-    totalWeight += weight;
-
-    if (task.status === 'completed') {
-      completedWeight += weight;
-    }
-  }
-
-  if (totalWeight === 0) {
-    return 100;
-  }
-
-  // Calculate percentage and scale to 0-100
-  const score = Math.round((completedWeight / totalWeight) * 100);
-
-  return Math.max(0, Math.min(100, score));
+  throw new Error('calculateProjectComplianceScore not implemented with Supabase');
 }
 
 /**
@@ -164,21 +124,7 @@ async function updateStoredComplianceScore(
   projectId: string,
   score: number
 ): Promise<void> {
-  // Try to update project record if it exists
-  try {
-    const projects = await MockDatabase.query('projects', {});
-    const project = projects.find((p: any) => p.id === projectId);
-
-    if (project) {
-      await MockDatabase.update('projects', projectId, {
-        compliance_score: score,
-        compliance_score_updated_at: new Date().toISOString(),
-      });
-    }
-  } catch (error) {
-    // Log but don't throw - this is best-effort
-    console.warn('Failed to update stored compliance score:', error);
-  }
+  throw new Error('updateStoredComplianceScore not implemented with Supabase');
 }
 
 /**
