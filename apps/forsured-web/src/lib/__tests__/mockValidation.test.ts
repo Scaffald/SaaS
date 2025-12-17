@@ -1,17 +1,17 @@
 /**
- * Mock Validation Tests (CLAUDE.md Requirement)
+ * ACORD 25 Template Validation Tests
  * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
  *
- * CRITICAL: These tests verify that our mocks match real system behavior
- * Per CLAUDE.md: "mocks used in tests must always be validated! They must
- * always have their own tests to verify they match the real system they are
- * mocking, so that we know the mocks themselves can be trusted."
+ * These tests verify that ACORD 25 templates match real certificate formats.
+ * Used for testing the OCR parsing engine against known document structures.
+ *
+ * Note: Per REQ-9, database operations are tested against real Supabase.
+ * See tests/fixtures/supabase.ts for database test helpers.
  */
 
 import { describe, it, expect } from 'vitest';
 import { mockACORD25Templates } from '../test-data/mockACORD25Templates';
 import type { PolicyData } from '../types/acord25';
-import MockDatabase from '../../utils/mockDataStore';
 
 describe('Mock Validation Tests', () => {
   describe('Mock ACORD 25 Templates Match Real Format', () => {
@@ -144,31 +144,7 @@ describe('Mock Validation Tests', () => {
     });
   });
 
-  describe('MockDatabase Schema Matches Real Policies Table (REQ-106)', () => {
-    it('should accept PolicyData matching database schema', async () => {
-      const policyData: Omit<PolicyData, 'id' | 'created_at' | 'updated_at'> = {
-        client_id: 'test-client-1',
-        policy_type: 'general_liability',
-        policy_number: 'GL-TRV-20241015',
-        provider: 'Travelers',
-        coverage_amount: 2000000,
-        premium_amount: 15000,
-        start_date: '2024-01-01',
-        end_date: '2024-12-31',
-        status: 'active',
-        deductible: 5000,
-        notes: 'Test policy',
-      };
-
-      // Should be able to insert into database
-      const inserted = await MockDatabase.insert<PolicyData>('policies', policyData);
-
-      expect(inserted).toBeDefined();
-      expect(inserted.id).toBeDefined();
-      expect(inserted.policy_type).toBe('general_liability');
-      expect(inserted.coverage_amount).toBe(2000000);
-    });
-
+  describe('PolicyData Schema Validation', () => {
     it('should validate all required PolicyData fields are present', () => {
       const requiredFields = [
         'client_id',

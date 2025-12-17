@@ -1,6 +1,10 @@
 /**
  * Vitest setup file
  * Configures testing environment and matchers
+ *
+ * REQ-9: Testing Policy
+ * Tests run against real Supabase (local instance at localhost:54321).
+ * No database mocking - if we own it, we test it directly.
  */
 
 import '@testing-library/jest-dom';
@@ -9,18 +13,16 @@ import { cleanup } from '@testing-library/react';
 
 /**
  * Set up environment variables for tests
+ * Uses local Supabase instance (pnpm supa start)
  */
 process.env.VITE_ENCRYPTION_KEY_ID = 'test-key-id';
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 process.env.CORS_ORIGIN = 'http://localhost:3000';
 // Vite env vars for Supabase (used by import.meta.env)
 process.env.VITE_SUPABASE_URL = 'http://localhost:54321';
-process.env.VITE_SUPABASE_ANON_KEY = 'test-anon-key';
-process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key';
-// Skip Supabase mock validation tests in unit tests (they require real Supabase)
-// Set to empty string to run them against a real Supabase instance
-process.env.SKIP_SUPABASE_TESTS = 'true';
+process.env.VITE_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 
 /**
  * Mock window.matchMedia for jsdom

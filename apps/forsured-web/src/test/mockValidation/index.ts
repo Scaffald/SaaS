@@ -3,6 +3,10 @@
  *
  * Barrel export for the mock validation system.
  * Import validators from here and register them with the framework.
+ *
+ * Note: Per testing policy (REQ-9), only external third-party service mocks
+ * are allowed. Internal systems (database, tRPC) must be tested directly
+ * against real implementations.
  */
 
 // Core types
@@ -24,8 +28,5 @@ export {
   createFailedResult,
 } from './MockValidationFramework';
 
-// Validators
-export { MockDatabaseValidator } from './validators/MockDatabaseValidator';
+// Validators - only for external service mocks
 export { MockOCRServiceValidator } from './validators/MockOCRServiceValidator';
-export { TaskMocksValidator } from './validators/TaskMocksValidator';
-export { MockDataStoreValidator } from './validators/MockDataStoreValidator';
