@@ -92,3 +92,12 @@ test-results.log
 
 # plans files
 /plans/
+
+# Supabase CLI generated files and directories
+/supabase/
+/scf-schemas
+/scf-trpc
+**/supabase/.temp/
+**/supabase/.branches/
+**/supabase/migrations
+**/*.toml.bak
