@@ -39,9 +39,7 @@ export interface QueueMetrics {
   totalProcessed: number
 }
 
-export interface UploadHandler {
-  (task: UploadTask): Promise<{ path: string; checksum?: string }>
-}
+export type UploadHandler = (task: UploadTask) => Promise<{ path: string; checksum?: string }>
 
 export interface QueueOptions {
   concurrency?: number
@@ -255,7 +253,7 @@ export class UploadQueue {
         this.options.onTaskError(task, lastError)
 
         // Wait before retry with exponential backoff
-        const delay = this.options.retryDelay * Math.pow(2, task.retryCount - 1)
+        const delay = this.options.retryDelay * 2 ** (task.retryCount - 1)
         await new Promise((resolve) => setTimeout(resolve, delay))
 
         // Re-queue the task

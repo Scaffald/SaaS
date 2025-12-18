@@ -376,7 +376,7 @@ ${NOTIFICATION_CONFIG.FROM_NAME}
         ctaUrl: privacyDashboardUrl,
       }
 
-    case CCPA_NOTIFICATION_TYPES.DEADLINE_REMINDER:
+    case CCPA_NOTIFICATION_TYPES.DEADLINE_REMINDER: {
       const daysRemaining = additionalData?.daysRemaining as number | undefined
       return {
         title: 'Privacy Request Deadline Approaching',
@@ -403,6 +403,7 @@ ${NOTIFICATION_CONFIG.FROM_NAME}
         ctaText: 'View Request Status',
         ctaUrl: requestUrl,
       }
+    }
 
     case CCPA_NOTIFICATION_TYPES.REQUEST_DENIED:
       return {
