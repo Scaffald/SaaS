@@ -18,8 +18,11 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
 
-  // Stop on first failure - fix issues as we discover them
-  maxFailures: process.env.CI ? 1 : undefined,
+  // Stop after 3 failures - allows us to see multiple issues at once
+  maxFailures: 3,
+
+  // Global setup - waits for Supabase and Mailpit to be ready
+  globalSetup: './tests/global-setup.ts',
 
   reporter: [
     ['html'],
