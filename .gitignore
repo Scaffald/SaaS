@@ -89,3 +89,6 @@ test-results.log
 # test artifacts
 **/playwright-report/
 **/test-results/
+
+# plans files
+/plans/
