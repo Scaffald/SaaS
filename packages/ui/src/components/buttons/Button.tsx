@@ -56,7 +56,7 @@ import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 
 
 type ButtonTone = 'blue' | 'gray' | 'info' | 'success' | 'error' | 'accent'
 
-export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme'> {
+export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme' | 'fullWidth' | 'fullwidth'> {
   /**
    * Visual style variant
    * @default 'primary'
@@ -66,10 +66,26 @@ export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme
    * Optional tone overrides for brand-aligned styling
    */
   theme?: ButtonTone
+  /**
+   * Make button full width
+   */
+  fullWidth?: boolean
 }
 
 const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', theme, ...props }, ref) => {
+  ({ variant = 'primary', theme, fullWidth, ...props }, ref) => {
+    // Extract fullWidth to prevent it from being passed to DOM
+    // Convert fullWidth to width prop for Tamagui
+    const widthProp = fullWidth ? { width: '100%' } : {}
+    
+    // Ensure fullWidth is not in props (it's already extracted above)
+    // Create a clean props object without fullWidth to prevent it from reaching DOM
+    // Also exclude 'fullwidth' (lowercase) in case it gets converted
+    const cleanProps = { ...props }
+    // Explicitly delete both fullWidth and fullwidth if they somehow got through
+    delete (cleanProps as { fullWidth?: boolean; fullwidth?: boolean }).fullWidth
+    delete (cleanProps as { fullWidth?: boolean; fullwidth?: boolean }).fullwidth
+    
     /**
      * Variant style definitions
      * Each variant has specific colors, borders, and interaction states
@@ -220,7 +236,8 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
         animation="quick" // Fast, responsive animations
         {...variantStyles[variant]}
         {...toneStyle}
-        {...props}
+        {...widthProp}
+        {...cleanProps}
       />
     )
   }
