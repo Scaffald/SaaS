@@ -494,11 +494,19 @@ test.describe('Signup Page - Scaffald Company Connection', () => {
   });
 });
 
-// SKIP: These tests require full mock OAuth setup with VITE_USE_REAL_AUTH=false
-// and specific Supabase configuration. Skip for now until mock OAuth is stable.
+// REAL LOGIN FLOW TESTS - These tests use actual Supabase and Mailpit
+// They test the complete login flow: Start page -> Magic Link -> Callback -> Signup/Dashboard
+//
+// IMPORTANT: These tests require:
+//   1. Local Supabase running (`pnpm supa start`)
+//   2. Mailpit running (part of Supabase stack on port 54324)
+//   3. VITE_USE_REAL_AUTH=false (magic link mode, not OAuth)
+//   4. Migrations applied (including RPC functions for user_profiles)
+//
+// These tests are now in login-flow.spec.ts for better organization
 test.describe.skip('Mock OAuth Login Flow', () => {
-  // These tests verify the actual login flow works in mock mode (VITE_USE_REAL_AUTH=false)
-  // They test the Start page -> OAuth -> Callback -> Dashboard flow
+  // DEPRECATED: These tests have been moved to login-flow.spec.ts
+  // They now test the real magic link flow instead of mocked OAuth
   //
   // IMPORTANT: These tests require local Supabase running with:
   //   1. `supabase start` (or `supabase db reset`)

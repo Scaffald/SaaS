@@ -83,7 +83,7 @@ describe('OAuth 2.0 Flow Integration Tests', () => {
     vi.stubGlobal('import', {
       meta: {
         env: {
-          VITE_USE_REAL_AUTH: 'false',
+          VITE_FORSURED_USE_OAUTH: 'false',
           VITE_SCAFFALD_CLIENT_ID: 'test-client-id',
           VITE_SCAFFALD_REDIRECT_URI: 'http://localhost:3000/auth/callback',
           VITE_SCAFFALD_AUTH_ENDPOINT: 'https://scaffald.com/oauth/authorize',
