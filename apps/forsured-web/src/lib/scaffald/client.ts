@@ -24,8 +24,9 @@ import type {
   CCPAOptOutStatus,
 } from './types';
 
-// Feature flag to toggle between mock and real Scaffald
-const USE_REAL_AUTH = import.meta.env.VITE_USE_REAL_AUTH === 'true';
+// Feature flag to toggle between magic link and OAuth for Forsured
+// Note: This is Forsured-specific. Scaffald always uses magic links.
+const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 const SCAFFALD_API_URL = import.meta.env.VITE_SCAFFALD_API_URL;
 const SCAFFALD_CLIENT_ID = import.meta.env.VITE_SCAFFALD_CLIENT_ID;
 const SCAFFALD_TOKEN_ENDPOINT = import.meta.env.VITE_SCAFFALD_TOKEN_ENDPOINT;
@@ -865,7 +866,7 @@ function createMockScaffaldClient(): ScaffaldClient {
 }
 
 // Create the appropriate client based on configuration
-const shouldUseRealClient = USE_REAL_AUTH && isScaffaldConfigured;
+const shouldUseRealClient = USE_OAUTH && isScaffaldConfigured;
 
 export const scaffaldClient: ScaffaldClient = shouldUseRealClient
   ? createRealScaffaldClient({
@@ -879,8 +880,8 @@ export const scaffaldClient: ScaffaldClient = shouldUseRealClient
 export const isUsingRealScaffald = shouldUseRealClient;
 
 // Log configuration status
-if (USE_REAL_AUTH && !isScaffaldConfigured) {
+if (USE_OAUTH && !isScaffaldConfigured) {
   console.warn(
-    '[ScaffaldClient] VITE_USE_REAL_AUTH is true but Scaffald is not configured. Using mock client.'
+    '[ScaffaldClient] VITE_FORSURED_USE_OAUTH is true but Scaffald is not configured. Using mock client.'
   );
 }

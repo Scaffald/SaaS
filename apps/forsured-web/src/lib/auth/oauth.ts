@@ -9,7 +9,7 @@ interface OAuthOptions {
 }
 
 // Feature flag to toggle between mock and real OAuth
-const USE_REAL_AUTH = import.meta.env.VITE_USE_REAL_AUTH === 'true';
+const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 const SCAFFALD_AUTH_URL = import.meta.env.VITE_SCAFFALD_AUTH_URL;
 const SCAFFALD_CLIENT_ID = import.meta.env.VITE_SCAFFALD_CLIENT_ID;
 
@@ -35,7 +35,7 @@ function generateState() {
 /**
  * Initiate OAuth flow
  *
- * In mock mode (VITE_USE_REAL_AUTH=false), this simulates the OAuth flow
+ * In magic link mode (VITE_FORSURED_USE_OAUTH=false), this simulates the OAuth flow
  * by redirecting directly to /callback with mock parameters.
  *
  * In real mode, this redirects to the actual Scaffald OAuth server.
@@ -46,9 +46,9 @@ export function initiateOAuth(options: OAuthOptions = {}) {
   // Store state for CSRF protection (used by both mock and real modes)
   sessionStorage.setItem('oauth_state', state);
 
-  // Mock mode: simulate OAuth by redirecting directly to callback
-  if (!USE_REAL_AUTH) {
-    console.log('[OAuth] Mock mode - simulating OAuth flow');
+  // Magic link mode: simulate OAuth by redirecting directly to callback
+  if (!USE_OAUTH) {
+    console.log('[OAuth] Magic link mode - simulating OAuth flow');
     const mockCode = `mock-auth-code-${Date.now()}`;
     // Store login hint for mock auth to use
     if (options.loginHint) {

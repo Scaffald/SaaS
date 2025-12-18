@@ -28,19 +28,19 @@ interface OAuthConfig {
 
 /**
  * Get OAuth configuration from environment
- * Only validates when USE_REAL_AUTH is true to allow testing without OAuth
+ * Only validates when USE_OAUTH is true to allow testing without OAuth
  */
 function getOAuthConfig(): OAuthConfig {
-  const useRealAuth = import.meta.env.VITE_USE_REAL_AUTH === 'true';
+  const useOAuth = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
   const clientId = import.meta.env.VITE_SCAFFALD_CLIENT_ID;
   const redirectUri = import.meta.env.VITE_SCAFFALD_REDIRECT_URI || `${window.location.origin}/auth/callback`;
   const authEndpoint = import.meta.env.VITE_SCAFFALD_AUTH_ENDPOINT || 'https://scaffald.com/oauth/authorize';
   const tokenEndpoint = import.meta.env.VITE_SCAFFALD_TOKEN_ENDPOINT || 'https://scaffald.com/oauth/token';
   const scope = import.meta.env.VITE_SCAFFALD_SCOPE || 'openid profile email read:user read:company read:projects write:tasks';
 
-  // Only require clientId when real auth is enabled
-  if (useRealAuth && !clientId) {
-    throw new Error('VITE_SCAFFALD_CLIENT_ID environment variable is required when VITE_USE_REAL_AUTH=true');
+  // Only require clientId when OAuth is enabled
+  if (useOAuth && !clientId) {
+    throw new Error('VITE_SCAFFALD_CLIENT_ID environment variable is required when VITE_FORSURED_USE_OAUTH=true');
   }
 
   return {

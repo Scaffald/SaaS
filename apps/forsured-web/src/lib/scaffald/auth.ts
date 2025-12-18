@@ -3,8 +3,8 @@
 //
 // Token management for Scaffald OAuth
 
-// Feature flag
-const USE_REAL_AUTH = import.meta.env.VITE_USE_REAL_AUTH === 'true';
+// Feature flag to toggle between magic link and OAuth for Forsured
+const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 const SCAFFALD_TOKEN_ENDPOINT = import.meta.env.VITE_SCAFFALD_TOKEN_ENDPOINT;
 const SCAFFALD_CLIENT_ID = import.meta.env.VITE_SCAFFALD_CLIENT_ID;
 
@@ -85,7 +85,7 @@ export async function refreshAccessToken(): Promise<ScaffaldTokens | null> {
   console.log('[ScaffaldAuth] Refreshing access token...');
 
   // Use real API if configured
-  if (USE_REAL_AUTH && SCAFFALD_TOKEN_ENDPOINT && SCAFFALD_CLIENT_ID) {
+  if (USE_OAUTH && SCAFFALD_TOKEN_ENDPOINT && SCAFFALD_CLIENT_ID) {
     try {
       const response = await fetch(SCAFFALD_TOKEN_ENDPOINT, {
         method: 'POST',

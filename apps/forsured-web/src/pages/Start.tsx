@@ -7,6 +7,9 @@ import { YStack, XStack, Text, Spinner } from '@unicornlove/ui';
 import { Button as CoreButton } from '@unicornlove/ui';
 import { Input as TextInput } from '@unicornlove/ui';
 import { initiateOAuth } from '../lib/auth/oauth';
+import { supabase } from '../lib/supabase';
+
+const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
 function StartPage() {
   const [email, setEmail] = useState('');
@@ -14,8 +17,47 @@ function StartPage() {
 
   const handleEmailContinue = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[StartPage] Form submitted with email:', email);
     setIsLoading(true);
-    initiateOAuth({ loginHint: email });
+    try {
+      if (USE_OAUTH) {
+        // OAuth mode: Use Scaffald OAuth
+        initiateOAuth({ loginHint: email });
+      } else {
+        // Magic link mode: Use Supabase magic link (like Scaffald does)
+        // This creates users in Supabase Auth, which triggers the database trigger
+        // to create core.users, core.profile, etc. (same as Scaffald)
+        const normalizedEmail = email.trim().toLowerCase();
+        // Use full URL with protocol - Supabase needs absolute URL
+        const redirectTo = `${window.location.protocol}//${window.location.host}/auth/callback`;
+        
+        console.log('[StartPage] Sending magic link with redirectTo:', redirectTo);
+        
+        // Send magic link - Supabase will handle user creation if needed
+        // Setting shouldCreateUser: true is safe - Supabase won't create duplicates
+        const { error } = await supabase.auth.signInWithOtp({
+          email: normalizedEmail,
+          options: {
+            emailRedirectTo: redirectTo,
+            shouldCreateUser: true, // Always allow creation - Supabase handles duplicates
+          },
+        });
+
+        if (error) {
+          console.error('[StartPage] Error sending magic link:', error);
+          setIsLoading(false);
+          // TODO: Show error to user
+          return;
+        }
+
+        console.log('[StartPage] Magic link sent - user will receive email');
+        // User will be redirected to /auth/callback when they click the magic link
+        // The callback will create a Forsured profile and redirect to signup
+      }
+    } catch (error) {
+      console.error('[StartPage] Error initiating auth:', error);
+      setIsLoading(false);
+    }
   };
 
   const handleScaffaldContinue = () => {
@@ -71,7 +113,8 @@ function StartPage() {
         </YStack>
 
         {/* Email Form */}
-        <YStack as="form" onSubmit={handleEmailContinue} gap="$4">
+        <form onSubmit={handleEmailContinue}>
+          <YStack gap="$4">
           <YStack gap="$1.5">
             <Text as="label" htmlFor="email" fontSize="$3" fontWeight="500" color="$color11">
               Email address
@@ -102,7 +145,8 @@ function StartPage() {
               'Continue with Email'
             )}
           </CoreButton>
-        </YStack>
+          </YStack>
+        </form>
 
         {/* Divider */}
         <YStack position="relative" alignItems="center">

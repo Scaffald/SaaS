@@ -135,6 +135,7 @@ const AppRoutes = () => {
         <Route path="/" element={<StartPage />} />
         <Route path="/start" element={<StartPage />} />
         <Route path="/callback" element={<CallbackPage />} />
+        <Route path="/auth/callback" element={<CallbackPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/design-system" element={<DesignSystemHome />} />

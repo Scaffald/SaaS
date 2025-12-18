@@ -3,7 +3,7 @@
 //
 // Service for managing ForSured user profiles in Supabase
 
-import { forsured } from '../lib/supabase';
+import { forsured, supabase } from '../lib/supabase';
 import { UserProfile } from '../types';
 
 const TABLE_NAME = 'user_profiles';
@@ -17,6 +17,24 @@ export async function getProfile(scaffaldUserId: string): Promise<UserProfile | 
   console.log(`[UserProfileService] Fetching profile for Scaffald user: ${scaffaldUserId}`);
 
   try {
+    // Try using RPC function first (bypasses RLS)
+    // This function uses SECURITY DEFINER to bypass RLS policies
+    const { data: rpcData, error: rpcError } = await supabase.rpc(
+      'get_user_profile_by_scaffald_id',
+      { p_scaffald_user_id: scaffaldUserId }
+    );
+
+    if (!rpcError && rpcData) {
+      console.log(`[UserProfileService] Found profile via RPC:`, rpcData?.user_type);
+      return rpcData as UserProfile;
+    }
+
+    // If RPC function doesn't exist yet (migration not run), log and continue to fallback
+    if (rpcError && rpcError.message?.includes('function') && rpcError.message?.includes('does not exist')) {
+      console.log('[UserProfileService] RPC function not available, using direct query fallback');
+    }
+
+    // Fallback to direct query (may fail due to RLS, but handles gracefully)
     const { data, error } = await forsured(TABLE_NAME)
       .select('*')
       .eq('scaffald_user_id', scaffaldUserId)
@@ -28,6 +46,15 @@ export async function getProfile(scaffaldUserId: string): Promise<UserProfile | 
         console.log(`[UserProfileService] No profile found for user ${scaffaldUserId}`);
         return null;
       }
+      // 406 Not Acceptable - RLS policy blocking access (likely auth.uid() mismatch)
+      // This happens when Supabase Auth session doesn't match Scaffald OAuth user
+      if (error.code === 'PGRST301' || error.message?.includes('406') || error.message?.includes('Not Acceptable')) {
+        console.warn(
+          `[UserProfileService] RLS policy blocked access (406) for user ${scaffaldUserId}. Returning null.`
+        );
+        // Return null instead of throwing - user may be new or RLS needs configuration
+        return null;
+      }
       console.error('[UserProfileService] Error fetching profile:', error);
       throw error;
     }
@@ -36,8 +63,18 @@ export async function getProfile(scaffaldUserId: string): Promise<UserProfile | 
     return data;
   } catch (err: unknown) {
     // Handle case where no rows returned (not an error, just no profile yet)
-    if (err && typeof err === 'object' && 'code' in err && (err as { code: string }).code === 'PGRST116') {
-      return null;
+    if (err && typeof err === 'object' && 'code' in err) {
+      const errorCode = (err as { code: string }).code;
+      if (errorCode === 'PGRST116') {
+        return null;
+      }
+      // Handle 406 errors from RLS policies
+      if (errorCode === 'PGRST301' || (err as { message?: string }).message?.includes('406')) {
+        console.warn(
+          `[UserProfileService] RLS policy blocked access for user ${scaffaldUserId}. Returning null.`
+        );
+        return null;
+      }
     }
     throw err;
   }

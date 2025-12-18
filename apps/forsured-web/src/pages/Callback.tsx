@@ -10,6 +10,9 @@ import { scaffaldClient } from '../lib/scaffald/client';
 import { useAuth } from '../contexts/AuthContext';
 import { getProfile, createProfile } from '../services/userProfileService';
 import { saveTokens, clearTokens } from '../lib/scaffald/auth';
+import { supabase } from '../lib/supabase';
+
+const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
 /**
  * Map profile user_type to router path prefix
@@ -18,7 +21,9 @@ import { saveTokens, clearTokens } from '../lib/scaffald/auth';
  */
 const USER_TYPE_TO_ROUTE: Record<string, string> = {
   gc: 'manager',
+  manager: 'manager', // Alias for gc
   contractor: 'subcontractor',
+  subcontractor: 'subcontractor', // Alias for contractor
   broker: 'broker',
   admin: 'admin',
 };
@@ -39,59 +44,148 @@ function CallbackPage() {
 
   async function handleCallback() {
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
-      const state = urlParams.get('state');
+      if (USE_OAUTH) {
+        // OAuth mode: Handle OAuth callback
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
 
-      if (!code || !state) {
-        throw new Error('Missing OAuth code or state parameter.');
+        if (!code || !state) {
+          throw new Error('Missing OAuth code or state parameter.');
+        }
+
+        // Verify state for CSRF protection
+        const storedState = sessionStorage.getItem('oauth_state');
+        if (state !== storedState) {
+          throw new Error('Invalid state parameter. Possible CSRF attack.');
+        }
+        // Clear state after successful verification
+        sessionStorage.removeItem('oauth_state');
+
+        // Exchange code for tokens
+        const tokens = await scaffaldClient.auth.exchangeCodeForTokens(code);
+        saveTokens(tokens);
+
+        // Get user info from Scaffald using the obtained access token
+        const scaffaldUser = await scaffaldClient.auth.getUser();
+
+        let forsuredProfile = await getProfile(scaffaldUser.id);
+
+        if (!forsuredProfile) {
+          // New user - create a basic profile and redirect to signup for type selection
+          forsuredProfile = await createProfile({
+            scaffald_user_id: scaffaldUser.id,
+            user_type: 'gc', // Default to GC, will be changed in signup
+            onboarding_completed: false,
+            onboarding_step: 1,
+            onboarding_data: {},
+            company_connected: false,
+          });
+        }
+
+        // Set user and profile in AuthContext
+        login({ user: scaffaldUser, profile: forsuredProfile });
+
+        // Map user_type to route prefix
+        const routePrefix = USER_TYPE_TO_ROUTE[forsuredProfile.user_type] || forsuredProfile.user_type;
+
+        if (!forsuredProfile.onboarding_completed) {
+          // Profile exists but onboarding not complete - redirect to signup
+          console.log(`[Callback] Redirecting to signup: /signup`);
+          navigate('/signup');
+          return;
+        }
+
+        // Fully set up user - go to dashboard
+        console.log(`[Callback] Redirecting to dashboard: /${routePrefix}/dashboard`);
+        navigate(`/${routePrefix}/dashboard`);
+      } else {
+        // Magic link mode: Handle magic link callback (Supabase auth)
+        // Supabase magic links redirect to /auth/callback with hash fragments (#access_token=...&type=magiclink)
+        // The Supabase client automatically processes these hash fragments and sets the session
+        // We need to wait for Supabase to process the hash fragments before getting the session
+        
+        // Check if we have hash fragments (magic link callback)
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const hasMagicLinkHash = hashParams.has('access_token') || hashParams.has('type');
+        
+        if (hasMagicLinkHash) {
+          console.log('[Callback] Magic link hash detected, waiting for Supabase to process...');
+          // Wait for Supabase to process the hash fragments
+          // Supabase client processes hash fragments automatically on page load
+          // We need to wait a bit for the session to be established
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        
+        // Try to get session - Supabase should have processed the hash fragments by now
+        let session = null;
+        let sessionError = null;
+        
+        // Retry getting session a few times in case Supabase is still processing
+        for (let i = 0; i < 3; i++) {
+          const result = await supabase.auth.getSession();
+          session = result.data?.session;
+          sessionError = result.error;
+          
+          if (session?.user) {
+            break;
+          }
+          
+          // Wait a bit before retrying
+          if (i < 2) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+        }
+        
+        if (sessionError || !session?.user) {
+          console.error('[Callback] Session error:', sessionError);
+          console.error('[Callback] Session data:', session);
+          throw new Error('Failed to get session from magic link. Please try again.');
+        }
+
+        const supabaseUser = session.user;
+        console.log('[Callback] Magic link authenticated user:', supabaseUser.email);
+
+        // Use Supabase user ID as scaffald_user_id (in non-OAuth mode, they're the same)
+        // The database trigger has already created core.users, core.profile, etc.
+        let forsuredProfile = await getProfile(supabaseUser.id);
+
+        if (!forsuredProfile) {
+          // New user - create a basic profile and redirect to signup for type selection
+          forsuredProfile = await createProfile({
+            scaffald_user_id: supabaseUser.id,
+            user_type: 'gc', // Default to GC, will be changed in signup
+            onboarding_completed: false,
+            onboarding_step: 1,
+            onboarding_data: {},
+            company_connected: false,
+          });
+        }
+
+        // Create ScaffaldUser-like object from Supabase user
+        const scaffaldUser = {
+          id: supabaseUser.id,
+          email: supabaseUser.email || '',
+          name: supabaseUser.user_metadata?.name || supabaseUser.email || '',
+        };
+
+        // Set user and profile in AuthContext
+        login({ user: scaffaldUser, profile: forsuredProfile });
+
+        // Map user_type to route prefix
+        const routePrefix = USER_TYPE_TO_ROUTE[forsuredProfile.user_type] || forsuredProfile.user_type;
+
+        if (!forsuredProfile.onboarding_completed) {
+          // Profile exists but onboarding not complete - redirect to signup
+          console.log(`[Callback] Redirecting to signup: /signup`);
+          navigate('/signup');
+          return;
+        }
+
+        // Fully set up user - go to dashboard
+        console.log(`[Callback] Redirecting to dashboard: /${routePrefix}/dashboard`);
+        navigate(`/${routePrefix}/dashboard`);
       }
-
-      // Verify state for CSRF protection
-      const storedState = sessionStorage.getItem('oauth_state');
-      if (state !== storedState) {
-        throw new Error('Invalid state parameter. Possible CSRF attack.');
-      }
-      // Clear state after successful verification
-      sessionStorage.removeItem('oauth_state');
-
-      // Exchange code for tokens
-      const tokens = await scaffaldClient.auth.exchangeCodeForTokens(code);
-      saveTokens(tokens);
-
-      // Get user info from Scaffald using the obtained access token
-      const scaffaldUser = await scaffaldClient.auth.getUser();
-
-      let forsuredProfile = await getProfile(scaffaldUser.id);
-
-      if (!forsuredProfile) {
-        // New user - create a basic profile and redirect to signup for type selection
-        forsuredProfile = await createProfile({
-          scaffald_user_id: scaffaldUser.id,
-          user_type: 'gc', // Default to GC, will be changed in signup
-          onboarding_completed: false,
-          onboarding_step: 1,
-          onboarding_data: {},
-          company_connected: false,
-        });
-      }
-
-      // Set user and profile in AuthContext
-      login({ user: scaffaldUser, profile: forsuredProfile });
-
-      // Map user_type to route prefix
-      const routePrefix = USER_TYPE_TO_ROUTE[forsuredProfile.user_type] || forsuredProfile.user_type;
-
-      if (!forsuredProfile.onboarding_completed) {
-        // Profile exists but onboarding not complete
-        console.log(`[Callback] Redirecting to onboarding: /${routePrefix}/onboarding`);
-        navigate(`/${routePrefix}/onboarding`);
-        return;
-      }
-
-      // Fully set up user - go to dashboard
-      console.log(`[Callback] Redirecting to dashboard: /${routePrefix}/dashboard`);
-      navigate(`/${routePrefix}/dashboard`);
 
     } catch (err: any) {
       console.error('Auth callback error:', err);
