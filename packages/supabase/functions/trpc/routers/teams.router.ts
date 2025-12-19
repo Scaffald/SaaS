@@ -1738,7 +1738,11 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         }),
       )
       .query(async ({ ctx, input }) => {
-        const { supabaseAdmin } = ctx;
+        const { supabaseAdmin, dbAdmin } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
@@ -1876,7 +1880,11 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
 
     create: procedure.input(teamInvitationCreateSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -2009,7 +2017,11 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
 
     resend: procedure.input(teamInvitationResendSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -2114,7 +2126,11 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
 
     cancel: procedure.input(teamInvitationCancelSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -2187,7 +2203,11 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
 
     respond: procedure.input(teamInvitationUserRespondSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
