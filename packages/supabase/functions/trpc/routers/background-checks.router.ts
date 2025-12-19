@@ -2,6 +2,7 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
+import type { Database } from '../../_shared/database.types.ts';
 import {
   notifyBackgroundCheckInvitation,
   notifyBackgroundCheckStatusChange,
@@ -629,8 +630,11 @@ async function submitBackgroundCheckToNationSearch(
   }
 
   const recordData = record as {
+    id: string
+    user_id: string
     check_type_ids?: string[]
-    package?: { check_type_ids?: string[] } | null
+    custom_configuration?: unknown
+    package?: { slug?: string; check_type_ids?: string[] } | null
   }
 
   const pkg = recordData.package
@@ -652,12 +656,12 @@ async function submitBackgroundCheckToNationSearch(
   const payload = {
     package_code: pkg.slug ?? '',
     user: {
-      id: (record.user_id ?? '') as string,
+      id: recordData.user_id,
     },
     metadata: {
-      background_check_id: record.id,
+      background_check_id: recordData.id,
     },
-    custom_configuration: record.custom_configuration ?? {},
+    custom_configuration: recordData.custom_configuration ?? {},
   }
 
   const statusHistory = Array.isArray(record.status_history)

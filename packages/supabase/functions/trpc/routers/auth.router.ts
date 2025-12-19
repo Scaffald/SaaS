@@ -54,11 +54,12 @@ export const authRouter = t.router({
       // Create admin client for user lookup (needed to check if user exists)
       const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
+      // List all users and filter by email client-side
+      // Note: Supabase admin API doesn't support email filter directly
       const { data: existingUsers, error: lookupError } =
         await supabaseAdmin.auth.admin.listUsers({
-          email,
           page: 1,
-          perPage: 1,
+          perPage: 1000, // Get enough to filter
         })
 
       if (lookupError) {
@@ -74,7 +75,9 @@ export const authRouter = t.router({
       }
 
       const isExistingUser = Boolean(
-        existingUsers?.users?.some((user: { email?: string }) => (user.email ?? '').toLowerCase() === email)
+        existingUsers?.users?.some((user: { email?: string | null }) => 
+          user.email?.toLowerCase() === email.toLowerCase()
+        )
       )
 
       const { error: otpError } = await ctx.supabase.auth.signInWithOtp({
