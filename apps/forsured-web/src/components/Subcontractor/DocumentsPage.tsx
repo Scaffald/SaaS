@@ -8,7 +8,7 @@ import {
   Calendar,
   Eye,
 } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button } from '@unicornlove/ui';
+import { YStack, XStack, Text, Card, Button, H1 } from '@unicornlove/ui';
 import CommonButton from '../Common/Button';
 import DocumentDetailModal from '../Document/DocumentDetailModal';
 import Modal from '../Common/Modal';
@@ -173,9 +173,9 @@ export default function DocumentsPage() {
     <YStack gap="$6">
       <XStack alignItems="center" justifyContent="space-between">
         <YStack>
-          <Text fontSize="$8" fontWeight="bold" color="$color12">
+          <H1 fontSize="$8" fontWeight="bold" color="$color12">
             Documents
-          </Text>
+          </H1>
           <Text color="$color11">
             Manage your certificates, licenses, and compliance documents
           </Text>

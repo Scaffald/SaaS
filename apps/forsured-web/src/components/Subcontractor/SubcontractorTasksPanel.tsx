@@ -11,7 +11,7 @@ import {
   Mail,
   DollarSign,
 } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button } from '@unicornlove/ui';
+import { YStack, XStack, Text, Card, Button, H1 } from '@unicornlove/ui';
 import { Task, SeverityLevel, SubcontractorTaskMetadata } from '../../types';
 import { formatDate, isOverdue } from '../../utils/dateHelpers';
 import CommonButton from '../Common/Button';
@@ -198,9 +198,9 @@ export default function SubcontractorTasksPanel({
       <YStack padding="$6" borderBottomWidth={1} borderBottomColor="$borderColor">
         <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
           <YStack>
-            <Text fontSize="$6" fontWeight="600" color="$color12">
+            <H1 fontSize="$6" fontWeight="600" color="$color12">
               My Tasks
-            </Text>
+            </H1>
             <Text fontSize="$2" color="$color11">Tasks assigned to you</Text>
           </YStack>
           <XStack alignItems="center" gap="$2">
