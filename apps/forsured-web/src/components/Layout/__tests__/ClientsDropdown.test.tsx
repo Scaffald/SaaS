@@ -226,14 +226,14 @@ describe('ClientsDropdown', () => {
   });
 
   describe('navigation', () => {
-    it('navigates to GC profile when GC is clicked', async () => {
+    it('navigates to unified client profile when GC is clicked', async () => {
       renderDropdown();
       await userEvent.click(screen.getByTestId('clients-dropdown-trigger'));
 
       const gcItem = screen.getByTestId('client-item-gc-1');
       await userEvent.click(gcItem);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/broker/gcs/gc-1');
+      expect(mockNavigate).toHaveBeenCalledWith('/broker/clients/gc-1');
     });
 
     it('navigates to subcontractor profile when sub is clicked', async () => {

@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { Users, UserPlus, Shield, Mail } from 'lucide-react';
 import { YStack, XStack, Text, H1, H2, Card } from '@unicornlove/ui';
 import { useUsers } from '../../hooks/useUsers';
 import { useClients } from '../../hooks/useClients';
 import Button from '../Common/Button';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
+import InviteTeamMemberModal from './InviteTeamMemberModal';
 
 export default function BrokerTeamPage() {
-  const { users, loading: usersLoading } = useUsers();
+  const { users, loading: usersLoading, fetchUsers } = useUsers();
   const { clients, loading: clientsLoading } = useClients();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const brokerUsers = users.filter((u) => u.role === 'broker');
   const adminUsers = brokerUsers.filter((u) => u.broker_role === 'admin');
@@ -29,9 +32,7 @@ export default function BrokerTeamPage() {
           </Text>
         </YStack>
         <Button
-          onClick={() => {
-            /* TODO: Implement invite modal */
-          }}
+          onClick={() => setIsInviteModalOpen(true)}
         >
           <UserPlus size={18} />
           <Text marginLeft="$2">Invite Team Member</Text>
@@ -260,13 +261,22 @@ export default function BrokerTeamPage() {
             <Text fontSize="$3" color="$color11" marginBottom="$4">
               Invite team members to collaborate
             </Text>
-            <Button>
+            <Button onClick={() => setIsInviteModalOpen(true)}>
               <UserPlus size={18} marginRight="$2" />
               Invite Team Member
             </Button>
           </YStack>
         </Card>
       )}
+
+      {/* Invite Team Member Modal */}
+      <InviteTeamMemberModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        onSuccess={() => {
+          fetchUsers();
+        }}
+      />
     </YStack>
   );
 }

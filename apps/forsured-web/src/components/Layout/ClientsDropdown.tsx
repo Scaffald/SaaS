@@ -100,11 +100,8 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
   const handleClientClick = (client: BrokerClient) => {
     setIsOpen(false);
     setSearchQuery('');
-    if (client.client_type === 'general_contractor') {
-      navigate(`/broker/gcs/${client.id}`);
-    } else {
-      navigate(`/broker/clients/${client.id}`);
-    }
+    // Navigate to unified client profile page
+    navigate(`/broker/clients/${client.id}`);
   };
 
   const getComplianceVariant = (score: number): 'success' | 'warning' | 'error' => {

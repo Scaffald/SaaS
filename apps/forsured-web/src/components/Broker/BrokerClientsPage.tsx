@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, TrendingUp, AlertTriangle, Shield, Users } from 'lucide-react';
 import { YStack, XStack, Text, H1, H2, Card } from '@unicornlove/ui';
@@ -7,15 +8,17 @@ import { usePolicies } from '../../hooks/usePolicies';
 import { useProjects } from '../../hooks/useProjects';
 import { useCompliance } from '../../hooks/useCompliance';
 import ClientsTable from './ClientsTable';
+import ClientModal from './ClientModal';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 import { BrokerClient } from '../../types';
 
 export default function BrokerClientsPage() {
   const navigate = useNavigate();
-  const { clients, loading: clientsLoading } = useClients();
+  const { clients, loading: clientsLoading, addClient } = useClients();
   const { policies, loading: policiesLoading } = usePolicies();
   const { projects, loading: projectsLoading } = useProjects();
   const { complianceData, loading: complianceLoading } = useCompliance();
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
 
   const getClientStats = () => {
     const totalClients = clients.length;
@@ -41,9 +44,43 @@ export default function BrokerClientsPage() {
     return <DashboardSkeleton />;
   }
 
+  const handleSaveClient = async (clientData: Partial<BrokerClient>) => {
+    await addClient(clientData as Omit<BrokerClient, 'id' | 'created_at' | 'updated_at'>);
+    setIsClientModalOpen(false);
+  };
+
   // Show empty state when no clients exist
   if (clients.length === 0) {
     return (
+      <>
+        <YStack gap="$6">
+          <YStack>
+            <H1 fontSize="$8" fontWeight="bold" color="$color12">Clients</H1>
+            <Text color="$color11">
+              Manage your client portfolio and monitor compliance
+            </Text>
+          </YStack>
+          <EmptyState
+            icon={Users}
+            title="No Clients Yet"
+            description="Start building your client portfolio by adding your first client. You'll be able to manage their policies, track compliance, and monitor risk."
+            action={{
+              label: 'Add Client',
+              onClick: () => setIsClientModalOpen(true),
+            }}
+          />
+        </YStack>
+        <ClientModal
+          isOpen={isClientModalOpen}
+          onClose={() => setIsClientModalOpen(false)}
+          onSave={handleSaveClient}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
       <YStack gap="$6">
         <YStack>
           <H1 fontSize="$8" fontWeight="bold" color="$color12">Clients</H1>
@@ -51,27 +88,6 @@ export default function BrokerClientsPage() {
             Manage your client portfolio and monitor compliance
           </Text>
         </YStack>
-        <EmptyState
-          icon={Users}
-          title="No Clients Yet"
-          description="Start building your client portfolio by adding your first client. You'll be able to manage their policies, track compliance, and monitor risk."
-          action={{
-            label: 'Add Client',
-            onClick: () => navigate('/broker/clients/new'),
-          }}
-        />
-      </YStack>
-    );
-  }
-
-  return (
-    <YStack gap="$6">
-      <YStack>
-        <H1 fontSize="$8" fontWeight="bold" color="$color12">Clients</H1>
-        <Text color="$color11">
-          Manage your client portfolio and monitor compliance
-        </Text>
-      </YStack>
 
       <XStack
         flexDirection="column"
@@ -282,14 +298,16 @@ export default function BrokerClientsPage() {
         complianceData={complianceData}
         projects={projects}
         onClientClick={(client: BrokerClient) => {
-          // Navigate to GC profile for general contractors, client profile for others
-          if (client.client_type === 'general_contractor') {
-            navigate(`/broker/gcs/${client.id}`);
-          } else {
-            navigate(`/broker/clients/${client.id}`);
-          }
+          // Navigate to unified client profile page
+          navigate(`/broker/clients/${client.id}`);
         }}
       />
-    </YStack>
+      </YStack>
+      <ClientModal
+        isOpen={isClientModalOpen}
+        onClose={() => setIsClientModalOpen(false)}
+        onSave={handleSaveClient}
+      />
+    </>
   );
 }

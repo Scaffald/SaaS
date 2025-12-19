@@ -18,7 +18,7 @@ import {
   List,
 } from 'lucide-react';
 import { YStack, XStack, Text, H1, H2, H3, Card, Spinner, Button as TamaguiButton } from '@unicornlove/ui';
-import { TabsCustom, TabsList, TabsTrigger, TabsContent } from '@unicornlove/ui';
+import { TabsCustom } from '@unicornlove/ui';
 import Tooltip from '../../ui/Tooltip';
 import Button from '../Common/Button';
 import { useProjectDetail } from '../../hooks/useProjectDetail';

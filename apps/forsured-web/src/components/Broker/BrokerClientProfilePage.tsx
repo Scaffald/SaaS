@@ -19,7 +19,7 @@ import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
 import { useProjects } from '../../hooks/useProjects';
 import Button from '../Common/Button';
-import { TabsCustom, TabsList, TabsTrigger, TabsContent } from '@unicornlove/ui';
+import { TabsCustom } from '@unicornlove/ui';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 
 export default function BrokerClientProfilePage() {
@@ -653,7 +653,7 @@ export default function BrokerClientProfilePage() {
         </XStack>
       </XStack>
 
-      <Tabs tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
+      <TabsCustom tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
     </YStack>
   );
 }

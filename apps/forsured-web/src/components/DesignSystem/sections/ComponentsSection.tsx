@@ -18,7 +18,7 @@ import { Alert } from '@unicornlove/ui';
 import Tooltip from '../../../ui/Tooltip';
 import Progress, { CircularProgress } from '../../../ui/Progress';
 import Avatar, { AvatarGroup } from '../../../ui/Avatar';
-import { TabsCustom as Tabs, TabsList, TabsTrigger, TabsContent } from '@unicornlove/ui';
+import { TabsCustom as Tabs } from '@unicornlove/ui';
 import Accordion from '../../../ui/Accordion';
 import Divider from '../../../ui/Divider';
 import { EmptyState } from '@unicornlove/ui';

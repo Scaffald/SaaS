@@ -434,9 +434,7 @@ export default function ClientsTable({
                       </YStack>
                       <YStack marginLeft="$4">
                         <Link
-                          to={client.client_type === 'general_contractor'
-                            ? `/broker/gcs/${client.id}`
-                            : `/broker/clients/${client.id}`}
+                          to={`/broker/clients/${client.id}`}
                           style={{
                             fontSize: '14px',
                             fontWeight: 500,

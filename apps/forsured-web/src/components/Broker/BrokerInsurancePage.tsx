@@ -15,7 +15,7 @@ import { YStack, XStack, Text, H1, H3, Card } from '@unicornlove/ui';
 import { usePolicies } from '../../hooks/usePolicies';
 import { useClients } from '../../hooks/useClients';
 import { Button } from '../Common/Button';
-import { TabsCustom, TabsList, TabsTrigger, TabsContent } from '@unicornlove/ui';
+import { TabsCustom } from '@unicornlove/ui';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 
 export default function BrokerInsurancePage() {
@@ -469,7 +469,7 @@ export default function BrokerInsurancePage() {
         </XStack>
       </XStack>
 
-      <Tabs tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
+      <TabsCustom tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
     </YStack>
   );
 }
