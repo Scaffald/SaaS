@@ -61,7 +61,7 @@ describe("useLocationResultCounts", () => {
     expect(formatCount("many")).toBe("Many results");
   });
 
-  it('returns 'Many results' for counts >= 500', () => {
+  it("returns 'Many results' for counts >= 500", () => {
     expect(formatCount(500)).toBe("Many results");
     expect(formatCount(501)).toBe("Many results");
     expect(formatCount(1000)).toBe("Many results");

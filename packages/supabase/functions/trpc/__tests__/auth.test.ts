@@ -187,7 +187,7 @@ Deno.test({
       if (errorCode === "INTERNAL_SERVER_ERROR") {
         const message = response[0].error?.message ?? '';
         if (message.includes("undefined") || message.includes("Cannot read")) {
-          throw new Error('Still getting undefined error - fix didn't work");
+          throw new Error("Still getting undefined error - fix didn't work");
         }
       }
     }
