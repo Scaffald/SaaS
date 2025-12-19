@@ -130,9 +130,9 @@ export function SuccessStep({
         </Text>
 
         <YStack gap="$3" marginTop="$2">
-          <NextStepItem textAlign="Our team will review your application within 3-5 business days" />
-          <NextStepItem textAlign="You'll receive an email update on your application status" />
-          <NextStepItem textAlign="If selected, we'll contact you to schedule an interview" />
+          <NextStepItem text="Our team will review your application within 3-5 business days" />
+          <NextStepItem text="You'll receive an email update on your application status" />
+          <NextStepItem text="If selected, we'll contact you to schedule an interview" />
         </YStack>
       </YStack>
 

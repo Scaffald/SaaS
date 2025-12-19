@@ -824,18 +824,18 @@ async function syncBackgroundCheckFromProvider(params: {
     }
 
     if (JSON.stringify(history) !== JSON.stringify(check.status_history)) {
-      updates.status_history = history
+      updates.status_history = history as Json
     }
 
     if (Object.keys(updates).length === 0) {
       return null
     }
 
-    if (!ctx.supabaseAdmin) {
+    if (!supabaseAdmin) {
       return null
     }
 
-    const { data: refreshed, error } = await ctx.supabaseAdmin
+    const { data: refreshed, error } = await supabaseAdmin
       .schema('core')
       .from('background_checks')
       .update(updates)
@@ -1248,8 +1248,7 @@ export const backgroundChecksRouter = t.router({
         .from('background_checks')
         .insert({
           user_id: workerUserId,
-          initiated_by_user_id: user?.id ?? null,
-          initiated_by_org_id: input.organization_id ?? null,
+          requested_by_user_id: user?.id ?? null,
           organization_id: input.organization_id ?? null,
           package_id: pkg.id,
           check_type_ids: checkTypeIds,
@@ -1353,7 +1352,7 @@ export const backgroundChecksRouter = t.router({
       const { data: checkRecord, error: checkError } = await supabaseAdmin
         .schema('core')
         .from('background_checks')
-        .select('id, user_id, initiated_by_user_id, organization_id, payment_intent_id')
+        .select('id, user_id, requested_by_user_id, organization_id, payment_intent_id')
         .eq('id', input.background_check_id)
         .maybeSingle()
 
@@ -1373,9 +1372,9 @@ export const backgroundChecksRouter = t.router({
 
       let hasAccess = false
 
-      const checkData = checkRecord as {
+      const checkData = checkRecord as unknown as {
         user_id?: string
-        initiated_by_user_id?: string
+        requested_by_user_id?: string
         organization_id?: string
         payment_intent_id?: string
         id: string
@@ -1383,7 +1382,7 @@ export const backgroundChecksRouter = t.router({
 
       if (
         (checkData.user_id && checkData.user_id === user?.id) ||
-        (checkData.initiated_by_user_id && checkData.initiated_by_user_id === user?.id)
+        (checkData.requested_by_user_id && checkData.requested_by_user_id === user?.id)
       ) {
         hasAccess = true
       } else if (checkData.organization_id) {
@@ -1403,8 +1402,8 @@ export const backgroundChecksRouter = t.router({
       }
 
       if (
-        !checkRecord.payment_intent_id ||
-        checkRecord.payment_intent_id !== input.payment_intent_id
+        !checkData.payment_intent_id ||
+        checkData.payment_intent_id !== input.payment_intent_id
       ) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
@@ -1430,7 +1429,7 @@ export const backgroundChecksRouter = t.router({
         .update({
           paid_at: paidAt,
         })
-        .eq('id', checkRecord.id)
+        .eq('id', checkData.id)
 
       if (updateError) {
         throw new TRPCError({
@@ -1448,7 +1447,7 @@ export const backgroundChecksRouter = t.router({
         })
         .eq('stripe_payment_intent_id', input.payment_intent_id)
 
-      const finalRecord = await submitBackgroundCheckToNationSearch(ctx, checkRecord.id)
+      const finalRecord = await submitBackgroundCheckToNationSearch(ctx, checkData.id)
 
       return finalRecord
     }),
@@ -1456,6 +1455,10 @@ export const backgroundChecksRouter = t.router({
   purchaseSharedAccess: protectedProcedure
     .input(purchaseSharedAccessInputSchema)
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
       const { supabaseAdmin, user } = ctx
       await ensureOrganizationAccess(ctx, input.organization_id)
 
@@ -1547,7 +1550,11 @@ export const backgroundChecksRouter = t.router({
 
       const paidAt = new Date(intent.created * 1000).toISOString()
 
-      const { data: existingAccess } = await supabaseAdmin
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
+      const { data: existingAccess } = await ctx.supabaseAdmin
         .schema('core')
         .from('background_check_access')
         .select('id')
@@ -1559,7 +1566,7 @@ export const backgroundChecksRouter = t.router({
         return { ok: true }
       }
 
-      const { error: insertError } = await supabaseAdmin
+      const { error: insertError } = await ctx.supabaseAdmin
         .schema('core')
         .from('background_check_access')
         .insert({

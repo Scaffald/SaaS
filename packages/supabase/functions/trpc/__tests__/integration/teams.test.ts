@@ -241,7 +241,7 @@ Deno.test({
     if (error) {
       const errorMessage = error.message || JSON.stringify(error);
       if (errorMessage.includes("Cannot read properties of undefined") || 
-          errorMessage.includes('reading 'schema'")) {
+          errorMessage.includes("reading 'schema'")) {
         throw new Error(
           `teams.list failed with supabaseAdmin error: ${errorMessage}. This indicates the fix didn't work.`
         );

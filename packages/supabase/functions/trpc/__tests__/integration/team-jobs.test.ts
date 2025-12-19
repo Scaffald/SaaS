@@ -96,7 +96,7 @@ Deno.test({
     
     if (error) {
       // Expected if job doesn't exist
-      assertExists(error, 'Expected error if job doesn't exist");
+      assertExists(error, "Expected error if job doesn't exist");
     } else if (result) {
       assertExists(result, "Expected assignment response");
     }
@@ -169,7 +169,7 @@ Deno.test({
     // May fail if assignment doesn't exist
     const error = response[0]?.error;
     if (error) {
-      assertExists(error, 'Expected error if assignment doesn't exist");
+      assertExists(error, "Expected error if assignment doesn't exist");
     }
   },
 });
@@ -198,7 +198,7 @@ Deno.test({
     const result = response[0]?.result?.data;
     
     if (error) {
-      assertExists(error, 'Expected error if assignment doesn't exist");
+      assertExists(error, "Expected error if assignment doesn't exist");
     } else if (result) {
       assertExists(result, "Expected delete response");
     }

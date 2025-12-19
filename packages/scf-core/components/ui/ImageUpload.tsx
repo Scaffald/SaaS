@@ -4,7 +4,8 @@ import { AlertCircle, Image as ImageIcon, Trash2, Upload } from '@tamagui/lucide
 import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { Button, Image, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { useFilePicker, MediaTypeOptions } from '@unicornlove/ui'
+import { useFilePicker } from '@unicornlove/ui'
+import { MediaTypeOptions } from '@unicornlove/ui'
 
 export interface ImageUploadProps {
   /** Current image URL (for edit mode) */
