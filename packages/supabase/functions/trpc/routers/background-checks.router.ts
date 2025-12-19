@@ -526,7 +526,7 @@ async function recordBackgroundCheckTransaction(
       currency: 'usd',
       transaction_type: params.transactionType,
       stripe_payment_intent_id: params.paymentIntentId,
-      metadata: params.metadata ?? {},
+      metadata: (params.metadata ?? {}) as Database['core']['Tables']['payment_transactions']['Insert']['metadata'],
     })
 
   if (error) {
@@ -589,6 +589,10 @@ async function submitBackgroundCheckToNationSearch(
   ctx: Context,
   backgroundCheckId: string
 ): Promise<BackgroundCheckRecord> {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+  }
+
   const { supabaseAdmin } = ctx
 
   const { data: record, error: recordError } = await supabaseAdmin
@@ -624,10 +628,15 @@ async function submitBackgroundCheckToNationSearch(
     })
   }
 
-  const pkg = record.package
+  const recordData = record as {
+    check_type_ids?: string[]
+    package?: { check_type_ids?: string[] } | null
+  }
+
+  const pkg = recordData.package
   const checkTypeIds =
-    Array.isArray(record.check_type_ids) && record.check_type_ids.length > 0
-      ? record.check_type_ids
+    Array.isArray(recordData.check_type_ids) && recordData.check_type_ids.length > 0
+      ? recordData.check_type_ids
       : Array.isArray(pkg?.check_type_ids)
         ? pkg?.check_type_ids
         : []

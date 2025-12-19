@@ -267,12 +267,17 @@ export const addressesRouter = t.router({
       // Validate containment if site_id provided
       let containmentWarning = null
       if (updateData.site_id && address.id) {
-        const { data: isContained } = await ctx.supabase
-          .rpc('validate_address_in_site', {
-            p_address_id: address.id,
-            p_site_id: updateData.site_id,
-          })
-          .catch(() => ({ data: false }))
+        let isContained = false
+        try {
+          const result = await ctx.supabase
+            .rpc('validate_address_in_site', {
+              p_address_id: address.id,
+              p_site_id: updateData.site_id,
+            })
+          isContained = result.data ?? false
+        } catch {
+          isContained = false
+        }
 
         if (!isContained) {
           containmentWarning = 'Property address may be outside site boundary. Please verify.'

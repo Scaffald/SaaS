@@ -128,7 +128,7 @@ export const authRouter = t.router({
     }
 
     const roles =
-      (data as Array<{ role: { name: string } | null }> | null)
+      (data as Array<{ role?: { name?: string } | null }> | null)
         ?.map((r) => r.role?.name)
         .filter((name): name is string => Boolean(name)) ?? []
 
