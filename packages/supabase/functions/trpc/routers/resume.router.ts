@@ -3,7 +3,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import type { Database } from '../../_shared/database.types.ts';
-import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/pdf';
+import { extractTextFromPdf as sharedExtractTextFromPdf } from '../../_shared/pdf/extract-text.ts';
 import {
   profileEmploymentInputSchema,
   profileGeneralInputSchema,
@@ -33,8 +33,8 @@ const RESUME_SECTIONS = [
 type ResumeSection = (typeof RESUME_SECTIONS)[number];
 
 // Type aliases for schema inference to avoid TS2344 errors
-type ProfileGeneralInput = typeof profileGeneralInputSchema extends z.ZodType<infer T> ? T : never;
-type ProfileEmploymentInput = typeof profileEmploymentInputSchema extends z.ZodType<infer T> ? T : never;
+type ProfileGeneralInput = z.infer<typeof profileGeneralInputSchema>;
+type ProfileEmploymentInput = z.infer<typeof profileEmploymentInputSchema>;
 
 // Lazy loading for large packages to reduce bundle size
 let mammothModule: typeof import("mammoth") | null = null;
@@ -61,7 +61,7 @@ const uploadResumeOutputSchema = z.object({
 
 const parseResumeInputSchema = z.object({
   resumeId: z.string().uuid(),
-  sections: z.array(z.enum(RESUME_SECTIONS)).default(RESUME_SECTIONS),
+  sections: z.array(z.enum(RESUME_SECTIONS)).default([...RESUME_SECTIONS]),
 });
 
 const parsedGeneralSchema = z.object({
@@ -641,14 +641,15 @@ async function matchSkillTaxonomies(
     supabase
       .schema("data")
       .rpc("search_masterformat", { search_term: trimmed })
-      .then((res: { data: Array<Record<string, unknown>> | null; error?: unknown; [key: string]: unknown }) => res.data as Array<Record<string, unknown>> | null)
+      .then((res) => res.data)
       .catch((error: unknown) => {
         console.warn("[resume] CSI search failed", error);
         return null;
       }),
     supabase
-      .rpc("onet.search_occupations", { search_term: trimmed })
-      .then((res: { data: Array<Record<string, unknown>> | null; error?: unknown; [key: string]: unknown }) => res.data as Array<Record<string, unknown>> | null)
+      .schema("onet")
+      .rpc("search_occupations", { search_term: trimmed })
+      .then((res) => res.data)
       .catch((error: unknown) => {
         console.warn("[resume] O*NET search failed", error);
         return null;
