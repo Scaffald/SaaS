@@ -2,7 +2,7 @@
  * Start Page - Landing page with OAuth login
  */
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { YStack, XStack, Text, Spinner } from '@unicornlove/ui';
 import { Button as CoreButton } from '@unicornlove/ui';
 import { Input as TextInput } from '@unicornlove/ui';
@@ -12,11 +12,14 @@ import { supabase } from '../lib/supabase';
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
 function StartPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleEmailContinue = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     console.log('[StartPage] Form submitted with email:', email);
     setIsLoading(true);
     try {
@@ -45,17 +48,18 @@ function StartPage() {
 
         if (error) {
           console.error('[StartPage] Error sending magic link:', error);
+          setError(error.message || 'Failed to send magic link. Please try again.');
           setIsLoading(false);
-          // TODO: Show error to user
           return;
         }
 
         console.log('[StartPage] Magic link sent - user will receive email');
-        // User will be redirected to /auth/callback when they click the magic link
-        // The callback will create a Forsured profile and redirect to signup
+        // Navigate to verify page to show success message (like Scaffald does)
+        navigate(`/auth/verify?email=${encodeURIComponent(normalizedEmail)}`);
       }
     } catch (error) {
       console.error('[StartPage] Error initiating auth:', error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.');
       setIsLoading(false);
     }
   };
@@ -123,11 +127,19 @@ function StartPage() {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError(null); // Clear error when user types
+              }}
               placeholder="you@company.com"
               required
               disabled={isLoading}
             />
+            {error && (
+              <Text fontSize="$2" color="$red10" marginTop="$1">
+                {error}
+              </Text>
+            )}
           </YStack>
 
           <CoreButton

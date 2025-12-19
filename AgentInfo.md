@@ -239,6 +239,10 @@ pnpm --filter @unicornlove/ui watch
 
 ## Code Quality Standards
 
+### DO NOT WORK AROUND PROBLEMS
+FIX THEM. Don't bypass problems. Don't skip them or comment them out. Fix them the right way. 
+We are not here to get things done quickly, we want them done correctly.
+
 ### Pre-Commit Workflow (MANDATORY)
 **REQUIRED**: Always run these checks before committing:
 ```bash

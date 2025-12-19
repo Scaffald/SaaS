@@ -26,6 +26,7 @@ const TestSupabase = lazy(() => import('./pages/TestSupabase'));
 const SignupPage = lazy(() => import('./pages/Signup'));
 const StartPage = lazy(() => import('./pages/Start'));
 const CallbackPage = lazy(() => import('./pages/Callback'));
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmail'));
 const UnauthorizedPage = lazy(() => import('./pages/Unauthorized'));
 
 // Dashboards
@@ -136,6 +137,7 @@ const AppRoutes = () => {
         <Route path="/start" element={<StartPage />} />
         <Route path="/callback" element={<CallbackPage />} />
         <Route path="/auth/callback" element={<CallbackPage />} />
+        <Route path="/auth/verify" element={<VerifyEmailPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/design-system" element={<DesignSystemHome />} />

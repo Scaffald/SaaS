@@ -13,6 +13,7 @@
 
 import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
 import { trpc } from '../lib/trpc';
+import { useAuth } from './AuthContext';
 
 /**
  * Default lexicon values (Construction type as fallback)
@@ -150,13 +151,20 @@ export function LexiconProvider({ children }: LexiconProviderProps) {
   // TASK-14: State for override user set type (used by brokers)
   const [overrideUserSetTypeId, setOverrideUserSetTypeIdState] = useState<string | null>(null);
 
+  // Get auth state to determine if user is logged in
+  // LexiconProvider is wrapped by AuthProvider, so we can safely use useAuth
+  const { user } = useAuth();
+
   // Fetch user's lexicon using tRPC
+  // Only fetch when user is authenticated to avoid UNAUTHORIZED errors
   const {
     data: userData,
     isLoading: userLoading,
     isError: userError,
     refetch: userRefetch,
   } = trpc.userSetTypes.getUserLexicon.useQuery(undefined, {
+    // Only fetch when user is authenticated
+    enabled: !!user,
     // Don't refetch on window focus (lexicon rarely changes)
     refetchOnWindowFocus: false,
     // Stale time of 5 minutes
@@ -165,6 +173,12 @@ export function LexiconProvider({ children }: LexiconProviderProps) {
     gcTime: 30 * 60 * 1000,
     // Retry once on failure
     retry: 1,
+    // Don't throw errors - fail gracefully with default lexicon
+    throwOnError: false,
+    // Log errors for debugging
+    onError: (error) => {
+      console.warn('[LexiconContext] Failed to fetch user lexicon, using defaults:', error.message);
+    },
   });
 
   // TASK-14: Fetch override lexicon when an override is set
@@ -182,6 +196,12 @@ export function LexiconProvider({ children }: LexiconProviderProps) {
       staleTime: 5 * 60 * 1000,
       gcTime: 30 * 60 * 1000,
       retry: 1,
+      // Don't throw errors - fail gracefully
+      throwOnError: false,
+      // Log errors for debugging
+      onError: (error) => {
+        console.warn('[LexiconContext] Failed to fetch override lexicon:', error.message);
+      },
     }
   );
 

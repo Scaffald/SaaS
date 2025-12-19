@@ -109,12 +109,27 @@ function CallbackPage() {
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const hasMagicLinkHash = hashParams.has('access_token') || hashParams.has('type');
         
-        if (hasMagicLinkHash) {
-          console.log('[Callback] Magic link hash detected, waiting for Supabase to process...');
+        // Also check query params (some Supabase configs use query params)
+        const queryParams = new URLSearchParams(window.location.search);
+        const hasQueryToken = queryParams.has('token') || queryParams.has('type');
+        
+        if (!hasMagicLinkHash && !hasQueryToken) {
+          // No auth parameters - check if we already have a session
+          const { data: existingSession } = await supabase.auth.getSession();
+          if (existingSession?.session?.user) {
+            console.log('[Callback] Already authenticated, using existing session');
+            // Continue with existing session
+          } else {
+            throw new Error('No authentication parameters found. Please request a new magic link.');
+          }
+        }
+        
+        if (hasMagicLinkHash || hasQueryToken) {
+          console.log('[Callback] Magic link detected, waiting for Supabase to process...');
           // Wait for Supabase to process the hash fragments
           // Supabase client processes hash fragments automatically on page load
           // We need to wait a bit for the session to be established
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1500));
         }
         
         // Try to get session - Supabase should have processed the hash fragments by now
@@ -122,17 +137,19 @@ function CallbackPage() {
         let sessionError = null;
         
         // Retry getting session a few times in case Supabase is still processing
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 5; i++) {
           const result = await supabase.auth.getSession();
           session = result.data?.session;
           sessionError = result.error;
           
           if (session?.user) {
+            console.log('[Callback] Session established successfully');
             break;
           }
           
           // Wait a bit before retrying
-          if (i < 2) {
+          if (i < 4) {
+            console.log(`[Callback] Waiting for session... (attempt ${i + 1}/5)`);
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
         }
@@ -140,6 +157,8 @@ function CallbackPage() {
         if (sessionError || !session?.user) {
           console.error('[Callback] Session error:', sessionError);
           console.error('[Callback] Session data:', session);
+          console.error('[Callback] Hash params:', hashParams.toString());
+          console.error('[Callback] Query params:', queryParams.toString());
           throw new Error('Failed to get session from magic link. Please try again.');
         }
 

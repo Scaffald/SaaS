@@ -168,6 +168,60 @@ async function setupMockTokens(page: Page) {
 }
 
 /**
+ * Set up mock Supabase session in localStorage
+ * This is required for TRPC authentication to work in tests.
+ * TRPC client gets auth headers from supabase.auth.getSession().
+ */
+async function setupSupabaseSession(
+  page: Page,
+  user: (typeof TEST_USERS)[string]
+) {
+  await page.addInitScript(
+    ({ userId, userEmail }) => {
+      // Create a mock Supabase session that matches the test user
+      // This session will be used by TRPC client to add Authorization headers
+      const mockSession = {
+        access_token: `mock-supabase-token-${userId}`,
+        refresh_token: `mock-supabase-refresh-${userId}`,
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        token_type: 'bearer',
+        user: {
+          id: userId,
+          email: userEmail,
+          aud: 'authenticated',
+          role: 'authenticated',
+          app_metadata: {},
+          user_metadata: {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      };
+
+      // Store in Supabase auth storage
+      const supabaseAuthKey = 'sb-auth-token';
+      window.localStorage.setItem(
+        supabaseAuthKey,
+        JSON.stringify({
+          access_token: mockSession.access_token,
+          refresh_token: mockSession.refresh_token,
+          expires_at: mockSession.expires_at,
+          expires_in: mockSession.expires_in,
+          token_type: mockSession.token_type,
+          user: mockSession.user,
+        })
+      );
+
+      console.log('[E2E] Supabase session created for:', userEmail);
+    },
+    {
+      userId: user.id,
+      userEmail: user.email,
+    }
+  );
+}
+
+/**
  * Set up E2E test user in localStorage
  * The mock Scaffald client will use this to return the correct user ID.
  *
@@ -358,6 +412,29 @@ async function setupMockProfile(
   await page.route('**/rest/v1/gc_settings*', createTableHandler('gc_settings', gcSettings));
   await page.route('**/rest/v1/contractor_settings*', createTableHandler('contractor_settings', contractorSettings));
   await page.route('**/rest/v1/broker_settings*', createTableHandler('broker_settings', brokerSettings));
+
+  // Set up TRPC route for getUserLexicon endpoint
+  // TRPC uses batched requests, so we need to handle the batch format
+  await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
+    const method = route.request().method();
+    console.log(`[E2E Mock] ${method} TRPC userSetTypes.getUserLexicon`);
+
+    // Return empty lexicon for test users (they'll use DEFAULT_LEXICON)
+    const mockResponse = {
+      result: {
+        data: {
+          lexicon: {},
+          userSetType: null,
+        },
+      },
+    };
+
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(mockResponse),
+    });
+  });
 }
 
 /**
@@ -407,6 +484,9 @@ export async function loginAs(
 
   // Set up mock Scaffald tokens
   await setupMockTokens(page);
+
+  // Set up mock Supabase session (required for TRPC auth)
+  await setupSupabaseSession(page, user);
 
   // Set up E2E test user for mock Scaffald client
   await setupTestUser(page, user);

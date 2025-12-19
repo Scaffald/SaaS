@@ -18,6 +18,16 @@ if [ -f .env ]; then
   set +a
 fi
 
+# Also load .env.test if we're in test mode or if .env.test exists and NODE_ENV is test
+if [ "$NODE_ENV" = "test" ] || [ -n "$CI" ] || [ -n "$PLAYWRIGHT" ]; then
+  if [ -f .env.test ]; then
+    echo "📋 Loading .env.test for test environment..."
+    set -a
+    source .env.test
+    set +a
+  fi
+fi
+
 # Determine if Mailpit should be enabled
 ENABLE_MAILPIT=false
 
@@ -106,13 +116,38 @@ fi
 
 # Start Supabase with explicit GOTRUE_SITE_URL to override defaults
 # This ensures magic links use the correct redirect URL
-# Export environment variables so Supabase CLI can use them when generating docker-compose
-export GOTRUE_SITE_URL="http://localhost:5173"
-export GOTRUE_URI_ALLOW_LIST="http://localhost:5173,http://localhost:5173/auth/callback,http://127.0.0.1:5173,http://127.0.0.1:5173/auth/callback,http://127.0.0.1:8081"
+# Read from environment variables (can be set in .env or .env.test)
+# Priority: GOTRUE_SITE_URL > APP_URL > default
+if [ -z "$GOTRUE_SITE_URL" ]; then
+  if [ -n "$APP_URL" ]; then
+    export GOTRUE_SITE_URL="$APP_URL"
+  else
+    export GOTRUE_SITE_URL="http://localhost:5173"
+  fi
+fi
 
-echo "Starting Supabase with GOTRUE_SITE_URL=$GOTRUE_SITE_URL"
-echo "GOTRUE_URI_ALLOW_LIST=$GOTRUE_URI_ALLOW_LIST"
+# Build allow list from site URL if not explicitly set
+if [ -z "$GOTRUE_URI_ALLOW_LIST" ]; then
+  BASE_URL=$(echo "$GOTRUE_SITE_URL" | sed 's|\(https\?://[^/]*\).*|\1|')
+  export GOTRUE_URI_ALLOW_LIST="${BASE_URL},${BASE_URL}/auth/callback,http://127.0.0.1:5173,http://127.0.0.1:5173/auth/callback,http://127.0.0.1:8081"
+fi
 
+echo "Starting Supabase with:"
+echo "  GOTRUE_SITE_URL=$GOTRUE_SITE_URL"
+echo "  GOTRUE_URI_ALLOW_LIST=$GOTRUE_URI_ALLOW_LIST"
+
+# Export environment variables so Docker Compose can read them
+# The docker-compose.override.yml will use env_file to load .env.test when it exists
+# We also export them here as a fallback in case env_file doesn't work
+if [ "$NODE_ENV" = "test" ] || [ -n "$CI" ] || [ -n "$PLAYWRIGHT" ] || [ -n "$TEST" ] || [ -n "$RUNNING_TESTS" ]; then
+  if [ -f .env.test ]; then
+    echo "📋 Environment variables from .env.test are loaded and will be passed to Docker containers"
+    echo "   Docker Compose will also read .env.test via env_file directive in docker-compose.override.yml"
+  fi
+fi
+
+# Start Supabase - Docker Compose will automatically read .env.test via env_file in override file
+# Environment variables are already exported above, so they're available to Docker Compose
 pnpm env-local pnpx supabase --workdir packages/supabase start "$@"
 
 # Fix GoTrue environment variables after Supabase starts

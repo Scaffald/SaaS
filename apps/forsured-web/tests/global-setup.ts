@@ -12,6 +12,17 @@
  */
 
 import { FullConfig } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env.test file for test environment variables
+const envPath = path.resolve(__dirname, '../../.env.test');
+dotenv.config({ path: envPath });
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'http://localhost:54321';
 const MAILPIT_URL = process.env.MAILPIT_URL || 'http://127.0.0.1:54324';
@@ -100,6 +111,16 @@ async function waitForService(
  */
 async function globalSetup(config: FullConfig) {
   console.log('🔍 Checking required services...\n');
+
+  // If GoTrue environment variables are set in .env.test, ensure they're applied
+  // Note: This requires Supabase to be restarted with these vars, or the fix script to be run
+  const appUrl = process.env.APP_URL || process.env.GOTRUE_SITE_URL;
+  if (appUrl) {
+    console.log(`📋 GoTrue configuration from .env.test:`);
+    console.log(`   GOTRUE_SITE_URL: ${process.env.GOTRUE_SITE_URL || appUrl}`);
+    console.log(`   APP_URL: ${appUrl}`);
+    console.log(`   (If magic links use wrong URL, run: bash scripts/fix-gotrue-env.sh)\n`);
+  }
 
   const services: ServiceCheck[] = [
     {

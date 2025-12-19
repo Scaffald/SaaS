@@ -13,6 +13,7 @@ import {
 import { YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
+import Modal from '../Common/Modal';
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 import { useEnums } from '../../hooks/useEnums';
@@ -47,7 +48,7 @@ interface Task {
 }
 
 export default function ManagerTasksPage() {
-  const { db } = useDatabase();
+  const { forsured } = useDatabase();
 
   // Fetch enums
   const { data: taskStatuses, isLoading: loadingStatuses } = useEnums('task_status');
@@ -70,6 +71,7 @@ export default function ManagerTasksPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [showCreateTask, setShowCreateTask] = useState(false);
 
   // Fetch tasks from database on mount
   useEffect(() => {
@@ -78,8 +80,7 @@ export default function ManagerTasksPage() {
       setError(null);
 
       try {
-        const { data, error: queryError } = await db
-          .from('tasks')
+        const { data, error: queryError } = await forsured('tasks')
           .select('*')
           .order('due_date', { ascending: true });
 
@@ -98,7 +99,7 @@ export default function ManagerTasksPage() {
     }
 
     fetchTasks();
-  }, [db]);
+  }, [forsured]);
 
   const allProjects = useMemo(() => {
     const projects = new Set(
@@ -315,7 +316,12 @@ export default function ManagerTasksPage() {
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
         </YStack>
-        <Button variant="primary">Create Task</Button>
+        <Button
+          variant="primary"
+          onPress={() => setShowCreateTask(true)}
+        >
+          Create Task
+        </Button>
       </XStack>
 
       <XStack alignItems="center" gap="$4" fontSize="$3">
@@ -791,6 +797,36 @@ export default function ManagerTasksPage() {
           setSelectedTask(null);
         }}
       />
+
+      <Modal
+        isOpen={showCreateTask}
+        onClose={() => setShowCreateTask(false)}
+        title="Create New Task"
+        size="large"
+      >
+        <YStack gap="$4" padding="$4">
+          <Text color="$color11" fontSize="$4">
+            Task creation form will be implemented here.
+          </Text>
+          <XStack gap="$3" justifyContent="flex-end">
+            <Button
+              variant="outlined"
+              onPress={() => setShowCreateTask(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onPress={() => {
+                toast.info('Task creation functionality coming soon');
+                setShowCreateTask(false);
+              }}
+            >
+              Create Task
+            </Button>
+          </XStack>
+        </YStack>
+      </Modal>
     </YStack>
   );
 }
