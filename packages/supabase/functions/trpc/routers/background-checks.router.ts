@@ -2,7 +2,7 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
-import type { Database } from '../../_shared/database.types.ts';
+import type { Database, Json } from '../../_shared/database.types';
 import {
   notifyBackgroundCheckInvitation,
   notifyBackgroundCheckStatusChange,
@@ -27,6 +27,7 @@ import {
 } from '../../_shared/background-check-status';
 import {
   type CheckStatusResponse,
+  type InitiateCheckPayload,
   createNationSearchClient,
   isNationSearchOutageError,
 } from '../../_shared/nationsearch/client';
@@ -629,11 +630,14 @@ async function submitBackgroundCheckToNationSearch(
     })
   }
 
-  const recordData = record as {
+  // Type assertion: record is guaranteed to exist after the null check above
+  const recordData = record as unknown as {
     id: string
     user_id: string
+    status_history?: unknown
     check_type_ids?: string[]
     custom_configuration?: unknown
+    metadata?: unknown
     package?: { slug?: string; check_type_ids?: string[] } | null
   }
 
@@ -653,22 +657,22 @@ async function submitBackgroundCheckToNationSearch(
   }
 
   const nationSearch = createNationSearchClient()
-  const payload = {
+  const payload: InitiateCheckPayload = {
     package_code: pkg.slug ?? '',
     user: {
       id: recordData.user_id,
     },
     metadata: {
       background_check_id: recordData.id,
-    },
-    custom_configuration: recordData.custom_configuration ?? {},
+    } as Record<string, unknown>,
+    custom_configuration: (recordData.custom_configuration ?? {}) as Record<string, unknown>,
   }
 
-  const statusHistory = Array.isArray(record.status_history)
-    ? [...(record.status_history as unknown[])]
+  const statusHistory = Array.isArray(recordData.status_history)
+    ? [...(recordData.status_history as unknown[])]
     : []
 
-  let finalRecord: BackgroundCheckRecord = record as unknown as BackgroundCheckRecord
+  let finalRecord: BackgroundCheckRecord = recordData as unknown as BackgroundCheckRecord
   let historyRef: unknown = statusHistory
 
   try {
@@ -682,7 +686,7 @@ async function submitBackgroundCheckToNationSearch(
         actor: 'worker',
       })
 
-      const metadataPatch = mergeMetadata(record.metadata, {
+      const metadataPatch = mergeMetadata(recordData.metadata, {
         provider_check_id: providerCheckId,
         provider_reference: response.metadata ?? null,
       })
@@ -697,7 +701,7 @@ async function submitBackgroundCheckToNationSearch(
           metadata: metadataPatch,
           estimated_completion_date: response.estimated_completion_date ?? null,
         })
-        .eq('id', record.id)
+        .eq('id', recordData.id)
         .select(BACKGROUND_CHECK_BASE_COLUMNS)
         .maybeSingle()
 
@@ -710,7 +714,7 @@ async function submitBackgroundCheckToNationSearch(
           ...finalRecord,
           provider_check_id: providerCheckId,
           status: 'in_progress',
-          status_history: newHistory,
+          status_history: newHistory as Json,
           metadata: metadataPatch,
           estimated_completion_date: response.estimated_completion_date ?? null,
         }
@@ -724,7 +728,7 @@ async function submitBackgroundCheckToNationSearch(
         actor: 'system',
         notes: 'queued_due_to_provider_outage',
       })
-      const outageMetadata = mergeMetadata(record.metadata, {
+      const outageMetadata = mergeMetadata(recordData.metadata, {
         provider_outage: true,
         provider_message: error instanceof Error ? error.message : String(error),
       })
@@ -733,10 +737,10 @@ async function submitBackgroundCheckToNationSearch(
         .schema('core')
         .from('background_checks')
         .update({
-          status_history: outageHistory,
+          status_history: outageHistory as Json,
           metadata: outageMetadata,
         })
-        .eq('id', record.id)
+        .eq('id', recordData.id)
         .select(BACKGROUND_CHECK_BASE_COLUMNS)
         .maybeSingle()
 
@@ -827,7 +831,11 @@ async function syncBackgroundCheckFromProvider(params: {
       return null
     }
 
-    const { data: refreshed, error } = await supabaseAdmin
+    if (!ctx.supabaseAdmin) {
+      return null
+    }
+
+    const { data: refreshed, error } = await ctx.supabaseAdmin
       .schema('core')
       .from('background_checks')
       .update(updates)
@@ -937,6 +945,10 @@ function mapAdminCheckType(row: RawAdminCheckTypeRow): AdminCheckTypeRecord {
 }
 
 async function fetchAdminCheckTypes(ctx: Context, ids?: string[]): Promise<AdminCheckTypeRecord[]> {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+  }
+
   const { supabaseAdmin } = ctx
 
   let query = supabaseAdmin
@@ -1004,6 +1016,10 @@ async function fetchAdminPackages(
   ctx: Context,
   packageIds?: string[]
 ): Promise<AdminPackageRecord[]> {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+  }
+
   const { supabaseAdmin } = ctx
 
   let query = supabaseAdmin
@@ -1058,6 +1074,10 @@ async function fetchAdminPackages(
 
 export const backgroundChecksRouter = t.router({
   getPricing: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.supabaseAdmin) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+    }
+
     const { supabaseAdmin } = ctx
 
     const { data: tiers, error: tiersError } = await supabaseAdmin
@@ -1131,7 +1151,11 @@ export const backgroundChecksRouter = t.router({
         await ensureOrganizationAccess(ctx, input.organization_id)
       }
 
-      const { data: pkg, error: pkgError } = await supabaseAdmin
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
+      const { data: pkg, error: pkgError } = await ctx.supabaseAdmin
         .schema('core')
         .from('background_check_packages')
         .select('id, slug, check_type_ids, metadata')
@@ -1162,7 +1186,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      const { data: tierRow, error: tierError } = await supabaseAdmin
+      const { data: tierRow, error: tierError } = await ctx.supabaseAdmin
         .schema('core')
         .from('service_pricing')
         .select('id, tier, name, price_cents')
@@ -1189,7 +1213,7 @@ export const backgroundChecksRouter = t.router({
       const activeAddOnIds: string[] = []
 
       if (input.add_on_ids?.length) {
-        const { data: addOns, error: addOnsError } = await supabaseAdmin
+        const { data: addOns, error: addOnsError } = await ctx.supabaseAdmin
           .schema('core')
           .from('background_check_addons')
           .select('id, price_cents')
@@ -1219,7 +1243,7 @@ export const backgroundChecksRouter = t.router({
         },
       ]
 
-      const { data: insertedRecord, error: insertError } = await supabaseAdmin
+      const { data: insertedRecord, error: insertError } = await ctx.supabaseAdmin
         .schema('core')
         .from('background_checks')
         .insert({
@@ -1277,7 +1301,11 @@ export const backgroundChecksRouter = t.router({
         },
       })
 
-      const { error: updateError } = await supabaseAdmin
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
+      const { error: updateError } = await ctx.supabaseAdmin
         .schema('core')
         .from('background_checks')
         .update({
@@ -1316,6 +1344,10 @@ export const backgroundChecksRouter = t.router({
   confirmCheckPayment: protectedProcedure
     .input(confirmBackgroundCheckPaymentSchema)
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
       const { supabaseAdmin, user } = ctx
 
       const { data: checkRecord, error: checkError } = await supabaseAdmin
@@ -1341,14 +1373,22 @@ export const backgroundChecksRouter = t.router({
 
       let hasAccess = false
 
+      const checkData = checkRecord as {
+        user_id?: string
+        initiated_by_user_id?: string
+        organization_id?: string
+        payment_intent_id?: string
+        id: string
+      }
+
       if (
-        (checkRecord.user_id && checkRecord.user_id === user?.id) ||
-        (checkRecord.initiated_by_user_id && checkRecord.initiated_by_user_id === user?.id)
+        (checkData.user_id && checkData.user_id === user?.id) ||
+        (checkData.initiated_by_user_id && checkData.initiated_by_user_id === user?.id)
       ) {
         hasAccess = true
-      } else if (checkRecord.organization_id) {
+      } else if (checkData.organization_id) {
         try {
-          await ensureOrganizationAccess(ctx, checkRecord.organization_id)
+          await ensureOrganizationAccess(ctx, checkData.organization_id)
           hasAccess = true
         } catch {
           hasAccess = false

@@ -178,7 +178,7 @@ async function verifyCertificateFingerprint(baseUrl: string): Promise<void> {
         return
       }
 
-      const digest = await crypto.subtle.digest('SHA-256', certificate.rawDER)
+      const digest = await crypto.subtle.digest('SHA-256', certificate.rawDER as BufferSource)
       const actualFingerprint = normalizeFingerprint(
         Array.from(new Uint8Array(digest))
           .map((b) => b.toString(16).padStart(2, '0'))

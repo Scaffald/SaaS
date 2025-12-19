@@ -42,7 +42,7 @@ export async function extractTextFromPdf(
       },
     );
 
-    const normalizedPages = pageTexts.map((page) => page?.trim() ?? "");
+    const normalizedPages = pageTexts.map((page: string | undefined) => page?.trim() ?? "");
     const combinedText = normalizedPages.join("\n").trim();
 
     if (combinedText.length > 0) {
