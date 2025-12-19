@@ -55,7 +55,7 @@ if [ -n "$ENABLE_MAILPIT_OVERRIDE" ]; then
 fi
 
 # Update config.toml to enable/disable Mailpit
-CONFIG_FILE="packages/scf-supabase/config.toml"
+CONFIG_FILE="packages/supabase/config.toml"
 BACKUP_FILE="${CONFIG_FILE}.bak"
 
 # Create backup

@@ -75,5 +75,5 @@
 \echo 'Password for all: ForsuredTest123!'
 \echo ''
 \echo 'Test IDs available in:'
-\echo '  packages/scf-supabase/seeds/forsured/test-ids.ts'
+\echo '  packages/supabase/seeds/forsured/test-ids.ts'
 \echo '============================================='

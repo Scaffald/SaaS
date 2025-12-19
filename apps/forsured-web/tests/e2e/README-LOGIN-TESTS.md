@@ -39,7 +39,7 @@ The authentication mode is controlled by **`VITE_FORSURED_USE_OAUTH`**:
 **Mailpit runs on**: `http://127.0.0.1:54324`
 
 This is configured in:
-- `packages/scf-supabase/config.toml` (port 54324)
+- `packages/supabase/config.toml` (port 54324)
 - `apps/forsured-web/tests/utils/mailpit.ts` (default URL)
 
 ### Accessing Mailpit
@@ -209,5 +209,5 @@ The new tests:
 - `apps/forsured-web/src/pages/Start.tsx` - Login page
 - `apps/forsured-web/src/pages/Callback.tsx` - Auth callback handler
 - `apps/forsured-web/src/lib/auth/oauth.ts` - OAuth initiation
-- `packages/scf-supabase/config.toml` - Mailpit configuration
+- `packages/supabase/config.toml` - Mailpit configuration
 

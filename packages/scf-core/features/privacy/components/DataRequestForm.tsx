@@ -194,7 +194,7 @@ function RadioButton({
 export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }: DataRequestFormProps) {
   const [requestType, setRequestType] = useState<DataRequestType>(initialType)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [correctionDetails, setCorrectionDetails] = useState('')
+  const [correctionDetails, _setCorrectionDetails] = useState('')
   const [confirmChecked, setConfirmChecked] = useState(false)
   const [step, setStep] = useState<'type' | 'categories' | 'confirm' | 'submitted'>('type')
 

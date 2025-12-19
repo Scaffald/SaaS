@@ -46,21 +46,6 @@ interface AdminCCPARequest {
 }
 
 /**
- * Compliance metrics structure
- */
-interface ComplianceMetrics {
-  total_requests: number
-  pending_requests: number
-  processing_requests: number
-  completed_requests: number
-  failed_requests: number
-  average_processing_days: number
-  compliance_rate: number
-  requests_by_type: Record<string, number>
-  overdue_count: number
-}
-
-/**
  * Status badge colors
  */
 const STATUS_COLORS: Record<AdminRequestStatus, { bg: string; text: string }> = {
@@ -379,7 +364,7 @@ export function CCPAAdminDashboard() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
-  const [selectedRequest, setSelectedRequest] = useState<string | null>(null)
+  const [_selectedRequest, setSelectedRequest] = useState<string | null>(null)
 
   // Fetch compliance metrics
   const {
@@ -432,7 +417,7 @@ export function CCPAAdminDashboard() {
     // Open detail modal or navigate to detail page
   }
 
-  const handleAssignRequest = (id: string) => {
+  const handleAssignRequest = (_id: string) => {
     // Open assignment modal
   }
 
