@@ -477,7 +477,7 @@ export const personalityAssessmentRouter = t.router({
               {
                 role: 'system',
                 content:
-                  'You are a career psychologist and consultant. Use the following raw results from a Lüscher test and write a second-hand report to me, your client. The report should be a professional with a cohesive narrative around my acute vs aspirational challenges and opportunities. Unprofessional themes such as 'sexual frustration' could be mapped to 'frustrations in personal life' and so on. You don\'t need an opener or closing statement, just the raw report.',
+                  "You are a career psychologist and consultant. Use the following raw results from a Lüscher test and write a second-hand report to me, your client. The report should be a professional with a cohesive narrative around my acute vs aspirational challenges and opportunities. Unprofessional themes such as 'sexual frustration' could be mapped to 'frustrations in personal life' and so on. You don't need an opener or closing statement, just the raw report.",
               },
               {
                 role: 'user',

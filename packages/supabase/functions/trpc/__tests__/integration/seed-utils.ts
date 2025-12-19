@@ -884,12 +884,12 @@ export async function setupTeamManagementFixture(
 
   const ownerTeamRole = organizationTeamRoles['admin']
   if (!ownerTeamRole) {
-    throw new Error('Organization team role 'admin' is required for team management fixtures.')
+    throw new Error("Organization team role 'admin' is required for team management fixtures.")
   }
 
   const memberRole = organizationTeamRoles['member']
   if (!memberRole) {
-    throw new Error('Organization team role 'member' is required for team management fixtures.')
+    throw new Error("Organization team role 'member' is required for team management fixtures.")
   }
 
   const team = await createTeamRecord({

@@ -1372,7 +1372,7 @@ export const paymentsRouter = t.router({
       ])
 
       const csvRows = [headers, ...rows]
-        .map((row: (string | number | null | undefined)[]) => row.map((cell: string | number | null | undefined) => `'${String(cell).replace(/'/g, '''')}'`).join(','))
+        .map((row: (string | number | null | undefined)[]) => row.map((cell: string | number | null | undefined) => `'${String(cell).replace(/'/g, "''")}'`).join(','))
         .join('\n')
 
       return {

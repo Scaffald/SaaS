@@ -109,9 +109,9 @@ const decodeHtmlEntities = (text: string): string => {
     "&": "&",
     "<": "<",
     ">": ">",
-    ''': '"',
-    "&#39;": ''",
-    "&apos;": ''",
+    '&quot;': '"',
+    "&#39;": "'",
+    "&apos;": "'",
     "&nbsp;": " ",
   };
 
@@ -294,7 +294,7 @@ const handler = async (req: Request) => {
   if (!source) {
     return new Response(
       JSON.stringify({
-        error: 'Missing parameter. Provide either 'source' or 'url' parameter.",
+        error: "Missing parameter. Provide either 'source' or 'url' parameter.",
       }),
       {
         status: 400,

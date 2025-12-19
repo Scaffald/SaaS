@@ -19,8 +19,8 @@ function decodeHtmlEntities(text: string): string {
     "&lt;": "<",
     "&gt;": ">",
     '&quot;': '"',
-    "&#39;": ''",
-    "&apos;": ''",
+    "&#39;": "'",
+    "&apos;": "'",
   };
   return text.replace(/&[#\w]+;/g, (entity) => entities[entity] || entity);
 }

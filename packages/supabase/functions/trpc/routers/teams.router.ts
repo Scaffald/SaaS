@@ -1055,7 +1055,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         if (input.teamId && input.teamId !== teamId) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: 'teamId does not match the member's team",
+            message: "teamId does not match the member's team",
           });
         }
 

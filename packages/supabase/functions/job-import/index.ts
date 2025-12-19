@@ -42,13 +42,13 @@ async function parseRSSFeed(url: string): Promise<JobData[]> {
       // Extract fields
       const title = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/)?.[1] ||
         item.match(/<title>(.*?)<\/title>/)?.[1] ||
-        "';
+        '';
 
       const link = item.match(/<link>(.*?)<\/link>/)?.[1] || '';
       const description =
         item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/)?.[1] ||
         item.match(/<description>(.*?)<\/description>/)?.[1] ||
-        "';
+        '';
       const pubDate = item.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || '';
 
       // Extract category/company from title (WeWorkRemotely format: "Company: Title")
