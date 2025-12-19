@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label, Spinner } from 'tamagui';
 import { EmptyState } from '@unicornlove/ui';
+import Tooltip from '../../ui/Tooltip';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEnumsAdmin, EnumValue, invalidateAllEnumCaches } from '../../hooks/useEnums';
 import {
@@ -262,6 +263,7 @@ function AdminEnums() {
             borderRadius="$4"
             hoverStyle={{ backgroundColor: "$backgroundHover" }}
             opacity={isLoadingValues ? 0.5 : 1}
+            aria-label="Refresh enum values"
           >
             Refresh
           </Button>
@@ -364,66 +366,81 @@ function AdminEnums() {
                     <XStack alignItems="center" gap="$1">
                       {enumItem.is_active ? (
                         <>
-                          <Button
-                            onPress={() => openEditModal(enumItem)}
-                            disabled={actionInProgress === enumItem.id}
-                            padding="$1"
-                            backgroundColor="transparent"
-                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
-                          >
-                            <Edit size={16} color="$blue10" />
-                          </Button>
-                          <Button
-                            onPress={() => handleDelete(enumItem.id)}
-                            disabled={actionInProgress === enumItem.id}
-                            padding="$1"
-                            backgroundColor="transparent"
-                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
-                          >
-                            {actionInProgress === enumItem.id ? (
-                              <Spinner size="small" color="$red10" />
-                            ) : (
-                              <Trash2 size={16} color="$red10" />
-                            )}
-                          </Button>
-                          <Button
-                            onPress={() => handleReorder(enumItem.id, 'up')}
-                            disabled={actionInProgress === enumItem.id}
-                            padding="$1"
-                            backgroundColor="transparent"
-                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
-                          >
-                            <ArrowUp size={16} color="$color11" />
-                          </Button>
-                          <Button
-                            onPress={() => handleReorder(enumItem.id, 'down')}
-                            disabled={actionInProgress === enumItem.id}
-                            padding="$1"
-                            backgroundColor="transparent"
-                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
-                          >
-                            <ArrowDown size={16} color="$color11" />
-                          </Button>
+                          <Tooltip content="Edit enum value">
+                            <Button
+                              onPress={() => openEditModal(enumItem)}
+                              disabled={actionInProgress === enumItem.id}
+                              padding="$1"
+                              backgroundColor="transparent"
+                              hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                              opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                              aria-label={`Edit ${enumItem.display_name}`}
+                            >
+                              <Edit size={16} color="$blue10" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Delete enum value">
+                            <Button
+                              onPress={() => handleDelete(enumItem.id)}
+                              disabled={actionInProgress === enumItem.id}
+                              padding="$1"
+                              backgroundColor="transparent"
+                              hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                              opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                              aria-label={`Delete ${enumItem.display_name}`}
+                            >
+                              {actionInProgress === enumItem.id ? (
+                                <Spinner size="small" color="$red10" />
+                              ) : (
+                                <Trash2 size={16} color="$red10" />
+                              )}
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Move up">
+                            <Button
+                              onPress={() => handleReorder(enumItem.id, 'up')}
+                              disabled={actionInProgress === enumItem.id}
+                              padding="$1"
+                              backgroundColor="transparent"
+                              hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                              opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                              aria-label={`Move ${enumItem.display_name} up`}
+                            >
+                              <ArrowUp size={16} color="$color11" />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip content="Move down">
+                            <Button
+                              onPress={() => handleReorder(enumItem.id, 'down')}
+                              disabled={actionInProgress === enumItem.id}
+                              padding="$1"
+                              backgroundColor="transparent"
+                              hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                              opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                              aria-label={`Move ${enumItem.display_name} down`}
+                            >
+                              <ArrowDown size={16} color="$color11" />
+                            </Button>
+                          </Tooltip>
                         </>
                       ) : (
-                        <Button
-                          onPress={() => handleRestore(enumItem.id)}
-                          disabled={actionInProgress === enumItem.id}
-                          padding="$1"
-                          backgroundColor="transparent"
-                          hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                          opacity={actionInProgress === enumItem.id ? 0.5 : 1}
-                        >
-                          {actionInProgress === enumItem.id ? (
-                            <Spinner size="small" color="$green10" />
-                          ) : (
-                            <RotateCcw size={16} color="$green10" />
-                          )}
-                        </Button>
+                        <Tooltip content="Restore enum value">
+                          <Button
+                            onPress={() => handleRestore(enumItem.id)}
+                            disabled={actionInProgress === enumItem.id}
+                            padding="$1"
+                            backgroundColor="transparent"
+                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                            aria-label={`Restore ${enumItem.display_name}`}
+                          >
+                            {actionInProgress === enumItem.id ? (
+                              <Spinner size="small" color="$green10" />
+                            ) : (
+                              <RotateCcw size={16} color="$green10" />
+                            )}
+                          </Button>
+                        </Tooltip>
                       )}
                     </XStack>
                   </td>
@@ -464,6 +481,7 @@ function AdminEnums() {
                 backgroundColor="transparent"
                 padding="$1"
                 hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                aria-label="Close modal"
               >
                 <X size={20} color="$color11" />
               </Button>
