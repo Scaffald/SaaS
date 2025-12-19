@@ -8,70 +8,12 @@ import { Button as CoreButton } from '@unicornlove/ui';
 import { Input as TextInput } from '@unicornlove/ui';
 import { initiateOAuth } from '../lib/auth/oauth';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { UserProfile } from '../types';
-import { User as ScaffaldUser } from '../lib/scaffald/types';
-import { saveTokens } from '../lib/scaffald/auth';
 
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
-/**
- * Map database user types to route prefixes
- */
-const USER_TYPE_TO_ROUTE: Record<string, string> = {
-  gc: 'manager',
-  manager: 'manager',
-  contractor: 'subcontractor',
-  subcontractor: 'subcontractor',
-  broker: 'broker',
-  admin: 'admin',
-};
-
-/**
- * Create a mock user and profile for testing
- * Note: The database stores 'gc' and 'contractor', but UserProfile type expects route types.
- * We use route types to satisfy TypeScript, matching how ProtectedRoute expects them.
- */
-function createMockSession(
-  userType: 'gc' | 'contractor' | 'broker' | 'admin'
-): { user: ScaffaldUser; profile: UserProfile } {
-  const userId = `test-${userType}-${Date.now()}`;
-  const now = new Date().toISOString();
-
-  const user: ScaffaldUser = {
-    id: userId,
-    email: `test-${userType}@forsured.test`,
-    name: `Test ${userType === 'gc' ? 'GC' : userType === 'contractor' ? 'Contractor' : userType.charAt(0).toUpperCase() + userType.slice(1)}`,
-  };
-
-  // Map database types to route types for UserProfile interface
-  // Database uses: gc, contractor, broker, admin
-  // UserProfile type expects: manager, subcontractor, broker, admin
-  const routeTypeMap: Record<'gc' | 'contractor' | 'broker' | 'admin', 'manager' | 'subcontractor' | 'broker' | 'admin'> = {
-    gc: 'manager',
-    contractor: 'subcontractor',
-    broker: 'broker',
-    admin: 'admin',
-  };
-
-  const profile: UserProfile = {
-    id: `profile-${userId}`,
-    scaffald_user_id: userId,
-    user_type: routeTypeMap[userType],
-    onboarding_completed: true,
-    company_connected: false,
-    onboarding_step: 5,
-    onboarding_data: {},
-    created_at: now,
-    updated_at: now,
-  };
-
-  return { user, profile };
-}
 
 function StartPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -129,57 +71,60 @@ function StartPage() {
   };
 
   /**
-   * Temporary test function to bypass login and set a session for a specific user type
-   * This allows testing logged-in functionality without OAuth
+   * Test login using real seeded database users
+   * This allows testing logged-in functionality with actual data
    */
-  const handleTestLogin = (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
-    try {
-      const { user, profile } = createMockSession(userType);
+  const handleTestLogin = async (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
+    setIsLoading(true);
+    setError(null);
 
-      // Save mock Scaffald tokens to localStorage
-      saveTokens({
-        access_token: `mock-test-token-${user.id}`,
-        refresh_token: `mock-test-refresh-${user.id}`,
-        expires_in: 3600,
-        token_type: 'Bearer',
-        created_at: Math.floor(Date.now() / 1000),
+    try {
+      // Map user types to seeded test accounts
+      const testAccounts: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
+        gc: { email: 'gc-active@forsured-test.com', password: 'ForsuredTest123!' },
+        contractor: { email: 'contractor-active@forsured-test.com', password: 'ForsuredTest123!' },
+        broker: { email: 'broker-active@forsured-test.com', password: 'ForsuredTest123!' },
+        admin: { email: 'admin@forsured-test.com', password: 'ForsuredTest123!' },
+      };
+
+      const credentials = testAccounts[userType];
+
+      // Sign in with Supabase using real credentials
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password,
       });
 
-      // Save mock Supabase session to localStorage
-      localStorage.setItem('sb-auth-token', JSON.stringify({
-        access_token: `mock-supabase-token-${user.id}`,
-        refresh_token: `mock-supabase-refresh-${user.id}`,
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-        expires_in: 3600,
-        token_type: 'bearer',
-        user: {
-          id: user.id,
-          email: user.email,
-          aud: 'authenticated',
-          role: 'authenticated',
-          app_metadata: {},
-          user_metadata: {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      }));
+      if (signInError) {
+        console.error('[StartPage] Test login failed:', signInError);
+        setError(`Test login failed: ${signInError.message}`);
+        setIsLoading(false);
+        return;
+      }
 
-      // CRITICAL FIX: Save mock user for Scaffald client to retrieve
-      // The mock Scaffald client checks this key when getUser() is called
-      localStorage.setItem('mock_scaffald_current_user', JSON.stringify(user));
+      if (!data.user) {
+        setError('Test login failed: No user returned');
+        setIsLoading(false);
+        return;
+      }
 
-      // CRITICAL FIX: Save mock profile for AuthContext to retrieve
-      // This ensures profile persists across navigation
-      localStorage.setItem('mock_forsured_profile', JSON.stringify(profile));
+      console.log('[StartPage] Test login successful, user:', data.user.email);
 
-      login({ user, profile });
+      // Map database user types to route types
+      const routeTypeMap: Record<'gc' | 'contractor' | 'broker' | 'admin', 'manager' | 'subcontractor' | 'broker' | 'admin'> = {
+        gc: 'manager',
+        contractor: 'subcontractor',
+        broker: 'broker',
+        admin: 'admin',
+      };
 
-      // profile.user_type is already a route type (manager, subcontractor, broker, admin)
-      // Use it directly as the route prefix
-      navigate(`/${profile.user_type}/dashboard`);
+      // Navigate to the appropriate dashboard
+      // The AuthContext will handle fetching the real profile data
+      navigate(`/${routeTypeMap[userType]}/dashboard`);
     } catch (err) {
-      console.error('Test login failed:', err);
+      console.error('[StartPage] Test login error:', err);
       setError(err instanceof Error ? err.message : 'Test login failed');
+      setIsLoading(false);
     }
   };
 
