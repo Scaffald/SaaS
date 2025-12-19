@@ -137,6 +137,10 @@ export const accountDeletionRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
       // Create deletion record
       const { data: deletion, error: deletionError } = await ctx.supabaseAdmin
         .schema('core')
@@ -163,7 +167,7 @@ export const accountDeletionRouter = t.router({
       // Start deletion process (async)
       // In production, this would be queued for background processing
       try {
-        await ctx.caller.accountDeletion.processWorkerDeletion({
+        await (ctx as any).caller?.accountDeletion?.processWorkerDeletion({
           deletionId: deletion.id,
         })
       } catch (error) {
@@ -199,6 +203,10 @@ export const accountDeletionRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       await ensureOrganizationAccess(ctx, input.organizationId)
 
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
       // Create deletion record
       const { data: deletion, error: deletionError } = await ctx.supabaseAdmin
         .schema('core')
@@ -224,7 +232,7 @@ export const accountDeletionRouter = t.router({
 
       // Start deletion process (async)
       try {
-        await ctx.caller.accountDeletion.processOrganizationDeletion({
+        await (ctx as any).caller?.accountDeletion?.processOrganizationDeletion({
           deletionId: deletion.id,
         })
       } catch (error) {
@@ -256,6 +264,10 @@ export const accountDeletionRouter = t.router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
       const { data: deletion, error: fetchError } = await ctx.supabaseAdmin
         .schema('core')
         .from('account_deletions')
@@ -385,6 +397,10 @@ export const accountDeletionRouter = t.router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
       const { data: deletion, error: fetchError } = await ctx.supabaseAdmin
         .schema('core')
         .from('account_deletions')
@@ -534,6 +550,10 @@ export const accountDeletionRouter = t.router({
       })
     )
     .query(async ({ ctx, input }) => {
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
       const { data: deletion, error } = await ctx.supabaseAdmin
         .schema('core')
         .from('account_deletions')
