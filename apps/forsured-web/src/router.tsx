@@ -124,13 +124,6 @@ const ContractorHelp = lazy(() => import('./pages/contractor/help/index'));
 const BrokerHelp = lazy(() => import('./pages/broker/help/index'));
 
 const AppRoutes = () => {
-  const { isLoading } = useAuth();
-
-  // Show loading spinner while auth state is being determined
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
