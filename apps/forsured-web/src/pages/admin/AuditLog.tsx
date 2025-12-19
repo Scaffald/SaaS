@@ -1,7 +1,7 @@
 // src/pages/admin/AuditLog.tsx
 import { useState } from 'react';
-import { Search, RefreshCcw } from 'lucide-react';
-import { YStack, XStack, Text, H1, Card, Button, Input, Select, styled } from '@unicornlove/ui';
+import { Search, RefreshCcw, FileText } from 'lucide-react';
+import { YStack, XStack, Text, H1, Card, Button, Input, Select, styled, EmptyState } from '@unicornlove/ui';
 
 interface AuditLogEntry {
   id: string;
@@ -12,10 +12,33 @@ interface AuditLogEntry {
   created_at: string;
 }
 
+// Generate dynamic timestamps for realistic mock data
+const now = new Date();
 const mockAuditLogs: AuditLogEntry[] = [
-  { id: '1', admin_user_id: 'user-4', action: 'CREATE_INVITATION', target_type: 'broker_invitation', target_id: 'inv-1', created_at: '2024-10-25T10:00:00Z' },
-  { id: '2', admin_user_id: 'user-4', action: 'UPDATE_USER_ROLE', target_type: 'user', target_id: 'user-1', created_at: '2024-10-25T10:30:00Z' },
-  { id: '3', admin_user_id: 'user-4', action: 'DELETE_ENUM_VALUE', target_type: 'enum_value', target_id: 'enum-1', created_at: '2024-10-25T11:00:00Z' },
+  {
+    id: '1',
+    admin_user_id: 'user-4',
+    action: 'CREATE_INVITATION',
+    target_type: 'broker_invitation',
+    target_id: 'inv-1',
+    created_at: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString() // 2 hours ago
+  },
+  {
+    id: '2',
+    admin_user_id: 'user-4',
+    action: 'UPDATE_USER_ROLE',
+    target_type: 'user',
+    target_id: 'user-1',
+    created_at: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString() // 1 day ago
+  },
+  {
+    id: '3',
+    admin_user_id: 'user-4',
+    action: 'DELETE_ENUM_VALUE',
+    target_type: 'enum_value',
+    target_id: 'enum-1',
+    created_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString() // 3 days ago
+  },
 ];
 
 const Table = styled('table', {
@@ -123,48 +146,65 @@ function AdminAuditLog() {
           />
         </XStack>
 
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>
-                <Text fontWeight="600">Timestamp</Text>
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Text fontWeight="600">User ID</Text>
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Text fontWeight="600">Action</Text>
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Text fontWeight="600">Target Type</Text>
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Text fontWeight="600">Target ID</Text>
-              </TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredLogs.map(log => (
-              <TableRow key={log.id}>
-                <TableCell>
-                  <Text>{new Date(log.created_at).toLocaleString()}</Text>
-                </TableCell>
-                <TableCell>
-                  <Text>{log.admin_user_id}</Text>
-                </TableCell>
-                <TableCell>
-                  <Text>{log.action}</Text>
-                </TableCell>
-                <TableCell>
-                  <Text>{log.target_type}</Text>
-                </TableCell>
-                <TableCell>
-                  <Text>{log.target_id}</Text>
-                </TableCell>
+        {filteredLogs.length === 0 ? (
+          <EmptyState
+            icon={FileText}
+            title={searchQuery || actionFilter !== 'all' ? 'No audit logs match your filters' : 'No audit logs yet'}
+            description={searchQuery || actionFilter !== 'all'
+              ? 'Try adjusting your search query or filter criteria to find audit logs.'
+              : 'Admin actions will be logged here for auditing and compliance purposes.'}
+            secondaryAction={searchQuery || actionFilter !== 'all' ? {
+              label: "Clear Filters",
+              onClick: () => {
+                setSearchQuery('');
+                setActionFilter('all');
+              },
+            } : undefined}
+          />
+        ) : (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell>
+                  <Text fontWeight="600">Timestamp</Text>
+                </TableHeaderCell>
+                <TableHeaderCell>
+                  <Text fontWeight="600">User ID</Text>
+                </TableHeaderCell>
+                <TableHeaderCell>
+                  <Text fontWeight="600">Action</Text>
+                </TableHeaderCell>
+                <TableHeaderCell>
+                  <Text fontWeight="600">Target Type</Text>
+                </TableHeaderCell>
+                <TableHeaderCell>
+                  <Text fontWeight="600">Target ID</Text>
+                </TableHeaderCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {filteredLogs.map(log => (
+                <TableRow key={log.id}>
+                  <TableCell>
+                    <Text>{new Date(log.created_at).toLocaleString()}</Text>
+                  </TableCell>
+                  <TableCell>
+                    <Text>{log.admin_user_id}</Text>
+                  </TableCell>
+                  <TableCell>
+                    <Text>{log.action}</Text>
+                  </TableCell>
+                  <TableCell>
+                    <Text>{log.target_type}</Text>
+                  </TableCell>
+                  <TableCell>
+                    <Text>{log.target_id}</Text>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </Card>
     </YStack>
   );
