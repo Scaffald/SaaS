@@ -821,7 +821,11 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           ),
       )
       .query(async ({ ctx, input }) => {
-        const { supabaseAdmin } = ctx;
+        const { supabaseAdmin, dbAdmin } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         let organizationId = input.organizationId ?? null;
         let team: { id: string; organization_id: string } | null = null;
@@ -849,9 +853,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const { data, error } = await supabaseAdmin
-          .schema("core")
-          .from("team_roles")
+        const { data, error } = await dbAdmin
+          .core("team_roles")
           .select("id, key, name, description, is_default, is_system")
           .eq("organization_id", organizationId)
           .order("name", { ascending: true });
@@ -886,7 +889,11 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
     list: procedure.input(z.object({ teamId: teamIdSchema })).query(
       async ({ ctx, input }) => {
-        const { supabaseAdmin } = ctx;
+        const { supabaseAdmin, dbAdmin } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
@@ -895,9 +902,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           permission: TeamPermissions.VIEW,
         });
 
-        const { data, error } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
+        const { data, error } = await dbAdmin
+          .core("team_members")
           .select(
             `
             id,
@@ -935,7 +941,11 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
     add: procedure.input(teamMemberAddSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -982,9 +992,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           metadata: input.metadata ?? {},
         };
 
-        const { data, error } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
+        const { data, error } = await dbAdmin
+          .core("team_members")
           .insert(insertPayload)
           .select(
             `
@@ -1033,16 +1042,19 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
     update: procedure.input(teamMemberUpdateSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
         const { data: existingMember, error: existingError } =
-          await supabaseAdmin
-            .schema("core")
-            .from("team_members")
+          await dbAdmin
+            .core("team_members")
             .select(
               `
             id,
@@ -1142,9 +1154,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const { data, error } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
+        const { data, error } = await dbAdmin
+          .core("team_members")
           .update(updates)
           .eq("id", input.teamMemberId)
           .select(
@@ -1233,15 +1244,18 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
     remove: procedure.input(teamMemberRemoveSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
-        const { data: existingMember, error: memberError } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
+        const { data: existingMember, error: memberError } = await dbAdmin
+          .core("team_members")
           .select("metadata")
           .eq("id", input.teamMemberId)
           .eq("team_id", input.teamId)
@@ -1280,9 +1294,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           updates.metadata = metadata;
         }
 
-        const { data, error } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
+        const { data, error } = await dbAdmin
+          .core("team_members")
           .update(updates)
           .eq("id", input.teamMemberId)
           .eq("team_id", input.teamId)
@@ -1332,7 +1345,11 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
     statusChange: procedure.input(teamMemberStatusChangeSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+        }
 
         if (!TEAM_MEMBER_STATUS_SET.has(input.status)) {
           throw new TRPCError({
@@ -1342,9 +1359,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         }
 
         const { data: existingMember, error: existingError } =
-          await supabaseAdmin
-            .schema("core")
-            .from("team_members")
+          await dbAdmin
+            .core("team_members")
             .select("team_id, user_id, status")
             .eq("id", input.teamMemberId)
             .single();
@@ -1385,9 +1401,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           updates.joined_at = updates.joined_at ?? nowIso();
         }
 
-        const { data, error } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
+        const { data, error } = await dbAdmin
+          .core("team_members")
           .update(updates)
           .eq("id", input.teamMemberId)
           .select(

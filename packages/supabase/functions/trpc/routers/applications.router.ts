@@ -8,7 +8,7 @@ import {
   fileUploadSchema,
 } from '../../_shared/application-schemas.ts';
 import { autoAssignApplicationToTeam } from '../../_shared/utils/application-assignment.ts';
-import { t } from '../middleware.ts';
+import { protectedProcedure, t } from '../middleware.ts';
 
 const publicProcedure = t.procedure
 const router = t.router
@@ -717,5 +717,231 @@ export const applicationsRouter = router({
       }
 
       return updated
+    }),
+
+  /**
+   * Get messages for an application
+   * Returns all messages in the application thread
+   */
+  getMessages: protectedProcedure
+    .input(z.object({ applicationId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
+
+      if (!user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You must be logged in to view messages',
+        })
+      }
+
+      // Verify user has access to this application
+      // RLS policies will handle this, but we verify explicitly for better error messages
+      const { data: application, error: appError } = await supabase
+        .schema('core')
+        .from('applications')
+        .select('id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))')
+        .eq('id', input.applicationId)
+        .single()
+
+      if (appError || !application) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Application not found',
+        })
+      }
+
+      // Check if user is the applicant
+      const isApplicant = application.user_id === user.id
+
+      // Check if user has organization access
+      let hasOrgAccess = false
+      if (!isApplicant) {
+        const orgId = (application.job as { organization_id?: string } | null)?.organization_id
+        const ownerId = (application.job as { organization?: { owner_user_id?: string } | null } | null)?.organization?.owner_user_id
+
+        if (ownerId === user.id) {
+          hasOrgAccess = true
+        } else if (orgId) {
+          // Check organization membership via role_assignments
+          const { data: roleAssignment } = await supabase
+            .schema('core')
+            .from('role_assignments')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('scope_org_id', orgId)
+            .maybeSingle()
+
+          if (roleAssignment) {
+            hasOrgAccess = true
+          }
+        }
+      }
+
+      if (!isApplicant && !hasOrgAccess) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You do not have access to this application',
+        })
+      }
+
+      // Fetch messages with author info
+      const { data: messages, error } = await supabase
+        .schema('core')
+        .from('application_messages')
+        .select(
+          `
+          id,
+          body,
+          created_at,
+          author_user_id,
+          author:users!author_user_id(
+            id,
+            display_name,
+            username,
+            avatar_path
+          )
+        `
+        )
+        .eq('application_id', input.applicationId)
+        .order('created_at', { ascending: true })
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch messages: ${error.message}`,
+          cause: error,
+        })
+      }
+
+      // Transform messages to include author info and application user_id for sender determination
+      return {
+        messages: (messages || []).map((msg) => {
+          const author = msg.author as { display_name?: string; username?: string; avatar_path?: string } | null
+          return {
+            id: msg.id,
+            body: msg.body,
+            created_at: msg.created_at,
+            author_user_id: msg.author_user_id,
+            author_name: author?.display_name || author?.username || 'Unknown',
+            author_avatar: author?.avatar_path || null,
+          }
+        }),
+        application_user_id: application.user_id,
+      }
+    }),
+
+  /**
+   * Send a message in an application thread
+   */
+  sendMessage: protectedProcedure
+    .input(
+      z.object({
+        applicationId: z.string().uuid(),
+        body: z.string().min(1, 'Message body cannot be empty'),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
+
+      if (!user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'You must be logged in to send messages',
+        })
+      }
+
+      // Verify user has access to this application
+      const { data: application, error: appError } = await supabase
+        .schema('core')
+        .from('applications')
+        .select('id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))')
+        .eq('id', input.applicationId)
+        .single()
+
+      if (appError || !application) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Application not found',
+        })
+      }
+
+      // Check if user is the applicant
+      const isApplicant = application.user_id === user.id
+
+      // Check if user has organization access
+      let hasOrgAccess = false
+      if (!isApplicant) {
+        const orgId = (application.job as { organization_id?: string } | null)?.organization_id
+        const ownerId = (application.job as { organization?: { owner_user_id?: string } | null } | null)?.organization?.owner_user_id
+
+        if (ownerId === user.id) {
+          hasOrgAccess = true
+        } else if (orgId) {
+          // Check organization membership via role_assignments
+          const { data: roleAssignment } = await supabase
+            .schema('core')
+            .from('role_assignments')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('scope_org_id', orgId)
+            .maybeSingle()
+
+          if (roleAssignment) {
+            hasOrgAccess = true
+          }
+        }
+      }
+
+      if (!isApplicant && !hasOrgAccess) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You do not have access to send messages for this application',
+        })
+      }
+
+      // Insert message
+      const { data: message, error } = await supabase
+        .schema('core')
+        .from('application_messages')
+        .insert({
+          application_id: input.applicationId,
+          author_user_id: user.id,
+          body: input.body,
+        })
+        .select(
+          `
+          id,
+          body,
+          created_at,
+          author_user_id,
+          author:users!author_user_id(
+            id,
+            display_name,
+            username,
+            avatar_path
+          )
+        `
+        )
+        .single()
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to send message: ${error.message}`,
+          cause: error,
+        })
+      }
+
+      // Transform message to include author info
+      const author = message.author as { display_name?: string; username?: string; avatar_path?: string } | null
+      return {
+        id: message.id,
+        body: message.body,
+        created_at: message.created_at,
+        author_user_id: message.author_user_id,
+        author_name: author?.display_name || author?.username || 'Unknown',
+        author_avatar: author?.avatar_path || null,
+      }
     }),
 })

@@ -326,7 +326,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           </Tabs.Tab>
           <Tabs.Tab value="messages" flex={1}>
             <Text fontSize="$3" fontWeight="600">
-              Messages ({application.messages.length})
+              Messages
             </Text>
           </Tabs.Tab>
           <Tabs.Tab value="inquiry" flex={1}>
@@ -358,7 +358,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         </Tabs.Content>
 
         <Tabs.Content value="messages" paddingTop="$4">
-          <MessagesTab messages={application.messages} applicationId={application.id} />
+          <MessagesTab applicationId={application.id} />
         </Tabs.Content>
 
         <Tabs.Content value="inquiry" paddingTop="$4">
