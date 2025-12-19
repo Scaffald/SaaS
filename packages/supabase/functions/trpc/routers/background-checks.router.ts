@@ -2938,6 +2938,10 @@ export const backgroundChecksRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "User not authenticated" });
+      }
+
       const { data: pkg, error: pkgError } = await supabase
         .schema('core')
         .from('background_check_packages')
@@ -3140,6 +3144,10 @@ export const backgroundChecksRouter = t.router({
     .query(async ({ ctx, input }) => {
       const { supabase, supabaseAdmin, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "User not authenticated" });
+      }
+
       const { data: check, error: checkError } = await supabase
         .schema('core')
         .from('background_checks')
@@ -3310,6 +3318,10 @@ export const backgroundChecksRouter = t.router({
     )
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx
+
+      if (!user) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "User not authenticated" });
+      }
 
       const { data: existing, error: fetchError } = await supabase
         .schema('core')
