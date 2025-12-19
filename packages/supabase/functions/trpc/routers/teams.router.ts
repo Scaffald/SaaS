@@ -902,8 +902,9 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           permission: TeamPermissions.VIEW,
         });
 
-        const { data, error } = await dbAdmin
-          .core("team_members")
+        const { data, error } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
           .select(
             `
             id,
@@ -992,8 +993,9 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           metadata: input.metadata ?? {},
         };
 
-        const { data, error } = await dbAdmin
-          .core("team_members")
+        const { data, error } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
           .insert(insertPayload)
           .select(
             `
@@ -1053,8 +1055,9 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         }
 
         const { data: existingMember, error: existingError } =
-          await dbAdmin
-            .core("team_members")
+          await supabaseAdmin
+            .schema("core")
+            .from("team_members")
             .select(
               `
             id,
@@ -1154,8 +1157,9 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const { data, error } = await dbAdmin
-          .core("team_members")
+        const { data, error } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
           .update(updates)
           .eq("id", input.teamMemberId)
           .select(
@@ -1294,8 +1298,9 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           updates.metadata = metadata;
         }
 
-        const { data, error } = await dbAdmin
-          .core("team_members")
+        const { data, error } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
           .update(updates)
           .eq("id", input.teamMemberId)
           .eq("team_id", input.teamId)
@@ -1401,8 +1406,9 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           updates.joined_at = updates.joined_at ?? nowIso();
         }
 
-        const { data, error } = await dbAdmin
-          .core("team_members")
+        const { data, error } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
           .update(updates)
           .eq("id", input.teamMemberId)
           .select(
