@@ -63,7 +63,7 @@ export class DropboxStorageBackend implements IStorageBackend {
    * Refresh an expired Dropbox token
    * Note: This requires the DROPBOX_APP_KEY and DROPBOX_APP_SECRET environment variables
    */
-  private async refreshToken(refreshToken: string): Promise<string | null> {
+  private async refreshToken(_refreshToken: string): Promise<string | null> {
     // TODO: Implement token refresh with Dropbox OAuth
     // This requires:
     // 1. DROPBOX_APP_KEY and DROPBOX_APP_SECRET environment variables
@@ -94,7 +94,7 @@ export class DropboxStorageBackend implements IStorageBackend {
     return this.accessToken
   }
 
-  async upload(file: Uint8Array, path: string, options: UploadOptions): Promise<UploadResult> {
+  async upload(file: Uint8Array, path: string, _options: UploadOptions): Promise<UploadResult> {
     const token = await this.ensureToken()
 
     // Normalize path for Dropbox (must start with /)

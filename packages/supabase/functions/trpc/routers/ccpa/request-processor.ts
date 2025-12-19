@@ -302,22 +302,12 @@ async function waitForOAuthContributions(
 async function aggregateAllData(
   coreData: UserDataExport | null,
   oauthContributions: OAuthAppContribution[],
-  requestId: string,
-  supabase: DbClient
+  _requestId: string,
+  _supabase: DbClient
 ): Promise<UserDataExport | null> {
   if (!coreData) {
     return null
   }
-
-  // Get OAuth app contributed data from request metadata
-  const { data: request } = await supabase
-    .schema('core')
-    .from('ccpa_requests')
-    .select('metadata')
-    .eq('id', requestId)
-    .single()
-
-  const metadata = request?.metadata as Record<string, unknown>
 
   // Enhance metadata with OAuth app information
   const successfulContributions = oauthContributions.filter(

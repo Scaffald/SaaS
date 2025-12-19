@@ -22,7 +22,6 @@ import { getDeadlineMetrics as getDeadlineMetricsUtil } from './ccpa/deadline-tr
 import {
   approveRequestInputSchema,
   cancelRequestInputSchema,
-  CCPAOptOutCategorySchema,
   completeEnhancedVerificationInputSchema,
   completeManualVerificationInputSchema,
   confirmDeletionInputSchema,
@@ -65,7 +64,6 @@ import {
 import {
   estimatePDFSize,
   generateCCPAPDF,
-  generateDeletionConfirmationPDF,
 } from './ccpa/pdf-generator.ts'
 import {
   cleanupExpiredExports,
@@ -79,15 +77,14 @@ import {
   notifyVerificationRequired,
   notifyRequestCompleted,
   notifyOptOutConfirmed,
-  notifyOptInConfirmed,
   notifyExportReady,
   sendDeadlineReminders,
   type CCPARequestInfo,
+  type NotificationResult,
   CCPA_NOTIFICATION_TYPES,
 } from './ccpa/notifications.ts'
 import {
   GPC_CONFIG,
-  detectGPCSignal,
   processGPCSignal,
   getGPCStatus,
   getGPCDisclosureText,
@@ -563,8 +560,15 @@ export const ccpaRouter = t.router({
         ? ALL_OPT_OUT_CATEGORIES
         : input.categories
 
+      if (!ctx.user?.id) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'User not authenticated',
+        })
+      }
+
       const insertData = categories.map((category) => ({
-        user_id: ctx.user!.id,
+        user_id: ctx.user.id,
         category,
         source: 'user_request' as const,
         metadata: {},
@@ -1841,7 +1845,7 @@ export const ccpaRouter = t.router({
       if (request.status !== 'completed') {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'Export is not yet available. Request status: ' + request.status,
+          message: `Export is not yet available. Request status: ${request.status}`,
         })
       }
 
@@ -2346,7 +2350,7 @@ export const ccpaRouter = t.router({
         status: request.status,
       }
 
-      let notificationResult
+      let notificationResult: NotificationResult
 
       switch (input.notificationType) {
         case 'request_submitted':

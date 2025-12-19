@@ -93,7 +93,7 @@ export async function clearForsuredTestData(): Promise<void> {
   }
 
   // Clear test users from auth.users
-  const { error: authError } = await supabase.auth.admin.deleteUser(
+  await supabase.auth.admin.deleteUser(
     "50000000-0000-0000-0000-000000000001",
   );
   // Note: This will cascade to core.users via trigger

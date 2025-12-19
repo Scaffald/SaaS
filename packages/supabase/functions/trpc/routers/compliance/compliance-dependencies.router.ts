@@ -379,7 +379,7 @@ export const complianceDependenciesRouter = t.router({
     .input(updateDependencyInputSchema)
     .use(enforceCompliancePermission('requirement:manage_dependencies', getOrgIdFromInput))
     .mutation(async ({ ctx, input }) => {
-      const { organizationId, dependencyId, ...updates } = input
+      const { dependencyId, ...updates } = input
 
       // Build update object
       const updateData: Record<string, unknown> = {}

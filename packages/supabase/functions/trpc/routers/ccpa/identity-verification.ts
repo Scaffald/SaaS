@@ -94,7 +94,7 @@ export function isVerificationExpired(expiresAt: Date | string): boolean {
 export async function initiateEmailVerification(
   _supabase: DbClient,
   requestId: string,
-  userEmail: string
+  _userEmail: string
 ): Promise<{ success: boolean; expiresAt: Date; error?: string }> {
   // Use service client for privileged operations
   const serviceClient = createServiceSupabaseClient()

@@ -4,7 +4,7 @@ import { protectedProcedure, t } from '../middleware.ts'
 import { createStorageRouter } from './utils/storage-router.ts'
 import type { StorageBackendType } from './utils/storage-backends/index.ts'
 import { createUploadQueue, type UploadTask } from './utils/upload-queue.ts'
-import { getDocumentCache, DocumentMetadataCache } from './utils/document-cache.ts'
+import { getDocumentCache } from './utils/document-cache.ts'
 import { getPerformanceMonitor } from './utils/performance-monitoring.ts'
 
 /**

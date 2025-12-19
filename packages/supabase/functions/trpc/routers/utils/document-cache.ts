@@ -91,11 +91,11 @@ export class DocumentCache<T = unknown> {
     const now = Date.now()
 
     // If key already exists, update it
-    if (this.cache.has(key)) {
-      const entry = this.cache.get(key)!
-      entry.value = value
-      entry.createdAt = now
-      entry.lastAccessed = now
+    const existingEntry = this.cache.get(key)
+    if (existingEntry) {
+      existingEntry.value = value
+      existingEntry.createdAt = now
+      existingEntry.lastAccessed = now
       this.updateAccessOrder(key)
       return
     }
@@ -315,10 +315,6 @@ export class DocumentMetadataCache extends DocumentCache<{
   createdAt: string
   updatedAt: string
 }> {
-  constructor(options?: CacheOptions) {
-    super(options)
-  }
-
   /**
    * Get cache key for a document by ID
    */

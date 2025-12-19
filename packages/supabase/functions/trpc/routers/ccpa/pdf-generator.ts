@@ -617,7 +617,7 @@ export async function generateDataAccessPDF(
  * Generate a Deletion Confirmation PDF
  */
 export async function generateDeletionConfirmationPDF(
-  data: UserDataExport,
+  _data: UserDataExport,
   deletedCategories: string[],
   retainedCategories: { category: string; reason: string }[],
   options: PDFGenerationOptions

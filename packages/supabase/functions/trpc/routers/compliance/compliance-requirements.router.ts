@@ -12,7 +12,6 @@ import { protectedProcedure, t } from '../../middleware.ts'
 import {
   enforceCompliancePermission,
   getOrgIdFromInput,
-  hasCompliancePermission,
   getUserPermissions,
 } from './compliance-auth.ts'
 
