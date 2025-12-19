@@ -184,6 +184,7 @@ test.describe('Manager/GC Routes - Page Object Model', () => {
       const sidebar = new SidebarComponent(page);
 
       await dashboard.goto();
+      await dashboard.expectDashboardVisible(); // Wait for sidebar to render
       await sidebar.navigateTo('Tasks');
 
       expect(page.url()).toContain('/tasks');
