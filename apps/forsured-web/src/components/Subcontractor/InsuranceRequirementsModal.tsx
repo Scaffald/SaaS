@@ -109,7 +109,7 @@ export default function InsuranceRequirementsModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Insurance Requirements"
-      size="lg"
+      size="large"
     >
       <YStack gap="$6">
         {/* Project Header */}

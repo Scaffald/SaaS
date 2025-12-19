@@ -845,7 +845,7 @@ export default function DocumentDetailModal({
           isOpen={showAISummary}
           onClose={() => setShowAISummary(false)}
           title="AI Analysis Summary"
-          size="md"
+          size="medium"
         >
           <AISummaryScreen
             title="Document Analysis Complete"

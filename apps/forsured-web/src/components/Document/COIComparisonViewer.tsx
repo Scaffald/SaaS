@@ -824,7 +824,7 @@ export default function COIComparisonViewer({
           isOpen={showAISummary}
           onClose={() => setShowAISummary(false)}
           title="AI Comparison Analysis Summary"
-          size="md"
+          size="medium"
         >
           <AISummaryScreen
             title="Coverage Comparison Analysis"

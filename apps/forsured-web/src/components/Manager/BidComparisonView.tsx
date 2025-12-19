@@ -569,7 +569,7 @@ export default function BidComparisonView({
               isOpen={!!showAISummary}
               onClose={() => setShowAISummary(null)}
               title="AI Bid Analysis Summary"
-              size="md"
+              size="medium"
             >
               <AISummaryScreen
                 title="Bid Compliance Analysis"

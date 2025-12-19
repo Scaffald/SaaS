@@ -645,7 +645,7 @@ export default function ConnectionWizard({
       isOpen={isOpen}
       onClose={handleClose}
       title={`Connect ${integrationName}`}
-      size="md"
+      size="medium"
     >
       <YStack gap="$6">
         {/* Progress Steps */}

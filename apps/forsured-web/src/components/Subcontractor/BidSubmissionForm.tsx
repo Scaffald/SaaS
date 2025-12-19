@@ -156,7 +156,7 @@ export default function BidSubmissionForm({
       isOpen={isOpen}
       onClose={handleClose}
       title="Submit Bid Proposal"
-      size="lg"
+      size="large"
     >
       {submitted ? (
         <YStack alignItems="center" paddingVertical="$12">

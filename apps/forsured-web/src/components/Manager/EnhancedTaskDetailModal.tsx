@@ -81,7 +81,7 @@ export default function EnhancedTaskDetailModal({
   onClose,
   onUpdateTask,
 }: EnhancedTaskDetailModalProps) {
-  const { db } = useDatabase();
+  const { forsured } = useDatabase();
   const [showReassignModal, setShowReassignModal] = useState(false);
   const [showAddNoteModal, setShowAddNoteModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -103,9 +103,9 @@ export default function EnhancedTaskDetailModal({
 
       try {
         const [usersResult, projectsResult, subsResult] = await Promise.all([
-          db.from('users').select('*'),
-          db.from('projects').select('*'),
-          db.from('subcontractors').select('*'),
+          forsured('users').select('*'),
+          forsured('projects').select('*'),
+          forsured('subcontractors').select('*'),
         ]);
 
         if (usersResult.error) throw usersResult.error;
@@ -124,7 +124,7 @@ export default function EnhancedTaskDetailModal({
     }
 
     fetchRelatedData();
-  }, [db, isOpen]);
+  }, [forsured, isOpen]);
 
   if (!task) return null;
 
@@ -245,7 +245,7 @@ export default function EnhancedTaskDetailModal({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} title="" size="large">
         <YStack gap="$6">
           <XStack alignItems="flex-start" justifyContent="space-between">
             <YStack flex={1}>

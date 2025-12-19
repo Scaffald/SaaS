@@ -383,7 +383,7 @@ export default function EnhancedSubcontractorDashboard() {
           setSelectedTask(null);
         }}
         title="Contact Broker"
-        size="md"
+        size="medium"
       >
         {selectedTask &&
           (() => {
@@ -457,7 +457,7 @@ export default function EnhancedSubcontractorDashboard() {
           }
         }}
         title="Upload Document"
-        size="md"
+        size="medium"
       >
         {selectedTask && (
           <YStack gap="$4">
@@ -561,7 +561,7 @@ export default function EnhancedSubcontractorDashboard() {
           setQuoteRequest({ message: '' });
         }}
         title="Request Quote"
-        size="md"
+        size="medium"
       >
         {selectedTask &&
           (() => {

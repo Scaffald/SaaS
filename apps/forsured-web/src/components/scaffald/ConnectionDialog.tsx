@@ -36,7 +36,7 @@ function ConnectionDialog({
       open={isOpen}
       onClose={onClose}
       title="Connect Your Scaffald Company"
-      size="md"
+      size="medium"
     >
       <YStack gap="$4">
         {scaffaldCompany && (

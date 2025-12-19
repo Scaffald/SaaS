@@ -332,7 +332,7 @@ export default function UnifiedTaskDetailModal({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} title="" size="large">
         <YStack gap="$6">
           {/* Header */}
           <XStack alignItems="flex-start" justifyContent="space-between">

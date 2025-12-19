@@ -113,7 +113,7 @@ export default function UserInvitationModal({
   const isBroker = currentUser?.role === 'broker';
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Invite User" size="md">
+    <Modal isOpen={isOpen} onClose={handleClose} title="Invite User" size="medium">
       <YStack gap="$4">
         {error && (
           <YStack
