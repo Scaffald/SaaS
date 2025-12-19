@@ -1,6 +1,7 @@
 import { defaultConfig } from '@tamagui/config/v4'
 import { createTamagui, setupDev } from 'tamagui'
 import { animations } from './config/animations'
+import { bodyFont, headingFont } from './config/fonts'
 import { themes } from './themes/scaffald-theme'
 
 // Development setup - only in development
@@ -15,6 +16,12 @@ export const tamaguiConfig = createTamagui({
 
   animations,
   disableSSR: true,
+
+  // Custom fonts configuration
+  fonts: {
+    heading: headingFont,
+    body: bodyFont,
+  },
 
   // Use defaultConfig.media since custom media export is commented out
   media: defaultConfig.media,

@@ -231,9 +231,9 @@ export default function Sidebar({
             </Text>
             {/* REQ-4: Use lexicon for role display */}
             <Text fontSize="$1" color="$color10">
-              {user.role === 'broker'
+              {userRole === 'broker'
                 ? `CMR (${t('role.broker')} View)`
-                : user.role === 'manager'
+                : userRole === 'manager'
                   ? `MRC (${t('role.manager_view')})`
                   : getContractorLabel()}
             </Text>
