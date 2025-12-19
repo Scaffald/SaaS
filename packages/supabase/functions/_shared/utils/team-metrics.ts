@@ -18,7 +18,7 @@ export async function refreshTeamMetricsSnapshot({
   captureWorkloads = true,
 }: RefreshTeamMetricsOptions) {
   const admin = supabaseAdmin as SupabaseClient<Database>
-  const { data, error } = await admin.rpc('refresh_team_daily_metrics', {
+  const { data, error } = await admin.rpc('refresh_team_daily_metrics' as any, {
     p_team_id: teamId,
     p_metric_date: metricDate ?? null,
     p_capture_workloads: captureWorkloads,
@@ -44,7 +44,7 @@ export async function refreshAllTeamMetrics({
   metricDate?: string
 }) {
   const admin = supabaseAdmin as SupabaseClient<Database>
-  const { data, error } = await admin.rpc('refresh_all_team_metrics', {
+  const { data, error } = await admin.rpc('refresh_all_team_metrics' as any, {
     p_metric_date: metricDate ?? null,
   })
 

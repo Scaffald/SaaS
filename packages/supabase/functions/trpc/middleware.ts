@@ -99,8 +99,8 @@ export const enforceOfficeRole = t.middleware(async ({ ctx, next, path }) => {
   }
 
   // Check if user has office role with platform scope
-  const hasOfficeRole = data?.some(
-    (assignment: { role?: { name?: string; scope?: string } | null; [key: string]: unknown }) => {
+  const hasOfficeRole = (data as Array<{ role?: { name?: string; scope?: string } | null }> | null)?.some(
+    (assignment) => {
       const role = assignment.role as { name: string; scope: string } | null
       return role?.name === 'office' && role?.scope === 'platform'
     }
