@@ -46,7 +46,7 @@ module.exports = (api) => {
           alias: {
             '@scf/core': '../../packages/scf-core',
             '@scf/schemas': '../../packages/scf-schemas/src',
-            '@scf/supabase': '../../packages/scf-supabase',
+            '@scf/supabase': '../../packages/supabase',
             '@scf/trpc': '../../packages/scf-trpc/src',
             '@scf/trpc/*': '../../packages/scf-trpc/src/*',
           },

@@ -1,4 +1,4 @@
-import { ROUTES } from "@scf/core/constants/routes";
+import { ROUTES } from '@scf/core/constants/routes';
 import {
   BarChart3,
   Briefcase,
@@ -7,8 +7,8 @@ import {
   Map as MapIcon,
   User,
   Users,
-} from "@tamagui/lucide-icons";
-import type { DrawerItemConfig } from "./types";
+} from '@tamagui/lucide-icons';
+import type { DrawerItemConfig } from './types';
 
 /**
  * Generates drawer items dynamically from dashboard routes

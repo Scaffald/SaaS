@@ -38,7 +38,7 @@ export const DashboardLayout = ({
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <XStack paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
-            <Breadcrumb alignItems={displayBreadcrumbs} />
+            <Breadcrumb items={displayBreadcrumbs} />
           </XStack>
         )}
 

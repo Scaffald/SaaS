@@ -62,19 +62,19 @@ export function SentryTestButtons() {
           Test JS Error (Handled)
         </Button>
 
-        <Button onPress={testMessage} theme="green">
+        <Button onPress={testMessage} theme="success">
           Test Info Message
         </Button>
 
-        <Button onPress={testWarning} theme="orange">
+        <Button onPress={testWarning} theme="info">
           Test Warning Message
         </Button>
 
-        <Button onPress={testCriticalError} theme="red">
+        <Button onPress={testCriticalError} theme="error">
           Test Critical Error
         </Button>
 
-        <Button onPress={testUnhandledError} theme="red" chromeless>
+        <Button onPress={testUnhandledError} theme="error" chromeless>
           Test Unhandled Error (Crashes Component)
         </Button>
       </YStack>

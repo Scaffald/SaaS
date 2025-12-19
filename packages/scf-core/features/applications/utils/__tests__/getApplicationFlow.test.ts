@@ -10,7 +10,7 @@ describe('getApplicationFlow', () => {
     },
   }
 
-  it('returns "quick" for jobs with no custom questions and no required attachments', () => {
+  it("returns 'quick' for jobs with no custom questions and no required attachments", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: undefined,
@@ -20,7 +20,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('quick')
   })
 
-  it('returns "quick" for jobs with empty custom questions array and no required attachments', () => {
+  it("returns 'quick' for jobs with empty custom questions array and no required attachments", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: [],
@@ -30,7 +30,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('quick')
   })
 
-  it('returns "quick" for jobs with optional attachments only', () => {
+  it("returns 'quick' for jobs with optional attachments only", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: [],
@@ -43,7 +43,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('quick')
   })
 
-  it('returns "full" for jobs with custom questions', () => {
+  it("returns 'full' for jobs with custom questions", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: [
@@ -60,7 +60,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('full')
   })
 
-  it('returns "full" for jobs with required resume', () => {
+  it("returns 'full' for jobs with required resume", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: undefined,
@@ -72,7 +72,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('full')
   })
 
-  it('returns "full" for jobs with required cover letter', () => {
+  it("returns 'full' for jobs with required cover letter", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: undefined,
@@ -84,7 +84,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('full')
   })
 
-  it('returns "full" for jobs with required portfolio', () => {
+  it("returns 'full' for jobs with required portfolio", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: undefined,
@@ -96,7 +96,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('full')
   })
 
-  it('returns "full" for jobs with both custom questions and required attachments', () => {
+  it("returns 'full' for jobs with both custom questions and required attachments", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: [
@@ -116,7 +116,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('full')
   })
 
-  it('returns "full" for jobs with multiple custom questions', () => {
+  it("returns 'full' for jobs with multiple custom questions", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: [
@@ -139,7 +139,7 @@ describe('getApplicationFlow', () => {
     expect(getApplicationFlow(job)).toBe('full')
   })
 
-  it('returns "full" for jobs with multiple required attachments', () => {
+  it("returns 'full' for jobs with multiple required attachments", () => {
     const job: JobForFlowSelection = {
       ...baseJob,
       custom_application_questions: undefined,

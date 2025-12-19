@@ -1,9 +1,9 @@
-import { api } from "@scf/core/utils/api";
-import { supabase } from "@scf/core/utils/supabase/client";
-import { NetInfoStateType, useNetInfo } from "@react-native-community/netinfo";
-import { Buffer } from "buffer";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Platform } from "react-native";
+import { api } from '@scf/core/utils/api';
+import { supabase } from '@scf/core/utils/supabase/client';
+import { NetInfoStateType, useNetInfo } from '@react-native-community/netinfo';
+import { Buffer } from 'buffer';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 
 import type {
   OfflineWorkLog,
@@ -11,11 +11,11 @@ import type {
   OfflineWorkLogPhoto,
   SyncSettings,
   SyncStatus,
-} from "../types/offline";
-import { DEFAULT_SYNC_SETTINGS } from "../types/offline";
-import { loadSyncSettings, saveSyncSettings } from "../utils/offline-storage";
+} from '../types/offline';
+import { DEFAULT_SYNC_SETTINGS } from '../types/offline';
+import { loadSyncSettings, saveSyncSettings } from '../utils/offline-storage';
 
-const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
+const WORK_LOG_PHOTO_BUCKET = 'work-log-photos';
 const BASE_RETRY_DELAY_MS = 5000;
 const MAX_RETRY_DELAY_MS = 5 * 60 * 1000;
 const ALLOWED_PHOTO_MIME_TYPES = [
@@ -80,7 +80,7 @@ const normalizePhotoMimeType = (value: unknown): PhotoMimeType => {
   ) {
     return value as PhotoMimeType;
   }
-  return "image/jpeg";
+  return 'image/jpeg';
 };
 
 interface UseWorkLogSyncOptions {

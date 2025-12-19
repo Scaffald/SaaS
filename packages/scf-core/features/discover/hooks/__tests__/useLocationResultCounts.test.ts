@@ -1,5 +1,5 @@
-import { renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock tRPC API - use vi.hoisted to avoid initialization issues
 const mockUseQuery = vi.hoisted(() => vi.fn());
@@ -18,7 +18,7 @@ import {
   formatCount,
   formatLocationWithCounts,
   useLocationResultCounts,
-} from "../useLocationResultCounts";
+} from '../useLocationResultCounts';
 
 describe("useLocationResultCounts", () => {
   beforeEach(() => {
@@ -61,7 +61,7 @@ describe("useLocationResultCounts", () => {
     expect(formatCount("many")).toBe("Many results");
   });
 
-  it('returns "Many results" for counts >= 500', () => {
+  it("returns 'Many results' for counts >= 500", () => {
     expect(formatCount(500)).toBe("Many results");
     expect(formatCount(501)).toBe("Many results");
     expect(formatCount(1000)).toBe("Many results");

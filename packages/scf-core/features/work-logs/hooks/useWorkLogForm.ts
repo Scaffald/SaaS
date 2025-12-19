@@ -1,19 +1,19 @@
-import { api } from "@scf/core/utils/api";
-import { useWorkLogLocation } from "@scf/core/utils/location/useWorkLogLocation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useNetInfo } from "@react-native-community/netinfo";
-import { useToastController } from "@tamagui/toast";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { api } from '@scf/core/utils/api';
+import { useWorkLogLocation } from '@scf/core/utils/location/useWorkLogLocation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useToastController } from '@tamagui/toast';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
 import {
   type CreateWorkLogInput,
   createWorkLogSchema,
   hasTimeEntriesOverlap,
   type UpdateWorkLogInput,
-} from "@scf/schemas";
-import type { OfflineWorkLog } from "../types/offline";
-import { useOfflineWorkLogs } from "./useOfflineWorkLogs";
+} from '@scf/schemas';
+import type { OfflineWorkLog } from '../types/offline';
+import { useOfflineWorkLogs } from './useOfflineWorkLogs';
 
 const DEFAULT_TIME_ENTRY = {
   start: "",
@@ -249,7 +249,7 @@ export const useWorkLogForm = ({
     onError: (error) => {
       const message = error instanceof Error
         ? error.message
-        : "Failed to save work log draft.";
+        : 'Failed to save work log draft.';
       setAutoSaveStatus({
         state: "error",
         message,
@@ -261,7 +261,7 @@ export const useWorkLogForm = ({
     onError: (error) => {
       const message = error instanceof Error
         ? error.message
-        : "Failed to update work log draft.";
+        : 'Failed to update work log draft.';
       setAutoSaveStatus({
         state: "error",
         message,
@@ -349,7 +349,7 @@ export const useWorkLogForm = ({
       } catch (error) {
         const message = error instanceof Error
           ? error.message
-          : "Failed to auto-save work log.";
+          : 'Failed to auto-save work log.';
         setAutoSaveStatus({ state: "error", message });
 
         if (!isOnline && payload) {
@@ -480,10 +480,10 @@ export const useWorkLogForm = ({
         });
         setOfflineDraftId(draft.id);
 
-        toast.show("Saved offline", {
+        toast.show('Saved offline', {
           message:
             "You're offline. We'll sync the work log when you're back online.",
-          type: "info",
+          type: 'info',
         });
         return;
       }
@@ -513,7 +513,7 @@ export const useWorkLogForm = ({
     } catch (error) {
       const message = error instanceof Error
         ? error.message
-        : "Failed to save work log.";
+        : 'Failed to save work log.';
       toast.show("Save Failed", {
         message,
         type: "error",

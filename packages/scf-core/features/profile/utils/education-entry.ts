@@ -1,8 +1,8 @@
-import { DEGREE_TYPE_OPTIONS } from "../config";
+import { DEGREE_TYPE_OPTIONS } from '../config';
 import type {
   EducationEntry,
   EducationEntryFormValues,
-} from "../types/education";
+} from '../types/education';
 
 type DegreeOption = (typeof DEGREE_TYPE_OPTIONS)[number];
 

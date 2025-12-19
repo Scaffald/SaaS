@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import { YStack, XStack, Text, styled, useTheme } from 'tamagui'
+import { YStack, XStack, Text } from 'tamagui'
+import { useTheme } from 'tamagui'
 import type { XStackProps } from 'tamagui'
 import { Chip } from '../chips'
 

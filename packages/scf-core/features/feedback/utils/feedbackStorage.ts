@@ -1,7 +1,7 @@
-import type { FeedbackPendingSubmission } from "@scf/schemas/feedback";
-import { Platform } from "react-native";
+import type { FeedbackPendingSubmission } from '@scf/schemas/feedback';
+import { Platform } from 'react-native';
 
-const STORAGE_KEY = "@scf-scaffald/feedback/pending-submissions";
+const STORAGE_KEY = '@scf-scaffald/feedback/pending-submissions';
 
 type AsyncStorageModule =
   typeof import("@react-native-async-storage/async-storage");

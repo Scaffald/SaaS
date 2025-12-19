@@ -1,7 +1,7 @@
-import { extractPlainText } from "@unicornlove/ui";
-import type { JSONContent } from "@tiptap/core";
+import { extractPlainText } from '@unicornlove/ui';
+import type { JSONContent } from '@tiptap/core';
 
-import type { Employer } from "../components/EmployerCard";
+import type { Employer } from '../components/EmployerCard';
 
 export interface EmployerFilters {
   searchQuery: string;
@@ -12,10 +12,10 @@ const toLowerCase = (value: string): string => value.toLowerCase();
 
 const getEmployerDescription = (employer: Employer): string => {
   if (!employer.description) {
-    return "";
+    return '';
   }
 
-  if (typeof employer.description === "string") {
+  if (typeof employer.description === 'string') {
     return employer.description;
   }
 
@@ -35,7 +35,7 @@ export const filterEmployers = (
   }
 
   return employers.filter((employer) => {
-    const employerIndustry = employer.industries?.name ?? "";
+    const employerIndustry = employer.industries?.name ?? '';
 
     if (hasQuery) {
       const descriptionText = getEmployerDescription(employer);

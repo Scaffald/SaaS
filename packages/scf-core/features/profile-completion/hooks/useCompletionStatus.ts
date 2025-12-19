@@ -1,8 +1,8 @@
-import { api } from "@scf/core/utils/api";
-import { useUser } from "@scf/core/utils/useUser";
-import type { ProfileWizardStepId } from "@scf/supabase/client-types";
-import { useMemo } from "react";
-import { resolveSectionMetadata } from "../constants/sectionMetadata";
+import { api } from '@scf/core/utils/api';
+import { useUser } from '@scf/core/utils/useUser';
+import type { ProfileWizardStepId } from '@scf/supabase/client-types';
+import { useMemo } from 'react';
+import { resolveSectionMetadata } from '../constants/sectionMetadata';
 
 interface RawCompletionSection {
   id: string;
@@ -69,7 +69,7 @@ export interface CompletionStatus {
   lastCompletedAt: string | null;
   lastPromptedAt: string | null;
   shouldShowWizard: boolean;
-  modalMode: "first-login" | "progress-reminder";
+  modalMode: 'first-login' | 'progress-reminder';
   milestoneHistory: Record<string, string>;
   summary: {
     completedWeight: number;
@@ -100,7 +100,7 @@ export function useCompletionStatus() {
 
   const userType: "worker" | "employer" =
     (user?.user_metadata?.type as "worker" | "employer" | undefined) ??
-      "worker";
+      'worker';
 
   const status: CompletionStatus | null = useMemo(() => {
     if (!rawStatus) {
@@ -146,7 +146,7 @@ export function useCompletionStatus() {
     const modalMode: "first-login" | "progress-reminder" =
       rawStatus.completionPercentage === 0
         ? "first-login"
-        : "progress-reminder";
+        : 'progress-reminder';
 
     const totalWeight = sections.reduce(
       (total, section) => total + section.weight,

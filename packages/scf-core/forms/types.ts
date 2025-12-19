@@ -1,16 +1,16 @@
-import type { AddressResult } from "@unicornlove/ui";
+import type { AddressResult } from '@unicornlove/ui';
 import type {
   Control,
   FieldPath,
   FieldValues,
   UseFormSetValue,
   UseFormTrigger,
-} from "react-hook-form";
+} from 'react-hook-form';
 
 /**
  * Field mapping strategies for address forms
  */
-export type FieldMappingStrategy = "nested" | "flat" | "custom";
+export type FieldMappingStrategy = 'nested' | 'flat' | 'custom';
 
 /**
  * Custom field mapping for address components
@@ -46,10 +46,10 @@ export interface ControlledAddressFormProps<
   };
 
   // AddressForm configuration
-  mode?: "hybrid" | "autocomplete-only" | "full";
-  provider?: "mapbox" | "google";
+  mode?: 'hybrid' | 'autocomplete-only' | 'full';
+  provider?: 'mapbox' | 'google';
   apiKey?: string;
-  zoomLevel?: "street" | "city" | "region";
+  zoomLevel?: 'street' | 'city' | 'region';
 
   // UI customization
   label?: string;

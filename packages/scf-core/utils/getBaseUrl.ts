@@ -1,11 +1,11 @@
-import { isWeb } from "@unicornlove/ui";
+import { isWeb } from '@unicornlove/ui';
 
-import { replaceLocalhost } from "./getLocalhost.native";
+import { replaceLocalhost } from './getLocalhost.native';
 
 export function _getBaseUrl() {
-  if (isWeb && typeof window !== "undefined") {
+  if (isWeb && typeof window !== 'undefined') {
     // browser should use relative path
-    return "";
+    return '';
   }
 
   if (process.env.EXPO_PUBLIC_URL) {

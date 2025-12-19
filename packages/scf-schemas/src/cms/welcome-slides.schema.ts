@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 /**
  * Lucide icon names commonly used in the app
@@ -67,7 +67,7 @@ export const welcomeSlideSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
   icon_name: z.enum(LUCIDE_ICON_NAMES as unknown as [string, ...string[]], {
-    errorMap: () => ({ message: 'Invalid icon name' }),
+    error: 'Invalid icon name',
   }),
   background_image_url: z.string().url('Must be a valid URL'),
   display_order: z.number().int().positive(),
@@ -83,7 +83,7 @@ export const welcomeSlideCreateSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title too long'),
   description: z.string().min(1, 'Description is required').max(500, 'Description too long'),
   icon_name: z.enum(LUCIDE_ICON_NAMES as unknown as [string, ...string[]], {
-    errorMap: () => ({ message: 'Please select a valid icon' }),
+    error: 'Please select a valid icon',
   }),
   background_image_url: z.string().url('Must be a valid URL').or(z.literal('')),
   display_order: z.number().int().positive('Display order must be positive'),
@@ -98,7 +98,7 @@ export const welcomeSlideUpdateSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title too long'),
   description: z.string().min(1, 'Description is required').max(500, 'Description too long'),
   icon_name: z.enum(LUCIDE_ICON_NAMES as unknown as [string, ...string[]], {
-    errorMap: () => ({ message: 'Please select a valid icon' }),
+    error: 'Please select a valid icon',
   }),
   background_image_url: z.string().url('Must be a valid URL').or(z.literal('')),
   display_order: z.number().int().positive('Display order must be positive'),

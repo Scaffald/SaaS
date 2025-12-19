@@ -9,25 +9,25 @@
  */
 
 // Application schemas
-export * from "./applications/index.ts";
+export * from './applications/index';
 // CMS schemas
-export * from "./cms/welcome-slides.schema.ts";
+export * from './cms/welcome-slides.schema';
 // Common schemas
-export * from "./common/index.ts";
+export * from './common/index';
 // Feedback schemas
-export * from "./feedback/index.ts";
+export * from './feedback/index';
 // Inquiry schemas
-export * from "./inquiries/index.ts";
+export * from './inquiries/index';
 // Job schemas
-export * from "./jobs/index.ts";
+export * from './jobs/index';
 // Organization schemas
-export * from "./organizations/index.ts";
+export * from './organizations/index';
 // Profile schemas
-export * from "./profile/index.ts";
+export * from './profile/index';
 
 // Project schemas
-export * from "./projects/index.ts";
+export * from './projects/index';
 // Team management schemas
-export * from "./teams/index.ts";
+export * from './teams/index';
 // Work log schemas
-export * from "./work-logs/index.ts";
+export * from './work-logs/index';

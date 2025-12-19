@@ -1,5 +1,5 @@
-import { parsePhoneNumber } from 'awesome-phonenumber'
-import { z } from 'zod'
+import { parsePhoneNumber } from 'awesome-phonenumber';
+import { z } from 'zod';
 
 const PHONE_INVALID_MESSAGE = 'Please enter a valid phone number'
 

@@ -1,14 +1,14 @@
-import { api } from "@scf/core/utils/api";
-import { supabase } from "@scf/core/utils/supabase/client";
-import { useToastController } from "@tamagui/toast";
-import { Buffer } from "buffer";
-import type * as ImageManipulator from "expo-image-manipulator";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { UploadWorkLogPhotoInput } from "@scf/schemas";
-import { deleteWorkLogPhotoSchema, updateWorkLogPhotoSchema } from "@scf/schemas";
-import type { ResolvedWorkLogPhoto, WorkLogPhoto } from "../types/photos";
+import { api } from '@scf/core/utils/api';
+import { supabase } from '@scf/core/utils/supabase/client';
+import { useToastController } from '@tamagui/toast';
+import { Buffer } from 'buffer';
+import type * as ImageManipulator from 'expo-image-manipulator';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { UploadWorkLogPhotoInput } from '@scf/schemas';
+import { deleteWorkLogPhotoSchema, updateWorkLogPhotoSchema } from '@scf/schemas';
+import type { ResolvedWorkLogPhoto, WorkLogPhoto } from '../types/photos';
 
-const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
+const WORK_LOG_PHOTO_BUCKET = 'work-log-photos';
 const DEFAULT_MAX_PHOTOS = 10;
 const STORAGE_LIMIT_BYTES = 100 * 1024 * 1024; // 100MB default from requirements
 const SIGNED_URL_TTL_SECONDS = 60 * 5;
@@ -26,12 +26,12 @@ interface BaseUploadCandidate {
 }
 
 export interface WebUploadCandidate extends BaseUploadCandidate {
-  platform: "web";
+  platform: 'web';
   file: File;
 }
 
 export interface NativeUploadCandidate extends BaseUploadCandidate {
-  platform: "native";
+  platform: 'native';
   uri: string;
   width?: number | null;
   height?: number | null;
@@ -151,7 +151,7 @@ const compressWebImage = async (
     let currentMime: UploadWorkLogPhotoInput["contentType"] =
       file.type === "image/png" || file.type === "image/webp"
         ? (file.type as UploadWorkLogPhotoInput["contentType"])
-        : "image/jpeg";
+        : 'image/jpeg';
     let quality = clampQuality(
       file.type === "image/png" || file.type === "image/webp" ? 0.92 : 0.85,
     );
@@ -174,7 +174,7 @@ const compressWebImage = async (
     let blob = await toBlob();
 
     if (blob.size > MAX_FILE_BYTES && currentMime !== "image/jpeg") {
-      currentMime = "image/jpeg";
+      currentMime = 'image/jpeg';
       quality = 0.85;
       blob = await toBlob();
     }
@@ -232,7 +232,7 @@ const compressNativeImage = async (
   if (
     format !== "image/jpeg" && format !== "image/png" && format !== "image/webp"
   ) {
-    format = "image/jpeg";
+    format = 'image/jpeg';
   }
 
   const saveFormat = format === "image/png"
@@ -261,7 +261,7 @@ const compressNativeImage = async (
       base64: true,
     });
     size = estimateSize(result.base64);
-    format = "image/jpeg";
+    format = 'image/jpeg';
   }
 
   while (size > MAX_FILE_BYTES && compress > 0.4) {
@@ -272,15 +272,15 @@ const compressNativeImage = async (
       base64: true,
     });
     size = estimateSize(result.base64);
-    format = "image/jpeg";
+    format = 'image/jpeg';
   }
 
   if (size > MAX_FILE_BYTES) {
     throw new Error("Unable to reduce photo below 2MB limit.");
   }
 
-  const base64Payload = result.base64 ?? "";
-  const byteArray = Uint8Array.from(Buffer.from(base64Payload, "base64"));
+  const base64Payload = result.base64 ?? '';
+  const byteArray = Uint8Array.from(Buffer.from(base64Payload, 'base64'));
   return {
     data: byteArray,
     mimeType: format,
@@ -522,7 +522,7 @@ export const usePhotoUpload = ({
         console.error("[usePhotoUpload] Upload failed", error);
         const message = error instanceof Error
           ? error.message
-          : "Unable to upload photo. Please try again.";
+          : 'Unable to upload photo. Please try again.';
         setUploadError(message);
         toast.show("Upload Failed", {
           message,

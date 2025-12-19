@@ -120,7 +120,7 @@ export const OrganizationCard = memo(
 
           {/* Metadata */}
           {metadataItems.length > 0 && (
-            <CardMetadata alignItems={metadataItems} isSelected={isSelected} />
+            <CardMetadata items={metadataItems} isSelected={isSelected} />
           )}
 
           {/* Actions */}

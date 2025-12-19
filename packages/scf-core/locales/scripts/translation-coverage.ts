@@ -1,6 +1,6 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 type TranslationRecord = Record<string, unknown>;
 
@@ -86,8 +86,8 @@ const collectUsedTranslationKeys = (): Set<string> => {
       const filePath = path.join(dir, entry.name);
       const content = loadFile(filePath);
       const patterns = [
-        /\bt\(\s*['"]([^'"]+)['"]/g,
-        /i18n\.t\(\s*['"]([^'"]+)['"]/g,
+        /\bt\(\s*['']([^'']+)['"]/g,
+        /i18n\.t\(\s*['']([^'']+)['"]/g,
       ];
 
       for (const pattern of patterns) {

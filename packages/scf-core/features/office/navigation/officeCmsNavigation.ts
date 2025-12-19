@@ -1,6 +1,6 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { i18n } from "@scf/core/locales";
-import type { OfficeAccordionSection, OfficeTabsItem } from "@unicornlove/ui";
+import { ROUTES } from '@scf/core/constants/routes';
+import { i18n } from '@scf/core/locales';
+import type { OfficeAccordionSection, OfficeTabsItem } from '@unicornlove/ui';
 
 export const CMS_TABS: OfficeTabsItem[] = [
   {

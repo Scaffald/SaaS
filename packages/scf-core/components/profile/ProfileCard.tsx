@@ -116,7 +116,7 @@ export const ProfileCard = memo(
       const profileBadgeConfigs: BadgeConfig[] = badges.slice(0, 3).map((badge) => ({
         key: badge.id,
         label: badge.label,
-        backgroundColor:
+        bg:
           badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
         color:
           badge.tone === 'success' ? '$green11' : badge.tone === 'warning' ? '$yellow11' : '$red11',
@@ -133,7 +133,7 @@ export const ProfileCard = memo(
         profileBadgeConfigs.push({
           key: 'overflow',
           label: `+${badges.length - 3} more`,
-          backgroundColor: 'transparent',
+          bg: 'transparent',
           color: isSelected ? '$color1' : '$color10',
         })
       }
@@ -143,13 +143,13 @@ export const ProfileCard = memo(
         ...certifications.slice(0, 2).map((cert, idx) => ({
           key: `cert-${idx}`,
           label: cert,
-          backgroundColor: '$red10',
+          bg: 'transparent',
           color: '$color1',
         })),
         ...skills.slice(0, 3).map((skill, idx) => ({
           key: `skill-${idx}`,
           label: skill,
-          backgroundColor: '$blue8',
+          bg: 'transparent',
           color: '$color1',
         })),
       ]
@@ -160,7 +160,7 @@ export const ProfileCard = memo(
         skillBadges.push({
           key: 'skills-overflow',
           label: `+${totalSkillsAndCerts - displayedSkillsAndCerts} more`,
-          backgroundColor: '$color3',
+          bg: 'transparent',
           color: '$color11',
         })
       }
@@ -209,7 +209,7 @@ export const ProfileCard = memo(
 
           {/* Metadata */}
           {metadataItems.length > 0 && (
-            <CardMetadata alignItems={metadataItems} isSelected={isSelected} />
+            <CardMetadata items={metadataItems} isSelected={isSelected} />
           )}
 
           {/* Profile badges (certifications, achievements, etc.) */}

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const TEAM_VISIBILITIES = ['organization', 'private'] as const
 export const TEAM_INVITATION_POLICIES = ['invite_only', 'request_to_join'] as const

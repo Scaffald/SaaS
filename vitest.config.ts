@@ -45,7 +45,7 @@ export default defineConfig({
       },
       {
         find: "@scf/supabase",
-        replacement: resolve(workspaceRoot, "packages/scf-supabase"),
+        replacement: resolve(workspaceRoot, "packages/supabase"),
       },
       {
         find: "@scf/schemas",
@@ -134,8 +134,8 @@ export default defineConfig({
       "**/dist/**",
       "**/.{idea,git,cache,output,temp}/**",
       // Exclude Deno tests - they run separately with Deno
-      "packages/scf-supabase/tests/routers/**",
-      "packages/scf-supabase/tests/**/*.test.ts",
+      "packages/supabase/tests/routers/**",
+      "packages/supabase/tests/**/*.test.ts",
     ],
     include: ["packages/**/*.{test,spec}.{ts,tsx}"],
     // Limit concurrent tests to reduce memory pressure

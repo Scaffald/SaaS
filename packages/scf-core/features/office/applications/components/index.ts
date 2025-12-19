@@ -1,7 +1,7 @@
-export { ApplicationDetailsTab } from "./ApplicationDetailsTab";
-export { ApplicationsFilters } from "./ApplicationsFilters";
-export { ApplicationsKanbanBoard } from "./ApplicationsKanbanBoard";
-export { CandidateDetailModal } from "./CandidateDetailModal";
-export { CandidateProfileTab } from "./CandidateProfileTab";
-export { MessagesTab } from "./MessagesTab";
-export { NotesTab } from "./NotesTab";
+export { ApplicationDetailsTab } from './ApplicationDetailsTab';
+export { ApplicationsFilters } from './ApplicationsFilters';
+export { ApplicationsKanbanBoard } from './ApplicationsKanbanBoard';
+export { CandidateDetailModal } from './CandidateDetailModal';
+export { CandidateProfileTab } from './CandidateProfileTab';
+export { MessagesTab } from './MessagesTab';
+export { NotesTab } from './NotesTab';

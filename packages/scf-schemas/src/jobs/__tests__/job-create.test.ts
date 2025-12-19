@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
-import { jobCreateSchema, jobUpdateSchema } from '../job-create.schema.ts'
+import { jobCreateSchema, jobUpdateSchema } from '../job-create.schema';
 
 const validJobPayload = {
   organization_id: '00000000-0000-0000-0000-000000000000',

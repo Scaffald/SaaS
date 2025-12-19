@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
 import {
   generalProfileDefaults,
   generalProfileSchema,
   type GeneralProfileFormData,
-} from '../profile/general.ts'
+} from '../profile/general';
 
 const buildValidProfile = (overrides: Partial<GeneralProfileFormData> = {}): GeneralProfileFormData => ({
   ...generalProfileDefaults,

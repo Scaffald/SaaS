@@ -1,8 +1,8 @@
-import { supabase } from "@scf/core/utils/supabase/client";
-import type { Database } from "@scf/supabase/types";
-import type { ViewportBounds } from "@unicornlove/ui";
-import { useQuery } from "@tanstack/react-query";
-import type { TalentProfile } from "../types";
+import { supabase } from '@scf/core/utils/supabase/client';
+import type { Database } from '@scf/supabase/types';
+import type { ViewportBounds } from '@unicornlove/ui';
+import { useQuery } from '@tanstack/react-query';
+import type { TalentProfile } from '../types';
 
 // Type for the v_profile_search view with additional fields we select
 type ProfileSearchRow = Database["core"]["Views"]["v_profile_search"]["Row"] & {

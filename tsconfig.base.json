@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
@@ -16,7 +17,7 @@
       "@scf/core": ["./packages/scf-core"],
       "@scf/schemas": ["./packages/scf-schemas/src"],
       "@scf/schemas/*": ["./packages/scf-schemas/src/*"],
-      "@scf/supabase": ["./packages/scf-supabase"],
+      "@scf/supabase": ["./packages/supabase"],
       "@scf/trpc": ["./packages/scf-trpc/src"],
       "@scf/trpc/*": ["./packages/scf-trpc/src/*"],
       "@test-helpers": ["./tests/infrastructure/vitest/helpers"],

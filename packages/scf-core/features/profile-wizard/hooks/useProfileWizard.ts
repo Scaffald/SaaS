@@ -1,12 +1,12 @@
-import { api } from "@scf/core/utils/api";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { api } from '@scf/core/utils/api';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   DEFAULT_WIZARD_PROGRESS,
   PROFILE_WIZARD_STEP_META,
   PROFILE_WIZARD_STEPS,
   type ProfileWizardProgress,
   type ProfileWizardStepId,
-} from "../utils/wizardSteps";
+} from '../utils/wizardSteps';
 
 export interface GeneralInfoStepData {
   firstName: string;
@@ -18,7 +18,7 @@ export interface GeneralInfoStepData {
 export interface SkillEntry {
   id: string;
   name: string;
-  taxonomy: "csi" | "onet";
+  taxonomy: 'csi' | 'onet';
   proficiency: number;
 }
 

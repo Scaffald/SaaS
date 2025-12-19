@@ -1,6 +1,6 @@
-import { type RouteConfig, ROUTES } from "@scf/core/constants/routes";
-import { i18n } from "@scf/core/locales";
-import type { BreadcrumbItem } from "@unicornlove/ui";
+import { type RouteConfig, ROUTES } from '@scf/core/constants/routes';
+import { i18n } from '@scf/core/locales';
+import type { BreadcrumbItem } from '@unicornlove/ui';
 
 type RouteSegment = {
   route: RouteConfig;

@@ -1,15 +1,15 @@
-import { api } from "@scf/core/utils/api";
-import { supabase } from "@scf/core/utils/supabase/client";
-import type { AppRouter } from "@scf/supabase/client-types";
-import type { UploadSelection } from "@unicornlove/ui";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useToastController } from "@tamagui/toast";
-import type { inferRouterOutputs } from "@trpc/server";
-import { Buffer } from "buffer";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Platform } from "react-native";
-import { z } from "zod";
+import { api } from '@scf/core/utils/api';
+import { supabase } from '@scf/core/utils/supabase/client';
+import type { AppRouter } from '@scf/supabase/client-types';
+import type { UploadSelection } from '@unicornlove/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useToastController } from '@tamagui/toast';
+import type { inferRouterOutputs } from '@trpc/server';
+import { Buffer } from 'buffer';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Platform } from 'react-native';
+import { z } from 'zod';
 
 const MAX_ATTACHMENTS = 5;
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
@@ -71,8 +71,8 @@ const disputeFormSchema = z
     if (value.reason === "other" && !value.otherReason?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["otherReason"],
-        message: 'Describe what needs review when selecting "Something else".',
+        path: ['otherReason'],
+        message: "Describe what needs review when selecting 'Something else'.",
       });
     }
   });
@@ -80,7 +80,7 @@ const disputeFormSchema = z
 export type DisputeFormValues = z.infer<typeof disputeFormSchema>;
 
 type NativeAssetSource = {
-  kind: "native";
+  kind: 'native';
   uri: string;
   name: string;
   mimeType: string;
@@ -88,7 +88,7 @@ type NativeAssetSource = {
 };
 
 type WebFileSource = {
-  kind: "web";
+  kind: 'web';
   file: File;
 };
 
@@ -445,7 +445,7 @@ export function useDispute(
     } catch (error) {
       const message = error instanceof Error
         ? error.message
-        : "Unable to submit dispute.";
+        : 'Unable to submit dispute.';
       console.error("[useDispute] Failed to submit dispute", error);
       setSubmissionError(message);
       toast.show("Unable to submit dispute", {

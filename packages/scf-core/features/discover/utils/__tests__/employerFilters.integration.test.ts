@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const extractPlainText = vi.fn();
 
@@ -249,7 +249,7 @@ describe("employerFilters Integration - Count Calculation Edge Cases", () => {
       const name = emp.name.toLowerCase();
       const desc = typeof emp.description === "string"
         ? emp.description.toLowerCase()
-        : "commercial electrical installations";
+        : 'commercial electrical installations';
       return name.includes("commercial") || desc.includes("commercial");
     });
 

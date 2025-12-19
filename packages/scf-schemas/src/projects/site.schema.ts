@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 /**
  * Coordinate pair schema [longitude, latitude]
@@ -21,7 +21,7 @@ export const siteCreateSchema = z.object({
   area_sqft: z.number().positive().optional(),
   zoning_classification: z.string().optional(),
   jurisdiction: z.string().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**
@@ -34,7 +34,7 @@ export const siteUpdateSchema = z.object({
   area_sqft: z.number().positive().optional().nullable(),
   zoning_classification: z.string().optional().nullable(),
   jurisdiction: z.string().optional().nullable(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**

@@ -1,7 +1,7 @@
-import { api } from "@scf/core/utils/api";
-import type { AppRouter } from "@scf/supabase/client-types";
-import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { api } from '@scf/core/utils/api';
+import type { AppRouter } from '@scf/supabase/client-types';
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 type RouterInputs = inferRouterInputs<AppRouter>;
 type RouterOutputs = inferRouterOutputs<AppRouter>;
@@ -13,7 +13,7 @@ export type BackgroundCheckWizardStep =
   | "consent"
   | "documents"
   | "payment"
-  | "confirmation";
+  | 'confirmation';
 
 const WIZARD_STEPS: BackgroundCheckWizardStep[] = [
   "packages",
@@ -48,7 +48,7 @@ export interface PaymentDetails {
   costCents: number;
   paidBy: BackgroundCheckPaidBy;
   paymentMethodId?: string;
-  status?: "pending" | "succeeded" | "failed";
+  status?: 'pending' | 'succeeded' | 'failed';
 }
 
 export interface BackgroundCheckFormState {

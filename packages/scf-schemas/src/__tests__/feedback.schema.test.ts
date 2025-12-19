@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
 import {
   FEEDBACK_ALLOWED_MIME_TYPES,
@@ -8,7 +8,7 @@ import {
   feedbackSubmitSchema,
   feedbackUploadRequestSchema,
   type FeedbackSubmitInput,
-} from "../feedback/feedback.schema.ts";
+} from '../feedback/feedback.schema';
 
 const baseFeedback = (): FeedbackSubmitInput => ({
   feedbackType: "bug",

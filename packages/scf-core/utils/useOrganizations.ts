@@ -1,10 +1,10 @@
 /* c8 ignore file */
 
-import type { Database } from "@scf/supabase/types";
-import { useQuery } from "@tanstack/react-query";
+import type { Database } from '@scf/supabase/types';
+import { useQuery } from '@tanstack/react-query';
 
-import { supabase } from "./supabase/client";
-import { useUser } from "./useUser";
+import { supabase } from './supabase/client';
+import { useUser } from './useUser';
 
 type TeamMemberRow = Database["core"]["Tables"]["team_members"]["Row"];
 type OrganizationRow = Database["core"]["Tables"]["organizations"]["Row"];

@@ -691,7 +691,8 @@ export default function GCProfilePage() {
                 })}
               </YStack>
             </YStack>
-          )}
+          </YStack>
+        )}
         </Card>
       </YStack>
     </YStack>

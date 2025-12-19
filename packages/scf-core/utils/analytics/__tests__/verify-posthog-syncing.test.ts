@@ -9,9 +9,9 @@
  * Run with: POSTHOG_ALL_ACCESS=xxx POSTHOG_PROJECT_ID=xxx pnpm --filter @scf/core test --run verify-posthog-syncing.test.ts
  */
 
-import { describe, expect, test } from "vitest";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { describe, expect, test } from 'vitest';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 // Load .env file
 const envVars: Record<string, string> = {};
@@ -38,7 +38,7 @@ const POSTHOG_PROJECT_ID = process.env.POSTHOG_PROJECT_ID ||
   envVars.EXPO_PUBLIC_POSTHOG_PROJECT || envVars.POSTHOG_PROJECT_ID;
 const POSTHOG_HOST = process.env.POSTHOG_HOST ||
   process.env.EXPO_PUBLIC_POSTHOG_HOST || envVars.EXPO_PUBLIC_POSTHOG_HOST ||
-  "https://app.posthog.com";
+  'https://app.posthog.com';
 
 const shouldRunVerification = Boolean(POSTHOG_ALL_ACCESS && POSTHOG_PROJECT_ID);
 

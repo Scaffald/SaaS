@@ -9,5 +9,5 @@ export {
   prerequisitesSchema,
   USER_TYPE_OPTIONS,
   type UserType,
-} from "./config/prerequisites-schema";
-export { PrerequisiteWidget } from "./PrerequisiteWidget";
+} from './config/prerequisites-schema';
+export { PrerequisiteWidget } from './PrerequisiteWidget';

@@ -1,9 +1,9 @@
-import fs from "node:fs";
-import path from "node:path";
-import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
+import fs from 'node:fs';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 
-import ts from "typescript";
+import ts from 'typescript';
 
 type RouteConfig = {
   path: string;
@@ -25,7 +25,7 @@ type DuplicateReport = {
 type ValidationIssue =
   | "missing-key"
   | "object-instead-of-string"
-  | "empty-value";
+  | 'empty-value';
 
 type ValidationError = {
   key: string;

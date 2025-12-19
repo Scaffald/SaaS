@@ -1,8 +1,8 @@
-import { act, renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { useMapPinState } from "../useMapPinState";
-import type { MapPinType } from "../useMapPinState";
-import type { ClusterInfo } from "../useMapPinState";
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useMapPinState } from '../useMapPinState';
+import type { MapPinType } from '../useMapPinState';
+import type { ClusterInfo } from '../useMapPinState';
 
 describe("useMapPinState", () => {
   const mockPin: MapPinType = {

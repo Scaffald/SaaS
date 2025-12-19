@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
 import {
   TEAM_ROLE_KEYS,
@@ -8,7 +8,7 @@ import {
   teamMemberAddSchema,
   teamMemberUpdateSchema,
   teamUpdateSchema,
-} from '../teams/index.ts'
+} from '../teams/index';
 
 const baseTeamInput = () => ({
   organizationId: '11111111-2222-3333-4444-555555555555',

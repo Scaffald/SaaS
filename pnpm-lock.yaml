@@ -377,7 +377,7 @@ importers:
     dependencies:
       '@scf/supabase':
         specifier: workspace:*
-        version: link:../../packages/scf-supabase
+        version: link:../../packages/supabase
       '@supabase/supabase-js':
         specifier: 'catalog:'
         version: 2.86.0
@@ -769,7 +769,7 @@ importers:
         version: link:../scf-schemas
       '@scf/supabase':
         specifier: workspace:*
-        version: link:../scf-supabase
+        version: link:../supabase
       '@sentry/react':
         specifier: ^10.28.0
         version: 10.28.0(react@19.2.0)
@@ -956,7 +956,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/scf-supabase:
+  packages/supabase:
     dependencies:
       '@supabase/supabase-js':
         specifier: 'catalog:'

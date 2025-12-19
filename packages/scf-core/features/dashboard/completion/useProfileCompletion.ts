@@ -1,7 +1,7 @@
-import { api } from "@scf/core/utils/api";
-import type { ProfileWizardStepId } from "@scf/supabase/client-types";
-import { useMemo } from "react";
-import { resolveSectionMetadata } from "../../profile-completion/constants/sectionMetadata";
+import { api } from '@scf/core/utils/api';
+import type { ProfileWizardStepId } from '@scf/supabase/client-types';
+import { useMemo } from 'react';
+import { resolveSectionMetadata } from '../../profile-completion/constants/sectionMetadata';
 
 type SectionProgressSummary = {
   id: string;

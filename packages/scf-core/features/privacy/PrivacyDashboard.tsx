@@ -22,8 +22,8 @@ import { ConnectedAppsPanel } from './components/ConnectedAppsPanel'
  * Main Privacy Dashboard component
  */
 export function PrivacyDashboard() {
-  const [showRequestForm, setShowRequestForm] = useState(false)
-  const [showOptOutManager, setShowOptOutManager] = useState(false)
+  const [_showRequestForm, setShowRequestForm] = useState(false)
+  const [_showOptOutManager, setShowOptOutManager] = useState(false)
 
   // Fetch user's data summary
   const {
@@ -125,7 +125,7 @@ export function PrivacyDashboard() {
               Manage Opt-Outs
             </Button>
           </XStack>
-          {optOutStatus && optOutStatus.hasGPCOptOut && (
+          {optOutStatus?.hasGPCOptOut && (
             <XStack
               gap="$2"
               padding="$3"

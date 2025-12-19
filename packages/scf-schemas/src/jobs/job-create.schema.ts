@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 /**
  * Base job schema with all possible fields
@@ -113,7 +113,7 @@ const baseJobSchema = z.object({
       })
     )
     .optional(),
-  physical_requirements: z.record(z.string()).optional(),
+  physical_requirements: z.record(z.string(), z.string()).optional(),
   travel_percentage: z.number().int().min(0).max(100).optional(),
   shift_requirements: z.string().optional(),
 
@@ -156,6 +156,7 @@ const baseJobSchema = z.object({
     .optional(),
   required_attachments: z
     .record(
+      z.string(),
       z.object({
         required: z.boolean(),
         max_size_mb: z.number().positive().optional(),

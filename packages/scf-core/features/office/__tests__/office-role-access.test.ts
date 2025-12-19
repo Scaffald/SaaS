@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { createServiceRoleClient } from "../../../../../tests/infrastructure/vitest/helpers/database";
+import { describe, expect, it } from 'vitest';
+import { createServiceRoleClient } from '../../../../../tests/infrastructure/vitest/helpers/database';
 
 const hasServiceRoleKey =
   typeof process.env.SUPABASE_TEST_SERVICE_ROLE_KEY === "string" ||
-  typeof process.env.SUPABASE_SERVICE_ROLE_KEY === "string";
+  typeof process.env.SUPABASE_SERVICE_ROLE_KEY === 'string';
 
 const describeIfHasKey = hasServiceRoleKey ? describe : describe.skip;
 

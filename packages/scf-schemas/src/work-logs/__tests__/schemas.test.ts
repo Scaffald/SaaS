@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
 import {
   addCollaboratorSchema,
@@ -7,11 +7,11 @@ import {
   timeEntriesSchema,
   updateWorkLogSchema,
   uploadWorkLogPhotoSchema,
-} from "../schemas";
+} from '../schemas';
 
-const sampleProjectId = "00000000-0000-0000-0000-000000000001";
-const sampleWorkLogId = "00000000-0000-0000-0000-000000000002";
-const sampleUserId = "00000000-0000-0000-0000-000000000003";
+const sampleProjectId = '00000000-0000-0000-0000-000000000001';
+const sampleWorkLogId = '00000000-0000-0000-0000-000000000002';
+const sampleUserId = '00000000-0000-0000-0000-000000000003';
 
 describe("timeEntriesSchema", () => {
   it("accepts non-overlapping time entries", () => {

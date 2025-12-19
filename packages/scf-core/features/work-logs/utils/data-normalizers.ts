@@ -1,7 +1,7 @@
 import type {
   ProjectSelectorOrganization,
   ProjectSelectorProject,
-} from "../components/ProjectSelector";
+} from '../components/ProjectSelector';
 
 export type ProjectOptionsData = {
   organizations: ProjectSelectorOrganization[];
@@ -17,7 +17,7 @@ const toProjectSelectorOrganization = (
   }
   const name = typeof input.name === "string" && input.name.trim().length > 0
     ? input.name
-    : "Unknown Organization";
+    : 'Unknown Organization';
   return {
     id,
     name,
@@ -50,7 +50,7 @@ const toProjectSelectorProject = (
 
   const name = typeof input.name === "string" && input.name.trim().length > 0
     ? input.name
-    : "Untitled Project";
+    : 'Untitled Project';
 
   const startsAt =
     typeof (input as { startsAt?: unknown }).startsAt === "string"

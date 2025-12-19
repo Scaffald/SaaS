@@ -1,5 +1,5 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock Supabase client - use vi.hoisted
 const mockRpc = vi.hoisted(() => vi.fn());
@@ -21,8 +21,8 @@ vi.mock("@tanstack/react-query", () => ({
   useQuery: mockUseQuery,
 }));
 
-import { useOrganizations } from "../useOrganizations";
-import type { ViewportBounds } from "@unicornlove/ui";
+import { useOrganizations } from '../useOrganizations';
+import type { ViewportBounds } from '@unicornlove/ui';
 
 describe("useOrganizations", () => {
   const mockBounds: ViewportBounds = {

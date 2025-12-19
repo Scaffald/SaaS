@@ -53,7 +53,7 @@ UNI-Construct/
 │   ├── scf-core/              # @scf/core - Shared business logic and features
 │   │   └── features/              # Route-based feature organization
 │   ├── ui/                    # @unicornlove/ui - Cross-platform UI components
-│   ├── scf-supabase/          # @scf/supabase - Database, migrations, Edge Functions
+│   ├── supabase/          # @scf/supabase - Database, migrations, Edge Functions
 │   │   └── migrations/        # 001-137 (Scaffald) + 200-232 (Forsured)
 │   ├── forsured/              # @unicornlove/forsured - Zod schemas
 │   ├── insurance/             # @unicornlove/insurance - Insurance domain

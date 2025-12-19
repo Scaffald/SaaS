@@ -24,9 +24,9 @@ import {
   HardDrive,
   ShieldCheck,
   Users,
-} from "@tamagui/lucide-icons";
-import type { TranslationKey } from "@scf/core/locales";
-import type { ComponentType } from "react";
+} from '@tamagui/lucide-icons';
+import type { TranslationKey } from '@scf/core/locales';
+import type { ComponentType } from 'react';
 
 // ============================================================================
 // Types
@@ -58,7 +58,7 @@ export type RouteNode = RouteConfig | { [key: string]: RouteNode };
  * Type guard to check if a route node is a terminal route
  */
 function isRouteConfig(node: RouteNode): node is RouteConfig {
-  return "path" in node && typeof node.path === "string";
+  return 'path' in node && typeof node.path === 'string';
 }
 
 // ============================================================================
@@ -762,8 +762,8 @@ export function isAuthPath(path: string): boolean {
  * Respects the exact flag on route configuration
  */
 export function matchesRoute(path: string, route: RouteConfig): boolean {
-  const normalizedPath = path.replace(/\/+$/, "") || "/";
-  const routePattern = route.path.replace(/:[^/]+/g, "[^/]+");
+  const normalizedPath = path.replace(/\/+$/, '') || '/';
+  const routePattern = route.path.replace(/:[^/]+/g, '[^/]+');
   const regex = new RegExp(`^${routePattern}$`);
 
   // Exact match if flag is set
@@ -879,7 +879,7 @@ function findRouteByPath(
   path: string,
   routeNode: RouteNode = ROUTES,
 ): { route: RouteConfig; parent: RouteNode | null } | null {
-  const normalizedPath = path.replace(/\/+$/, "") || "/";
+  const normalizedPath = path.replace(/\/+$/, '') || '/';
 
   if (isRouteConfig(routeNode)) {
     // Check if this route matches
@@ -954,11 +954,11 @@ export function getParentRoute(
  */
 export function getBreadcrumbs(currentPath: string): RouteConfig[] {
   const breadcrumbs: RouteConfig[] = [];
-  const normalizedPath = currentPath.replace(/\/+$/, "") || "/";
-  const segments = normalizedPath.split("/").filter(Boolean);
+  const normalizedPath = currentPath.replace(/\/+$/, '') || '/';
+  const segments = normalizedPath.split('/').filter(Boolean);
 
   // Build path progressively and find matching routes
-  let currentRoutePath = "";
+  let currentRoutePath = '';
   for (let i = 0; i < segments.length; i++) {
     currentRoutePath += i === 0 ? segments[i] : `/${segments[i]}`;
     const fullPath = `/${currentRoutePath}`;

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 vi.mock("@react-native-async-storage/async-storage", () => {
   const store = new Map<string, string>();
@@ -24,13 +24,13 @@ vi.mock("../client", () => ({
   captureEvent: captureEventMock,
 }));
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   captureEventWithQueue,
   flushQueue,
   getQueueStats,
   queueEvent,
-} from "../queue";
+} from '../queue';
 
 describe("analytics queue", () => {
   beforeEach(async () => {

@@ -19,11 +19,11 @@ describe('getStatusLabel', () => {
     expect(getStatusLabel('disputed')).toBe('Disputed');
   });
 
-  it('returns "Unknown" for null status', () => {
+  it("returns 'Unknown' for null status", () => {
     expect(getStatusLabel(null)).toBe('Unknown');
   });
 
-  it('returns "Unknown" for undefined status', () => {
+  it("returns 'Unknown' for undefined status", () => {
     expect(getStatusLabel(undefined)).toBe('Unknown');
   });
 

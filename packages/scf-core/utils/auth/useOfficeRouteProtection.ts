@@ -1,8 +1,8 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { useToastController } from "@tamagui/toast";
-import { useRouter } from "expo-router";
-import { useEffect } from "react";
-import { useWindowDimensions } from "@unicornlove/ui";
+import { ROUTES } from '@scf/core/constants/routes';
+import { useToastController } from '@tamagui/toast';
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { useWindowDimensions } from '@unicornlove/ui';
 
 export const useOfficeRouteProtection = () => {
   const router = useRouter();

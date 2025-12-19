@@ -7,8 +7,8 @@
     "paths": {
       "@scf/core": ["."],
       "@scf/core/*": ["./*"],
-      "@scf/supabase": ["../scf-supabase"],
-      "@scf/supabase/*": ["../scf-supabase/*"],
+      "@scf/supabase": ["../supabase"],
+      "@scf/supabase/*": ["../supabase/*"],
       "@scf/schemas": ["../scf-schemas/src"],
       "@scf/schemas/*": ["../scf-schemas/src/*"],
       "@scf/trpc": ["../scf-trpc/src"],
@@ -20,12 +20,12 @@
     "plugins": []
   },
   "exclude": [
-    "../../scf-supabase/functions/**/*",
-    "../../scf-supabase/migrations/**/*",
-    "../../scf-supabase/scripts/**/*",
-    "../scf-supabase/functions/**/*",
-    "../scf-supabase/migrations/**/*",
-    "../scf-supabase/scripts/**/*"
+    "../../supabase/functions/**/*",
+    "../../supabase/migrations/**/*",
+    "../../supabase/scripts/**/*",
+    "../supabase/functions/**/*",
+    "../supabase/migrations/**/*",
+    "../supabase/scripts/**/*"
   ],
   "extends": "../../tsconfig.base",
   "include": [

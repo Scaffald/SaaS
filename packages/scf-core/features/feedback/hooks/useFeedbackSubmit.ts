@@ -1,28 +1,28 @@
-import { api } from "@scf/core/utils/api";
-import { supabase } from "@scf/core/utils/supabase/client";
+import { api } from '@scf/core/utils/api';
+import { supabase } from '@scf/core/utils/supabase/client';
 import {
   type FeedbackPendingScreenshot,
   type FeedbackPendingSubmission,
   feedbackPendingSubmissionSchema,
   type FeedbackSubmitInput,
   feedbackUploadRequestSchema,
-} from "@scf/schemas/feedback";
-import { useToastController } from "@tamagui/toast";
-import { Buffer } from "buffer";
-import { randomUUID } from "expo-crypto";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { z } from "zod";
+} from '@scf/schemas/feedback';
+import { useToastController } from '@tamagui/toast';
+import { Buffer } from 'buffer';
+import { randomUUID } from 'expo-crypto';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { z } from 'zod';
 import {
   addPendingFeedback,
   getPendingFeedbackQueue,
   removePendingFeedback,
   updatePendingFeedback,
-} from "../utils/feedbackStorage";
-import type { FeedbackContextPayload } from "./useFeedbackContext";
+} from '../utils/feedbackStorage';
+import type { FeedbackContextPayload } from './useFeedbackContext';
 import type {
   FeedbackFormValues,
   FeedbackScreenshotSource,
-} from "./useFeedbackForm";
+} from './useFeedbackForm';
 
 const RETRY_INTERVAL_MS = 5 * 60 * 1000;
 const MAX_QUEUE_ATTEMPTS = 5;
@@ -305,7 +305,7 @@ export function useFeedbackSubmit(): UseFeedbackSubmitResult {
       } catch (error) {
         const message = error instanceof Error
           ? error.message
-          : "Unknown error";
+          : 'Unknown error';
 
         if (error instanceof z.ZodError) {
           toast.show("Validation Error", {
@@ -350,7 +350,7 @@ export function useFeedbackSubmit(): UseFeedbackSubmitResult {
           await addPendingFeedback(pending);
           toast.show("Submission Saved Locally", {
             message:
-              "We couldn't reach the server. Your feedback will be submitted automatically once you're online.",
+              'We couldn\'t reach the server. Your feedback will be submitted automatically once you\'re online.',
             type: "warning",
           });
           void refreshPendingCount();

@@ -7,20 +7,20 @@ export type MapPinType = {
   subtitle?: string;
   score?: number;
   hourlyRate?: number;
-  availability?: "available" | "unavailable";
-  organization?: "Individual" | "Organization" | "Job";
+  availability?: 'available' | 'unavailable';
+  organization?: 'Individual' | 'Organization' | 'Job';
   color?: string;
-  pinType?: "worker" | "organization" | "job";
+  pinType?: 'worker' | 'organization' | 'job';
   avatarUrl?: string | null;
   badges?: Array<{
     id: string;
     label: string;
-    tone: "success" | "warning" | "danger";
+    tone: 'success' | 'warning' | 'danger';
   }>;
   selected?: boolean;
   data?: unknown;
 };
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 /**
  * Pin visibility state types
@@ -29,7 +29,7 @@ export type PinVisibilityState =
   | "visible"
   | "hidden"
   | "transitioning-in"
-  | "transitioning-out";
+  | 'transitioning-out';
 
 /**
  * Individual pin state tracking
@@ -210,7 +210,7 @@ export function useMapPinState(
         if (existing) {
           const newVisibility: PinVisibilityState = clusterId
             ? "hidden"
-            : "visible";
+            : 'visible';
           next.set(pinId, {
             ...existing,
             clusterId,
@@ -314,7 +314,7 @@ export function useMapPinState(
           // New pin - check if it should be in a cluster
           // For now, we'll determine cluster membership externally
           // and set it via setPinCluster
-          const initialState: PinVisibilityState = "transitioning-in";
+          const initialState: PinVisibilityState = 'transitioning-in';
           nextStates.set(pin.id, {
             pin,
             visibility: initialState,
