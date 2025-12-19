@@ -14,6 +14,7 @@ vi.mock('@unicornlove/ui', async () => {
       Thumb: ({ onValueChange, value, disabled }: { onValueChange?: (value: number[]) => void; value: number[]; disabled?: boolean }) => (
         <input
           type="range"
+          role="slider"
           data-testid={`slider-thumb-${value[0]}`}
           min={1}
           max={5}
