@@ -97,7 +97,7 @@ function SignupPage() {
   const [error, setError] = useState<string | null>(null);
 
   // REQ-4: Fetch available user set types
-  const { data: userSetTypes, isLoading: isLoadingUserSetTypes } = trpc.userSetTypes.listActive.useQuery();
+  const { data: userSetTypes, isLoading: isLoadingUserSetTypes, error: userSetTypesError } = trpc.userSetTypes.listActive.useQuery();
 
   // If user already has a completed profile, redirect to their dashboard
   useEffect(() => {
@@ -378,6 +378,40 @@ function SignupPage() {
                 <Spinner size="large" />
                 <Text color="$color10" marginTop="$4">Loading industries...</Text>
               </YStack>
+            ) : userSetTypesError ? (
+              <YStack
+                data-testid="user-set-types-error"
+                backgroundColor="$red2"
+                borderWidth={1}
+                borderColor="$red6"
+                borderRadius="$md"
+                padding="$4"
+                gap="$2"
+              >
+                <Text fontSize="$3" fontWeight="600" color="$red11">
+                  Failed to load industries
+                </Text>
+                <Text fontSize="$2" color="$red10">
+                  Please refresh the page or contact support if the problem persists.
+                </Text>
+              </YStack>
+            ) : !userSetTypes || userSetTypes.length === 0 ? (
+              <YStack
+                data-testid="no-user-set-types"
+                backgroundColor="$yellow2"
+                borderWidth={1}
+                borderColor="$yellow6"
+                borderRadius="$md"
+                padding="$4"
+                gap="$2"
+              >
+                <Text fontSize="$3" fontWeight="600" color="$yellow11">
+                  No industries available
+                </Text>
+                <Text fontSize="$2" color="$yellow10">
+                  Please contact support to set up your account.
+                </Text>
+              </YStack>
             ) : (
               <XStack
                 flexDirection="row"
@@ -385,7 +419,7 @@ function SignupPage() {
                 gap="$4"
                 marginBottom="$8"
               >
-                {userSetTypes?.map((ust) => (
+                {userSetTypes.map((ust) => (
                   <UserTypeCard
                     key={ust.id}
                     as="button"

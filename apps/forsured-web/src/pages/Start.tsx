@@ -164,6 +164,14 @@ function StartPage() {
         },
       }));
 
+      // CRITICAL FIX: Save mock user for Scaffald client to retrieve
+      // The mock Scaffald client checks this key when getUser() is called
+      localStorage.setItem('mock_scaffald_current_user', JSON.stringify(user));
+
+      // CRITICAL FIX: Save mock profile for AuthContext to retrieve
+      // This ensures profile persists across navigation
+      localStorage.setItem('mock_forsured_profile', JSON.stringify(profile));
+
       login({ user, profile });
 
       // profile.user_type is already a route type (manager, subcontractor, broker, admin)

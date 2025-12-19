@@ -55,9 +55,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (scaffaldUser) {
           setUser(scaffaldUser);
 
-          // Load ForSured profile from Supabase
+          // Load ForSured profile from Supabase or localStorage (for test users)
           // Profile fetch errors are non-fatal - user may be new without a profile yet
           try {
+            // First check for mock profile in localStorage (set by test login)
+            const mockProfileJson = localStorage.getItem('mock_forsured_profile');
+            if (mockProfileJson) {
+              const mockProfile = JSON.parse(mockProfileJson);
+              // Verify the mock profile matches the current user
+              if (mockProfile.scaffald_user_id === scaffaldUser.id) {
+                setProfile(mockProfile);
+                console.log('[AuthContext] Session restored (mock):', scaffaldUser.email, mockProfile.user_type);
+                return;
+              } else {
+                // Mock profile is for a different user, clear it
+                console.log('[AuthContext] Mock profile user mismatch, clearing');
+                localStorage.removeItem('mock_forsured_profile');
+              }
+            }
+
+            // Fetch real profile from database
             const userProfile = await getProfile(scaffaldUser.id);
             setProfile(userProfile);
             console.log('[AuthContext] Session restored:', scaffaldUser.email, userProfile?.user_type);
@@ -129,6 +146,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log('[AuthContext] Logging out');
     await scaffaldClient.auth.signOut();
     clearTokens();
+    // Clear mock profile from localStorage
+    localStorage.removeItem('mock_forsured_profile');
     setUser(null);
     setProfile(null);
   }, []);
