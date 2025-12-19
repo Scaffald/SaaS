@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/utils';
+import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/pdf';
 import {
   clearImportDataInputSchema,
   type ImportMetadata,

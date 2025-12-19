@@ -6,7 +6,9 @@
     ".": "./src/index.ts",
     "./schemas": "./src/schemas/index.ts",
     "./types": "./src/types/index.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/shared.ts",
+    "./utils/shared": "./src/utils/shared.ts",
+    "./utils/node": "./src/utils/index.ts"
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",

@@ -16,7 +16,8 @@
     "vitest": "npm:vitest@2.1.0",
     "@scf/schemas": "../../scf-schemas/src/index.ts",
     "@scf/trpc/schemas": "../../scf-trpc/src/schemas/index.ts",
-    "@scf/trpc/utils": "../../scf-trpc/src/utils/index.ts",
+    "@scf/trpc/utils": "../../scf-trpc/src/utils/shared.ts",
+    "@scf/trpc/pdf": "./_shared/pdf/extract-text.ts",
     "@scf/supabase/types": "../types.ts"
   }
 }

@@ -178,7 +178,8 @@ async function verifyCertificateFingerprint(baseUrl: string): Promise<void> {
         return
       }
 
-      const digest = await crypto.subtle.digest('SHA-256', certificate.rawDER as BufferSource)
+      // Convert to proper ArrayBuffer type for Deno's crypto API
+      const digest = await crypto.subtle.digest('SHA-256', new Uint8Array(certificate.rawDER))
       const actualFingerprint = normalizeFingerprint(
         Array.from(new Uint8Array(digest))
           .map((b) => b.toString(16).padStart(2, '0'))

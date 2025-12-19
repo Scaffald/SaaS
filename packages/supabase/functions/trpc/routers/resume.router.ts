@@ -3,7 +3,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import type { Database } from '../../_shared/database.types';
-import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/utils';
+import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/pdf';
 import {
   profileEmploymentInputSchema,
   profileGeneralInputSchema,
