@@ -32,7 +32,7 @@ Deno.test({
     const error = response[0]?.error;
     
     if (error) {
-      assertExists(error, 'Expected error if application doesn't exist");
+      assertExists(error, "Expected error if application doesn't exist");
     } else if (result) {
       assertExists(result, "Expected assignment response");
     }
@@ -94,7 +94,7 @@ Deno.test({
     const error = response[0]?.error;
     
     if (error) {
-      assertExists(error, 'Expected error if assignment doesn't exist");
+      assertExists(error, "Expected error if assignment doesn't exist");
     } else if (result) {
       assertExists(result, "Expected unassign response");
     }

@@ -358,6 +358,10 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     } as unknown as Stripe
   }
 
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+  }
+
   const { data: settings, error } = await ctx.supabaseAdmin
     .schema('core')
     .from('stripe_settings')
@@ -406,6 +410,10 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
     return false
   }
 
+  if (!ctx.supabaseAdmin) {
+    return false
+  }
+
   const { data, error } = await ctx.supabaseAdmin
     .schema('core')
     .from('role_assignments')
@@ -435,6 +443,10 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
 
   if (await userHasPlatformRole(ctx)) {
     return
+  }
+
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
   }
 
   const { data: organization, error: orgError } = await ctx.supabaseAdmin
@@ -498,6 +510,10 @@ async function recordBackgroundCheckTransaction(
     metadata?: Record<string, unknown>
   }
 ) {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+  }
+
   const { error } = await ctx.supabaseAdmin
     .schema('core')
     .from('payment_transactions')
@@ -530,6 +546,10 @@ async function recordBackgroundCheckConsent(
     source: 'worker_self_service' | 'organization_portal' | 'system'
   }
 ) {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+  }
+
   const { supabaseAdmin } = ctx
   const consentedAt = params.consent.consent_given_at ?? new Date().toISOString()
 

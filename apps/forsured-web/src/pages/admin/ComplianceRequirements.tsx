@@ -278,7 +278,7 @@ export function ComplianceRequirements() {
         mode={bulkMode}
         onClose={() => setIsBulkModalOpen(false)}
       />
-    </div>
+    </YStack>
   )
 }
 
