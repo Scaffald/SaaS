@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts'
+import { protectedProcedure, t } from '../middleware';
 
 // =========================================================
 // Zod Schemas
@@ -24,7 +24,7 @@ const trackEventSchema = z.object({
   ]),
   targetType: z.enum(['user', 'job', 'organization']).nullable().optional(),
   targetId: z.string().uuid().nullable().optional(),
-  metadata: z.record(z.unknown()).optional().default({}),
+  metadata: z.record(z.string(), z.unknown()).optional().default({}),
 })
 
 const getRecentActivitySchema = z

@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
-import { invalidateProfileQueries } from "../profile-sync";
+import { describe, expect, it, vi } from 'vitest';
+import { invalidateProfileQueries } from '../profile-sync';
 
 const createInvalidateMock = () => vi.fn().mockResolvedValue(undefined);
 

@@ -9,14 +9,14 @@
 import {
   assertEquals,
   assertExists,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
+} from 'https://deno.land/std@0.208.0/assert/mod';
 import {
   getPerformanceMonitor,
   PerformanceMonitor,
   type RequestMetric,
   resetPerformanceMonitor,
   withTiming,
-} from "../routers/utils/performance-monitoring.ts";
+} from '../routers/utils/performance-monitoring';
 
 Deno.test({
   name: "PerformanceMonitor - should create monitor with default options",
@@ -494,7 +494,7 @@ Deno.test({
 
     const wrappedFn = withTiming(async () => {
       await new Promise((resolve) => setTimeout(resolve, 20));
-      return "result";
+      return 'result';
     }, "test.operation");
 
     const result = await wrappedFn();

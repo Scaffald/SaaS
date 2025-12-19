@@ -2,17 +2,17 @@ import type {
   CreateWorkLogInput,
   UpdateWorkLogInput,
   UploadWorkLogPhotoInput,
-} from "@scf/schemas";
+} from '@scf/schemas';
 
-export type SyncStatus = "pending" | "queued" | "syncing" | "synced" | "failed";
+export type SyncStatus = 'pending' | 'queued' | 'syncing' | 'synced' | 'failed';
 
 export interface OfflineWorkLogCreatePayload {
-  kind: "create";
+  kind: 'create';
   input: CreateWorkLogInput;
 }
 
 export interface OfflineWorkLogUpdatePayload {
-  kind: "update";
+  kind: 'update';
   input: UpdateWorkLogInput;
 }
 
@@ -45,7 +45,7 @@ export interface OfflineWorkLogPhoto {
   showOnProfile?: boolean;
   takenAt?: string;
   gpsCapture?: UploadWorkLogPhotoInput["gpsCapture"];
-  status: "pending" | "uploaded" | "failed";
+  status: 'pending' | 'uploaded' | 'failed';
   lastError?: string | null;
 }
 

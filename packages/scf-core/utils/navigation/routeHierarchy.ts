@@ -1,9 +1,9 @@
-import type { RouteConfig, RouteKey } from "@scf/core/constants/routes";
+import type { RouteConfig, RouteKey } from '@scf/core/constants/routes';
 import {
   flattenRoutes,
   matchesRoute,
   ROUTES,
-} from "@scf/core/constants/routes";
+} from '@scf/core/constants/routes';
 
 type RouteMap = typeof ROUTES;
 
@@ -29,7 +29,7 @@ export const MIN_QUICK_LINK_DEPTH = 3;
 const getAllRoutes = (): RouteConfig[] => flattenRoutes();
 
 const normalizePath = (path: string) => {
-  if (!path) return "/";
+  if (!path) return '/';
   if (path === "/") return path;
   return path.endsWith("/") ? path.slice(0, -1) : path;
 };
@@ -100,9 +100,9 @@ function buildRouteNode(
     return null;
   }
 
-  const fullKey = (currentPath.length > 0 ? `${currentPath.join(".")}.` : "") +
+  const fullKey = (currentPath.length > 0 ? `${currentPath.join('.')}.` : '') +
     currentKey as RouteKey;
-  let path = "";
+  let path = '';
   const children: RouteHierarchyNode[] = [];
 
   for (const [key, value] of Object.entries(routeNode)) {

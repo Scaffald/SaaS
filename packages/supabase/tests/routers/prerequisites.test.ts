@@ -2,10 +2,10 @@
  * Prerequisites router baseline coverage.
  */
 
-import { assertEquals, assertExists } from "../shared/assert.ts";
+import { assertEquals, assertExists } from '../shared/assert';
 
-import { callTRPCEndpoint, loadCachedTokens } from "../shared/setup.ts";
-import { requireAuthSetup } from "../shared/test-context.ts";
+import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup';
+import { requireAuthSetup } from '../shared/test-context';
 
 Deno.test({
   name: "Prerequisites router - check requires authentication",

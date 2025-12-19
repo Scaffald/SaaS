@@ -58,15 +58,15 @@ export const applicationCreateSchema = z.object({
   years_experience: z.number().int().nonnegative().optional(),
   is_authorized_to_work: z.boolean().optional(),
   earliest_start_date: z.string().optional(),
-  screening_answers: z.record(z.unknown()).optional(),
+  screening_answers: z.record(z.string(), z.unknown()).optional(),
   custom_question_answers: z.array(customQuestionAnswerSchema).optional(),
   attachments: attachmentsSchema.optional(),
   cover_letter: z.string().optional(),
   resume_path: z.string().optional(),
   completed_steps: z.array(z.string()).optional(),
   is_complete: z.boolean().default(false),
-  notes: z.record(z.unknown()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  notes: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**
@@ -79,13 +79,13 @@ export const applicationUpdateSchema = z.object({
   years_experience: z.number().int().nonnegative().optional(),
   is_authorized_to_work: z.boolean().optional(),
   earliest_start_date: z.string().optional(),
-  screening_answers: z.record(z.unknown()).optional(),
+  screening_answers: z.record(z.string(), z.unknown()).optional(),
   custom_question_answers: z.array(customQuestionAnswerSchema).optional(),
   attachments: attachmentsSchema.optional(),
   completed_steps: z.array(z.string()).optional(),
   is_complete: z.boolean().optional(),
-  notes: z.record(z.unknown()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  notes: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   status: z
     .enum([
       'pending',
@@ -113,7 +113,7 @@ export const applicationStepUpdateSchema = z.object({
     'video_interview',
     'review',
   ]),
-  data: z.record(z.unknown()),
+  data: z.record(z.string(), z.unknown()),
 })
 
 /**

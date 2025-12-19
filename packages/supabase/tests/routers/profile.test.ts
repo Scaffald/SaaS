@@ -2,12 +2,12 @@
  * Profile router baseline coverage.
  */
 
-import { assertEquals, assertExists } from "../shared/assert.ts";
+import { assertEquals, assertExists } from '../shared/assert';
 
-import { loadCachedTokens } from "../shared/setup.ts";
-import { requireAuthSetup } from "../shared/test-context.ts";
+import { loadCachedTokens } from '../shared/setup';
+import { requireAuthSetup } from '../shared/test-context';
 
-const PROFILE_ENDPOINT = "http://127.0.0.1:54321/functions/v1/trpc/profile.updateGeneral?batch=1";
+const PROFILE_ENDPOINT = 'http://127.0.0.1:54321/functions/v1/trpc/profile.updateGeneral?batch=1';
 
 Deno.test({
   name: "Profile router - updateGeneral allows address updates",

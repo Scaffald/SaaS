@@ -208,12 +208,12 @@ Deno.test({
         .schema("private")
         .from("user_experience")
         .select("*")
-        .eq("user_id", userId); // Try to fetch first user's experience
+        .eq('user_id', userId); // Try to fetch first user's experience
 
       // Should succeed but return empty (RLS filters it out)
       assertEquals(error, null, "Query should succeed");
-      assertEquals(data, [], "Should not see other user's experience");
-      console.log("✓ RLS prevents seeing other user's data");
+      assertEquals(data, [], 'Should not see other user's experience");
+      console.log('✓ RLS prevents seeing other user's data");
     });
 
     await t.step("9. Test experience with dates and current position", async () => {

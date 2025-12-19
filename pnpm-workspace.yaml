@@ -1,7 +1,7 @@
 packages:
   - apps/*
   - packages/scf-core
-  - packages/scf-supabase
+  - packages/supabase
   - packages/scf-schemas
   - packages/scf-trpc
   - packages/ui

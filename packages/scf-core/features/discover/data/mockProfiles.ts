@@ -1,4 +1,4 @@
-import type { TalentProfile } from "../types";
+import type { TalentProfile } from '../types';
 
 export const mockTalentProfiles: TalentProfile[] = [
   {

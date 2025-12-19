@@ -1,5 +1,5 @@
-import { api } from "@scf/core/utils/api";
-import { useEffect, useMemo, useState } from "react";
+import { api } from '@scf/core/utils/api';
+import { useEffect, useMemo, useState } from 'react';
 
 export type ResumeWizardSection =
   | "general"
@@ -7,14 +7,14 @@ export type ResumeWizardSection =
   | "education"
   | "skills"
   | "certifications"
-  | "employment";
+  | 'employment';
 
 export interface ResumeWizardStep {
-  id: ResumeWizardSection | "review";
+  id: ResumeWizardSection | 'review';
   label: string;
 }
 
-export type ResumeMergeStrategy = "replace" | "append" | "keepExisting";
+export type ResumeMergeStrategy = 'replace' | 'append' | 'keepExisting';
 
 const BASE_STEPS: ResumeWizardStep[] = [
   { id: "general", label: "General Information" },
@@ -73,7 +73,7 @@ export function useResumeWizard(resumeId: string) {
     data: unknown,
     mergeStrategy?: ResumeMergeStrategy,
   ) => {
-    const strategy = mergeStrategy ?? "replace";
+    const strategy = mergeStrategy ?? 'replace';
     await saveSectionMutation.mutateAsync({
       section,
       data,

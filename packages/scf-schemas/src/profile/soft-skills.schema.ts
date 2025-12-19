@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 /**
  * Single soft skill rating (self assessment or requirements)
@@ -7,7 +7,7 @@ export const softSkillRatingSchema = z.object({
   skill_id: z.string().uuid('Skill ID must be a valid UUID'),
   rating: z
     .number({
-      required_error: 'Rating is required',
+      error: 'Rating is required',
     })
     .int('Rating must be a whole number')
     .min(1, 'Rating must be at least 1')
@@ -20,7 +20,7 @@ export const softSkillRatingSchema = z.object({
 export const softSkillsUpdateSchema = z.object({
   skills: z
     .array(softSkillRatingSchema, {
-      required_error: 'You must rate all soft skills',
+      error: 'You must rate all soft skills',
     })
     .length(25, 'All 25 soft skills must be rated'),
 })
@@ -32,7 +32,7 @@ export const jobSoftSkillRequirementSchema = z.object({
   skill_id: z.string().uuid('Skill ID must be a valid UUID'),
   importance: z
     .number({
-      required_error: 'Importance is required',
+      error: 'Importance is required',
     })
     .int('Importance must be a whole number')
     .min(1, 'Importance must be at least 1')

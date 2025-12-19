@@ -6,10 +6,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, StorageBackendType, StorageRouterResult } from './storage-backends/index.ts'
-import { SupabaseStorageBackend } from './storage-backends/supabase-backend.ts'
-import { DropboxStorageBackend } from './storage-backends/dropbox-backend.ts'
-import { GoogleDriveStorageBackend } from './storage-backends/google-drive-backend.ts'
+import type { IStorageBackend, StorageBackendType, StorageRouterResult } from './storage-backends/index';
+import { SupabaseStorageBackend } from './storage-backends/supabase-backend';
+import { DropboxStorageBackend } from './storage-backends/dropbox-backend';
+import { GoogleDriveStorageBackend } from './storage-backends/google-drive-backend';
 
 // Backend cache to avoid creating new instances for each request
 const backendCache = new Map<string, IStorageBackend>()

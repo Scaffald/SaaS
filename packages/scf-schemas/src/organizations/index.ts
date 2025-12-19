@@ -1,5 +1,5 @@
-import { z } from 'zod'
-import { addressSchema } from '../common/address.ts'
+import { z } from 'zod';
+import { addressSchema } from '../common/address';
 
 const locationTypeSchema = z.enum(['headquarters', 'branch', 'job_site', 'remote', 'other'])
 
@@ -61,9 +61,9 @@ export const organizationSettingsSchema = z.object({
   enforceMfa: z.boolean().default(false),
   sessionTimeoutMinutes: z.number().min(15).max(720).default(60),
   ipAllowList: z.array(z.string()).default([]),
-  notificationPreferences: z.record(z.unknown()).default({}),
-  securityPreferences: z.record(z.unknown()).default({}),
-  privacyPreferences: z.record(z.unknown()).default({}),
+  notificationPreferences: z.record(z.string(), z.unknown()).default({}),
+  securityPreferences: z.record(z.string(), z.unknown()).default({}),
+  privacyPreferences: z.record(z.string(), z.unknown()).default({}),
 })
 
 export const organizationDocumentUploadSchema = z.object({

@@ -1,5 +1,5 @@
-import { z } from 'zod'
-import { addressSchema } from '../common/address.ts'
+import { z } from 'zod';
+import { addressSchema } from '../common/address';
 
 /**
  * Property type enum
@@ -22,7 +22,7 @@ export const addressCreateSchema = z.object({
     message: 'Address is required',
   }),
   property_type: propertyTypeSchema.optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**
@@ -33,7 +33,7 @@ export const addressUpdateSchema = z.object({
   site_id: z.string().uuid('Invalid site ID').optional().nullable(),
   address: addressSchema.optional(),
   property_type: propertyTypeSchema.optional().nullable(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**

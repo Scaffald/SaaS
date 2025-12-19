@@ -1,5 +1,5 @@
-import { api } from "@scf/core/utils/api";
-import type { ReviewAnalytics } from "../types";
+import { api } from '@scf/core/utils/api';
+import type { ReviewAnalytics } from '../types';
 
 /**
  * Custom hook to fetch review analytics data for a user

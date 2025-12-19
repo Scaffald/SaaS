@@ -2,7 +2,7 @@ import {
   assert,
   assertEquals,
   assertExists,
-} from "jsr:@std/assert";
+} from 'jsr:@std/assert';
 
 import {
   callTRPCEndpoint,
@@ -217,7 +217,7 @@ Deno.test({
 });
 
 Deno.test({
-  name: "Team invitations - mine returns user's invitations",
+  name: 'Team invitations - mine returns user's invitations",
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {

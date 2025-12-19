@@ -1,10 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { OfflineWorkLog, SyncSettings } from "../types/offline";
-import { DEFAULT_SYNC_SETTINGS } from "../types/offline";
+import type { OfflineWorkLog, SyncSettings } from '../types/offline';
+import { DEFAULT_SYNC_SETTINGS } from '../types/offline';
 
-const OFFLINE_WORK_LOGS_KEY = "scf.workLogs.offlineQueue";
-const WORK_LOG_SYNC_SETTINGS_KEY = "scf.workLogs.syncSettings";
+const OFFLINE_WORK_LOGS_KEY = 'scf.workLogs.offlineQueue';
+const WORK_LOG_SYNC_SETTINGS_KEY = 'scf.workLogs.syncSettings';
 
 const parseJson = <T>(rawValue: string | null): T | null => {
   if (!rawValue) {

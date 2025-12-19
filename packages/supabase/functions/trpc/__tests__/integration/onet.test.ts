@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertExists,
-} from "jsr:@std/assert";
+} from 'jsr:@std/assert';
 
 import { callTRPCEndpoint } from '../setup';
 
@@ -33,7 +33,7 @@ Deno.test("O*NET - searchOccupations returns matching results", async () => {
       `✅ Found ${result.length} occupations (top match: ${first.title})`,
     );
   } else {
-    console.log("⚠️  No occupations returned for 'engineer' query");
+    console.log('⚠️  No occupations returned for 'engineer' query");
   }
 });
 

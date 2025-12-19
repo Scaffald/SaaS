@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import { uploadAvatarInputSchema } from '../consolidated.ts';
+import { uploadAvatarInputSchema } from '../consolidated';
 
 const base64Jpeg =
-  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhISEhIVFRUVFRUVFRUVFRUVFRcWFhUVFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICYtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKgBLAMBIgACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABQYDBAcCAQj/xABCEAABAwIEAwUFBQYEBwEAAAABAAIRAyEEEjFBBVFhBiJxgZGh8BMysdHhQhQjQlJy4SNDYnKC0uHwFlODk6LxFRY0Q3Sj8RY0gpOztJPC4v/EABoBAAIDAQEAAAAAAAAAAAAAAAIDAQQFAAb/xAA4EQACAQIEAwYEBQQDAAAAAAAAAQIDEQQSITEFE0FhFDJxgaGxwfAUIkKhscHR4SNS8SNC8f/aAAwDAQACEQMRAD8A9xREQEREBERAREQEREBERAREQEREBERAREQEREBERA//Z";
+  'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhISEhIVFRUVFRUVFRUVFRUVFRcWFhUVFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICYtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKgBLAMBIgACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABQYDBAcCAQj/xABCEAABAwIEAwUFBQYEBwEAAAABAAIRAyEEEjFBBVFhBiJxgZGh8BMysdHhQhQjQlJy4SNDYnKC0uHwFlODk6LxFRY0Q3Sj8RY0gpOztJPC4v/EABoBAAIDAQEAAAAAAAAAAAAAAAIDAQQFAAb/xAA4EQACAQIEAwYEBQQDAAAAAAAAAQIDEQQSITEFE0FhFDJxgaGxwfAUIkKhscHR4SNS8SNC8f/aAAwDAQACEQMRAD8A9xREQEREBERAREQEREBERAREQEREBERAREQEREBERA//Z';
 
 describe("uploadAvatarInputSchema", () => {
   it("accepts a valid payload", () => {
@@ -118,7 +118,7 @@ describe("uploadAvatarInputSchema", () => {
     });
 
     it("handles very long filenames", () => {
-      const longFileName = "a".repeat(200) + ".jpg";
+      const longFileName = 'a'.repeat(200) + '.jpg';
       const result = uploadAvatarInputSchema.safeParse({
         file: base64Jpeg,
         fileName: longFileName,

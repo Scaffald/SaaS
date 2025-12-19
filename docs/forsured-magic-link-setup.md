@@ -19,19 +19,19 @@ After starting Supabase, manually recreate the auth container with correct envir
 
 ```bash
 # Stop and remove the auth container
-docker stop supabase_auth_scf-supabase
-docker rm supabase_auth_scf-supabase
+docker stop supabase_auth_supabase
+docker rm supabase_auth_supabase
 
 # Get the network name
 NETWORK=$(docker network ls | grep supabase | awk '{print $2}' | head -1)
 
 # Recreate with correct environment variables
 docker run -d \
-  --name supabase_auth_scf-supabase \
+  --name supabase_auth_supabase \
   --network "$NETWORK" \
   -e "GOTRUE_SITE_URL=http://localhost:5173" \
   -e "GOTRUE_URI_ALLOW_LIST=http://localhost:5173,http://localhost:5173/auth/callback,http://127.0.0.1:5173,http://127.0.0.1:5173/auth/callback,http://127.0.0.1:8081" \
-  $(docker inspect supabase_auth_scf-supabase --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null | grep -v "GOTRUE_SITE_URL\|GOTRUE_URI_ALLOW_LIST" | xargs -n1 echo | sed 's/^/-e /' | tr '\n' ' ') \
+  $(docker inspect supabase_auth_supabase --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null | grep -v "GOTRUE_SITE_URL\|GOTRUE_URI_ALLOW_LIST" | xargs -n1 echo | sed 's/^/-e /' | tr '\n' ' ') \
   public.ecr.aws/supabase/gotrue:v2.184.0 \
   auth
 ```
@@ -59,7 +59,7 @@ Despite the environment variables showing wrong values, Supabase might read `con
 Check if environment variables are set correctly:
 
 ```bash
-docker exec supabase_auth_scf-supabase env | grep GOTRUE_SITE_URL
+docker exec supabase_auth_supabase env | grep GOTRUE_SITE_URL
 # Should show: GOTRUE_SITE_URL=http://localhost:5173
 ```
 

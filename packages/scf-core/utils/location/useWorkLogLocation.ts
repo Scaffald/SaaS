@@ -1,24 +1,24 @@
-import * as Location from "expo-location";
-import { useCallback, useState } from "react";
-import { Platform } from "react-native";
+import * as Location from 'expo-location';
+import { useCallback, useState } from 'react';
+import { Platform } from 'react-native';
 
 import {
   LOCATION_PERMISSION_STATUS_VALUES,
   type LocationPermissionStatus,
   type WorkLogLocation,
   type WorkLogLocationState,
-} from "@scf/schemas";
+} from '@scf/schemas';
 
 const getDeviceType = () => {
   if (Platform.OS === "ios") {
-    return "ios";
+    return 'ios';
   }
 
   if (Platform.OS === "android") {
-    return "android";
+    return 'android';
   }
 
-  return "web";
+  return 'web';
 };
 
 type PermissionResponse = Location.LocationPermissionResponse;
@@ -54,11 +54,11 @@ const resolveLocationPermissionStatus = (
 
   switch (response.status) {
     case Location.PermissionStatus.GRANTED:
-      return "granted";
+      return 'granted';
     case Location.PermissionStatus.DENIED:
-      return "denied";
+      return 'denied';
     default:
-      return "notDetermined";
+      return 'notDetermined';
   }
 };
 
@@ -119,7 +119,7 @@ export const useWorkLogLocation = (): WorkLogLocationHook => {
           ? error.message
           : "Failed to check permission status",
       }));
-      return "notDetermined";
+      return 'notDetermined';
     }
   }, []);
 
@@ -173,7 +173,7 @@ export const useWorkLogLocation = (): WorkLogLocationHook => {
     } catch (error) {
       const message = error instanceof Error
         ? error.message
-        : "Unable to capture location.";
+        : 'Unable to capture location.';
 
       setState((prev) => ({
         ...prev,

@@ -12,12 +12,12 @@
  *   - SUPABASE_SERVICE_ROLE_KEY environment variable
  */
 
-import { createClient } from "@supabase/supabase-js";
-import * as fs from "fs";
-import * as path from "path";
+import { createClient } from '@supabase/supabase-js';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Re-export test IDs for use in tests
-export * from "./test-ids";
+export * from './test-ids';
 
 // Environment validation
 const SUPABASE_URL = process.env.SUPABASE_URL;

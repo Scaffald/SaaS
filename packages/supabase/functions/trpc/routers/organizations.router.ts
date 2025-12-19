@@ -1,17 +1,17 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 import {
   isOrganizationAdminRole,
   isSuperAdmin,
   loadUserRoleAssignments,
-} from '../../_shared/permissions/team-permissions.ts';
-import type { Context } from '../context.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+} from '../../_shared/permissions/team-permissions';
+import type { Context } from '../context';
+import { protectedProcedure, t } from '../middleware';
 
-const ORG_DOCUMENT_BUCKET = "organization-documents";
+const ORG_DOCUMENT_BUCKET = 'organization-documents';
 const DOCUMENT_UPLOAD_URL_TTL_SECONDS = 60 * 10;
 const DEFAULT_INVITE_EXPIRATION_DAYS = 7;
-const DEFAULT_SUBSCRIPTION_TIER = "starter";
+const DEFAULT_SUBSCRIPTION_TIER = 'starter';
 const STORAGE_WARNING_LEVELS = [0.75, 0.9, 0.95, 0.99] as const;
 
 const DOCUMENT_CATEGORY_OPTIONS = [
@@ -395,11 +395,11 @@ const updateSettingsSchema = z.object({
   timezone: z.string().optional(),
   locale: z.string().optional(),
   defaultCurrency: z.string().optional(),
-  businessHours: z.array(z.record(z.any())).optional(),
-  holidayCalendar: z.array(z.record(z.any())).optional(),
-  notificationPreferences: z.record(z.any()).optional(),
-  securityPreferences: z.record(z.any()).optional(),
-  privacyPreferences: z.record(z.any()).optional(),
+  businessHours: z.array(z.record(z.string(), z.unknown())).optional(),
+  holidayCalendar: z.array(z.record(z.string(), z.unknown())).optional(),
+  notificationPreferences: z.record(z.string(), z.unknown()).optional(),
+  securityPreferences: z.record(z.string(), z.unknown()).optional(),
+  privacyPreferences: z.record(z.string(), z.unknown()).optional(),
   enforceMfa: z.boolean().optional(),
   sessionTimeoutMinutes: z.number().min(15).max(720).optional(),
   ipAllowList: z.array(z.string()).optional(),
@@ -1097,7 +1097,7 @@ export const organizationsRouter = t.router({
         });
       }
 
-      const roleName = invite.role_name ?? "member";
+      const roleName = invite.role_name ?? 'member';
       const { data: role } = await ctx.supabase
         .schema("core")
         .from("roles")
@@ -1280,8 +1280,8 @@ export const organizationsRouter = t.router({
       if (input.search?.trim()) {
         const term = input.search.trim().toLowerCase();
         results = results.filter((member) => {
-          const display = member.profile?.display_name?.toLowerCase() ?? "";
-          const username = member.profile?.username?.toLowerCase() ?? "";
+          const display = member.profile?.display_name?.toLowerCase() ?? '';
+          const username = member.profile?.username?.toLowerCase() ?? '';
           return display.includes(term) || username.includes(term);
         });
       }
@@ -1515,7 +1515,7 @@ export const organizationsRouter = t.router({
         throw new TRPCError({
           code: "BAD_REQUEST",
           message:
-            "Uploading this document would exceed the organization's storage limit.",
+            'Uploading this document would exceed the organization\'s storage limit.',
         });
       }
 
@@ -2558,7 +2558,7 @@ export const organizationsRouter = t.router({
         return { format: "json", payload: data ?? [] };
       }
 
-      const header = "timestamp,action,target_type,target_id,actor,description";
+      const header = 'timestamp,action,target_type,target_id,actor,description';
       const rows = (data ?? []).map((row: { created_at: string; action_type?: string | null; target_type?: string | null; target_id?: string | null; actor_user_id?: string | null; description?: string | null; [key: string]: unknown }) => {
         const values = [
           row.created_at,
@@ -2566,7 +2566,7 @@ export const organizationsRouter = t.router({
           row.target_type ?? "",
           row.target_id ?? "",
           row.actor_user_id ?? "",
-          (row.description ?? "").replace(/"/g, '""'),
+          (row.description ?? '').replace(/'/g, '""'),
         ];
         return values.map((value) => `"${value}"`).join(",");
       });

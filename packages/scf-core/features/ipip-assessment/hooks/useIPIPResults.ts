@@ -1,14 +1,14 @@
 import type {
   IPIPAnswer,
   IPIPScores,
-} from "@scf/core/features/personality-assessment/lib/ipip";
+} from '@scf/core/features/personality-assessment/lib/ipip';
 import {
   getResults,
   getScore,
-} from "@scf/core/features/personality-assessment/lib/ipip";
-import { api } from "@scf/core/utils/api";
-import { useMemo } from "react";
-import { normalizeScores } from "../utils/scoreNormalizer";
+} from '@scf/core/features/personality-assessment/lib/ipip';
+import { api } from '@scf/core/utils/api';
+import { useMemo } from 'react';
+import { normalizeScores } from '../utils/scoreNormalizer';
 
 const RESULTS_STALE_TIME_MS = 1000 * 60 * 5; // 5 minutes
 const RESULTS_CACHE_TIME_MS = 1000 * 60 * 30; // 30 minutes

@@ -1,6 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { supabase } from "./client";
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { supabase } from './client';
 
 /**
  * Hook to subscribe to real-time updates for an inquiry

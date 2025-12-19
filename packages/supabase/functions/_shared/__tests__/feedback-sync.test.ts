@@ -4,7 +4,7 @@ import {
   buildBraingridPayload,
   getBraingridConfig,
   type FeedbackRow,
-} from '../feedback-sync.ts'
+} from '../feedback-sync';
 
 type DenoEnv = {
   get: (key: string) => string | undefined

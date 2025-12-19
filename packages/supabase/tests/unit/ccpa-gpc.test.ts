@@ -13,7 +13,7 @@
 import {
   assertEquals,
   assertExists,
-} from '../shared/assert.ts'
+} from '../shared/assert';
 
 import {
   GPC_CONFIG,
@@ -24,7 +24,7 @@ import {
   type GPCSignalResult,
   type GPCOptOutResult,
   type GPCStatus,
-} from '../../functions/trpc/routers/ccpa/gpc.ts'
+} from '../../functions/trpc/routers/ccpa/gpc';
 
 // ========================================================
 // CONFIGURATION TESTS
@@ -58,7 +58,7 @@ Deno.test({
     assertEquals(
       GPC_CONFIG.ENABLED_VALUE,
       '1',
-      'Enabled value should be "1" per GPC specification'
+      'Enabled value should be '1' per GPC specification'
     )
   },
 })
@@ -489,7 +489,7 @@ Deno.test({
     assertEquals(
       GPC_CONFIG.SOURCE,
       'gpc',
-      'Source should be "gpc" for audit trail'
+      'Source should be 'gpc' for audit trail'
     )
   },
 })

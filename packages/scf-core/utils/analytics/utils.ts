@@ -1,4 +1,4 @@
-import { APP_VERSION } from "@scf/core/constants/appVersion";
+import { APP_VERSION } from '@scf/core/constants/appVersion';
 import {
   ANDROID_PACKAGE,
   APP_ENV,
@@ -7,8 +7,8 @@ import {
   POSTHOG_HOST,
   POSTHOG_KEY,
   RUNTIME_VERSION,
-} from "./config";
-import type { SuperProperties } from "./types";
+} from './config';
+import type { SuperProperties } from './types';
 
 export const isAnalyticsAvailable = () => Boolean(POSTHOG_KEY && POSTHOG_HOST);
 
@@ -17,7 +17,7 @@ export const buildSuperProperties = (): SuperProperties => {
     ? RUNTIME_VERSION
     : RUNTIME_VERSION
     ? JSON.stringify(RUNTIME_VERSION)
-    : "unknown";
+    : 'unknown';
 
   const properties: SuperProperties = {
     env: APP_ENV,

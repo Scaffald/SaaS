@@ -1,11 +1,11 @@
-import type { z } from 'zod'
+import type { z } from 'zod';
 import type {
   applicationCreateSchema,
   applicationUpdateSchema,
   attachmentMetadataSchema,
   customQuestionAnswerSchema,
   screeningAnswersSchema,
-} from './application.schema.ts'
+} from './application.schema';
 
 /**
  * Application form data types derived from Zod schemas

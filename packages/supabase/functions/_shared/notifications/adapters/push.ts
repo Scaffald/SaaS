@@ -1,6 +1,6 @@
-import { Expo } from "expo-server-sdk";
-import type { ChannelAdapter } from '../types.ts';
-import { normalizeMetadata } from '../utils.ts';
+import { Expo } from 'expo-server-sdk';
+import type { ChannelAdapter } from '../types';
+import { normalizeMetadata } from '../utils';
 
 const expo = new Expo({
   accessToken: Deno.env.get("EXPO_ACCESS_TOKEN") ?? undefined,
@@ -46,7 +46,7 @@ export const pushAdapter: ChannelAdapter = {
 
     const sound = typeof metadata.sound === "string"
       ? metadata.sound
-      : "default";
+      : 'default';
 
     try {
       const [ticket] = await expo.sendPushNotificationsAsync([

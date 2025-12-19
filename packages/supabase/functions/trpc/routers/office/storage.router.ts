@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 
-import { officeProcedure, t } from '../../middleware.ts'
+import { officeProcedure, t } from '../../middleware';
 
 type UsageRow = {
   user_id: string

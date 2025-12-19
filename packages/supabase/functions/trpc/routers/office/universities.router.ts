@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { officeProcedure, protectedProcedure, t } from '../../middleware.ts'
+import { officeProcedure, protectedProcedure, t } from '../../middleware';
 
 /**
  * Office Universities router - handles university catalog management (admin only)
@@ -171,7 +171,7 @@ export const officeUniversitiesRouter = t.router({
         domains: z.array(z.string()).default([]),
         web_pages: z.array(z.string()).default([]),
         state_province: z.string().optional(),
-        metadata: z.record(z.unknown()).default({}),
+        metadata: z.record(z.string(), z.unknown()).default({}),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -244,7 +244,7 @@ export const officeUniversitiesRouter = t.router({
         domains: z.array(z.string()).default([]),
         web_pages: z.array(z.string()).default([]),
         state_province: z.string().optional(),
-        metadata: z.record(z.unknown()).default({}),
+        metadata: z.record(z.string(), z.unknown()).default({}),
       })
     )
     .mutation(async ({ ctx, input }) => {

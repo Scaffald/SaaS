@@ -1,8 +1,8 @@
 /* c8 ignore file */
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "./supabase/client";
-import { useSessionContext } from "./supabase/useSessionContext";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from './supabase/client';
+import { useSessionContext } from './supabase/useSessionContext';
 
 // Define the profile type based on the database schema
 type Profile = {
@@ -64,8 +64,8 @@ export const useUser = () => {
     }
 
     const params = new URLSearchParams();
-    const name = profile?.display_name || user?.email || "";
-    params.append("name", name);
+    const name = profile?.display_name || user?.email || '';
+    params.append('name', name);
     params.append("size", "256"); // will be resized again by Expo Image
     return `https://ui-avatars.com/api.jpg?${params.toString()}`;
   })();

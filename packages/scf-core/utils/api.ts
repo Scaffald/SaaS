@@ -20,15 +20,15 @@
  * - This ensures proper autocomplete and type safety in the client application
  */
 
-import { getGlobalQueryClient } from "@scf/core/provider/react-query/queryClient";
-import type { AppRouter } from "@scf/supabase/client-types";
-import { httpBatchLink, TRPCClientError, type TRPCLink } from "@trpc/client";
-import { createTRPCReact } from "@trpc/react-query";
-import { observable } from "@trpc/server/observable";
-import Constants from "expo-constants";
-import { Platform } from "react-native";
-import { clearAllAuthStorage } from "./auth/clearAuthStorage";
-import { supabase } from "./supabase/client";
+import { getGlobalQueryClient } from '@scf/core/provider/react-query/queryClient';
+import type { AppRouter } from '@scf/supabase/client-types';
+import { httpBatchLink, TRPCClientError, type TRPCLink } from '@trpc/client';
+import { createTRPCReact } from '@trpc/react-query';
+import { observable } from '@trpc/server/observable';
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+import { clearAllAuthStorage } from './auth/clearAuthStorage';
+import { supabase } from './supabase/client';
 
 /**
  * tRPC React client instance
@@ -160,7 +160,7 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
-} from "@scf/supabase/client-types";
+} from '@scf/supabase/client-types';
 
 // Export constants and schemas for form usage
 export {
@@ -169,4 +169,4 @@ export {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
-} from "@scf/supabase/client-types";
+} from '@scf/supabase/client-types';

@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertExists,
-} from "jsr:@std/assert";
+} from 'jsr:@std/assert';
 
 import { callTRPCEndpoint } from '../setup';
 import { setupTeamManagementFixture } from './seed-utils';
@@ -12,7 +12,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeApplicationId = "00000000-0000-0000-0000-000000000000";
+    const fakeApplicationId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.applications.assign",
@@ -32,7 +32,7 @@ Deno.test({
     const error = response[0]?.error;
     
     if (error) {
-      assertExists(error, "Expected error if application doesn't exist");
+      assertExists(error, 'Expected error if application doesn't exist");
     } else if (result) {
       assertExists(result, "Expected assignment response");
     }
@@ -45,7 +45,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeApplicationId = "00000000-0000-0000-0000-000000000000";
+    const fakeApplicationId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.applications.assign",
@@ -74,7 +74,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeApplicationId = "00000000-0000-0000-0000-000000000000";
+    const fakeApplicationId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.applications.unassign",
@@ -94,7 +94,7 @@ Deno.test({
     const error = response[0]?.error;
     
     if (error) {
-      assertExists(error, "Expected error if assignment doesn't exist");
+      assertExists(error, 'Expected error if assignment doesn't exist");
     } else if (result) {
       assertExists(result, "Expected unassign response");
     }
@@ -107,7 +107,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeApplicationId = "00000000-0000-0000-0000-000000000000";
+    const fakeApplicationId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.applications.list",
@@ -137,7 +137,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeApplicationId = "00000000-0000-0000-0000-000000000000";
+    const fakeApplicationId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.applications.list",

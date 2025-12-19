@@ -1,6 +1,6 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { protectedProcedure, publicProcedure, t } from '../middleware.ts';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { protectedProcedure, publicProcedure, t } from '../middleware';
 
 type MaybeArray<T> = T | T[] | null | undefined;
 
@@ -66,13 +66,13 @@ const createReviewDraftSchema = z.object({
 
 const saveDraftSchema = z.object({
   reviewId: z.string().uuid(),
-  draft: z.record(z.unknown()),
+  draft: z.record(z.string(), z.unknown()),
 });
 
 const updateReviewStepSchema = z.object({
   reviewId: z.string().uuid(),
   step: z.string(),
-  data: z.record(z.unknown()),
+  data: z.record(z.string(), z.unknown()),
 });
 
 const updateSkillRatingsSchema = z.object({
@@ -858,7 +858,7 @@ export const reviewsRouter = t.router({
           for (const sr of review.review_skill_ratings) {
             const skillId = sr.skill_id;
             const skillDetails = resolveRelation<SkillSummary>(sr.skills);
-            const skillName = skillDetails?.name || "Unknown Skill";
+            const skillName = skillDetails?.name || 'Unknown Skill';
             if (!skillRatings.has(skillId)) {
               skillRatings.set(skillId, {
                 name: skillName,
@@ -911,8 +911,8 @@ export const reviewsRouter = t.router({
         if (review.review_soft_skill_votes) {
           for (const vote of review.review_soft_skill_votes) {
             const softSkill = resolveRelation<SkillSummary>(vote.soft_skills);
-            const skillName = softSkill?.name || "Unknown";
-            const skillCategory = softSkill?.category || "other";
+            const skillName = softSkill?.name || 'Unknown';
+            const skillCategory = softSkill?.category || 'other';
             const map = vote.is_strength ? strengthTags : improvementTags;
 
             if (!map.has(skillName)) {

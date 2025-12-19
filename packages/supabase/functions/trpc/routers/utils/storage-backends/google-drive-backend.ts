@@ -12,7 +12,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts'
+import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index';
 
 // Google Drive API endpoints
 const GOOGLE_DRIVE_API = 'https://www.googleapis.com/drive/v3'

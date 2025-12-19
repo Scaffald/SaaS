@@ -1,13 +1,13 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { jobCreateSchema, jobUpdateSchema } from '../../_shared/job-schemas.ts'
-import { employmentProfileSchema, generalProfileSchema } from '../../_shared/profile-schemas.ts'
-import { transformJobSkills } from '../../_shared/skill-helpers.ts'
-import { officeProcedure, t } from '../middleware.ts'
-import { officeProfilesRouter } from './office/profiles.router.ts'
-import { officeStorageRouter } from './office/storage.router.ts'
-import { officeUniversitiesRouter } from './office/universities.router.ts'
-import { officeTeamsRouter } from './teams.router.ts'
+import { jobCreateSchema, jobUpdateSchema } from '../../_shared/job-schemas';
+import { employmentProfileSchema, generalProfileSchema } from '../../_shared/profile-schemas';
+import { transformJobSkills } from '../../_shared/skill-helpers';
+import { officeProcedure, t } from '../middleware';
+import { officeProfilesRouter } from './office/profiles.router';
+import { officeStorageRouter } from './office/storage.router';
+import { officeUniversitiesRouter } from './office/universities.router';
+import { officeTeamsRouter } from './teams.router';
 
 const RESERVED_ORGANIZATION_SLUGS = new Set([
   'admin',
@@ -614,7 +614,7 @@ export const officeRouter = t.router({
           if (!organizationIds.has(organizationId)) {
             throw new TRPCError({
               code: 'FORBIDDEN',
-              message: "You do not have access to this job's organization",
+              message: 'You do not have access to this job\'s organization',
             })
           }
         }
@@ -955,7 +955,7 @@ export const officeRouter = t.router({
       if (!organizationIds.has(currentOrganizationId)) {
         throw new TRPCError({
           code: 'FORBIDDEN',
-          message: "You do not have access to this job's organization",
+          message: 'You do not have access to this job\'s organization',
         })
       }
 
@@ -1015,7 +1015,7 @@ export const officeRouter = t.router({
         if (invalidTeams.length > 0) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: "All teams must belong to the job's organization.",
+            message: 'All teams must belong to the job\'s organization.',
           })
         }
       }
@@ -1053,7 +1053,7 @@ export const officeRouter = t.router({
       if (teamRecord.organization_id !== nextOrganizationId) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: "Assigned team must belong to the job's organization.",
+          message: 'Assigned team must belong to the job\'s organization.',
         })
       }
     } else if (
@@ -1315,7 +1315,7 @@ export const officeRouter = t.router({
         if (!organizationIds.has(organizationId)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: "You do not have access to this job's organization",
+            message: 'You do not have access to this job\'s organization',
           })
         }
       }
@@ -1416,7 +1416,7 @@ export const officeRouter = t.router({
         if (!organizationIds.has(organizationId)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: "You do not have access to this job's organization",
+            message: 'You do not have access to this job\'s organization',
           })
         }
       }
@@ -1515,7 +1515,7 @@ export const officeRouter = t.router({
         if (!organizationIds.has(organizationId)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: "You do not have access to this job's organization",
+            message: 'You do not have access to this job\'s organization',
           })
         }
       }
@@ -1619,7 +1619,7 @@ export const officeRouter = t.router({
         if (!organizationIds.has(organizationId)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: "You do not have access to this job's organization",
+            message: 'You do not have access to this job\'s organization',
           })
         }
       }
@@ -2085,7 +2085,7 @@ export const officeRouter = t.router({
         industry_id: z.string().uuid().optional(),
         logo_url: z.string().url().optional().or(z.literal('')),
         visibility: z.enum(['public', 'private']).default('public'),
-        address: z.record(z.unknown()).optional(),
+        address: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -2145,12 +2145,12 @@ export const officeRouter = t.router({
         industry_id: z.string().uuid().optional(),
         logo_url: z.string().url().optional().or(z.literal('')),
         visibility: z.enum(['public', 'private']),
-        address: z.record(z.unknown()).optional(),
+        address: z.record(z.string(), z.unknown()).optional(),
         locations: z
           .array(
             z.object({
               name: z.string(),
-              address: z.record(z.unknown()),
+              address: z.record(z.string(), z.unknown()),
             })
           )
           .optional(),
@@ -2439,7 +2439,7 @@ export const officeRouter = t.router({
         typical_duration_days: z.number().int().positive().optional(),
         requires_renewal: z.boolean().default(false),
         renewal_period_months: z.number().int().positive().optional(),
-        metadata: z.record(z.any()).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -2480,7 +2480,7 @@ export const officeRouter = t.router({
         requires_renewal: z.boolean().optional(),
         renewal_period_months: z.number().int().positive().optional(),
         is_active: z.boolean().optional(),
-        metadata: z.record(z.any()).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

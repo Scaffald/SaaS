@@ -9,14 +9,14 @@
 import {
   assertEquals,
   assertExists,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
+} from 'https://deno.land/std@0.208.0/assert/mod';
 import {
   createDocumentCache,
   DocumentCache,
   DocumentMetadataCache,
   getDocumentCache,
   resetDocumentCache,
-} from "../routers/utils/document-cache.ts";
+} from '../routers/utils/document-cache';
 
 // Helper to create test document metadata
 function createTestDocument(id: string) {
@@ -201,7 +201,7 @@ Deno.test({
 
     const factory = async () => {
       factoryCalls++;
-      return "generated-value";
+      return 'generated-value';
     };
 
     // First call - factory should be invoked

@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { mapToArchetype } from '../../_shared/ipip-archetype-mapper.ts'
-import { getScore } from '../../_shared/ipip-score.ts'
-import type { IPIPAnswer } from '../../_shared/ipip-types.ts'
-import { protectedProcedure, publicProcedure, t } from '../middleware.ts'
+import { mapToArchetype } from '../../_shared/ipip-archetype-mapper';
+import { getScore } from '../../_shared/ipip-score';
+import type { IPIPAnswer } from '../../_shared/ipip-types';
+import { protectedProcedure, publicProcedure, t } from '../middleware';
 
 /**
  * Personality Assessment Router - Handles personality assessment operations
@@ -25,7 +25,7 @@ export const personalityAssessmentRouter = t.router({
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        // PGRST116 is "not found" - that's okay, we'll create one
+        // PGRST116 is 'not found' - that's okay, we'll create one
         console.error('Error fetching assessment:', error)
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -477,7 +477,7 @@ export const personalityAssessmentRouter = t.router({
               {
                 role: 'system',
                 content:
-                  'You are a career psychologist and consultant. Use the following raw results from a Lüscher test and write a second-hand report to me, your client. The report should be a professional with a cohesive narrative around my acute vs aspirational challenges and opportunities. Unprofessional themes such as "sexual frustration" could be mapped to "frustrations in personal life" and so on. You don\'t need an opener or closing statement, just the raw report.',
+                  'You are a career psychologist and consultant. Use the following raw results from a Lüscher test and write a second-hand report to me, your client. The report should be a professional with a cohesive narrative around my acute vs aspirational challenges and opportunities. Unprofessional themes such as 'sexual frustration' could be mapped to 'frustrations in personal life' and so on. You don\'t need an opener or closing statement, just the raw report.',
               },
               {
                 role: 'user',

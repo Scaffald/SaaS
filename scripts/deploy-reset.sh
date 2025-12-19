@@ -143,7 +143,7 @@ echo "════════════════════════�
 echo "📋 Step 4: Deploying Edge Functions"
 echo "═══════════════════════════════════════"
 
-cd packages/scf-supabase
+cd packages/supabase
 
 echo ""
 echo "Deploying tRPC Router..."

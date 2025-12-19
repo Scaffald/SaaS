@@ -48,7 +48,7 @@ export const requestDataAccessInputSchema = z.object({
   /**
    * Optional metadata about the request
    */
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**
@@ -62,7 +62,7 @@ export const requestDeletionInputSchema = z.object({
   /**
    * Additional metadata
    */
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**
@@ -76,7 +76,7 @@ export const requestCorrectionInputSchema = z.object({
   /**
    * Additional metadata
    */
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**
@@ -90,7 +90,7 @@ export const requestPortabilityInputSchema = z.object({
   /**
    * Additional metadata
    */
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**
@@ -200,7 +200,7 @@ export const contributeExportDataInputSchema = z.object({
   /**
    * The data payload
    */
-  data: z.record(z.unknown()),
+  data: z.record(z.string(), z.unknown()),
   /**
    * Categories included in this data
    */

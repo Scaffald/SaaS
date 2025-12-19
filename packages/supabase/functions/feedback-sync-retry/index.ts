@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server';
-import { z } from "zod";
+import { z } from 'zod';
 
 import {
   createServiceClient,
@@ -117,7 +117,7 @@ serve(async (req) => {
     skipped: number;
     details: Array<{
       id: string;
-      status: "success" | "failed";
+      status: 'success' | 'failed';
       error?: string;
     }>;
   } = {
@@ -169,7 +169,7 @@ serve(async (req) => {
         syncResult && typeof syncResult === "object" && "error" in syncResult
       ) {
         const errorMessage = (syncResult as { error?: string }).error ??
-          "Unknown Braingrid sync error";
+          'Unknown Braingrid sync error';
 
         results.failed += 1;
         results.details.push({

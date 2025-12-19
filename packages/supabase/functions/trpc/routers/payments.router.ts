@@ -2,8 +2,8 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
-import type { Context } from '../context.ts'
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
+import type { Context } from '../context';
+import { officeProcedure, protectedProcedure, t } from '../middleware';
 
 const STRIPE_API_VERSION = '2024-06-20'
 
@@ -437,7 +437,7 @@ export const paymentsRouter = t.router({
         priceCents: z.number().int().nonnegative(),
         isActive: z.boolean().default(true),
         displayOrder: z.number().int().default(0),
-        metadata: z.record(z.unknown()).default({}),
+        metadata: z.record(z.string(), z.unknown()).default({}),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -1372,7 +1372,7 @@ export const paymentsRouter = t.router({
       ])
 
       const csvRows = [headers, ...rows]
-        .map((row: (string | number | null | undefined)[]) => row.map((cell: string | number | null | undefined) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .map((row: (string | number | null | undefined)[]) => row.map((cell: string | number | null | undefined) => `'${String(cell).replace(/'/g, '''')}'`).join(','))
         .join('\n')
 
       return {

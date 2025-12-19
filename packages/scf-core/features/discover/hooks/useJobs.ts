@@ -1,6 +1,6 @@
-import { supabase } from "@scf/core/utils/supabase/client";
-import type { ViewportBounds } from "@unicornlove/ui";
-import { useQuery } from "@tanstack/react-query";
+import { supabase } from '@scf/core/utils/supabase/client';
+import type { ViewportBounds } from '@unicornlove/ui';
+import { useQuery } from '@tanstack/react-query';
 
 // Type for job data on map
 export interface JobMapPin {

@@ -50,8 +50,8 @@ export const backgroundCheckTypeSchema = z.object({
   retail_cost_cents: z.number().int().nonnegative().nullable().optional(),
   estimated_completion_days: z.number().int().nonnegative().nullable().optional(),
   required_documents: z.array(z.string()).default([]),
-  provider_configuration: z.record(z.unknown()).default({}),
-  metadata: z.record(z.unknown()).default({}),
+  provider_configuration: z.record(z.string(), z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 })
@@ -65,12 +65,12 @@ export const backgroundCheckPackageSchema = z.object({
   description: z.string().nullable().optional(),
   provider_package_code: z.string().nullable().optional(),
   check_type_ids: z.array(z.string().uuid()).default([]),
-  component_overrides: z.array(z.record(z.unknown())).default([]),
+  component_overrides: z.array(z.record(z.string(), z.unknown())).default([]),
   platform_cost_cents: z.number().int().nonnegative(),
   retail_cost_cents: z.number().int().nonnegative(),
   estimated_completion_days: z.number().int().nonnegative().nullable().optional(),
   is_active: z.boolean().default(true),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 })
@@ -79,7 +79,7 @@ export type BackgroundCheckPackage = z.infer<typeof backgroundCheckPackageSchema
 
 export const consentMetadataSchema = z.object({
   consent_given_at: z.string().datetime(),
-  consent_ip_address: z.string().ip().optional(),
+  consent_ip_address: z.string().regex(/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/, 'Invalid IP address').optional(),
   consent_user_agent: z.string().optional(),
   consent_signature: z.string().optional(),
   disclosure_provided_at: z.string().datetime().optional(),
@@ -88,14 +88,14 @@ export const consentMetadataSchema = z.object({
 
 export const backgroundCheckInitiationSchema = z.object({
   package_id: z.string().uuid(),
-  custom_configuration: z.record(z.unknown()).optional(),
+  custom_configuration: z.record(z.string(), z.unknown()).optional(),
   organization_id: z.string().uuid().optional(),
   job_id: z.string().uuid().optional(),
   paid_by: backgroundCheckPaidByEnum,
   cost_cents: z.number().int().nonnegative(),
   check_type_overrides: z.array(z.string().uuid()).optional(),
   consent: consentMetadataSchema.optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 export type BackgroundCheckInitiationInput = z.infer<typeof backgroundCheckInitiationSchema>
@@ -111,7 +111,7 @@ export const backgroundCheckDocumentUploadSchema = z.object({
     .int()
     .positive()
     .max(10 * 1024 * 1024, 'File must be <= 10MB'),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 export type BackgroundCheckDocumentUploadInput = z.infer<typeof backgroundCheckDocumentUploadSchema>
@@ -134,16 +134,16 @@ export const componentStatusSchema = z.object({
   check_type_id: z.string().uuid(),
   status: backgroundCheckStatusEnum,
   completed_at: z.string().datetime().nullable().optional(),
-  findings: z.record(z.unknown()).nullable().optional(),
+  findings: z.record(z.string(), z.unknown()).nullable().optional(),
 })
 
 export const backgroundCheckStatusUpdateSchema = z.object({
   background_check_id: z.string().uuid(),
   status: backgroundCheckStatusEnum,
-  findings: z.record(z.unknown()).nullable().optional(),
+  findings: z.record(z.string(), z.unknown()).nullable().optional(),
   summary: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
-  provider_reference: z.record(z.unknown()).nullable().optional(),
+  provider_reference: z.record(z.string(), z.unknown()).nullable().optional(),
   last_webhook_event_at: z.string().datetime().optional(),
   component_statuses: z.array(componentStatusSchema).optional(),
   expires_at: z.string().datetime().nullable().optional(),

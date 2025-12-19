@@ -15,10 +15,10 @@ import { TRPCError } from '@trpc/server'
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
-import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
-import { supabaseServiceKey, supabaseUrl } from '../context.ts'
-import { collectCoreUserData } from './ccpa/data-collector.ts'
-import { getDeadlineMetrics as getDeadlineMetricsUtil } from './ccpa/deadline-tracker.ts'
+import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware';
+import { supabaseServiceKey, supabaseUrl } from '../context';
+import { collectCoreUserData } from './ccpa/data-collector';
+import { getDeadlineMetrics as getDeadlineMetricsUtil } from './ccpa/deadline-tracker';
 import {
   approveRequestInputSchema,
   cancelRequestInputSchema,
@@ -45,7 +45,7 @@ import {
   requestPortabilityInputSchema,
   resendVerificationInputSchema,
   verifyEmailOTPInputSchema,
-} from './ccpa/schemas.ts'
+} from './ccpa/schemas';
 import {
   completeEnhancedVerification,
   completeManualVerification,
@@ -55,23 +55,23 @@ import {
   requestManualVerification,
   resendVerificationCode,
   verifyEmailOTP,
-} from './ccpa/identity-verification.ts'
+} from './ccpa/identity-verification';
 import {
   getProcessingStatus,
   processRequest,
   retryProcessing,
-} from './ccpa/request-processor.ts'
+} from './ccpa/request-processor';
 import {
   estimatePDFSize,
   generateCCPAPDF,
-} from './ccpa/pdf-generator.ts'
+} from './ccpa/pdf-generator';
 import {
   cleanupExpiredExports,
   createExportDownload,
   getDownloadRecord,
   trackDownload,
   EXPORT_CONFIG,
-} from './ccpa/export-storage.ts'
+} from './ccpa/export-storage';
 import {
   notifyRequestSubmitted,
   notifyVerificationRequired,
@@ -82,14 +82,14 @@ import {
   type CCPARequestInfo,
   type NotificationResult,
   CCPA_NOTIFICATION_TYPES,
-} from './ccpa/notifications.ts'
+} from './ccpa/notifications';
 import {
   GPC_CONFIG,
   processGPCSignal,
   getGPCStatus,
   getGPCDisclosureText,
   getDoNotSellPageStatus,
-} from './ccpa/gpc.ts'
+} from './ccpa/gpc';
 
 // All CCPA opt-out categories
 const ALL_OPT_OUT_CATEGORIES = ['sale', 'sharing', 'targeted_advertising', 'profiling'] as const
@@ -2305,7 +2305,7 @@ export const ccpaRouter = t.router({
         'request_completed',
         'export_ready',
       ]),
-      additionalData: z.record(z.unknown()).optional(),
+      additionalData: z.record(z.string(), z.unknown()).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       // Get the request and user info

@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context.ts'
-import { insertNotification } from '../../_shared/notifications/utils.ts'
-import { protectedProcedure, t } from '../middleware.ts'
+import type { Context } from '../context';
+import { insertNotification } from '../../_shared/notifications/utils';
+import { protectedProcedure, t } from '../middleware';
 
 // =========================================================
 // Zod Schemas

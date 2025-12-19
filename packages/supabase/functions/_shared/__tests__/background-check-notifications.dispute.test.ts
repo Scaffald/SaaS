@@ -15,12 +15,12 @@ vi.mock('../notifications/utils.ts', async () => {
 
 import {
   notifyBackgroundCheckStatusChange,
-} from '../background-check-notifications.ts'
+} from '../background-check-notifications';
 import {
   enqueueDelivery,
   getUserContacts,
   insertNotification,
-} from '../notifications/utils.ts'
+} from '../notifications/utils';
 
 const mockedInsertNotification = vi.mocked(insertNotification)
 const mockedEnqueueDelivery = vi.mocked(enqueueDelivery)

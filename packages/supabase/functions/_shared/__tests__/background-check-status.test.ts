@@ -5,7 +5,7 @@ import {
   mapProviderStatus,
   mergeMetadata,
   shouldSyncStatus,
-} from '../background-check-status.ts'
+} from '../background-check-status';
 
 describe('background-check-status helpers', () => {
   describe('mapProviderStatus', () => {

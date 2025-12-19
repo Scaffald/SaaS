@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts'
+import { protectedProcedure, t } from '../middleware';
 
 /**
  * Helper function to geocode address using Mapbox API
@@ -85,7 +85,7 @@ export const addressesRouter = t.router({
         property_type: z
           .enum(['residential', 'commercial', 'industrial', 'mixed_use', 'other'])
           .optional(),
-        metadata: z.record(z.any()).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -187,7 +187,7 @@ export const addressesRouter = t.router({
           .enum(['residential', 'commercial', 'industrial', 'mixed_use', 'other'])
           .optional()
           .nullable(),
-        metadata: z.record(z.any()).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

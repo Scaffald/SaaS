@@ -1,5 +1,5 @@
-import { act, renderHook } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 describe("discovery location hooks", () => {
   let mockFindNearestQuery: ReturnType<typeof vi.fn>;

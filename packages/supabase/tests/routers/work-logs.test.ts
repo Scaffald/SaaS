@@ -2,7 +2,7 @@
  * Work logs router coverage.
  */
 
-import { assert, assertEquals, assertExists } from "../shared/assert.ts";
+import { assert, assertEquals, assertExists } from '../shared/assert';
 
 import {
   TEST_USERS,
@@ -10,7 +10,7 @@ import {
   createAdminClient,
   getAuthToken,
   loadCachedTokens,
-} from "../shared/setup.ts";
+} from '../shared/setup';
 
 Deno.test({
   name: "Work logs router - getById returns NOT_FOUND for unknown work log",
@@ -23,7 +23,7 @@ Deno.test({
 
     const error = response[0]?.error;
     assertExists(error, "Expected error payload");
-    const code = error?.data?.code ?? "";
+    const code = error?.data?.code ?? '';
     assertEquals(
       ["NOT_FOUND", "INTERNAL_SERVER_ERROR"].includes(code),
       true,
@@ -567,7 +567,7 @@ Deno.test({
 
     const error = response[0]?.error;
     assertExists(error, "Expected error for unauthorized organization");
-    const code = error?.data?.code ?? "";
+    const code = error?.data?.code ?? '';
     assertEquals(
       code,
       "FORBIDDEN",
@@ -1351,7 +1351,7 @@ Deno.test({
 
     const error = response[0]?.error;
     assertExists(error, "Expected error for invalid project");
-    const code = error?.data?.code ?? "";
+    const code = error?.data?.code ?? '';
     assertEquals(code, "BAD_REQUEST", "Should return BAD_REQUEST");
   },
 });
@@ -1573,7 +1573,7 @@ Deno.test({
 
       const error = response[0]?.error;
       assertExists(error, "Expected error for missing reason");
-      const code = error?.data?.code ?? "";
+      const code = error?.data?.code ?? '';
       assertEquals(code, "BAD_REQUEST", "Should return BAD_REQUEST");
     } finally {
       await admin
@@ -2761,7 +2761,7 @@ Deno.test({
 
       const error = response[0]?.error;
       assertExists(error, "Expected error for draft work log");
-      const code = error?.data?.code ?? "";
+      const code = error?.data?.code ?? '';
       assertEquals(code, "BAD_REQUEST", "Should return BAD_REQUEST");
     } finally {
       await admin
@@ -3687,7 +3687,7 @@ Deno.test({
 
       const error = response[0]?.error;
       assertExists(error, "Expected error payload");
-      const code = error?.data?.code ?? "";
+      const code = error?.data?.code ?? '';
       assertEquals(
         code,
         "FORBIDDEN",

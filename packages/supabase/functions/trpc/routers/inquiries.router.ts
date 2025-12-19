@@ -12,10 +12,10 @@ import {
   inquiryTemplateUpdateSchema,
   inquiryUpdateSchema,
   sectionAcceptanceSchema,
-} from '../../_shared/inquiry-schemas.ts'
-import { insertNotification } from '../../_shared/notifications/utils.ts'
-import type { Context } from '../context.ts'
-import { protectedProcedure, t } from '../middleware.ts'
+} from '../../_shared/inquiry-schemas';
+import { insertNotification } from '../../_shared/notifications/utils';
+import type { Context } from '../context';
+import { protectedProcedure, t } from '../middleware';
 
 // Import state machine utilities (inline since we can't import from core)
 type InquiryStatus =

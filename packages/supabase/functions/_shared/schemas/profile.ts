@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Profile schemas for tRPC operations
 export const profileGeneralSchema = z.object({

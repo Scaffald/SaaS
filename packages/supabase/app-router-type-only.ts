@@ -17,8 +17,8 @@
  * Type checking of the type itself still occurs in importing files.
  */
 
-import type { AppRouter as _AppRouter } from "./functions/trpc/routers/_app.ts";
-import type { AnyRouter } from "@trpc/server";
+import type { AppRouter as _AppRouter } from './functions/trpc/routers/_app';
+import type { AnyRouter } from '@trpc/server';
 
 /**
  * The tRPC AppRouter type for client-side usage

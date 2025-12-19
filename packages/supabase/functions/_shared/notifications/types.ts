@@ -1,7 +1,7 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { z } from "zod";
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { z } from 'zod';
 
-import type { Database, Json } from '../database.types.ts';
+import type { Database, Json } from '../database.types';
 
 export type NotificationSupabaseClient = SupabaseClient<Database>;
 
@@ -95,8 +95,8 @@ export const notificationEventSchema = z.object({
   preview: z.string().optional(),
   recipients: z.array(z.string().uuid()).min(1),
   channels: z.array(z.enum(NOTIFICATION_CHANNELS)).default(["in_app"]),
-  body: z.record(z.any()).default({}),
-  metadata: z.record(z.any()).optional(),
+  body: z.record(z.string(), z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   dedupeKey: z.string().optional(),
   actorId: z.string().uuid().optional(),
   tenantId: z.string().optional(),
@@ -132,7 +132,7 @@ export interface AdapterSendParams {
 }
 
 export interface AdapterSendResult {
-  status: "sent" | "retry" | "failed";
+  status: 'sent' | 'retry' | 'failed';
   providerMessageId?: string;
   events?: Array<{
     kind: NotificationEventKind;

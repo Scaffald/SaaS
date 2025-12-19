@@ -113,7 +113,7 @@ export GOTRUE_URI_ALLOW_LIST="http://localhost:5173,http://localhost:5173/auth/c
 echo "Starting Supabase with GOTRUE_SITE_URL=$GOTRUE_SITE_URL"
 echo "GOTRUE_URI_ALLOW_LIST=$GOTRUE_URI_ALLOW_LIST"
 
-pnpm env-local pnpx supabase --workdir packages/scf-supabase start "$@"
+pnpm env-local pnpx supabase --workdir packages/supabase start "$@"
 
 # Fix GoTrue environment variables after Supabase starts
 # This ensures magic links use the correct redirect URL

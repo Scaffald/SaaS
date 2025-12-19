@@ -14,9 +14,9 @@ import {
   assertExists,
 } from 'https://deno.land/std@0.208.0/assert/mod';
 
-const SUPABASE_URL = "http://127.0.0.1:54321";
+const SUPABASE_URL = 'http://127.0.0.1:54321';
 const ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 /**
  * Helper to call Supabase REST API with timeout protection
@@ -432,7 +432,7 @@ Deno.test({
       assertEquals(
         job.status,
         "open",
-        "Job status should be 'open'",
+        'Job status should be 'open'",
       );
 
       console.log(
@@ -488,7 +488,7 @@ Deno.test({
       assertEquals(
         allOpen,
         true,
-        "All jobs should have status 'open'",
+        'All jobs should have status 'open'",
       );
 
       console.log(

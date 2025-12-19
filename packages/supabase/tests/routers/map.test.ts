@@ -2,9 +2,9 @@
  * Map router baseline coverage.
  */
 
-import { assertEquals, assertExists } from "../shared/assert.ts";
+import { assertEquals, assertExists } from '../shared/assert';
 
-import { callTRPCEndpoint } from "../shared/setup.ts";
+import { callTRPCEndpoint } from '../shared/setup';
 
 const SAMPLE_BOUNDS = {
   north: 37.9,

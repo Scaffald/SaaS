@@ -1,9 +1,9 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useProfileWizard } from "../useProfileWizard";
-import type { ProfileWizardProgressResponse } from "../useProfileWizard";
-import type { ProfileWizardStepId } from "../../utils/wizardSteps";
+import { useProfileWizard } from '../useProfileWizard';
+import type { ProfileWizardProgressResponse } from '../useProfileWizard';
+import type { ProfileWizardStepId } from '../../utils/wizardSteps';
 
 const mockGetProgressQuery = {
   data: undefined as unknown,

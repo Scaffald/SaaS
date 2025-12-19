@@ -1,20 +1,20 @@
-import { Buffer } from "node:buffer";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import type { Database } from '../../_shared/database.types.ts';
-import { extractTextFromPdf as sharedExtractTextFromPdf } from "@scf/trpc/utils";
+import { Buffer } from 'node:buffer';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import type { Database } from '../../_shared/database.types';
+import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/utils';
 import {
   profileEmploymentInputSchema,
   profileGeneralInputSchema,
-} from "@scf/trpc/schemas";
-import { supabaseAnonKey, supabaseUrl } from '../context.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+} from '@scf/trpc/schemas';
+import { supabaseAnonKey, supabaseUrl } from '../context';
+import { protectedProcedure, t } from '../middleware';
 
 type DbClient = SupabaseClient<Database>;
 
 const MAX_FILE_SIZE_BYTES = 1_048_576; // 1MB
-const RESUME_BUCKET_ID = "resumes";
+const RESUME_BUCKET_ID = 'resumes';
 const ALLOWED_MIME_TYPES = new Set([
   "application/pdf",
   "application/msword",
@@ -406,7 +406,7 @@ async function extractTextFromDocLike(bytes: Uint8Array): Promise<string> {
   try {
     return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
   } catch {
-    return "";
+    return '';
   }
 }
 
@@ -429,7 +429,7 @@ async function extractResumeText(
     return await extractTextFromDocLike(bytes);
   }
 
-  return "";
+  return '';
 }
 
 function buildParsingPrompt(resumeText: string): string {
@@ -437,7 +437,7 @@ function buildParsingPrompt(resumeText: string): string {
   const truncated = normalized.slice(0, 1500);
   const truncationNote = normalized.length > 1500
     ? "\n[Note: Resume text truncated to first 1500 characters.]\n"
-    : "";
+    : '';
   return `Parse this resume and return JSON that matches the following rules exactly:
 - Always respond with an object containing only the keys: general, experience, education, skills, certifications, employment.
 - Each of general, experience, education, skills, certifications MUST be arrays. Use an empty array [] if no data is found. Do not return plain strings.
@@ -1356,7 +1356,7 @@ export const resumeRouter = t.router({
         const missingSectionMessage = (section: ResumeSection): string =>
           openAiConfigured
             ? `No ${section} information found in resume.`
-            : "Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.";
+            : 'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.';
 
         const parsedData: z.infer<typeof parsedResumeSchema> = {
           ...parsed,
@@ -1488,7 +1488,7 @@ export const resumeRouter = t.router({
   saveSection: protectedProcedure.input(saveSectionInputSchema).mutation(
     async ({ ctx, input }) => {
       const { supabase, user } = ctx;
-      const mergeStrategy = input.mergeStrategy?.mode ?? "replace";
+      const mergeStrategy = input.mergeStrategy?.mode ?? 'replace';
 
       const { data: wizardState, error: wizardError } = await supabase
         .schema("core")

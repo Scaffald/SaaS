@@ -547,7 +547,7 @@ export default function ProjectManagement() {
             </Card>
           ))}
         </YStack>
-      </div>
+        </Card>
 
       {/* Empty State */}
       {filteredProjects.length === 0 && (
@@ -1107,9 +1107,9 @@ export default function ProjectManagement() {
                         </YStack>
                       )}
                     </Card>
-                  </div>
+                  </YStack>
                 )}
-              </div>
+              </YStack>
 
               {/* Form Actions */}
           <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">

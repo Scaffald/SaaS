@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.223.0/http/server';
-import { Expo } from "expo-server-sdk";
+import { Expo } from 'expo-server-sdk';
 
 import { corsHeaders, createCorsResponse } from '../_shared/cors';
 import { NotificationChannel } from '../_shared/notifications/types';
@@ -107,7 +107,7 @@ serve(async (req) => {
 
         failures += 1;
         const errorDetails = receipt.details ?? {};
-        const errorMessage = receipt.message ?? "Unknown push delivery failure";
+        const errorMessage = receipt.message ?? 'Unknown push delivery failure';
 
         const { error: failUpdate } = await supabase
           .schema("core")

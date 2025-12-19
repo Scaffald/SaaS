@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertExists,
-} from "jsr:@std/assert";
+} from 'jsr:@std/assert';
 
 import { callTRPCEndpoint } from '../setup';
 import { setupTeamManagementFixture } from './seed-utils';
@@ -15,7 +15,7 @@ Deno.test({
 
     // Create a job first (simplified - would need actual job creation)
     // For now, test that endpoint requires valid job ID
-    const fakeJobId = "00000000-0000-0000-0000-000000000000";
+    const fakeJobId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.jobs.list",
@@ -47,7 +47,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeJobId = "00000000-0000-0000-0000-000000000000";
+    const fakeJobId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.jobs.list",
@@ -75,7 +75,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeJobId = "00000000-0000-0000-0000-000000000000";
+    const fakeJobId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.jobs.create",
@@ -96,7 +96,7 @@ Deno.test({
     
     if (error) {
       // Expected if job doesn't exist
-      assertExists(error, "Expected error if job doesn't exist");
+      assertExists(error, 'Expected error if job doesn't exist");
     } else if (result) {
       assertExists(result, "Expected assignment response");
     }
@@ -109,7 +109,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeJobId = "00000000-0000-0000-0000-000000000000";
+    const fakeJobId = '00000000-0000-0000-0000-000000000000';
 
     // First assignment
     await callTRPCEndpoint(
@@ -151,8 +151,8 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeJobId = "00000000-0000-0000-0000-000000000000";
-    const fakeAssignmentId = "00000000-0000-0000-0000-000000000001";
+    const fakeJobId = '00000000-0000-0000-0000-000000000000';
+    const fakeAssignmentId = '00000000-0000-0000-0000-000000000001';
 
     const response = await callTRPCEndpoint(
       "teams.jobs.update",
@@ -169,7 +169,7 @@ Deno.test({
     // May fail if assignment doesn't exist
     const error = response[0]?.error;
     if (error) {
-      assertExists(error, "Expected error if assignment doesn't exist");
+      assertExists(error, 'Expected error if assignment doesn't exist");
     }
   },
 });
@@ -180,7 +180,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeAssignmentId = "00000000-0000-0000-0000-000000000001";
+    const fakeAssignmentId = '00000000-0000-0000-0000-000000000001';
 
     const response = await callTRPCEndpoint(
       "teams.jobs.delete",
@@ -198,7 +198,7 @@ Deno.test({
     const result = response[0]?.result?.data;
     
     if (error) {
-      assertExists(error, "Expected error if assignment doesn't exist");
+      assertExists(error, 'Expected error if assignment doesn't exist");
     } else if (result) {
       assertExists(result, "Expected delete response");
     }
@@ -211,7 +211,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeAssignmentId = "00000000-0000-0000-0000-000000000001";
+    const fakeAssignmentId = '00000000-0000-0000-0000-000000000001';
 
     const response = await callTRPCEndpoint(
       "teams.jobs.delete",

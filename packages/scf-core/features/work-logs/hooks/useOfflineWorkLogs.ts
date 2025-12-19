@@ -1,6 +1,6 @@
-import { randomUUID } from "expo-crypto";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Platform } from "react-native";
+import { randomUUID } from 'expo-crypto';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 
 import type {
   OfflineWorkLog,
@@ -9,17 +9,17 @@ import type {
   OfflineWorkLogPhotoInput,
   QueueOfflineWorkLogOptions,
   SyncStatus,
-} from "../types/offline";
+} from '../types/offline';
 import {
   clearOfflineWorkLogs,
   loadOfflineWorkLogs,
   saveOfflineWorkLogs,
-} from "../utils/offline-storage";
+} from '../utils/offline-storage';
 
 type FileSystemModule = typeof import("expo-file-system/legacy");
 
-const WORK_LOG_PHOTO_DIR_NAME = "work-logs-offline";
-const DEFAULT_PHOTO_EXTENSION = ".jpg";
+const WORK_LOG_PHOTO_DIR_NAME = 'work-logs-offline';
+const DEFAULT_PHOTO_EXTENSION = '.jpg';
 
 const getFileNameFromUri = (uri: string): string | null => {
   try {
@@ -33,16 +33,16 @@ const getFileNameFromUri = (uri: string): string | null => {
 };
 
 const inferExtensionFromMime = (mimeType: string): string => {
-  if (mimeType === "image/png") return ".png";
-  if (mimeType === "image/webp") return ".webp";
-  if (mimeType === "image/jpeg") return ".jpg";
+  if (mimeType === 'image/png') return '.png';
+  if (mimeType === 'image/webp') return '.webp';
+  if (mimeType === 'image/jpeg') return '.jpg';
   return DEFAULT_PHOTO_EXTENSION;
 };
 
 const estimateBase64Size = (base64: string) =>
   Math.floor((base64.length * 3) / 4);
 
-const isNativePlatform = Platform.OS !== "web";
+const isNativePlatform = Platform.OS !== 'web';
 
 const ensureFileSystem = async (): Promise<FileSystemModule | null> => {
   if (!isNativePlatform) {

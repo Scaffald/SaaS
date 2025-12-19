@@ -1,6 +1,6 @@
-import { api } from "@scf/core/utils/api";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { ProfileIndustry } from "../types/profile-skills-types";
+import { api } from '@scf/core/utils/api';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { ProfileIndustry } from '../types/profile-skills-types';
 
 /**
  * Hook for managing profile skills queries
@@ -70,7 +70,7 @@ export function useProfileSkillsQueries() {
     const matchingIndustry = industries.find(
       (industry: ProfileIndustry) => industry.id === selectedIndustryId,
     );
-    return matchingIndustry?.slug ?? "construction";
+    return matchingIndustry?.slug ?? 'construction';
   }, [industries, selectedIndustryId]);
 
   // Get existing skill IDs - use stable data reference with memoization
@@ -105,7 +105,7 @@ export function useProfileSkillsQueries() {
               onet_occupation_id?: string | null;
               id?: string;
             }).id;
-          return id || "";
+          return id || '';
         },
       ).filter(Boolean),
     [userSkills],

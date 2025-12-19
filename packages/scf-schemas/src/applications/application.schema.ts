@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 /**
  * Screening answers schema - basic screening questions
@@ -57,7 +57,7 @@ export const applicationCreateSchema = z.object({
   earliest_start_date: z.string().optional(),
 
   // Additional screening data
-  screening_answers: z.record(z.unknown()).optional(),
+  screening_answers: z.record(z.string(), z.unknown()).optional(),
 
   // Custom question answers
   custom_question_answers: z.array(customQuestionAnswerSchema).optional(),
@@ -74,8 +74,8 @@ export const applicationCreateSchema = z.object({
   is_complete: z.boolean().default(false),
 
   // Additional metadata
-  notes: z.record(z.unknown()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  notes: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 /**
@@ -92,7 +92,7 @@ export const applicationUpdateSchema = z.object({
   earliest_start_date: z.string().optional(),
 
   // Additional screening data
-  screening_answers: z.record(z.unknown()).optional(),
+  screening_answers: z.record(z.string(), z.unknown()).optional(),
 
   // Custom question answers
   custom_question_answers: z.array(customQuestionAnswerSchema).optional(),
@@ -105,8 +105,8 @@ export const applicationUpdateSchema = z.object({
   is_complete: z.boolean().optional(),
 
   // Additional fields
-  notes: z.record(z.unknown()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  notes: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   status: z
     .enum(['pending', 'reviewing', 'interview', 'offer', 'hired', 'rejected', 'withdrawn'])
     .optional(),
@@ -125,7 +125,7 @@ export const applicationStepUpdateSchema = z.object({
     'video_interview',
     'review',
   ]),
-  data: z.record(z.unknown()),
+  data: z.record(z.string(), z.unknown()),
 })
 
 /**

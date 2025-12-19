@@ -1,5 +1,5 @@
-import { api } from "@scf/core/utils/api";
-import type { AssessmentStep } from "../utils/assessment-steps";
+import { api } from '@scf/core/utils/api';
+import type { AssessmentStep } from '../utils/assessment-steps';
 
 export function usePersonalityAssessment() {
   const utils = api.useUtils();
@@ -50,7 +50,7 @@ export function usePersonalityAssessment() {
     });
 
   const currentStep = (assessment?.current_step as AssessmentStep) ||
-    "luscher1";
+    'luscher1';
   const completionScore = assessment?.completion_score || 0;
 
   return {

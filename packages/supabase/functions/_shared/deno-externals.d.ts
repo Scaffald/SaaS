@@ -12,7 +12,7 @@ declare module "expo-server-sdk" {
     sound?: string | null;
     ttl?: number;
     expiration?: number;
-    priority?: "default" | "normal" | "high";
+    priority?: 'default' | 'normal' | 'high';
     badge?: number;
     channelId?: string;
   };

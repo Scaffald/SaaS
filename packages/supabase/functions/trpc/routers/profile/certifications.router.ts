@@ -11,7 +11,7 @@ import {
   uploadCertificationFileInputSchema,
   uploadCertificationFileOutputSchema,
 } from '@scf/trpc/schemas'
-import { protectedProcedure, t } from '../../middleware.ts'
+import { protectedProcedure, t } from '../../middleware';
 
 /**
  * Profile Certifications router - handles certification CRUD and file upload operations

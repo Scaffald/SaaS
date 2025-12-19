@@ -11,14 +11,14 @@ import {
   assertEquals,
   assertExists,
   assertRejects,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
+} from 'https://deno.land/std@0.208.0/assert/mod';
 import type {
   IStorageBackend,
   SignedUrlResult,
   StorageBackendType,
   UploadOptions,
   UploadResult,
-} from "../routers/utils/storage-backends/index.ts";
+} from '../routers/utils/storage-backends/index';
 
 // Mock storage backend for testing the interface
 class MockStorageBackend implements IStorageBackend {
@@ -27,7 +27,7 @@ class MockStorageBackend implements IStorageBackend {
     new Map();
   private isAvailableValue = true;
   private shouldFail = false;
-  private failureMessage = "Mock failure";
+  private failureMessage = 'Mock failure';
 
   constructor(type: StorageBackendType = "supabase") {
     this.type = type;

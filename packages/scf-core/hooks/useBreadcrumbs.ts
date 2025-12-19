@@ -3,11 +3,11 @@ import {
   matchesRoute,
   type RouteConfig,
   ROUTES,
-} from "@scf/core/constants/routes";
-import { useTranslation } from "@scf/core/utils/useTranslation";
-import { usePathname } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
-import type { BreadcrumbItem, BreadcrumbSibling } from "@unicornlove/ui";
+} from '@scf/core/constants/routes';
+import { useTranslation } from '@scf/core/utils/useTranslation';
+import { usePathname } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
+import type { BreadcrumbItem, BreadcrumbSibling } from '@unicornlove/ui';
 
 export interface UseBreadcrumbsOptions {
   /** Whether to auto-generate breadcrumbs from route (default: false) */
@@ -93,7 +93,7 @@ export function useBreadcrumbs(
   const translateRoute = useCallback(
     (route?: RouteConfig | null) => {
       if (!route) {
-        return "";
+        return '';
       }
       return t(route.titleKey);
     },
@@ -273,7 +273,7 @@ export function useBreadcrumbs(
       // Note: We don't add Home for dashboard routes - Dashboard is the apex
 
       // Build breadcrumbs from path segments
-      let currentPath = "";
+      let currentPath = '';
       segments.forEach((segment, index) => {
         currentPath += `/${segment}`;
 

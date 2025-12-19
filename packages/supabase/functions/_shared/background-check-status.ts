@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { backgroundCheckStatusEnum } from './background-check-schemas.ts';
+import { backgroundCheckStatusEnum } from './background-check-schemas';
 
 export type BackgroundCheckStatus = z.infer<typeof backgroundCheckStatusEnum>;
 
 export const BACKGROUND_CHECK_BASE_COLUMNS =
-  "id, status, status_history, provider_check_id, summary, findings, component_statuses, provider_reference, completed_at, expires_at, estimated_completion_date, updated_at";
+  'id, status, status_history, provider_check_id, summary, findings, component_statuses, provider_reference, completed_at, expires_at, estimated_completion_date, updated_at';
 
 export const BACKGROUND_CHECK_SYNC_COLUMNS =
   `${BACKGROUND_CHECK_BASE_COLUMNS}, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)`;
@@ -54,10 +54,10 @@ export function mapProviderStatus(
     return providerStatusMap[normalised];
   }
   if (normalised.startsWith("complete") || normalised.startsWith("completed")) {
-    return "completed_clear";
+    return 'completed_clear';
   }
   if (normalised.includes("progress")) {
-    return "in_progress";
+    return 'in_progress';
   }
   return null;
 }

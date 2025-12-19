@@ -1,11 +1,11 @@
-import { z } from 'zod'
+import { z } from 'zod';
 import {
   teamInvitationActionSchema,
   teamInvitationStatusSchema,
   teamRoleKeySchema,
-} from './constants.ts'
-import { jsonSchema } from './json.ts'
-import { teamIdSchema } from './team.schema.ts'
+} from './constants';
+import { jsonSchema } from './json';
+import { teamIdSchema } from './team.schema';
 
 export const teamInvitationIdSchema = z.string().uuid('Invitation ID must be a valid UUID')
 

@@ -2,12 +2,12 @@
  * Applications router baseline coverage.
  */
 
-import { assertEquals, assertExists } from "../shared/assert.ts";
+import { assertEquals, assertExists } from '../shared/assert';
 
-import { callTRPCEndpoint, loadCachedTokens } from "../shared/setup.ts";
-import { requireAuthSetup } from "../shared/test-context.ts";
+import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup';
+import { requireAuthSetup } from '../shared/test-context';
 
-const TEST_JOB_ID = "00000000-0000-0000-0000-000000000000";
+const TEST_JOB_ID = '00000000-0000-0000-0000-000000000000';
 
 function buildSubmitPayload() {
   return {

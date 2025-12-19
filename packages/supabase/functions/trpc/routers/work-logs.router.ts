@@ -1,22 +1,22 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 // Deno requires file extension in Deno runtime
-import type { Database } from '../../_shared/database.types.ts';
+import type { Database } from '../../_shared/database.types';
 // Deno requires file extension in Deno runtime
-import { insertNotification } from '../../_shared/notifications/utils.ts';
+import { insertNotification } from '../../_shared/notifications/utils';
 // Deno requires file extension in Deno runtime
 import type {
   WorkLogExportSnapshot,
   WorkLogExportTimeEntry,
-} from '../../_shared/work-log-export.ts';
+} from '../../_shared/work-log-export';
 // Deno requires file extension in Deno runtime
 import {
   buildWorkLogCsv,
   buildWorkLogPdf,
-} from '../../_shared/work-log-export.ts';
+} from '../../_shared/work-log-export';
 // Deno requires file extension in Deno runtime
-import { notifyWorkLogCollaborator } from '../../_shared/work-log-notifications.ts';
+import { notifyWorkLogCollaborator } from '../../_shared/work-log-notifications';
 // Deno requires file extension in Deno runtime
 import {
   addCollaboratorSchema,
@@ -41,29 +41,29 @@ import {
   uploadWorkLogPhotoSchema,
   verifyWorkLogSchema,
   workLogStatusSchema,
-} from '../../_shared/work-log-schemas.ts';
+} from '../../_shared/work-log-schemas';
 import {
   officeProcedure,
   protectedProcedure,
   publicProcedure,
   t,
-} from '../middleware.ts';
+} from '../middleware';
 // Deno requires file extension in Deno runtime
-import { enrichUserSkills } from './utils/skill-enrichment.ts';
+import { enrichUserSkills } from './utils/skill-enrichment';
 
 type DbClient = SupabaseClient<Database>;
 type WorkLogRow = Database["core"]["Tables"]["work_logs"]["Row"];
 type CollaboratorRow =
   Database["core"]["Tables"]["work_log_collaborators"]["Row"];
 
-const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
+const WORK_LOG_PHOTO_BUCKET = 'work-log-photos';
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
-const WORK_LOG_EXPORT_BUCKET = "work-log-exports";
+const WORK_LOG_EXPORT_BUCKET = 'work-log-exports';
 const SIGNED_EXPORT_URL_TTL_SECONDS = 60 * 10;
 const PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS = 60 * 5;
 
 const WORK_LOG_SELECT =
-  "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, total_hours, submitted_at, verified_at, disputed_at, dispute_reason, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, created_at, updated_at, verified_by_user_id, pending_move_to_project_id, pending_move_reason, pending_move_requested_at, pending_move_requested_by";
+  'id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, total_hours, submitted_at, verified_at, disputed_at, dispute_reason, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, created_at, updated_at, verified_by_user_id, pending_move_to_project_id, pending_move_reason, pending_move_requested_at, pending_move_requested_by';
 
 const sanitizeFileName = (fileName: string): string => {
   return fileName
@@ -715,7 +715,7 @@ function resolveProjectDisplayName(
     "project_name",
     "title",
     "display_name",
-  ]) ?? "";
+  ]) ?? '';
 
   const trimmed = name.trim();
 
@@ -726,7 +726,7 @@ function resolveProjectDisplayName(
   const fallbackId =
     typeof project?.id === "string" && project.id.trim().length > 0
       ? project.id.slice(0, 8)
-      : "unknown";
+      : 'unknown';
 
   return `Project ${fallbackId}`;
 }
@@ -847,7 +847,7 @@ const buildWorkLogExportSnapshot = async (
   let skillSummaries: Array<{
     id: string;
     label: string;
-    taxonomy: "csi" | "onet";
+    taxonomy: 'csi' | 'onet';
     tradeId: string | null;
     tradeName: string | null;
     tradeSlug: string | null;
@@ -978,7 +978,7 @@ const getWorkLogAccess = async (
   userId: string,
 ): Promise<{
   workLog: WorkLogRow;
-  role: "owner" | "editor" | "viewer";
+  role: 'owner' | 'editor' | 'viewer';
   collaborator?: Pick<CollaboratorRow, "permission_level">;
 }> => {
   const workLog = await fetchWorkLog(supabase, workLogId);
@@ -1003,7 +1003,7 @@ const getWorkLogAccess = async (
   }
 
   if (collaborator) {
-    const role = collaborator.permission_level === "edit" ? "editor" : "viewer";
+    const role = collaborator.permission_level === 'edit' ? 'editor' : 'viewer';
     return { workLog, role, collaborator };
   }
 
@@ -1139,7 +1139,7 @@ const createSystemMessage = async (
   return data;
 };
 
-type SkillTaxonomy = "csi" | "onet";
+type SkillTaxonomy = 'csi' | 'onet';
 
 export interface SuggestedSkill {
   id: string;
@@ -1166,7 +1166,7 @@ interface ProjectContext {
 }
 
 const normaliseOnetCode = (value: string | null | undefined): string => {
-  if (!value) return "";
+  if (!value) return '';
   return value.trim();
 };
 
@@ -1415,10 +1415,10 @@ const getUserDisplayName = async (
     .maybeSingle();
 
   if (!data) {
-    return "System";
+    return 'System';
   }
 
-  return data.display_name?.trim() || data.username?.trim() || "Member";
+  return data.display_name?.trim() || data.username?.trim() || 'Member';
 };
 
 const recordAuditLog = async (
@@ -1445,7 +1445,7 @@ const recordAuditLog = async (
       | "collaborator_added"
       | "photo_added"
       | "photo_removed"
-      | "export_generated";
+      | 'export_generated';
     oldValue?: Record<string, unknown> | null;
     newValue?: Record<string, unknown> | null;
     reason?: string | null;
@@ -2258,7 +2258,7 @@ export const workLogsRouter = t.router({
           ? row.display_name.trim()
           : typeof row?.username === "string"
           ? row.username
-          : "Member";
+          : 'Member';
         const username = typeof row?.username === "string"
           ? row.username
           : null;
@@ -2570,7 +2570,7 @@ export const workLogsRouter = t.router({
           const project = projectId
             ? (projectMap.get(projectId) ?? null)
             : null;
-          const status = typeof row.status === "string" ? row.status : "draft";
+          const status = typeof row.status === 'string' ? row.status : 'draft';
           const totalHours = coerceNumber(row.total_hours);
 
           return {
@@ -3156,7 +3156,7 @@ export const workLogsRouter = t.router({
 
       const nextStatus = requireVerification
         ? "pending_verification"
-        : "verified";
+        : 'verified';
       const updates: Record<string, unknown> = {
         status: nextStatus,
         submitted_at: new Date().toISOString(),
@@ -3391,7 +3391,7 @@ export const workLogsRouter = t.router({
 
       await ensureCollaboratorExists(supabaseAdmin, input.collaboratorUserId);
 
-      const permissionLevel = input.permissionLevel ?? "view";
+      const permissionLevel = input.permissionLevel ?? 'view';
 
       const { data: existing, error: existingError } = await supabase
         .schema("core")
@@ -4908,19 +4908,19 @@ export const workLogsRouter = t.router({
 
       let fileBytes: Uint8Array;
       let mimeType: string;
-      let extension: "pdf" | "csv";
+      let extension: 'pdf' | 'csv';
 
       if (input.format === "pdf") {
         const pdfBytes = await buildWorkLogPdf(snapshot);
         fileBytes = pdfBytes;
-        mimeType = "application/pdf";
-        extension = "pdf";
+        mimeType = 'application/pdf';
+        extension = 'pdf';
       } else {
         const csvContent = buildWorkLogCsv(snapshot);
         const csvBytes = new TextEncoder().encode(csvContent);
         fileBytes = csvBytes;
-        mimeType = "text/csv";
-        extension = "csv";
+        mimeType = 'text/csv';
+        extension = 'csv';
       }
 
       const timestampSuffix = new Date()

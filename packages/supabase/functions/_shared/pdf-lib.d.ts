@@ -22,19 +22,19 @@ declare module "pdf-lib" {
   }
 
   export interface RGB {
-    type: "RGB";
+    type: 'RGB';
     red: number;
     green: number;
     blue: number;
   }
 
   export interface Grayscale {
-    type: "Grayscale";
+    type: 'Grayscale';
     gray: number;
   }
 
   export interface CMYK {
-    type: "CMYK";
+    type: 'CMYK';
     cyan: number;
     magenta: number;
     yellow: number;
@@ -53,11 +53,11 @@ declare module "pdf-lib" {
     | "HardLight"
     | "SoftLight"
     | "Difference"
-    | "Exclusion";
+    | 'Exclusion';
 
   export interface Rotation {
     angle: number;
-    type: "degrees" | "radians";
+    type: 'degrees' | 'radians';
   }
 
   export class PDFFont {
@@ -81,7 +81,7 @@ declare module "pdf-lib" {
       thickness?: number;
       color?: RGB | Grayscale | CMYK;
       opacity?: number;
-      lineCap?: "butt" | "round" | "projecting";
+      lineCap?: 'butt' | 'round' | 'projecting';
       dashArray?: number[];
       dashPhase?: number;
       blendMode?: BlendMode;
@@ -100,7 +100,7 @@ declare module "pdf-lib" {
       xSkew?: Rotation;
       ySkew?: Rotation;
       blendMode?: BlendMode;
-      borderLineCap?: "butt" | "round" | "projecting";
+      borderLineCap?: 'butt' | 'round' | 'projecting';
       borderDashArray?: number[];
       borderDashPhase?: number;
     }): void;

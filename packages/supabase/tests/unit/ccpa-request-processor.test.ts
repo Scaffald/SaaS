@@ -12,12 +12,12 @@
 import {
   assertEquals,
   assertExists,
-} from '../shared/assert.ts'
+} from '../shared/assert';
 
 import type {
   ProcessingStage,
   ProcessingResult,
-} from '../../functions/trpc/routers/ccpa/request-processor.ts'
+} from '../../functions/trpc/routers/ccpa/request-processor';
 
 // ========================================================
 // TYPE VALIDATION TESTS

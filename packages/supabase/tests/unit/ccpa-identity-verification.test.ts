@@ -13,14 +13,14 @@
 import {
   assertEquals,
   assertNotEquals,
-} from '../shared/assert.ts'
+} from '../shared/assert';
 
 import {
   generateOTP,
   generateVerificationToken,
   calculateOTPExpiry,
   isVerificationExpired,
-} from '../../functions/trpc/routers/ccpa/identity-verification.ts'
+} from '../../functions/trpc/routers/ccpa/identity-verification';
 
 // ========================================================
 // OTP GENERATION TESTS

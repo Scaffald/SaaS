@@ -1,5 +1,5 @@
-import { XMLParser } from "fast-xml-parser";
-import type { NewsItem, ParsedRSSFeed } from "../config/types";
+import { XMLParser } from 'fast-xml-parser';
+import type { NewsItem, ParsedRSSFeed } from '../config/types';
 
 /**
  * RSS/XML Parser utility with cross-platform support
@@ -165,15 +165,15 @@ function normalizeAtomFormat(feed: AtomFeed): ParsedRSSFeed {
       ? feed.title["#text"]
       : typeof feed.title === "string"
       ? feed.title
-      : "Unknown Feed";
+      : 'Unknown Feed';
 
   const feedSubtitle =
-    typeof feed.subtitle === "object" && feed.subtitle !== null &&
-      "#text" in feed.subtitle
-      ? feed.subtitle["#text"]
-      : typeof feed.subtitle === "string"
+    typeof feed.subtitle === 'object' && feed.subtitle !== null &&
+      '#text' in feed.subtitle
+      ? feed.subtitle['#text']
+      : typeof feed.subtitle === 'string'
       ? feed.subtitle
-      : "";
+      : '';
 
   return {
     title: decodeHtmlEntities(feedTitle),
@@ -198,7 +198,7 @@ function formatRSSItem(item: RSSItem): NewsItem | null {
         : typeof item.guid === "string"
         ? item.guid
         : undefined;
-    const link = item.link || guidText || "";
+    const link = item.link || guidText || '';
 
     if (!title || !link) {
       return null;
@@ -299,9 +299,9 @@ function extractImageFromContent(content: unknown): string | null {
   if (!content) return null;
 
   const htmlContent =
-    typeof content === "object" && content !== null && "#text" in content
-      ? (content["#text"] as string) || ""
-      : content?.toString() || "";
+    typeof content === 'object' && content !== null && '#text' in content
+      ? (content['#text'] as string) || ''
+      : content?.toString() || '';
 
   // Look for img tags
   const imgMatch = htmlContent.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
@@ -344,7 +344,7 @@ function parseDate(dateString: Date | string): Date | null {
  * Decode HTML entities
  */
 function decodeHtmlEntities(text: string): string {
-  if (typeof text !== "string") return "";
+  if (typeof text !== 'string') return '';
 
   return text
     .replace(/&amp;/g, "&")
@@ -364,7 +364,7 @@ function decodeHtmlEntities(text: string): string {
  * Strip HTML tags from text
  */
 function stripHtmlTags(html: string): string {
-  if (typeof html !== "string") return "";
+  if (typeof html !== 'string') return '';
 
   return html
     .replace(/<[^>]*>/g, "") // Remove all HTML tags
@@ -380,7 +380,7 @@ export function calculateReadingTime(text: string): string {
   const wordCount = text.split(/\s+/).length;
   const minutes = Math.ceil(wordCount / wordsPerMinute);
 
-  if (minutes < 1) return "< 1 min read";
-  if (minutes === 1) return "1 min read";
+  if (minutes < 1) return '< 1 min read';
+  if (minutes === 1) return '1 min read';
   return `${minutes} min read`;
 }

@@ -1,8 +1,8 @@
-import { useRouter } from "expo-router";
-import { useEffect, useMemo, useRef } from "react";
+import { useRouter } from 'expo-router';
+import { useEffect, useMemo, useRef } from 'react';
 
-import { useProtectedRoute } from "./useProtectedRoute";
-import { useUserRoles } from "./useUserRoles";
+import { useProtectedRoute } from './useProtectedRoute';
+import { useUserRoles } from './useUserRoles';
 
 type UseRoleProtectedRouteOptions = {
   unauthorizedRedirectPath?: string;
@@ -12,7 +12,7 @@ type UseRoleProtectedRouteOptions = {
   suppressLogging?: boolean;
 };
 
-const DEFAULT_REDIRECT_PATH = "/dashboard";
+const DEFAULT_REDIRECT_PATH = '/dashboard';
 
 export function useRoleProtectedRoute(
   requiredRoles: string[],

@@ -24,7 +24,7 @@ export interface ParentSkill {
 export interface PendingSearch {
   id: string;
   term: string;
-  taxonomy: "csi" | "onet" | "both";
+  taxonomy: 'csi' | 'onet' | 'both';
 }
 
 /**

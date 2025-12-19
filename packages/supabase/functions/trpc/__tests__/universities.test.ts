@@ -48,7 +48,7 @@ Deno.test({
 });
 
 Deno.test({
-  name: "Universities - Search for 'Ferris' returns Ferris State University",
+  name: 'Universities - Search for 'Ferris' returns Ferris State University",
   async fn() {
     const ctx = await getTestContext();
 
@@ -96,7 +96,7 @@ Deno.test({
 
     assertExists(
       ferrisStateUniversity,
-      "Should find 'Ferris State University' in search results",
+      'Should find 'Ferris State University' in search results",
     );
 
     console.log(
@@ -122,12 +122,12 @@ Deno.test({
     console.log("6. Requires authentication (regular or admin user)");
     console.log("\nExample queries:");
     console.log(
-      "  - query='ferris', country='United States' -> Ferris State University",
+      '  - query='ferris', country='United States' -> Ferris State University",
     );
     console.log(
-      "  - query='mit', country=null -> All universities matching 'mit'",
+      '  - query='mit', country=null -> All universities matching 'mit'",
     );
-    console.log("  - query='harvard', limit=5 -> Top 5 matches for 'harvard'");
+    console.log('  - query='harvard', limit=5 -> Top 5 matches for 'harvard'");
     console.log("\n✅ Documentation test passed");
   },
   sanitizeResources: false,

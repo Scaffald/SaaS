@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertExists,
-} from "jsr:@std/assert";
+} from 'jsr:@std/assert';
 
 import { callTRPCEndpoint } from '../setup';
 import { setupTeamManagementFixture } from './seed-utils';
@@ -236,7 +236,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeApplicationId = "00000000-0000-0000-0000-000000000000";
+    const fakeApplicationId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.analytics.comments",
@@ -457,7 +457,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeApplicationId = "00000000-0000-0000-0000-000000000000";
+    const fakeApplicationId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.analytics.postComment",

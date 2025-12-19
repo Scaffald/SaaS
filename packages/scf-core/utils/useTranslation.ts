@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   getCurrentLocale,
@@ -6,7 +6,7 @@ import {
   setLocale as setGlobalLocale,
   subscribeToLocaleChanges,
   type SupportedLocale,
-} from "../locales";
+} from '../locales';
 
 interface TranslationOptions {
   t: (key: string, params?: Record<string, unknown>) => string;

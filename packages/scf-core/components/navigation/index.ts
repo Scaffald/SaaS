@@ -2,9 +2,9 @@ export {
   AssessmentsTabs,
   type AssessmentsTabsItem,
   type AssessmentsTabsProps,
-} from "./AssessmentsTabs";
+} from './AssessmentsTabs';
 export {
   ProfileTabs,
   type ProfileTabsItem,
   type ProfileTabsProps,
-} from "./ProfileTabs";
+} from './ProfileTabs';

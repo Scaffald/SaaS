@@ -1,22 +1,22 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import PostHog, {
   type PostHogCustomStorage,
   type PostHogOptions,
-} from "posthog-react-native";
+} from 'posthog-react-native';
 import {
   APP_ENV,
   CHANNEL,
   isAllowedEnvironment,
   POSTHOG_HOST,
   POSTHOG_KEY,
-} from "./config";
+} from './config';
 import {
   type AnalyticsEventName,
   type AnalyticsEventProperties,
   validateEventProperties,
-} from "./events";
-import type { EventProperties, InitAnalyticsOptions } from "./types";
-import { buildSuperProperties, isAnalyticsAvailable } from "./utils";
+} from './events';
+import type { EventProperties, InitAnalyticsOptions } from './types';
+import { buildSuperProperties, isAnalyticsAvailable } from './utils';
 
 const CUSTOM_STORAGE: PostHogCustomStorage = {
   getItem: AsyncStorage.getItem,

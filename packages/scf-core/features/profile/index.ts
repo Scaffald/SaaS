@@ -4,26 +4,26 @@
  */
 
 // Configuration and schemas
-export * from "./config";
+export * from './config';
 // Certifications Profile Components
-export { ProfileCertificationsLeft } from "./profile-certifications-left";
-export { ProfileCertificationsRight } from "./profile-certifications-right";
+export { ProfileCertificationsLeft } from './profile-certifications-left';
+export { ProfileCertificationsRight } from './profile-certifications-right';
 // Education Profile Components
-export { ProfileEducationLeft } from "./profile-education-left";
-export { ProfileEducationRight } from "./profile-education-right";
+export { ProfileEducationLeft } from './profile-education-left';
+export { ProfileEducationRight } from './profile-education-right';
 // Employment Profile Components
-export { ProfileEmploymentLeft } from "./profile-employment-left";
-export { ProfileEmploymentRight } from "./profile-employment-right";
+export { ProfileEmploymentLeft } from './profile-employment-left';
+export { ProfileEmploymentRight } from './profile-employment-right';
 // Experience Profile Components
-export { ProfileExperienceLeft } from "./profile-experience-left";
-export { ProfileExperienceRight } from "./profile-experience-right";
+export { ProfileExperienceLeft } from './profile-experience-left';
+export { ProfileExperienceRight } from './profile-experience-right';
 // General Profile Components
-export { ProfileGeneralLeft } from "./profile-general-left";
-export { ProfileGeneralRight } from "./profile-general-right";
+export { ProfileGeneralLeft } from './profile-general-left';
+export { ProfileGeneralRight } from './profile-general-right';
 export {
   ProfileSkillsProvider,
   useProfileSkillsContext,
-} from "./profile-skills-context";
+} from './profile-skills-context';
 // Skills Profile Components
-export { ProfileSkillsLeft } from "./profile-skills-left";
-export { ProfileSkillsRight } from "./profile-skills-right";
+export { ProfileSkillsLeft } from './profile-skills-left';
+export { ProfileSkillsRight } from './profile-skills-right';

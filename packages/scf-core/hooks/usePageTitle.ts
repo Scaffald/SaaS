@@ -1,7 +1,7 @@
-import { useNavigation } from "@react-navigation/native";
-import type { NavigationProp, ParamListBase } from "@react-navigation/native";
-import { useEffect, useMemo } from "react";
-import { Platform } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import type { NavigationProp, ParamListBase } from '@react-navigation/native';
+import { useEffect, useMemo } from 'react';
+import { Platform } from 'react-native';
 
 declare const __DEV__: boolean | undefined;
 
@@ -33,7 +33,7 @@ const isDevEnvironment = (typeof __DEV__ !== "undefined" && __DEV__) ||
     process.env.NODE_ENV !== undefined &&
     process.env.NODE_ENV !== "production");
 
-const ROUTES_PREFIX = "routes.";
+const ROUTES_PREFIX = 'routes.';
 
 const isRouteTranslationKey = (value: string) =>
   value.startsWith(ROUTES_PREFIX);

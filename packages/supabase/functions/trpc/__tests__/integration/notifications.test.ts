@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertExists,
-} from "jsr:@std/assert";
+} from 'jsr:@std/assert';
 
 import { callTRPCEndpoint, loadCachedTokens } from '../setup';
 

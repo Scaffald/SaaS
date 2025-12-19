@@ -2,13 +2,13 @@
  * Feedback router baseline coverage.
  */
 
-import { assertEquals, assertExists } from "../shared/assert.ts";
+import { assertEquals, assertExists } from '../shared/assert';
 
 import {
   callTRPCEndpoint,
   loadCachedTokens,
-} from "../shared/setup.ts";
-import { requireAuthSetup } from "../shared/test-context.ts";
+} from '../shared/setup';
+import { requireAuthSetup } from '../shared/test-context';
 
 Deno.test({
   name: "Feedback router - submit requires authentication",

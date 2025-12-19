@@ -1,14 +1,14 @@
-import { api } from "@scf/core/utils/api";
-import { useToastController } from "@tamagui/toast";
-import { useCallback, useMemo, useRef } from "react";
-import type { ParentSkill } from "../types/profile-skills-types";
+import { api } from '@scf/core/utils/api';
+import { useToastController } from '@tamagui/toast';
+import { useCallback, useMemo, useRef } from 'react';
+import type { ParentSkill } from '../types/profile-skills-types';
 import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
   startProfileSync,
-} from "../utils/profile-sync-store";
-import { invalidateProfileQueries } from "../utils/profile-sync";
+} from '../utils/profile-sync-store';
+import { invalidateProfileQueries } from '../utils/profile-sync';
 
 interface UseProfileSkillsMutationsReturn {
   addSkillMutation: ReturnType<
@@ -49,7 +49,7 @@ export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
   const addSkillMutation = api.profile.skillsMultiTaxonomy.addSkill.useMutation(
     {
       async onMutate(variables: {
-        taxonomy: "csi" | "onet";
+        taxonomy: 'csi' | 'onet';
         skillId: string;
         proficiencyLevel: number;
       }) {

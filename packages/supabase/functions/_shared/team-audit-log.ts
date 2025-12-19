@@ -1,6 +1,6 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { Database, Json } from './database.types.ts';
+import type { Database, Json } from './database.types';
 
 type ServiceSupabaseClient = SupabaseClient<Database>;
 
@@ -22,7 +22,7 @@ export type TeamAuditAction =
   | "job_assigned"
   | "job_unassigned"
   | "ownership_transferred"
-  | "workload_rebalanced";
+  | 'workload_rebalanced';
 
 interface RecordTeamAuditLogOptions {
   supabaseAdmin: ServiceSupabaseClient;

@@ -2,13 +2,13 @@
  * Profile education router coverage.
  */
 
-import { assert, assertEquals, assertExists } from "../shared/assert.ts";
+import { assert, assertEquals, assertExists } from '../shared/assert';
 
 import {
   callTRPCEndpoint,
   loadCachedTokens,
-} from "../shared/setup.ts";
-import { requireAuthSetup } from "../shared/test-context.ts";
+} from '../shared/setup';
+import { requireAuthSetup } from '../shared/test-context';
 
 type EducationEntry = {
   id?: string;

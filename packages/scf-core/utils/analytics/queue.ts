@@ -1,8 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { captureEvent } from "./client";
-import type { AnalyticsEventName, AnalyticsEventProperties } from "./events";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { captureEvent } from './client';
+import type { AnalyticsEventName, AnalyticsEventProperties } from './events';
 
-const QUEUE_STORAGE_KEY = "analytics:event_queue";
+const QUEUE_STORAGE_KEY = 'analytics:event_queue';
 const MAX_QUEUE_SIZE_BYTES = 100 * 1024 * 1024;
 const MAX_RETRY_ATTEMPTS = 6;
 const CRITICAL_EVENTS: Set<AnalyticsEventName> = new Set([

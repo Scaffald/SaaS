@@ -1,5 +1,5 @@
-import { getAnalyticsClient, isAnalyticsInitialized } from "./client";
-import { getQueueStats } from "./queue";
+import { getAnalyticsClient, isAnalyticsInitialized } from './client';
+import { getQueueStats } from './queue';
 
 export const getAnalyticsHealthSnapshot = async () => {
   const queue = await getQueueStats();

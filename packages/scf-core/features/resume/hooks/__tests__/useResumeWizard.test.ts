@@ -1,8 +1,8 @@
-import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { ResumeWizardSection } from "../../hooks/useResumeWizard";
-import { useResumeWizard } from "../../hooks/useResumeWizard";
+import type { ResumeWizardSection } from '../../hooks/useResumeWizard';
+import { useResumeWizard } from '../../hooks/useResumeWizard';
 
 interface MockWizardState {
   id: string;
@@ -44,7 +44,7 @@ vi.mock("@scf/core/utils/api", () => ({
   },
 }));
 
-const RESUME_ID = "resume-123";
+const RESUME_ID = 'resume-123';
 
 describe("useResumeWizard", () => {
   beforeEach(() => {

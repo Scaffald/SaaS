@@ -1,19 +1,19 @@
-import results from "./data/en.results.json";
+import results from './data/en.results.json';
 import type {
   IPIPAnswer,
   IPIPFacet,
   IPIPResults,
   IPIPScoreOptions,
   IPIPScores,
-} from "./types";
+} from './types';
 
 function _calcHandler(score: number, count: number): string {
   const average = score / count;
-  let result = "neutral";
+  let result = 'neutral';
   if (average > 3) {
-    result = "high";
+    result = 'high';
   } else if (average < 3) {
-    result = "low";
+    result = 'low';
   }
   return result;
 }

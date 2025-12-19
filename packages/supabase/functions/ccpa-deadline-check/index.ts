@@ -14,11 +14,11 @@
  * schedule = "0 9 * * *"
  * ```
  */
-import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.223.0/http/server';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
-import type { Database } from '../_shared/database.types.ts'
-import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
-import { insertNotification } from '../_shared/notifications/utils.ts'
+import type { Database } from '../_shared/database.types';
+import { corsHeaders, createCorsResponse } from '../_shared/cors';
+import { insertNotification } from '../_shared/notifications/utils';
 
 // Constants
 const DAY_MS = 24 * 60 * 60 * 1000

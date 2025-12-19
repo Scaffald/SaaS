@@ -1,9 +1,9 @@
-import { TRPCError } from "@trpc/server";
+import { TRPCError } from '@trpc/server';
 import {
   profileEmploymentInputSchema,
   type UserPrivateEmploymentUpdate,
-} from "@scf/trpc/schemas";
-import { protectedProcedure, t } from '../../middleware.ts';
+} from '@scf/trpc/schemas';
+import { protectedProcedure, t } from '../../middleware';
 
 /**
  * Profile Employment router - handles employment-related profile data

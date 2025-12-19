@@ -1,6 +1,6 @@
-import type { QueryClient } from "@tanstack/react-query";
-import { Platform } from "react-native";
-import { supabase } from "../supabase/client";
+import type { QueryClient } from '@tanstack/react-query';
+import { Platform } from 'react-native';
+import { supabase } from '../supabase/client';
 
 type CookieStoreDeleteTarget = string | {
   name: string;

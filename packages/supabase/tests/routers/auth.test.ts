@@ -10,7 +10,7 @@ import {
   assertEquals,
   assertExists,
   assertNotEquals,
-} from "../shared/assert.ts";
+} from '../shared/assert';
 
 import {
   TEST_MAILPIT_URL,
@@ -23,10 +23,10 @@ import {
   loadCachedTokens,
   registerUserWithMagicLink,
   saveCachedTokens,
-} from "../shared/setup.ts";
+} from '../shared/setup';
 
 const TEST_USER_EMAIL = `trpc-auth-${Date.now()}@example.com`;
-const TEST_ADMIN_EMAIL = "admin@scaffald.dev";
+const TEST_ADMIN_EMAIL = 'admin@scaffald.dev';
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -85,8 +85,8 @@ Deno.test({
     assertExists(loginEmail, "Login email should arrive");
     assertExists(loginEmail.body?.html, "Login email should have HTML");
 
-    const signupSubject = signupEmail?.subject ?? "";
-    const loginSubject = loginEmail?.subject ?? "";
+    const signupSubject = signupEmail?.subject ?? '';
+    const loginSubject = loginEmail?.subject ?? '';
 
     assertExists(
       signupSubject || loginSubject,

@@ -1,5 +1,5 @@
-import type { ChannelAdapter } from '../types.ts'
-import { normalizeMetadata } from '../utils.ts'
+import type { ChannelAdapter } from '../types';
+import { normalizeMetadata } from '../utils';
 
 function encodeBasicAuth(accountSid: string, authToken: string): string {
   return `Basic ${btoa(`${accountSid}:${authToken}`)}`

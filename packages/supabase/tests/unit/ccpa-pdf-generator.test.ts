@@ -13,15 +13,15 @@
 import {
   assertEquals,
   assertExists,
-} from '../shared/assert.ts'
+} from '../shared/assert';
 
 import {
   estimatePDFSize,
   type PDFGenerationOptions,
   type PDFGenerationResult,
-} from '../../functions/trpc/routers/ccpa/pdf-generator.ts'
+} from '../../functions/trpc/routers/ccpa/pdf-generator';
 
-import type { UserDataExport } from '../../functions/trpc/routers/ccpa/types.ts'
+import type { UserDataExport } from '../../functions/trpc/routers/ccpa/types';
 
 // ========================================================
 // TEST DATA
@@ -353,7 +353,7 @@ Deno.test({
   fn() {
     const data = createMockUserData(1)
     data.personalInformation.firstName = 'José'
-    data.personalInformation.lastName = "O'Brien"
+    data.personalInformation.lastName = 'O'Brien"
     data.personalInformation.address = {
       street: '123 Straße',
       city: 'München',

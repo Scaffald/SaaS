@@ -2,12 +2,12 @@
  * Resume router baseline coverage.
  */
 
-import { Buffer } from "node:buffer";
+import { Buffer } from 'node:buffer';
 
-import { assert, assertEquals, assertExists } from "../shared/assert.ts";
+import { assert, assertEquals, assertExists } from '../shared/assert';
 
-import { callTRPCEndpoint, loadCachedTokens } from "../shared/setup.ts";
-import { requireAuthSetup } from "../shared/test-context.ts";
+import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup';
+import { requireAuthSetup } from '../shared/test-context';
 
 const TEST_PDF_CONTENT = `%PDF-1.1
 1 0 obj
@@ -53,7 +53,7 @@ async function uploadSampleResume(
     fileSize: number;
   }>,
 ): Promise<UploadResponse> {
-  const mimeType = overrides?.mimeType ?? "application/pdf";
+  const mimeType = overrides?.mimeType ?? 'application/pdf';
   const fileName = overrides?.fileName ??
     `resume-${crypto.randomUUID()}.${mimeType === "application/pdf" ? "pdf" : "doc"}`;
 

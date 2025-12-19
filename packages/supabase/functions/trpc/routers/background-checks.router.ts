@@ -5,7 +5,7 @@ import { z } from 'zod'
 import {
   notifyBackgroundCheckInvitation,
   notifyBackgroundCheckStatusChange,
-} from '../../_shared/background-check-notifications.ts'
+} from '../../_shared/background-check-notifications';
 import {
   BACKGROUND_CHECK_ALLOWED_MIME_TYPES,
   backgroundCheckDisputeSchema,
@@ -15,7 +15,7 @@ import {
   backgroundCheckStatusEnum,
   backgroundCheckUploadRequestSchema,
   consentMetadataSchema,
-} from '../../_shared/background-check-schemas.ts'
+} from '../../_shared/background-check-schemas';
 import {
   appendStatusHistory,
   BACKGROUND_CHECK_BASE_COLUMNS,
@@ -23,14 +23,14 @@ import {
   mapProviderStatus,
   mergeMetadata,
   shouldSyncStatus,
-} from '../../_shared/background-check-status.ts'
+} from '../../_shared/background-check-status';
 import {
   type CheckStatusResponse,
   createNationSearchClient,
   isNationSearchOutageError,
-} from '../../_shared/nationsearch/client.ts'
-import type { Context } from '../context.ts'
-import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
+} from '../../_shared/nationsearch/client';
+import type { Context } from '../context';
+import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware';
 
 const listPackagesOutputSchema = z.object({
   id: z.string().uuid(),
@@ -41,7 +41,7 @@ const listPackagesOutputSchema = z.object({
   platform_cost_cents: z.number(),
   retail_cost_cents: z.number(),
   estimated_completion_days: z.number().nullable(),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
   components: z.array(
     z.object({
       id: z.string().uuid(),
@@ -77,22 +77,22 @@ const listChecksOutputSchema = z.object({
   expires_at: z.string().datetime().nullable(),
   invited_at: z.string().datetime().nullable(),
   provider_check_id: z.string().nullable(),
-  findings: z.record(z.unknown()).nullable(),
-  metadata: z.record(z.unknown()).nullable(),
+  findings: z.record(z.string(), z.unknown()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
 })
 
 const getCheckOutputSchema = z.object({
   check: z.object({
     id: z.string().uuid(),
     status: backgroundCheckStatusEnum,
-    status_history: z.array(z.record(z.unknown())).default([]),
+    status_history: z.array(z.record(z.string(), z.unknown())).default([]),
     package_id: z.string().uuid().nullable(),
     check_type_ids: z.array(z.string().uuid()),
     provider_check_id: z.string().nullable(),
     summary: z.string().nullable(),
-    findings: z.record(z.unknown()).nullable(),
-    component_statuses: z.array(z.record(z.unknown())).default([]),
-    metadata: z.record(z.unknown()).nullable(),
+    findings: z.record(z.string(), z.unknown()).nullable(),
+    component_statuses: z.array(z.record(z.string(), z.unknown())).default([]),
+    metadata: z.record(z.string(), z.unknown()).nullable(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
     expires_at: z.string().datetime().nullable(),
@@ -136,7 +136,7 @@ const adminDisputeSummarySchema = z.object({
   status: z.string(),
   dispute_reason: z.string().nullable(),
   dispute_details: z.string().nullable(),
-  supporting_documents: z.record(z.unknown()).nullable(),
+  supporting_documents: z.record(z.string(), z.unknown()).nullable(),
   created_at: z.string().datetime(),
   resolved_at: z.string().datetime().nullable(),
   resolution: z.string().nullable(),
@@ -145,7 +145,7 @@ const adminDisputeSummarySchema = z.object({
 
 const adminGetCheckOutputSchema = z.object({
   check: getCheckOutputSchema.shape.check.extend({
-    metadata: z.record(z.unknown()).nullable(),
+    metadata: z.record(z.string(), z.unknown()).nullable(),
     worker: adminCheckWorkerSchema.nullable(),
     organization: adminCheckOrganizationSchema.nullable(),
   }),
@@ -165,8 +165,8 @@ const adminCheckTypeSchema = z.object({
   retail_cost_cents: z.number().nullable(),
   estimated_completion_days: z.number().nullable(),
   required_documents: z.array(z.string()),
-  provider_configuration: z.record(z.unknown()).default({}),
-  metadata: z.record(z.unknown()).default({}),
+  provider_configuration: z.record(z.string(), z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
   is_active: z.boolean(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
@@ -179,12 +179,12 @@ const adminPackageSchema = z.object({
   description: z.string().nullable(),
   provider_package_code: z.string().nullable(),
   check_type_ids: z.array(z.string().uuid()),
-  component_overrides: z.array(z.record(z.unknown())).default([]),
+  component_overrides: z.array(z.record(z.string(), z.unknown())).default([]),
   platform_cost_cents: z.number(),
   retail_cost_cents: z.number(),
   estimated_completion_days: z.number().nullable(),
   is_active: z.boolean(),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
   components: z.array(
@@ -214,8 +214,8 @@ const adminUpsertCheckTypeInputSchema = z.object({
   retail_cost_cents: z.number().int().min(0).nullable().optional(),
   estimated_completion_days: z.number().int().min(0).nullable().optional(),
   required_documents: z.array(z.string().min(1)).optional(),
-  provider_configuration: z.record(z.unknown()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  provider_configuration: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   is_active: z.boolean().optional(),
 })
 
@@ -229,8 +229,8 @@ const adminUpsertPackageInputSchema = z.object({
   platform_cost_cents: z.number().int().min(0),
   retail_cost_cents: z.number().int().min(0),
   estimated_completion_days: z.number().int().min(0).nullable().optional(),
-  metadata: z.record(z.unknown()).optional(),
-  component_overrides: z.array(z.record(z.unknown())).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+  component_overrides: z.array(z.record(z.string(), z.unknown())).optional(),
   is_active: z.boolean().optional(),
 })
 
@@ -247,8 +247,8 @@ const requestBackgroundCheckInputSchema = z.object({
   organization_id: z.string().uuid().optional(),
   job_id: z.string().uuid().optional(),
   worker_user_id: z.string().uuid().optional(),
-  custom_configuration: z.record(z.unknown()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  custom_configuration: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   consent: consentMetadataSchema.optional(),
 })
 
@@ -3238,8 +3238,8 @@ export const backgroundChecksRouter = t.router({
         background_check_id: z.string().uuid(),
         status: backgroundCheckStatusEnum,
         summary: z.string().nullable().optional(),
-        findings: z.record(z.unknown()).nullable().optional(),
-        component_statuses: z.array(z.record(z.unknown())).optional(),
+        findings: z.record(z.string(), z.unknown()).nullable().optional(),
+        component_statuses: z.array(z.record(z.string(), z.unknown())).optional(),
         expires_at: z.string().datetime().nullable().optional(),
         notes: z.string().nullable().optional(),
       })

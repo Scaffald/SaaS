@@ -115,7 +115,7 @@ Deno.test({
     await new Promise((resolve) => setTimeout(resolve, 1500));
     const signupEmail = await getLatestEmail(trpcEmail);
     assertExists(signupEmail, "Signup email should be delivered");
-    const signupSubject = signupEmail?.subject ?? "";
+    const signupSubject = signupEmail?.subject ?? '';
 
     const loginResponse = await callTRPCEndpoint(
       "auth.requestMagicLink",
@@ -135,7 +135,7 @@ Deno.test({
     await new Promise((resolve) => setTimeout(resolve, 1500));
     const loginEmail = await getLatestEmail(trpcEmail);
     assertExists(loginEmail, "Login email should be delivered");
-    const loginSubject = loginEmail?.subject ?? "";
+    const loginSubject = loginEmail?.subject ?? '';
 
     if (signupSubject && loginSubject) {
       if (signupSubject === loginSubject) {
@@ -185,9 +185,9 @@ Deno.test({
       }
       // If it's an internal server error about undefined, that's the bug we fixed
       if (errorCode === "INTERNAL_SERVER_ERROR") {
-        const message = response[0].error?.message ?? "";
+        const message = response[0].error?.message ?? '';
         if (message.includes("undefined") || message.includes("Cannot read")) {
-          throw new Error("Still getting undefined error - fix didn't work");
+          throw new Error('Still getting undefined error - fix didn't work");
         }
       }
     }

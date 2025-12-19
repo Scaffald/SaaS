@@ -1,4 +1,4 @@
-type ExtractSource = "unpdf" | "fallback";
+type ExtractSource = 'unpdf' | 'fallback';
 
 // Lazy loading for large packages to reduce bundle size
 let unpdfModule: typeof import("unpdf") | null = null;
@@ -31,7 +31,7 @@ export async function extractTextFromPdf(
   fileBytes: Uint8Array,
   options: ExtractTextFromPdfOptions = {},
 ): Promise<PdfExtractionResult> {
-  const namespace = options.namespace ?? "pdf";
+  const namespace = options.namespace ?? 'pdf';
 
   try {
     const unpdf = await getUnpdf();
@@ -84,7 +84,7 @@ function decodeWithTextDecoder(bytes: Uint8Array): string {
       message: error instanceof Error ? error.message : String(error),
       fileSize: bytes.length,
     });
-    return "";
+    return '';
   }
 }
 

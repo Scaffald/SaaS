@@ -1,6 +1,6 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { buildAppUrl } from '../../_shared/app-url.ts';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { buildAppUrl } from '../../_shared/app-url';
 import {
   checkTeamPermission,
   isOrganizationAdminRole,
@@ -8,8 +8,8 @@ import {
   loadUserRoleAssignments,
   type TeamPermissionKey,
   TeamPermissions,
-} from '../../_shared/permissions/team-permissions.ts';
-import { recordTeamAuditLog } from '../../_shared/team-audit-log.ts';
+} from '../../_shared/permissions/team-permissions';
+import { recordTeamAuditLog } from '../../_shared/team-audit-log';
 import {
   TEAM_INVITATION_TTL_DEFAULT,
   TEAM_MEMBER_STATUSES,
@@ -38,16 +38,16 @@ import {
   teamRoleKeySchema,
   teamUpdateSchema,
   teamWorkloadSnapshotInputSchema,
-} from '../../_shared/team-schemas.ts';
-import { assignApplicationToMember } from '../../_shared/utils/application-assignment.ts';
-import { refreshTeamMetricsSnapshot } from '../../_shared/utils/team-metrics.ts';
-import type { Context } from '../context.ts';
+} from '../../_shared/team-schemas';
+import { assignApplicationToMember } from '../../_shared/utils/application-assignment';
+import { refreshTeamMetricsSnapshot } from '../../_shared/utils/team-metrics';
+import type { Context } from '../context';
 import {
   officeProcedure,
   protectedProcedure,
   publicProcedure,
   t,
-} from '../middleware.ts';
+} from '../middleware';
 
 const teamApplicationAssignmentSchema = z.object({
   teamId: teamIdSchema,
@@ -249,8 +249,8 @@ async function notifyTeamMemberAdded(options: {
     return;
   }
 
-  const teamName = team.name ?? "your team";
-  const roleName = member.role?.name ?? "team member";
+  const teamName = team.name ?? 'your team';
+  const roleName = member.role?.name ?? 'team member';
 
   await publishTeamNotification({
     id: `team-assigned:${team.id}:${member.userId}:${Date.now()}`,
@@ -290,7 +290,7 @@ async function notifyTeamMemberRemoved(options: {
     return;
   }
 
-  const teamName = team.name ?? "the team";
+  const teamName = team.name ?? 'the team';
 
   await publishTeamNotification({
     id: `team-removed:${team.id}:${member.userId}:${Date.now()}`,
@@ -952,7 +952,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const status = input.status ?? "active";
+        const status = input.status ?? 'active';
 
         const insertPayload = {
           team_id: input.teamId,
@@ -1055,7 +1055,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         if (input.teamId && input.teamId !== teamId) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "teamId does not match the member's team",
+            message: 'teamId does not match the member's team",
           });
         }
 
@@ -1775,7 +1775,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         const normalizedEmail = user.email
           ? user.email.trim().toLowerCase()
           : null;
-        const status = input?.status ?? "pending";
+        const status = input?.status ?? 'pending';
 
         let query = client
           .schema("core")
@@ -3922,7 +3922,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
 
           const metadata =
             (invitation.metadata as Record<string, unknown> | null) ?? {};
-          metadata.lastAction = "accepted";
+          metadata.lastAction = 'accepted';
           metadata.responderId = responderId;
 
           await supabaseAdmin

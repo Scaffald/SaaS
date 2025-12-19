@@ -616,7 +616,7 @@ async function countFileRows(filePath: string): Promise<number> {
 
 function buildCopyCommand(config: TableConfig): string {
   const columnList = config.columns.map((column) => column.column).join(', ')
-  return `COPY onet.${config.table} (${columnList}) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t', NULL '${COPY_NULL_VALUE}', QUOTE '"', ESCAPE '"')`
+  return `COPY onet.${config.table} (${columnList}) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t', NULL '${COPY_NULL_VALUE}', QUOTE ''', ESCAPE '"')`
 }
 
 async function writeCopyRow(stream: Duplex, row: (string | number | null)[]): Promise<void> {
@@ -658,7 +658,7 @@ function formatCopyValue(value: string | number | null): string {
     return trimmed
   }
 
-  return `"${trimmed.replace(/"/g, '""')}"`
+  return `'${trimmed.replace(/'/g, '""')}"`
 }
 
 function waitForStreamCompletion(stream: Duplex): Promise<void> {

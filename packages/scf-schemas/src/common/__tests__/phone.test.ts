@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
 import {
   formatPhoneNumber,
@@ -8,7 +8,7 @@ import {
   isValidPhoneNumber,
   phoneNumberSchema,
   requiredPhoneNumberSchema,
-} from '../phone.ts'
+} from '../phone';
 
 describe('phone schemas', () => {
   it('accepts undefined optional phone numbers', () => {

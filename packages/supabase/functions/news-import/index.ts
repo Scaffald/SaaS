@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server';
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 import { corsHeaders } from '../_shared/cors';
 import type { Database } from '../_shared/database.types';
 
@@ -18,9 +18,9 @@ function decodeHtmlEntities(text: string): string {
     "&amp;": "&",
     "&lt;": "<",
     "&gt;": ">",
-    "&quot;": '"',
-    "&#39;": "'",
-    "&apos;": "'",
+    '&quot;': '"',
+    "&#39;": ''",
+    "&apos;": ''",
   };
   return text.replace(/&[#\w]+;/g, (entity) => entities[entity] || entity);
 }

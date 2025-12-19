@@ -1,6 +1,6 @@
-import { api } from "@scf/core/utils/api";
-import { useCallback, useState } from "react";
-import type { ApplicationStatus } from "../../mock-data/ats-mock-data";
+import { api } from '@scf/core/utils/api';
+import { useCallback, useState } from 'react';
+import type { ApplicationStatus } from '../../mock-data/ats-mock-data';
 
 // Map UI status to database status
 const STATUS_MAP: Record<ApplicationStatus, string> = {
@@ -55,7 +55,7 @@ export const useApplicationStatusChange =
 
     const isCriticalChange = useCallback(
       (toStatus: ApplicationStatus): boolean => {
-        return toStatus === "rejected" || toStatus === "hired";
+        return toStatus === 'rejected' || toStatus === 'hired';
       },
       [],
     );

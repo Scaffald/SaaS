@@ -1,6 +1,6 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { extractTextFromPdf as sharedExtractTextFromPdf } from "@scf/trpc/utils";
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/utils';
 import {
   clearImportDataInputSchema,
   type ImportMetadata,
@@ -11,9 +11,9 @@ import {
   resumeParseInputSchema,
   saveImportDataInputSchema,
   validateJsonInputSchema,
-} from "@scf/trpc/schemas";
-import type { Context } from '../../context.ts';
-import { protectedProcedure, t } from '../../middleware.ts';
+} from '@scf/trpc/schemas';
+import type { Context } from '../../context';
+import { protectedProcedure, t } from '../../middleware';
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const IMPORT_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -43,7 +43,7 @@ interface ParseOptions {
 interface ParsedResumeResult {
   payload: ImportPayload;
   metadata: {
-    strategy: "openai" | "heuristic";
+    strategy: 'openai' | 'heuristic';
     extractedCharacters: number;
   };
 }
@@ -106,7 +106,7 @@ async function extractTextFromDocx(fileBytes: Uint8Array): Promise<string> {
     try {
       return new TextDecoder("utf-8", { fatal: false }).decode(fileBytes);
     } catch {
-      return "";
+      return '';
     }
   }
 }
@@ -128,7 +128,7 @@ async function extractResumeText(
     case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
       return await extractTextFromDocx(fileBytes);
     default:
-      return "";
+      return '';
   }
 }
 

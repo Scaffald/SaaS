@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server';
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../_shared/database.types';
 
 const corsHeaders = {
@@ -42,14 +42,14 @@ async function parseRSSFeed(url: string): Promise<JobData[]> {
       // Extract fields
       const title = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/)?.[1] ||
         item.match(/<title>(.*?)<\/title>/)?.[1] ||
-        "";
+        "';
 
-      const link = item.match(/<link>(.*?)<\/link>/)?.[1] || "";
+      const link = item.match(/<link>(.*?)<\/link>/)?.[1] || '';
       const description =
         item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/)?.[1] ||
         item.match(/<description>(.*?)<\/description>/)?.[1] ||
-        "";
-      const pubDate = item.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || "";
+        "';
+      const pubDate = item.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || '';
 
       // Extract category/company from title (WeWorkRemotely format: "Company: Title")
       const titleParts = title.split(": ");
@@ -62,7 +62,7 @@ async function parseRSSFeed(url: string): Promise<JobData[]> {
 
       // Extract location from description if available
       const locationMatch = description.match(/location:?\s*([^<]+)/i);
-      const job_location = locationMatch ? locationMatch[1].trim() : "Remote";
+      const job_location = locationMatch ? locationMatch[1].trim() : 'Remote';
 
       jobs.push({
         feed_id: "weworkremotely",

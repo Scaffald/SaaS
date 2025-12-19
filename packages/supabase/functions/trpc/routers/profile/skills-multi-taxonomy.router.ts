@@ -1,8 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { supabaseAnonKey, supabaseUrl } from '../../context.ts';
-import { protectedProcedure, t } from '../../middleware.ts';
+import { createClient } from '@supabase/supabase-js';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { supabaseAnonKey, supabaseUrl } from '../../context';
+import { protectedProcedure, t } from '../../middleware';
 
 /**
  * Multi-Taxonomy Skills Router
@@ -179,7 +179,7 @@ export const skillsMultiTaxonomyRouter = t.router({
       ): Promise<void> => {
         const skillData: {
           user_id: string;
-          skill_taxonomy: "csi" | "onet";
+          skill_taxonomy: 'csi' | 'onet';
           proficiency_level: number;
           csi_skill_id?: string;
           onet_occupation_id?: string;

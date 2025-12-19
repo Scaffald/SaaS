@@ -1,4 +1,4 @@
-import type { IPIPDomain, IPIPScores } from './ipip-types.ts'
+import type { IPIPDomain, IPIPScores } from './ipip-types';
 
 /**
  * Condition for archetype matching

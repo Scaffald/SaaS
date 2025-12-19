@@ -1,13 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import { buildPath, ROUTES } from "@scf/core/constants/routes";
+import { buildPath, ROUTES } from '@scf/core/constants/routes';
 
 import {
   getChildRoutes,
   getRouteDepth,
   getRouteKeyForPath,
   getRoutesAtDepth,
-} from "../routeHierarchy";
+} from '../routeHierarchy';
 
 describe("routeHierarchy utilities", () => {
   it("calculates depth across the office CMS tree", () => {

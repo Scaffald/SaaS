@@ -1,12 +1,12 @@
-import * as Localization from "expo-localization";
-import { I18n } from "i18n-js";
+import * as Localization from 'expo-localization';
+import { I18n } from 'i18n-js';
 
-import en from "./en";
-import es from "./es";
-import fr from "./fr";
-import type { TranslationKey } from "./types";
+import en from './en';
+import es from './es';
+import fr from './fr';
+import type { TranslationKey } from './types';
 
-export type { TranslationKey, TranslationNamespaces } from "./types";
+export type { TranslationKey, TranslationNamespaces } from './types';
 
 declare const __DEV__: boolean | undefined;
 
@@ -18,7 +18,7 @@ export const translations = {
 
 export type SupportedLocale = keyof typeof translations;
 
-const DEFAULT_LOCALE: SupportedLocale = "en";
+const DEFAULT_LOCALE: SupportedLocale = 'en';
 
 const localeListeners = new Set<() => void>();
 
@@ -70,7 +70,7 @@ i18n.defaultLocale = DEFAULT_LOCALE;
 i18n.enableFallback = true;
 const initialLocale = resolveInitialLocale();
 i18n.locale = initialLocale;
-i18n.missingBehavior = "guess";
+i18n.missingBehavior = 'guess';
 
 const isDevEnvironment = (typeof __DEV__ !== "undefined" && __DEV__) ||
   (typeof process !== "undefined" &&
@@ -103,7 +103,7 @@ const collectDuplicateKeys = (data: Record<string, unknown>): string[] => {
   return Array.from(duplicates).sort();
 };
 
-type TranslationWarningType = "missing" | "object";
+type TranslationWarningType = 'missing' | 'object';
 
 const formatScope = (scope: string | string[]): string =>
   Array.isArray(scope) ? scope.join(".") : String(scope);
@@ -225,7 +225,7 @@ export const hasTranslation = (
   locale: SupportedLocale = getCurrentLocale(),
 ) => {
   const value = getTranslationValue(locale, key);
-  return typeof value === "string" || typeof value === "number";
+  return typeof value === 'string' || typeof value === 'number';
 };
 
 type TranslateFn = typeof i18n.t;

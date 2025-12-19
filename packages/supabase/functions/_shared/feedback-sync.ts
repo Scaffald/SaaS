@@ -1,11 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 
 export interface FeedbackRow {
   id: string;
   user_id: string;
   user_email: string;
   user_name: string | null;
-  feedback_type: "bug" | "feature" | "comment";
+  feedback_type: 'bug' | 'feature' | 'comment';
   feedback_text: string;
   screenshot_path: string | null;
   page_url: string;
@@ -17,7 +17,7 @@ export interface FeedbackRow {
   screen_resolution: string | null;
   viewport_size: string | null;
   braingrid_feature_id: string | null;
-  braingrid_sync_status: "pending" | "synced" | "failed";
+  braingrid_sync_status: 'pending' | 'synced' | 'failed';
   braingrid_sync_error: string | null;
   braingrid_synced_at: string | null;
   sync_retry_count: number | null;
@@ -32,9 +32,9 @@ export interface BraingridConfig {
 }
 
 export function getBraingridConfig(): BraingridConfig | null {
-  const apiUrl = Deno.env.get("BRAINGRID_API_URL") ?? "";
-  const apiKey = Deno.env.get("BRAINGRID_API_KEY") ?? "";
-  const projectId = Deno.env.get("BRAINGRID_PROJECT_ID") ?? "";
+  const apiUrl = Deno.env.get('BRAINGRID_API_URL') ?? '';
+  const apiKey = Deno.env.get('BRAINGRID_API_KEY') ?? '';
+  const projectId = Deno.env.get('BRAINGRID_PROJECT_ID') ?? '';
 
   if (!apiUrl || !apiKey) {
     return null;
@@ -48,8 +48,8 @@ export function getBraingridConfig(): BraingridConfig | null {
 }
 
 export function createServiceClient() {
-  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
   if (!supabaseUrl || !serviceKey) {
     console.error(

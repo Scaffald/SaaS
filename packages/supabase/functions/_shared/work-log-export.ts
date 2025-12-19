@@ -2,7 +2,7 @@
 import type { PDFFont, PDFPage } from 'pdf-lib'
 import { PDFDocument, StandardFonts } from 'pdf-lib'
 
-import type { Database } from './database.types.ts'
+import type { Database } from './database.types';
 
 type CoreSchemaTables = Database extends { core: { Tables: infer Tables } } ? Tables : never
 

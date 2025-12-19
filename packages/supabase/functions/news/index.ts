@@ -109,9 +109,9 @@ const decodeHtmlEntities = (text: string): string => {
     "&": "&",
     "<": "<",
     ">": ">",
-    '"': '"',
-    "&#39;": "'",
-    "&apos;": "'",
+    ''': '"',
+    "&#39;": ''",
+    "&apos;": ''",
     "&nbsp;": " ",
   };
 
@@ -149,7 +149,7 @@ const parseRssFeed = (xml: string): NewsArticle[] => {
       if (titleMatch && linkMatch) {
         const title = decodeHtmlEntities(titleMatch[1].trim());
         const link = linkMatch[1].trim();
-        const description = descriptionMatch ? descriptionMatch[1].trim() : "";
+        const description = descriptionMatch ? descriptionMatch[1].trim() : '';
         const guid = guidMatch ? guidMatch[1].trim() : link;
         const pubDate = pubDateMatch ? pubDateMatch[1].trim() : undefined;
 
@@ -174,7 +174,7 @@ const parseRssFeed = (xml: string): NewsArticle[] => {
 const createFallbackArticles = (source?: NewsSource): NewsArticle[] => {
   const now = new Date();
   const isoDate = Number.isNaN(now.getTime()) ? undefined : now.toISOString();
-  const siteUrl = source?.siteUrl ?? source?.feedUrl ?? "https://www.enr.com/";
+  const siteUrl = source?.siteUrl ?? source?.feedUrl ?? 'https://www.enr.com/';
 
   return [
     {
@@ -196,7 +196,7 @@ const createFallbackArticles = (source?: NewsSource): NewsArticle[] => {
 const isValidUrl = (urlString: string): boolean => {
   try {
     const url = new URL(urlString);
-    return url.protocol === "http:" || url.protocol === "https:";
+    return url.protocol === 'http:' || url.protocol === 'https:';
   } catch {
     return false;
   }
@@ -272,12 +272,12 @@ const handler = async (req: Request) => {
       console.warn("RSS proxy error:", error);
 
       // Provide more specific error messages
-      let errorMessage = "Unable to fetch RSS feed";
+      let errorMessage = 'Unable to fetch RSS feed';
       if (error instanceof Error) {
         if (error.name === "AbortError" || error.message.includes("timeout")) {
-          errorMessage = "Request timeout: RSS feed took too long to respond";
+          errorMessage = 'Request timeout: RSS feed took too long to respond';
         } else if (error.message.includes("Failed to fetch")) {
-          errorMessage = "Network error: Unable to reach RSS feed";
+          errorMessage = 'Network error: Unable to reach RSS feed';
         } else {
           errorMessage = `Error fetching RSS feed: ${error.message}`;
         }
@@ -294,7 +294,7 @@ const handler = async (req: Request) => {
   if (!source) {
     return new Response(
       JSON.stringify({
-        error: "Missing parameter. Provide either 'source' or 'url' parameter.",
+        error: 'Missing parameter. Provide either 'source' or 'url' parameter.",
       }),
       {
         status: 400,
@@ -350,7 +350,7 @@ const handler = async (req: Request) => {
     console.warn("News API error:", error);
 
     // In development, return fallback articles
-    const isProd = Deno.env.get("NODE_ENV") === "production";
+    const isProd = Deno.env.get('NODE_ENV') === 'production';
     if (!isProd) {
       const fallbackArticles = createFallbackArticles(newsSource);
       return new Response(JSON.stringify({ articles: fallbackArticles }), {

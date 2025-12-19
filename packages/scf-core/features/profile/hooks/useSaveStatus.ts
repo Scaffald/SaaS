@@ -1,6 +1,6 @@
-import { api } from "@scf/core/utils/api";
-import type { SaveStatus } from "@unicornlove/ui";
-import { useEffect, useState } from "react";
+import { api } from '@scf/core/utils/api';
+import type { SaveStatus } from '@unicornlove/ui';
+import { useEffect, useState } from 'react';
 
 /**
  * Hook for tracking save status across profile pages
@@ -29,7 +29,7 @@ export function useSaveStatus(isAdding: boolean, isRemoving: boolean) {
       setSaveStatus((prevStatus) => {
         // Only update if not already saving to avoid unnecessary updates
         if (prevStatus !== "saving") {
-          return "saving";
+          return 'saving';
         }
         return prevStatus;
       });
@@ -44,7 +44,7 @@ export function useSaveStatus(isAdding: boolean, isRemoving: boolean) {
         // Only transition from 'saving' to 'saved'
         if (prevStatus === "saving") {
           setLastSavedAt(new Date());
-          return "saved";
+          return 'saved';
         }
         return prevStatus;
       });

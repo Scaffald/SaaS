@@ -1,7 +1,7 @@
 import type {
   EducationEntryFormValues as SingleEducationEntryFormValues,
   EducationProfileFormData,
-} from "../config";
+} from '../config';
 
 /**
  * Represents a persisted education entry returned from the profile API.

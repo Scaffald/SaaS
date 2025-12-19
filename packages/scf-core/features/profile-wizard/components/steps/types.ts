@@ -1,5 +1,5 @@
-import type { WizardStepPayloads } from "../../hooks/useProfileWizard";
-import type { ProfileWizardStepId } from "../../utils/wizardSteps";
+import type { WizardStepPayloads } from '../../hooks/useProfileWizard';
+import type { ProfileWizardStepId } from '../../utils/wizardSteps';
 
 export interface StepStateChangePayload<TStep extends ProfileWizardStepId> {
   data: WizardStepPayloads[TStep];

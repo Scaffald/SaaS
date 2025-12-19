@@ -1,17 +1,17 @@
 // This file is excluded from expo tsconfig but imported for types
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../_shared/database.types.ts';
 
-const DEFAULT_LOCAL_SUPABASE_URL = "http://127.0.0.1:54321";
+const DEFAULT_LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321';
 const DEFAULT_LOCAL_SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 const DEFAULT_LOCAL_SUPABASE_SERVICE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 
 const resolvedSupabaseUrl = Deno.env.get("SUPABASE_URL") ??
-  Deno.env.get("EXPO_PUBLIC_SUPABASE_URL") ??
-  Deno.env.get("SUPABASE_SITE_URL") ??
-  "";
+  Deno.env.get('EXPO_PUBLIC_SUPABASE_URL') ??
+  Deno.env.get('SUPABASE_SITE_URL') ??
+  '';
 
 const supabaseUrl = resolvedSupabaseUrl.length > 0
   ? resolvedSupabaseUrl
@@ -19,7 +19,7 @@ const supabaseUrl = resolvedSupabaseUrl.length > 0
 
 const isLocalSupabase = supabaseUrl.includes("127.0.0.1") ||
   supabaseUrl.includes("localhost") ||
-  (Deno.env.get("ENVIRONMENT") ?? Deno.env.get("NODE_ENV")) === "development";
+  (Deno.env.get('ENVIRONMENT') ?? Deno.env.get('NODE_ENV')) === 'development';
 
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ??
   Deno.env.get("SUPABASE_KEY") ??
@@ -30,7 +30,7 @@ const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
   (isLocalSupabase ? DEFAULT_LOCAL_SUPABASE_SERVICE_KEY : "");
 
 const maskKey = (value: string) => {
-  if (!value) return "<missing>";
+  if (!value) return '<missing>';
   if (value.length <= 8) return `${value.substring(0, 4)}…`;
   return `${value.substring(0, 4)}…${value.substring(value.length - 4)}`;
 };

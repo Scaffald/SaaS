@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { softSkillsUpdateSchema } from '../../../_shared/profile-schemas.ts'
+import { softSkillsUpdateSchema } from '../../../_shared/profile-schemas';
 import {
   addUserSkillInputSchema,
   getSkillChildrenInputSchema,
@@ -10,8 +10,8 @@ import {
   searchParentSkillsInputSchema,
   updateUserSkillInputSchema,
 } from '@scf/trpc/schemas'
-import { supabaseAnonKey, supabaseUrl } from '../../context.ts'
-import { protectedProcedure, t } from '../../middleware.ts'
+import { supabaseAnonKey, supabaseUrl } from '../../context';
+import { protectedProcedure, t } from '../../middleware';
 
 const publicProcedure = t.procedure
 

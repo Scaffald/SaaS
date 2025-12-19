@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertExists,
-} from "jsr:@std/assert";
+} from 'jsr:@std/assert';
 
 import { callTRPCEndpoint } from '../setup';
 import { setupTeamManagementFixture } from './seed-utils';
@@ -241,7 +241,7 @@ Deno.test({
     if (error) {
       const errorMessage = error.message || JSON.stringify(error);
       if (errorMessage.includes("Cannot read properties of undefined") || 
-          errorMessage.includes("reading 'schema'")) {
+          errorMessage.includes('reading 'schema'")) {
         throw new Error(
           `teams.list failed with supabaseAdmin error: ${errorMessage}. This indicates the fix didn't work.`
         );
@@ -421,7 +421,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const fakeTeamId = "00000000-0000-0000-0000-000000000000";
+    const fakeTeamId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.byId",
@@ -611,7 +611,7 @@ Deno.test({
   sanitizeOps: false,
   async fn() {
     const fixture = await setupTeamManagementFixture();
-    const invalidOrgId = "00000000-0000-0000-0000-000000000000";
+    const invalidOrgId = '00000000-0000-0000-0000-000000000000';
 
     const response = await callTRPCEndpoint(
       "teams.create",

@@ -1,10 +1,10 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useOfflineWorkLogs } from "../useOfflineWorkLogs";
-import * as offlineStorage from "../../utils/offline-storage";
-import type { OfflineWorkLog } from "../../types/offline";
-import type { CreateWorkLogInput } from "@scf/schemas";
+import { useOfflineWorkLogs } from '../useOfflineWorkLogs';
+import * as offlineStorage from '../../utils/offline-storage';
+import type { OfflineWorkLog } from '../../types/offline';
+import type { CreateWorkLogInput } from '@scf/schemas';
 
 const createWorkLogInput = (
   overrides: Partial<CreateWorkLogInput>,

@@ -1,5 +1,5 @@
-import { api } from "@scf/core/utils/api";
-import type { ViewportBounds } from "@unicornlove/ui";
+import { api } from '@scf/core/utils/api';
+import type { ViewportBounds } from '@unicornlove/ui';
 
 /**
  * Calculate approximate viewport bounds from a location point
@@ -78,7 +78,7 @@ export function useLocationResultCounts({
  */
 export function formatCount(count: number | "many"): string {
   if (count === "many" || count >= 500) {
-    return "Many results";
+    return 'Many results';
   }
   return new Intl.NumberFormat("en-US").format(count);
 }

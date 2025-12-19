@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.223.0/http/server';
-import { z } from "zod";
+import { z } from 'zod';
 import { notifyBackgroundCheckStatusChange } from '../_shared/background-check-notifications';
 import {
   appendStatusHistory,
@@ -13,8 +13,8 @@ import { createNationSearchClient } from '../_shared/nationsearch/client';
 import type { NotificationSupabaseClient } from '../_shared/notifications/types';
 import { createServiceSupabaseClient } from '../_shared/notifications/utils';
 
-const SIGNATURE_HEADER = "x-nationsearch-signature";
-const IDEMPOTENCY_HEADER = "x-nationsearch-idempotency";
+const SIGNATURE_HEADER = 'x-nationsearch-signature';
+const IDEMPOTENCY_HEADER = 'x-nationsearch-idempotency';
 const IDEMPOTENCY_TTL_MS = 1000 * 60 * 60; // 1 hour
 
 const processedEvents = new Map<string, number>();
@@ -23,7 +23,7 @@ const componentStatusSchema = z.object({
   code: z.string(),
   status: z.string(),
   completed_at: z.string().datetime().nullable().optional(),
-  findings: z.record(z.unknown()).nullable().optional(),
+  findings: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 
 const webhookEventSchema = z.object({
@@ -41,11 +41,11 @@ const webhookEventSchema = z.object({
     check_id: z.string(),
     status: z.string().optional(),
     summary: z.string().nullable().optional(),
-    findings: z.record(z.unknown()).nullable().optional(),
+    findings: z.record(z.string(), z.unknown()).nullable().optional(),
     completed_at: z.string().datetime().nullable().optional(),
     expires_at: z.string().datetime().nullable().optional(),
     estimated_completion_date: z.string().datetime().nullable().optional(),
-    metadata: z.record(z.unknown()).optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
     components: z.array(componentStatusSchema).optional(),
     component: componentStatusSchema.optional(),
   }),

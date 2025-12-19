@@ -2,10 +2,10 @@ import {
   assertEquals,
   assertExists,
   assertStringIncludes,
-} from "jsr:@std/assert";
+} from 'jsr:@std/assert';
 import { createAdminClient, loadCachedTokens } from '../setup';
 
-const TRPC_URL = "http://127.0.0.1:54321/functions/v1/trpc";
+const TRPC_URL = 'http://127.0.0.1:54321/functions/v1/trpc';
 
 Deno.test("User Profile - Get user skills (tests user_skills join)", async () => {
   const tokens = await loadCachedTokens();

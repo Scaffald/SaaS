@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts'
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
+import type { Context } from '../context';
+import { officeProcedure, protectedProcedure, t } from '../middleware';
 
 const listInputSchema = z.object({
   status: z.enum(['all', 'unread', 'read', 'archived']).default('all'),
@@ -399,7 +399,7 @@ export const notificationsRouter = t.router({
         z.object({
           token: z.string().min(10),
           platform: z.enum(['ios', 'android', 'web']),
-          metadata: z.record(z.any()).optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
         })
       )
       .mutation(async ({ ctx, input }) => {

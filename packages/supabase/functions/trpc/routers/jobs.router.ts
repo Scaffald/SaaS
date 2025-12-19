@@ -4,10 +4,10 @@ import { z } from 'zod'
 import {
   applicationCreateSchema,
   applicationWithdrawSchema,
-} from '../../_shared/application-schemas.ts'
-import { jobSoftSkillRequirementSchema } from '../../_shared/profile-schemas.ts'
-import { transformJobSkills } from '../../_shared/skill-helpers.ts'
-import { protectedProcedure, t } from '../middleware.ts'
+} from '../../_shared/application-schemas';
+import { jobSoftSkillRequirementSchema } from '../../_shared/profile-schemas';
+import { transformJobSkills } from '../../_shared/skill-helpers';
+import { protectedProcedure, t } from '../middleware';
 
 type SoftSkillRequirement = z.infer<typeof jobSoftSkillRequirementSchema>
 
@@ -890,7 +890,7 @@ export const jobsRouter = t.router({
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        // PGRST116 is "not found" - that's ok, just means no application
+        // PGRST116 is 'not found' - that's ok, just means no application
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch application: ${error.message}`,
@@ -916,7 +916,7 @@ export const jobsRouter = t.router({
         cover_letter: z.string().optional(),
         resume_path: z.string().optional(),
         custom_question_answers: z.array(z.any()).optional(),
-        attachments: z.record(z.any()).optional(),
+        attachments: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
