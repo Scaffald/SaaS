@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
 /**
+ * Date string format (YYYY-MM-DD)
+ */
+const dateStringSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+  message: 'Date must be in YYYY-MM-DD format',
+})
+
+/**
  * Base job schema with all possible fields
  */
 const baseJobSchema = z.object({
@@ -89,8 +96,8 @@ const baseJobSchema = z.object({
 
   // Date tracking
   application_deadline: z.string().datetime().optional(),
-  target_start_date: z.string().date().optional(),
-  estimated_hire_date: z.string().date().optional(),
+  target_start_date: dateStringSchema.optional(),
+  estimated_hire_date: dateStringSchema.optional(),
   scheduled_publish_at: z.string().datetime().optional(),
 
   // Enhanced requirements (Migration 069)

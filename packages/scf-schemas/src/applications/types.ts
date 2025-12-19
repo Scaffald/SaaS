@@ -5,7 +5,7 @@ import type {
   attachmentMetadataSchema,
   customQuestionAnswerSchema,
   screeningAnswersSchema,
-} from './application.schema';
+} from './application.schema.ts';
 
 /**
  * Application form data types derived from Zod schemas

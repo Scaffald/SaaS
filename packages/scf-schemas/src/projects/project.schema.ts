@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
 /**
+ * Date string format (YYYY-MM-DD)
+ */
+const dateStringSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+  message: 'Date must be in YYYY-MM-DD format',
+})
+
+/**
  * Project status enum
  */
 export const projectStatusSchema = z.enum(['planning', 'active', 'completed', 'on_hold'])
@@ -23,8 +30,8 @@ export const projectCreateSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255, 'Name must be less than 255 characters'),
   description: z.string().optional(),
   status: projectStatusSchema.default('planning'),
-  start_date: z.string().date().optional(),
-  end_date: z.string().date().optional(),
+  start_date: dateStringSchema.optional(),
+  end_date: dateStringSchema.optional(),
   location_visibility: locationVisibilitySchema.optional(),
   location_visibility_override: z.boolean().optional(),
 })
@@ -37,8 +44,8 @@ export const projectUpdateSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   description: z.string().optional().nullable(),
   status: projectStatusSchema.optional(),
-  start_date: z.string().date().optional().nullable(),
-  end_date: z.string().date().optional().nullable(),
+  start_date: dateStringSchema.optional().nullable(),
+  end_date: dateStringSchema.optional().nullable(),
   location_visibility: locationVisibilitySchema.optional(),
   location_visibility_override: z.boolean().optional(),
 })
@@ -55,8 +62,8 @@ export const projectWorkerCreateSchema = z.object({
   project_id: z.string().uuid('Invalid project ID'),
   user_id: z.string().uuid('Invalid user ID'),
   job_id: z.string().uuid('Invalid job ID').optional(),
-  start_date: z.string().date().optional(),
-  end_date: z.string().date().optional(),
+  start_date: dateStringSchema.optional(),
+  end_date: dateStringSchema.optional(),
   role_on_project: z.string().optional(),
   notes: z.string().optional(),
 })
@@ -67,8 +74,8 @@ export const projectWorkerCreateSchema = z.object({
 export const projectWorkerClaimSchema = z.object({
   project_id: z.string().uuid('Invalid project ID'),
   job_id: z.string().uuid('Invalid job ID').optional(),
-  start_date: z.string().date().optional(),
-  end_date: z.string().date().optional(),
+  start_date: dateStringSchema.optional(),
+  end_date: dateStringSchema.optional(),
   role_on_project: z.string().optional(),
   notes: z.string().optional(),
 })

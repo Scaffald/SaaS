@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { jobCreateSchema, jobPublishSchema, jobUpdateSchema } from './job-create.schema';
+import type { jobCreateSchema, jobPublishSchema, jobUpdateSchema } from './job-create.schema.ts';
 
 /**
  * Job form data types derived from Zod schemas
