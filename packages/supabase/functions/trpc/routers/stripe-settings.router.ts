@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { supabaseUrl } from '../context';
-import { officeProcedure, t } from '../middleware';
+import { supabaseUrl } from '../context.ts';
+import { officeProcedure, t } from '../middleware.ts';
 
 const WEBHOOK_PATH = '/functions/v1/stripe-webhook'
 

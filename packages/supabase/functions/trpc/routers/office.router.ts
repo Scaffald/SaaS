@@ -1,13 +1,13 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { jobCreateSchema, jobUpdateSchema } from '../../_shared/job-schemas';
-import { employmentProfileSchema, generalProfileSchema } from '../../_shared/profile-schemas';
-import { transformJobSkills } from '../../_shared/skill-helpers';
-import { officeProcedure, t } from '../middleware';
-import { officeProfilesRouter } from './office/profiles.router';
-import { officeStorageRouter } from './office/storage.router';
-import { officeUniversitiesRouter } from './office/universities.router';
-import { officeTeamsRouter } from './teams.router';
+import { jobCreateSchema, jobUpdateSchema } from '../../_shared/job-schemas.ts';
+import { employmentProfileSchema, generalProfileSchema } from '../../_shared/profile-schemas.ts';
+import { transformJobSkills } from '../../_shared/skill-helpers.ts';
+import { officeProcedure, t } from '../middleware.ts';
+import { officeProfilesRouter } from './office/profiles.router.ts';
+import { officeStorageRouter } from './office/storage.router.ts';
+import { officeUniversitiesRouter } from './office/universities.router.ts';
+import { officeTeamsRouter } from './teams.router.ts';
 
 const RESERVED_ORGANIZATION_SLUGS = new Set([
   'admin',

@@ -2,8 +2,8 @@ import type {
   NotificationSeverity,
   NotificationSupabaseClient,
   NotificationType,
-} from './notifications/types';
-import { insertNotification } from './notifications/utils';
+} from './notifications/types.ts';
+import { insertNotification } from './notifications/utils.ts';
 
 export type WorkLogCollaboratorAction = 'added' | 'removed' | 'permission_changed' | 'comment'
 

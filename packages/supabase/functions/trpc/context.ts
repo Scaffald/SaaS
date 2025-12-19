@@ -1,6 +1,7 @@
 // This file is excluded from expo tsconfig but imported for types
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../_shared/database.types.ts';
+import { createDbHelpers } from '../_shared/utils/db-helpers.ts';
 
 const DEFAULT_LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321';
 const DEFAULT_LOCAL_SUPABASE_ANON_KEY =
@@ -159,6 +160,7 @@ export const createTRPCContext = async (opts: { req: Request }) => {
     user: userId ? { id: userId, email: userEmail } : undefined,
     userToken,
     supabase, // Default client with anon key + auth header (respects RLS)
+    dbClient: createDbHelpers(supabase), // Schema-aware query helpers for user client
     // supabaseAdmin is not created by default
     // Use role-based middleware (enforceOfficeRole, etc.) to add it when needed
   };
@@ -171,4 +173,5 @@ export { supabaseAnonKey, supabaseServiceKey, supabaseUrl };
 // Note: supabaseAdmin is optional and only added by role-based middleware
 export type Context = Awaited<ReturnType<typeof createTRPCContext>> & {
   supabaseAdmin?: ReturnType<typeof createClient<Database>>;
+  dbAdmin?: ReturnType<typeof createDbHelpers>;
 };

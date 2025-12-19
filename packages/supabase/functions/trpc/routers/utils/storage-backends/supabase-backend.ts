@@ -6,7 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index';
+import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts';
 
 export class SupabaseStorageBackend implements IStorageBackend {
   readonly type = 'supabase' as const

@@ -12,8 +12,8 @@ import {
   saveImportDataInputSchema,
   validateJsonInputSchema,
 } from '@scf/trpc/schemas';
-import type { Context } from '../../context';
-import { protectedProcedure, t } from '../../middleware';
+import type { Context } from '../../context.ts';
+import { protectedProcedure, t } from '../../middleware.ts';
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const IMPORT_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours

@@ -1,11 +1,11 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware';
-import { createStorageRouter } from './utils/storage-router';
-import type { StorageBackendType } from './utils/storage-backends/index';
-import { createUploadQueue, type UploadTask } from './utils/upload-queue';
-import { getDocumentCache } from './utils/document-cache';
-import { getPerformanceMonitor } from './utils/performance-monitoring';
+import { protectedProcedure, t } from '../middleware.ts';
+import { createStorageRouter } from './utils/storage-router.ts';
+import type { StorageBackendType } from './utils/storage-backends/index.ts';
+import { createUploadQueue, type UploadTask } from './utils/upload-queue.ts';
+import { getDocumentCache } from './utils/document-cache.ts';
+import { getPerformanceMonitor } from './utils/performance-monitoring.ts';
 
 /**
  * Document category enum matching database type

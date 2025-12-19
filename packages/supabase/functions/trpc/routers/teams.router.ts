@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { buildAppUrl } from '../../_shared/app-url';
+import { buildAppUrl } from '../../_shared/app-url.ts';
 import {
   checkTeamPermission,
   isOrganizationAdminRole,
@@ -8,8 +8,8 @@ import {
   loadUserRoleAssignments,
   type TeamPermissionKey,
   TeamPermissions,
-} from '../../_shared/permissions/team-permissions';
-import { recordTeamAuditLog } from '../../_shared/team-audit-log';
+} from '../../_shared/permissions/team-permissions.ts';
+import { recordTeamAuditLog } from '../../_shared/team-audit-log.ts';
 import {
   TEAM_INVITATION_TTL_DEFAULT,
   TEAM_MEMBER_STATUSES,
@@ -38,16 +38,16 @@ import {
   teamRoleKeySchema,
   teamUpdateSchema,
   teamWorkloadSnapshotInputSchema,
-} from '../../_shared/team-schemas';
-import { assignApplicationToMember } from '../../_shared/utils/application-assignment';
-import { refreshTeamMetricsSnapshot } from '../../_shared/utils/team-metrics';
-import type { Context } from '../context';
+} from '../../_shared/team-schemas.ts';
+import { assignApplicationToMember } from '../../_shared/utils/application-assignment.ts';
+import { refreshTeamMetricsSnapshot } from '../../_shared/utils/team-metrics.ts';
+import type { Context } from '../context.ts';
 import {
   officeProcedure,
   protectedProcedure,
   publicProcedure,
   t,
-} from '../middleware';
+} from '../middleware.ts';
 
 const teamApplicationAssignmentSchema = z.object({
   teamId: teamIdSchema,

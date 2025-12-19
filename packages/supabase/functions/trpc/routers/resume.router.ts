@@ -2,14 +2,14 @@ import { Buffer } from 'node:buffer';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import type { Database } from '../../_shared/database.types';
+import type { Database } from '../../_shared/database.types.ts';
 import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/pdf';
 import {
   profileEmploymentInputSchema,
   profileGeneralInputSchema,
 } from '@scf/trpc/schemas';
-import { supabaseAnonKey, supabaseUrl } from '../context';
-import { protectedProcedure, t } from '../middleware';
+import { supabaseAnonKey, supabaseUrl } from '../context.ts';
+import { protectedProcedure, t } from '../middleware.ts';
 
 type DbClient = SupabaseClient<Database>;
 

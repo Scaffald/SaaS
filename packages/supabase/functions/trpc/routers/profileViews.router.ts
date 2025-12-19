@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context';
-import { protectedProcedure, t } from '../middleware';
+import type { Context } from '../context.ts';
+import { protectedProcedure, t } from '../middleware.ts';
 
 // =========================================================
 // Zod Schemas

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, publicProcedure, t } from '../../middleware';
+import { protectedProcedure, publicProcedure, t } from '../../middleware.ts';
 
 /**
  * Profile Vanity URL router - handles slug-based profile access and management

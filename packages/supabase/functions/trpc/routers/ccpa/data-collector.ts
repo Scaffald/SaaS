@@ -6,7 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types';
+import type { Database } from '../../../_shared/database.types.ts';
 import type {
   BackgroundCheckEntry,
   CertificationEntry,
@@ -30,7 +30,7 @@ import type {
   UsageInformation,
   UserDataExport,
   WorkLogEntry,
-} from './types';
+} from './types.ts';
 
 type DbClient = SupabaseClient<Database>
 

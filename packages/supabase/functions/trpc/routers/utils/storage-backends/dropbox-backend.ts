@@ -12,7 +12,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index';
+import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts';
 
 // Dropbox API endpoints
 const DROPBOX_API_BASE = 'https://api.dropboxapi.com/2'

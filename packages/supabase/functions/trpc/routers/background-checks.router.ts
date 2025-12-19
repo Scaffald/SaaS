@@ -2,11 +2,11 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
-import type { Database, Json } from '../../_shared/database.types';
+import type { Database, Json } from '../../_shared/database.types.ts';
 import {
   notifyBackgroundCheckInvitation,
   notifyBackgroundCheckStatusChange,
-} from '../../_shared/background-check-notifications';
+} from '../../_shared/background-check-notifications.ts';
 import {
   BACKGROUND_CHECK_ALLOWED_MIME_TYPES,
   backgroundCheckDisputeSchema,
@@ -16,7 +16,7 @@ import {
   backgroundCheckStatusEnum,
   backgroundCheckUploadRequestSchema,
   consentMetadataSchema,
-} from '../../_shared/background-check-schemas';
+} from '../../_shared/background-check-schemas.ts';
 import {
   appendStatusHistory,
   BACKGROUND_CHECK_BASE_COLUMNS,
@@ -24,15 +24,15 @@ import {
   mapProviderStatus,
   mergeMetadata,
   shouldSyncStatus,
-} from '../../_shared/background-check-status';
+} from '../../_shared/background-check-status.ts';
 import {
   type CheckStatusResponse,
   type InitiateCheckPayload,
   createNationSearchClient,
   isNationSearchOutageError,
-} from '../../_shared/nationsearch/client';
-import type { Context } from '../context';
-import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware';
+} from '../../_shared/nationsearch/client.ts';
+import type { Context } from '../context.ts';
+import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts';
 
 const listPackagesOutputSchema = z.object({
   id: z.string().uuid(),
@@ -360,13 +360,12 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     } as unknown as Stripe
   }
 
-  if (!ctx.supabaseAdmin) {
+  if (!ctx.supabaseAdmin || !ctx.dbAdmin) {
     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
   }
 
-  const { data: settings, error } = await ctx.supabaseAdmin
-    .schema('core')
-    .from('stripe_settings')
+  const { data: settings, error } = await ctx.dbAdmin
+    .core('stripe_settings')
     .select('api_key_secret_id')
     .eq('settings_name', 'stripe')
     .maybeSingle()
@@ -412,13 +411,12 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
     return false
   }
 
-  if (!ctx.supabaseAdmin) {
+  if (!ctx.supabaseAdmin || !ctx.dbAdmin) {
     return false
   }
 
-  const { data, error } = await ctx.supabaseAdmin
-    .schema('core')
-    .from('role_assignments')
+  const { data, error } = await ctx.dbAdmin
+    .core('role_assignments')
     .select('role:roles(name, scope)')
     .eq('user_id', ctx.user.id)
 
@@ -447,13 +445,12 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
     return
   }
 
-  if (!ctx.supabaseAdmin) {
+  if (!ctx.supabaseAdmin || !ctx.dbAdmin) {
     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
   }
 
-  const { data: organization, error: orgError } = await ctx.supabaseAdmin
-    .schema('core')
-    .from('organizations')
+  const { data: organization, error: orgError } = await ctx.dbAdmin
+    .core('organizations')
     .select('id, owner_user_id')
     .eq('id', organizationId)
     .maybeSingle()
@@ -476,9 +473,8 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
     return
   }
 
-  const { data: membership, error: membershipError } = await ctx.supabaseAdmin
-    .schema('core')
-    .from('role_assignments')
+  const { data: membership, error: membershipError } = await ctx.dbAdmin
+    .core('role_assignments')
     .select('scope_org_id')
     .eq('user_id', ctx.user.id)
     .eq('scope_org_id', organizationId)
@@ -512,13 +508,12 @@ async function recordBackgroundCheckTransaction(
     metadata?: Record<string, unknown>
   }
 ) {
-  if (!ctx.supabaseAdmin) {
+  if (!ctx.supabaseAdmin || !ctx.dbAdmin) {
     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
   }
 
-  const { error } = await ctx.supabaseAdmin
-    .schema('core')
-    .from('payment_transactions')
+  const { error } = await ctx.dbAdmin
+    .core('payment_transactions')
     .insert({
       organization_id: params.organizationId ?? null,
       user_id: params.userId ?? null,
@@ -1118,7 +1113,7 @@ export const backgroundChecksRouter = t.router({
   requestCheck: protectedProcedure
     .input(requestBackgroundCheckInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabaseAdmin, user } = ctx
+      const { user } = ctx
       const workerUserId = input.worker_user_id ?? user?.id
 
       if (!workerUserId) {
@@ -1151,13 +1146,12 @@ export const backgroundChecksRouter = t.router({
         await ensureOrganizationAccess(ctx, input.organization_id)
       }
 
-      if (!ctx.supabaseAdmin) {
+      if (!ctx.supabaseAdmin || !ctx.dbAdmin) {
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
       }
 
-      const { data: pkg, error: pkgError } = await ctx.supabaseAdmin
-        .schema('core')
-        .from('background_check_packages')
+      const { data: pkg, error: pkgError } = await ctx.dbAdmin
+        .core('background_check_packages')
         .select('id, slug, check_type_ids, metadata')
         .eq('id', input.package_id)
         .eq('is_active', true)
@@ -1186,9 +1180,8 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      const { data: tierRow, error: tierError } = await ctx.supabaseAdmin
-        .schema('core')
-        .from('service_pricing')
+      const { data: tierRow, error: tierError } = await ctx.dbAdmin
+        .core('service_pricing')
         .select('id, tier, name, price_cents')
         .eq('service_type', 'background_check')
         .eq('tier', input.tier)
@@ -1213,9 +1206,8 @@ export const backgroundChecksRouter = t.router({
       const activeAddOnIds: string[] = []
 
       if (input.add_on_ids?.length) {
-        const { data: addOns, error: addOnsError } = await ctx.supabaseAdmin
-          .schema('core')
-          .from('background_check_addons')
+        const { data: addOns, error: addOnsError } = await ctx.dbAdmin
+          .core('background_check_addons')
           .select('id, price_cents')
           .in('id', input.add_on_ids)
           .eq('is_active', true)
@@ -1243,9 +1235,8 @@ export const backgroundChecksRouter = t.router({
         },
       ]
 
-      const { data: insertedRecord, error: insertError } = await ctx.supabaseAdmin
-        .schema('core')
-        .from('background_checks')
+      const { data: insertedRecord, error: insertError } = await ctx.dbAdmin
+        .core('background_checks')
         .insert({
           user_id: workerUserId,
           requested_by_user_id: user?.id ?? null,
@@ -1535,7 +1526,7 @@ export const backgroundChecksRouter = t.router({
   confirmSharedAccessPayment: protectedProcedure
     .input(confirmSharedAccessPaymentInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabaseAdmin, user } = ctx
+      const { user } = ctx
       await ensureOrganizationAccess(ctx, input.organization_id)
 
       const stripe = await loadStripeClient(ctx)
@@ -1690,8 +1681,6 @@ export const backgroundChecksRouter = t.router({
   adminUpsertCheckType: officeProcedure
     .input(adminUpsertCheckTypeInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabaseAdmin } = ctx
-
       const payload = {
         slug: input.slug,
         display_name: input.display_name,
@@ -1718,7 +1707,7 @@ export const backgroundChecksRouter = t.router({
         is_active: input.is_active ?? true,
       }
 
-      const query = supabaseAdmin.schema('core').from('background_check_types')
+      const query = ctx.dbAdmin.core('background_check_types')
 
       const { data, error } = input.id
         ? await query
@@ -1752,8 +1741,6 @@ export const backgroundChecksRouter = t.router({
   adminUpsertPackage: officeProcedure
     .input(adminUpsertPackageInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabaseAdmin } = ctx
-
       const payload = {
         slug: input.slug,
         display_name: input.display_name,
@@ -1775,7 +1762,7 @@ export const backgroundChecksRouter = t.router({
         is_active: input.is_active ?? true,
       }
 
-      const query = supabaseAdmin.schema('core').from('background_check_packages')
+      const query = ctx.dbAdmin.core('background_check_packages')
 
       const { data, error } = input.id
         ? await query
@@ -3560,17 +3547,14 @@ export const backgroundChecksRouter = t.router({
     }),
 
   adminGetMetrics: officeProcedure.query(async ({ ctx }) => {
-    const { supabase } = ctx
-
     const [{ data: checks, error: checksError }, { data: disputes, error: disputesError }] =
       await Promise.all([
-        supabase
-          .schema('core')
-          .from('background_checks')
+        ctx.dbAdmin
+          .core('background_checks')
           .select(
             'status, created_at, completed_at, package:background_check_packages(id, display_name, slug)'
           ),
-        supabase.schema('core').from('background_check_disputes').select('status'),
+        ctx.dbAdmin.core('background_check_disputes').select('status'),
       ])
 
     if (checksError || disputesError) {

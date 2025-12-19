@@ -8,12 +8,12 @@
 
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../../middleware';
+import { protectedProcedure, t } from '../../middleware.ts';
 import {
   enforceCompliancePermission,
   getOrgIdFromInput,
   getUserPermissions,
-} from './compliance-auth';
+} from './compliance-auth.ts';
 
 // =============================================================================
 // Zod Schemas
