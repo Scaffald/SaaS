@@ -11,6 +11,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Layout - loaded immediately (needed for all routes)
 import Layout from './components/Layout/Layout';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Suspense wrapper for lazy components
 const LazyRoute = ({ children }: { children: React.ReactNode }) => (
@@ -92,8 +93,9 @@ const BrokerAgencySettings = lazy(() => import('./pages/broker/settings/AgencySe
 const BrokerClientSettings = lazy(() => import('./pages/broker/settings/ClientSettings'));
 const BrokerNotificationSettings = lazy(() => import('./pages/broker/settings/NotificationSettings'));
 
-// Admin
-const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+// Admin - AdminLayout is NOT lazy loaded to prevent esbuild service crashes
+// Layout components should be eagerly loaded to avoid dependency resolution issues
+import AdminLayout from './components/admin/AdminLayout';
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminUsers = lazy(() => import('./pages/admin/Users'));
 const AdminBrokers = lazy(() => import('./pages/admin/Brokers'));
@@ -626,13 +628,15 @@ const AppRoutes = () => {
         />
       </Route>
 
-      {/* Admin routes with AdminLayout */}
+      {/* Admin routes with AdminLayout and ErrorBoundary */}
       <Route
         path="/admin"
         element={
-          <ProtectedRoute allowedTypes={['admin']} requireOnboarding={false}>
-            <AdminLayout />
-          </ProtectedRoute>
+          <ErrorBoundary>
+            <ProtectedRoute allowedTypes={['admin']} requireOnboarding={false}>
+              <AdminLayout />
+            </ProtectedRoute>
+          </ErrorBoundary>
         }
       >
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
