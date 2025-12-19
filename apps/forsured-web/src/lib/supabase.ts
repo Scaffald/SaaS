@@ -51,11 +51,66 @@ export const supabase: SupabaseClient = createClient(effectiveSupabaseUrl, effec
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    // Handle auth state changes and errors
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storageKey: 'sb-auth-token',
+    flowType: 'pkce',
   },
   db: {
     schema: 'public', // Supabase requires this, but we'll specify schema in queries
   },
+  global: {
+    // Handle auth errors gracefully
+    headers: {
+      'x-client-info': 'forsured-web',
+    },
+  },
 });
+
+// Set up error handler for auth refresh failures
+// This handles cases where stale refresh tokens exist in localStorage
+if (typeof window !== 'undefined') {
+  // Listen for auth state changes and handle errors
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'TOKEN_REFRESHED') {
+      console.log('[Supabase] Token refreshed successfully');
+    } else if (event === 'SIGNED_OUT') {
+      console.log('[Supabase] User signed out');
+    } else if (event === 'SIGNED_IN') {
+      console.log('[Supabase] User signed in');
+    }
+  });
+
+  // Handle initial session load and catch refresh token errors
+  // This prevents console errors from stale refresh tokens after database resets
+  supabase.auth.getSession().then(({ data, error }) => {
+    if (error) {
+      // If there's an error getting the session (e.g., invalid refresh token),
+      // clear the session to prevent repeated refresh attempts
+      const errorMessage = error.message || '';
+      if (
+        errorMessage.includes('refresh_token') ||
+        errorMessage.includes('Invalid') ||
+        errorMessage.includes('Refresh Token Not Found')
+      ) {
+        console.log('[Supabase] Clearing invalid session due to refresh token error');
+        // Clear the session silently to prevent error loops
+        supabase.auth.signOut({ scope: 'local' }).catch(() => {
+          // Ignore errors - session might already be cleared
+        });
+      }
+    }
+  }).catch((error) => {
+    // Handle errors during initial session check (e.g., network issues)
+    // Don't log these as errors since they might be expected in some scenarios
+    if (error.message?.includes('refresh_token') || error.message?.includes('Invalid')) {
+      console.log('[Supabase] Clearing invalid session due to refresh error');
+      supabase.auth.signOut({ scope: 'local' }).catch(() => {
+        // Ignore errors
+      });
+    }
+  });
+}
 
 /**
  * Supabase service role client (bypasses RLS)

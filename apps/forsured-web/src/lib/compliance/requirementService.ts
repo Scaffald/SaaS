@@ -3,7 +3,7 @@
  * CRUD operations for compliance requirements
  */
 
-import { forsured } from '@scf/supabase/forsured-client'
+import { supabase } from '../supabase'
 import {
   type ComplianceRequirement,
   type CreateComplianceRequirementInput,
@@ -32,7 +32,7 @@ export async function createRequirement(
   }
 
   // Check for duplicate names
-  const { data: existingRequirements } = await forsured('compliance_requirements')
+  const { data: existingRequirements } = await supabase.schema('forsured').from('compliance_requirements')
     .select('*')
     .eq('organization_id', input.organization_id)
 
@@ -53,7 +53,7 @@ export async function createRequirement(
   }
 
   // Create the requirement
-  const { data: requirement, error } = await forsured('compliance_requirements')
+  const { data: requirement, error } = await supabase.schema('forsured').from('compliance_requirements')
     .insert({
       ...input,
       version: 1,
@@ -78,7 +78,7 @@ export async function createRequirement(
  * @returns The requirement or null if not found
  */
 export async function getRequirement(id: string): Promise<ComplianceRequirement | null> {
-  const { data } = await forsured('compliance_requirements').select('*').eq('id', id).single()
+  const { data } = await supabase.schema('forsured').from('compliance_requirements').select('*').eq('id', id).single()
 
   return data
 }
@@ -94,7 +94,7 @@ export async function listRequirements(
   const { filters = {}, sort_by = 'created_at', ascending = false, page = 1, limit = 50 } = options
 
   // Build Supabase query
-  let query = forsured('compliance_requirements').select('*')
+  let query = supabase.schema('forsured').from('compliance_requirements').select('*')
 
   // Apply filters
   if (filters.type) {
@@ -185,7 +185,7 @@ export async function updateRequirement(
 
   // Check for duplicate names if name was updated
   if (updates.name && updates.name !== current.name) {
-    const { data: existingRequirements } = await forsured('compliance_requirements')
+    const { data: existingRequirements } = await supabase.schema('forsured').from('compliance_requirements')
       .select('*')
       .eq('organization_id', current.organization_id)
 
@@ -208,7 +208,7 @@ export async function updateRequirement(
   }
 
   // Mark current version as superseded
-  const { error: updateError } = await forsured('compliance_requirements')
+  const { error: updateError } = await supabase.schema('forsured').from('compliance_requirements')
     .update({ superseded_date: new Date().toISOString() })
     .eq('id', id)
 
@@ -217,7 +217,7 @@ export async function updateRequirement(
   }
 
   // Create new version
-  const { data: newVersion, error: insertError } = await forsured('compliance_requirements')
+  const { data: newVersion, error: insertError } = await supabase.schema('forsured').from('compliance_requirements')
     .insert({
       name: updatedName,
       type: current.type,
@@ -255,7 +255,7 @@ export async function deleteRequirement(id: string): Promise<void> {
     throw new Error('Requirement not found')
   }
 
-  const { error } = await forsured('compliance_requirements')
+  const { error } = await supabase.schema('forsured').from('compliance_requirements')
     .update({
       status: RequirementStatus.ARCHIVED,
       archived_at: new Date().toISOString(),
@@ -323,7 +323,7 @@ export async function getRequirementVersions(id: string): Promise<ComplianceRequ
 
   // Find all descendants
   while (true) {
-    const { data: descendants } = await forsured('compliance_requirements')
+    const { data: descendants } = await supabase.schema('forsured').from('compliance_requirements')
       .select('*')
       .eq('parent_requirement_id', currentVersion.id)
 

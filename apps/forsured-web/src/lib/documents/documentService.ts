@@ -29,7 +29,7 @@ import {
   ALLOWED_FILE_EXTENSION,
 } from '../../types/document'
 import type { DocumentCategory, UploadDocumentResponse } from '../scaffald/types'
-import { forsured } from '@scf/supabase/forsured-client'
+import { supabase } from '../supabase'
 
 console.log('[DocumentService] Mode: Scaffald')
 
@@ -231,7 +231,7 @@ export class DocumentService {
    * Get documents with optional filtering
    */
   async getDocuments(filters: DocumentFilter = {}): Promise<Document[]> {
-    let query = forsured('documents').select('*').order('uploaded_at', { ascending: false })
+    let query = supabase.schema('forsured').from('documents').select('*').order('uploaded_at', { ascending: false })
 
     // Apply filters if provided
     if (filters.clientId) {
@@ -256,7 +256,7 @@ export class DocumentService {
    * Get a single document by ID
    */
   async getDocumentById(id: string): Promise<Document | null> {
-    const { data, error } = await forsured('documents').select('*').eq('id', id).single()
+    const { data, error } = await supabase.schema('forsured').from('documents').select('*').eq('id', id).single()
 
     if (error) {
       if (error.code === 'PGRST116') return null // Not found
@@ -281,7 +281,7 @@ export class DocumentService {
       updates.error_message = errorMessage
     }
 
-    const { data, error } = await forsured('documents')
+    const { data, error } = await supabase.schema('forsured').from('documents')
       .update(updates)
       .eq('id', id)
       .select()
@@ -295,7 +295,7 @@ export class DocumentService {
    * Delete a document
    */
   async deleteDocument(id: string): Promise<void> {
-    const { error } = await forsured('documents').delete().eq('id', id)
+    const { error } = await supabase.schema('forsured').from('documents').delete().eq('id', id)
 
     if (error) throw error
   }
@@ -304,7 +304,7 @@ export class DocumentService {
    * Delete multiple documents
    */
   async deleteDocuments(ids: string[]): Promise<void> {
-    const { error } = await forsured('documents').delete().in('id', ids)
+    const { error } = await supabase.schema('forsured').from('documents').delete().in('id', ids)
 
     if (error) throw error
   }

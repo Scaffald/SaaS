@@ -16,11 +16,25 @@ export class SidebarComponent {
   }
 
   async navigateTo(linkText: string) {
-    // Try to find the navigation link, but handle auth redirect gracefully
-    const link = this.page.getByRole('link', { name: linkText }).first();
-    if (await link.isVisible({ timeout: 5000 }).catch(() => false)) {
+    // Try to find the navigation link with multiple strategies
+    const currentUrl = this.page.url();
+
+    // Try exact match first
+    let link = this.page.getByRole('link', { name: linkText, exact: true }).first();
+    if (!await link.isVisible({ timeout: 2000 }).catch(() => false)) {
+      // Try partial match
+      link = this.page.getByRole('link', { name: linkText }).first();
+    }
+    if (!await link.isVisible({ timeout: 2000 }).catch(() => false)) {
+      // Try text content match
+      link = this.page.locator(`a:has-text("${linkText}")`).first();
+    }
+
+    if (await link.isVisible({ timeout: 3000 }).catch(() => false)) {
       await link.click();
-      await this.page.waitForLoadState('networkidle');
+      // Wait for URL to change
+      await this.page.waitForURL((url) => url.href !== currentUrl, { timeout: 10000 }).catch(() => {});
+      await this.page.waitForLoadState('domcontentloaded');
     }
     // If link not found, page may have auth redirected - that's acceptable in E2E
   }

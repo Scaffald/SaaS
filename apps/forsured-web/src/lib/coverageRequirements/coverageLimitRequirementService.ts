@@ -13,7 +13,7 @@ import type {
   CreateCoverageLimitRequirementRequest,
   UpdateCoverageLimitRequirementRequest,
 } from '../../types'
-import { forsured } from '@scf/supabase/forsured-client'
+import { supabase } from '../supabase'
 
 /**
  * Valid coverage requirement levels
@@ -260,12 +260,12 @@ export async function getCoverageLimitRequirements(
 
     if (projectId) {
       // Get combined org-level + project-level requirements
-      const { data: orgRequirements } = await forsured('coverage_limit_requirements')
+      const { data: orgRequirements } = await supabase.schema('forsured').from('coverage_limit_requirements')
         .select('*')
         .eq('organization_id', organizationId)
         .eq('level', 'org')
 
-      const { data: projectRequirements } = await forsured('coverage_limit_requirements')
+      const { data: projectRequirements } = await supabase.schema('forsured').from('coverage_limit_requirements')
         .select('*')
         .eq('organization_id', organizationId)
         .eq('project_id', projectId)
@@ -274,7 +274,7 @@ export async function getCoverageLimitRequirements(
       requirements = [...(orgRequirements || []), ...(projectRequirements || [])]
     } else {
       // Get only org-level requirements
-      const { data } = await forsured('coverage_limit_requirements')
+      const { data } = await supabase.schema('forsured').from('coverage_limit_requirements')
         .select('*')
         .eq('organization_id', organizationId)
         .eq('level', 'org')
@@ -312,7 +312,7 @@ export async function getCoverageLimitRequirementById(
   id: string
 ): Promise<ApiResponse<CoverageLimitRequirement>> {
   try {
-    const { data: requirement } = await forsured('coverage_limit_requirements')
+    const { data: requirement } = await supabase.schema('forsured').from('coverage_limit_requirements')
       .select('*')
       .eq('id', id)
       .single()
@@ -382,7 +382,7 @@ export async function createCoverageLimitRequirement(
   }
 
   try {
-    const { data: requirement, error } = await forsured('coverage_limit_requirements')
+    const { data: requirement, error } = await supabase.schema('forsured').from('coverage_limit_requirements')
       .insert({
         name: input.name,
         level: input.level,
@@ -429,7 +429,7 @@ export async function updateCoverageLimitRequirement(
   user: UserContext
 ): Promise<ApiResponse<CoverageLimitRequirement>> {
   // Check requirement exists
-  const { data: existing } = await forsured('coverage_limit_requirements')
+  const { data: existing } = await supabase.schema('forsured').from('coverage_limit_requirements')
     .select('*')
     .eq('id', id)
     .single()
@@ -473,7 +473,7 @@ export async function updateCoverageLimitRequirement(
   }
 
   try {
-    const { data: updated, error } = await forsured('coverage_limit_requirements')
+    const { data: updated, error } = await supabase.schema('forsured').from('coverage_limit_requirements')
       .update(input)
       .eq('id', id)
       .select()
@@ -510,7 +510,7 @@ export async function deleteCoverageLimitRequirement(
   user: UserContext
 ): Promise<ApiResponse<void>> {
   // Check requirement exists
-  const { data: existing } = await forsured('coverage_limit_requirements')
+  const { data: existing } = await supabase.schema('forsured').from('coverage_limit_requirements')
     .select('*')
     .eq('id', id)
     .single()
@@ -544,7 +544,7 @@ export async function deleteCoverageLimitRequirement(
   }
 
   try {
-    const { error } = await forsured('coverage_limit_requirements').delete().eq('id', id)
+    const { error } = await supabase.schema('forsured').from('coverage_limit_requirements').delete().eq('id', id)
 
     if (error) {
       return {
@@ -574,7 +574,7 @@ export async function getOrgLevelRequirements(
   organizationId: string
 ): Promise<ApiResponse<CoverageLimitRequirement[]>> {
   try {
-    const { data: requirements } = await forsured('coverage_limit_requirements')
+    const { data: requirements } = await supabase.schema('forsured').from('coverage_limit_requirements')
       .select('*')
       .eq('organization_id', organizationId)
       .eq('level', 'org')
@@ -601,7 +601,7 @@ export async function getProjectLevelRequirements(
   projectId: string
 ): Promise<ApiResponse<CoverageLimitRequirement[]>> {
   try {
-    const { data: requirements } = await forsured('coverage_limit_requirements')
+    const { data: requirements } = await supabase.schema('forsured').from('coverage_limit_requirements')
       .select('*')
       .eq('project_id', projectId)
       .eq('level', 'project')

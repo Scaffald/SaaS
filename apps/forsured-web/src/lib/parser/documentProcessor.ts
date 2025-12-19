@@ -14,7 +14,7 @@ import type {
   AIExtractionRecord,
   CoverageType,
 } from '../types/acord25'
-import { forsured } from '@scf/supabase/forsured-client'
+import { supabase } from '../supabase'
 
 export interface ProcessingResult {
   success: boolean
@@ -109,7 +109,7 @@ export class DocumentProcessor {
       requires_review: extraction.requires_manual_review,
     }
 
-    const { data, error } = await forsured('ai_extractions').insert(record).select().single()
+    const { data, error } = await supabase.schema('forsured').from('ai_extractions').insert(record).select().single()
 
     if (error) throw error
     return data as AIExtractionRecord
@@ -147,7 +147,7 @@ export class DocumentProcessor {
       }
 
       try {
-        const { data: policy, error } = await forsured('policies')
+        const { data: policy, error } = await supabase.schema('forsured').from('policies')
           .insert(policyData)
           .select()
           .single()
@@ -170,7 +170,7 @@ export class DocumentProcessor {
    */
   private async resolveClientId(_documentId: string): Promise<string | null> {
     // For MVP, try to find first client in database
-    const { data: clients = [] } = await forsured('clients').select('id').limit(1)
+    const { data: clients = [] } = await supabase.schema('forsured').from('clients').select('id').limit(1)
 
     if (clients.length > 0) {
       return clients[0].id
@@ -245,7 +245,7 @@ export class DocumentProcessor {
     errorMessage?: string
   ): Promise<void> {
     try {
-      const { error } = await forsured('document_versions')
+      const { error } = await supabase.schema('forsured').from('document_versions')
         .update({
           status,
           error_message: errorMessage,
