@@ -292,8 +292,9 @@ export const pinkDark = {
   pink12: 'hsla(25, 42%, 92%, 1)',
 }
 
-export const lightPalette = [lightTransparent, ...Object.values(grayLight), darkTransparent]
-export const darkPalette = [darkTransparent, ...Object.values(grayDark), lightTransparent]
+// Use visible edge colors (paper/ink) instead of transparent for proper $color1/$color14 tokens
+export const lightPalette = [paper, ...Object.values(grayLight), ink]
+export const darkPalette = [ink, ...Object.values(grayDark), paper]
 
 export const shadows = {
   shadowColor: 'rgba(0,0,0,0.3)',

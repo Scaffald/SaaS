@@ -11,7 +11,9 @@
 
 import { t } from '../middleware.ts'
 import { accountDeletionRouter } from './account-deletion.router.ts'
+import { ccpaRouter } from './ccpa.router.ts'
 import { addressesRouter } from './addresses.router.ts'
+import { documentsRouter } from './documents.router.ts'
 import { applicationsRouter } from './applications.router.ts'
 import { authRouter } from './auth.router.ts'
 import { backgroundChecksRouter } from './background-checks.router.ts'
@@ -48,6 +50,7 @@ import { teamsRouter } from './teams.router.ts'
 import { userProfileRouter } from './user-profile.router.ts'
 import { workLogsRouter } from './work-logs.router.ts'
 import { workersRouter } from './workers.router.ts'
+import { complianceRequirementsRouter, complianceDependenciesRouter } from './compliance/index.ts'
 
 /**
  * Main application router - merges all feature routers into a single tRPC router
@@ -58,6 +61,7 @@ export const appRouter = t.router({
   profileWizard: profileWizardRouter,
   auth: authRouter,
   cms: cmsRouter,
+  documents: documentsRouter,
   office: officeRouter,
   jobs: jobsRouter,
   applications: applicationsRouter,
@@ -92,4 +96,9 @@ export const appRouter = t.router({
   accountDeletion: accountDeletionRouter,
   connections: connectionsRouter,
   profileViews: profileViewsRouter,
+  // Compliance routers (REQ-2)
+  complianceRequirements: complianceRequirementsRouter,
+  complianceDependencies: complianceDependenciesRouter,
+  // CCPA router (REQ-3)
+  ccpa: ccpaRouter,
 })

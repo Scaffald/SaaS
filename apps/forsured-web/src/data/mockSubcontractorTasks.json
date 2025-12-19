@@ -1,0 +1,621 @@
+{
+  "subcontractorTasks": [
+    {
+      "id": "task-sub-001",
+      "title": "Upload Additional Insured Endorsement for Ongoing Operations",
+      "description": "Your General Liability policy is missing the Additional Insured endorsement for ongoing operations (CG 2010). This endorsement is required before work can begin.",
+      "task_type": "endorsement_correction",
+      "status": "pending",
+      "priority": "urgent",
+      "origin_role": "manager",
+      "due_date": "2025-11-08T17:00:00Z",
+      "project_id": "proj-1",
+      "project_name": "Bay Area Tech Campus",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-1",
+      "policy_number": "GL-1000",
+      "created_at": "2025-11-04T09:00:00Z",
+      "updated_at": "2025-11-04T09:00:00Z",
+      "created_by_user_id": "user-manager-2",
+      "assigned_to_user_id": "user-sub-1",
+      "created_by": {
+        "id": "user-manager-2",
+        "name": "Stephanie Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "critical",
+        "compliance_issue_type": "missing_endorsement",
+        "missing_endorsement": "Additional Insured - Ongoing Operations",
+        "required_endorsement_form": "CG 2010 (11/85) or equivalent",
+        "current_endorsement": "None",
+        "required_endorsement": "CG 2010 - Additional Insured - Owners, Lessees or Contractors - Scheduled Person or Organization (Ongoing Operations)",
+        "correction_instructions": "Contact your insurance broker to add the CG 2010 endorsement naming Massei Construction as Additional Insured for ongoing operations. Upload the updated certificate once received.",
+        "requirements_link": "/projects/proj-1/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": [
+        "upload_document",
+        "view_requirements",
+        "contact_broker"
+      ]
+    },
+    {
+      "id": "task-sub-002",
+      "title": "Update Auto Liability Coverage Symbol",
+      "description": "Your Commercial Auto policy shows Symbol 7 (Specifically Described Autos), but the project requires Symbol 1 (Any Auto) coverage.",
+      "task_type": "auto_symbol_compliance",
+      "status": "pending",
+      "priority": "high",
+      "origin_role": "manager",
+      "due_date": "2025-11-15T17:00:00Z",
+      "project_id": "proj-1",
+      "project_name": "Bay Area Tech Campus",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-3",
+      "policy_number": "CA-3000",
+      "created_at": "2025-11-04T10:30:00Z",
+      "updated_at": "2025-11-04T10:30:00Z",
+      "created_by_user_id": "user-manager-2",
+      "assigned_to_user_id": "user-sub-1",
+      "created_by": {
+        "id": "user-manager-2",
+        "name": "Stephanie Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "high",
+        "compliance_issue_type": "auto_symbol",
+        "current_symbol": "Symbol 7 - Specifically Described Autos",
+        "required_symbol": "Symbol 1 - Any Auto",
+        "symbol_explanation": "Symbol 1 provides coverage for any auto used in your business, including owned, hired, and non-owned vehicles. Symbol 7 only covers specifically listed vehicles, which may not provide adequate protection for this project.",
+        "correction_instructions": "Contact your broker to update your Commercial Auto policy to Symbol 1 coverage. This will ensure all vehicles used on the project are covered.",
+        "requirements_link": "/projects/proj-1/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_requirements", "contact_broker", "request_quote"]
+    },
+    {
+      "id": "task-sub-003",
+      "title": "Increase Umbrella Liability Limits",
+      "description": "Your current Umbrella Liability limit of $1,000,000 does not meet the project requirement of $5,000,000.",
+      "task_type": "limit_inadequacy",
+      "status": "submitted",
+      "priority": "high",
+      "origin_role": "manager",
+      "due_date": "2025-11-20T17:00:00Z",
+      "project_id": "proj-1",
+      "project_name": "Bay Area Tech Campus",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-7",
+      "policy_number": "UMB-5000",
+      "created_at": "2025-11-04T11:00:00Z",
+      "updated_at": "2025-11-05T14:30:00Z",
+      "created_by_user_id": "user-manager-2",
+      "assigned_to_user_id": "user-sub-1",
+      "created_by": {
+        "id": "user-manager-2",
+        "name": "Stephanie Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "high",
+        "compliance_issue_type": "limit_inadequacy",
+        "current_limit": 1000000,
+        "required_limit": 5000000,
+        "gap_amount": 4000000,
+        "correction_instructions": "Request a quote from your broker to increase your Umbrella Liability limits to $5,000,000. Upload the updated certificate once the increase is bound.",
+        "requirements_link": "/projects/proj-1/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_quote", "view_requirements", "contact_broker"]
+    },
+    {
+      "id": "task-sub-004",
+      "title": "Update Umbrella Policy Description of Operations",
+      "description": "Your Umbrella policy does not explicitly state that it provides excess coverage over General Liability, Auto Liability, and Employers Liability as required.",
+      "task_type": "operations_language",
+      "status": "pending",
+      "priority": "medium",
+      "origin_role": "broker",
+      "due_date": "2025-11-25T17:00:00Z",
+      "project_id": "proj-1",
+      "project_name": "Bay Area Tech Campus",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-7",
+      "policy_number": "UMB-5000",
+      "created_at": "2025-11-04T14:00:00Z",
+      "updated_at": "2025-11-04T14:00:00Z",
+      "created_by_user_id": "user-broker-1",
+      "assigned_to_user_id": "user-sub-1",
+      "created_by": {
+        "id": "user-broker-1",
+        "name": "Erik Wenstone",
+        "role": "broker"
+      },
+      "metadata": {
+        "severity_level": "medium",
+        "compliance_issue_type": "operations_language",
+        "current_language": "Umbrella Liability provides excess coverage over underlying policies.",
+        "required_language": "Umbrella or Excess Liability coverage provides excess limits over General Liability, Auto Liability, and Employers Liability.",
+        "correction_instructions": "Request an endorsement from your broker that explicitly states the Umbrella policy provides excess coverage over GL, Auto, and Employers Liability. This language must appear on the certificate.",
+        "requirements_link": "/projects/proj-1/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": [
+        "view_requirements",
+        "contact_broker",
+        "upload_document"
+      ]
+    },
+    {
+      "id": "task-sub-005",
+      "title": "Upload Initial Certificate of Insurance with Endorsements",
+      "description": "Upload your Certificate of Insurance including all required endorsements for the Bay Area Tech Campus project.",
+      "task_type": "coi_upload",
+      "status": "pending",
+      "priority": "urgent",
+      "origin_role": "manager",
+      "due_date": "2025-11-06T17:00:00Z",
+      "project_id": "proj-1",
+      "project_name": "Bay Area Tech Campus",
+      "gc_company_name": "Massei Construction",
+      "created_at": "2025-11-04T08:00:00Z",
+      "updated_at": "2025-11-04T08:00:00Z",
+      "created_by_user_id": "user-manager-1",
+      "assigned_to_user_id": "user-sub-1",
+      "created_by": {
+        "id": "user-manager-1",
+        "name": "Steve Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "critical",
+        "compliance_issue_type": "initial_coi_upload",
+        "required_endorsements": [
+          "CG 2010 - Additional Insured - Ongoing Operations",
+          "CG 2037 - Additional Insured - Completed Operations",
+          "Waiver of Subrogation",
+          "Primary and Non-Contributory"
+        ],
+        "correction_instructions": "Upload your Certificate of Insurance (ACORD 25) that includes all required endorsements. Ensure all endorsements are listed on the certificate.",
+        "requirements_link": "/projects/proj-1/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": [
+        "upload_document",
+        "view_requirements",
+        "contact_broker"
+      ]
+    },
+    {
+      "id": "task-sub-006",
+      "title": "Add Completed Operations Additional Insured Endorsement",
+      "description": "Your General Liability policy is missing the Additional Insured endorsement for completed operations (CG 2037). This must be added before final project approval.",
+      "task_type": "endorsement_correction",
+      "status": "submitted",
+      "priority": "high",
+      "origin_role": "manager",
+      "due_date": "2025-11-12T17:00:00Z",
+      "project_id": "proj-1",
+      "project_name": "Bay Area Tech Campus",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-1",
+      "policy_number": "GL-1000",
+      "created_at": "2025-11-03T13:00:00Z",
+      "updated_at": "2025-11-05T10:00:00Z",
+      "created_by_user_id": "user-manager-1",
+      "assigned_to_user_id": "user-sub-1",
+      "created_by": {
+        "id": "user-manager-1",
+        "name": "Steve Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "high",
+        "compliance_issue_type": "missing_endorsement",
+        "missing_endorsement": "Additional Insured - Completed Operations",
+        "required_endorsement_form": "CG 2037 (04/13) or equivalent",
+        "current_endorsement": "None",
+        "required_endorsement": "CG 2037 - Additional Insured - Owners, Lessees or Contractors - Completed Operations",
+        "correction_instructions": "Contact your insurance broker to add the CG 2037 endorsement naming Massei Construction as Additional Insured for completed operations. Upload the updated certificate once received.",
+        "requirements_link": "/projects/proj-1/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_requirements", "contact_broker"]
+    },
+    {
+      "id": "task-sub-007",
+      "title": "Upload Certificate of Insurance with All Endorsements",
+      "description": "Upload your Certificate of Insurance for the Nob Hill Residential Complex project, including all required endorsements.",
+      "task_type": "coi_upload",
+      "status": "approved",
+      "priority": "urgent",
+      "origin_role": "manager",
+      "due_date": "2025-11-01T17:00:00Z",
+      "project_id": "proj-2",
+      "project_name": "Nob Hill Residential Complex",
+      "gc_company_name": "Massei Construction",
+      "created_at": "2025-10-28T09:00:00Z",
+      "updated_at": "2025-11-01T16:30:00Z",
+      "created_by_user_id": "user-manager-2",
+      "assigned_to_user_id": "user-sub-2",
+      "created_by": {
+        "id": "user-manager-2",
+        "name": "Stephanie Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "critical",
+        "compliance_issue_type": "initial_coi_upload",
+        "required_endorsements": [
+          "CG 2010 - Additional Insured - Ongoing Operations",
+          "CG 2037 - Additional Insured - Completed Operations",
+          "Waiver of Subrogation",
+          "Primary and Non-Contributory"
+        ],
+        "correction_instructions": "Upload your Certificate of Insurance (ACORD 25) that includes all required endorsements.",
+        "requirements_link": "/projects/proj-2/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_requirements"]
+    },
+    {
+      "id": "task-sub-008",
+      "title": "Increase General Liability Limits to Meet Project Requirements",
+      "description": "Your current General Liability limit of $1,000,000 per occurrence does not meet the project requirement of $2,000,000 per occurrence.",
+      "task_type": "limit_inadequacy",
+      "status": "rejected",
+      "priority": "high",
+      "origin_role": "manager",
+      "due_date": "2025-11-10T17:00:00Z",
+      "project_id": "proj-2",
+      "project_name": "Nob Hill Residential Complex",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-4",
+      "policy_number": "GL-1001",
+      "created_at": "2025-10-30T11:00:00Z",
+      "updated_at": "2025-11-03T14:20:00Z",
+      "created_by_user_id": "user-manager-2",
+      "assigned_to_user_id": "user-sub-2",
+      "created_by": {
+        "id": "user-manager-2",
+        "name": "Stephanie Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "high",
+        "compliance_issue_type": "limit_inadequacy",
+        "current_limit": 1000000,
+        "required_limit": 2000000,
+        "gap_amount": 1000000,
+        "correction_instructions": "The uploaded certificate shows limits of $1M/$2M aggregate, but the project requires $2M per occurrence. Please request updated limits from your broker and upload a new certificate with the correct per-occurrence limit.",
+        "rejection_reason": "Certificate shows $1M per occurrence instead of required $2M per occurrence.",
+        "requirements_link": "/projects/proj-2/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": [
+        "upload_document",
+        "view_requirements",
+        "contact_broker"
+      ]
+    },
+    {
+      "id": "task-sub-009",
+      "title": "Add Waiver of Subrogation Endorsement",
+      "description": "Your General Liability policy is missing the Waiver of Subrogation endorsement. This is required for all subcontractors on this project.",
+      "task_type": "endorsement_correction",
+      "status": "pending",
+      "priority": "urgent",
+      "origin_role": "broker",
+      "due_date": "2025-11-07T17:00:00Z",
+      "project_id": "proj-2",
+      "project_name": "Nob Hill Residential Complex",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-4",
+      "policy_number": "GL-1001",
+      "created_at": "2025-11-04T15:00:00Z",
+      "updated_at": "2025-11-04T15:00:00Z",
+      "created_by_user_id": "user-broker-2",
+      "assigned_to_user_id": "user-sub-2",
+      "created_by": {
+        "id": "user-broker-2",
+        "name": "Jennifer Walsh",
+        "role": "broker"
+      },
+      "metadata": {
+        "severity_level": "critical",
+        "compliance_issue_type": "missing_endorsement",
+        "missing_endorsement": "Waiver of Subrogation",
+        "required_endorsement_form": "CG 24 04 or equivalent",
+        "current_endorsement": "None",
+        "required_endorsement": "Waiver of Transfer of Rights of Recovery Against Others to Us - This endorsement waives the insurer's right to subrogate against the additional insured.",
+        "correction_instructions": "Contact your insurance broker to add a Waiver of Subrogation endorsement to your General Liability policy. Upload the updated certificate once received.",
+        "requirements_link": "/projects/proj-2/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": [
+        "upload_document",
+        "view_requirements",
+        "contact_broker"
+      ]
+    },
+    {
+      "id": "task-sub-010",
+      "title": "Update Auto Liability Symbol from 7 to 1",
+      "description": "Your Commercial Auto policy currently shows Symbol 7 (Specifically Described Autos). The project requires Symbol 1 (Any Auto) coverage.",
+      "task_type": "auto_symbol_compliance",
+      "status": "submitted",
+      "priority": "high",
+      "origin_role": "manager",
+      "due_date": "2025-11-18T17:00:00Z",
+      "project_id": "proj-2",
+      "project_name": "Nob Hill Residential Complex",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-6",
+      "policy_number": "CA-3001",
+      "created_at": "2025-11-02T09:00:00Z",
+      "updated_at": "2025-11-05T11:00:00Z",
+      "created_by_user_id": "user-manager-1",
+      "assigned_to_user_id": "user-sub-2",
+      "created_by": {
+        "id": "user-manager-1",
+        "name": "Steve Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "high",
+        "compliance_issue_type": "auto_symbol",
+        "current_symbol": "Symbol 7 - Specifically Described Autos",
+        "required_symbol": "Symbol 1 - Any Auto",
+        "symbol_explanation": "Symbol 1 provides coverage for any auto used in your business operations, including owned, hired, and non-owned vehicles. Symbol 7 only covers vehicles specifically listed on your policy schedule.",
+        "correction_instructions": "Contact your broker to update your Commercial Auto policy to Symbol 1. This change ensures all vehicles used on the project are covered, including rental vehicles and employee-owned vehicles used for business purposes.",
+        "requirements_link": "/projects/proj-2/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_requirements", "contact_broker"]
+    },
+    {
+      "id": "task-sub-011",
+      "title": "Upload Initial COI for Mission District Commercial Center",
+      "description": "Upload your Certificate of Insurance with all required endorsements for the Mission District Commercial Center project.",
+      "task_type": "coi_upload",
+      "status": "pending",
+      "priority": "urgent",
+      "origin_role": "manager",
+      "due_date": "2025-11-09T17:00:00Z",
+      "project_id": "proj-3",
+      "project_name": "Mission District Commercial Center",
+      "gc_company_name": "Massei Construction",
+      "created_at": "2025-11-04T08:30:00Z",
+      "updated_at": "2025-11-04T08:30:00Z",
+      "created_by_user_id": "user-manager-1",
+      "assigned_to_user_id": "user-sub-3",
+      "created_by": {
+        "id": "user-manager-1",
+        "name": "Steve Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "critical",
+        "compliance_issue_type": "initial_coi_upload",
+        "required_endorsements": [
+          "CG 2010 - Additional Insured - Ongoing Operations",
+          "CG 2037 - Additional Insured - Completed Operations",
+          "Waiver of Subrogation",
+          "Primary and Non-Contributory",
+          "30-Day Notice of Cancellation"
+        ],
+        "correction_instructions": "Upload your Certificate of Insurance (ACORD 25) that includes all required endorsements listed in the project requirements. Ensure the 30-day notice of cancellation is included.",
+        "requirements_link": "/projects/proj-3/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": [
+        "upload_document",
+        "view_requirements",
+        "contact_broker"
+      ]
+    },
+    {
+      "id": "task-sub-012",
+      "title": "Add Primary and Non-Contributory Endorsement",
+      "description": "Your General Liability policy must include the Primary and Non-Contributory endorsement. This ensures your policy responds first and does not share coverage with other policies.",
+      "task_type": "endorsement_correction",
+      "status": "approved",
+      "priority": "high",
+      "origin_role": "broker",
+      "due_date": "2025-10-30T17:00:00Z",
+      "project_id": "proj-3",
+      "project_name": "Mission District Commercial Center",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-4",
+      "policy_number": "GL-1001",
+      "created_at": "2025-10-25T10:00:00Z",
+      "updated_at": "2025-10-30T16:00:00Z",
+      "created_by_user_id": "user-broker-1",
+      "assigned_to_user_id": "user-sub-3",
+      "created_by": {
+        "id": "user-broker-1",
+        "name": "Erik Wenstone",
+        "role": "broker"
+      },
+      "metadata": {
+        "severity_level": "high",
+        "compliance_issue_type": "missing_endorsement",
+        "missing_endorsement": "Primary and Non-Contributory",
+        "required_endorsement_form": "CG 20 01 or equivalent",
+        "current_endorsement": "None",
+        "required_endorsement": "Primary and Non-Contributory Endorsement - This endorsement makes your policy primary and non-contributory with respect to the additional insured.",
+        "correction_instructions": "Contact your insurance broker to add the Primary and Non-Contributory endorsement to your General Liability policy. Upload the updated certificate once received.",
+        "requirements_link": "/projects/proj-3/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_requirements"]
+    },
+    {
+      "id": "task-sub-013",
+      "title": "Increase Umbrella Limits to $5,000,000",
+      "description": "Your current Umbrella Liability limit of $2,000,000 does not meet the project requirement of $5,000,000.",
+      "task_type": "limit_inadequacy",
+      "status": "pending",
+      "priority": "high",
+      "origin_role": "manager",
+      "due_date": "2025-11-22T17:00:00Z",
+      "project_id": "proj-3",
+      "project_name": "Mission District Commercial Center",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-7",
+      "policy_number": "UMB-5000",
+      "created_at": "2025-11-04T12:00:00Z",
+      "updated_at": "2025-11-04T12:00:00Z",
+      "created_by_user_id": "user-manager-2",
+      "assigned_to_user_id": "user-sub-3",
+      "created_by": {
+        "id": "user-manager-2",
+        "name": "Stephanie Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "high",
+        "compliance_issue_type": "limit_inadequacy",
+        "current_limit": 2000000,
+        "required_limit": 5000000,
+        "gap_amount": 3000000,
+        "correction_instructions": "Request a quote from your broker to increase your Umbrella Liability limits to $5,000,000. Upload the updated certificate once the increase is bound.",
+        "requirements_link": "/projects/proj-3/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_requirements", "contact_broker", "request_quote"]
+    },
+    {
+      "id": "task-sub-014",
+      "title": "Update Policy Language for Umbrella Coverage",
+      "description": "Your Umbrella policy description must explicitly state that it provides excess coverage over General Liability, Auto Liability, and Employers Liability.",
+      "task_type": "operations_language",
+      "status": "submitted",
+      "priority": "medium",
+      "origin_role": "broker",
+      "due_date": "2025-11-28T17:00:00Z",
+      "project_id": "proj-3",
+      "project_name": "Mission District Commercial Center",
+      "gc_company_name": "Massei Construction",
+      "policy_id": "policy-7",
+      "policy_number": "UMB-5000",
+      "created_at": "2025-11-03T16:00:00Z",
+      "updated_at": "2025-11-05T09:00:00Z",
+      "created_by_user_id": "user-broker-2",
+      "assigned_to_user_id": "user-sub-3",
+      "created_by": {
+        "id": "user-broker-2",
+        "name": "Jennifer Walsh",
+        "role": "broker"
+      },
+      "metadata": {
+        "severity_level": "medium",
+        "compliance_issue_type": "operations_language",
+        "current_language": "Umbrella policy provides excess coverage over scheduled underlying policies.",
+        "required_language": "Umbrella or Excess Liability coverage provides excess limits over General Liability, Auto Liability, and Employers Liability.",
+        "correction_instructions": "Request an endorsement from your broker that explicitly states the Umbrella policy provides excess coverage over GL, Auto, and Employers Liability. This language must appear on the certificate.",
+        "requirements_link": "/projects/proj-3/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_requirements", "contact_broker"]
+    },
+    {
+      "id": "task-sub-015",
+      "title": "Upload Certificate of Insurance with Endorsements",
+      "description": "Upload your Certificate of Insurance for the Bay Area Tech Campus project, ensuring all required endorsements are included.",
+      "task_type": "coi_upload",
+      "status": "approved",
+      "priority": "urgent",
+      "origin_role": "manager",
+      "due_date": "2025-10-25T17:00:00Z",
+      "project_id": "proj-1",
+      "project_name": "Bay Area Tech Campus",
+      "gc_company_name": "Massei Construction",
+      "created_at": "2025-10-20T09:00:00Z",
+      "updated_at": "2025-10-25T15:00:00Z",
+      "created_by_user_id": "user-manager-1",
+      "assigned_to_user_id": "user-sub-4",
+      "created_by": {
+        "id": "user-manager-1",
+        "name": "Steve Massei",
+        "role": "manager"
+      },
+      "metadata": {
+        "severity_level": "critical",
+        "compliance_issue_type": "initial_coi_upload",
+        "required_endorsements": [
+          "CG 2010 - Additional Insured - Ongoing Operations",
+          "CG 2037 - Additional Insured - Completed Operations",
+          "Waiver of Subrogation",
+          "Primary and Non-Contributory"
+        ],
+        "correction_instructions": "Upload your Certificate of Insurance (ACORD 25) that includes all required endorsements.",
+        "requirements_link": "/projects/proj-1/requirements",
+        "broker_contact": {
+          "name": "CMR Insurance",
+          "email": "service@cmrris.com",
+          "phone": "(555) 123-4567"
+        }
+      },
+      "quick_actions": ["view_requirements"]
+    }
+  ]
+}

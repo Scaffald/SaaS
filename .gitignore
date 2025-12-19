@@ -82,3 +82,13 @@ test-results.log
 
 # worktrees
 .worktrees/
+
+# build artifacts
+**/dist/
+
+# test artifacts
+**/playwright-report/
+**/test-results/
+
+# plans files
+/plans/

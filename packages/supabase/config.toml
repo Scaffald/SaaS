@@ -4,8 +4,8 @@ project_id = "supabase"
 
 [api]
 port = 54321
-schemas = ["auth", "public", "core", "cms", "storage", "data", "onet", "engagement"]
-extra_search_path = ["public", "core", "cms", "data", "onet", "engagement"]
+schemas = ["auth", "public", "core", "cms", "storage", "data", "onet", "engagement", "forsured"]
+extra_search_path = ["public", "core", "cms", "data", "onet", "engagement", "forsured"]
 max_rows = 1000
 
 [db]
@@ -25,7 +25,14 @@ port = 54323
 
 # Email testing server. Emails sent with the local dev setup are not actually sent - rather, they
 # are monitored, and you can view the emails that would have been sent from the web interface.
+# Mailpit is enabled when:
+# 1. NODE_ENV=development AND VITE_FORSURED_USE_OAUTH=false (Forsured magic links)
+# 2. Tests are running (any app)
+# 3. Scaffald app is running (always uses magic links)
 [inbucket]
+# Enable/disable Mailpit. Set via ENABLE_MAILPIT environment variable
+# Defaults to enabled for backward compatibility, but should be controlled by startup script
+enabled = true
 # Port to use for the email testing server web interface.
 port = 54324
 smtp_port = 54325
@@ -38,9 +45,19 @@ file_size_limit = "50MiB"
 [auth]
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "env(EXPO_PUBLIC_URL)"
+# For local development, use http://localhost:5173 (Forsured web) or http://127.0.0.1:8081 (Scaffald Expo)
+# Set to http://localhost:5173 for Forsured web app
+site_url = "http://localhost:5173"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["env(EXPO_PUBLIC_URL)", "http://127.0.0.1:8081"]
+# Include both Forsured web (5173) and Scaffald Expo (8081) ports
+# Also include callback paths for magic links
+additional_redirect_urls = [
+  "http://localhost:5173",
+  "http://localhost:5173/auth/callback",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5173/auth/callback",
+  "http://127.0.0.1:8081",
+]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 seconds (one
 # week).
 jwt_expiry = 3600
@@ -86,7 +103,7 @@ skip_nonce_check = true
 
 
 [analytics]
-enabled = false
+enabled = true
 port = 54327
 vector_port = 54328
 # Setup BigQuery project to enable log viewer on local development stack.

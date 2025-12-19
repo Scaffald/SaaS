@@ -5,6 +5,17 @@ alwaysApply: true
 
 # Testing & Logging Reminders
 
+## Testing Policy - NO MOCKING INTERNAL SYSTEMS
+
+**If we own it or write it, we test it directly - we do NOT mock it in tests.**
+
+- Do NOT mock the database or the internal API
+- Use a real database instance and real HTTP calls
+- Mocks are only allowed for external third-party services
+- Tables, code, configuration, and definitions that we own and that affect the code we own inside of 3rd party systems should be tested because we own it
+
+**Why:** Mocks can hide real bugs in infrastructure, configuration, and integration points. When mocks intercept failing requests, tests "pass" but actual functionality is broken.
+
 ## Quiet Reporters
 - Vitest and Playwright use custom quiet reporters that only log suite lifecycle events and failures.
 - Expect `queued path/to/spec.test.ts` when a suite is scheduled and `completed path/to/spec.test.ts` when it finishes; the last `completed …` line shows which suite ran most recently (helpful when diagnosing hangs).

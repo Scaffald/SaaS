@@ -1,0 +1,64 @@
+{
+  "organizations": [
+    {
+      "id": "org-broker-1",
+      "name": "CMR Insurance",
+      "type": "broker",
+      "email": "contact@cmrinsurance.com",
+      "phone": "555-0100",
+      "address": "100 Insurance Plaza, San Francisco, CA",
+      "created_at": "2024-01-01T08:00:00Z",
+      "updated_at": "2024-10-24T12:00:00Z"
+    },
+    {
+      "id": "org-broker-2",
+      "name": "Leavitt Insurance",
+      "type": "broker",
+      "email": "info@leavittinsurance.com",
+      "phone": "555-0101",
+      "address": "101 Coverage Lane, San Francisco, CA",
+      "created_at": "2024-01-01T08:00:00Z",
+      "updated_at": "2024-10-24T12:00:00Z"
+    },
+    {
+      "id": "org-gc-1",
+      "name": "Massei Construction",
+      "type": "general_contractor",
+      "email": "info@masseiconstruction.com",
+      "phone": "555-0200",
+      "address": "456 Construction Blvd, San Francisco, CA",
+      "created_at": "2024-01-05T08:00:00Z",
+      "updated_at": "2024-10-24T12:00:00Z"
+    },
+    {
+      "id": "org-sub-1",
+      "name": "Wizard Construction",
+      "type": "subcontractor",
+      "email": "contact@wizardconstruction.com",
+      "phone": "555-0301",
+      "address": "789 Builder St, San Francisco, CA",
+      "created_at": "2024-01-12T08:00:00Z",
+      "updated_at": "2024-10-24T12:00:00Z"
+    },
+    {
+      "id": "org-sub-2",
+      "name": "Gale Electric",
+      "type": "subcontractor",
+      "email": "info@galeelectric.com",
+      "phone": "555-0302",
+      "address": "987 Electric Ave, San Francisco, CA",
+      "created_at": "2024-01-15T08:00:00Z",
+      "updated_at": "2024-10-24T12:00:00Z"
+    },
+    {
+      "id": "org-sub-3",
+      "name": "Sprague Plumbing",
+      "type": "subcontractor",
+      "email": "service@spragueplumbing.com",
+      "phone": "555-0303",
+      "address": "246 Pipe Road, Oakland, CA",
+      "created_at": "2024-01-18T08:00:00Z",
+      "updated_at": "2024-10-24T12:00:00Z"
+    }
+  ]
+}

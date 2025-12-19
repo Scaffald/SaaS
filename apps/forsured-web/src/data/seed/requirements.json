@@ -1,0 +1,163 @@
+[
+  {
+    "id": "req-001",
+    "project_id": "proj-001",
+    "organization_id": null,
+    "requirement_type": "coverage_limit",
+    "requirement_name": "General Liability Minimum",
+    "description": "Minimum $2M General Liability coverage required",
+    "policy_type": "general_liability",
+    "minimum_coverage_amount": 2000000,
+    "requires_additional_insured": true,
+    "requires_waiver_of_subrogation": true,
+    "requires_primary_non_contributory": true,
+    "rule_definition": {
+      "type": "coverage_limit",
+      "operator": ">=",
+      "threshold": 2000000,
+      "applies_to": "general_liability"
+    },
+    "priority": 100,
+    "is_active": true,
+    "created_at": "2025-01-15T08:00:00.000Z",
+    "updated_at": "2025-01-15T08:00:00.000Z"
+  },
+  {
+    "id": "req-002",
+    "project_id": "proj-001",
+    "organization_id": null,
+    "requirement_type": "coverage_limit",
+    "requirement_name": "Workers Comp Requirement",
+    "description": "Minimum $1M Workers Compensation coverage",
+    "policy_type": "workers_comp",
+    "minimum_coverage_amount": 1000000,
+    "requires_additional_insured": false,
+    "requires_waiver_of_subrogation": true,
+    "requires_primary_non_contributory": false,
+    "rule_definition": {
+      "type": "coverage_limit",
+      "operator": ">=",
+      "threshold": 1000000,
+      "applies_to": "workers_comp"
+    },
+    "priority": 95,
+    "is_active": true,
+    "created_at": "2025-01-15T08:00:00.000Z",
+    "updated_at": "2025-01-15T08:00:00.000Z"
+  },
+  {
+    "id": "req-003",
+    "project_id": "proj-001",
+    "organization_id": null,
+    "requirement_type": "coverage_limit",
+    "requirement_name": "Umbrella Coverage Required",
+    "description": "Minimum $5M Umbrella/Excess Liability",
+    "policy_type": "umbrella_excess",
+    "minimum_coverage_amount": 5000000,
+    "requires_additional_insured": false,
+    "requires_waiver_of_subrogation": false,
+    "requires_primary_non_contributory": false,
+    "rule_definition": {
+      "type": "coverage_limit",
+      "operator": ">=",
+      "threshold": 5000000,
+      "applies_to": "umbrella_excess"
+    },
+    "priority": 80,
+    "is_active": true,
+    "created_at": "2025-01-15T08:00:00.000Z",
+    "updated_at": "2025-01-15T08:00:00.000Z"
+  },
+  {
+    "id": "req-004",
+    "project_id": "proj-002",
+    "organization_id": null,
+    "requirement_type": "coverage_limit",
+    "requirement_name": "General Liability Minimum",
+    "description": "Minimum $2M General Liability coverage required",
+    "policy_type": "general_liability",
+    "minimum_coverage_amount": 2000000,
+    "requires_additional_insured": true,
+    "requires_waiver_of_subrogation": true,
+    "requires_primary_non_contributory": true,
+    "rule_definition": {
+      "type": "coverage_limit",
+      "operator": ">=",
+      "threshold": 2000000,
+      "applies_to": "general_liability"
+    },
+    "priority": 100,
+    "is_active": true,
+    "created_at": "2024-11-01T08:00:00.000Z",
+    "updated_at": "2024-11-01T08:00:00.000Z"
+  },
+  {
+    "id": "req-005",
+    "project_id": "proj-003",
+    "organization_id": null,
+    "requirement_type": "coverage_limit",
+    "requirement_name": "General Liability Minimum",
+    "description": "Minimum $1M General Liability coverage required",
+    "policy_type": "general_liability",
+    "minimum_coverage_amount": 1000000,
+    "requires_additional_insured": false,
+    "requires_waiver_of_subrogation": false,
+    "requires_primary_non_contributory": false,
+    "rule_definition": {
+      "type": "coverage_limit",
+      "operator": ">=",
+      "threshold": 1000000,
+      "applies_to": "general_liability"
+    },
+    "priority": 100,
+    "is_active": true,
+    "created_at": "2025-02-01T08:00:00.000Z",
+    "updated_at": "2025-02-01T08:00:00.000Z"
+  },
+  {
+    "id": "req-006",
+    "project_id": "proj-004",
+    "organization_id": null,
+    "requirement_type": "coverage_limit",
+    "requirement_name": "General Liability Minimum",
+    "description": "Minimum $2M General Liability coverage required",
+    "policy_type": "general_liability",
+    "minimum_coverage_amount": 2000000,
+    "requires_additional_insured": true,
+    "requires_waiver_of_subrogation": true,
+    "requires_primary_non_contributory": true,
+    "rule_definition": {
+      "type": "coverage_limit",
+      "operator": ">=",
+      "threshold": 2000000,
+      "applies_to": "general_liability"
+    },
+    "priority": 100,
+    "is_active": true,
+    "created_at": "2024-12-01T08:00:00.000Z",
+    "updated_at": "2024-12-01T08:00:00.000Z"
+  },
+  {
+    "id": "req-007",
+    "project_id": "proj-005",
+    "organization_id": null,
+    "requirement_type": "coverage_limit",
+    "requirement_name": "General Liability Minimum",
+    "description": "Minimum $2M General Liability coverage required",
+    "policy_type": "general_liability",
+    "minimum_coverage_amount": 2000000,
+    "requires_additional_insured": true,
+    "requires_waiver_of_subrogation": true,
+    "requires_primary_non_contributory": true,
+    "rule_definition": {
+      "type": "coverage_limit",
+      "operator": ">=",
+      "threshold": 2000000,
+      "applies_to": "general_liability"
+    },
+    "priority": 100,
+    "is_active": true,
+    "created_at": "2025-01-20T08:00:00.000Z",
+    "updated_at": "2025-01-20T08:00:00.000Z"
+  }
+]

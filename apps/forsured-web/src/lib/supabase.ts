@@ -1,0 +1,235 @@
+/**
+ * Supabase Client Configuration
+ * REQ-212: Code Updates for Shared Database Architecture
+ *
+ * This module provides the Supabase client configured for the forsured.* schema
+ * with cross-schema query support for core.* tables (Uni-Construct/Scaffald).
+ */
+
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+// Environment variables - support both Vite client (import.meta.env) and Node server (process.env)
+const getEnvVar = (viteKey: string, processKey?: string): string | undefined => {
+  // Check Vite client-side env first
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[viteKey];
+  }
+  // Fall back to process.env for server-side (tRPC middleware)
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[processKey || viteKey];
+  }
+  return undefined;
+};
+
+const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
+const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
+const supabaseServiceRoleKey = getEnvVar('VITE_SUPABASE_SERVICE_ROLE_KEY');
+
+// Check for missing env vars - warn instead of throw for E2E testing with mocks
+const isMissingEnvVars = !supabaseUrl || !supabaseAnonKey;
+if (isMissingEnvVars) {
+  console.error(
+    'Missing Supabase environment variables. Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set.'
+  );
+}
+
+// Use placeholder values when env vars are missing (for E2E tests with mock data)
+const effectiveSupabaseUrl = supabaseUrl || 'https://mock.supabase.co';
+const effectiveSupabaseAnonKey = supabaseAnonKey || 'mock-anon-key';
+
+/**
+ * Supabase client instance (uses anon key)
+ *
+ * Configured with:
+ * - Default schema: public (Supabase requirement)
+ * - App uses forsured.* schema for all tables
+ * - Cross-schema queries to core.* for users/orgs
+ * - Subject to RLS policies
+ */
+export const supabase: SupabaseClient = createClient(effectiveSupabaseUrl, effectiveSupabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+  },
+  db: {
+    schema: 'public', // Supabase requires this, but we'll specify schema in queries
+  },
+});
+
+/**
+ * Supabase service role client (bypasses RLS)
+ *
+ * WARNING: Only use for testing! Never expose service role key in production client code.
+ * This client bypasses Row Level Security policies.
+ */
+export const supabaseServiceRole: SupabaseClient | null = supabaseServiceRoleKey
+  ? createClient(effectiveSupabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+      db: {
+        schema: 'public',
+      },
+    })
+  : null;
+
+/**
+ * Helper to build schema-prefixed table names
+ */
+export const table = {
+  // Forsured schema tables
+  auditLog: 'forsured.audit_log',
+  auditLogArchiveIndex: 'forsured.audit_log_archive_index',
+  projects: 'forsured.projects',
+  subcontractors: 'forsured.subcontractors',
+  documents: 'forsured.documents',
+  policies: 'forsured.policies', // OLD - deprecated, use insurancePolicies
+  endorsements: 'forsured.endorsements', // OLD - deprecated, use policyEndorsements
+  requirements: 'forsured.requirements', // OLD - deprecated
+  complianceScores: 'forsured.compliance_scores',
+  tasks: 'forsured.tasks',
+  // Task Documents (REQ-265)
+  taskDocuments: 'forsured.task_documents',
+  // NEW: Insurance Policy Parent-Child Model (REQ-262)
+  insurancePolicies: 'forsured.insurance_policies',
+  policyProvisions: 'forsured.policy_provisions',
+  policyEndorsements: 'forsured.policy_endorsements',
+  // Coverage Requirements (REQ-271)
+  coverageRequirements: 'forsured.coverage_requirements',
+  // Coverage Request Workflow (REQ-273)
+  coverageRequests: 'forsured.coverage_requests',
+  // User Set Types (REQ-4: Multi-Industry Support)
+  userSetTypes: 'forsured.user_set_types',
+  userSetTypeLexicon: 'forsured.user_set_type_lexicon',
+
+  // Core schema tables (Uni-Construct/Scaffald - read-only)
+  coreUsers: 'core.users',
+  coreOrganizations: 'core.organizations',
+  coreProjects: 'core.projects',
+  coreRoleAssignments: 'core.role_assignments',
+  // Legacy aliases (deprecated - use core* versions)
+  /** @deprecated Use coreUsers instead */
+  scaffaldUsers: 'core.users',
+  /** @deprecated Use coreOrganizations instead */
+  scaffaldOrganizations: 'core.organizations',
+  /** @deprecated Use coreProjects instead */
+  scaffaldProjects: 'core.projects',
+  /** @deprecated Use coreRoleAssignments instead */
+  scaffaldRoleAssignments: 'core.role_assignments',
+};
+
+/**
+ * Type-safe query builder for forsured schema
+ *
+ * IMPORTANT: Supabase PostgREST requires schema to be set via .schema() method,
+ * not via dot notation in table names (e.g., 'forsured.tasks' doesn't work).
+ *
+ * @param tableName - Table name within forsured schema
+ * @param client - Optional Supabase client (defaults to anon client)
+ *
+ * @example
+ * ```ts
+ * // Query forsured.tasks table
+ * const { data } = await forsured('tasks')
+ *   .select('*, assigned_to:users!inner(id, name, email)', { head: false, count: 'exact' })
+ *   .eq('status', 'open');
+ *
+ * // Use service role client for testing (bypasses RLS)
+ * const { data } = await forsured('tasks', supabaseServiceRole!)
+ *   .select('*');
+ * ```
+ */
+export function forsured(tableName: string, client: SupabaseClient = supabase) {
+  return client.schema('forsured').from(tableName);
+}
+
+/**
+ * Type-safe query builder for core schema (Uni-Construct/Scaffald - read-only)
+ *
+ * @param tableName - Table name within core schema
+ * @param client - Optional Supabase client (defaults to anon client)
+ *
+ * @example
+ * ```ts
+ * // Query core.users table
+ * const { data } = await core('users')
+ *   .select('id, name, email, organization:organizations!inner(id, name)')
+ *   .eq('id', userId);
+ *
+ * // Use service role client for testing (bypasses RLS)
+ * const { data } = await core('users', supabaseServiceRole!)
+ *   .select('*');
+ * ```
+ */
+export function core(tableName: string, client: SupabaseClient = supabase) {
+  return client.schema('core').from(tableName);
+}
+
+/**
+ * @deprecated Use core() instead. This function is maintained for backward compatibility.
+ * Type-safe query builder for core schema (legacy name)
+ */
+export function scaffald(tableName: string, client: SupabaseClient = supabase) {
+  return core(tableName, client);
+}
+
+/**
+ * Helper to get current user from Supabase Auth
+ */
+export async function getCurrentUser() {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error) {
+    console.error('[Supabase] Error getting current user:', error);
+    return null;
+  }
+
+  return user;
+}
+
+/**
+ * Helper to get user's organization ID from core schema
+ */
+export async function getUserOrganizationId(userId: string): Promise<string | null> {
+  const { data, error } = await core('users')
+    .select('organization_id')
+    .eq('id', userId)
+    .single();
+
+  if (error) {
+    console.error('[Supabase] Error getting user organization:', error);
+    return null;
+  }
+
+  return data?.organization_id || null;
+}
+
+/**
+ * Helper to check if user has required role in organization
+ */
+export async function userHasRole(
+  userId: string,
+  organizationId: string,
+  allowedRoles: string[]
+): Promise<boolean> {
+  const { data, error } = await core('role_assignments')
+    .select('role_type')
+    .eq('user_id', userId)
+    .eq('organization_id', organizationId)
+    .in('role_type', allowedRoles)
+    .single();
+
+  if (error) {
+    console.error('[Supabase] Error checking user role:', error);
+    return false;
+  }
+
+  return !!data;
+}
+
+export default supabase;

@@ -1,0 +1,271 @@
+{
+  "schema": {
+    "broker_ack_packet": {
+      "id": "string",
+      "version": "string",
+      "project_id": "string",
+      "gc_company_id": "string",
+      "broker_company_id": "string",
+      "effective_at": "ISO-8601",
+      "expires_at": "ISO-8601|null",
+      "status": "DRAFT|SENT|VIEWED|SIGNED|DECLINED|EXPIRED",
+      "jurisdiction": "string",
+      "attestations": {
+        "is_licensed_for_project_state": "boolean",
+        "has_active_eo": "boolean",
+        "documents_are_accurate": "boolean",
+        "will_maintain_required_endorsements": "boolean",
+        "will_notify_material_change_days": "number",
+        "agrees_to_platform_terms": "boolean",
+        "fraud_reporting_enabled": "boolean",
+        "data_use_agreed": "boolean"
+      },
+      "licensing": {
+        "states": ["string"],
+        "license_numbers": [
+          { "state": "string", "number": "string", "expires": "ISO-8601" }
+        ]
+      },
+      "eo_policy": {
+        "carrier": "string",
+        "policy_number": "string",
+        "limits_each_claim": "number",
+        "limits_aggregate": "number",
+        "effective": "ISO-8601",
+        "expires": "ISO-8601"
+      },
+      "responsibilities": [
+        "VERIFY_COI",
+        "VERIFY_ENDORSEMENTS",
+        "CONFIRM_LIMITS",
+        "NOTICE_OF_CANCELLATION_HANDLING",
+        "RENEWAL_CALENDARS",
+        "FRAUD_ESCALATION",
+        "AUDIT_COOPERATION"
+      ],
+      "limits_liability": {
+        "cap_type": "EO_LIMITS|CUSTOM|UNCAPPED",
+        "cap_amount": "number|null",
+        "exclusions": ["WILLFUL_MISCONDUCT", "GROSS_NEGLIGENCE"]
+      },
+      "signers": [
+        {
+          "user_id": "string",
+          "company_id": "string",
+          "role": "BROKER|GC",
+          "email": "string",
+          "status": "PENDING|SENT|VIEWED|SIGNED|DECLINED",
+          "acted_at": "ISO-8601|null"
+        }
+      ],
+      "links": {
+        "requirement_template_id": "string",
+        "related_policies": ["string"],
+        "related_documents": ["string"]
+      },
+      "audit_log": [
+        {
+          "at": "ISO-8601",
+          "actor": "string",
+          "event": "created|sent|viewed|signed|declined|expired",
+          "meta": {}
+        }
+      ],
+      "pdf_artifacts": [
+        {
+          "id": "string",
+          "name": "string",
+          "url": "/docs/...",
+          "hash": "sha256:..."
+        }
+      ]
+    }
+  },
+
+  "mocks": {
+    "packets": [
+      {
+        "id": "ack_ht_cmr_v1",
+        "version": "1.0",
+        "project_id": "prj_harbor_tower",
+        "gc_company_id": "cmp_massei",
+        "broker_company_id": "cmp_cmr",
+        "effective_at": "2025-09-06T10:45:00-04:00",
+        "expires_at": null,
+        "status": "SENT",
+        "jurisdiction": "Michigan",
+        "attestations": {
+          "is_licensed_for_project_state": true,
+          "has_active_eo": true,
+          "documents_are_accurate": true,
+          "will_maintain_required_endorsements": true,
+          "will_notify_material_change_days": 10,
+          "agrees_to_platform_terms": true,
+          "fraud_reporting_enabled": true,
+          "data_use_agreed": true
+        },
+        "licensing": {
+          "states": ["MI", "OH", "IN"],
+          "license_numbers": [
+            {
+              "state": "MI",
+              "number": "MI-BRK-004219",
+              "expires": "2026-12-31"
+            },
+            { "state": "OH", "number": "OH-002781", "expires": "2026-07-31" }
+          ]
+        },
+        "eo_policy": {
+          "carrier": "Allied Professional Indemnity",
+          "policy_number": "EOP-CMR-2025-1883",
+          "limits_each_claim": 2000000,
+          "limits_aggregate": 4000000,
+          "effective": "2025-01-01",
+          "expires": "2025-12-31"
+        },
+        "responsibilities": [
+          "VERIFY_COI",
+          "VERIFY_ENDORSEMENTS",
+          "CONFIRM_LIMITS",
+          "NOTICE_OF_CANCELLATION_HANDLING",
+          "RENEWAL_CALENDARS",
+          "FRAUD_ESCALATION",
+          "AUDIT_COOPERATION"
+        ],
+        "limits_liability": {
+          "cap_type": "EO_LIMITS",
+          "cap_amount": null,
+          "exclusions": ["WILLFUL_MISCONDUCT", "GROSS_NEGLIGENCE"]
+        },
+        "signers": [
+          {
+            "user_id": "usr_erik_w",
+            "company_id": "cmp_cmr",
+            "role": "BROKER",
+            "email": "erik@cmrbroker.com",
+            "status": "SENT",
+            "acted_at": "2025-09-06T10:45:00-04:00"
+          },
+          {
+            "user_id": "usr_steph_m",
+            "company_id": "cmp_massei",
+            "role": "GC",
+            "email": "stephanie@massei.com",
+            "status": "SIGNED",
+            "acted_at": "2025-09-06T10:47:12-04:00"
+          }
+        ],
+        "links": {
+          "requirement_template_id": "req_tpl_standard_cm",
+          "related_policies": ["pol_gl_baldwin_ht", "pol_wc_baldwin_ht"],
+          "related_documents": ["doc_ai_endorsements_baldwin_ht"]
+        },
+        "audit_log": [
+          {
+            "at": "2025-09-06T10:42:00-04:00",
+            "actor": "usr_steph_m",
+            "event": "created",
+            "meta": { "from": "template_v1" }
+          },
+          {
+            "at": "2025-09-06T10:45:00-04:00",
+            "actor": "system",
+            "event": "sent",
+            "meta": { "to": "usr_erik_w" }
+          }
+        ],
+        "pdf_artifacts": [
+          {
+            "id": "pdf_ack_ht_v1",
+            "name": "BrokerAck-HarborTower-v1.pdf",
+            "url": "/docs/BrokerAck-HarborTower-v1.pdf",
+            "hash": "sha256:abc123"
+          }
+        ]
+      },
+      {
+        "id": "ack_mh_leavitt_v1",
+        "version": "1.0",
+        "project_id": "prj_maple_heights",
+        "gc_company_id": "cmp_wizard",
+        "broker_company_id": "cmp_leavitt",
+        "effective_at": "2025-10-28T09:20:00-04:00",
+        "expires_at": null,
+        "status": "DRAFT",
+        "jurisdiction": "Michigan",
+        "attestations": {
+          "is_licensed_for_project_state": true,
+          "has_active_eo": true,
+          "documents_are_accurate": true,
+          "will_maintain_required_endorsements": true,
+          "will_notify_material_change_days": 10,
+          "agrees_to_platform_terms": true,
+          "fraud_reporting_enabled": true,
+          "data_use_agreed": true
+        },
+        "licensing": {
+          "states": ["MI"],
+          "license_numbers": [
+            {
+              "state": "MI",
+              "number": "MI-BRK-001055",
+              "expires": "2027-03-31"
+            }
+          ]
+        },
+        "eo_policy": {
+          "carrier": "Northgate Specialty",
+          "policy_number": "EOP-LG-2025-9921",
+          "limits_each_claim": 1000000,
+          "limits_aggregate": 3000000,
+          "effective": "2025-07-01",
+          "expires": "2026-06-30"
+        },
+        "responsibilities": [
+          "VERIFY_COI",
+          "VERIFY_ENDORSEMENTS",
+          "CONFIRM_LIMITS",
+          "NOTICE_OF_CANCELLATION_HANDLING",
+          "RENEWAL_CALENDARS"
+        ],
+        "limits_liability": {
+          "cap_type": "CUSTOM",
+          "cap_amount": 1500000,
+          "exclusions": ["WILLFUL_MISCONDUCT", "GROSS_NEGLIGENCE"]
+        },
+        "signers": [
+          {
+            "user_id": "usr_mark_l",
+            "company_id": "cmp_leavitt",
+            "role": "BROKER",
+            "email": "mark@leavittgroup.com",
+            "status": "PENDING",
+            "acted_at": null
+          },
+          {
+            "user_id": "usr_chris_c",
+            "company_id": "cmp_wizard",
+            "role": "GC",
+            "email": "chris@wizardco.com",
+            "status": "PENDING",
+            "acted_at": null
+          }
+        ],
+        "links": {
+          "requirement_template_id": "req_tpl_standard_cm",
+          "related_policies": ["pol_auto_birdseye_mh"],
+          "related_documents": []
+        },
+        "audit_log": [
+          {
+            "at": "2025-10-28T09:20:01-04:00",
+            "actor": "usr_bryce_c",
+            "event": "created",
+            "meta": { "from": "template_v1" }
+          }
+        ],
+        "pdf_artifacts": []
+      }
+    ]
+  }
+}

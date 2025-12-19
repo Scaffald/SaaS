@@ -33,6 +33,15 @@ The project is structured as a monorepo with the following workspaces:
 -   Run all tests: `pnpm test`
 -   Run Playwright E2E tests: `pnpm exec playwright test`
 
+### Testing Policy
+
+**If we own it or write it, we test it directly - we do NOT mock it in tests.**
+
+- Do NOT mock the database or the internal API
+- Use a real database instance and real HTTP calls
+- Mocks are only allowed for external third-party services
+- Tables, code, configuration, and definitions that we own and that affect the code we own inside of 3rd party systems should be tested because we own it
+
 ## Development Conventions
 
 ### Code Quality

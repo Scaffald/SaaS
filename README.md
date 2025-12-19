@@ -345,6 +345,62 @@ The main apps are:
 
 Note that the main entry point for the Expo app is at `apps/expo/app/index.tsx`. For more on how Expo Router works, [check out their docs](https://docs.expo.dev/router/create-pages/).
 
+## Forsured Integration
+
+This monorepo includes **Forsured**, an insurance compliance platform that shares infrastructure with Scaffald.
+
+### Forsured Structure
+
+```
+apps/
+├── scaffald/          # Expo app (iOS, Android, Web) - port 8081
+└── forsured-web/      # Vite web app - port 5173
+
+packages/
+├── forsured/          # @unicornlove/forsured - Aggregate exports
+├── insurance/         # @unicornlove/insurance - Insurance components
+├── compliance/        # @unicornlove/compliance - Compliance components
+└── tasks/             # @unicornlove/tasks - Task management
+```
+
+### Development Commands
+
+```bash
+# Forsured development
+pnpm dev:forsured     # Start Vite dev server (port 5173)
+pnpm build:forsured   # Build for production
+pnpm test:forsured    # Run Forsured tests (2400+ tests)
+pnpm dev:all          # Run Scaffald + Forsured concurrently
+```
+
+### Database Schema
+
+Forsured uses separate database schemas that coexist with Scaffald:
+
+- **`core.*`** - Shared platform tables (users, organizations)
+- **`forsured.*`** - Insurance compliance tables (migrations 200-232)
+- **`data.*`, `onet.*`, `cms.*`** - Shared reference data
+
+### Forsured Database Client
+
+```typescript
+import { forsured, core } from '@scf/supabase/forsured-client';
+
+// Query insurance compliance data
+const policies = await forsured('insurance_policies').select('*');
+const tasks = await forsured('tasks').select('*').eq('project_id', id);
+
+// Query shared platform data
+const users = await core('users').select('*').eq('organization_id', orgId);
+```
+
+### Shared Dependencies
+
+Both applications share:
+- Supabase backend and authentication
+- UI components from `@unicornlove/ui`
+- Build tooling (Nx, Vitest, TypeScript)
+
 ## Route Naming Convention
 
 We follow a consistent naming convention for dashboard routes to maintain clarity and scalability.
