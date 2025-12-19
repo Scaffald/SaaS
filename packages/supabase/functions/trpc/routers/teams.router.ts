@@ -969,8 +969,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
           organizationId: team.organization_id,
-          roleId: input.roleId,
-          roleKey: input.roleKey,
+          roleId: input.roleId ?? null,
+          roleKey: input.roleKey ?? null,
           teamId: input.teamId,
         });
 
@@ -1893,8 +1893,8 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
           organizationId: team.organization_id,
-          roleId: input.roleId,
-          roleKey: input.roleKey,
+          roleId: input.roleId ?? null,
+          roleKey: input.roleKey ?? null,
           teamId: input.teamId,
         });
 

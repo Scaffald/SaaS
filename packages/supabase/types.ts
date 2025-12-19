@@ -1369,8 +1369,11 @@ export type Database = {
           assigned_at: string | null
           assigned_by: string | null
           assigned_to: string | null
+          attachment_metadata: Json | null
+          completed_steps: string[] | null
           cover_letter_url: string | null
           created_at: string
+          current_step: string | null
           id: string
           is_shortlisted: boolean | null
           job_id: string
@@ -1378,6 +1381,10 @@ export type Database = {
           reject_reasons: string[] | null
           rejected_at: string | null
           resume_url: string | null
+          score_breakdown: Json | null
+          score_calculated_at: string | null
+          score_total: number | null
+          screening_answers: Json | null
           stage_changed_at: string | null
           status: string
           updated_at: string
@@ -1389,8 +1396,11 @@ export type Database = {
           assigned_at?: string | null
           assigned_by?: string | null
           assigned_to?: string | null
+          attachment_metadata?: Json | null
+          completed_steps?: string[] | null
           cover_letter_url?: string | null
           created_at?: string
+          current_step?: string | null
           id?: string
           is_shortlisted?: boolean | null
           job_id: string
@@ -1398,6 +1408,10 @@ export type Database = {
           reject_reasons?: string[] | null
           rejected_at?: string | null
           resume_url?: string | null
+          score_breakdown?: Json | null
+          score_calculated_at?: string | null
+          score_total?: number | null
+          screening_answers?: Json | null
           stage_changed_at?: string | null
           status?: string
           updated_at?: string
@@ -1409,8 +1423,11 @@ export type Database = {
           assigned_at?: string | null
           assigned_by?: string | null
           assigned_to?: string | null
+          attachment_metadata?: Json | null
+          completed_steps?: string[] | null
           cover_letter_url?: string | null
           created_at?: string
+          current_step?: string | null
           id?: string
           is_shortlisted?: boolean | null
           job_id?: string
@@ -1418,6 +1435,10 @@ export type Database = {
           reject_reasons?: string[] | null
           rejected_at?: string | null
           resume_url?: string | null
+          score_breakdown?: Json | null
+          score_calculated_at?: string | null
+          score_total?: number | null
+          screening_answers?: Json | null
           stage_changed_at?: string | null
           status?: string
           updated_at?: string
@@ -4140,95 +4161,309 @@ export type Database = {
       jobs: {
         Row: {
           address: Json | null
+          affirmative_action_plan: boolean | null
+          application_deadline: string | null
+          application_expiry_days: number | null
+          assessment_details: string | null
+          assigned_team_id: string | null
+          auto_reject_criteria: Json | null
+          background_check_type: string | null
+          benefits_summary: string | null
+          bonus_details: string | null
           closes_at: string | null
           compensation: Json | null
+          cost_center: string | null
           created_at: string
           created_by_user_id: string | null
+          custom_application_questions: Json | null
+          department: string | null
           description: Json | null
+          drivers_license_type: string | null
+          eeo_job_category: string | null
           employment_type: string | null
+          enable_auto_reject: boolean | null
+          equity_details: string | null
+          estimated_application_time_minutes: number | null
+          estimated_hire_date: string | null
+          external_application_url: string | null
+          featured_until: string | null
           geo: unknown
+          has_bonus_structure: boolean | null
+          has_equity: boolean | null
+          has_relocation_package: boolean | null
+          hiring_manager_id: string | null
           id: string
           inquiry_capability_questions: Json | null
+          internal_job_code: string | null
+          is_confidential: boolean | null
+          is_disability_friendly: boolean | null
+          is_featured: boolean | null
+          is_veteran_friendly: boolean | null
+          job_category: string | null
+          language_requirements: Json | null
           location: string | null
           min_reputation: number | null
+          minimum_education_level: string | null
+          minimum_score: number | null
+          minimum_years_experience: number | null
+          number_of_openings: number | null
           organization_id: string
+          overtime_eligible: boolean | null
+          pay_frequency: string | null
           pay_range_max_cents: number | null
           pay_range_min_cents: number | null
           pay_range_type: string | null
+          physical_requirements: Json | null
           position_level: string | null
           posted_at: string | null
+          posting_channels: Json | null
+          priority_level: string | null
+          recruiter_id: string | null
+          relocation_assistance_details: string | null
+          relocation_assistance_offered: boolean | null
+          relocation_package_details: string | null
           remote_option: string | null
+          require_background_check: boolean | null
+          require_current_location: boolean | null
+          require_drivers_license: boolean | null
+          require_drug_test: boolean | null
+          require_earliest_start_date: boolean | null
+          require_relocation_willingness: boolean | null
+          require_work_authorization: boolean | null
+          required_attachments: Json | null
           required_soft_skills: Json
+          requires_assessment: boolean | null
+          requires_video_interview: boolean | null
+          requisition_number: string | null
           scheduled_publish_at: string | null
           search_tsv: unknown
+          security_clearance_required: string | null
+          seo_keywords: string[] | null
+          shift_requirements: string | null
+          show_team_on_posting: boolean | null
+          sign_on_bonus_cents: number | null
           slug: string | null
+          source_tracking_enabled: boolean | null
           status: string
+          target_start_date: string | null
           team_id: string | null
+          team_ids: string[] | null
+          team_visibility: string | null
+          timezone: string | null
           title: string
+          travel_percentage: number | null
           updated_at: string
+          utm_parameters: Json | null
           visibility: string | null
+          work_locations: Json | null
+          work_schedule_details: string | null
         }
         Insert: {
           address?: Json | null
+          affirmative_action_plan?: boolean | null
+          application_deadline?: string | null
+          application_expiry_days?: number | null
+          assessment_details?: string | null
+          assigned_team_id?: string | null
+          auto_reject_criteria?: Json | null
+          background_check_type?: string | null
+          benefits_summary?: string | null
+          bonus_details?: string | null
           closes_at?: string | null
           compensation?: Json | null
+          cost_center?: string | null
           created_at?: string
           created_by_user_id?: string | null
+          custom_application_questions?: Json | null
+          department?: string | null
           description?: Json | null
+          drivers_license_type?: string | null
+          eeo_job_category?: string | null
           employment_type?: string | null
+          enable_auto_reject?: boolean | null
+          equity_details?: string | null
+          estimated_application_time_minutes?: number | null
+          estimated_hire_date?: string | null
+          external_application_url?: string | null
+          featured_until?: string | null
           geo?: unknown
+          has_bonus_structure?: boolean | null
+          has_equity?: boolean | null
+          has_relocation_package?: boolean | null
+          hiring_manager_id?: string | null
           id?: string
           inquiry_capability_questions?: Json | null
+          internal_job_code?: string | null
+          is_confidential?: boolean | null
+          is_disability_friendly?: boolean | null
+          is_featured?: boolean | null
+          is_veteran_friendly?: boolean | null
+          job_category?: string | null
+          language_requirements?: Json | null
           location?: string | null
           min_reputation?: number | null
+          minimum_education_level?: string | null
+          minimum_score?: number | null
+          minimum_years_experience?: number | null
+          number_of_openings?: number | null
           organization_id: string
+          overtime_eligible?: boolean | null
+          pay_frequency?: string | null
           pay_range_max_cents?: number | null
           pay_range_min_cents?: number | null
           pay_range_type?: string | null
+          physical_requirements?: Json | null
           position_level?: string | null
           posted_at?: string | null
+          posting_channels?: Json | null
+          priority_level?: string | null
+          recruiter_id?: string | null
+          relocation_assistance_details?: string | null
+          relocation_assistance_offered?: boolean | null
+          relocation_package_details?: string | null
           remote_option?: string | null
+          require_background_check?: boolean | null
+          require_current_location?: boolean | null
+          require_drivers_license?: boolean | null
+          require_drug_test?: boolean | null
+          require_earliest_start_date?: boolean | null
+          require_relocation_willingness?: boolean | null
+          require_work_authorization?: boolean | null
+          required_attachments?: Json | null
           required_soft_skills?: Json
+          requires_assessment?: boolean | null
+          requires_video_interview?: boolean | null
+          requisition_number?: string | null
           scheduled_publish_at?: string | null
           search_tsv?: unknown
+          security_clearance_required?: string | null
+          seo_keywords?: string[] | null
+          shift_requirements?: string | null
+          show_team_on_posting?: boolean | null
+          sign_on_bonus_cents?: number | null
           slug?: string | null
+          source_tracking_enabled?: boolean | null
           status?: string
+          target_start_date?: string | null
           team_id?: string | null
+          team_ids?: string[] | null
+          team_visibility?: string | null
+          timezone?: string | null
           title: string
+          travel_percentage?: number | null
           updated_at?: string
+          utm_parameters?: Json | null
           visibility?: string | null
+          work_locations?: Json | null
+          work_schedule_details?: string | null
         }
         Update: {
           address?: Json | null
+          affirmative_action_plan?: boolean | null
+          application_deadline?: string | null
+          application_expiry_days?: number | null
+          assessment_details?: string | null
+          assigned_team_id?: string | null
+          auto_reject_criteria?: Json | null
+          background_check_type?: string | null
+          benefits_summary?: string | null
+          bonus_details?: string | null
           closes_at?: string | null
           compensation?: Json | null
+          cost_center?: string | null
           created_at?: string
           created_by_user_id?: string | null
+          custom_application_questions?: Json | null
+          department?: string | null
           description?: Json | null
+          drivers_license_type?: string | null
+          eeo_job_category?: string | null
           employment_type?: string | null
+          enable_auto_reject?: boolean | null
+          equity_details?: string | null
+          estimated_application_time_minutes?: number | null
+          estimated_hire_date?: string | null
+          external_application_url?: string | null
+          featured_until?: string | null
           geo?: unknown
+          has_bonus_structure?: boolean | null
+          has_equity?: boolean | null
+          has_relocation_package?: boolean | null
+          hiring_manager_id?: string | null
           id?: string
           inquiry_capability_questions?: Json | null
+          internal_job_code?: string | null
+          is_confidential?: boolean | null
+          is_disability_friendly?: boolean | null
+          is_featured?: boolean | null
+          is_veteran_friendly?: boolean | null
+          job_category?: string | null
+          language_requirements?: Json | null
           location?: string | null
           min_reputation?: number | null
+          minimum_education_level?: string | null
+          minimum_score?: number | null
+          minimum_years_experience?: number | null
+          number_of_openings?: number | null
           organization_id?: string
+          overtime_eligible?: boolean | null
+          pay_frequency?: string | null
           pay_range_max_cents?: number | null
           pay_range_min_cents?: number | null
           pay_range_type?: string | null
+          physical_requirements?: Json | null
           position_level?: string | null
           posted_at?: string | null
+          posting_channels?: Json | null
+          priority_level?: string | null
+          recruiter_id?: string | null
+          relocation_assistance_details?: string | null
+          relocation_assistance_offered?: boolean | null
+          relocation_package_details?: string | null
           remote_option?: string | null
+          require_background_check?: boolean | null
+          require_current_location?: boolean | null
+          require_drivers_license?: boolean | null
+          require_drug_test?: boolean | null
+          require_earliest_start_date?: boolean | null
+          require_relocation_willingness?: boolean | null
+          require_work_authorization?: boolean | null
+          required_attachments?: Json | null
           required_soft_skills?: Json
+          requires_assessment?: boolean | null
+          requires_video_interview?: boolean | null
+          requisition_number?: string | null
           scheduled_publish_at?: string | null
           search_tsv?: unknown
+          security_clearance_required?: string | null
+          seo_keywords?: string[] | null
+          shift_requirements?: string | null
+          show_team_on_posting?: boolean | null
+          sign_on_bonus_cents?: number | null
           slug?: string | null
+          source_tracking_enabled?: boolean | null
           status?: string
+          target_start_date?: string | null
           team_id?: string | null
+          team_ids?: string[] | null
+          team_visibility?: string | null
+          timezone?: string | null
           title?: string
+          travel_percentage?: number | null
           updated_at?: string
+          utm_parameters?: Json | null
           visibility?: string | null
+          work_locations?: Json | null
+          work_schedule_details?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "jobs_assigned_team_id_fkey"
+            columns: ["assigned_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "jobs_created_by_user_id_fkey"
             columns: ["created_by_user_id"]
@@ -4244,10 +4479,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "jobs_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
           {
@@ -4762,6 +5025,70 @@ export type Database = {
           {
             foreignKeyName: "oauth_apps_created_by_fkey"
             columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      oauth_authorization_codes: {
+        Row: {
+          code_challenge: string
+          code_challenge_method: string
+          code_hash: string
+          created_at: string
+          expires_at: string
+          id: string
+          oauth_app_id: string
+          redirect_uri: string
+          scopes: string[]
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_challenge: string
+          code_challenge_method?: string
+          code_hash: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          oauth_app_id: string
+          redirect_uri: string
+          scopes?: string[]
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_challenge?: string
+          code_challenge_method?: string
+          code_hash?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          oauth_app_id?: string
+          redirect_uri?: string
+          scopes?: string[]
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oauth_authorization_codes_oauth_app_id_fkey"
+            columns: ["oauth_app_id"]
+            isOneToOne: false
+            referencedRelation: "oauth_apps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_authorization_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_authorization_codes_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
@@ -9570,6 +9897,14 @@ export type Database = {
         Returns: string
       }
       archive_expired_external_jobs: { Args: never; Returns: Json }
+      auto_reject_application: {
+        Args: { p_application_id: string }
+        Returns: boolean
+      }
+      calculate_application_score: {
+        Args: { p_application_id: string }
+        Returns: number
+      }
       calculate_next_attempt: { Args: { p_attempts: number }; Returns: string }
       calculate_time_entries_total_hours: {
         Args: { time_entries: Json }
@@ -9611,6 +9946,14 @@ export type Database = {
       enqueue_due_success_fees: { Args: never; Returns: number }
       enqueue_duration_check_success_fees: { Args: never; Returns: number }
       extract_tiptap_plain_text: { Args: { content: Json }; Returns: string }
+      generate_application_attachment_path: {
+        Args: {
+          application_id: string
+          attachment_type: string
+          user_id: string
+        }
+        Returns: string
+      }
       get_current_verification: {
         Args: { p_worker_user_id: string }
         Returns: {
@@ -9698,6 +10041,10 @@ export type Database = {
       notify_admins_of_cron_failure: {
         Args: { p_error_message: string; p_job_name: string }
         Returns: number
+      }
+      preview_auto_rejection: {
+        Args: { p_application_id: string }
+        Returns: Json
       }
       process_daily_digest: { Args: never; Returns: number }
       process_notification_queue: { Args: never; Returns: number }
