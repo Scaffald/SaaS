@@ -37,7 +37,7 @@ catalog:
   '@tanstack/react-table': ~8.20.5
   '@trpc/client': ~11.7.2
   '@trpc/react-query': ~11.7.2
-  '@trpc/server': ~11.7.2
+  '@trpc/server': ~11.8.0
   '@ts-react/form': ~1.6.4
   '@types/geojson': ~7946.0.14
   '@types/mapbox-gl': ~2.7.21
