@@ -11,6 +11,10 @@ import {
 import { YStack, XStack, Text, Card, Button } from '@unicornlove/ui';
 import CommonButton from '../Common/Button';
 import DocumentDetailModal from '../Document/DocumentDetailModal';
+import Modal from '../Common/Modal';
+import { FileUploadZone } from '../documents/FileUploadZone';
+import { useUser } from '../../contexts/UserContext';
+import type { Document } from '../../types/document';
 
 interface DocumentItem {
   id: string;
@@ -24,12 +28,15 @@ interface DocumentItem {
 }
 
 export default function DocumentsPage() {
+  const { currentUser } = useUser();
   const [filter, setFilter] = useState<
     'all' | 'verified' | 'pending' | 'expiring'
   >('all');
   const [selectedDocument, setSelectedDocument] = useState<DocumentItem | null>(
     null
   );
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const mockDocuments: DocumentItem[] = [
     {
@@ -151,6 +158,17 @@ export default function DocumentsPage() {
     return days;
   };
 
+  const handleUploadDocument = (document: Document) => {
+    console.log('Document uploaded:', document);
+    // TODO: Refresh document list after upload
+    // This would typically refetch documents from the API
+  };
+
+  const handleUploadError = (error: string) => {
+    setUploadError(error);
+    console.error('Upload error:', error);
+  };
+
   return (
     <YStack gap="$6">
       <XStack alignItems="center" justifyContent="space-between">
@@ -162,7 +180,7 @@ export default function DocumentsPage() {
             Manage your certificates, licenses, and compliance documents
           </Text>
         </YStack>
-        <CommonButton>
+        <CommonButton onPress={() => setUploadModalOpen(true)}>
           <XStack alignItems="center" gap="$2">
             <Upload size={18} />
             <Text>Upload Document</Text>
@@ -173,9 +191,8 @@ export default function DocumentsPage() {
       <XStack
         flexWrap="wrap"
         gap="$6"
-        $gtMd={{
-          flexWrap: 'nowrap',
-        }}
+        // Use media query hook or conditional rendering instead of $gtMd prop
+        // $gtMd responsive props can leak to DOM in some Tamagui versions
       >
         <Card
           padding="$6"
@@ -394,8 +411,8 @@ export default function DocumentsPage() {
                 return (
                   <tr key={doc.id}>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center">
-                        <FileText color="$blue10" size={20} marginRight="$3" />
+                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center" gap="$3">
+                        <FileText color="$blue10" size={20} />
                         <YStack>
                           <Text fontSize="$2" fontWeight="500" color="$color12">
                             {doc.name}
@@ -496,14 +513,16 @@ export default function DocumentsPage() {
         </YStack>
 
         {filteredDocuments.length === 0 && (
-          <YStack alignItems="center" paddingVertical="$12">
-            <FileText color="$color10" size={48} marginBottom="$4" />
-            <Text color="$color12" fontWeight="500" marginBottom="$2">
+          <YStack alignItems="center" paddingVertical="$12" gap="$4">
+            <FileText color="$color10" size={48} />
+            <YStack alignItems="center" gap="$2">
+              <Text color="$color12" fontWeight="500">
               No documents found
             </Text>
-            <Text color="$color11" fontSize="$2">
-              Upload documents to get started
-            </Text>
+              <Text color="$color11" fontSize="$2">
+                Upload documents to get started
+              </Text>
+            </YStack>
           </YStack>
         )}
       </Card>
@@ -523,6 +542,73 @@ export default function DocumentsPage() {
           onClose={() => setSelectedDocument(null)}
         />
       )}
+
+      {/* Upload Document Modal */}
+      <Modal
+        isOpen={uploadModalOpen}
+        onClose={() => {
+          setUploadModalOpen(false);
+          setUploadError(null);
+        }}
+        title="Upload Document"
+        size="medium"
+      >
+        <YStack gap="$4">
+          <Text color="$color11">
+            Upload your compliance documents, certificates, licenses, or other required files.
+          </Text>
+
+          {uploadError && (
+            <Card
+              backgroundColor="$red2"
+              borderColor="$red6"
+              borderWidth={1}
+              borderRadius="$4"
+              padding="$4"
+            >
+              <Text color="$red11" fontSize="$3">
+                {uploadError}
+              </Text>
+            </Card>
+          )}
+
+          {currentUser?.organization_id && currentUser?.id ? (
+            <FileUploadZone
+              projectId="general"
+              uploaderId={currentUser.id}
+              organizationId={currentUser.organization_id}
+              subcontractorId={currentUser.id}
+              maxFiles={5}
+              onUpload={handleUploadDocument}
+              onError={handleUploadError}
+            />
+          ) : (
+            <Card
+              backgroundColor="$yellow2"
+              borderColor="$yellow6"
+              borderWidth={1}
+              borderRadius="$4"
+              padding="$4"
+            >
+              <Text color="$yellow11" fontSize="$3">
+                Unable to upload documents. Please ensure you are logged in and have a valid organization.
+              </Text>
+            </Card>
+          )}
+
+          <XStack justifyContent="flex-end" paddingTop="$4">
+            <Button
+              variant="ghost"
+              onPress={() => {
+                setUploadModalOpen(false);
+                setUploadError(null);
+              }}
+            >
+              Close
+            </Button>
+          </XStack>
+        </YStack>
+      </Modal>
     </YStack>
   );
 }
