@@ -59,6 +59,7 @@ export const DashboardLayout = ({
                 width: hasBothColumns ? undefined : '100%',
                 flex: hasBothColumns ? 3 : undefined,
                 minWidth: hasBothColumns ? 300 : undefined,
+                maxWidth: hasBothColumns ? undefined : '100%',
               }}
             >
               {leftContent}
@@ -71,6 +72,7 @@ export const DashboardLayout = ({
                 width: hasBothColumns ? undefined : '100%',
                 flex: hasBothColumns ? 2 : undefined,
                 minWidth: hasBothColumns ? 300 : undefined,
+                maxWidth: hasBothColumns ? undefined : '100%',
               }}
             >
               {rightContent}

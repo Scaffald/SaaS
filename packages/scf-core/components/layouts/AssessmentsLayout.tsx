@@ -39,6 +39,7 @@ export const AssessmentsLayout = ({
             <YStack
               width="100%"
               $md={{
+                width: hasBothColumns ? undefined : '100%',
                 flex: hasBothColumns ? 13 : 1,
                 minWidth: hasBothColumns ? 300 : undefined,
               }}
@@ -50,6 +51,7 @@ export const AssessmentsLayout = ({
             <YStack
               width="100%"
               $md={{
+                width: hasBothColumns ? undefined : '100%',
                 flex: hasBothColumns ? 7 : 1,
                 minWidth: hasBothColumns ? 300 : undefined,
               }}

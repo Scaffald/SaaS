@@ -322,6 +322,7 @@ async function notifyTeamMemberRemoved(options: {
 
 async function recordTeamActivityEvent({
   supabaseAdmin,
+  dbAdmin,
   organizationId,
   teamId,
   eventType,
@@ -334,6 +335,7 @@ async function recordTeamActivityEvent({
   occurredAt,
 }: {
   supabaseAdmin: SupabaseAdminClient;
+  dbAdmin: Context["dbAdmin"];
   organizationId: string;
   teamId: string;
   eventType: string;
@@ -345,6 +347,11 @@ async function recordTeamActivityEvent({
   payload?: Record<string, unknown> | null;
   occurredAt?: string | null;
 }): Promise<void> {
+  if (!supabaseAdmin || !dbAdmin) {
+    console.error("[teams] Cannot record activity event - admin client not available");
+    return;
+  }
+
   const insertPayload = {
     organization_id: organizationId,
     team_id: teamId,
@@ -358,9 +365,8 @@ async function recordTeamActivityEvent({
     occurred_at: occurredAt ?? nowIso(),
   };
 
-  const { error } = await supabaseAdmin
-    .schema("core")
-    .from("team_activity_events")
+  const { error } = await dbAdmin
+    .core("team_activity_events")
     .insert(insertPayload);
 
   if (error) {
@@ -518,6 +524,10 @@ async function fetchTeamOrThrow(
   supabaseAdmin: SupabaseAdminClient,
   teamId: string,
 ) {
+  if (!supabaseAdmin) {
+    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+  }
+
   const { data, error } = await supabaseAdmin
     .schema("core")
     .from("teams")
@@ -550,6 +560,10 @@ async function fetchJobOrThrow(
   supabaseAdmin: SupabaseAdminClient,
   jobId: string,
 ) {
+  if (!supabaseAdmin) {
+    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+  }
+
   const { data, error } = await supabaseAdmin
     .schema("core")
     .from("jobs")
@@ -576,6 +590,10 @@ async function ensureOrganizationRoles(
   supabaseAdmin: SupabaseAdminClient,
   organizationId: string,
 ): Promise<Map<string, string>> {
+  if (!supabaseAdmin) {
+    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
+  }
+
   const { data: existingRoles, error: rolesError } = await supabaseAdmin
     .schema("core")
     .from("team_roles")
@@ -1427,10 +1445,14 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
     transferOwnership: procedure
       .input(teamOwnershipTransferSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
         }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
@@ -1527,6 +1549,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
         await recordTeamActivityEvent({
           supabaseAdmin,
+          dbAdmin,
           organizationId: team.organization_id,
           teamId: input.teamId,
           eventType: "team.ownership_transferred",
@@ -1568,10 +1591,14 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
     selfRemove: procedure.input(teamMemberSelfRemovalSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
         }
 
         const { data: existingMember, error: fetchError } = await supabaseAdmin
@@ -1651,6 +1678,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
         await recordTeamActivityEvent({
           supabaseAdmin,
+          dbAdmin,
           organizationId: team.organization_id,
           teamId: member.teamId,
           eventType: "member.self_removed",
@@ -2955,10 +2983,14 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
 
     assign: procedure.input(teamJobAssignmentCreateSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
         }
 
         const job = await fetchJobOrThrow(supabaseAdmin, input.jobId);
@@ -3029,6 +3061,7 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
 
         await recordTeamActivityEvent({
           supabaseAdmin,
+          dbAdmin,
           organizationId: job.organization_id,
           teamId: input.teamId,
           eventType: "job.assigned",
@@ -3066,10 +3099,14 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
 
     update: procedure.input(teamJobAssignmentUpdateSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
         }
 
         const { data: existingAssignment, error: fetchError } =
@@ -3128,6 +3165,7 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
 
         await recordTeamActivityEvent({
           supabaseAdmin,
+          dbAdmin,
           organizationId,
           teamId,
           eventType: "job.assignment_updated",
@@ -3145,10 +3183,14 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
 
     remove: procedure.input(teamJobAssignmentDeleteSchema).mutation(
       async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, dbAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        if (!supabaseAdmin || !dbAdmin) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Admin client not available" });
         }
 
         const { data: existingAssignment, error: fetchError } =
@@ -3203,6 +3245,7 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
 
         await recordTeamActivityEvent({
           supabaseAdmin,
+          dbAdmin,
           organizationId: existingAssignment.organization_id as string,
           teamId,
           eventType: "job.unassigned",

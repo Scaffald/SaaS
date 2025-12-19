@@ -50,6 +50,11 @@ import { supabase } from './supabase/client';
  */
 export const api = createTRPCReact<AppRouter>();
 
+// Debounce state for auth cleanup
+let cleanupTimeout: ReturnType<typeof setTimeout> | null = null;
+let pendingCleanup: Promise<void> | null = null;
+const CLEANUP_DEBOUNCE_MS = 100; // Debounce window for batching cleanup calls
+
 // Custom error handling link for session validation
 const sessionValidationLink: TRPCLink<AppRouter> = () => {
   return ({ next, op }) => {
@@ -64,19 +69,51 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
             console.log(
               "[tRPC] UNAUTHORIZED error detected - invalid or expired session",
             );
-            console.log(
-              "[tRPC] Triggering comprehensive auth cleanup and redirect",
-            );
 
-            // Get query client for cache clearing
-            const queryClient = getGlobalQueryClient();
+            // Clear any existing timeout
+            if (cleanupTimeout) {
+              clearTimeout(cleanupTimeout);
+              cleanupTimeout = null;
+            }
 
-            // Perform comprehensive cleanup
-            await clearAllAuthStorage(queryClient || undefined);
+            // If cleanup is already pending, wait for it
+            if (pendingCleanup) {
+              console.log(
+                "[tRPC] Cleanup already pending, waiting for existing cleanup",
+              );
+              try {
+                await pendingCleanup;
+              } catch {
+                // Ignore errors from pending cleanup
+              }
+              observer.error(err);
+              return;
+            }
 
-            console.log(
-              "[tRPC] Auth cleanup completed - user will be redirected to /auth",
-            );
+            // Debounce cleanup to batch multiple simultaneous errors
+            cleanupTimeout = setTimeout(async () => {
+              cleanupTimeout = null;
+              try {
+                console.log(
+                  "[tRPC] Triggering comprehensive auth cleanup and redirect",
+                );
+
+                // Get query client for cache clearing
+                const queryClient = getGlobalQueryClient();
+
+                // Perform comprehensive cleanup (this function has its own guard)
+                pendingCleanup = clearAllAuthStorage(queryClient || undefined);
+                await pendingCleanup;
+
+                console.log(
+                  "[tRPC] Auth cleanup completed - user will be redirected to /auth",
+                );
+              } catch (error) {
+                console.error("[tRPC] Error during auth cleanup:", error);
+              } finally {
+                pendingCleanup = null;
+              }
+            }, CLEANUP_DEBOUNCE_MS);
           }
           observer.error(err);
         },
