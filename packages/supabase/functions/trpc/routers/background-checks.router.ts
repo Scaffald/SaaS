@@ -697,7 +697,7 @@ async function submitBackgroundCheckToNationSearch(
         .update({
           provider_check_id: providerCheckId,
           status: 'in_progress',
-          status_history: newHistory,
+          status_history: newHistory as Json,
           metadata: metadataPatch,
           estimated_completion_date: response.estimated_completion_date ?? null,
         })
@@ -1252,16 +1252,16 @@ export const backgroundChecksRouter = t.router({
           organization_id: input.organization_id ?? null,
           package_id: pkg.id,
           check_type_ids: checkTypeIds,
-          custom_configuration: input.custom_configuration ?? {},
+          custom_configuration: (input.custom_configuration ?? {}) as Json,
           status: 'pending',
-          status_history: statusHistory,
+          status_history: statusHistory as Json,
           paid_by: input.paid_by,
           tier: input.tier,
           add_on_ids: activeAddOnIds,
           base_price_cents: tierRow.price_cents,
           add_ons_price_cents: addOnsTotal,
           total_price_cents: totalPriceCents,
-          metadata: input.metadata ?? {},
+          metadata: (input.metadata ?? {}) as Json,
           invited_at: now,
         })
         .select('id, total_price_cents')
@@ -1499,7 +1499,7 @@ export const backgroundChecksRouter = t.router({
 
       const discountedPrice = Math.max(
         1,
-        Math.round(checkRecord.total_price_cents * (1 - SHARED_BACKGROUND_CHECK_DISCOUNT))
+        Math.round((checkRecord.total_price_cents ?? 0) * (1 - SHARED_BACKGROUND_CHECK_DISCOUNT))
       )
 
       const stripe = await loadStripeClient(ctx)
@@ -1585,7 +1585,11 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      await supabaseAdmin
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+      }
+
+      await ctx.supabaseAdmin
         .schema('core')
         .from('payment_transactions')
         .update({
@@ -1646,7 +1650,7 @@ export const backgroundChecksRouter = t.router({
 
     const typeMap = new Map(types?.map((type: { id: string; [key: string]: unknown }) => [type.id, type]) ?? [])
 
-    const result = (packages ?? []).map((pkg: { id: string; slug: string; display_name: string; [key: string]: unknown }) => ({
+    const result = (packages ?? []).map((pkg: { id: string; slug: string; display_name: string; check_type_ids?: string[] | null; [key: string]: unknown }) => ({
       id: pkg.id,
       slug: pkg.slug,
       display_name: pkg.display_name,
@@ -1656,7 +1660,7 @@ export const backgroundChecksRouter = t.router({
       retail_cost_cents: pkg.retail_cost_cents,
       estimated_completion_days: pkg.estimated_completion_days,
       metadata: pkg.metadata ?? {},
-      components: (pkg.check_type_ids ?? [])
+      components: (Array.isArray(pkg.check_type_ids) ? pkg.check_type_ids : [])
         .map((typeId: string) => typeMap.get(typeId))
         .filter(Boolean),
     }))
@@ -1939,7 +1943,7 @@ export const backgroundChecksRouter = t.router({
           status_history: statusHistory,
           paid_by: input.paid_by,
           cost_cents: input.cost_cents,
-          metadata: input.metadata ?? {},
+          metadata: (input.metadata ?? {}) as Json,
           invited_at: new Date().toISOString(),
           estimated_completion_date: null,
         })
@@ -1959,18 +1963,11 @@ export const backgroundChecksRouter = t.router({
       if (input.consent) {
         await recordBackgroundCheckConsent(ctx, {
           backgroundCheckId: record.id,
-          workerUserId: input.worker_user_id,
+          workerUserId: user.id,
           consent: input.consent,
-          source: 'organization_portal',
+          source: 'worker_self_service',
         })
       }
-
-      await recordBackgroundCheckConsent(ctx, {
-        backgroundCheckId: record.id,
-        workerUserId: user.id,
-        consent: input.consent,
-        source: 'worker_self_service',
-      })
 
       let finalRecord: BackgroundCheckRecord = record as unknown as BackgroundCheckRecord
 
@@ -2516,7 +2513,7 @@ export const backgroundChecksRouter = t.router({
           file_size: input.file_size,
           mime_type: input.mime_type,
           uploaded_by_user_id: user.id,
-          metadata: input.metadata ?? {},
+          metadata: (input.metadata ?? {}) as Json,
         })
         .select('id, document_type, file_name')
         .single()
@@ -3011,7 +3008,7 @@ export const backgroundChecksRouter = t.router({
           status_history: statusHistory,
           paid_by: 'organization',
           cost_cents: input.cost_cents,
-          metadata: input.metadata ?? {},
+          metadata: (input.metadata ?? {}) as Json,
           requested_by_user_id: user.id,
           invited_at: new Date().toISOString(),
         })
