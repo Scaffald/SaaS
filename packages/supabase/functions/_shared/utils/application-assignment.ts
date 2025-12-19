@@ -105,7 +105,7 @@ export async function assignApplicationToMember(options: {
       assigned_to: assigneeUserId,
       assigned_by: actorUserId ?? null,
       source,
-      metadata,
+      metadata: metadata as Database['core']['Tables']['application_assignment_history']['Row']['metadata'],
     })
 
   if (historyError) {
@@ -117,28 +117,30 @@ export async function assignApplicationToMember(options: {
     })
   }
 
-  const { error: activityError } = await supabaseAdmin
-    .schema('core')
-    .from('team_activity_events')
-    .insert({
-      team_id: teamId,
-      organization_id: organizationId ?? null,
-      event_type: source === 'auto' ? 'application.assigned' : 'application.reassigned',
-      actor_user_id: actorUserId ?? null,
-      related_application_id: applicationId,
-      payload: {
-        assignedTo: assigneeUserId,
-        source,
-        metadata,
-      },
-    })
+  if (organizationId) {
+    const { error: activityError } = await supabaseAdmin
+      .schema('core')
+      .from('team_activity_events')
+      .insert({
+        team_id: teamId,
+        organization_id: organizationId,
+        event_type: source === 'auto' ? 'application.assigned' : 'application.reassigned',
+        actor_user_id: actorUserId ?? null,
+        related_application_id: applicationId,
+        payload: {
+          assignedTo: assigneeUserId,
+          source,
+          metadata,
+        } as Database['core']['Tables']['team_activity_events']['Row']['payload'],
+      })
 
-  if (activityError) {
-    console.error('[applications] Failed to record team activity for assignment', {
-      applicationId,
-      teamId,
-      assigneeUserId,
-      error: activityError.message,
-    })
+    if (activityError) {
+      console.error('[applications] Failed to record team activity for assignment', {
+        applicationId,
+        teamId,
+        assigneeUserId,
+        error: activityError.message,
+      })
+    }
   }
 }

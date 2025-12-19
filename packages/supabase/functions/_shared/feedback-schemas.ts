@@ -117,7 +117,6 @@ export const feedbackUploadRequestSchema = z.object({
     .max(255, { message: 'File name is too long' }),
   fileType: z.enum(FEEDBACK_ALLOWED_MIME_TYPES, {
     error: 'File type is required',
-    invalid_type_error: 'Unsupported file type',
   }),
   fileSize: z
     .number()
