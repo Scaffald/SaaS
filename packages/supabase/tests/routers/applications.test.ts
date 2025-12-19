@@ -229,7 +229,7 @@ Deno.test({
         id: jobId,
         title: "Test Job for Messaging",
         organization_id: orgId,
-        status: "published",
+        status: "open",
       });
 
     if (jobError) {
@@ -244,8 +244,7 @@ Deno.test({
         id: applicationId,
         job_id: jobId,
         user_id: ctx.user.userId,
-        status: "pending",
-        applied_at: new Date().toISOString(),
+        status: "new",
       });
 
     if (appError) {
@@ -388,7 +387,7 @@ Deno.test({
         id: jobId,
         title: "Test Job",
         organization_id: orgId,
-        status: "published",
+        status: "open",
       });
 
     // Create application
@@ -399,8 +398,7 @@ Deno.test({
         id: applicationId,
         job_id: jobId,
         user_id: ctx.user.userId,
-        status: "pending",
-        applied_at: new Date().toISOString(),
+        status: "new",
       });
 
     try {

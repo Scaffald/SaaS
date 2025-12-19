@@ -10,15 +10,15 @@ This directory contains all seed data for development and testing environments. 
   - Imports modular seed files in correct dependency order
 
 #### Modular Core Seeds (Imported by seed.sql)
-1. **`seed-industries.sql`** - 4 industries (Construction, Manufacturing, Transportation, Energy)
-2. **`seed-organizations.sql`** - 8 sample organizations across different locations
-3. **`seed-users.sql`** - 50 realistic users with full profiles, auth accounts, and geographic distribution
-4. **`seed-ats-data.sql`** - Complete ATS testing data:
-   - 6 hiring pipelines
-   - 36 pipeline stages
-   - 6 open jobs
-   - 3 candidate-job links
-   - 4 applications with stage history
+1. **`001_seed-industries.sql`** - 4 industries (Construction, Manufacturing, Transportation, Energy)
+2. **`002_seed-users.sql`** - 50 realistic users with full profiles, auth accounts, and geographic distribution
+3. **`003_seed-organizations.sql`** - 8 sample organizations across different locations
+4. **`004_seed-unicorn-org.sql`** - Unicorn organization and 3 initial jobs
+5. **`005_seed-ats-data.sql`** - Complete ATS testing data:
+   - 8 demo job postings across multiple organizations
+   - 18 candidate applications in various stages
+   - Application messages for communication tracking
+   - Applications distributed across all workflow statuses
 
 ### Optional/Specialized Seeds (Run Manually)
 - **`seed-affiliates.sql`** - Affiliate program partners (OSHA, NIMS, etc.)
@@ -73,6 +73,9 @@ pnpm supa db reset
 
 ### Selective Seeding
 ```bash
+# Add only ATS demo data
+pnpm supa db seed --file seeds/005_seed-ats-data.sql
+
 # Add only affiliates
 pnpm supa db seed --file seeds/seed-affiliates.sql
 
@@ -123,13 +126,22 @@ pnpm supa db seed --file seeds/seed.sql
 - Industry assignments
 - Travel preferences and availability
 
-### seed-ats-data.sql
-- **6 Pipelines**: 2 per organization (default + specialized)
-- **36 Pipeline Stages**: Complete hiring workflow stages
-- **6 Jobs**: Open positions across organizations
-- **3 Candidate-Job Links**: Talent pool, referrals, sourced candidates
-- **4 Applications**: Applications in various stages (screen, interview, offer, rejected)
-- **12 Stage History Entries**: Complete application progression tracking
+### 005_seed-ats-data.sql
+- **8 Demo Jobs**: Various construction and trade positions across multiple organizations
+  - Commercial Electrician, Licensed Plumber, Carpenter, Construction Project Manager
+  - Site Supervisor, HVAC Technician, Heavy Equipment Operator, Safety Coordinator
+  - Mix of full-time positions with different employment types and locations
+  - Realistic job descriptions, pay ranges, and geographic coordinates
+- **18 Candidate Applications**: Applications distributed across all workflow stages
+  - Statuses: pending, reviewing, interview, offer, hired, rejected, withdrawn, stale
+  - Multiple applications per job (2-4 candidates per job)
+  - Some applications include resume URLs, cover letters, and application answers
+  - Realistic timestamps showing application progression
+- **Application Messages**: Sample communication between candidates and organizations
+  - Messages for applications in reviewing, interview, and offer stages
+  - Demonstrates communication tracking in the ATS workflow
+
+**Note:** This seed file is idempotent and can be safely run multiple times. It uses `ON CONFLICT DO NOTHING` to prevent duplicate data.
 
 ### seed-affiliates.sql
 - OSHA 30-Hour Construction Training
