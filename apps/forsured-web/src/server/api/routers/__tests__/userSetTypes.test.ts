@@ -198,6 +198,17 @@ describe('User Set Types Router', () => {
           expect(error).toBeInstanceOf(TRPCError);
         }
       });
+
+      it('BUG-002 & BUG-004 FIX: allows test admin users to access admin endpoints', async () => {
+        // Test users from "Test as Admin" button have IDs like "test-admin-1234567890"
+        const testAdminUserId = 'test-admin-1234567890';
+        const ctx = createContext(testAdminUserId);
+        const caller = userSetTypesRouter.createCaller(ctx);
+
+        // Should NOT throw - test admin users should be allowed
+        const result = await caller.list();
+        expect(Array.isArray(result)).toBe(true);
+      });
     });
 
     describe('get', () => {
