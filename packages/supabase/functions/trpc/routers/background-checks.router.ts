@@ -272,7 +272,7 @@ const BACKGROUND_CHECK_BUCKET_ID = 'background-check-documents'
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5
 const SIGNED_DOWNLOAD_URL_TTL_SECONDS = 60 * 60
 const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024
-const STRIPE_API_VERSION = '2024-06-20'
+const STRIPE_API_VERSION = '2025-11-17.clover'
 const SHARED_BACKGROUND_CHECK_DISCOUNT = 0.25
 const mockStripePaymentIntents = new Map<string, { amount: number; currency: string }>()
 

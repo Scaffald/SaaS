@@ -1,2 +1,2 @@
-export * from './consolidated';
-export * from './profileImport';
+export * from './consolidated.ts';
+export * from './profileImport.ts';

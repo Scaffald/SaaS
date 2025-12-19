@@ -7,7 +7,7 @@ import { z } from 'zod'
 import type { Context } from '../context.ts';
 import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
 
-const STRIPE_API_VERSION = '2024-06-20'
+const STRIPE_API_VERSION = '2025-11-17.clover'
 
 // Lazy initialization of Stripe to avoid module loading issues
 let StripeClass: typeof import('stripe').default | null = null

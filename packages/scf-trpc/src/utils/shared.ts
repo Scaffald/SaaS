@@ -7,4 +7,4 @@
  */
 
 // Phone validation utilities - pure JavaScript + Zod, safe for all environments
-export * from './phone'
+export * from './phone.ts'
