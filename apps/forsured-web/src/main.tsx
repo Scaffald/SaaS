@@ -11,6 +11,7 @@ import { UserProvider } from './contexts/UserContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { DatabaseProvider } from './contexts/DatabaseContext';
 import { TRPCProvider } from './providers/TRPCProvider';
+import { LexiconProvider } from './contexts/LexiconContext';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,11 +20,13 @@ createRoot(document.getElementById('root')!).render(
         <ThemeProvider>
           <AuthProvider>
             <TRPCProvider>
-              <UserProvider>
-                <DatabaseProvider>
-                  <App />
-                </DatabaseProvider>
-              </UserProvider>
+              <LexiconProvider>
+                <UserProvider>
+                  <DatabaseProvider>
+                    <App />
+                  </DatabaseProvider>
+                </UserProvider>
+              </LexiconProvider>
             </TRPCProvider>
           </AuthProvider>
         </ThemeProvider>

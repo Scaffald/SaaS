@@ -4,13 +4,15 @@
 import React from 'react';
 import { YStack, XStack, styled } from '@unicornlove/ui';
 
+// Use Tamagui's animation prop instead of CSS animationDuration
+// Tamagui will handle the animation properly without passing it to DOM
 const SkeletonBox = styled(YStack, {
   name: 'SkeletonBox',
   backgroundColor: '$color4',
   borderRadius: '$md',
   animation: 'pulse',
-  animationDuration: '2s',
-  animationIterationCount: 'infinite',
+  // Remove animationDuration - use Tamagui's animation system instead
+  // animationDuration is handled by the 'pulse' animation config
 });
 
 interface SkeletonLoaderProps {

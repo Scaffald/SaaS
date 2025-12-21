@@ -33,25 +33,29 @@ import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 
 // Type definitions for database schema
+// Database schema: name (contact person), company (company name)
 interface Subcontractor {
   id: string;
   organization_id: string;
-  company_name: string;
-  contact_name: string;
+  name: string; // Contact person name (from DB)
+  company: string; // Company name (from DB)
+  // Legacy fields for compatibility - mapped from DB fields
+  company_name: string; // Mapped from 'company'
+  contact_name: string; // Mapped from 'name'
   contact_info: {
     email: string;
     phone: string;
     address?: { street: string; city: string; state: string; zip: string };
   };
-  trade_type: string;
-  license_number: string;
-  status: string;
-  compliance_score: number;
-  risk_level: string;
-  last_activity_at: string;
+  trade_type?: string;
+  license_number?: string;
+  status?: string;
+  compliance_score?: number;
+  risk_level?: string;
+  last_activity_at?: string;
   notes?: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 interface Policy {
@@ -90,7 +94,7 @@ export default function SubcontractorDetailModal({
   isOpen,
   onClose,
 }: SubcontractorDetailModalProps) {
-  const { db } = useDatabase();
+  const { forsured } = useDatabase();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'policies' | 'documents' | 'issues'
   >('overview');
@@ -128,10 +132,10 @@ export default function SubcontractorDetailModal({
 
       try {
         const [subResult, policiesResult, projectsResult, usersResult] = await Promise.all([
-          db.from('subcontractors').select('*').eq('id', subcontractorId).single(),
-          db.from('policies').select('*').eq('subcontractor_id', subcontractorId),
-          db.from('projects').select('*'),
-          db.from('users').select('*'),
+          forsured('subcontractors').select('*').eq('id', subcontractorId).single(),
+          forsured('policies').select('*').eq('subcontractor_id', subcontractorId),
+          forsured('projects').select('*'),
+          forsured('users').select('*'),
         ]);
 
         if (subResult.error) throw subResult.error;
@@ -139,7 +143,14 @@ export default function SubcontractorDetailModal({
         if (projectsResult.error) throw projectsResult.error;
         if (usersResult.error) throw usersResult.error;
 
-        setSubcontractor(subResult.data);
+        // Map database fields to component interface
+        const mappedSubcontractor = subResult.data ? {
+          ...subResult.data,
+          company_name: subResult.data.company || '', // Map 'company' to 'company_name'
+          contact_name: subResult.data.name || '', // Map 'name' to 'contact_name'
+        } : null;
+
+        setSubcontractor(mappedSubcontractor);
         setPolicies(policiesResult.data || []);
         setProjects(projectsResult.data || []);
         setUsers(usersResult.data || []);
@@ -152,7 +163,7 @@ export default function SubcontractorDetailModal({
     }
 
     fetchSubcontractorData();
-  }, [db, subcontractorId, isOpen]);
+  }, [forsured, subcontractorId, isOpen]);
 
   // Use hooks for documents and issues
   const { attachments: documents, loading: documentsLoading } = useAttachments({

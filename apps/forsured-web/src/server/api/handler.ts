@@ -77,12 +77,13 @@ export async function trpcMiddleware(req: any, res: any) {
   // Handle request
   const response = await handleTRPCRequest(request);
 
-  // Convert Web API Response to Express response
-  res.status(response.status);
+  // Convert Web API Response to Connect/Express response
+  // Vite's Connect middleware uses statusCode property, not status() method
+  res.statusCode = response.status;
   response.headers.forEach((value, key) => {
     res.setHeader(key, value);
   });
 
   const responseBody = await response.text();
-  res.send(responseBody);
+  res.end(responseBody);
 }

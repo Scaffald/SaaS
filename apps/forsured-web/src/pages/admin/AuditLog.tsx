@@ -41,43 +41,11 @@ const mockAuditLogs: AuditLogEntry[] = [
   },
 ];
 
-const Table = styled('table', {
-  name: 'Table',
-  width: '100%',
-  backgroundColor: '$background',
-  borderCollapse: 'collapse',
-});
-
-const TableHead = styled('thead', {
-  name: 'TableHead',
-});
-
-const TableBody = styled('tbody', {
-  name: 'TableBody',
-});
-
-const TableRow = styled('tr', {
-  name: 'TableRow',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-});
-
-const TableHeaderCell = styled('th', {
-  name: 'TableHeaderCell',
-  paddingVertical: '$2',
-  paddingHorizontal: '$4',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  textAlign: 'left',
-});
-
-const TableCell = styled('td', {
-  name: 'TableCell',
-  paddingVertical: '$2',
-  paddingHorizontal: '$4',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-});
+// Use inline styles for native CSS table properties to avoid React prop warnings
+const tableStyle = { borderCollapse: 'collapse' as const, width: '100%' };
+const thStyle = { textAlign: 'left' as const, padding: '8px 16px', borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
+const tdStyle = { padding: '8px 16px', borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
+const trStyle = { borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
 
 
 function AdminAuditLog() {
@@ -162,48 +130,48 @@ function AdminAuditLog() {
             } : undefined}
           />
         ) : (
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell>
+          <table style={tableStyle}>
+            <thead>
+              <tr style={trStyle}>
+                <th style={thStyle}>
                   <Text fontWeight="600">Timestamp</Text>
-                </TableHeaderCell>
-                <TableHeaderCell>
+                </th>
+                <th style={thStyle}>
                   <Text fontWeight="600">User ID</Text>
-                </TableHeaderCell>
-                <TableHeaderCell>
+                </th>
+                <th style={thStyle}>
                   <Text fontWeight="600">Action</Text>
-                </TableHeaderCell>
-                <TableHeaderCell>
+                </th>
+                <th style={thStyle}>
                   <Text fontWeight="600">Target Type</Text>
-                </TableHeaderCell>
-                <TableHeaderCell>
+                </th>
+                <th style={thStyle}>
                   <Text fontWeight="600">Target ID</Text>
-                </TableHeaderCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {filteredLogs.map(log => (
-                <TableRow key={log.id}>
-                  <TableCell>
+                <tr key={log.id} style={trStyle}>
+                  <td style={tdStyle}>
                     <Text>{new Date(log.created_at).toLocaleString()}</Text>
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td style={tdStyle}>
                     <Text>{log.admin_user_id}</Text>
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td style={tdStyle}>
                     <Text>{log.action}</Text>
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td style={tdStyle}>
                     <Text>{log.target_type}</Text>
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td style={tdStyle}>
                     <Text>{log.target_id}</Text>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         )}
       </Card>
     </YStack>

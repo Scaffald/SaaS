@@ -105,7 +105,7 @@ interface Project {
 }
 
 export default function EnhancedManagerDashboard() {
-  const { db } = useDatabase()
+  const { forsured } = useDatabase()
   const navigate = useNavigate()
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
@@ -129,10 +129,10 @@ export default function EnhancedManagerDashboard() {
       try {
         // Fetch all data sources in parallel
         const [tasksResult, subsResult, complianceResult, projectsResult] = await Promise.all([
-          db.from('tasks').select('*').order('due_date', { ascending: true }),
-          db.from('subcontractors').select('*'),
-          db.from('compliance_scores').select('*'),
-          db.from('projects').select('*'),
+          forsured('tasks').select('*').order('due_date', { ascending: true }),
+          forsured('subcontractors').select('*'),
+          forsured('compliance_scores').select('*'),
+          forsured('projects').select('*'),
         ])
 
         if (tasksResult.error) throw tasksResult.error
@@ -154,7 +154,7 @@ export default function EnhancedManagerDashboard() {
     }
 
     fetchDashboardData()
-  }, [db])
+  }, [forsured])
 
   // Computed metrics
   const totalSubcontractors = subcontractors.filter((s) => s.status === 'active').length

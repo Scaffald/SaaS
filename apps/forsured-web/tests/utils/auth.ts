@@ -168,6 +168,32 @@ async function setupMockTokens(page: Page) {
 }
 
 /**
+ * Create a mock JWT token with proper 3-part format (header.payload.signature)
+ * This is needed because Supabase's JWT parsing expects the standard format.
+ */
+function createMockJWT(userId: string, email: string): string {
+  // Header: { "alg": "HS256", "typ": "JWT" }
+  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+
+  // Payload with user info and claims
+  const now = Math.floor(Date.now() / 1000);
+  const payload = btoa(JSON.stringify({
+    sub: userId,
+    email: email,
+    aud: 'authenticated',
+    role: 'authenticated',
+    iat: now,
+    exp: now + 3600,
+    iss: 'https://mock-supabase.test/auth/v1',
+  }));
+
+  // Signature (mock - not cryptographically valid but structurally correct)
+  const signature = btoa(`mock-signature-${userId}`);
+
+  return `${header}.${payload}.${signature}`;
+}
+
+/**
  * Set up mock Supabase session in localStorage
  * This is required for TRPC authentication to work in tests.
  * TRPC client gets auth headers from supabase.auth.getSession().
@@ -178,11 +204,36 @@ async function setupSupabaseSession(
 ) {
   await page.addInitScript(
     ({ userId, userEmail }) => {
+      // Helper to create mock JWT with proper 3-part format
+      function createMockJWT(id: string, email: string): string {
+        // Use a simpler base64 that works in browser
+        const toBase64 = (obj: unknown) => btoa(JSON.stringify(obj));
+
+        const header = toBase64({ alg: 'HS256', typ: 'JWT' });
+        const now = Math.floor(Date.now() / 1000);
+        const payload = toBase64({
+          sub: id,
+          email: email,
+          aud: 'authenticated',
+          role: 'authenticated',
+          iat: now,
+          exp: now + 3600,
+          iss: 'https://mock-supabase.test/auth/v1',
+        });
+        const signature = toBase64({ sig: `mock-${id}` });
+
+        return `${header}.${payload}.${signature}`;
+      }
+
+      // Create proper JWT tokens
+      const accessToken = createMockJWT(userId, userEmail);
+      const refreshToken = createMockJWT(userId + '-refresh', userEmail);
+
       // Create a mock Supabase session that matches the test user
       // This session will be used by TRPC client to add Authorization headers
       const mockSession = {
-        access_token: `mock-supabase-token-${userId}`,
-        refresh_token: `mock-supabase-refresh-${userId}`,
+        access_token: accessToken,
+        refresh_token: refreshToken,
         expires_in: 3600,
         expires_at: Math.floor(Date.now() / 1000) + 3600,
         token_type: 'bearer',
@@ -226,6 +277,7 @@ async function setupSupabaseSession(
  * The mock Scaffald client will use this to return the correct user ID.
  *
  * Includes organization_id and companies array for settings pages.
+ * Also sets mock_forsured_profile for AuthContext to use.
  */
 async function setupTestUser(
   page: Page,
@@ -235,9 +287,13 @@ async function setupTestUser(
   const companyId = `company-${user.id}`;
 
   await page.addInitScript(
-    ({ testUserKey, testUser }) => {
+    ({ testUserKey, testUser, mockProfile }) => {
       window.localStorage.setItem(testUserKey, JSON.stringify(testUser));
+      // Set mock_forsured_profile for AuthContext to use
+      // AuthContext checks this FIRST before fetching from API
+      window.localStorage.setItem('mock_forsured_profile', JSON.stringify(mockProfile));
       console.log('[E2E] Test user set:', testUser.email);
+      console.log('[E2E] Mock profile set:', mockProfile.user_type);
     },
     {
       testUserKey: TEST_USER_KEY,
@@ -257,6 +313,18 @@ async function setupTestUser(
               },
             ]
           : [],
+      },
+      // Mock ForSured profile that AuthContext will use
+      mockProfile: {
+        id: `profile-${user.id}`,
+        scaffald_user_id: user.id,
+        user_type: user.user_type,
+        onboarding_completed: user.onboarding_completed,
+        onboarding_step: user.onboarding_step,
+        company_connected: user.company_connected,
+        onboarding_data: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
     }
   );
@@ -435,6 +503,117 @@ async function setupMockProfile(
       body: JSON.stringify(mockResponse),
     });
   });
+
+  // Mock approvals endpoint - returns empty array for test users
+  await page.route('**/rest/v1/approvals*', async (route) => {
+    const method = route.request().method();
+    console.log(`[E2E Mock] ${method} approvals endpoint`);
+
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([]),
+    });
+  });
+
+  // Mock help_articles endpoint with mock help content
+  await page.route('**/rest/v1/help_articles*', async (route) => {
+    const method = route.request().method();
+    const url = route.request().url();
+    console.log(`[E2E Mock] ${method} help_articles endpoint`);
+
+    // Return mock help article for GC getting-started
+    const mockHelpArticle = {
+      id: 'gc-getting-started',
+      slug: 'getting-started',
+      title: 'Getting Started as a General Contractor',
+      content: `# Getting Started as a General Contractor
+
+Welcome to ForSured! This guide will help you set up your account and start managing subcontractor compliance.
+
+## Step 1: Complete Your Company Profile
+After signing up, complete your company profile.
+
+## Step 2: Create Your First Project
+Click "New Project" from your dashboard.
+
+## Need Help?
+Contact support for assistance.`,
+      user_types: ['gc', 'manager'],
+      category: 'getting-started',
+      sort_order: 1,
+      video_url: null,
+      is_published: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    if (method === 'GET') {
+      // Check if it's a single row request (has eq.slug filter)
+      const isSingleRequest = url.includes('eq.slug');
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(isSingleRequest ? mockHelpArticle : [mockHelpArticle]),
+      });
+    }
+
+    return route.continue();
+  });
+
+  // Mock common dashboard data endpoints - return empty arrays
+  // These are needed for GC/Manager dashboard and other pages
+  const emptyArrayEndpoints = [
+    'tasks',
+    'projects',
+    'subcontractors',
+    'compliance_scores',
+    'documents',
+    'notifications',
+    'invitations',
+    'companies',
+  ];
+
+  for (const endpoint of emptyArrayEndpoints) {
+    await page.route(`**/rest/v1/${endpoint}*`, async (route) => {
+      const method = route.request().method();
+      console.log(`[E2E Mock] ${method} ${endpoint} endpoint`);
+
+      if (method === 'GET') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify([]),
+        });
+      }
+
+      if (method === 'POST') {
+        return route.fulfill({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify({ id: `mock-${endpoint}-id` }),
+        });
+      }
+
+      if (method === 'PATCH' || method === 'PUT') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({}),
+        });
+      }
+
+      if (method === 'DELETE') {
+        return route.fulfill({
+          status: 204,
+          contentType: 'application/json',
+          body: '',
+        });
+      }
+
+      return route.continue();
+    });
+  }
 }
 
 /**

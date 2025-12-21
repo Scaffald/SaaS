@@ -56,7 +56,7 @@ import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 
 
 type ButtonTone = 'blue' | 'gray' | 'info' | 'success' | 'error' | 'accent'
 
-export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme' | 'fullWidth' | 'fullwidth'> {
+export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme' | 'fullWidth' | 'fullwidth' | 'width'> {
   /**
    * Visual style variant
    * @default 'primary'
@@ -73,18 +73,26 @@ export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme
 }
 
 const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', theme, fullWidth, ...props }, ref) => {
+  ({ variant = 'primary', theme, fullWidth, ...restProps }, ref) => {
     // Extract fullWidth to prevent it from being passed to DOM
     // Convert fullWidth to width prop for Tamagui
     const widthProp = fullWidth ? { width: '100%' } : {}
     
-    // Ensure fullWidth is not in props (it's already extracted above)
-    // Create a clean props object without fullWidth to prevent it from reaching DOM
-    // Also exclude 'fullwidth' (lowercase) in case it gets converted
-    const cleanProps = { ...props }
-    // Explicitly delete both fullWidth and fullwidth if they somehow got through
-    delete (cleanProps as { fullWidth?: boolean; fullwidth?: boolean }).fullWidth
-    delete (cleanProps as { fullWidth?: boolean; fullwidth?: boolean }).fullwidth
+    // Explicitly filter out fullWidth, fullwidth, and width from restProps
+    // This prevents React warnings about unknown DOM props
+    // We set width separately via widthProp, so we must exclude it from spread
+    // Use Object.keys to avoid inherited properties and ensure proper filtering
+    const {
+      fullWidth: _fullWidth,
+      fullwidth: _fullwidth,
+      width: _width,
+      ...cleanProps
+    } = restProps as {
+      fullWidth?: unknown;
+      fullwidth?: unknown;
+      width?: unknown;
+      [key: string]: unknown;
+    }
     
     /**
      * Variant style definitions

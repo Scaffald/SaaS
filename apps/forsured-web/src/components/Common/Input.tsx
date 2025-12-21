@@ -1,11 +1,11 @@
 /**
- * Input - Re-export TextInput from @unicornlove/ui
+ * Input - Re-export Input from @unicornlove/ui
  * 
- * The package component is called TextInput and supports label, error, and helperText props.
+ * The package component is called Input (from Tamagui).
  */
-export { TextInput as Input } from '@unicornlove/ui';
-export type { TextInputProps as InputProps } from '@unicornlove/ui';
+export { Input } from '@unicornlove/ui';
+export type { InputProps } from '@unicornlove/ui';
 
 // Default export for backward compatibility
-import { Input as TextInput } from '@unicornlove/ui';
-export default TextInput;
+import { Input } from '@unicornlove/ui';
+export default Input;

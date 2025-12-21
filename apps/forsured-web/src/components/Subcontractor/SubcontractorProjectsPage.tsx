@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building, Briefcase, CheckCircle, Clock } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button } from '@unicornlove/ui';
+import { YStack, XStack, Text, Card, Button, H1 } from '@unicornlove/ui';
 import ProjectCard from '../Shared/ProjectCard';
 
 export default function SubcontractorProjectsPage() {
@@ -101,9 +101,7 @@ export default function SubcontractorProjectsPage() {
   return (
     <YStack gap="$6">
       <YStack>
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
-          My Projects
-        </Text>
+        <H1>My Projects</H1>
         <Text color="$color11">
           Track your active and completed projects
         </Text>

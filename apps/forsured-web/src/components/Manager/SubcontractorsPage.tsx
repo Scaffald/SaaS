@@ -20,11 +20,15 @@ import { toast } from 'sonner';
 
 type ComplianceStatus = 'compliant' | 'warning' | 'critical' | 'all';
 
+// Database schema: name (contact person), company (company name)
 interface Subcontractor {
   id: string;
   organization_id: string;
-  company_name: string;
-  contact_name: string;
+  name: string; // Contact person name (from DB)
+  company: string; // Company name (from DB)
+  // Legacy fields for compatibility - mapped from DB fields
+  company_name: string; // Mapped from 'company'
+  contact_name: string; // Mapped from 'name'
   contact_info: {
     email: string;
     phone: string;
@@ -35,19 +39,19 @@ interface Subcontractor {
       zip: string;
     };
   };
-  trade_type: string;
-  license_number: string;
-  status: string;
-  compliance_score: number;
-  risk_level: string;
-  last_activity_at: string;
+  trade_type?: string;
+  license_number?: string;
+  status?: string;
+  compliance_score?: number;
+  risk_level?: string;
+  last_activity_at?: string;
   notes?: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 export default function SubcontractorsPage() {
-  const { db } = useDatabase();
+  const { forsured } = useDatabase();
   const navigate = useNavigate();
 
   // State for data fetching
@@ -74,16 +78,22 @@ export default function SubcontractorsPage() {
       setError(null);
 
       try {
-        const { data, error: queryError } = await db
-          .from('subcontractors')
+        const { data, error: queryError } = await forsured('subcontractors')
           .select('*')
-          .order('company_name', { ascending: true });
+          .order('company', { ascending: true }); // Use 'company' column from DB
 
         if (queryError) {
           throw queryError;
         }
 
-        setSubcontractors(data || []);
+        // Map database fields to component interface
+        const mappedData = (data || []).map((sub: any) => ({
+          ...sub,
+          company_name: sub.company || '', // Map 'company' to 'company_name' for compatibility
+          contact_name: sub.name || '', // Map 'name' to 'contact_name' for compatibility
+        }));
+
+        setSubcontractors(mappedData);
       } catch (err) {
         const error = err as Error;
         setError(error);
@@ -94,7 +104,7 @@ export default function SubcontractorsPage() {
     }
 
     fetchSubcontractors();
-  }, [db]);
+  }, [forsured]);
 
   // Derive compliance status from compliance_score
   const subcontractorsWithStatus = useMemo(() => {
