@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { phoneNumberSchema } from '../phone';
+import { phoneNumberSchema } from '../phone.ts';
 
 // Phone validation helper (matches frontend validation)
 const optionalPhoneNumberSchema = phoneNumberSchema;

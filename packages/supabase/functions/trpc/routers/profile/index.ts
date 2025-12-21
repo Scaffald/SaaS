@@ -16,7 +16,7 @@
  */
 
 // Re-export the actual router instance (used at runtime in Deno)
-export { profileRouter } from './_impl';
+export { profileRouter } from './_impl.ts';
 
 // Re-export the router type for client-side usage
 export type ProfileRouter = typeof import("./_impl.ts").profileRouter;

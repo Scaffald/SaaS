@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { addressSchema } from '@scf/trpc/schemas'
-import { protectedProcedure, t } from '../../middleware';
+import { protectedProcedure, t } from '../../middleware.ts';
 
 /**
  * Location formatting helper

@@ -1,4 +1,4 @@
-import type { Json } from './database.types';
+import type { Json } from './database.types.ts';
 
 type PlainRecord = Record<string, unknown>
 

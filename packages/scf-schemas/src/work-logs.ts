@@ -1,1 +1,1 @@
-export * from './work-logs/index';
+export * from './work-logs/index.ts';

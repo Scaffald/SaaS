@@ -63,6 +63,7 @@ export const ProfileLayout = ({
           <YStack
             width="100%"
             $md={{
+              width: undefined,
               flex: 3,
               minWidth: 300,
             }}
@@ -72,6 +73,7 @@ export const ProfileLayout = ({
           <YStack
             width="100%"
             $md={{
+              width: undefined,
               flex: 2,
               minWidth: 300,
             }}

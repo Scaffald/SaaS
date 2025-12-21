@@ -15,10 +15,10 @@ import { TRPCError } from '@trpc/server'
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
-import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware';
-import { supabaseServiceKey, supabaseUrl } from '../context';
-import { collectCoreUserData } from './ccpa/data-collector';
-import { getDeadlineMetrics as getDeadlineMetricsUtil } from './ccpa/deadline-tracker';
+import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts';
+import { supabaseServiceKey, supabaseUrl } from '../context.ts';
+import { collectCoreUserData } from './ccpa/data-collector.ts';
+import { getDeadlineMetrics as getDeadlineMetricsUtil } from './ccpa/deadline-tracker.ts';
 import {
   approveRequestInputSchema,
   cancelRequestInputSchema,
@@ -45,7 +45,7 @@ import {
   requestPortabilityInputSchema,
   resendVerificationInputSchema,
   verifyEmailOTPInputSchema,
-} from './ccpa/schemas';
+} from './ccpa/schemas.ts';
 import {
   completeEnhancedVerification,
   completeManualVerification,
@@ -55,23 +55,23 @@ import {
   requestManualVerification,
   resendVerificationCode,
   verifyEmailOTP,
-} from './ccpa/identity-verification';
+} from './ccpa/identity-verification.ts';
 import {
   getProcessingStatus,
   processRequest,
   retryProcessing,
-} from './ccpa/request-processor';
+} from './ccpa/request-processor.ts';
 import {
   estimatePDFSize,
   generateCCPAPDF,
-} from './ccpa/pdf-generator';
+} from './ccpa/pdf-generator.ts';
 import {
   cleanupExpiredExports,
   createExportDownload,
   getDownloadRecord,
   trackDownload,
   EXPORT_CONFIG,
-} from './ccpa/export-storage';
+} from './ccpa/export-storage.ts';
 import {
   notifyRequestSubmitted,
   notifyVerificationRequired,
@@ -82,14 +82,14 @@ import {
   type CCPARequestInfo,
   type NotificationResult,
   CCPA_NOTIFICATION_TYPES,
-} from './ccpa/notifications';
+} from './ccpa/notifications.ts';
 import {
   GPC_CONFIG,
   processGPCSignal,
   getGPCStatus,
   getGPCDisclosureText,
   getDoNotSellPageStatus,
-} from './ccpa/gpc';
+} from './ccpa/gpc.ts';
 
 // All CCPA opt-out categories
 const ALL_OPT_OUT_CATEGORIES = ['sale', 'sharing', 'targeted_advertising', 'profiling'] as const

@@ -10,7 +10,7 @@
  */
 
 import { PDFDocument, rgb, StandardFonts, PDFPage } from 'pdf-lib'
-import type { UserDataExport } from './types';
+import type { UserDataExport } from './types.ts';
 
 // Page configuration
 const PAGE_WIDTH = 612 // Letter size in points

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware';
+import { protectedProcedure, t } from '../middleware.ts';
 
 /**
  * Prerequisites input schema

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { execSync } from 'node:child_process'
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 
@@ -35,6 +36,26 @@ const PATTERNS = [
 
 const violations = []
 
+// Check if we're in a git context and should only check staged files
+function getStagedFiles() {
+  try {
+    const output = execSync('git diff --cached --name-only --diff-filter=ACM', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    })
+    return new Set(
+      output
+        .split('\n')
+        .filter(Boolean)
+        .map((file) => path.join(ROOT, file))
+    )
+  } catch {
+    return null // Not in git context or no staged files
+  }
+}
+
+const stagedFiles = getStagedFiles()
+
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true })
 
@@ -63,6 +84,11 @@ async function walk(directory) {
 }
 
 async function checkFile(filePath) {
+  // If we're checking staged files only, skip files not in the staged set
+  if (stagedFiles !== null && !stagedFiles.has(filePath)) {
+    return
+  }
+
   const content = await readFile(filePath, 'utf8')
 
   for (const { regex, reason } of PATTERNS) {

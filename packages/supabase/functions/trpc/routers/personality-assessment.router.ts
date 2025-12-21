@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { mapToArchetype } from '../../_shared/ipip-archetype-mapper';
-import { getScore } from '../../_shared/ipip-score';
-import type { IPIPAnswer } from '../../_shared/ipip-types';
-import { protectedProcedure, publicProcedure, t } from '../middleware';
+import { mapToArchetype } from '../../_shared/ipip-archetype-mapper.ts';
+import { getScore } from '../../_shared/ipip-score.ts';
+import type { IPIPAnswer } from '../../_shared/ipip-types.ts';
+import { protectedProcedure, publicProcedure, t } from '../middleware.ts';
 
 /**
  * Personality Assessment Router - Handles personality assessment operations

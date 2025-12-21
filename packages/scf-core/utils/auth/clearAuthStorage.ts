@@ -8,6 +8,10 @@ type CookieStoreDeleteTarget = string | {
   path?: string;
 };
 
+// Guard to prevent concurrent cleanup executions
+let isCleanupInProgress = false;
+let cleanupPromise: Promise<void> | null = null;
+
 /**
  * Comprehensive auth storage cleanup utility
  * Clears all authentication-related storage across platforms
@@ -22,6 +26,29 @@ type CookieStoreDeleteTarget = string | {
 export async function clearAllAuthStorage(
   queryClient?: QueryClient,
 ): Promise<void> {
+  // If cleanup is already in progress, return the existing promise
+  if (isCleanupInProgress && cleanupPromise) {
+    console.log("[clearAuthStorage] Cleanup already in progress, waiting for existing cleanup");
+    return cleanupPromise;
+  }
+
+  // Mark cleanup as in progress and create promise
+  isCleanupInProgress = true;
+  cleanupPromise = performCleanup(queryClient);
+
+  try {
+    await cleanupPromise;
+  } finally {
+    // Reset flag after cleanup completes (success or failure)
+    isCleanupInProgress = false;
+    cleanupPromise = null;
+  }
+}
+
+/**
+ * Internal cleanup implementation
+ */
+async function performCleanup(queryClient?: QueryClient): Promise<void> {
   console.log("[clearAuthStorage] Starting comprehensive auth cleanup");
 
   try {

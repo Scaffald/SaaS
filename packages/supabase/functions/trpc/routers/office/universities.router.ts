@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { officeProcedure, protectedProcedure, t } from '../../middleware';
+import { officeProcedure, protectedProcedure, t } from '../../middleware.ts';
 
 /**
  * Office Universities router - handles university catalog management (admin only)

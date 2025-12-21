@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import {
   CheckCircle,
   XCircle,
@@ -71,6 +71,15 @@ export default function BidComparisonView({
 
   const project = projects.find((p) => p.id === projectId);
 
+  // Track all intervals and timeouts for cleanup
+  const activeTimersRef = useRef<{
+    timeouts: Set<ReturnType<typeof setTimeout>>;
+    intervals: Set<ReturnType<typeof setInterval>>;
+  }>({
+    timeouts: new Set(),
+    intervals: new Set(),
+  });
+
   // Simulate AI processing for new bids
   useEffect(() => {
     if (!project) return;
@@ -78,9 +87,9 @@ export default function BidComparisonView({
     bids.forEach((bid) => {
       if (!aiProcessingStates[bid.id] && bid.status === 'submitted') {
         // Start AI processing simulation
-        setTimeout(() => {
+        const timeoutId1 = setTimeout(() => {
           setAIProcessingStates((prev) => ({ ...prev, [bid.id]: 'analyzing' }));
-          setTimeout(() => {
+          const timeoutId2 = setTimeout(() => {
             setAIProcessingStates((prev) => ({
               ...prev,
               [bid.id]: 'processing',
@@ -91,11 +100,12 @@ export default function BidComparisonView({
               if (progress >= 100) {
                 progress = 100;
                 clearInterval(progressInterval);
+                activeTimersRef.current.intervals.delete(progressInterval);
                 setAIProcessingStates((prev) => ({
                   ...prev,
                   [bid.id]: 'complete',
                 }));
-                setTimeout(() => {
+                const timeoutId3 = setTimeout(() => {
                   setAIProcessingStates((prev) => {
                     const newState = { ...prev };
                     delete newState[bid.id];
@@ -106,7 +116,9 @@ export default function BidComparisonView({
                     delete newProgress[bid.id];
                     return newProgress;
                   });
+                  activeTimersRef.current.timeouts.delete(timeoutId3);
                 }, 1000);
+                activeTimersRef.current.timeouts.add(timeoutId3);
               } else {
                 setAIProcessingProgress((prev) => ({
                   ...prev,
@@ -114,10 +126,23 @@ export default function BidComparisonView({
                 }));
               }
             }, 400);
+            activeTimersRef.current.intervals.add(progressInterval);
+            activeTimersRef.current.timeouts.delete(timeoutId2);
           }, 1000);
+          activeTimersRef.current.timeouts.add(timeoutId2);
+          activeTimersRef.current.timeouts.delete(timeoutId1);
         }, 500);
+        activeTimersRef.current.timeouts.add(timeoutId1);
       }
     });
+
+    // Cleanup function to clear all timeouts and intervals
+    return () => {
+      activeTimersRef.current.timeouts.forEach((id) => clearTimeout(id));
+      activeTimersRef.current.intervals.forEach((id) => clearInterval(id));
+      activeTimersRef.current.timeouts.clear();
+      activeTimersRef.current.intervals.clear();
+    };
   }, [bids, project, aiProcessingStates]);
 
   // Calculate scores for all bids

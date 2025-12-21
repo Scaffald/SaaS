@@ -2,10 +2,10 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
-import type { Context } from '../context';
-import { officeProcedure, protectedProcedure, t } from '../middleware';
+import type { Context } from '../context.ts';
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
 
-const STRIPE_API_VERSION = '2024-06-20'
+const STRIPE_API_VERSION = '2025-11-17.clover'
 
 // Lazy initialization of Stripe to avoid module loading issues
 let StripeClass: typeof import('stripe').default | null = null
@@ -163,7 +163,15 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     return createMockStripeClient()
   }
 
-  const { data: settings, error } = await ctx.supabaseAdmin
+  const { supabaseAdmin } = ctx
+  if (!supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
+  const { data: settings, error } = await supabaseAdmin
     .schema('core')
     .from('stripe_settings')
     .select('api_key_secret_id')
@@ -184,7 +192,7 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     })
   }
 
-  const { data: secretValue, error: secretError } = await ctx.supabaseAdmin
+  const { data: secretValue, error: secretError } = await supabaseAdmin
     .schema('core')
     .rpc('get_secret_value', {
       p_secret_id: settings.api_key_secret_id,
@@ -208,7 +216,16 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
 
 async function userHasPlatformRole(ctx: Context): Promise<boolean> {
   if (!ctx.user?.id) return false
-  const { data, error } = await ctx.supabaseAdmin
+
+  const { supabaseAdmin } = ctx
+  if (!supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
+  const { data, error } = await supabaseAdmin
     .schema('core')
     .from('role_assignments')
     .select('role:roles(name, scope)')
@@ -235,10 +252,18 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string): P
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
 
+  const { supabaseAdmin } = ctx
+  if (!supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   const hasPlatformRole = await userHasPlatformRole(ctx)
   if (hasPlatformRole) return
 
-  const { data: organization, error: orgError } = await ctx.supabaseAdmin
+  const { data: organization, error: orgError } = await supabaseAdmin
     .schema('core')
     .from('organizations')
     .select('id, owner_user_id')
@@ -261,7 +286,7 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string): P
 
   if (organization.owner_user_id === ctx.user.id) return
 
-  const { data: assignment, error: assignmentError } = await ctx.supabaseAdmin
+  const { data: assignment, error: assignmentError } = await supabaseAdmin
     .schema('core')
     .from('role_assignments')
     .select('scope_org_id')
@@ -289,7 +314,15 @@ async function getOrCreateStripeCustomer(
   stripe: Stripe,
   organizationId: string
 ): Promise<string> {
-  const { data: organization, error } = await ctx.supabaseAdmin
+  const { supabaseAdmin } = ctx
+  if (!supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
+  const { data: organization, error } = await supabaseAdmin
     .schema('core')
     .from('organizations')
     .select('id, name, stripe_customer_id')
@@ -321,7 +354,7 @@ async function getOrCreateStripeCustomer(
     customerId = customer.id
   }
 
-  const { error: updateError } = await ctx.supabaseAdmin
+  const { error: updateError } = await supabaseAdmin
     .schema('core')
     .from('organizations')
     .update({ stripe_customer_id: customerId })
@@ -875,13 +908,21 @@ export const paymentsRouter = t.router({
       const stripe = await loadStripeClient(ctx)
       const customerId = await getOrCreateStripeCustomer(ctx, stripe, input.organizationId)
 
+      const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       // Attach payment method to customer
       const paymentMethod = await stripe.paymentMethods.attach(input.paymentMethodId, {
         customer: customerId,
       })
 
       // Soft delete any existing payment method for this organization
-      const { error: softDeleteError } = await ctx.supabaseAdmin
+      const { error: softDeleteError } = await supabaseAdmin
         .schema('core')
         .from('organization_payment_methods')
         .update({ deleted_at: new Date().toISOString() })
@@ -897,7 +938,7 @@ export const paymentsRouter = t.router({
 
       // Create new payment method record
       const card = paymentMethod.card
-      const { data: saved, error: insertError } = await ctx.supabaseAdmin
+      const { data: saved, error: insertError } = await supabaseAdmin
         .schema('core')
         .from('organization_payment_methods')
         .insert({
@@ -929,7 +970,7 @@ export const paymentsRouter = t.router({
       }
 
       // Update organization default
-      const { error: updateError } = await ctx.supabaseAdmin
+      const { error: updateError } = await supabaseAdmin
         .schema('core')
         .from('organizations')
         .update({ default_payment_method_id: saved.id })
@@ -957,7 +998,15 @@ export const paymentsRouter = t.router({
     .query(async ({ ctx, input }) => {
       await ensureOrganizationAccess(ctx, input.organizationId)
 
-      const { data: method, error } = await ctx.supabaseAdmin
+      const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
+      const { data: method, error } = await supabaseAdmin
         .schema('core')
         .from('organization_payment_methods')
         .select('*')
@@ -995,7 +1044,15 @@ export const paymentsRouter = t.router({
   deletePaymentMethod: officeProcedure
     .input(z.object({ organizationPaymentMethodId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { data: method, error: fetchError } = await ctx.supabaseAdmin
+      const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
+      const { data: method, error: fetchError } = await supabaseAdmin
         .schema('core')
         .from('organization_payment_methods')
         .select('organization_id, stripe_payment_method_id')
@@ -1029,7 +1086,7 @@ export const paymentsRouter = t.router({
       }
 
       // Soft delete in database
-      const { error: deleteError } = await ctx.supabaseAdmin
+      const { error: deleteError } = await supabaseAdmin
         .schema('core')
         .from('organization_payment_methods')
         .update({ deleted_at: new Date().toISOString() })
@@ -1043,7 +1100,7 @@ export const paymentsRouter = t.router({
       }
 
       // Clear organization default if this was the default
-      const { error: clearError } = await ctx.supabaseAdmin
+      const { error: clearError } = await supabaseAdmin
         .schema('core')
         .from('organizations')
         .update({ default_payment_method_id: null })
@@ -1169,6 +1226,12 @@ export const paymentsRouter = t.router({
       await ensureOrganizationAccess(ctx, input.organizationId)
 
       const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
 
       let query = supabaseAdmin
         .schema('core')
@@ -1434,7 +1497,15 @@ export const paymentsRouter = t.router({
     .query(async ({ ctx, input }) => {
       await ensureOrganizationAccess(ctx, input.organizationId)
 
-      const { data: credits, error } = await ctx.supabaseAdmin
+      const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
+      const { data: credits, error } = await supabaseAdmin
         .schema('core')
         .from('account_credits')
         .select('*')
@@ -1500,8 +1571,16 @@ export const paymentsRouter = t.router({
         },
       })
 
+      const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       // Record payment transaction
-      const { data: transaction, error: txError } = await ctx.supabaseAdmin
+      const { data: transaction, error: txError } = await supabaseAdmin
         .schema('core')
         .from('payment_transactions')
         .insert({
@@ -1526,7 +1605,7 @@ export const paymentsRouter = t.router({
 
       // If payment succeeded, deposit credits
       if (paymentIntent.status === 'succeeded' && transaction) {
-        const { error: creditError } = await ctx.supabaseAdmin
+        const { error: creditError } = await supabaseAdmin
           .schema('core')
           .rpc('apply_credit_transaction', {
             p_organization_id: input.organizationId,
@@ -1581,6 +1660,12 @@ export const paymentsRouter = t.router({
       await ensureOrganizationAccess(ctx, input.organizationId)
 
       const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
 
       let query = supabaseAdmin
         .schema('core')
@@ -1650,7 +1735,15 @@ export const paymentsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       await ensureOrganizationAccess(ctx, input.organizationId)
 
-      const { error } = await ctx.supabaseAdmin.schema('core').rpc('apply_credit_transaction', {
+      const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
+      const { error } = await supabaseAdmin.schema('core').rpc('apply_credit_transaction', {
         p_organization_id: input.organizationId,
         p_amount_cents: input.amountCents,
         p_transaction_type: 'withdrawal',

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { addressSchema } from '../common/address';
-import { phoneNumberSchema } from '../common/phone';
+import { addressSchema } from '../common/address.ts';
+import { phoneNumberSchema } from '../common/phone.ts';
 
 /**
  * General Profile Form Schema

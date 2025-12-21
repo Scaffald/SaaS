@@ -11,10 +11,10 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types';
-import { collectCoreUserData } from './data-collector';
-import type { UserDataExport, CollectionResult } from './types';
-import { insertNotification } from '../../../_shared/notifications/utils';
+import type { Database } from '../../../_shared/database.types.ts';
+import { collectCoreUserData } from './data-collector.ts';
+import type { UserDataExport, CollectionResult } from './types.ts';
+import { insertNotification } from '../../../_shared/notifications/utils.ts';
 
 type DbClient = SupabaseClient<Database>
 

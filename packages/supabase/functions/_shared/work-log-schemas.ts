@@ -28,4 +28,4 @@ export {
   verifyWorkLogSchema,
   workLogStatusSchema,
   workLogVisibilitySchema,
-} from '../../../scf-schemas/src/work-logs/schemas';
+} from '@scf/schemas';

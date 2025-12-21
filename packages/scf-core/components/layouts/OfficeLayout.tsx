@@ -258,10 +258,10 @@ export const OfficeLayout = ({
               {...restLeftContainerProps}
               $md={{
                 minWidth: hasBothColumns ? 300 : 'auto',
-                width: hasBothColumns ? '60%' : '100%',
-                maxWidth: hasBothColumns ? '60%' : '100%',
-                flexBasis: hasBothColumns ? '60%' : 'auto',
-                flex: hasBothColumns ? 1 : undefined,
+                width: hasBothColumns ? undefined : '100%',
+                maxWidth: hasBothColumns ? undefined : '100%',
+                flexBasis: hasBothColumns ? undefined : 'auto',
+                flex: hasBothColumns ? 3 : undefined,
                 ...(leftMdProps ?? {}),
               }}
             >
@@ -277,9 +277,10 @@ export const OfficeLayout = ({
               {...restRightContainerProps}
               $md={{
                 minWidth: hasBothColumns ? 300 : 'auto',
-                width: hasBothColumns ? '40%' : '100%',
-                maxWidth: hasBothColumns ? '40%' : '100%',
-                flexBasis: hasBothColumns ? '40%' : 'auto',
+                width: hasBothColumns ? undefined : '100%',
+                maxWidth: hasBothColumns ? undefined : '100%',
+                flexBasis: hasBothColumns ? undefined : 'auto',
+                flex: hasBothColumns ? 2 : undefined,
                 ...(rightMdProps ?? {}),
               }}
             >

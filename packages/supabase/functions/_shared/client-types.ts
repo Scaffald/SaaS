@@ -13,7 +13,7 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
-} from './schemas/consolidated';
+} from './schemas/consolidated.ts';
 // Re-export constants and schemas
 export {
   AVAILABILITY_OPTIONS,
@@ -21,4 +21,4 @@ export {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
-} from './schemas/consolidated';
+} from './schemas/consolidated.ts';

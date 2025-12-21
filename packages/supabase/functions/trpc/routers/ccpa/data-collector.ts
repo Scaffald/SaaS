@@ -6,7 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types';
+import type { Database } from '../../../_shared/database.types.ts';
 import type {
   BackgroundCheckEntry,
   CertificationEntry,
@@ -30,7 +30,7 @@ import type {
   UsageInformation,
   UserDataExport,
   WorkLogEntry,
-} from './types';
+} from './types.ts';
 
 type DbClient = SupabaseClient<Database>
 
@@ -219,7 +219,7 @@ async function collectProfessionalInformation(
           endDate: edu.end_date ?? null,
           isVerified: edu.is_verified ?? false,
           gpa: edu.gpa ?? null,
-          description: edu.description ?? null,
+          description: typeof edu.description === 'string' ? edu.description : null,
         })
       }
       sources.push({
@@ -248,12 +248,12 @@ async function collectProfessionalInformation(
       for (const skill of skillsData) {
         skills.push({
           id: skill.id,
-          skillId: skill.skill_id ?? '',
+          skillId: skill.csi_skill_id ?? skill.onet_occupation_id ?? '',
           skillName: null, // Would need join to get name
-          taxonomyType: skill.taxonomy_type ?? null,
+          taxonomyType: skill.skill_taxonomy ?? null,
           yearsExperience: skill.years_experience ?? null,
           proficiencyLevel: skill.proficiency_level ?? null,
-          isVerified: skill.is_verified ?? false,
+          isVerified: skill.verified ?? false,
         })
       }
       sources.push({
@@ -288,7 +288,7 @@ async function collectProfessionalInformation(
           startDate: exp.start_date ?? null,
           endDate: exp.end_date ?? null,
           isCurrent: exp.is_current ?? false,
-          description: exp.description ?? null,
+          description: typeof exp.description === 'string' ? exp.description : null,
           location: exp.location ?? null,
         })
       }
@@ -318,12 +318,12 @@ async function collectProfessionalInformation(
       for (const cert of certData) {
         certifications.push({
           id: cert.id,
-          certificationName: cert.certification_name ?? '',
-          issuingOrganization: cert.issuing_organization ?? null,
+          certificationName: cert.certification_id ?? '',
+          issuingOrganization: null, // Not available in schema
           issueDate: cert.issue_date ?? null,
           expirationDate: cert.expiration_date ?? null,
           credentialId: cert.credential_id ?? null,
-          isVerified: cert.is_verified ?? false,
+          isVerified: cert.verification_status === 'verified',
         })
       }
       sources.push({
@@ -408,57 +408,35 @@ async function collectFinancialInformation(
   let stripeConnected = false
   const payments: PaymentEntry[] = []
 
-  // Check for Stripe settings
-  try {
-    const { data: stripeData, error } = await supabase
-      .schema('core')
-      .from('stripe_settings')
-      .select('stripe_customer_id, stripe_connect_account_id')
-      .eq('user_id', userId)
-      .single()
+  // Note: stripe_settings table exists but is for global platform settings, not per-user
+  // User stripe information would need to be retrieved from a different source if needed
 
-    if (error && error.code !== 'PGRST116') {
-      errors.push(`core.stripe_settings: ${error.message}`)
-    } else if (stripeData) {
-      stripeCustomerId = stripeData.stripe_customer_id ?? null
-      stripeConnected = !!stripeData.stripe_connect_account_id
-      sources.push({
-        source: 'core.stripe_settings',
-        description: 'Payment configuration',
-        collectedAt: now,
-        retentionPeriod: '7_years',
-      })
-    }
-  } catch (e) {
-    errors.push(`core.stripe_settings: ${e instanceof Error ? e.message : 'Unknown error'}`)
-  }
-
-  // Get payments (if table exists)
+  // Get payment transactions
   try {
     const { data: paymentsData, error } = await supabase
       .schema('core')
-      .from('payments')
-      .select('id, amount, currency, status, created_at, description')
+      .from('payment_transactions')
+      .select('id, amount_cents, currency, status, created_at, metadata')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(50)
 
-    if (error && error.code !== 'PGRST116' && !error.message.includes('does not exist')) {
-      errors.push(`core.payments: ${error.message}`)
+    if (error && error.code !== 'PGRST116') {
+      errors.push(`core.payment_transactions: ${error.message}`)
     } else if (paymentsData) {
       for (const payment of paymentsData) {
         payments.push({
           id: payment.id,
-          amount: payment.amount ?? 0,
+          amount: payment.amount_cents ?? 0,
           currency: payment.currency ?? 'usd',
           status: payment.status ?? 'unknown',
           createdAt: payment.created_at ?? now,
-          description: payment.description ?? null,
+          description: null, // metadata is Json, not string
         })
       }
       if (paymentsData.length > 0) {
         sources.push({
-          source: 'core.payments',
+          source: 'core.payment_transactions',
           description: 'Payment transactions',
           collectedAt: now,
           retentionPeriod: '7_years',
@@ -466,10 +444,7 @@ async function collectFinancialInformation(
       }
     }
   } catch (e) {
-    // Table might not exist, which is fine
-    if (e instanceof Error && !e.message.includes('does not exist')) {
-      errors.push(`core.payments: ${e.message}`)
-    }
+    errors.push(`core.payment_transactions: ${e instanceof Error ? e.message : 'Unknown error'}`)
   }
 
   return {
@@ -498,33 +473,33 @@ async function collectUsageInformation(
   const profileViews: ProfileViewEntry[] = []
   try {
     const { data: viewsData, error } = await supabase
-      .schema('core')
+      .schema('social')
       .from('profile_views')
-      .select('id, viewer_id, viewed_at')
-      .eq('profile_id', userId)
+      .select('id, viewer_user_id, viewed_at')
+      .eq('viewed_user_id', userId)
       .order('viewed_at', { ascending: false })
       .limit(100)
 
     if (error) {
-      errors.push(`core.profile_views: ${error.message}`)
+      errors.push(`social.profile_views: ${error.message}`)
     } else if (viewsData) {
       for (const view of viewsData) {
         profileViews.push({
           id: view.id,
-          viewerId: view.viewer_id ?? null,
+          viewerId: view.viewer_user_id ?? null,
           viewedAt: view.viewed_at ?? now,
           viewerType: null, // Would need additional lookup
         })
       }
       sources.push({
-        source: 'core.profile_views',
+        source: 'social.profile_views',
         description: 'Profile view history',
         collectedAt: now,
         retentionPeriod: '1_year',
       })
     }
   } catch (e) {
-    errors.push(`core.profile_views: ${e instanceof Error ? e.message : 'Unknown error'}`)
+    errors.push(`social.profile_views: ${e instanceof Error ? e.message : 'Unknown error'}`)
   }
 
   // Login history would come from auth metadata (already collected in personal info)
@@ -608,7 +583,7 @@ async function collectSensitiveInformation(
     const { data: bgData, error } = await supabase
       .schema('core')
       .from('background_checks')
-      .select('id, provider, status, requested_at, completed_at, result_summary')
+      .select('id, initiated_by, status, created_at, completed_at, summary')
       .eq('user_id', userId)
 
     if (error) {
@@ -617,11 +592,11 @@ async function collectSensitiveInformation(
       for (const bg of bgData) {
         backgroundChecks.push({
           id: bg.id,
-          provider: bg.provider ?? 'unknown',
+          provider: bg.initiated_by ?? 'unknown',
           status: bg.status ?? 'unknown',
-          requestedAt: bg.requested_at ?? now,
+          requestedAt: bg.created_at ?? now,
           completedAt: bg.completed_at ?? null,
-          resultSummary: bg.result_summary ?? null,
+          resultSummary: bg.summary ?? null,
         })
       }
       if (bgData.length > 0) {
@@ -643,8 +618,8 @@ async function collectSensitiveInformation(
     const { data: idData, error } = await supabase
       .schema('core')
       .from('id_verifications')
-      .select('id, provider, status, verified_at, document_type')
-      .eq('user_id', userId)
+      .select('id, persona_inquiry_id, badge_status, verified_at, verification_level')
+      .eq('worker_user_id', userId)
 
     if (error) {
       errors.push(`core.id_verifications: ${error.message}`)
@@ -652,10 +627,10 @@ async function collectSensitiveInformation(
       for (const id of idData) {
         idVerifications.push({
           id: id.id,
-          provider: id.provider ?? 'unknown',
-          status: id.status ?? 'unknown',
+          provider: 'persona', // Using Persona as the provider
+          status: id.badge_status ?? 'unknown',
           verifiedAt: id.verified_at ?? null,
-          documentType: id.document_type ?? null,
+          documentType: id.verification_level ?? null,
         })
       }
       if (idData.length > 0) {
@@ -677,7 +652,7 @@ async function collectSensitiveInformation(
     const { data: paData, error } = await supabase
       .schema('core')
       .from('personality_assessments')
-      .select('id, assessment_type, completed_at, results')
+      .select('id, current_domain, completed_at, ipip_scores')
       .eq('user_id', userId)
 
     if (error) {
@@ -686,9 +661,9 @@ async function collectSensitiveInformation(
       for (const pa of paData) {
         personalityAssessments.push({
           id: pa.id,
-          assessmentType: pa.assessment_type ?? 'unknown',
+          assessmentType: pa.current_domain ?? 'personality',
           completedAt: pa.completed_at ?? null,
-          results: pa.results as Record<string, unknown> | null,
+          results: pa.ipip_scores as Record<string, unknown> | null,
         })
       }
       if (paData.length > 0) {
@@ -733,8 +708,8 @@ async function collectCommunicationsData(
     const { data: givenReviews, error: givenError } = await supabase
       .schema('core')
       .from('reviews')
-      .select('id, rating, content, created_at, project_id')
-      .eq('reviewer_id', userId)
+      .select('id, rating, body, created_at, subject_id')
+      .eq('author_user_id', userId)
       .limit(50)
 
     if (givenError) {
@@ -745,19 +720,20 @@ async function collectCommunicationsData(
           id: review.id,
           reviewType: 'given',
           rating: review.rating ?? null,
-          content: review.content ?? null,
+          content: review.body ?? null,
           createdAt: review.created_at ?? now,
-          projectId: review.project_id ?? null,
+          projectId: review.subject_id ?? null,
         })
       }
     }
 
-    // Reviews received
+    // Reviews received (where the user is the subject)
     const { data: receivedReviews, error: receivedError } = await supabase
       .schema('core')
       .from('reviews')
-      .select('id, rating, content, created_at, project_id')
-      .eq('reviewee_id', userId)
+      .select('id, rating, body, created_at, subject_id')
+      .eq('subject_id', userId)
+      .eq('subject_type', 'user')
       .limit(50)
 
     if (receivedError) {
@@ -768,9 +744,9 @@ async function collectCommunicationsData(
           id: review.id,
           reviewType: 'received',
           rating: review.rating ?? null,
-          content: review.content ?? null,
+          content: review.body ?? null,
           createdAt: review.created_at ?? now,
-          projectId: review.project_id ?? null,
+          projectId: review.subject_id ?? null,
         })
       }
     }
@@ -787,40 +763,9 @@ async function collectCommunicationsData(
     errors.push(`core.reviews: ${e instanceof Error ? e.message : 'Unknown error'}`)
   }
 
-  // Get feedback
+  // Note: feedback table does not exist in the core schema
+  // If feedback needs to be collected, it would need to be from a different source
   const feedback: FeedbackEntry[] = []
-  try {
-    const { data: feedbackData, error } = await supabase
-      .schema('core')
-      .from('feedback')
-      .select('id, feedback_type, content, created_at, status')
-      .eq('user_id', userId)
-      .limit(50)
-
-    if (error) {
-      errors.push(`core.feedback: ${error.message}`)
-    } else if (feedbackData) {
-      for (const fb of feedbackData) {
-        feedback.push({
-          id: fb.id,
-          feedbackType: fb.feedback_type ?? 'general',
-          content: fb.content ?? null,
-          createdAt: fb.created_at ?? now,
-          status: fb.status ?? 'submitted',
-        })
-      }
-      if (feedbackData.length > 0) {
-        sources.push({
-          source: 'core.feedback',
-          description: 'Platform feedback submissions',
-          collectedAt: now,
-          retentionPeriod: '3_years',
-        })
-      }
-    }
-  } catch (e) {
-    errors.push(`core.feedback: ${e instanceof Error ? e.message : 'Unknown error'}`)
-  }
 
   return {
     data: {

@@ -4,10 +4,10 @@ import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
 
-import type { Context } from '../context';
-import { officeProcedure, protectedProcedure, t } from '../middleware';
+import type { Context } from '../context.ts';
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
 
-const STRIPE_API_VERSION = '2024-06-20'
+const STRIPE_API_VERSION = '2025-11-17.clover'
 
 // Lazy initialization of Stripe to avoid module loading issues
 let StripeClass: typeof import('stripe').default | null = null
@@ -122,6 +122,288 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
   }
 }
 
+/**
+ * Handler for processing worker account deletion
+ * Extracted for direct calls without using ctx.caller
+ */
+async function handleProcessWorkerDeletion(
+  ctx: Context,
+  deletionId: string
+): Promise<{ id: string; status: string; errors?: string[] }> {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+  }
+
+  const { data: deletion, error: fetchError } = await ctx.supabaseAdmin
+    .schema('core')
+    .from('account_deletions')
+    .select('*')
+    .eq('id', deletionId)
+    .eq('deletion_type', 'worker')
+    .maybeSingle()
+
+  if (fetchError || !deletion) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Deletion record not found',
+    })
+  }
+
+  if (!deletion.deleted_user_id) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'Deletion record missing user ID',
+    })
+  }
+
+  // Update status to in_progress
+  await ctx.supabaseAdmin
+    .schema('core')
+    .from('account_deletions')
+    .update({
+      status: 'in_progress',
+    })
+    .eq('id', deletionId)
+
+  const errors: string[] = []
+
+  // 1. Anonymize payment data
+  try {
+    await ctx.supabaseAdmin.rpc('anonymize_worker_payment_data', {
+      p_worker_user_id: deletion.deleted_user_id,
+    })
+
+    await ctx.supabaseAdmin
+      .schema('core')
+      .from('account_deletions')
+      .update({
+        payment_data_anonymized: true,
+        payment_data_anonymized_at: new Date().toISOString(),
+      })
+      .eq('id', deletionId)
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+    errors.push(`Payment data anonymization failed: ${errorMsg}`)
+  }
+
+  // 2. Cleanup Stripe data (if any)
+  try {
+    const _stripe = await loadStripeClient(ctx)
+
+    // Find Stripe customers for this user
+    const { data: transactions } = await ctx.supabaseAdmin
+      .schema('core')
+      .from('payment_transactions')
+      .select('stripe_payment_intent_id')
+      .eq('user_id', deletion.deleted_user_id)
+      .not('stripe_payment_intent_id', 'is', null)
+      .limit(10)
+
+    // Note: In production, we'd need to track Stripe customer IDs
+    // For now, we'll just log that cleanup would be needed
+    const stripeCleanupNeeded = transactions && transactions.length > 0
+
+    await ctx.supabaseAdmin
+      .schema('core')
+      .from('account_deletions')
+      .update({
+        stripe_customer_deleted: !stripeCleanupNeeded, // Mark as done if no cleanup needed
+        stripe_customer_deleted_at: stripeCleanupNeeded ? null : new Date().toISOString(),
+        stripe_payment_methods_deleted: !stripeCleanupNeeded,
+        stripe_payment_methods_deleted_at: stripeCleanupNeeded
+          ? null
+          : new Date().toISOString(),
+        stripe_cleanup_errors: stripeCleanupNeeded
+          ? ['Stripe customer cleanup requires manual intervention']
+          : [],
+      })
+      .eq('id', deletionId)
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+    errors.push(`Stripe cleanup failed: ${errorMsg}`)
+  }
+
+  // 3. Update compliance log
+  const complianceLog = {
+    gdpr_compliant: true,
+    anonymization_completed: deletion.payment_data_anonymized,
+    deleted_at: new Date().toISOString(),
+    retention_period_days: 90, // Keep anonymized data for compliance
+  }
+
+  // 4. Mark as completed or partial
+  const finalStatus = errors.length > 0 ? 'partial' : 'completed'
+
+  await ctx.supabaseAdmin
+    .schema('core')
+    .from('account_deletions')
+    .update({
+      status: finalStatus,
+      completed_at: new Date().toISOString(),
+      compliance_log: complianceLog,
+      stripe_cleanup_errors: errors.length > 0 ? errors : null,
+      error_message: errors.length > 0 ? errors.join('; ') : null,
+    })
+    .eq('id', deletionId)
+
+  return {
+    id: deletionId,
+    status: finalStatus,
+    errors: errors.length > 0 ? errors : undefined,
+  }
+}
+
+/**
+ * Handler for processing organization account deletion
+ * Extracted for direct calls without using ctx.caller
+ */
+async function handleProcessOrganizationDeletion(
+  ctx: Context,
+  deletionId: string
+): Promise<{ id: string; status: string; errors?: string[] }> {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+  }
+
+  const { data: deletion, error: fetchError } = await ctx.supabaseAdmin
+    .schema('core')
+    .from('account_deletions')
+    .select('*')
+    .eq('id', deletionId)
+    .eq('deletion_type', 'organization')
+    .maybeSingle()
+
+  if (fetchError || !deletion) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Deletion record not found',
+    })
+  }
+
+  if (!deletion.deleted_organization_id) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'Deletion record missing organization ID',
+    })
+  }
+
+  await ctx.supabaseAdmin
+    .schema('core')
+    .from('account_deletions')
+    .update({
+      status: 'in_progress',
+    })
+    .eq('id', deletionId)
+
+  const errors: string[] = []
+
+  // 1. Anonymize payment data
+  try {
+    await ctx.supabaseAdmin.rpc('anonymize_organization_payment_data', {
+      p_organization_id: deletion.deleted_organization_id,
+    })
+
+    await ctx.supabaseAdmin
+      .schema('core')
+      .from('account_deletions')
+      .update({
+        payment_data_anonymized: true,
+        payment_data_anonymized_at: new Date().toISOString(),
+      })
+      .eq('id', deletionId)
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+    errors.push(`Payment data anonymization failed: ${errorMsg}`)
+  }
+
+  // 2. Cleanup Stripe data
+  try {
+    const stripe = await loadStripeClient(ctx)
+
+    // Get organization's Stripe customer ID
+    const { data: org } = await ctx.supabaseAdmin
+      .schema('core')
+      .from('organizations')
+      .select('stripe_customer_id')
+      .eq('id', deletion.deleted_organization_id)
+      .maybeSingle()
+
+    if (org?.stripe_customer_id) {
+      try {
+        // Delete payment methods
+        const paymentMethods = await stripe.paymentMethods.list({
+          customer: org.stripe_customer_id,
+        })
+
+        for (const pm of paymentMethods.data) {
+          await stripe.paymentMethods.detach(pm.id)
+        }
+
+        // Delete customer
+        await stripe.customers.del(org.stripe_customer_id)
+
+        await ctx.supabaseAdmin
+          .schema('core')
+          .from('account_deletions')
+          .update({
+            stripe_customer_deleted: true,
+            stripe_customer_deleted_at: new Date().toISOString(),
+            stripe_payment_methods_deleted: true,
+            stripe_payment_methods_deleted_at: new Date().toISOString(),
+          })
+          .eq('id', deletionId)
+      } catch (stripeError) {
+        const errorMsg = stripeError instanceof Error ? stripeError.message : 'Unknown error'
+        errors.push(`Stripe cleanup failed: ${errorMsg}`)
+      }
+    } else {
+      // No Stripe customer to clean up
+      await ctx.supabaseAdmin
+        .schema('core')
+        .from('account_deletions')
+        .update({
+          stripe_customer_deleted: true,
+          stripe_customer_deleted_at: new Date().toISOString(),
+          stripe_payment_methods_deleted: true,
+          stripe_payment_methods_deleted_at: new Date().toISOString(),
+        })
+        .eq('id', deletionId)
+    }
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+    errors.push(`Stripe cleanup failed: ${errorMsg}`)
+  }
+
+  // 3. Update compliance log
+  const complianceLog = {
+    gdpr_compliant: true,
+    anonymization_completed: deletion.payment_data_anonymized,
+    deleted_at: new Date().toISOString(),
+    retention_period_days: 90,
+  }
+
+  // 4. Mark as completed or partial
+  const finalStatus = errors.length > 0 ? 'partial' : 'completed'
+
+  await ctx.supabaseAdmin
+    .schema('core')
+    .from('account_deletions')
+    .update({
+      status: finalStatus,
+      completed_at: new Date().toISOString(),
+      compliance_log: complianceLog,
+      stripe_cleanup_errors: errors.length > 0 ? errors : null,
+      error_message: errors.length > 0 ? errors.join('; ') : null,
+    })
+    .eq('id', deletionId)
+
+  return {
+    id: deletionId,
+    status: finalStatus,
+    errors: errors.length > 0 ? errors : undefined,
+  }
+}
+
 export const accountDeletionRouter = t.router({
   /**
    * Request worker account deletion
@@ -167,9 +449,7 @@ export const accountDeletionRouter = t.router({
       // Start deletion process (async)
       // In production, this would be queued for background processing
       try {
-        await (ctx as any).caller?.accountDeletion?.processWorkerDeletion({
-          deletionId: deletion.id,
-        })
+        await handleProcessWorkerDeletion(ctx, deletion.id)
       } catch (error) {
         console.error('Failed to process worker deletion:', error)
         // Update status to failed
@@ -232,9 +512,7 @@ export const accountDeletionRouter = t.router({
 
       // Start deletion process (async)
       try {
-        await (ctx as any).caller?.accountDeletion?.processOrganizationDeletion({
-          deletionId: deletion.id,
-        })
+        await handleProcessOrganizationDeletion(ctx, deletion.id)
       } catch (error) {
         console.error('Failed to process organization deletion:', error)
         await ctx.supabaseAdmin
@@ -264,127 +542,7 @@ export const accountDeletionRouter = t.router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.supabaseAdmin) {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
-      }
-
-      const { data: deletion, error: fetchError } = await ctx.supabaseAdmin
-        .schema('core')
-        .from('account_deletions')
-        .select('*')
-        .eq('id', input.deletionId)
-        .eq('deletion_type', 'worker')
-        .maybeSingle()
-
-      if (fetchError || !deletion) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Deletion record not found',
-        })
-      }
-
-      if (!deletion.deleted_user_id) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Deletion record missing user ID',
-        })
-      }
-
-      // Update status to in_progress
-      await ctx.supabaseAdmin
-        .schema('core')
-        .from('account_deletions')
-        .update({
-          status: 'in_progress',
-        })
-        .eq('id', input.deletionId)
-
-      const errors: string[] = []
-
-      // 1. Anonymize payment data
-      try {
-        await ctx.supabaseAdmin.rpc('anonymize_worker_payment_data', {
-          p_worker_user_id: deletion.deleted_user_id,
-        })
-
-        await ctx.supabaseAdmin
-          .schema('core')
-          .from('account_deletions')
-          .update({
-            payment_data_anonymized: true,
-            payment_data_anonymized_at: new Date().toISOString(),
-          })
-          .eq('id', input.deletionId)
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-        errors.push(`Payment data anonymization failed: ${errorMsg}`)
-      }
-
-      // 2. Cleanup Stripe data (if any)
-      try {
-        const _stripe = await loadStripeClient(ctx)
-
-        // Find Stripe customers for this user
-        const { data: transactions } = await ctx.supabaseAdmin
-          .schema('core')
-          .from('payment_transactions')
-          .select('stripe_payment_intent_id')
-          .eq('user_id', deletion.deleted_user_id)
-          .not('stripe_payment_intent_id', 'is', null)
-          .limit(10)
-
-        // Note: In production, we'd need to track Stripe customer IDs
-        // For now, we'll just log that cleanup would be needed
-        const stripeCleanupNeeded = transactions && transactions.length > 0
-
-        await ctx.supabaseAdmin
-          .schema('core')
-          .from('account_deletions')
-          .update({
-            stripe_customer_deleted: !stripeCleanupNeeded, // Mark as done if no cleanup needed
-            stripe_customer_deleted_at: stripeCleanupNeeded ? null : new Date().toISOString(),
-            stripe_payment_methods_deleted: !stripeCleanupNeeded,
-            stripe_payment_methods_deleted_at: stripeCleanupNeeded
-              ? null
-              : new Date().toISOString(),
-            stripe_cleanup_errors: stripeCleanupNeeded
-              ? ['Stripe customer cleanup requires manual intervention']
-              : [],
-          })
-          .eq('id', input.deletionId)
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-        errors.push(`Stripe cleanup failed: ${errorMsg}`)
-      }
-
-      // 3. Update compliance log
-      const complianceLog = {
-        gdpr_compliant: true,
-        anonymization_completed: deletion.payment_data_anonymized,
-        deleted_at: new Date().toISOString(),
-        retention_period_days: 90, // Keep anonymized data for compliance
-      }
-
-      // 4. Mark as completed or partial
-      const finalStatus = errors.length > 0 ? 'partial' : 'completed'
-
-      await ctx.supabaseAdmin
-        .schema('core')
-        .from('account_deletions')
-        .update({
-          status: finalStatus,
-          completed_at: new Date().toISOString(),
-          compliance_log: complianceLog,
-          stripe_cleanup_errors: errors.length > 0 ? errors : null,
-          error_message: errors.length > 0 ? errors.join('; ') : null,
-        })
-        .eq('id', input.deletionId)
-
-      return {
-        id: input.deletionId,
-        status: finalStatus,
-        errors: errors.length > 0 ? errors : undefined,
-      }
+      return handleProcessWorkerDeletion(ctx, input.deletionId)
     }),
 
   /**
@@ -397,147 +555,7 @@ export const accountDeletionRouter = t.router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.supabaseAdmin) {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
-      }
-
-      const { data: deletion, error: fetchError } = await ctx.supabaseAdmin
-        .schema('core')
-        .from('account_deletions')
-        .select('*')
-        .eq('id', input.deletionId)
-        .eq('deletion_type', 'organization')
-        .maybeSingle()
-
-      if (fetchError || !deletion) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Deletion record not found',
-        })
-      }
-
-      if (!deletion.deleted_organization_id) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Deletion record missing organization ID',
-        })
-      }
-
-      await ctx.supabaseAdmin
-        .schema('core')
-        .from('account_deletions')
-        .update({
-          status: 'in_progress',
-        })
-        .eq('id', input.deletionId)
-
-      const errors: string[] = []
-
-      // 1. Anonymize payment data
-      try {
-        await ctx.supabaseAdmin.rpc('anonymize_organization_payment_data', {
-          p_organization_id: deletion.deleted_organization_id,
-        })
-
-        await ctx.supabaseAdmin
-          .schema('core')
-          .from('account_deletions')
-          .update({
-            payment_data_anonymized: true,
-            payment_data_anonymized_at: new Date().toISOString(),
-          })
-          .eq('id', input.deletionId)
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-        errors.push(`Payment data anonymization failed: ${errorMsg}`)
-      }
-
-      // 2. Cleanup Stripe data
-      try {
-        const stripe = await loadStripeClient(ctx)
-
-        // Get organization's Stripe customer ID
-        const { data: org } = await ctx.supabaseAdmin
-          .schema('core')
-          .from('organizations')
-          .select('stripe_customer_id')
-          .eq('id', deletion.deleted_organization_id)
-          .maybeSingle()
-
-        if (org?.stripe_customer_id) {
-          try {
-            // Delete payment methods
-            const paymentMethods = await stripe.paymentMethods.list({
-              customer: org.stripe_customer_id,
-            })
-
-            for (const pm of paymentMethods.data) {
-              await stripe.paymentMethods.detach(pm.id)
-            }
-
-            // Delete customer
-            await stripe.customers.del(org.stripe_customer_id)
-
-            await ctx.supabaseAdmin
-              .schema('core')
-              .from('account_deletions')
-              .update({
-                stripe_customer_deleted: true,
-                stripe_customer_deleted_at: new Date().toISOString(),
-                stripe_payment_methods_deleted: true,
-                stripe_payment_methods_deleted_at: new Date().toISOString(),
-              })
-              .eq('id', input.deletionId)
-          } catch (stripeError) {
-            const errorMsg = stripeError instanceof Error ? stripeError.message : 'Unknown error'
-            errors.push(`Stripe cleanup failed: ${errorMsg}`)
-          }
-        } else {
-          // No Stripe customer to clean up
-          await ctx.supabaseAdmin
-            .schema('core')
-            .from('account_deletions')
-            .update({
-              stripe_customer_deleted: true,
-              stripe_customer_deleted_at: new Date().toISOString(),
-              stripe_payment_methods_deleted: true,
-              stripe_payment_methods_deleted_at: new Date().toISOString(),
-            })
-            .eq('id', input.deletionId)
-        }
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-        errors.push(`Stripe cleanup failed: ${errorMsg}`)
-      }
-
-      // 3. Update compliance log
-      const complianceLog = {
-        gdpr_compliant: true,
-        anonymization_completed: deletion.payment_data_anonymized,
-        deleted_at: new Date().toISOString(),
-        retention_period_days: 90,
-      }
-
-      // 4. Mark as completed or partial
-      const finalStatus = errors.length > 0 ? 'partial' : 'completed'
-
-      await ctx.supabaseAdmin
-        .schema('core')
-        .from('account_deletions')
-        .update({
-          status: finalStatus,
-          completed_at: new Date().toISOString(),
-          compliance_log: complianceLog,
-          stripe_cleanup_errors: errors.length > 0 ? errors : null,
-          error_message: errors.length > 0 ? errors.join('; ') : null,
-        })
-        .eq('id', input.deletionId)
-
-      return {
-        id: input.deletionId,
-        status: finalStatus,
-        errors: errors.length > 0 ? errors : undefined,
-      }
+      return handleProcessOrganizationDeletion(ctx, input.deletionId)
     }),
 
   /**

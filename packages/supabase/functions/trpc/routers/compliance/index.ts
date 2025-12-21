@@ -5,8 +5,8 @@
  * Exports all compliance-related tRPC routers.
  */
 
-export { complianceRequirementsRouter } from './compliance-requirements.router';
-export { complianceDependenciesRouter } from './compliance-dependencies.router';
+export { complianceRequirementsRouter } from './compliance-requirements.router.ts';
+export { complianceDependenciesRouter } from './compliance-dependencies.router.ts';
 export {
   enforceCompliancePermission,
   hasCompliancePermission,
@@ -19,4 +19,4 @@ export {
   type ComplianceDbPermission,
   type ComplianceSystemRole,
   ALL_COMPLIANCE_PERMISSIONS,
-} from './compliance-auth';
+} from './compliance-auth.ts';

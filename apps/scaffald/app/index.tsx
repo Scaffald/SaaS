@@ -1,4 +1,5 @@
 import { AUTH_ROUTES, ROUTES } from '@scf/core/constants/routes'
+import { continueOAuthFlowIfPending } from '@scf/core/features/oauth/utils/passthrough'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useUser } from '@scf/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
@@ -87,9 +88,16 @@ export default function RootIndex() {
       return
     }
 
-    const performNavigation = () => {
+    const performNavigation = async () => {
       try {
         if (user) {
+          // Check for pending OAuth authorization (Task 12: OAuth passthrough)
+          const continuedOAuth = await continueOAuthFlowIfPending()
+          if (continuedOAuth) {
+            // OAuth flow will handle redirect
+            return
+          }
+
           console.log('Navigating to dashboard for authenticated user')
           router.replace(ROUTES.DASHBOARD.path)
         } else {

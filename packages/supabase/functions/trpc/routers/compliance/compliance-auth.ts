@@ -7,8 +7,8 @@
  */
 
 import { TRPCError } from '@trpc/server'
-import type { Context } from '../../context';
-import { t } from '../../middleware';
+import type { Context } from '../../context.ts';
+import { t } from '../../middleware.ts';
 
 // =============================================================================
 // Types

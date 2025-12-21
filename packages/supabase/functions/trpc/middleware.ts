@@ -121,7 +121,9 @@ export const enforceOfficeRole = t.middleware(async ({ ctx, next, path }) => {
   // Create service client only after role verification
   const { createClient } = await import('@supabase/supabase-js')
   const { supabaseServiceKey, supabaseUrl } = await import('./context.ts')
+  const { createDbHelpers } = await import('../_shared/utils/db-helpers.ts')
   const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+  const dbAdmin = createDbHelpers(supabaseAdmin)
 
   // Log service client usage for security audit
   console.log('[middleware] Service client created for office role', {
@@ -135,6 +137,7 @@ export const enforceOfficeRole = t.middleware(async ({ ctx, next, path }) => {
     ctx: {
       ...ctx,
       supabaseAdmin, // Only available after role verification
+      dbAdmin, // Schema-aware query helpers for admin client
     },
   })
 })

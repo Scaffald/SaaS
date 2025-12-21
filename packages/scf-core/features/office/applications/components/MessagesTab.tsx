@@ -1,34 +1,109 @@
 import { Send } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Card, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
-import type { MockApplication } from '../../mock-data/ats-mock-data'
+import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { api } from '@scf/core/utils/api'
+import { useToastController } from '@tamagui/toast'
 
 interface MessagesTabProps {
-  messages: MockApplication['messages']
   applicationId: string
 }
 
-export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
+interface Message {
+  id: string
+  sender: 'recruiter' | 'candidate'
+  senderName: string
+  content: string
+  sentAt: string
+  isRead: boolean
+}
+
+export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   const [newMessage, setNewMessage] = useState('')
+  const toast = useToastController()
+  const utils = api.useUtils()
+
+  // Fetch messages
+  const { data: messagesData, isLoading, error } = api.applications.getMessages.useQuery({
+    applicationId,
+  })
+
+  // Send message mutation
+  const sendMessageMutation = api.applications.sendMessage.useMutation({
+    onSuccess: () => {
+      setNewMessage('')
+      // Invalidate and refetch messages
+      utils.applications.getMessages.invalidate({ applicationId })
+    },
+    onError: (error) => {
+      toast.show('Error', {
+        message: error.message || 'Failed to send message',
+      })
+    },
+  })
 
   const handleSend = () => {
-    console.log('Send message:', { applicationId, message: newMessage })
-    // TODO: Call API to send message
-    setNewMessage('')
+    if (!newMessage.trim()) return
+
+    sendMessageMutation.mutate({
+      applicationId,
+      body: newMessage.trim(),
+    })
+  }
+
+  // Transform API response to UI format
+  const transformedMessages: Message[] = messagesData
+    ? messagesData.messages.map((msg) => {
+        // Determine if sender is recruiter or candidate
+        const isCandidate = messagesData.application_user_id === msg.author_user_id
+        return {
+          id: msg.id,
+          sender: isCandidate ? ('candidate' as const) : ('recruiter' as const),
+          senderName: msg.author_name,
+          content: msg.body,
+          sentAt: msg.created_at,
+          isRead: false, // MVP: default to false, can implement read tracking later
+        }
+      })
+    : []
+
+  if (isLoading) {
+    return (
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+        <Spinner size="large" />
+        <Text fontSize="$3" opacity={0.7}>
+          Loading messages...
+        </Text>
+      </YStack>
+    )
+  }
+
+  if (error) {
+    return (
+      <YStack gap="$3" padding="$4">
+        <Card padding="$4" backgroundColor="$red3">
+          <Text fontSize="$3" color="$red10" fontWeight="600">
+            Error loading messages
+          </Text>
+          <Text fontSize="$2" color="$red10" marginTop="$2">
+            {error.message || 'Failed to load messages'}
+          </Text>
+        </Card>
+      </YStack>
+    )
   }
 
   return (
     <YStack gap="$4">
       {/* Message Thread */}
       <YStack gap="$3">
-        {messages.length === 0 ? (
+        {transformedMessages.length === 0 ? (
           <Card padding="$4" backgroundColor="$color2">
             <Text fontSize="$3" opacity={0.7} textAlign="center">
               No messages yet. Start the conversation below!
             </Text>
           </Card>
         ) : (
-          messages.map((message) => (
+          transformedMessages.map((message) => (
             <Card
               key={message.id}
               padding="$4"
@@ -78,8 +153,13 @@ export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
           marginBottom="$3"
         />
 
-        <Button onPress={handleSend} disabled={!newMessage.trim()} theme="info" icon={Send}>
-          Send Message
+        <Button
+          onPress={handleSend}
+          disabled={!newMessage.trim() || sendMessageMutation.isPending}
+          theme="info"
+          icon={Send}
+        >
+          {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
         </Button>
       </Card>
     </YStack>

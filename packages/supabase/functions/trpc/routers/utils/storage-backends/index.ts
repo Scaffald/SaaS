@@ -81,6 +81,6 @@ export interface StorageRouterResult {
   actualBackend: StorageBackendType
 }
 
-export { SupabaseStorageBackend } from './supabase-backend';
-export { DropboxStorageBackend } from './dropbox-backend';
-export { GoogleDriveStorageBackend } from './google-drive-backend';
+export { SupabaseStorageBackend } from './supabase-backend.ts';
+export { DropboxStorageBackend } from './dropbox-backend.ts';
+export { GoogleDriveStorageBackend } from './google-drive-backend.ts';

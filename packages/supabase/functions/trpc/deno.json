@@ -13,8 +13,11 @@
     "pdf-lib": "npm:pdf-lib@1.17.1",
     "posthog-node": "npm:posthog-node@4.18.0",
     "stripe": "npm:stripe@20.0.0",
+    "awesome-phonenumber": "npm:awesome-phonenumber@7.6.0",
+    "@scf/schemas": "../../../scf-schemas/src/index.ts",
     "@scf/trpc/schemas": "../../../scf-trpc/src/schemas/index.ts",
     "@scf/trpc/utils": "../../../scf-trpc/src/utils/index.ts",
+    "@scf/trpc/pdf": "../_shared/pdf/extract-text.ts",
     "@scf/supabase/types": "../../types.ts"
   }
 }
