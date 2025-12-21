@@ -10,8 +10,8 @@
  * - Broker multi-industry support
  */
 
-import { test, expect, Page } from '@playwright/test';
-import { loginAs, setupAuthAs, TEST_USER_IDS } from '../utils/auth';
+import { test, expect } from './fixtures/base';
+import { Page } from '@playwright/test';
 
 const TOKEN_KEY = 'scaffald_tokens';
 
@@ -144,9 +144,9 @@ async function setupAdminMocks(page: Page) {
 }
 
 test.describe('User Set Types - Lexicon Application', () => {
-  test('Construction users see Construction terminology in navigation', async ({ page }) => {
+  test('Construction users see Construction terminology in navigation', async ({ page, setupAuthAs }) => {
     await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'active.gc@test.forsured.com');
+    await setupAuthAs(page, 'active.gc@test.forsured.com');
 
     // Wait for page to load
     await page.waitForTimeout(1000);
@@ -164,7 +164,7 @@ test.describe('User Set Types - Lexicon Application', () => {
     }
   });
 
-  test('Property Management users see Property Management terminology', async ({ page }) => {
+  test('Property Management users see Property Management terminology', async ({ page, setupAuthAs }) => {
     await setupUserSetTypesMocks(page, 'property-management');
     await setupAuthAs(page, 'active.gc@test.forsured.com');
 
@@ -184,7 +184,7 @@ test.describe('User Set Types - Lexicon Application', () => {
     }
   });
 
-  test('Broker users see generic terminology in their own navigation', async ({ page }) => {
+  test('Broker users see generic terminology in their own navigation', async ({ page, setupAuthAs }) => {
     // Brokers don't have a user set type, so they see generic labels
     await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
       return route.fulfill({
@@ -201,7 +201,7 @@ test.describe('User Set Types - Lexicon Application', () => {
       });
     });
 
-    await loginAs(page, 'active.broker@test.forsured.com');
+    await setupAuthAs(page, 'active.broker@test.forsured.com');
     await page.waitForTimeout(1000);
 
     // Brokers should see "Clients" instead of role-specific terminology
@@ -242,11 +242,11 @@ test.describe('User Set Types - Public API', () => {
 });
 
 test.describe('User Set Types - Admin Management', () => {
-  test.skip('Admin can view all user set types', async ({ page }) => {
+  test.skip('Admin can view all user set types', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
     await setupAdminMocks(page);
     await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Navigate to admin user set types page
     await page.goto('/admin/user-set-types');
@@ -257,11 +257,11 @@ test.describe('User Set Types - Admin Management', () => {
     await expect(page.getByText('Property Management')).toBeVisible();
   });
 
-  test.skip('Admin can see user count for each type', async ({ page }) => {
+  test.skip('Admin can see user count for each type', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
     await setupAdminMocks(page);
     await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     await page.goto('/admin/user-set-types');
     await page.waitForTimeout(1000);
@@ -271,11 +271,11 @@ test.describe('User Set Types - Admin Management', () => {
     await expect(page.getByText('3')).toBeVisible(); // Property Management user count
   });
 
-  test.skip('Admin can create new user set type', async ({ page }) => {
+  test.skip('Admin can create new user set type', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
     await setupAdminMocks(page);
     await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock create endpoint
     await page.route('**/api/trpc/userSetTypes.create*', async (route) => {
@@ -324,11 +324,11 @@ test.describe('User Set Types - Admin Management', () => {
 });
 
 test.describe('User Set Types - Lexicon Editor', () => {
-  test.skip('Admin can edit lexicon values', async ({ page }) => {
+  test.skip('Admin can edit lexicon values', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-10 (Lexicon Editor UI) is implemented
     await setupAdminMocks(page);
     await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock updateLexicon endpoint
     await page.route('**/api/trpc/userSetTypes.updateLexicon*', async (route) => {
@@ -367,11 +367,11 @@ test.describe('User Set Types - Lexicon Editor', () => {
     await expect(page.getByText('Lexicon updated')).toBeVisible();
   });
 
-  test.skip('Admin can export lexicon as JSON', async ({ page }) => {
+  test.skip('Admin can export lexicon as JSON', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-10 (Lexicon Editor UI) is implemented
     await setupAdminMocks(page);
     await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock exportLexicon endpoint
     await page.route('**/api/trpc/userSetTypes.exportLexicon*', async (route) => {
@@ -461,7 +461,7 @@ test.describe('User Set Types - Signup Flow', () => {
 });
 
 test.describe('User Set Types - Error Handling', () => {
-  test('Gracefully handles API errors for lexicon loading', async ({ page }) => {
+  test('Gracefully handles API errors for lexicon loading', async ({ page, setupAuthAs }) => {
     // Mock API error
     await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
       return route.fulfill({
@@ -475,7 +475,7 @@ test.describe('User Set Types - Error Handling', () => {
       });
     });
 
-    await loginAs(page, 'active.gc@test.forsured.com');
+    await setupAuthAs(page, 'active.gc@test.forsured.com');
     await page.waitForTimeout(1000);
 
     // Page should still load (using default lexicon)
@@ -487,7 +487,7 @@ test.describe('User Set Types - Error Handling', () => {
     }
   });
 
-  test('Falls back to default lexicon when user set type not found', async ({ page }) => {
+  test('Falls back to default lexicon when user set type not found', async ({ page, setupAuthAs }) => {
     // Mock empty lexicon response
     await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
       return route.fulfill({
@@ -504,7 +504,7 @@ test.describe('User Set Types - Error Handling', () => {
       });
     });
 
-    await loginAs(page, 'active.gc@test.forsured.com');
+    await setupAuthAs(page, 'active.gc@test.forsured.com');
     await page.waitForTimeout(1000);
 
     // Should fall back to Construction defaults

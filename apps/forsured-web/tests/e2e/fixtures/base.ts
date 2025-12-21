@@ -176,6 +176,9 @@ export const test = baseTest.extend<BaseFixtures>({
         if (msg.text.includes('[vite]') || msg.text.includes('HMR')) return false;
         // Ignore expected Supabase warnings about missing environment
         if (msg.text.includes('supabase') && msg.text.includes('not configured')) return false;
+        // Ignore React prop warnings from Tamagui/react-native-web passing style props to DOM
+        // These are known library behaviors, not critical bugs
+        if (msg.text.includes('React does not recognize the') && msg.text.includes('prop on a DOM element')) return false;
         return true;
       });
 

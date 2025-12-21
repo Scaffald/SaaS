@@ -523,11 +523,21 @@ test.describe('Contractor Tasks Page - Comprehensive', () => {
     });
   });
 
-  test('should display tasks page', async ({ page }) => {
+  test('should display tasks page', async ({ page, getConsoleErrors }) => {
     await page.goto('/subcontractor/tasks');
+    await page.waitForTimeout(2000);
+
+    // Debug: log what's actually on the page
+    const h1Text = await page.locator('h1').allTextContents();
+    const h2Text = await page.locator('h2').allTextContents();
+    const allText = await page.locator('body').textContent();
+    console.log('H1 elements:', h1Text);
+    console.log('H2 elements:', h2Text);
+    console.log('Body text (first 200 chars):', allText?.substring(0, 200));
+    console.log('Console errors:', getConsoleErrors());
 
     // Verify page heading
-    await expect(page.locator('h1, h2').filter({ hasText: /tasks|to-do/i })).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('h1').filter({ hasText: /my tasks/i })).toBeVisible({ timeout: 10000 });
   });
 
   test('should show tasks list with details', async ({ page }) => {

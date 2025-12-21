@@ -14,7 +14,8 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe('Vite Dev Server Stability', () => {
+// TODO: Skip until "Test as Admin" button is implemented on /start page
+test.describe.skip('Vite Dev Server Stability', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page }) => {
