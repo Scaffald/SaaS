@@ -146,6 +146,19 @@ if [ "$NODE_ENV" = "test" ] || [ -n "$CI" ] || [ -n "$PLAYWRIGHT" ] || [ -n "$TE
   fi
 fi
 
+# Check if Supabase is in a bad state (thinks it's running but containers are dead)
+# If so, stop it first to clean up the state
+echo "🔍 Checking Supabase status..."
+if pnpm env-local pnpx supabase --workdir packages/supabase status > /dev/null 2>&1; then
+  # Supabase reports it's running - check if containers are actually running
+  if ! curl -s --max-time 2 http://127.0.0.1:54321/rest/v1/ > /dev/null 2>&1; then
+    echo "⚠️  Supabase reports running but API is not responding"
+    echo "   Stopping Supabase to clean up state..."
+    pnpm env-local pnpx supabase --workdir packages/supabase stop > /dev/null 2>&1 || true
+    sleep 2
+  fi
+fi
+
 # Start Supabase - Docker Compose will automatically read .env.test via env_file in override file
 # Environment variables are already exported above, so they're available to Docker Compose
 pnpm env-local pnpx supabase --workdir packages/supabase start "$@"
