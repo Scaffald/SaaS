@@ -1,8 +1,7 @@
 // src/components/onboarding/steps/gc/InsuranceStep.tsx
 // REQ-126: GC Onboarding - Insurance Requirements Step
 import { useState } from 'react';
-import { YStack, XStack } from '@unicornlove/ui';
-import { Input as TextInput, Checkbox, Button, Heading2, BodyText } from '@unicornlove/ui';
+import { YStack, XStack, Text, H2, Input, Checkbox, Button } from '@unicornlove/ui';
 
 interface InsuranceStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -62,30 +61,30 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
 
   return (
     <YStack>
-      <Heading2 marginBottom="$2">Default Insurance Requirements</Heading2>
-      <BodyText marginBottom="$6" color="$color10">
+      <H2 marginBottom="$2">Default Insurance Requirements</H2>
+      <Text marginBottom="$6" color="$color10">
         Set your default insurance requirements for subcontractors
-      </BodyText>
-      <YStack as="form" onSubmit={handleSubmit} gap="$4">
+      </Text>
+      <YStack tag="form" onSubmit={handleSubmit} gap="$4">
         <YStack gap="$4">
-          <TextInput
-            label="General Liability Per Occurrence ($)"
-            value={glPerOccurrence}
-            onChangeText={setGlPerOccurrence}
-            error={errors.glPerOccurrence}
-            placeholder="e.g., 1000000"
-            keyboardType="numeric"
-            required
-          />
-          <TextInput
-            label="General Liability Aggregate ($)"
-            value={glAggregate}
-            onChangeText={setGlAggregate}
-            error={errors.glAggregate}
-            placeholder="e.g., 2000000"
-            keyboardType="numeric"
-            required
-          />
+          <YStack gap="$2">
+            <Text fontWeight="600" color="$color12">General Liability Per Occurrence ($)</Text>
+            <Input
+              value={glPerOccurrence}
+              onChangeText={setGlPerOccurrence}
+              placeholder="e.g., 1000000"
+            />
+            {errors.glPerOccurrence && <Text color="$red10" fontSize="$2">{errors.glPerOccurrence}</Text>}
+          </YStack>
+          <YStack gap="$2">
+            <Text fontWeight="600" color="$color12">General Liability Aggregate ($)</Text>
+            <Input
+              value={glAggregate}
+              onChangeText={setGlAggregate}
+              placeholder="e.g., 2000000"
+            />
+            {errors.glAggregate && <Text color="$red10" fontSize="$2">{errors.glAggregate}</Text>}
+          </YStack>
         </YStack>
 
         <YStack marginTop="$6" gap="$3">
@@ -94,27 +93,27 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
               checked={wcRequired}
               onCheckedChange={setWcRequired}
             />
-            <BodyText>Workers Compensation Required</BodyText>
+            <Text>Workers Compensation Required</Text>
           </XStack>
           <XStack alignItems="center" gap="$2">
             <Checkbox
               checked={autoRequired}
               onCheckedChange={setAutoRequired}
             />
-            <BodyText>Auto Liability Required</BodyText>
+            <Text>Auto Liability Required</Text>
           </XStack>
           <XStack alignItems="center" gap="$2">
             <Checkbox
               checked={umbrellaRequired}
               onCheckedChange={setUmbrellaRequired}
             />
-            <BodyText>Umbrella Coverage Required</BodyText>
+            <Text>Umbrella Coverage Required</Text>
           </XStack>
         </YStack>
 
         <YStack marginTop="$6">
           <Button
-            type="submit"
+            onPress={handleSubmit}
             variant="primary"
             disabled={isLoading}
           >

@@ -1,10 +1,7 @@
 // src/components/onboarding/steps/contractor/InsuranceStep.tsx
 // REQ-126: Contractor Onboarding - Insurance Information Step
 import { useState } from 'react';
-import { YStack, XStack } from 'tamagui';
-import { Input as TextInput } from '@unicornlove/ui';
-import { Button } from '@unicornlove/ui';
-import { Heading2, BodyText } from '@unicornlove/ui';
+import { YStack, XStack, Text, H2, Input, Button } from '@unicornlove/ui';
 
 interface InsuranceStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -58,62 +55,61 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
 
   return (
     <YStack>
-      <Heading2 marginBottom="$2">Your Insurance Information</Heading2>
-      <BodyText marginBottom="$6" color="$color10">
+      <H2 marginBottom="$2">Your Insurance Information</H2>
+      <Text marginBottom="$6" color="$color10">
         Provide your current insurance policy details
-      </BodyText>
+      </Text>
       <YStack tag="form" onSubmit={handleSubmit} gap="$4">
-        <TextInput
-          label="Insurance Carrier"
-          value={carrier}
-          onChangeText={setCarrier}
-          error={errors.carrier}
-          placeholder="Enter insurance carrier name"
-          required
-        />
-        <TextInput
-          label="General Liability Policy Number"
-          value={glPolicyNumber}
-          onChangeText={setGlPolicyNumber}
-          error={errors.glPolicyNumber}
-          placeholder="Enter policy number"
-          required
-        />
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Insurance Carrier</Text>
+          <Input
+            value={carrier}
+            onChangeText={setCarrier}
+            placeholder="Enter insurance carrier name"
+          />
+          {errors.carrier && <Text color="$red10" fontSize="$2">{errors.carrier}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">General Liability Policy Number</Text>
+          <Input
+            value={glPolicyNumber}
+            onChangeText={setGlPolicyNumber}
+            placeholder="Enter policy number"
+          />
+          {errors.glPolicyNumber && <Text color="$red10" fontSize="$2">{errors.glPolicyNumber}</Text>}
+        </YStack>
         <XStack gap="$4" flexWrap="wrap">
-          <YStack flex={1} minWidth="45%">
-            <TextInput
-              label="Per Occurrence Limit ($)"
+          <YStack flex={1} minWidth="45%" gap="$2">
+            <Text fontWeight="600" color="$color12">Per Occurrence Limit ($)</Text>
+            <Input
               value={glPerOccurrence}
               onChangeText={setGlPerOccurrence}
-              error={errors.glPerOccurrence}
               placeholder="e.g., 1000000"
-              keyboardType="numeric"
-              required
             />
+            {errors.glPerOccurrence && <Text color="$red10" fontSize="$2">{errors.glPerOccurrence}</Text>}
           </YStack>
-          <YStack flex={1} minWidth="45%">
-            <TextInput
-              label="Aggregate Limit ($)"
+          <YStack flex={1} minWidth="45%" gap="$2">
+            <Text fontWeight="600" color="$color12">Aggregate Limit ($)</Text>
+            <Input
               value={glAggregate}
               onChangeText={setGlAggregate}
-              error={errors.glAggregate}
               placeholder="e.g., 2000000"
-              keyboardType="numeric"
-              required
             />
+            {errors.glAggregate && <Text color="$red10" fontSize="$2">{errors.glAggregate}</Text>}
           </YStack>
         </XStack>
-        <TextInput
-          label="Expiration Date"
-          value={glExpirationDate}
-          onChangeText={setGlExpirationDate}
-          error={errors.glExpirationDate}
-          placeholder="YYYY-MM-DD"
-          required
-        />
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Expiration Date</Text>
+          <Input
+            value={glExpirationDate}
+            onChangeText={setGlExpirationDate}
+            placeholder="YYYY-MM-DD"
+          />
+          {errors.glExpirationDate && <Text color="$red10" fontSize="$2">{errors.glExpirationDate}</Text>}
+        </YStack>
         <YStack marginTop="$6">
           <Button
-            type="submit"
+            onPress={handleSubmit}
             variant="primary"
             disabled={isLoading}
           >

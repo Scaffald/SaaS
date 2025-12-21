@@ -1,8 +1,7 @@
 // src/components/onboarding/steps/broker/SuccessStep.tsx
 // REQ-126: Broker Onboarding - Success/Completion Step
-import { Button, Heading2, BodyText } from '@unicornlove/ui';
-import { YStack, XStack } from 'tamagui';
-import { Check } from '@tamagui/lucide-icons';
+import { CheckCircle } from 'lucide-react';
+import { YStack, Text, H2, Button } from '@unicornlove/ui';
 
 interface SuccessStepProps {
   onComplete: () => Promise<void>;
@@ -13,21 +12,21 @@ function SuccessStep({ onComplete, isLoading = false }: SuccessStepProps) {
   return (
     <YStack alignItems="center" paddingVertical="$8">
       <YStack marginBottom="$6" alignItems="center">
-        <XStack
+        <YStack
           alignItems="center"
           justifyContent="center"
           width={64}
           height={64}
           borderRadius={9999}
-          backgroundColor="$green3"
+          backgroundColor="$green2"
           marginBottom="$4"
         >
-          <Check size={32} color="$green10" />
-        </XStack>
-        <Heading2 marginBottom="$2">Onboarding Complete!</Heading2>
-        <BodyText color="$color10">
+          <CheckCircle size={32} color="var(--green10)" />
+        </YStack>
+        <H2 marginBottom="$2">Onboarding Complete!</H2>
+        <Text color="$color10">
           You're all set to manage your clients' insurance needs and track compliance.
-        </BodyText>
+        </Text>
       </YStack>
       <Button
         onPress={onComplete}

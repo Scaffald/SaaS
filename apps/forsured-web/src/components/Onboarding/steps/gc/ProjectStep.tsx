@@ -1,8 +1,7 @@
 // src/components/onboarding/steps/gc/ProjectStep.tsx
 // REQ-126: GC Onboarding - First Project Step (Optional)
 import { useState } from 'react';
-import { YStack } from '@unicornlove/ui';
-import { Input as TextInput, Button, Heading2, BodyText } from '@unicornlove/ui';
+import { YStack, Text, H2, Input, Button } from '@unicornlove/ui';
 
 interface ProjectStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -29,33 +28,39 @@ function ProjectStep({ onComplete, initialData = {}, isLoading = false }: Projec
 
   return (
     <YStack>
-      <Heading2 marginBottom="$2">Create Your First Project (Optional)</Heading2>
-      <BodyText marginBottom="$6" color="$color10">
+      <H2 marginBottom="$2">Create Your First Project (Optional)</H2>
+      <Text marginBottom="$6" color="$color10">
         You can skip this step and create a project later
-      </BodyText>
-      <YStack as="form" onSubmit={handleSubmit} gap="$4">
-        <TextInput
-          label="Project Name"
-          value={projectName}
-          onChangeText={setProjectName}
-          placeholder="Enter project name"
-        />
-        <TextInput
-          label="Project Address"
-          value={address}
-          onChangeText={setAddress}
-          placeholder="Enter project address"
-        />
-        <TextInput
-          label="Start Date"
-          value={startDate}
-          onChangeText={setStartDate}
-          placeholder="YYYY-MM-DD"
-          helperText="Optional: You can set this later"
-        />
+      </Text>
+      <YStack tag="form" onSubmit={handleSubmit} gap="$4">
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Project Name</Text>
+          <Input
+            value={projectName}
+            onChangeText={setProjectName}
+            placeholder="Enter project name"
+          />
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Project Address</Text>
+          <Input
+            value={address}
+            onChangeText={setAddress}
+            placeholder="Enter project address"
+          />
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Start Date</Text>
+          <Input
+            value={startDate}
+            onChangeText={setStartDate}
+            placeholder="YYYY-MM-DD"
+          />
+          <Text fontSize="$2" color="$color10">Optional: You can set this later</Text>
+        </YStack>
         <YStack marginTop="$6">
           <Button
-            type="submit"
+            onPress={handleSubmit}
             variant="primary"
             disabled={isLoading}
           >

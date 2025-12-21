@@ -1,10 +1,8 @@
 // src/components/onboarding/steps/contractor/COIUploadStep.tsx
 // REQ-126: Contractor Onboarding - COI Upload Step (Optional)
 import { useState } from 'react';
-import { YStack, XStack, Text } from 'tamagui';
-import { Button } from '@unicornlove/ui';
-import { Heading2, BodyText, Label } from '@unicornlove/ui';
-import { Upload, FileText } from '@unicornlove/ui';
+import { Upload, FileText } from 'lucide-react';
+import { YStack, XStack, Text, H2, Label, Button } from '@unicornlove/ui';
 
 interface COIUploadStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -39,10 +37,10 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
 
   return (
     <YStack>
-      <Heading2 marginBottom="$2">Upload Certificates of Insurance (Optional)</Heading2>
-      <BodyText marginBottom="$6" color="$color10">
+      <H2 marginBottom="$2">Upload Certificates of Insurance (Optional)</H2>
+      <Text marginBottom="$6" color="$color10">
         You can skip this step and upload certificates later. PDF files only.
-      </BodyText>
+      </Text>
       <YStack tag="form" onSubmit={handleSubmit} gap="$6">
         <YStack gap="$4">
           <YStack>
@@ -150,7 +148,7 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
 
         <YStack marginTop="$6">
           <Button
-            type="submit"
+            onPress={handleSubmit}
             variant="primary"
             disabled={isLoading}
           >

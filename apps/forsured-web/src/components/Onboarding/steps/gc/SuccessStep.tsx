@@ -1,8 +1,7 @@
 // src/components/onboarding/steps/gc/SuccessStep.tsx
 // REQ-126: GC Onboarding - Success/Completion Step
 import { CheckCircle } from 'lucide-react';
-import { YStack, XStack } from '@unicornlove/ui';
-import { Button, Heading2, BodyText } from '@unicornlove/ui';
+import { YStack, Text, H2, Button } from '@unicornlove/ui';
 
 interface SuccessStepProps {
   onComplete: () => Promise<void>;
@@ -24,12 +23,12 @@ function SuccessStep({ onComplete, isLoading = false }: SuccessStepProps) {
         >
           <CheckCircle size={32} color="var(--green10)" />
         </YStack>
-        <Heading2 marginBottom="$2" textAlign="center">
+        <H2 marginBottom="$2" textAlign="center">
           Onboarding Complete!
-        </Heading2>
-        <BodyText color="$color10" textAlign="center">
+        </H2>
+        <Text color="$color10" textAlign="center">
           You're all set to manage subcontractor compliance and track insurance requirements.
-        </BodyText>
+        </Text>
       </YStack>
       <Button
         onPress={onComplete}
