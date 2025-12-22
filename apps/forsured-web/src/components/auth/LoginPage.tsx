@@ -107,7 +107,7 @@ function createMockSession(userType: 'gc' | 'contractor' | 'broker' | 'admin'): 
 }
 
 export const LoginPage: React.FC = () => {
-  const { login, state } = useAuth()
+  const { login, isLoading } = useAuth()
   const navigate = useNavigate()
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [error, setError] = useState<AuthError | null>(null)
@@ -172,7 +172,7 @@ export const LoginPage: React.FC = () => {
         </YStack>
 
         {/* Error Message */}
-        {(error || state.error) && (
+        {error && (
           <YStack
             backgroundColor="$red2"
             borderWidth={1}
@@ -192,7 +192,7 @@ export const LoginPage: React.FC = () => {
                   Authentication Failed
                 </Text>
                 <Text fontSize="$2" color="$red10">
-                  {(error || state.error)?.message || 'An unknown error occurred'}
+                  {error?.message || 'An unknown error occurred'}
                 </Text>
               </YStack>
             </XStack>
@@ -203,12 +203,12 @@ export const LoginPage: React.FC = () => {
         <YStack gap="$4">
           <CoreButton
             onPress={handleLogin}
-            disabled={isLoggingIn || state.isLoading}
+            disabled={isLoggingIn || isLoading}
             variant="primary"
             fullWidth
             size="$4"
           >
-            {isLoggingIn || state.isLoading ? (
+            {isLoggingIn || isLoading ? (
               <XStack alignItems="center" gap="$2">
                 <Spinner size="small" color="$color1" />
                 <Text>Signing in...</Text>
