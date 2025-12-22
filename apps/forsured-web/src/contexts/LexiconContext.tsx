@@ -155,16 +155,20 @@ export function LexiconProvider({ children }: LexiconProviderProps) {
   // LexiconProvider is wrapped by AuthProvider, so we can safely use useAuth
   const { user } = useAuth();
 
+  // Check if this is a mock user (test login) - mock users have IDs starting with "test-"
+  // Mock users don't have real Supabase sessions, so API calls would fail with 401
+  const isMockUser = user?.id?.startsWith('test-') || false;
+
   // Fetch user's lexicon using tRPC
-  // Only fetch when user is authenticated to avoid UNAUTHORIZED errors
+  // Only fetch when user is authenticated AND not a mock user
   const {
     data: userData,
     isLoading: userLoading,
     isError: userError,
     refetch: userRefetch,
   } = trpc.userSetTypes.getUserLexicon.useQuery(undefined, {
-    // Only fetch when user is authenticated
-    enabled: !!user,
+    // Only fetch when user is authenticated and not a mock user
+    enabled: !!user && !isMockUser,
     // Don't refetch on window focus (lexicon rarely changes)
     refetchOnWindowFocus: false,
     // Stale time of 5 minutes
