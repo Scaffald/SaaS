@@ -47,6 +47,13 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
+    // Filter out textAlign from props to prevent React warnings
+    // If textAlign is needed, it should be passed via style prop
+    const {
+      textAlign: _textAlign,
+      ...cleanProps
+    } = props as TextareaHTMLAttributes<HTMLTextAreaElement> & { textAlign?: string };
+    
     return (
       <YStack gap="$1.5" width={fullWidth ? '100%' : undefined}>
         {label && (
@@ -66,7 +73,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           rows={rows}
           borderColor={error ? '$red8' : '$borderColor'}
           disabled={props.disabled}
-          {...props}
+          {...cleanProps}
         />
         {error && (
           <Text fontSize="$2" color="$red9">
