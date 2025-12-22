@@ -130,10 +130,12 @@ class ForSuredEmailService {
     name?: string;
     invitationCode: string;
     expiresAt: Date;
+    brokerageName?: string;
   }): Promise<SendResult> {
     const context = {
       user: { name: options.name || '' },
       invitationCode: options.invitationCode,
+      brokerageName: options.brokerageName || null,
       signupUrl: `${APP_URL}/signup?type=broker&code=${options.invitationCode}`,
       expiresAt: options.expiresAt.toLocaleDateString('en-US', {
         weekday: 'long',

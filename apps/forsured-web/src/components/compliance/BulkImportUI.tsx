@@ -217,8 +217,8 @@ export function BulkImportUI({
     <YStack gap="$6">
       {/* Template Download Section */}
       <Card backgroundColor="$blue2" borderColor="$blue5" borderRadius="$4" padding="$4">
-        <H4 fontSize="$4" fontWeight="600" color="$blue11" marginBottom="$2">Download Templates</H4>
-        <Text fontSize="$3" color="$blue10" marginBottom="$3">
+        <H4 fontSize="$4" fontWeight="600" color="$blue11" mb="$2">Download Templates</H4>
+        <Text fontSize="$3" color="$blue10" mb="$3">
           Start with a template to ensure your data is formatted correctly.
         </Text>
         <XStack gap="$3">
@@ -243,7 +243,7 @@ export function BulkImportUI({
 
       {/* File Upload Section */}
       <YStack>
-        <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$2">
+        <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$2">
           Upload File
         </Text>
         <Card
@@ -315,7 +315,7 @@ export function BulkImportUI({
       </YStack>
 
       <YStack>
-        <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
+        <XStack justifyContent="space-between" alignItems="center" mb="$2">
           <Text fontSize="$3" fontWeight="500" color="$gray11">
             Paste CSV or JSON
           </Text>
@@ -366,7 +366,7 @@ export function BulkImportUI({
             accentColor: '#2563EB',
           }}
         />
-        <Text marginLeft="$2" fontSize="$3" color="$gray11">
+        <Text ml="$2" fontSize="$3" color="$gray11">
           Skip duplicate requirement codes (recommended)
         </Text>
       </XStack>
@@ -432,14 +432,14 @@ export function BulkImportUI({
                   clipRule="evenodd"
                 />
               </svg>
-              <YStack marginLeft="$3" flex={1}>
+              <YStack ml="$3" flex={1}>
                 <H4 fontSize="$3" fontWeight="500" color="$yellow11">Duplicate Codes Found</H4>
-                <Text fontSize="$3" color="$yellow10" marginTop="$1">
+                <Text fontSize="$3" color="$yellow10" mt="$1">
                   {skipDuplicates
                     ? 'The following codes already exist and will be skipped:'
                     : 'The following codes already exist and may cause conflicts:'}
                 </Text>
-                <XStack marginTop="$2" flexWrap="wrap" gap="$2">
+                <XStack mt="$2" flexWrap="wrap" gap="$2">
                   {previewData.duplicateCodes.map((code) => (
                     <Text
                       key={code}
@@ -462,7 +462,7 @@ export function BulkImportUI({
 
         {/* Row Details */}
         <YStack>
-          <H4 fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$3">Row Details</H4>
+          <H4 fontSize="$3" fontWeight="500" color="$gray12" mb="$3">Row Details</H4>
           <Card borderColor="$gray5" borderRadius="$4" overflow="hidden">
             <YStack maxHeight={384} overflowY="auto">
               {previewData.rows.map((row, idx) => (
@@ -486,7 +486,7 @@ export function BulkImportUI({
                     flexDirection="row"
                     alignItems="center"
                     justifyContent="space-between"
-                    textAlign="left"
+                    style={{ textAlign: 'left' }}
                     hoverStyle={{ backgroundColor: '$gray2' }}
                     onPress={() => toggleRowExpansion(row.rowIndex)}
                   >
@@ -600,7 +600,7 @@ export function BulkImportUI({
                       {/* Raw Data */}
                       {row.data && (
                         <YStack>
-                          <Text fontSize="$2" fontWeight="500" color="$gray9" textTransform="uppercase" marginBottom="$1">
+                          <Text fontSize="$2" fontWeight="500" color="$gray9" textTransform="uppercase" mb="$1">
                             Raw Data
                           </Text>
                           <pre style={{
@@ -634,7 +634,7 @@ export function BulkImportUI({
                   clipRule="evenodd"
                 />
               </svg>
-              <Text marginLeft="$3" fontSize="$3" color="$red10">
+              <Text ml="$3" fontSize="$3" color="$red10">
                 Cannot proceed with import. Please fix all errors and try again.
               </Text>
             </XStack>
@@ -694,8 +694,8 @@ export function BulkImportUI({
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <H3 marginTop="$3" fontSize="$6" fontWeight="500" color="$green11">Import Successful!</H3>
-              <Text marginTop="$1" fontSize="$3" color="$green10">
+              <H3 mt="$3" fontSize="$6" fontWeight="500" color="$green11">Import Successful!</H3>
+              <Text mt="$1" fontSize="$3" color="$green10">
                 {importResult.successfulImports} requirement
                 {importResult.successfulImports !== 1 ? 's' : ''} imported successfully.
               </Text>
@@ -715,8 +715,8 @@ export function BulkImportUI({
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-              <H3 marginTop="$3" fontSize="$6" fontWeight="500" color="$yellow11">Import Partially Complete</H3>
-              <Text marginTop="$1" fontSize="$3" color="$yellow10">
+              <H3 mt="$3" fontSize="$6" fontWeight="500" color="$yellow11">Import Partially Complete</H3>
+              <Text mt="$1" fontSize="$3" color="$yellow10">
                 {importResult.successfulImports} succeeded, {importResult.failedImports} failed.
               </Text>
             </>
@@ -746,7 +746,7 @@ export function BulkImportUI({
         {/* Errors List */}
         {importResult.errors.length > 0 && (
           <YStack>
-            <H4 fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$3">Import Errors</H4>
+            <H4 fontSize="$3" fontWeight="500" color="$gray12" mb="$3">Import Errors</H4>
             <Card borderColor="$red5" borderRadius="$4" overflow="hidden">
               <YStack maxHeight={256} overflowY="auto">
                 {importResult.errors.map((error, idx) => (
@@ -797,7 +797,7 @@ export function BulkImportUI({
       {/* Header */}
       <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray5">
         <H3 fontSize="$6" fontWeight="600" color="$gray12">Bulk Import Requirements</H3>
-        <Text marginTop="$1" fontSize="$3" color="$gray9">
+        <Text mt="$1" fontSize="$3" color="$gray9">
           Import multiple compliance requirements from a CSV or JSON file.
         </Text>
       </YStack>
@@ -849,7 +849,7 @@ export function BulkImportUI({
                     idx + 1
                   )}
                 </YStack>
-                <Text marginTop="$1" fontSize="$2" color="$gray10" textTransform="capitalize">{s}</Text>
+                <Text mt="$1" fontSize="$2" color="$gray10" textTransform="capitalize">{s}</Text>
               </YStack>
             </XStack>
           ))}

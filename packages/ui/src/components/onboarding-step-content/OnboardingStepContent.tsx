@@ -43,7 +43,7 @@ export const StepContent = ({
         size="$10"
         color="$color10"
         selectable={false}
-        textAlign="center"
+        style={{ textAlign: 'center' }}
         $md={{
           size: '$10',
           marginTop: '$4',

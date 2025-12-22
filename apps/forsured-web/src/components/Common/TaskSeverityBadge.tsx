@@ -61,7 +61,7 @@ const Tooltip = styled(YStack, {
   fontSize: '$1',
   color: '$color1',
   backgroundColor: '$color12',
-  borderRadius: '$md',
+  borderRadius: '$3',
   shadowColor: '$shadowColor',
   shadowRadius: 8,
   shadowOffset: { width: 0, height: 4 },

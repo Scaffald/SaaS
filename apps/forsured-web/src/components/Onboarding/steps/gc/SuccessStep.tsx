@@ -11,7 +11,7 @@ interface SuccessStepProps {
 function SuccessStep({ onComplete, isLoading = false }: SuccessStepProps) {
   return (
     <YStack alignItems="center" paddingVertical="$8">
-      <YStack alignItems="center" marginBottom="$6">
+      <YStack alignItems="center" mb="$6">
         <YStack
           alignItems="center"
           justifyContent="center"
@@ -19,14 +19,14 @@ function SuccessStep({ onComplete, isLoading = false }: SuccessStepProps) {
           height={64}
           borderRadius={9999}
           backgroundColor="$green2"
-          marginBottom="$4"
+          mb="$4"
         >
           <CheckCircle size={32} color="var(--green10)" />
         </YStack>
-        <H2 marginBottom="$2" textAlign="center">
+        <H2 mb="$2" style={{ textAlign: 'center' }}>
           Onboarding Complete!
         </H2>
-        <Text color="$color10" textAlign="center">
+        <Text color="$color10" style={{ textAlign: 'center' }}>
           You're all set to manage subcontractor compliance and track insurance requirements.
         </Text>
       </YStack>

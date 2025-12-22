@@ -18,6 +18,7 @@ import { User as ScaffaldUser } from '../lib/scaffald/types';
 import { UserProfile } from '../types';
 import { initiateOAuth } from '../lib/auth/oauth';
 import { getProfile, updateProfileByScaffaldId } from '../services/userProfileService';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextValue {
   user: ScaffaldUser | null;
@@ -83,6 +84,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     loadUserAndProfile();
   }, [loadUserAndProfile]);
+
+  // Listen for Supabase auth state changes (e.g., test login switching users)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[AuthContext] Auth state changed:', event, session?.user?.email);
+
+      if (event === 'SIGNED_IN' && session?.user) {
+        // User signed in (or switched) - update user immediately, profile will load via separate effect
+        const scaffaldUser: ScaffaldUser = {
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || session.user.email || '',
+          avatar_url: session.user.user_metadata?.avatar_url || null,
+        };
+        setUser(scaffaldUser);
+        // Set profile to null to trigger re-fetch - don't call getProfile here to avoid deadlock
+        setProfile(null);
+        setIsLoading(true);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setProfile(null);
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Fetch profile when user changes (deferred from auth state change)
+  useEffect(() => {
+    if (user && !profile) {
+      console.log('[AuthContext] Fetching profile for user:', user.id);
+      getProfile(user.id)
+        .then((userProfile) => {
+          setProfile(userProfile);
+          console.log('[AuthContext] Profile loaded:', userProfile?.user_type);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.warn('[AuthContext] Could not load profile:', err);
+          setProfile(null);
+          setIsLoading(false);
+        });
+    }
+  }, [user, profile]);
 
   // Set up proactive token refresh
   useEffect(() => {

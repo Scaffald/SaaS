@@ -260,9 +260,9 @@ export default function ProjectCoverageRequirementsPage({
   // Access denied view
   if (!canManage) {
     return (
-      <YStack alignItems="center" justifyContent="center" padding="$8" textAlign="center">
-        <AlertCircle size={48} color="$yellow10" marginBottom="$4" />
-        <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">Access Denied</Text>
+      <YStack alignItems="center" justifyContent="center" padding="$8" style={{ textAlign: 'center' }}>
+        <AlertCircle size={48} color="$yellow10" mb="$4" />
+        <Text fontSize="$6" fontWeight="600" color="$color12" mb="$2">Access Denied</Text>
         <Text color="$color11">
           You don't have permission to manage coverage requirements for this project.
         </Text>
@@ -315,7 +315,7 @@ export default function ProjectCoverageRequirementsPage({
               <Text>PROJECT</Text>
             </XStack>
           </XStack>
-          <Text color="$color11" fontSize="$6" marginTop="$1">
+          <Text color="$color11" fontSize="$6" mt="$1">
             Set project-specific coverage requirements for <Text fontWeight="600">{projectName}</Text>
           </Text>
         </YStack>
@@ -327,10 +327,10 @@ export default function ProjectCoverageRequirementsPage({
       {/* Info Banner */}
       <CardCommon padding="$4" backgroundColor="$purple2" borderColor="$purple6">
         <XStack alignItems="flex-start" gap="$3">
-          <Shield color="$purple10" marginTop="$0.5" size={20} />
+          <Shield color="$purple10" mt="$0.5" size={20} />
           <YStack>
             <Text color="$purple11" fontWeight="500">Project-Level Requirements</Text>
-            <Text color="$purple10" fontSize="$3" marginTop="$1">
+            <Text color="$purple10" fontSize="$3" mt="$1">
               These requirements are specific to this project and supplement the organization-wide
               requirements. Subcontractors must meet both org-level and project-level requirements.
             </Text>
@@ -392,12 +392,12 @@ export default function ProjectCoverageRequirementsPage({
         <YStack overflowX="auto">
           <YStack>
             <XStack padding="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
-              <Text flex={1} textAlign="right" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
+              <Text flex={1} style={{ textAlign: 'right' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
             </XStack>
             <YStack>
               {isLoading ? (
@@ -526,7 +526,7 @@ export default function ProjectCoverageRequirementsPage({
               {showOrgRequirements ? 'Hide' : 'Show'}
             </Text>
           </XStack>
-          <Text fontSize="$3" color="$color10" marginTop="$1">
+          <Text fontSize="$3" color="$color10" mt="$1">
             These org-level requirements also apply to this project (read-only)
           </Text>
         </YStack>
@@ -534,11 +534,11 @@ export default function ProjectCoverageRequirementsPage({
           <YStack overflowX="auto">
             <YStack>
               <XStack padding="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
-                <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
-                <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
-                <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
-                <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
-                <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
+                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
+                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
+                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
+                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
+                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
               </XStack>
               <YStack>
                 {filteredOrgRequirements.length === 0 ? (

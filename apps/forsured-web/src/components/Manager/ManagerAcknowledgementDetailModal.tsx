@@ -150,7 +150,7 @@ export default function ManagerAcknowledgementDetailModal({
       <YStack gap="$6">
         <XStack alignItems="flex-start" justifyContent="space-between" paddingBottom="$4" borderBottomWidth={1} borderColor="$borderColor">
           <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" marginBottom="$2">
+            <XStack alignItems="center" gap="$3" mb="$2">
               <H2 fontSize="$9" fontWeight="700" color="$color12">
                 {getProjectName(currentPacket.project_id)}
               </H2>
@@ -205,7 +205,7 @@ export default function ManagerAcknowledgementDetailModal({
             minWidth="calc(50% - 8px)"
             $gtMd={{ minWidth: 'calc(50% - 8px)' }}
           >
-            <XStack alignItems="center" gap="$2" marginBottom="$2">
+            <XStack alignItems="center" gap="$2" mb="$2">
               <Calendar size={18} color="$color11" />
               <H3 fontSize="$4" fontWeight="600" color="$color12">
                 Effective Date
@@ -224,7 +224,7 @@ export default function ManagerAcknowledgementDetailModal({
             minWidth="calc(50% - 8px)"
             $gtMd={{ minWidth: 'calc(50% - 8px)' }}
           >
-            <XStack alignItems="center" gap="$2" marginBottom="$2">
+            <XStack alignItems="center" gap="$2" mb="$2">
               <Calendar size={18} color="$color11" />
               <H3 fontSize="$4" fontWeight="600" color="$color12">
                 Expiration Date
@@ -243,7 +243,7 @@ export default function ManagerAcknowledgementDetailModal({
             minWidth="calc(50% - 8px)"
             $gtMd={{ minWidth: 'calc(50% - 8px)' }}
           >
-            <XStack alignItems="center" gap="$2" marginBottom="$2">
+            <XStack alignItems="center" gap="$2" mb="$2">
               <Building size={18} color="$color11" />
               <H3 fontSize="$4" fontWeight="600" color="$color12">Jurisdiction</H3>
             </XStack>
@@ -260,7 +260,7 @@ export default function ManagerAcknowledgementDetailModal({
             minWidth="calc(50% - 8px)"
             $gtMd={{ minWidth: 'calc(50% - 8px)' }}
           >
-            <XStack alignItems="center" gap="$2" marginBottom="$2">
+            <XStack alignItems="center" gap="$2" mb="$2">
               <Shield size={18} color="$color11" />
               <H3 fontSize="$4" fontWeight="600" color="$color12">Liability Cap</H3>
             </XStack>
@@ -277,7 +277,7 @@ export default function ManagerAcknowledgementDetailModal({
         </XStack>
 
         <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <CheckCircle size={18} />
             <H3 fontSize="$4" fontWeight="600" color="$color12">
               Attestations
@@ -289,11 +289,11 @@ export default function ManagerAcknowledgementDetailModal({
                 <CheckCircle
                   size={16}
                   color="$green10"
-                  marginTop="$0.5"
+                  mt="$0.5"
                   flexShrink={0}
                 />
               ) : (
-                <X size={16} color="$red10" marginTop="$0.5" flexShrink={0} />
+                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
               )}
               <Text fontSize="$3" color="$color12">
                 Licensed for project state
@@ -304,11 +304,11 @@ export default function ManagerAcknowledgementDetailModal({
                 <CheckCircle
                   size={16}
                   color="$green10"
-                  marginTop="$0.5"
+                  mt="$0.5"
                   flexShrink={0}
                 />
               ) : (
-                <X size={16} color="$red10" marginTop="$0.5" flexShrink={0} />
+                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
               )}
               <Text fontSize="$3" color="$color12">
                 Active E&O policy
@@ -319,11 +319,11 @@ export default function ManagerAcknowledgementDetailModal({
                 <CheckCircle
                   size={16}
                   color="$green10"
-                  marginTop="$0.5"
+                  mt="$0.5"
                   flexShrink={0}
                 />
               ) : (
-                <X size={16} color="$red10" marginTop="$0.5" flexShrink={0} />
+                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
               )}
               <Text fontSize="$3" color="$color12">
                 Documents are accurate
@@ -335,11 +335,11 @@ export default function ManagerAcknowledgementDetailModal({
                 <CheckCircle
                   size={16}
                   color="$green10"
-                  marginTop="$0.5"
+                  mt="$0.5"
                   flexShrink={0}
                 />
               ) : (
-                <X size={16} color="$red10" marginTop="$0.5" flexShrink={0} />
+                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
               )}
               <Text fontSize="$3" color="$color12">
                 Will maintain required endorsements
@@ -350,11 +350,11 @@ export default function ManagerAcknowledgementDetailModal({
                 <CheckCircle
                   size={16}
                   color="$green10"
-                  marginTop="$0.5"
+                  mt="$0.5"
                   flexShrink={0}
                 />
               ) : (
-                <X size={16} color="$red10" marginTop="$0.5" flexShrink={0} />
+                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
               )}
               <Text fontSize="$3" color="$color12">
                 Agrees to platform terms
@@ -365,11 +365,11 @@ export default function ManagerAcknowledgementDetailModal({
                 <CheckCircle
                   size={16}
                   color="$green10"
-                  marginTop="$0.5"
+                  mt="$0.5"
                   flexShrink={0}
                 />
               ) : (
-                <X size={16} color="$red10" marginTop="$0.5" flexShrink={0} />
+                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
               )}
               <Text fontSize="$3" color="$color12">
                 Fraud reporting enabled
@@ -380,11 +380,11 @@ export default function ManagerAcknowledgementDetailModal({
                 <CheckCircle
                   size={16}
                   color="$green10"
-                  marginTop="$0.5"
+                  mt="$0.5"
                   flexShrink={0}
                 />
               ) : (
-                <X size={16} color="$red10" marginTop="$0.5" flexShrink={0} />
+                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
               )}
               <Text fontSize="$3" color="$color12">Data use agreed</Text>
             </XStack>
@@ -392,7 +392,7 @@ export default function ManagerAcknowledgementDetailModal({
               <CheckCircle
                 size={16}
                 color="$blue10"
-                marginTop="$0.5"
+                mt="$0.5"
                 flexShrink={0}
               />
               <Text fontSize="$3" color="$color12">
@@ -405,7 +405,7 @@ export default function ManagerAcknowledgementDetailModal({
         </Card>
 
         <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <Shield size={18} />
             <H3 fontSize="$4" fontWeight="600" color="$color12">
               E&O Insurance Policy
@@ -413,19 +413,19 @@ export default function ManagerAcknowledgementDetailModal({
           </XStack>
           <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
             <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" marginBottom="$1">Carrier</Text>
+              <Text fontSize="$1" color="$color11" mb="$1">Carrier</Text>
               <Text fontSize="$3" fontWeight="500" color="$color12">
                 {currentPacket.eo_policy.carrier}
               </Text>
             </YStack>
             <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" marginBottom="$1">Policy Number</Text>
+              <Text fontSize="$1" color="$color11" mb="$1">Policy Number</Text>
               <Text fontSize="$3" fontWeight="500" color="$color12">
                 {currentPacket.eo_policy.policy_number}
               </Text>
             </YStack>
             <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" marginBottom="$1">
+              <Text fontSize="$1" color="$color11" mb="$1">
                 Each Claim Limit
               </Text>
               <Text fontSize="$3" fontWeight="500" color="$color12">
@@ -433,7 +433,7 @@ export default function ManagerAcknowledgementDetailModal({
               </Text>
             </YStack>
             <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" marginBottom="$1">
+              <Text fontSize="$1" color="$color11" mb="$1">
                 Aggregate Limit
               </Text>
               <Text fontSize="$3" fontWeight="500" color="$color12">
@@ -441,13 +441,13 @@ export default function ManagerAcknowledgementDetailModal({
               </Text>
             </YStack>
             <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" marginBottom="$1">Effective Date</Text>
+              <Text fontSize="$1" color="$color11" mb="$1">Effective Date</Text>
               <Text fontSize="$3" fontWeight="500" color="$color12">
                 {formatDate(currentPacket.eo_policy.effective)}
               </Text>
             </YStack>
             <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" marginBottom="$1">
+              <Text fontSize="$1" color="$color11" mb="$1">
                 Expiration Date
               </Text>
               <Text fontSize="$3" fontWeight="500" color="$color12">
@@ -458,7 +458,7 @@ export default function ManagerAcknowledgementDetailModal({
         </Card>
 
         <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <FileText size={18} />
             <H3 fontSize="$4" fontWeight="600" color="$color12">
               Licensing Information
@@ -466,7 +466,7 @@ export default function ManagerAcknowledgementDetailModal({
           </XStack>
           <YStack gap="$3">
             <YStack>
-              <Text fontSize="$1" color="$color11" marginBottom="$2">
+              <Text fontSize="$1" color="$color11" mb="$2">
                 Licensed States
               </Text>
               <XStack flexWrap="wrap" gap="$2">
@@ -478,7 +478,7 @@ export default function ManagerAcknowledgementDetailModal({
               </XStack>
             </YStack>
             <YStack>
-              <Text fontSize="$1" color="$color11" marginBottom="$2">
+              <Text fontSize="$1" color="$color11" mb="$2">
                 License Details
               </Text>
               <YStack gap="$2">
@@ -510,7 +510,7 @@ export default function ManagerAcknowledgementDetailModal({
         </Card>
 
         <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <Users size={18} />
             <H3 fontSize="$4" fontWeight="600" color="$color12">
               Broker Responsibilities
@@ -540,7 +540,7 @@ export default function ManagerAcknowledgementDetailModal({
         </Card>
 
         <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <Users size={18} />
             <H3 fontSize="$4" fontWeight="600" color="$color12">
               Signers
@@ -582,7 +582,7 @@ export default function ManagerAcknowledgementDetailModal({
                     {signer.status}
                   </Text>
                   {signer.acted_at && (
-                    <Text fontSize="$1" color="$color11" marginTop="$1">
+                    <Text fontSize="$1" color="$color11" mt="$1">
                       {formatDate(signer.acted_at)}
                     </Text>
                   )}
@@ -593,7 +593,7 @@ export default function ManagerAcknowledgementDetailModal({
         </Card>
 
         <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <Clock size={18} />
             <H3 fontSize="$4" fontWeight="600" color="$color12">
               Audit Log
@@ -609,7 +609,7 @@ export default function ManagerAcknowledgementDetailModal({
                 backgroundColor="$background"
                 borderRadius="$4"
               >
-                <YStack marginTop="$1">{getEventIcon(entry.event)}</YStack>
+                <YStack mt="$1">{getEventIcon(entry.event)}</YStack>
                 <YStack flex={1}>
                   <XStack alignItems="center" justifyContent="space-between">
                     <Text fontSize="$3" fontWeight="500" color="$color12" textTransform="capitalize">

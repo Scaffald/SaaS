@@ -271,8 +271,8 @@ export default function NotificationsAndApprovalsPage() {
         <YStack gap="$4">
           {notifications.length === 0 ? (
             <YStack alignItems="center" paddingVertical="$12">
-              <Bell color="$color10" marginBottom="$4" size={48} />
-              <Text fontWeight="500" color="$color12" marginBottom="$2">
+              <Bell color="$color10" mb="$4" size={48} />
+              <Text fontWeight="500" color="$color12" mb="$2">
                 No notifications
               </Text>
               <SizableText size="$3" color="$color11">
@@ -291,11 +291,11 @@ export default function NotificationsAndApprovalsPage() {
                   borderColor="$borderColor"
                 >
                   <XStack alignItems="flex-start" gap="$3">
-                    <YStack marginTop={2}>
+                    <YStack mt={2}>
                       {getTypeIcon(notification.type)}
                     </YStack>
                     <YStack flex={1}>
-                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+                      <XStack alignItems="center" justifyContent="space-between" mb="$1">
                         <SizableText size="$3" fontWeight="500" color="$color12">
                           {notification.title}
                         </SizableText>
@@ -405,7 +405,7 @@ export default function NotificationsAndApprovalsPage() {
                 fullWidth
               />
             </XStack>
-            <XStack marginTop="$4" alignItems="center" gap="$2">
+            <XStack mt="$4" alignItems="center" gap="$2">
               <Button
                 variant="ghost"
                 size="$3"
@@ -461,13 +461,13 @@ export default function NotificationsAndApprovalsPage() {
           {/* Approvals List */}
           {loading ? (
             <YStack alignItems="center" paddingVertical="$12">
-              <Spinner size="large" color="$blue9" marginBottom="$2" />
+              <Spinner size="large" color="$blue9" mb="$2" />
               <SizableText color="$color11">Loading approvals...</SizableText>
             </YStack>
           ) : filteredApprovals.length === 0 ? (
             <YStack alignItems="center" paddingVertical="$12">
-              <UserCheck color="$color10" marginBottom="$4" size={48} />
-              <Text fontWeight="500" color="$color12" marginBottom="$2">
+              <UserCheck color="$color10" mb="$4" size={48} />
+              <Text fontWeight="500" color="$color12" mb="$2">
                 No approvals found
               </Text>
               <SizableText size="$3" color="$color11">
@@ -491,7 +491,7 @@ export default function NotificationsAndApprovalsPage() {
                   <XStack alignItems="flex-start" gap="$3">
                     <Button
                       unstyled
-                      marginTop="$1"
+                      mt="$1"
                       color="$color10"
                       hoverStyle={{ color: '$blue9' }}
                       onPress={() => toggleSelectItem(approval.id)}
@@ -503,7 +503,7 @@ export default function NotificationsAndApprovalsPage() {
                       )}
                     </Button>
                     <YStack flex={1}>
-                      <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                      <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
                         <XStack alignItems="center" gap="$2">
                           {getTypeIcon(approval.type)}
                           <XStack
@@ -588,13 +588,13 @@ export default function NotificationsAndApprovalsPage() {
                           </SizableText>
                         </XStack>
                       </XStack>
-                      <SizableText size="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                      <SizableText size="$3" fontWeight="600" color="$color12" mb="$1">
                         {approval.title}
                       </SizableText>
-                      <SizableText size="$3" color="$color11" marginBottom="$2">
+                      <SizableText size="$3" color="$color11" mb="$2">
                         {approval.description}
                       </SizableText>
-                      <XStack alignItems="center" gap="$4" marginBottom="$3">
+                      <XStack alignItems="center" gap="$4" mb="$3">
                         <SizableText size="$1" color="$color10">
                           Requested {formatDate(approval.requested_at)}
                         </SizableText>
@@ -698,7 +698,7 @@ export default function NotificationsAndApprovalsPage() {
             width="100%"
             padding="$6"
           >
-            <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Request More Information
             </Text>
             <Textarea
@@ -710,7 +710,7 @@ export default function NotificationsAndApprovalsPage() {
               fullWidth
               required
             />
-            <XStack gap="$3" marginTop="$4">
+            <XStack gap="$3" mt="$4">
               <Button
                 variant="secondary"
                 onPress={() => {
@@ -756,7 +756,7 @@ export default function NotificationsAndApprovalsPage() {
             width="100%"
             padding="$6"
           >
-            <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Defer Approval
             </Text>
             <Input
@@ -767,7 +767,7 @@ export default function NotificationsAndApprovalsPage() {
               fullWidth
               required
             />
-            <XStack gap="$3" marginTop="$4">
+            <XStack gap="$3" mt="$4">
               <Button
                 variant="secondary"
                 onPress={() => {

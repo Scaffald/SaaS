@@ -43,7 +43,7 @@ function CompanyStep({ onComplete, initialData = {}, isLoading = false }: Compan
 
   return (
     <YStack>
-      <H2 marginBottom="$6">Company Information</H2>
+      <H2 mb="$6">Company Information</H2>
       <YStack tag="form" onSubmit={handleSubmit} gap="$4">
         <YStack gap="$2">
           <Text fontWeight="600" color="$color12">Company Name</Text>
@@ -81,7 +81,7 @@ function CompanyStep({ onComplete, initialData = {}, isLoading = false }: Compan
           />
           {errors.phone && <Text color="$red10" fontSize="$2">{errors.phone}</Text>}
         </YStack>
-        <YStack marginTop="$6">
+        <YStack mt="$6">
           <Button
             onPress={handleSubmit}
             variant="primary"

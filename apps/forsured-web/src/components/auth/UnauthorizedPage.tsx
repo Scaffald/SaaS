@@ -25,7 +25,7 @@ const CardContainer = styled(YStack, {
   gap: '$8',
   padding: '$10',
   backgroundColor: '$backgroundHover',
-  borderRadius: '$xl',
+  borderRadius: '$5',
   shadowColor: '$shadowColor',
   shadowRadius: 20,
   shadowOffset: { width: 0, height: 10 },
@@ -85,7 +85,7 @@ export const UnauthorizedPage: React.FC = () => {
           <Text fontSize="$9" fontWeight="700" color="$color12">
             Access Denied
           </Text>
-          <Text fontSize="$2" color="$color10" textAlign="center">
+          <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
             {reason === 'insufficient_role'
               ? "You don't have the required role to access this page"
               : "You don't have permission to access this resource"}
@@ -98,7 +98,7 @@ export const UnauthorizedPage: React.FC = () => {
             backgroundColor="$blue2"
             borderWidth={1}
             borderColor="$blue6"
-            borderRadius="$md"
+            borderRadius="$3"
             padding="$4"
             gap="$3"
           >
@@ -112,7 +112,7 @@ export const UnauthorizedPage: React.FC = () => {
                 <Text fontSize="$2" color="$blue11">
                   <Text fontWeight="600">Current User:</Text> {user.email}
                 </Text>
-                <Text fontSize="$2" color="$blue11" marginTop="$1">
+                <Text fontSize="$2" color="$blue11" mt="$1">
                   <Text fontWeight="600">Role:</Text>{' '}
                   <Text textTransform="capitalize">{currentRole || profile?.user_type || 'Unknown'}</Text>
                 </Text>
@@ -123,7 +123,7 @@ export const UnauthorizedPage: React.FC = () => {
 
         {/* Attempted Path */}
         {from && from !== '/' && (
-          <YStack backgroundColor="$backgroundHover" borderRadius="$md" padding="$4" gap="$1">
+          <YStack backgroundColor="$backgroundHover" borderRadius="$3" padding="$4" gap="$1">
             <Text fontSize="$1" color="$color9">
               Attempted to access:
             </Text>
@@ -131,7 +131,7 @@ export const UnauthorizedPage: React.FC = () => {
               fontSize="$2"
               color="$color11"
               fontFamily="$mono"
-              marginTop="$1"
+              mt="$1"
               numberOfLines={3}
             >
               {from}
@@ -153,8 +153,8 @@ export const UnauthorizedPage: React.FC = () => {
         </YStack>
 
         {/* Contact Support */}
-        <YStack marginTop="$6" alignItems="center">
-          <Text fontSize="$1" color="$color9" textAlign="center">
+        <YStack mt="$6" alignItems="center">
+          <Text fontSize="$1" color="$color9" style={{ textAlign: 'center' }}>
             If you believe this is an error, please{' '}
             <SupportLink href="mailto:support@forsured.com">
               contact support

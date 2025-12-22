@@ -285,7 +285,7 @@ export default function HomePage() {
               $gtMd={{ fontSize: '$12' }}
               fontWeight="700"
               color="white"
-              marginBottom="$6"
+              mb="$6"
               letterSpacing="-0.02em"
             >
               Construction Compliance
@@ -297,7 +297,7 @@ export default function HomePage() {
               fontSize="$6"
               $gtMd={{ fontSize: '$8' }}
               color="rgba(255,255,255,0.9)"
-              marginBottom="$12"
+              mb="$12"
               maxWidth={768}
               marginHorizontal="auto"
               lineHeight={1.6}
@@ -313,7 +313,7 @@ export default function HomePage() {
               gap="$4"
               justifyContent="center"
               alignItems="center"
-              marginBottom="$10"
+              mb="$10"
             >
               <Button
                 onClick={() => handleGetStarted('manager')}
@@ -370,8 +370,8 @@ export default function HomePage() {
                 minWidth="45%"
                 $gtMd={{ minWidth: '30%' }}
               >
-                <Shield size={40} color="$blue10" marginBottom="$4" />
-                <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
+                <Shield size={40} color="$blue10" mb="$4" />
+                <H3 fontWeight="600" color="$color12" mb="$2" fontSize="$6">
                   Automated Verification
                 </H3>
                 <Text color="$color11">AI-powered document verification with 99.8% accuracy</Text>
@@ -388,8 +388,8 @@ export default function HomePage() {
                 minWidth="45%"
                 $gtMd={{ minWidth: '30%' }}
               >
-                <Clock size={40} color="$gray10" marginBottom="$4" />
-                <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
+                <Clock size={40} color="$gray10" mb="$4" />
+                <H3 fontWeight="600" color="$color12" mb="$2" fontSize="$6">
                   Save 60% Time
                 </H3>
                 <Text color="$color11">Reduce compliance management from hours to minutes</Text>
@@ -406,8 +406,8 @@ export default function HomePage() {
                 minWidth="45%"
                 $gtMd={{ minWidth: '30%' }}
               >
-                <DollarSign size={40} color="$yellow10" marginBottom="$4" />
-                <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
+                <DollarSign size={40} color="$yellow10" mb="$4" />
+                <H3 fontWeight="600" color="$color12" mb="$2" fontSize="$6">
                   Instant Coverage
                 </H3>
                 <Text color="$color11">Purchase insurance and get COIs issued immediately</Text>
@@ -456,8 +456,8 @@ export default function HomePage() {
           $gtLg={{ paddingHorizontal: '$8' }}
           position="relative"
         >
-          <YStack alignItems="center" marginBottom="$10">
-            <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" marginBottom="$4">
+          <YStack alignItems="center" mb="$10">
+            <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" mb="$4">
               Trusted by Construction Leaders
             </H2>
             <Text fontSize="$6" color="rgba(255,255,255,0.7)">
@@ -478,7 +478,7 @@ export default function HomePage() {
                   $gtMd={{ fontSize: '$11' }}
                   fontWeight="700"
                   color="$blue9"
-                  marginBottom="$2"
+                  mb="$2"
                 >
                   {stat.value}
                 </Text>
@@ -500,13 +500,13 @@ export default function HomePage() {
           $gtSm={{ paddingHorizontal: '$6' }}
           $gtLg={{ paddingHorizontal: '$8' }}
         >
-          <YStack alignItems="center" marginBottom="$10">
+          <YStack alignItems="center" mb="$10">
             <H2
               fontSize="$9"
               $gtMd={{ fontSize: '$10' }}
               fontWeight="700"
               color="$color12"
-              marginBottom="$6"
+              mb="$6"
             >
               Built for Construction
             </H2>
@@ -545,12 +545,12 @@ export default function HomePage() {
                     borderRadius="$4"
                     alignItems="center"
                     justifyContent="center"
-                    marginBottom="$5"
+                    mb="$5"
                     hoverStyle={{ backgroundColor: '$blue10' }}
                   >
                     <Icon size={28} color="$blue11" />
                   </XStack>
-                  <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$3">
+                  <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$3">
                     {feature.title}
                   </H3>
                   <Text color="$color11" lineHeight={1.6}>
@@ -586,7 +586,7 @@ export default function HomePage() {
               minWidth="45%"
               $gtLg={{ minWidth: '30%' }}
             >
-              <XStack alignItems="center" gap="$3" marginBottom="$6">
+              <XStack alignItems="center" gap="$3" mb="$6">
                 <XStack backgroundColor="$blue2" padding="$3" borderRadius="$4">
                   <Users size={28} color="$blue11" />
                 </XStack>
@@ -594,25 +594,25 @@ export default function HomePage() {
                   For Managers
                 </H3>
               </XStack>
-              <YStack gap="$4" marginBottom="$8">
+              <YStack gap="$4" mb="$8">
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$blue10" mt="$1" flexShrink={0} />
                   <Text color="$color11">
                     Automatically verify subcontractor compliance across all projects
                   </Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$blue10" mt="$1" flexShrink={0} />
                   <Text color="$color11">Real-time risk monitoring with predictive alerts</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$blue10" mt="$1" flexShrink={0} />
                   <Text color="$color11">
                     Generate compliance reports for audits and stakeholders
                   </Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$blue10" mt="$1" flexShrink={0} />
                   <Text color="$color11">
                     Integrate with existing construction management tools
                   </Text>
@@ -642,7 +642,7 @@ export default function HomePage() {
               minWidth="45%"
               $gtLg={{ minWidth: '30%' }}
             >
-              <XStack alignItems="center" gap="$3" marginBottom="$6">
+              <XStack alignItems="center" gap="$3" mb="$6">
                 <XStack backgroundColor="$gray2" padding="$3" borderRadius="$4">
                   <Award size={28} color="$gray11" />
                 </XStack>
@@ -650,21 +650,21 @@ export default function HomePage() {
                   For Subcontractors
                 </H3>
               </XStack>
-              <YStack gap="$4" marginBottom="$8">
+              <YStack gap="$4" mb="$8">
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$gray10" mt="$1" flexShrink={0} />
                   <Text color="$color11">Upload documents and get instant compliance scoring</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$gray10" mt="$1" flexShrink={0} />
                   <Text color="$color11">Receive personalized insurance recommendations</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$gray10" mt="$1" flexShrink={0} />
                   <Text color="$color11">Purchase coverage and get COIs issued instantly</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$gray10" mt="$1" flexShrink={0} />
                   <Text color="$color11">Track renewal dates and maintain compliance status</Text>
                 </XStack>
               </YStack>
@@ -692,7 +692,7 @@ export default function HomePage() {
               minWidth="45%"
               $gtLg={{ minWidth: '30%' }}
             >
-              <XStack alignItems="center" gap="$3" marginBottom="$6">
+              <XStack alignItems="center" gap="$3" mb="$6">
                 <XStack backgroundColor="$gray2" padding="$3" borderRadius="$4">
                   <Handshake size={28} color="$gray11" />
                 </XStack>
@@ -700,23 +700,23 @@ export default function HomePage() {
                   For Brokers
                 </H3>
               </XStack>
-              <YStack gap="$4" marginBottom="$8">
+              <YStack gap="$4" mb="$8">
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$color11" mt="$1" flexShrink={0} />
                   <Text color="$color11">
                     Access qualified construction leads with verified needs
                   </Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$color11" mt="$1" flexShrink={0} />
                   <Text color="$color11">Streamline quote generation and policy management</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$color11" mt="$1" flexShrink={0} />
                   <Text color="$color11">Automated COI generation and compliance tracking</Text>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
+                  <CheckCircle size={20} color="$color11" mt="$1" flexShrink={0} />
                   <Text color="$color11">Expand your construction industry client base</Text>
                 </XStack>
               </YStack>
@@ -779,7 +779,7 @@ export default function HomePage() {
             $gtMd={{ fontSize: '$10' }}
             fontWeight="700"
             color="white"
-            marginBottom="$6"
+            mb="$6"
           >
             Ready to Build with Confidence?
           </H2>
@@ -787,7 +787,7 @@ export default function HomePage() {
             fontSize="$6"
             $gtMd={{ fontSize: '$8' }}
             color="rgba(255,255,255,0.9)"
-            marginBottom="$12"
+            mb="$12"
             lineHeight={1.6}
           >
             Join thousands of construction professionals managing compliance the modern way.
@@ -806,13 +806,13 @@ export default function HomePage() {
         >
           <XStack flexWrap="wrap" gap="$12">
             <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <ForsuredLogo height={32} marginBottom="$6" color="white" />
+              <ForsuredLogo height={32} mb="$6" color="white" />
               <Text color="rgba(255,255,255,0.6)" lineHeight={1.6}>
                 AI-powered compliance and insurance management for the construction industry.
               </Text>
             </YStack>
             <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <H3 fontWeight="600" marginBottom="$4" color="white">
+              <H3 fontWeight="600" mb="$4" color="white">
                 Product
               </H3>
               <YStack gap="$3">
@@ -851,7 +851,7 @@ export default function HomePage() {
               </YStack>
             </YStack>
             <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <H3 fontWeight="600" marginBottom="$4" color="white">
+              <H3 fontWeight="600" mb="$4" color="white">
                 Company
               </H3>
               <YStack gap="$3">
@@ -890,7 +890,7 @@ export default function HomePage() {
               </YStack>
             </YStack>
             <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <H3 fontWeight="600" marginBottom="$4" color="white">
+              <H3 fontWeight="600" mb="$4" color="white">
                 Support
               </H3>
               <YStack gap="$3">
@@ -932,7 +932,7 @@ export default function HomePage() {
           <YStack
             borderTopWidth={1}
             borderColor="$gray11"
-            marginTop="$12"
+            mt="$12"
             paddingTop="$8"
             alignItems="center"
           >

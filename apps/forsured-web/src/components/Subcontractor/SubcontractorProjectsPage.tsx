@@ -125,7 +125,7 @@ export default function SubcontractorProjectsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Total Projects</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
                 {stats.total}
               </Text>
             </YStack>
@@ -146,7 +146,7 @@ export default function SubcontractorProjectsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Active Projects</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
                 {stats.active}
               </Text>
             </YStack>
@@ -167,7 +167,7 @@ export default function SubcontractorProjectsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Completed</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$green10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$green10" mt="$1">
                 {stats.completed}
               </Text>
             </YStack>
@@ -188,7 +188,7 @@ export default function SubcontractorProjectsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Active Value</Text>
-              <Text fontSize="$8" fontWeight="bold" color="$color12" marginTop="$1">
+              <Text fontSize="$8" fontWeight="bold" color="$color12" mt="$1">
                 {formatCurrency(stats.totalValue)}
               </Text>
             </YStack>
@@ -271,8 +271,8 @@ export default function SubcontractorProjectsPage() {
       {filteredProjects.length === 0 && (
         <Card elevation={1} borderWidth={1} borderColor="$borderColor" padding="$12">
           <YStack alignItems="center">
-            <Building color="$color10" size={48} marginBottom="$4" />
-            <Text color="$color12" fontWeight="500" marginBottom="$2">
+            <Building color="$color10" size={48} mb="$4" />
+            <Text color="$color12" fontWeight="500" mb="$2">
               No projects found
             </Text>
             <Text color="$color11" fontSize="$2">

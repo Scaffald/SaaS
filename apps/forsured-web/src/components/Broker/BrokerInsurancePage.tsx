@@ -97,14 +97,14 @@ export default function BrokerInsurancePage() {
               flex={1}
               minWidth="20%"
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="center" justifyContent="space-between" mb="$4">
                 <YStack padding="$2" backgroundColor="$green2" borderRadius="$4">
                   <CheckCircle color="$green10" size={24} />
                 </YStack>
                 <Text fontSize="$1" color="$green10" fontWeight="500">Active</Text>
               </XStack>
               <Text fontSize="$9" fontWeight="bold" color="$color12">{activePolicies.length}</Text>
-              <Text fontSize="$3" color="$color11" marginTop="$1">Active Policies</Text>
+              <Text fontSize="$3" color="$color11" mt="$1">Active Policies</Text>
             </Card>
 
             <Card
@@ -116,14 +116,14 @@ export default function BrokerInsurancePage() {
               flex={1}
               minWidth="20%"
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="center" justifyContent="space-between" mb="$4">
                 <YStack padding="$2" backgroundColor="$yellow2" borderRadius="$4">
                   <Clock color="$yellow10" size={24} />
                 </YStack>
                 <Text fontSize="$1" color="$yellow10" fontWeight="500">Attention</Text>
               </XStack>
               <Text fontSize="$9" fontWeight="bold" color="$color12">{expiringPolicies.length}</Text>
-              <Text fontSize="$3" color="$color11" marginTop="$1">Expiring Soon</Text>
+              <Text fontSize="$3" color="$color11" mt="$1">Expiring Soon</Text>
             </Card>
 
             <Card
@@ -135,7 +135,7 @@ export default function BrokerInsurancePage() {
               flex={1}
               minWidth="20%"
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="center" justifyContent="space-between" mb="$4">
                 <YStack padding="$2" backgroundColor="$blue2" borderRadius="$4">
                   <DollarSign color="$blue10" size={24} />
                 </YStack>
@@ -143,7 +143,7 @@ export default function BrokerInsurancePage() {
               <Text fontSize="$9" fontWeight="bold" color="$color12">
                 ${(totalCoverage / 1000000).toFixed(1)}M
               </Text>
-              <Text fontSize="$3" color="$color11" marginTop="$1">Total Coverage</Text>
+              <Text fontSize="$3" color="$color11" mt="$1">Total Coverage</Text>
             </Card>
 
             <Card
@@ -155,7 +155,7 @@ export default function BrokerInsurancePage() {
               flex={1}
               minWidth="20%"
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="center" justifyContent="space-between" mb="$4">
                 <YStack padding="$2" backgroundColor="$purple2" borderRadius="$4">
                   <TrendingUp color="$purple10" size={24} />
                 </YStack>
@@ -163,7 +163,7 @@ export default function BrokerInsurancePage() {
               <Text fontSize="$9" fontWeight="bold" color="$color12">
                 ${totalPremium.toLocaleString()}
               </Text>
-              <Text fontSize="$3" color="$color11" marginTop="$1">Annual Premium</Text>
+              <Text fontSize="$3" color="$color11" mt="$1">Annual Premium</Text>
             </Card>
           </XStack>
 
@@ -175,7 +175,7 @@ export default function BrokerInsurancePage() {
               borderRadius="$4"
               padding="$6"
             >
-              <XStack alignItems="center" gap="$3" marginBottom="$4">
+              <XStack alignItems="center" gap="$3" mb="$4">
                 <AlertTriangle color="$yellow10" size={24} />
                 <H3 fontSize="$6" fontWeight="600" color="$yellow12">
                   Policies Requiring Attention
@@ -225,7 +225,7 @@ export default function BrokerInsurancePage() {
               flex={1}
               minWidth="45%"
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="center" justifyContent="space-between" mb="$4">
                 <H3 fontSize="$6" fontWeight="600" color="$color12">Recent Policies</H3>
                 <Button
                   variant="ghost"
@@ -280,7 +280,7 @@ export default function BrokerInsurancePage() {
               flex={1}
               minWidth="45%"
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="center" justifyContent="space-between" mb="$4">
                 <H3 fontSize="$6" fontWeight="600" color="$color12">Coverage by Type</H3>
               </XStack>
               <YStack gap="$4">
@@ -289,7 +289,7 @@ export default function BrokerInsurancePage() {
                   const percentage = policies.length > 0 ? (count / policies.length) * 100 : 0;
                   return (
                     <YStack key={type}>
-                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+                      <XStack alignItems="center" justifyContent="space-between" mb="$1">
                         <Text fontSize="$3" color="$color12">{type}</Text>
                         <Text fontSize="$3" fontWeight="500" color="$color12">{count}</Text>
                       </XStack>
@@ -342,7 +342,7 @@ export default function BrokerInsurancePage() {
                     cursor="pointer"
                     onClick={() => navigate(`/broker/insurance/policies/${policy.id}`)}
                   >
-                    <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+                    <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
                       <YStack>
                         <Text fontSize="$4" fontWeight="600" color="$color12">{policy.policy_type}</Text>
                         <Text fontSize="$3" color="$color11">{policy.carrier}</Text>
@@ -407,8 +407,8 @@ export default function BrokerInsurancePage() {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <FileText color="$color10" size={48} marginBottom="$4" />
-              <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">No Policies Found</H3>
+              <FileText color="$color10" size={48} mb="$4" />
+              <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">No Policies Found</H3>
               <Text color="$color11">No policies have been added yet.</Text>
             </Card>
           )}
@@ -436,8 +436,8 @@ export default function BrokerInsurancePage() {
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Shield color="$color10" size={48} marginBottom="$4" />
-            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+            <Shield color="$color10" size={48} mb="$4" />
+            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
               Coverage Requests Coming Soon
             </H3>
             <Text color="$color11">

@@ -215,7 +215,7 @@ export default function CoverageRequirementForm({
 
           {/* Common limit quick-select buttons */}
           <XStack flexWrap="wrap" gap="$2" alignItems="center">
-            <Text fontSize="$3" color="$color10" marginRight="$2">Quick select:</Text>
+            <Text fontSize="$3" color="$color10" mr="$2">Quick select:</Text>
             {[500000, 1000000, 2000000, 5000000].map((amount) => (
               <Button
                 key={amount}

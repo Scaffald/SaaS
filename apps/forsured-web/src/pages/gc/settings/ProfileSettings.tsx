@@ -1,13 +1,16 @@
 // src/pages/gc/settings/ProfileSettings.tsx
+// REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { YStack, Text, Button, H2, Input } from '@unicornlove/ui';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSettings } from '../../../hooks/useSettings';
+import { useLexicon } from '../../../contexts/LexiconContext';
 import { toast } from 'sonner';
 
 function GCProfileSettings() {
   const { user, profile, isLoading: authLoading } = useAuth();
   const { userSettings, updateUserSettings, isLoading: settingsLoading, isSaving } = useSettings();
+  const { getManagerLabel, getContractorLabel } = useLexicon();
 
   const [phone, setPhone] = useState('');
   const [originalPhone, setOriginalPhone] = useState('');
@@ -86,7 +89,13 @@ function GCProfileSettings() {
           <Input
             label="User Type"
             type="text"
-            value={profile?.user_type === 'gc' ? 'General Contractor' : profile?.user_type || ''}
+            value={
+              profile?.user_type === 'manager'
+                ? getManagerLabel()
+                : profile?.user_type === 'subcontractor'
+                  ? getContractorLabel()
+                  : profile?.user_type || ''
+            }
             disabled
           />
           <Button

@@ -64,15 +64,9 @@ const SwitchThumb = styled(XStack, {
   transition: 'transform 0.2s ease-in-out',
   variants: {
     size: {
-      sm: { width: 16, height: 16, translateX: 16 }, // w-4 h-4, translate-x-4
-      md: { width: 20, height: 20, translateX: 20 }, // w-5 h-5, translate-x-5
-      lg: { width: 24, height: 24, translateX: 28 }, // w-6 h-6, translate-x-7
-    },
-    checked: {
-      true: {},
-      false: {
-        translateX: 0,
-      },
+      sm: { width: 16, height: 16 },
+      md: { width: 20, height: 20 },
+      lg: { width: 24, height: 24 },
     },
   } as const,
 });
@@ -89,7 +83,14 @@ const SwitchLabel = styled(Text, {
 const Switch = forwardRef<HTMLInputElement, SwitchProps>(
   ({ label, helperText, size = 'md', className = '', id, ...props }, ref) => {
     const switchId = id || `switch-${Math.random().toString(36).substr(2, 9)}`;
-    const isChecked = props.checked || false;
+    const isChecked = props.checked ?? props.defaultChecked ?? false;
+
+    // Calculate thumb translation based on size
+    const thumbTranslation = {
+      sm: 16,
+      md: 20,
+      lg: 28,
+    };
 
     return (
       <SwitchContainer className={className}>
@@ -110,7 +111,12 @@ const Switch = forwardRef<HTMLInputElement, SwitchProps>(
                 as="label"
                 htmlFor={switchId}
               >
-                <SwitchThumb size={size} checked={isChecked} />
+                <SwitchThumb
+                  size={size}
+                  style={{
+                    transform: isChecked ? `translateX(${thumbTranslation[size]}px)` : 'translateX(0)'
+                  }}
+                />
               </SwitchTrack>
             </XStack>
             {label && (

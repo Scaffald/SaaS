@@ -168,7 +168,7 @@ export default function UserInvitationModal({
 
         {/* Role Description */}
         <YStack backgroundColor="$color2" borderRadius="$4" padding="$3">
-          <SizableText fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
+          <SizableText fontSize="$3" fontWeight="500" color="$color12" mb="$1">
             {role === 'admin' &&
               'Admin: Full access to all features and settings'}
             {role === 'manager' &&
@@ -181,7 +181,7 @@ export default function UserInvitationModal({
         {/* Project Assignment */}
         {projects.length > 0 && (
           <YStack>
-            <SizableText fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+            <SizableText fontSize="$3" fontWeight="500" color="$color12" mb="$2">
               Assign to Projects (Optional)
             </SizableText>
             <Card
@@ -224,7 +224,7 @@ export default function UserInvitationModal({
         {/* Client Assignment (for brokers) */}
         {isBroker && clients.length > 0 && (
           <YStack>
-            <SizableText fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+            <SizableText fontSize="$3" fontWeight="500" color="$color12" mb="$2">
               Assign to Clients (Optional)
             </SizableText>
             <Card

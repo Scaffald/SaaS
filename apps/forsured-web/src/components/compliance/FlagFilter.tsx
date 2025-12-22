@@ -54,7 +54,7 @@ const ToggleButton = styled(Button, {
   paddingVertical: '$2',
   fontSize: '$2',
   fontWeight: '500',
-  borderRadius: '$md',
+  borderRadius: '$3',
   backgroundColor: 'transparent',
   borderWidth: 1,
   borderColor: 'transparent',
@@ -128,14 +128,14 @@ export const FlagFilter: React.FC<FlagFilterProps> = ({
   const filterOptions: FilterOption[] = ['all', 'policy', 'provision', 'endorsement'];
 
   return (
-    <YStack marginBottom="$4" gap="$2">
+    <YStack mb="$4" gap="$2">
       <Text fontSize="$2" fontWeight="500" color="$color10">
         Filter by flag level
       </Text>
 
       <XStack
         display="inline-flex"
-        borderRadius="$md"
+        borderRadius="$3"
         backgroundColor="$backgroundHover"
         borderWidth={1}
         borderColor="$borderColor"
@@ -249,16 +249,16 @@ export const FilterableFlagList: React.FC<FilterableFlagListProps> = ({
           backgroundColor="$green2"
           borderWidth={1}
           borderColor="$green6"
-          borderRadius="$md"
+          borderRadius="$3"
           padding="$6"
           alignItems="center"
           gap="$2"
         >
-          <CheckCircle size={32} color="currentColor" marginBottom="$2" />
+          <CheckCircle size={32} color="currentColor" mb="$2" />
           <Text color="$green11" fontWeight="500">
             {getEmptyMessage()}
           </Text>
-          <Text fontSize="$2" color="$green10" marginTop="$1">
+          <Text fontSize="$2" color="$green10" mt="$1">
             All requirements are met for this filter
           </Text>
         </YStack>

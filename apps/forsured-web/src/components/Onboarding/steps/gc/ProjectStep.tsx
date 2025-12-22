@@ -28,8 +28,8 @@ function ProjectStep({ onComplete, initialData = {}, isLoading = false }: Projec
 
   return (
     <YStack>
-      <H2 marginBottom="$2">Create Your First Project (Optional)</H2>
-      <Text marginBottom="$6" color="$color10">
+      <H2 mb="$2">Create Your First Project (Optional)</H2>
+      <Text mb="$6" color="$color10">
         You can skip this step and create a project later
       </Text>
       <YStack tag="form" onSubmit={handleSubmit} gap="$4">
@@ -58,7 +58,7 @@ function ProjectStep({ onComplete, initialData = {}, isLoading = false }: Projec
           />
           <Text fontSize="$2" color="$color10">Optional: You can set this later</Text>
         </YStack>
-        <YStack marginTop="$6">
+        <YStack mt="$6">
           <Button
             onPress={handleSubmit}
             variant="primary"

@@ -337,7 +337,7 @@ export default function UnifiedTaskDetailModal({
           {/* Header */}
           <XStack alignItems="flex-start" justifyContent="space-between">
             <YStack flex={1}>
-              <XStack alignItems="center" gap="$3" marginBottom="$2">
+              <XStack alignItems="center" gap="$3" mb="$2">
                 <H2 fontSize="$8" fontWeight="bold" color="$color12">
                   {task.title}
                 </H2>
@@ -387,7 +387,7 @@ export default function UnifiedTaskDetailModal({
                   <Text fontSize="$3" fontWeight="500" color={dueDate.color}>
                     {dueDate.text}
                   </Text>
-                  {dueDate.isOverdue && <Text marginLeft="$2">⚠️</Text>}
+                  {dueDate.isOverdue && <Text ml="$2">⚠️</Text>}
                 </XStack>
               </YStack>
             </XStack>
@@ -543,12 +543,12 @@ export default function UnifiedTaskDetailModal({
                   {/* Quick Actions from task */}
                   {task.quick_actions && task.quick_actions.length > 0 && (
                     <YStack
-                      marginTop="$4"
+                      mt="$4"
                       paddingTop="$4"
                       borderTopWidth={1}
                       borderColor="$borderColor"
                     >
-                      <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
+                      <Text fontSize="$3" fontWeight="600" color="$color12" mb="$3">
                         Additional Actions
                       </Text>
                       <XStack flexWrap="wrap" gap="$2">
@@ -609,7 +609,7 @@ export default function UnifiedTaskDetailModal({
                             </Text>
                           </XStack>
                           <YStack flex={1}>
-                            <XStack alignItems="center" gap="$2" marginBottom="$1">
+                            <XStack alignItems="center" gap="$2" mb="$1">
                               <Text fontSize="$3" fontWeight="500" color="$color12">
                                 {getUserName(comment.user_id)}
                               </Text>
@@ -626,7 +626,7 @@ export default function UnifiedTaskDetailModal({
                               {comment.content}
                             </Text>
                             {comment.mentions && comment.mentions.length > 0 && (
-                              <XStack marginTop="$2" flexWrap="wrap" gap="$1">
+                              <XStack mt="$2" flexWrap="wrap" gap="$1">
                                 {comment.mentions.map((userId) => (
                                   <Text
                                     key={userId}
@@ -665,7 +665,7 @@ export default function UnifiedTaskDetailModal({
                         position="absolute"
                         zIndex={10}
                         width="100%"
-                        marginTop="$1"
+                        mt="$1"
                         backgroundColor="$background"
                         borderWidth={1}
                         borderColor="$borderColor"
@@ -716,7 +716,7 @@ export default function UnifiedTaskDetailModal({
                       </YStack>
                     )}
                   </YStack>
-                  <XStack marginTop="$3" justifyContent="flex-end">
+                  <XStack mt="$3" justifyContent="flex-end">
                     <Button onPress={handleAddComment} disabled={!commentText.trim()}>
                       Add Comment
                     </Button>
@@ -827,9 +827,9 @@ export default function UnifiedTaskDetailModal({
                         backgroundColor="$backgroundHover"
                         borderRadius="$4"
                       >
-                        <History color="$color10" size={16} marginTop={2} />
+                        <History color="$color10" size={16} mt={2} />
                         <YStack flex={1}>
-                          <XStack alignItems="center" gap="$2" marginBottom="$1">
+                          <XStack alignItems="center" gap="$2" mb="$1">
                             <Text fontSize="$3" fontWeight="500" color="$color12">
                               {getUserName(entry.changed_by)}
                             </Text>
@@ -859,11 +859,11 @@ export default function UnifiedTaskDetailModal({
                             </Text>
                           </XStack>
                           {entry.reason && (
-                            <Text fontSize="$1" color="$color11" marginTop="$1">
+                            <Text fontSize="$1" color="$color11" mt="$1">
                               Reason: {entry.reason}
                             </Text>
                           )}
-                          <Text fontSize="$1" color="$color10" marginTop="$1">
+                          <Text fontSize="$1" color="$color10" mt="$1">
                             {formatDate(entry.created_at)}
                           </Text>
                         </YStack>

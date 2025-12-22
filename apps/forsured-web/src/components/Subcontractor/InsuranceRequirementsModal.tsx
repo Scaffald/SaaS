@@ -114,14 +114,14 @@ export default function InsuranceRequirementsModal({
       <YStack gap="$6">
         {/* Project Header */}
         <Card backgroundColor="$blue3" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
-          <Text fontWeight="600" color="$color12" marginBottom="$1">
+          <Text fontWeight="600" color="$color12" mb="$1">
             {project.name}
           </Text>
           <Text fontSize="$2" color="$color11">
             {task.gc_company_name || 'General Contractor'}
           </Text>
           {project.location && (
-            <Text fontSize="$1" color="$color11" marginTop="$1">
+            <Text fontSize="$1" color="$color11" mt="$1">
               {project.location}
             </Text>
           )}
@@ -129,7 +129,7 @@ export default function InsuranceRequirementsModal({
 
         {/* Coverage Requirements */}
         <YStack>
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <Shield color="$blue10" size={20} />
             <Text fontSize="$6" fontWeight="600" color="$color12">
               Required Coverage Limits
@@ -167,7 +167,7 @@ export default function InsuranceRequirementsModal({
 
         {/* Required Endorsements */}
         <YStack>
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <FileText color="$blue10" size={20} />
             <Text fontSize="$6" fontWeight="600" color="$color12">
               Required Endorsements
@@ -183,7 +183,7 @@ export default function InsuranceRequirementsModal({
                 borderWidth={1}
                 borderColor="$borderColor"
               >
-                <Text fontWeight="500" color="$color12" marginBottom="$1">
+                <Text fontWeight="500" color="$color12" mb="$1">
                   {endorsement.form} - {endorsement.name}
                 </Text>
                 <Text fontSize="$2" color="$color11">
@@ -212,7 +212,7 @@ export default function InsuranceRequirementsModal({
         {project.additional_insureds &&
           project.additional_insureds.length > 0 && (
             <YStack>
-              <XStack alignItems="center" gap="$2" marginBottom="$4">
+              <XStack alignItems="center" gap="$2" mb="$4">
                 <Users color="$blue10" size={20} />
                 <Text fontSize="$6" fontWeight="600" color="$color12">
                   Additional Insureds
@@ -238,7 +238,7 @@ export default function InsuranceRequirementsModal({
         {/* Certificate Holder */}
         {project.certificate_holder && (
           <YStack>
-            <XStack alignItems="center" gap="$2" marginBottom="$4">
+            <XStack alignItems="center" gap="$2" mb="$4">
               <FileText color="$blue10" size={20} />
               <Text fontSize="$6" fontWeight="600" color="$color12">
                 Certificate Holder
@@ -261,7 +261,7 @@ export default function InsuranceRequirementsModal({
         {/* Special Provisions */}
         {project.special_provisions && (
           <YStack>
-            <XStack alignItems="center" gap="$2" marginBottom="$4">
+            <XStack alignItems="center" gap="$2" mb="$4">
               <AlertCircle color="$orange10" size={20} />
               <Text fontSize="$6" fontWeight="600" color="$color12">
                 Special Provisions

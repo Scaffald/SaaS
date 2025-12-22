@@ -82,13 +82,13 @@ export default function RelationshipCard({
       cursor={onClick ? 'pointer' : 'default'}
       hoverStyle={onClick ? { shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, borderColor: '$blue9' } : undefined}
     >
-      <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+      <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
         <XStack alignItems="flex-start" gap="$3">
           <YStack
             width={48}
             height={48}
             backgroundColor="$blue3"
-            borderRadius="$md"
+            borderRadius="$3"
             alignItems="center"
             justifyContent="center"
             flexShrink={0}
@@ -110,7 +110,7 @@ export default function RelationshipCard({
       <XStack flexWrap="wrap" gap="$4">
         {complianceScore !== undefined && (
           <YStack gap="$1">
-            <Text fontSize="$1" color="$color10" marginBottom="$1">
+            <Text fontSize="$1" color="$color10" mb="$1">
               Compliance
             </Text>
             <ComplianceScore
@@ -123,7 +123,7 @@ export default function RelationshipCard({
 
         {relationshipHealth && (
           <YStack gap="$1">
-            <Text fontSize="$1" color="$color10" marginBottom="$1">
+            <Text fontSize="$1" color="$color10" mb="$1">
               Relationship Health
             </Text>
             <XStack alignItems="center" gap="$1">
@@ -137,7 +137,7 @@ export default function RelationshipCard({
 
         {activeProjects !== undefined && (
           <YStack gap="$1">
-            <Text fontSize="$1" color="$color10" marginBottom="$1">
+            <Text fontSize="$1" color="$color10" mb="$1">
               Active Projects
             </Text>
             <Text fontSize="$2" fontWeight="600" color="$color11">
@@ -147,7 +147,7 @@ export default function RelationshipCard({
         )}
 
         <YStack gap="$1">
-          <Text fontSize="$1" color="$color10" marginBottom="$1">
+          <Text fontSize="$1" color="$color10" mb="$1">
             Last Activity
           </Text>
           <XStack alignItems="center" gap="$1" color="$color10">

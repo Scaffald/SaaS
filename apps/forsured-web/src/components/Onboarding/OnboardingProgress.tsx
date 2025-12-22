@@ -30,7 +30,7 @@ function OnboardingProgress({ current, total }: OnboardingProgressProps) {
   const progress = (current / total) * 100;
 
   return (
-    <YStack gap="$2" marginBottom="$6">
+    <YStack gap="$2" mb="$6">
       <Text fontSize="$2" fontWeight="500" color="$color11">
         Step {current} of {total}
       </Text>

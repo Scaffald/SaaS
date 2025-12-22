@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { YStack, XStack, View, Text, H2, H3 } from '@unicornlove/ui';
+import { YStack, XStack, View, Text, H2, H3, Spinner } from '@unicornlove/ui';
 import ComponentShowcase from '../ComponentShowcase';
 import Button from '../../Common/Button';
 import Badge from '../../Common/Badge';
@@ -59,16 +59,16 @@ export default function ComponentsSection() {
           <Button variant="danger">Danger</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="outline">Outline</Button>
-          <Button size="sm">Small</Button>
-          <Button size="lg">Large</Button>
+          <Button size="$2">Small</Button>
+          <Button size="$4">Large</Button>
           <Button leftIcon={Play}>With Icon</Button>
-          <Button loading>Loading</Button>
+          <Button disabled><Spinner size="small" color="$color11" /> Loading</Button>
           <Button disabled>Disabled</Button>
         </ComponentShowcase>
       </View>
 
       <View id="forms">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" mb="$4">
           Form Controls
         </H3>
 
@@ -133,7 +133,7 @@ export default function ComponentsSection() {
           >
             <YStack width="100%" maxWidth={448} gap="$3">
               <Checkbox label="Default checkbox" />
-              <Checkbox label="Checked checkbox" checked />
+              <Checkbox label="Checked checkbox" defaultChecked />
               <Checkbox label="Small size" size="sm" />
               <Checkbox label="Large size" size="lg" />
               <Checkbox
@@ -149,7 +149,7 @@ export default function ComponentsSection() {
           >
             <YStack width="100%" maxWidth={448} gap="$3">
               <Radio name="demo" label="Option 1" />
-              <Radio name="demo" label="Option 2" checked />
+              <Radio name="demo" label="Option 2" defaultChecked />
               <Radio name="demo" label="Option 3" />
             </YStack>
           </ComponentShowcase>
@@ -160,7 +160,7 @@ export default function ComponentsSection() {
           >
             <YStack width="100%" maxWidth={448} gap="$3">
               <Switch label="Enable notifications" />
-              <Switch label="Auto-save" checked />
+              <Switch label="Auto-save" defaultChecked />
               <Switch label="Small size" size="sm" />
               <Switch label="Large size" size="lg" />
             </YStack>
@@ -169,7 +169,7 @@ export default function ComponentsSection() {
       </View>
 
       <View id="display">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" mb="$4">
           Display Components
         </H3>
 
@@ -184,9 +184,9 @@ export default function ComponentsSection() {
             <Badge variant="danger">Danger</Badge>
             <Badge variant="primary">Primary</Badge>
             <Badge variant="secondary">Secondary</Badge>
-            <Badge size="sm">Small</Badge>
-            <Badge size="lg">Large</Badge>
-            <Badge dot>With Dot</Badge>
+            <Badge size="$2">Small</Badge>
+            <Badge size="$4">Large</Badge>
+            <Badge variant="filled">Filled</Badge>
           </ComponentShowcase>
 
           <ComponentShowcase
@@ -238,19 +238,19 @@ export default function ComponentsSection() {
             description="Container components with shadow and padding options"
           >
             <Card padding="sm" width={192}>
-              <Text fontWeight="600" color="$color12" marginBottom="$1">
+              <Text fontWeight="600" color="$color12" mb="$1">
                 Small Padding
               </Text>
               <Text fontSize="$3" color="$color11">Card content</Text>
             </Card>
             <Card padding="md" width={192}>
-              <Text fontWeight="600" color="$color12" marginBottom="$1">
+              <Text fontWeight="600" color="$color12" mb="$1">
                 Medium Padding
               </Text>
               <Text fontSize="$3" color="$color11">Card content</Text>
             </Card>
-            <Card padding="lg" hover width={192}>
-              <Text fontWeight="600" color="$color12" marginBottom="$1">
+            <Card padding="lg" hoverStyle={{ backgroundColor: '$backgroundHover' }} width={192}>
+              <Text fontWeight="600" color="$color12" mb="$1">
                 With Hover
               </Text>
               <Text fontSize="$3" color="$color11">Hover over me</Text>
@@ -274,7 +274,7 @@ export default function ComponentsSection() {
       </View>
 
       <View id="feedback">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" mb="$4">
           Feedback Components
         </H3>
 
@@ -313,7 +313,7 @@ export default function ComponentsSection() {
               isOpen={modalOpen}
               onClose={() => setModalOpen(false)}
               title="Example Modal"
-              size="md"
+              size="medium"
             >
               <Text color="$color11">
                 This is an example modal dialog. It can contain any content you
@@ -335,16 +335,16 @@ export default function ComponentsSection() {
             description="Contextual information on hover"
           >
             <Tooltip content="Top tooltip" position="top">
-              <Button size="sm">Top</Button>
+              <Button size="$2">Top</Button>
             </Tooltip>
             <Tooltip content="Bottom tooltip" position="bottom">
-              <Button size="sm">Bottom</Button>
+              <Button size="$2">Bottom</Button>
             </Tooltip>
             <Tooltip content="Left tooltip" position="left">
-              <Button size="sm">Left</Button>
+              <Button size="$2">Left</Button>
             </Tooltip>
             <Tooltip content="Right tooltip" position="right">
-              <Button size="sm">Right</Button>
+              <Button size="$2">Right</Button>
             </Tooltip>
           </ComponentShowcase>
 
@@ -387,7 +387,7 @@ export default function ComponentsSection() {
       </View>
 
       <View id="navigation">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" mb="$4">
           Navigation Components
         </H3>
 
@@ -537,7 +537,7 @@ export default function ComponentsSection() {
       </View>
 
       <View id="layout">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+        <H3 fontSize="$8" fontWeight="600" color="$color12" mb="$4">
           Layout Components
         </H3>
 

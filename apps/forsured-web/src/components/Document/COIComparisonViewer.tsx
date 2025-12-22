@@ -276,12 +276,12 @@ export default function COIComparisonViewer({
           {/* Header */}
           <XStack alignItems="flex-start" justifyContent="space-between">
             <YStack>
-              <H2 fontSize="$8" fontWeight="bold" color="$color12" marginBottom="$2">
+              <H2 fontSize="$8" fontWeight="bold" color="$color12" mb="$2">
                 COI Comparison
               </H2>
               <Text color="$color11">{documentName}</Text>
               {project && (
-                <Text fontSize="$3" color="$color10" marginTop="$1">
+                <Text fontSize="$3" color="$color10" mt="$1">
                   Project: {project.name}
                 </Text>
               )}
@@ -376,7 +376,7 @@ export default function COIComparisonViewer({
                   padding="$4"
                   backgroundColor="$background"
                 >
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$4">
                     <XStack alignItems="center" gap="$2">
                       <Shield size={16} />
                       <H3 fontSize="$3" fontWeight="600" color="$color12">
@@ -411,7 +411,7 @@ export default function COIComparisonViewer({
                       width={`${comparisonResult.overallMatch}%`}
                     />
                   </YStack>
-                  <Text fontSize="$1" color="$color10" marginTop="$2">
+                  <Text fontSize="$1" color="$color10" mt="$2">
                     AI Confidence: {comparisonResult.confidence}%
                   </Text>
                 </Card>
@@ -426,7 +426,7 @@ export default function COIComparisonViewer({
                   padding="$4"
                   backgroundColor="$background"
                 >
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                     Extracted Fields
                   </H3>
                   <YStack gap="$3">
@@ -481,7 +481,7 @@ export default function COIComparisonViewer({
                   padding="$4"
                   backgroundColor="$background"
                 >
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                     Project Requirements
                   </H3>
                   <YStack gap="$3">
@@ -560,7 +560,7 @@ export default function COIComparisonViewer({
                   padding="$4"
                   backgroundColor="$background"
                 >
-                  <XStack alignItems="center" gap="$2" marginBottom="$4">
+                  <XStack alignItems="center" gap="$2" mb="$4">
                     <AlertOctagon color="$red10" size={16} />
                     <H3 fontSize="$3" fontWeight="600" color="$color12">
                       Coverage Gaps ({comparisonResult.gaps.length})
@@ -588,7 +588,7 @@ export default function COIComparisonViewer({
                               : '$red6'
                         }
                       >
-                        <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                        <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
                           <XStack alignItems="center" gap="$2">
                             {getGapStatusIcon(gap)}
                             <Text fontSize="$3" fontWeight="500" color="$color12">
@@ -596,7 +596,7 @@ export default function COIComparisonViewer({
                             </Text>
                           </XStack>
                         </XStack>
-                        <YStack gap="$1" marginLeft="$7">
+                        <YStack gap="$1" ml="$7">
                           <XStack justifyContent="space-between" fontSize="$1">
                             <Text color="$color11">Required:</Text>
                             <Text fontWeight="500" color="$color12">
@@ -653,7 +653,7 @@ export default function COIComparisonViewer({
                     padding="$4"
                     backgroundColor="$background"
                   >
-                    <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+                    <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                       Recommendations
                     </H3>
                     <YStack gap="$2">
@@ -665,7 +665,7 @@ export default function COIComparisonViewer({
                           fontSize="$3"
                           color="$color11"
                         >
-                          <Text color="$teal9" marginTop="$0.5">
+                          <Text color="$teal9" mt="$0.5">
                             •
                           </Text>
                           <Text>{rec}</Text>
@@ -683,7 +683,7 @@ export default function COIComparisonViewer({
                 padding="$4"
                 backgroundColor="$background"
               >
-                <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+                <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                   Actions
                 </H3>
                 <YStack gap="$2">

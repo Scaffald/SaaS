@@ -7,18 +7,18 @@ const SvgContainer = styled('svg', {
 
 type SvgContainerProps = GetProps<typeof SvgContainer>
 
-interface ForsuredLogoProps extends Omit<SvgContainerProps, 'height' | 'width'> {
+interface ForsuredLogoProps extends Omit<SvgContainerProps, 'height' | 'width' | 'marginBottom'> {
   height?: number
   width?: number
   color?: 'blue' | 'white' | 'auto'
-  marginBottom?: SvgContainerProps['marginBottom']
+  mb?: SvgContainerProps['mb']
 }
 
 export default function ForsuredLogo({
   height = 20,
   width,
   color = 'auto',
-  marginBottom,
+  mb,
   ...props
 }: ForsuredLogoProps) {
   const theme = useTheme()
@@ -52,7 +52,7 @@ export default function ForsuredLogo({
       viewBox="0 0 151 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      marginBottom={marginBottom}
+      mb={mb}
       {...props}
     >
       <path

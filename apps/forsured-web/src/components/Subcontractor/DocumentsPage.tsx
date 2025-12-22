@@ -205,7 +205,7 @@ export default function DocumentsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Total Documents</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
                 {stats.total}
               </Text>
             </YStack>
@@ -226,7 +226,7 @@ export default function DocumentsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Verified</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$green10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$green10" mt="$1">
                 {stats.verified}
               </Text>
             </YStack>
@@ -247,7 +247,7 @@ export default function DocumentsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Pending Review</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
                 {stats.pending}
               </Text>
             </YStack>
@@ -268,7 +268,7 @@ export default function DocumentsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Expiring Soon</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$orange10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$orange10" mt="$1">
                 {stats.expiring}
               </Text>
             </YStack>
@@ -356,49 +356,49 @@ export default function DocumentsPage() {
               <tr>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Document
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Type
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Status
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Upload Date
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Expiry
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Size
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3" justifyContent="flex-end">
-                    <Text textAlign="right" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'right' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Actions
                     </Text>
                   </XStack>

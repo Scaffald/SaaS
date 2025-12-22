@@ -211,7 +211,7 @@ export function MemberDetailModal({
                   {member.email}
                 </SizableText>
                 {member.company && (
-                  <SizableText fontSize="$1" color="$color10" marginTop="$0.5">
+                  <SizableText fontSize="$1" color="$color10" mt="$0.5">
                     {member.company}
                   </SizableText>
                 )}

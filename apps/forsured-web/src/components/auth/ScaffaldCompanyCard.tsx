@@ -38,7 +38,7 @@ export function ScaffaldCompanyCard({
     return (
       <YStack
         backgroundColor="$background"
-        borderRadius="$md"
+        borderRadius="$3"
         shadowColor="$shadowColor"
         shadowRadius={4}
         shadowOffset={{ width: 0, height: 2 }}
@@ -60,7 +60,7 @@ export function ScaffaldCompanyCard({
   return (
     <YStack
       backgroundColor="$background"
-      borderRadius="$md"
+      borderRadius="$3"
       shadowColor="$shadowColor"
       shadowRadius={4}
       shadowOffset={{ width: 0, height: 2 }}
@@ -74,12 +74,12 @@ export function ScaffaldCompanyCard({
             {company.name}
           </Text>
           {company.address && (
-            <Text fontSize="$2" color="$color10" marginTop="$1">
+            <Text fontSize="$2" color="$color10" mt="$1">
               {company.address.street}, {company.address.city}, {company.address.state}{' '}
               {company.address.zip}
             </Text>
           )}
-          <XStack alignItems="center" marginTop="$4" gap="$2">
+          <XStack alignItems="center" mt="$4" gap="$2">
             <Checkbox
               checked={connectCompany}
               onCheckedChange={(checked) => onToggleConnect(!!checked)}

@@ -59,7 +59,7 @@ const NavLinkWrapper = ({ to, children }: { to: string; children: (props: { isAc
           gap="$2.5"
           paddingHorizontal="$3"
           paddingVertical="$2.5"
-          borderRadius="$md"
+          borderRadius="$3"
           backgroundColor={isActive ? '$blue9' : 'transparent'}
           color={isActive ? '$color1' : '$color10'}
           shadowColor={isActive ? '$shadowColor' : 'transparent'}
@@ -211,7 +211,7 @@ export default function Sidebar({
           gap="$2"
           paddingHorizontal="$2"
           paddingVertical="$1.5"
-          borderRadius="$md"
+          borderRadius="$3"
           backgroundColor="$backgroundHover"
         >
           <XStack

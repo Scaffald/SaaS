@@ -133,7 +133,7 @@ export default function ClientModal({
         maxHeight="90vh"
         overflow="auto"
       >
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <XStack alignItems="center" justifyContent="space-between" mb="$6">
           <H2 fontSize="$6" fontWeight="600" color="$color12">
             {client ? 'Edit Client' : 'Add New Client'}
           </H2>
@@ -153,7 +153,7 @@ export default function ClientModal({
             borderColor="$red7"
             borderWidth={1}
             padding="$3"
-            marginBottom="$4"
+            mb="$4"
             borderRadius="$3"
           >
             <Text color="$red11" fontSize="$3">
@@ -348,7 +348,7 @@ export default function ClientModal({
           </YStack>
         </YStack>
 
-        <XStack gap="$3" marginTop="$6" justifyContent="flex-end">
+        <XStack gap="$3" mt="$6" justifyContent="flex-end">
           <Button variant="outlined" onPress={onClose} disabled={isSaving}>
             Cancel
           </Button>

@@ -420,7 +420,7 @@ export function RequirementEditorForm({
               <AlertCircle color="var(--red9)" size={20} style={{ marginTop: '2px', flexShrink: 0 }} />
               <YStack>
                 <Text fontWeight="500" color="$red11">Error saving requirement</Text>
-                <Text fontSize="$3" color="$red9" marginTop="$1">{errors.general}</Text>
+                <Text fontSize="$3" color="$red9" mt="$1">{errors.general}</Text>
               </YStack>
             </XStack>
           </Card>

@@ -249,7 +249,7 @@ export default function EnhancedTaskDetailModal({
         <YStack gap="$6">
           <XStack alignItems="flex-start" justifyContent="space-between">
             <YStack flex={1}>
-              <XStack alignItems="center" gap="$3" marginBottom="$2">
+              <XStack alignItems="center" gap="$3" mb="$2">
                 <H2 fontSize="$9" fontWeight="700" color="$color12">
                   {task.title}
                 </H2>
@@ -393,7 +393,7 @@ export default function EnhancedTaskDetailModal({
                     borderColor="$red8"
                     borderRadius="$4"
                   >
-                    <Circle size={8} backgroundColor="$red10" marginTop="$1.5" />
+                    <Circle size={8} backgroundColor="$red10" mt="$1.5" />
                     <Text fontSize="$3" color="$red12">{blocker}</Text>
                   </XStack>
                 ))}
@@ -551,7 +551,7 @@ export default function EnhancedTaskDetailModal({
               fontSize="$3"
               fontWeight="500"
               color="$color11"
-              marginBottom="$2"
+              mb="$2"
             >
               Select Assignee
             </Text>
@@ -610,7 +610,7 @@ export default function EnhancedTaskDetailModal({
               fontSize="$3"
               fontWeight="500"
               color="$color11"
-              marginBottom="$2"
+              mb="$2"
             >
               Note
             </Text>
@@ -664,7 +664,7 @@ export default function EnhancedTaskDetailModal({
               fontSize="$3"
               fontWeight="500"
               color="$color11"
-              marginBottom="$2"
+              mb="$2"
             >
               Email Address
             </Text>

@@ -23,12 +23,11 @@ const UserTypeCard = styled(YStack, {
   name: 'UserTypeCard',
   position: 'relative',
   backgroundColor: '$background',
-  borderRadius: '$md',
+  borderRadius: '$3',
   shadowColor: '$shadowColor',
   shadowRadius: 4,
   shadowOffset: { width: 0, height: 2 },
   padding: '$6',
-  textAlign: 'left',
   borderWidth: 2,
   borderColor: 'transparent',
   cursor: 'pointer',
@@ -71,11 +70,11 @@ export function UserTypeSelection({
         </XStack>
       </CoreButton>
 
-      <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+      <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
         How will you use ForSured?
       </Text>
 
-      <XStack flexDirection="row" flexWrap="wrap" gap="$4" marginBottom="$8">
+      <XStack flexDirection="row" flexWrap="wrap" gap="$4" mb="$8">
         {/* Manager Card - uses lexicon labels */}
         <UserTypeCard
           as="button"
@@ -91,7 +90,7 @@ export function UserTypeSelection({
               width={48}
               height={48}
               backgroundColor="$blue3"
-              borderRadius="$md"
+              borderRadius="$3"
               alignItems="center"
               justifyContent="center"
               flexShrink={0}
@@ -102,7 +101,7 @@ export function UserTypeSelection({
               <Text fontSize="$5" fontWeight="600" color="$color12">
                 {userSetType.managerLabelSingular}
               </Text>
-              <Text fontSize="$2" color="$color10" marginTop="$1">
+              <Text fontSize="$2" color="$color10" mt="$1">
                 I hire {userSetType.contractorLabelPlural.toLowerCase()} and manage projects
               </Text>
             </YStack>
@@ -117,7 +116,7 @@ export function UserTypeSelection({
               backgroundColor="rgba(255, 255, 255, 0.8)"
               alignItems="center"
               justifyContent="center"
-              borderRadius="$md"
+              borderRadius="$3"
             >
               <Spinner />
             </YStack>
@@ -139,7 +138,7 @@ export function UserTypeSelection({
               width={48}
               height={48}
               backgroundColor="$yellow3"
-              borderRadius="$md"
+              borderRadius="$3"
               alignItems="center"
               justifyContent="center"
               flexShrink={0}
@@ -150,7 +149,7 @@ export function UserTypeSelection({
               <Text fontSize="$5" fontWeight="600" color="$color12">
                 {userSetType.contractorLabelSingular}
               </Text>
-              <Text fontSize="$2" color="$color10" marginTop="$1">
+              <Text fontSize="$2" color="$color10" mt="$1">
                 I work on projects for {userSetType.managerLabelPlural.toLowerCase()}
               </Text>
             </YStack>
@@ -165,7 +164,7 @@ export function UserTypeSelection({
               backgroundColor="rgba(255, 255, 255, 0.8)"
               alignItems="center"
               justifyContent="center"
-              borderRadius="$md"
+              borderRadius="$3"
             >
               <Spinner />
             </YStack>

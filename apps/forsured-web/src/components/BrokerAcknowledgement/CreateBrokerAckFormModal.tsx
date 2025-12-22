@@ -148,18 +148,18 @@ export default function CreateBrokerAckFormModal({
                     size={20}
                     color="$red10"
                     flexShrink={0}
-                    marginTop="$0.5"
+                    mt="$0.5"
                   />
                   <YStack>
                     <Text fontWeight="500" color="$red11">Error</Text>
-                    <Text fontSize="$2" color="$red10" marginTop="$1">{error}</Text>
+                    <Text fontSize="$2" color="$red10" mt="$1">{error}</Text>
                   </YStack>
                 </XStack>
               </Card>
             )}
 
             <YStack>
-              <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
                 Project <Text color="$red10">*</Text>
               </Text>
               <select
@@ -186,13 +186,13 @@ export default function CreateBrokerAckFormModal({
             </YStack>
 
             <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
-              <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+              <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
                 Subcontractor Information
               </Text>
 
               <YStack gap="$4">
                 <YStack>
-                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
                     Company Name <Text color="$red10">*</Text>
                   </Text>
                   <input
@@ -218,13 +218,13 @@ export default function CreateBrokerAckFormModal({
             </YStack>
 
             <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
-              <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+              <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
                 Broker Information
               </Text>
 
               <YStack gap="$4">
                 <YStack>
-                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
                     Agency Name <Text color="$red10">*</Text>
                   </Text>
                   <input
@@ -255,7 +255,7 @@ export default function CreateBrokerAckFormModal({
                   }}
                 >
                   <YStack flex={1} minWidth="200px">
-                    <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                    <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
                       Contact Name <Text color="$red10">*</Text>
                     </Text>
                     <input
@@ -279,7 +279,7 @@ export default function CreateBrokerAckFormModal({
                   </YStack>
 
                   <YStack flex={1} minWidth="200px">
-                    <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                    <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
                       Phone
                     </Text>
                     <input
@@ -300,7 +300,7 @@ export default function CreateBrokerAckFormModal({
                 </XStack>
 
                 <YStack>
-                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
                     Email <Text color="$red10">*</Text>
                   </Text>
                   <input
@@ -323,7 +323,7 @@ export default function CreateBrokerAckFormModal({
             </YStack>
 
             <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
-              <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+              <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
                 Coverage Requirements
               </Text>
 

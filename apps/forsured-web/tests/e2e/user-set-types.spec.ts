@@ -60,92 +60,39 @@ const MOCK_LEXICONS = {
 };
 
 /**
- * Helper to set up mock user set types API responses
+ * REMOVED: setupUserSetTypesMocks
+ * 
+ * This function was mocking internal tRPC endpoints (userSetTypes.listActive, getUserLexicon),
+ * which violates REQ-9: Testing Policy - we do NOT mock internal services we own.
+ * 
+ * Tests should now use real tRPC endpoints that query the real Supabase database.
+ * User set types should be seeded in the database for tests.
  */
-async function setupUserSetTypesMocks(page: Page, userSetTypeSlug: string = 'construction') {
-  // Mock listActive endpoint (public - for signup)
-  await page.route('**/api/trpc/userSetTypes.listActive*', async (route) => {
-    const activeTypes = Object.values(MOCK_USER_SET_TYPES).filter((t) => t.isActive);
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: activeTypes,
-        },
-      }),
-    });
-  });
-
-  // Mock getUserLexicon endpoint (protected - for authenticated users)
-  await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
-    const userSetType =
-      userSetTypeSlug === 'property-management'
-        ? MOCK_USER_SET_TYPES.propertyManagement
-        : MOCK_USER_SET_TYPES.construction;
-    const lexicon =
-      userSetTypeSlug === 'property-management'
-        ? MOCK_LEXICONS.propertyManagement
-        : MOCK_LEXICONS.construction;
-
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: {
-            lexicon,
-            userSetType,
-          },
-        },
-      }),
-    });
-  });
+async function setupUserSetTypesMocks_DEPRECATED(page: Page, userSetTypeSlug: string = 'construction') {
+  // This function is deprecated and should not be used
+  // Use real tRPC endpoints with seeded database data instead
+  throw new Error('setupUserSetTypesMocks is deprecated. Use real tRPC endpoints with seeded database data instead.');
 }
 
 /**
- * Helper to set up admin user set types list mock
+ * REMOVED: setupAdminMocks
+ * 
+ * This function was mocking internal tRPC endpoints (userSetTypes.list, get),
+ * which violates REQ-9: Testing Policy - we do NOT mock internal services we own.
+ * 
+ * Tests should now use real tRPC endpoints that query the real Supabase database.
+ * User set types should be seeded in the database for tests.
  */
-async function setupAdminMocks(page: Page) {
-  await page.route('**/api/trpc/userSetTypes.list*', async (route) => {
-    const allTypes = Object.values(MOCK_USER_SET_TYPES).map((t) => ({
-      ...t,
-      userCount: t.slug === 'construction' ? 5 : 3,
-    }));
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: allTypes,
-        },
-      }),
-    });
-  });
-
-  await page.route('**/api/trpc/userSetTypes.get*', async (route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: {
-            ...MOCK_USER_SET_TYPES.construction,
-            lexiconEntries: Object.entries(MOCK_LEXICONS.construction).map(([key, value]) => ({
-              key,
-              value,
-              category: key.split('.')[0],
-            })),
-          },
-        },
-      }),
-    });
-  });
+async function setupAdminMocks_DEPRECATED(page: Page) {
+  // This function is deprecated and should not be used
+  // Use real tRPC endpoints with seeded database data instead
+  throw new Error('setupAdminMocks is deprecated. Use real tRPC endpoints with seeded database data instead.');
 }
 
 test.describe('User Set Types - Lexicon Application', () => {
   test('Construction users see Construction terminology in navigation', async ({ page, setupAuthAs }) => {
-    await setupUserSetTypesMocks(page, 'construction');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
     await setupAuthAs(page, 'active.gc@test.forsured.com');
 
     // Wait for page to load
@@ -165,7 +112,8 @@ test.describe('User Set Types - Lexicon Application', () => {
   });
 
   test('Property Management users see Property Management terminology', async ({ page, setupAuthAs }) => {
-    await setupUserSetTypesMocks(page, 'property-management');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
     await setupAuthAs(page, 'active.gc@test.forsured.com');
 
     // Navigate to manager dashboard
@@ -244,8 +192,10 @@ test.describe('User Set Types - Public API', () => {
 test.describe('User Set Types - Admin Management', () => {
   test.skip('Admin can view all user set types', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
     await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Navigate to admin user set types page
@@ -259,8 +209,10 @@ test.describe('User Set Types - Admin Management', () => {
 
   test.skip('Admin can see user count for each type', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
     await setupAuthAs(page, 'admin@test.forsured.com');
 
     await page.goto('/admin/user-set-types');
@@ -273,8 +225,10 @@ test.describe('User Set Types - Admin Management', () => {
 
   test.skip('Admin can create new user set type', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
     await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock create endpoint
@@ -326,8 +280,10 @@ test.describe('User Set Types - Admin Management', () => {
 test.describe('User Set Types - Lexicon Editor', () => {
   test.skip('Admin can edit lexicon values', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-10 (Lexicon Editor UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
     await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock updateLexicon endpoint
@@ -369,8 +325,10 @@ test.describe('User Set Types - Lexicon Editor', () => {
 
   test.skip('Admin can export lexicon as JSON', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-10 (Lexicon Editor UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
     await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock exportLexicon endpoint

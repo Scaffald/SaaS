@@ -15,7 +15,7 @@ const StyledTextarea = styled('textarea', {
   name: 'Textarea',
   borderWidth: 1,
   borderColor: '$borderColor',
-  borderRadius: '$md',
+  borderRadius: '$3',
   paddingHorizontal: '$3',
   paddingVertical: '$2',
   fontSize: '$4',

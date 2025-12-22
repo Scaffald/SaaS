@@ -38,7 +38,7 @@ const NavItem = styled(XStack, {
   gap: '$3',
   paddingHorizontal: '$3',
   paddingVertical: '$2',
-  borderRadius: '$md',
+  borderRadius: '$3',
   fontSize: '$2',
   fontWeight: '500',
   borderLeftWidth: 0,

@@ -230,7 +230,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
       </Card>
 
       {fileQueue.length > 0 && (
-        <YStack marginTop="$4" gap="$2">
+        <YStack mt="$4" gap="$2">
           {fileQueue.map((item) => (
             <Card
               key={item.id}
@@ -241,7 +241,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
               padding="$4"
               elevation={1}
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+              <XStack alignItems="center" justifyContent="space-between" mb="$2">
                 <YStack flex={1} minWidth={0}>
                   <Text fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
                     {item.file.name}
@@ -254,7 +254,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
                 {item.status === 'queued' && (
                   <XStack
                     as="button"
-                    marginLeft="$4"
+                    ml="$4"
                     color="$color9"
                     hoverStyle={{ color: '$color10' }}
                     onClick={(e) => {
@@ -295,7 +295,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
               )}
 
               {item.status === 'error' && item.error && (
-                <Text fontSize="$1" color="$red10" marginTop="$1">
+                <Text fontSize="$1" color="$red10" mt="$1">
                   {item.error}
                 </Text>
               )}

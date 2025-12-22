@@ -96,7 +96,7 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
 
   return (
     <YStack
-      borderRadius="$md"
+      borderRadius="$3"
       borderWidth={1}
       borderColor={severity === 'critical' ? '$red6' : severity === 'warning' ? '$yellow6' : '$blue6'}
       backgroundColor={severity === 'critical' ? '$red2' : severity === 'warning' ? '$yellow2' : '$blue2'}
@@ -129,13 +129,13 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
           </XStack>
 
           {title && (
-            <Text fontSize="$2" fontWeight="500" color="$color11" marginTop="$1">
+            <Text fontSize="$2" fontWeight="500" color="$color11" mt="$1">
               {title}
             </Text>
           )}
 
           {showDescription && description && (
-            <Text fontSize="$2" color="$color10" marginTop="$1">
+            <Text fontSize="$2" color="$color10" mt="$1">
               {description}
             </Text>
           )}

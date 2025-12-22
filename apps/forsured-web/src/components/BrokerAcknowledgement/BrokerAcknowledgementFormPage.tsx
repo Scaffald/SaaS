@@ -209,11 +209,11 @@ export default function BrokerAcknowledgementFormPage() {
   if (!formId) {
     return (
       <YStack alignItems="center" justifyContent="center" height={256}>
-        <AlertCircle size={48} color="$red10" marginBottom="$4" />
-        <Text fontSize="$7" fontWeight="600" color="$color12" marginBottom="$2">
+        <AlertCircle size={48} color="$red10" mb="$4" />
+        <Text fontSize="$7" fontWeight="600" color="$color12" mb="$2">
           No Form Selected
         </Text>
-        <Text color="$color11" marginBottom="$6">
+        <Text color="$color11" mb="$6">
           Please select a form to view or edit.
         </Text>
         <XStack
@@ -268,7 +268,7 @@ export default function BrokerAcknowledgementFormPage() {
             hoverStyle={{
               color: '$color12',
             }}
-            marginBottom="$4"
+            mb="$4"
           >
             <ArrowLeft size={20} />
             <Text>Back</Text>
@@ -276,7 +276,7 @@ export default function BrokerAcknowledgementFormPage() {
           <Text fontSize="$8" fontWeight="bold" color="$color12">
             Broker Acknowledgement Form - Tier 1
           </Text>
-          <Text color="$color11" marginTop="$1">
+          <Text color="$color11" mt="$1">
             {currentForm.gc_project_name}
           </Text>
         </YStack>
@@ -322,12 +322,12 @@ export default function BrokerAcknowledgementFormPage() {
           padding="$4"
         >
           <XStack alignItems="flex-start" gap="$3">
-            <Info size={20} color="$blue10" marginTop="$0.5" flexShrink={0} />
+            <Info size={20} color="$blue10" mt="$0.5" flexShrink={0} />
             <YStack>
               <Text fontWeight="500" color="$blue11">
               Form Status: {currentForm.status}
               </Text>
-              <Text fontSize="$2" color="$blue10" marginTop="$1">
+              <Text fontSize="$2" color="$blue10" mt="$1">
               This form has been submitted and is locked for editing.
               </Text>
             </YStack>
@@ -336,7 +336,7 @@ export default function BrokerAcknowledgementFormPage() {
       )}
 
       <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-        <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+        <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
           General Information
         </Text>
         <XStack
@@ -347,7 +347,7 @@ export default function BrokerAcknowledgementFormPage() {
           }}
         >
           <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
               Subcontractor Company
             </Text>
             <Text color="$color12" fontWeight="500">
@@ -355,7 +355,7 @@ export default function BrokerAcknowledgementFormPage() {
             </Text>
           </YStack>
           <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
               Broker / Agency
             </Text>
             <Text color="$color12" fontWeight="500">
@@ -363,7 +363,7 @@ export default function BrokerAcknowledgementFormPage() {
             </Text>
           </YStack>
           <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
               Broker Contact
             </Text>
             <Text color="$color12" fontWeight="500">
@@ -371,7 +371,7 @@ export default function BrokerAcknowledgementFormPage() {
             </Text>
           </YStack>
           <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
               Broker Email
             </Text>
             <Text color="$color12" fontWeight="500">
@@ -379,7 +379,7 @@ export default function BrokerAcknowledgementFormPage() {
             </Text>
           </YStack>
           <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
               Date Issued
             </Text>
             <Text color="$color12" fontWeight="500">
@@ -387,7 +387,7 @@ export default function BrokerAcknowledgementFormPage() {
             </Text>
           </YStack>
           <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
               Due Date
             </Text>
             <Text color="$color12" fontWeight="500">
@@ -408,11 +408,11 @@ export default function BrokerAcknowledgementFormPage() {
         <AlertCircle
           size={20}
             color="$orange10"
-            marginTop="$0.5"
+            mt="$0.5"
             flexShrink={0}
           />
           <YStack fontSize="$2" color="$orange11">
-            <Text fontWeight="500" marginBottom="$1">Important Notes:</Text>
+            <Text fontWeight="500" mb="$1">Important Notes:</Text>
             <YStack gap="$1" paddingLeft="$4">
               <Text>• No new insurance should be purchased until the project contract is executed</Text>
               <Text>• All endorsement forms must include corresponding policy numbers</Text>
@@ -487,10 +487,10 @@ export default function BrokerAcknowledgementFormPage() {
         )}
 
         <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
             (6) Hazardous Materials Work
           </Text>
-          <Text fontSize="$2" color="$color11" marginBottom="$4">
+          <Text fontSize="$2" color="$color11" mb="$4">
             If the subcontractor's scope involves creating, hauling, or
             disposing of hazardous waste, pollution coverage must include the
             appropriate endorsements.
@@ -540,10 +540,10 @@ export default function BrokerAcknowledgementFormPage() {
         )}
 
         <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
             (9) Trenching or Excavation Work
           </Text>
-          <Text fontSize="$2" color="$color11" marginBottom="$4">
+          <Text fontSize="$2" color="$color11" mb="$4">
             If trenching, excavation, or underground work is part of scope, the
             following must be confirmed.
           </Text>
@@ -610,7 +610,7 @@ export default function BrokerAcknowledgementFormPage() {
 
       {currentForm.compliance_score > 0 && (
         <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
             Compliance Summary
           </Text>
           <XStack
@@ -631,7 +631,7 @@ export default function BrokerAcknowledgementFormPage() {
               <Text fontSize="$9" fontWeight="bold" color="$blue10">
                 {currentForm.compliance_score}%
               </Text>
-              <Text fontSize="$2" color="$color11" marginTop="$1">
+              <Text fontSize="$2" color="$color11" mt="$1">
                 Compliance Score
               </Text>
             </Card>
@@ -646,7 +646,7 @@ export default function BrokerAcknowledgementFormPage() {
               <CheckCircle
                 color="$green10"
                 size={24}
-                marginBottom="$2"
+                mb="$2"
               />
               <Text fontSize="$2" fontWeight="500" color="$color12">
                 {
@@ -665,7 +665,7 @@ export default function BrokerAcknowledgementFormPage() {
               flex={1}
               minWidth="200px"
             >
-              <AlertCircle color="$red10" size={24} marginBottom="$2" />
+              <AlertCircle color="$red10" size={24} mb="$2" />
               <Text fontSize="$2" fontWeight="500" color="$color12">
                 {
                   coverageItems.filter(
@@ -680,14 +680,14 @@ export default function BrokerAcknowledgementFormPage() {
           {currentForm.missing_endorsements &&
             currentForm.missing_endorsements.length > 0 && (
               <Card
-                marginTop="$4"
+                mt="$4"
                 backgroundColor="$orange3"
                 borderWidth={1}
                 borderColor="$orange6"
                 borderRadius="$4"
                 padding="$4"
               >
-                <Text fontWeight="500" color="$orange11" marginBottom="$2">
+                <Text fontWeight="500" color="$orange11" mb="$2">
                   Missing Endorsements:
                 </Text>
                 <YStack gap="$1" paddingLeft="$4">

@@ -84,14 +84,14 @@ export default function ManagerOnboarding() {
           </XStack>
         </Button>
 
-        <YStack alignItems="center" marginBottom="$8">
-          <YStack alignItems="center" marginBottom="$6">
+        <YStack alignItems="center" mb="$8">
+          <YStack alignItems="center" mb="$6">
             <ForsuredLogo />
           </YStack>
-          <H1 fontSize="$8" fontWeight="bold" marginBottom="$2" textAlign="center">
+          <H1 fontSize="$8" fontWeight="bold" mb="$2" style={{ textAlign: 'center' }}>
             Welcome, General Contractor
           </H1>
-          <Text color="$color11" textAlign="center">Let's get your company set up</Text>
+          <Text color="$color11" style={{ textAlign: 'center' }}>Let's get your company set up</Text>
         </YStack>
 
         <Card
@@ -102,7 +102,7 @@ export default function ManagerOnboarding() {
           borderColor="$borderColor"
           padding="$8"
         >
-          <YStack alignItems="center" marginBottom="$6">
+          <YStack alignItems="center" mb="$6">
             <Circle
               size={64}
               backgroundColor="$blue3"
@@ -119,7 +119,7 @@ export default function ManagerOnboarding() {
                 fontSize="$3"
                 fontWeight="600"
                 color="$color12"
-                marginBottom="$2"
+                mb="$2"
                 display="block"
               >
                 Company Name
@@ -171,7 +171,7 @@ export default function ManagerOnboarding() {
                 fontSize="$3"
                 fontWeight="600"
                 color="$color12"
-                marginBottom="$2"
+                mb="$2"
                 display="block"
               >
                 Primary Location

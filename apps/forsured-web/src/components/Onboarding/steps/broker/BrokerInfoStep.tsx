@@ -40,8 +40,8 @@ function BrokerInfoStep({ onComplete, initialData = {}, isLoading = false }: Bro
 
   return (
     <YStack>
-      <H2 marginBottom="$2">Your Information</H2>
-      <Text marginBottom="$6" color="$color10">
+      <H2 mb="$2">Your Information</H2>
+      <Text mb="$6" color="$color10">
         Tell us about your insurance broker credentials
       </Text>
       <YStack tag="form" onSubmit={handleSubmit} gap="$4">
@@ -73,7 +73,7 @@ function BrokerInfoStep({ onComplete, initialData = {}, isLoading = false }: Bro
           <Text fontSize="$2" color="$color10">Enter states where you're licensed, separated by commas</Text>
           {errors.statesLicensed && <Text color="$red10" fontSize="$2">{errors.statesLicensed}</Text>}
         </YStack>
-        <YStack marginTop="$6">
+        <YStack mt="$6">
           <Button
             onPress={handleSubmit}
             variant="primary"

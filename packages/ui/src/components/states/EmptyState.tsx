@@ -116,7 +116,7 @@ export function EmptyState({
             <Button
               onPress={action.onClick}
               variant={action.variant || 'primary'}
-              size={action.size || 'md'}
+              size={action.size || '$4'}
               {...action}
             >
               {action.label}
@@ -126,7 +126,7 @@ export function EmptyState({
             <Button
               onPress={secondaryAction.onClick}
               variant={secondaryAction.variant || 'outlined'}
-              size={secondaryAction.size || 'md'}
+              size={secondaryAction.size || '$4'}
               {...secondaryAction}
             >
               {secondaryAction.label}

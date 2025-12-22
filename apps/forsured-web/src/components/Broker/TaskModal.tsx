@@ -267,7 +267,7 @@ export default function TaskModal({
           )}
 
           <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
               Task Title *
             </Label>
             <Input
@@ -288,7 +288,7 @@ export default function TaskModal({
           </YStack>
 
           <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
               Description
             </Label>
             <TextArea
@@ -347,7 +347,7 @@ export default function TaskModal({
                 borderColor="$blue4"
                 borderRadius="$4"
               >
-                <Info size={16} color="$blue10" marginTop={2} flexShrink={0} />
+                <Info size={16} color="$blue10" mt={2} flexShrink={0} />
                 <Text fontSize="$3" color="$blue12">{selectedTaskType.description}</Text>
               </XStack>
             )}
@@ -360,7 +360,7 @@ export default function TaskModal({
 
           <XStack gap="$4" flexWrap="wrap">
             <YStack flex={1} minWidth="45%">
-              <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+              <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                 Priority
               </Label>
               <select
@@ -389,7 +389,7 @@ export default function TaskModal({
 
           <XStack gap="$4" flexWrap="wrap">
             <YStack flex={1} minWidth="45%">
-              <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+              <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                 Status
               </Label>
               <select
@@ -418,7 +418,7 @@ export default function TaskModal({
             </YStack>
 
             <YStack flex={1} minWidth="45%">
-              <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+              <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                 Assign To *
               </Label>
               <select
@@ -439,7 +439,7 @@ export default function TaskModal({
                 required
               >
                 <option value="">Select user</option>
-                {users.map((user) => (
+                {(users || []).map((user) => (
                   <option key={user.id} value={user.id}>
                     {user.name} ({user.role})
                   </option>
@@ -449,7 +449,7 @@ export default function TaskModal({
           </XStack>
 
           <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
               Client
             </Label>
             <select
@@ -471,7 +471,7 @@ export default function TaskModal({
               }}
             >
               <option value="">Select client (optional)</option>
-              {clients.map((client) => (
+              {(clients || []).map((client) => (
                 <option key={client.id} value={client.id}>
                   {client.company_name}
                 </option>
@@ -482,7 +482,7 @@ export default function TaskModal({
           {formData.client_id && (
             <>
               <YStack>
-                <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                   Project
                 </Label>
                 <select
@@ -508,7 +508,7 @@ export default function TaskModal({
               </YStack>
 
               <YStack>
-                <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                   Related Policy
                 </Label>
                 <select
@@ -537,7 +537,7 @@ export default function TaskModal({
           )}
 
           <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
               Due Date
             </Label>
             <Input
@@ -556,7 +556,7 @@ export default function TaskModal({
           </YStack>
 
           <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
               Document Link
             </Label>
             <Input

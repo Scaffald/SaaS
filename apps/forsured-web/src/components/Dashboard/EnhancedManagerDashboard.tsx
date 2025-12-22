@@ -266,10 +266,10 @@ export default function EnhancedManagerDashboard() {
     return (
       <YStack alignItems="center" justifyContent="center" minHeight={400}>
         <YStack alignItems="center">
-          <YStack marginBottom="$4">
+          <YStack mb="$4">
             <AlertTriangle size={48} color="$red10" />
           </YStack>
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             Failed to load dashboard
           </H3>
           <Text color="$color11">{error.message}</Text>
@@ -325,7 +325,7 @@ export default function EnhancedManagerDashboard() {
           borderColor="$borderColor"
           padding="$5"
         >
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+          <XStack alignItems="center" justifyContent="space-between" mb="$3">
             <YStack
               width={40}
               height={40}
@@ -343,7 +343,7 @@ export default function EnhancedManagerDashboard() {
           <H3 fontSize="$3" fontWeight="500" color="$color11">
             Active {getContractorLabel(true)}
           </H3>
-          <Text fontSize="$2" color="$color10" marginTop="$1">
+          <Text fontSize="$2" color="$color10" mt="$1">
             Across {activeProjects} projects
           </Text>
         </Card>
@@ -358,7 +358,7 @@ export default function EnhancedManagerDashboard() {
           borderColor="$borderColor"
           padding="$5"
         >
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+          <XStack alignItems="center" justifyContent="space-between" mb="$3">
             <YStack
               width={40}
               height={40}
@@ -376,7 +376,7 @@ export default function EnhancedManagerDashboard() {
           <H3 fontSize="$3" fontWeight="500" color="$color11">
             Tasks On Track
           </H3>
-          <Text fontSize="$2" color="$color10" marginTop="$1">
+          <Text fontSize="$2" color="$color10" mt="$1">
             {tasksInProgress} in progress
           </Text>
         </Card>
@@ -391,7 +391,7 @@ export default function EnhancedManagerDashboard() {
           borderColor="$borderColor"
           padding="$5"
         >
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+          <XStack alignItems="center" justifyContent="space-between" mb="$3">
             <YStack
               width={40}
               height={40}
@@ -409,7 +409,7 @@ export default function EnhancedManagerDashboard() {
           <H3 fontSize="$3" fontWeight="500" color="$color11">
             Overdue Tasks
           </H3>
-          <Text fontSize="$2" color="$color10" marginTop="$1">
+          <Text fontSize="$2" color="$color10" mt="$1">
             Require immediate action
           </Text>
         </Card>
@@ -424,7 +424,7 @@ export default function EnhancedManagerDashboard() {
           borderColor="$borderColor"
           padding="$5"
         >
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+          <XStack alignItems="center" justifyContent="space-between" mb="$3">
             <YStack
               width={40}
               height={40}
@@ -442,7 +442,7 @@ export default function EnhancedManagerDashboard() {
           <H3 fontSize="$3" fontWeight="500" color="$color11">
             Blocked Tasks
           </H3>
-          <Text fontSize="$2" color="$color10" marginTop="$1">
+          <Text fontSize="$2" color="$color10" mt="$1">
             Waiting on dependencies
           </Text>
         </Card>
@@ -465,7 +465,7 @@ export default function EnhancedManagerDashboard() {
             <H2 fontSize="$6" fontWeight="600" color="$color12">
               Urgent Tasks
             </H2>
-            <Text fontSize="$3" color="$color11" marginTop="$1">
+            <Text fontSize="$3" color="$color11" mt="$1">
               High priority items requiring attention
             </Text>
           </YStack>
@@ -502,11 +502,11 @@ export default function EnhancedManagerDashboard() {
                   <XStack alignItems="flex-start" gap="$3" flex={1}>
                     <Circle
                       size={8}
-                      marginTop={2}
+                      mt={2}
                       backgroundColor={getPriorityColor(task.priority)}
                     />
                     <YStack flex={1}>
-                      <XStack alignItems="center" gap="$2" marginBottom="$1">
+                      <XStack alignItems="center" gap="$2" mb="$1">
                         <H3
                           fontSize="$3"
                           fontWeight="600"
@@ -555,7 +555,7 @@ export default function EnhancedManagerDashboard() {
                           </XStack>
                         )}
                       </XStack>
-                      <Text fontSize="$3" color="$color11" marginBottom="$2">
+                      <Text fontSize="$3" color="$color11" mb="$2">
                         {task.description}
                       </Text>
                       <XStack alignItems="center" gap="$3">
@@ -624,7 +624,7 @@ export default function EnhancedManagerDashboard() {
             <H2 fontSize="$6" fontWeight="600" color="$color12">
               Critical Compliance Items
             </H2>
-            <Text fontSize="$3" color="$color11" marginTop="$1">
+            <Text fontSize="$3" color="$color11" mt="$1">
               Issues requiring immediate attention
             </Text>
           </YStack>
@@ -651,11 +651,11 @@ export default function EnhancedManagerDashboard() {
                 <XStack alignItems="flex-start" gap="$3" flex={1}>
                   <Circle
                     size={8}
-                    marginTop={2}
+                    mt={2}
                     backgroundColor={item.severity === 'critical' ? '$red9' : '$orange9'}
                   />
                   <YStack flex={1}>
-                    <XStack alignItems="center" gap="$2" marginBottom="$1">
+                    <XStack alignItems="center" gap="$2" mb="$1">
                       <H3 fontSize="$3" fontWeight="600" color="$color12">
                         {item.type}
                       </H3>
@@ -664,7 +664,7 @@ export default function EnhancedManagerDashboard() {
                         size="sm"
                       />
                     </XStack>
-                    <Text fontSize="$3" color="$color11" marginBottom="$1">
+                    <Text fontSize="$3" color="$color11" mb="$1">
                       {item.subcontractor}
                     </Text>
                     <XStack alignItems="center" gap="$3">

@@ -86,7 +86,7 @@ function GCDashboard() {
                     <YStack
                       padding="$2"
                       backgroundColor="$blue3"
-                      borderRadius="$md"
+                      borderRadius="$3"
                     >
                       <Building2 size={24} color="currentColor" />
                     </YStack>

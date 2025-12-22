@@ -98,7 +98,7 @@ function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
 
   return (
     <YStack gap="$4">
-      <Text fontSize="$5" fontWeight="600" marginBottom="$4">
+      <Text fontSize="$5" fontWeight="600" mb="$4">
         Sync History
       </Text>
       <DataTable

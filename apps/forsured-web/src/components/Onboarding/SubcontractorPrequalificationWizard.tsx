@@ -262,16 +262,16 @@ export default function SubcontractorPrequalificationWizard({
           </Button>
         )}
 
-        <YStack alignItems="center" marginBottom="$8">
-          <YStack justifyContent="center" marginBottom="$6">
+        <YStack alignItems="center" mb="$8">
+          <YStack justifyContent="center" mb="$6">
             <ForsuredLogo />
           </YStack>
           {invitationData ? (
             <YStack alignItems="center">
-              <H1 fontSize="$9" fontWeight="700" color="$color12" marginBottom="$2">
+              <H1 fontSize="$9" fontWeight="700" color="$color12" mb="$2">
                 Subcontractor Prequalification
               </H1>
-              <Text fontSize="$6" color="$color11" marginBottom="$4">
+              <Text fontSize="$6" color="$color11" mb="$4">
                 Complete your prequalification for {invitationData.gcName}
               </Text>
               {invitationData.customMessage && (
@@ -284,7 +284,7 @@ export default function SubcontractorPrequalificationWizard({
             </YStack>
           ) : (
             <YStack alignItems="center">
-              <H1 fontSize="$9" fontWeight="700" color="$color12" marginBottom="$2">
+              <H1 fontSize="$9" fontWeight="700" color="$color12" mb="$2">
                 Complete Your Profile
               </H1>
               <Text fontSize="$6" color="$color11">
@@ -294,7 +294,7 @@ export default function SubcontractorPrequalificationWizard({
           )}
         </YStack>
 
-        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" marginBottom="$8">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" mb="$8">
           <XStack alignItems="center" justifyContent="space-between" overflowX="auto">
             {STEPS.map((step, index) => {
               const Icon = step.icon;
@@ -326,7 +326,7 @@ export default function SubcontractorPrequalificationWizard({
                         <Icon size={20} />
                       )}
                     </YStack>
-                    <YStack marginTop="$2" alignItems="center" minWidth={0}>
+                    <YStack mt="$2" alignItems="center" minWidth={0}>
                       <Text
                         fontSize="$1"
                         fontWeight="500"
@@ -548,7 +548,7 @@ function CertificationSearchSelect({
   return (
     <YStack position="relative" ref={dropdownRef}>
       <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$3" minHeight={100}>
-        <XStack flexWrap="wrap" gap="$2" marginBottom="$2">
+        <XStack flexWrap="wrap" gap="$2" mb="$2">
           {selectedCertifications.map((cert) => (
             <XStack
               key={cert}
@@ -596,7 +596,7 @@ function CertificationSearchSelect({
               position="absolute"
               zIndex={10}
               width="100%"
-              marginTop="$1"
+              mt="$1"
               backgroundColor="$background"
               borderWidth={1}
               borderColor="$borderColor"
@@ -628,7 +628,7 @@ function CertificationSearchSelect({
           )}
         </YStack>
       </Card>
-      <Text fontSize="$1" color="$color11" marginTop="$1">
+      <Text fontSize="$1" color="$color11" mt="$1">
         Search and select your certifications. Click the X to remove.
       </Text>
     </YStack>
@@ -645,7 +645,7 @@ function CompanyInfoStep({
   return (
     <YStack gap="$6">
       <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
           Company Information
         </H2>
         <Text color="$color11">
@@ -655,7 +655,7 @@ function CompanyInfoStep({
 
       <XStack flexWrap="wrap" gap="$6">
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Company Name <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -674,7 +674,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             DBA (if applicable)
           </Text>
           <Input
@@ -692,7 +692,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Federal Tax ID / EIN <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -713,7 +713,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Primary Address <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -734,7 +734,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Mailing Address (if different)
           </Text>
           <Input
@@ -754,7 +754,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Website URL
           </Text>
           <Input
@@ -790,7 +790,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Years in Business <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -815,7 +815,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Primary Contact Name <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -836,7 +836,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Primary Contact Title <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -857,7 +857,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Primary Contact Email <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -878,7 +878,7 @@ function CompanyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Primary Contact Phone <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -912,7 +912,7 @@ function LicensingInfoStep({
   return (
     <YStack gap="$6">
       <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
           Licensing and Registration
         </H2>
         <Text color="$color11">
@@ -922,7 +922,7 @@ function LicensingInfoStep({
 
       <XStack flexWrap="wrap" gap="$6">
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             State Contractor License Number{' '}
             <Text color="$red10">*</Text>
           </Text>
@@ -944,7 +944,7 @@ function LicensingInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             License Classification / Trade{' '}
             <Text color="$red10">*</Text>
           </Text>
@@ -984,7 +984,7 @@ function LicensingInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             License Expiration Date <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -1004,12 +1004,12 @@ function LicensingInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Business License File
           </Text>
           <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
-            <Upload color="$color11" marginBottom="$2" size={32} />
-            <Text fontSize="$3" color="$color11" marginBottom="$2">
+            <Upload color="$color11" mb="$2" size={32} />
+            <Text fontSize="$3" color="$color11" mb="$2">
               Drag and drop or click to upload
             </Text>
             <Button variant="outline" size="sm">
@@ -1019,7 +1019,7 @@ function LicensingInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Professional / Trade Certifications
           </Text>
           <CertificationSearchSelect
@@ -1044,7 +1044,7 @@ function InsuranceInfoStep({
   return (
     <YStack gap="$6">
       <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
           Insurance and Compliance
         </H2>
         <Text color="$color11">
@@ -1055,7 +1055,7 @@ function InsuranceInfoStep({
       {requirements && (
         <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
           <XStack alignItems="flex-start" gap="$2">
-            <Info color="$blue10" marginTop={2} flexShrink={0} size={16} />
+            <Info color="$blue10" mt={2} flexShrink={0} size={16} />
             <YStack>
               <Text fontSize="$3" fontWeight="500" color="$blue11">
                 Required Coverage
@@ -1071,12 +1071,12 @@ function InsuranceInfoStep({
 
       <XStack flexWrap="wrap" gap="$6">
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             W-9 Form <Text color="$red10">*</Text>
           </Text>
           <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
-            <Upload color="$color11" marginBottom="$2" size={32} />
-            <Text fontSize="$3" color="$color11" marginBottom="$2">
+            <Upload color="$color11" mb="$2" size={32} />
+            <Text fontSize="$3" color="$color11" mb="$2">
               Upload current W-9 form
             </Text>
             <Button variant="outline" size="sm">
@@ -1086,13 +1086,13 @@ function InsuranceInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Certificate of Insurance (COI){' '}
             <Text color="$red10">*</Text>
           </Text>
           <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
-            <Upload color="$color11" marginBottom="$2" size={32} />
-            <Text fontSize="$3" color="$color11" marginBottom="$2">
+            <Upload color="$color11" mb="$2" size={32} />
+            <Text fontSize="$3" color="$color11" mb="$2">
               Upload current COI
             </Text>
             <Button variant="outline" size="sm">
@@ -1102,7 +1102,7 @@ function InsuranceInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }} position="relative">
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             General Liability Coverage <Text color="$red10">*</Text>
           </Text>
           <XStack position="relative" width="100%">
@@ -1133,7 +1133,7 @@ function InsuranceInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }} position="relative">
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Auto Liability Coverage <Text color="$red10">*</Text>
           </Text>
           <XStack position="relative" width="100%">
@@ -1164,7 +1164,7 @@ function InsuranceInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Insurance Carrier <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -1185,7 +1185,7 @@ function InsuranceInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Policy Expiration Date <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -1205,7 +1205,7 @@ function InsuranceInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             EMR Rating (Experience Modification Rate)
           </Text>
           <Input
@@ -1244,7 +1244,7 @@ function SafetyInfoStep({
   return (
     <YStack gap="$6">
       <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
           Safety and Risk Management
         </H2>
         <Text color="$color11">
@@ -1254,7 +1254,7 @@ function SafetyInfoStep({
 
       <XStack flexWrap="wrap" gap="$6">
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Safety Manager Name <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -1275,7 +1275,7 @@ function SafetyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Safety Manager Email <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -1339,7 +1339,7 @@ function SafetyInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             OSHA Violations (if any)
           </Text>
           <TextArea
@@ -1372,7 +1372,7 @@ function FinancialInfoStep({
   return (
     <YStack gap="$6">
       <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
           Financial and Capacity Information
         </H2>
         <Text color="$color11">
@@ -1407,7 +1407,7 @@ function FinancialInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Number of Full-Time Employees
           </Text>
           <Input
@@ -1431,7 +1431,7 @@ function FinancialInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Bonding Capacity
           </Text>
           <Input
@@ -1451,7 +1451,7 @@ function FinancialInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Bonding Company
           </Text>
           <Input
@@ -1471,7 +1471,7 @@ function FinancialInfoStep({
         </YStack>
 
         <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Bank Reference
           </Text>
           <Input
@@ -1517,7 +1517,7 @@ function TradeCapabilitiesStep({
   return (
     <YStack gap="$6">
       <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
           Trade Capabilities and Experience
         </H2>
         <Text color="$color11">
@@ -1527,7 +1527,7 @@ function TradeCapabilitiesStep({
 
       <YStack gap="$6">
         <YStack>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Primary Trades / Scopes <Text color="$red10">*</Text>
           </Text>
           <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
@@ -1560,7 +1560,7 @@ function TradeCapabilitiesStep({
         </YStack>
 
         <YStack>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Geographic Coverage Area
           </Text>
           <Input
@@ -1636,7 +1636,7 @@ function TradeCapabilitiesStep({
         </YStack>
 
         <YStack>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Special Equipment or Certifications
           </Text>
           <TextArea
@@ -1669,7 +1669,7 @@ function ReviewStep({
   return (
     <YStack gap="$6">
       <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
           Review and Submit
         </H2>
         <Text color="$color11">
@@ -1722,14 +1722,14 @@ function ReviewStep({
                   accuracyAffirmation: checked === true,
                 })
               }
-              marginTop="$1"
+              mt="$1"
             />
             <YStack>
               <Text fontSize="$3" fontWeight="500" color="$color12">
                 Affirmation of Accuracy{' '}
                 <Text color="$red10">*</Text>
               </Text>
-              <Text fontSize="$1" color="$color11" marginTop="$1">
+              <Text fontSize="$1" color="$color11" mt="$1">
                 I certify that all information provided in this application is
                 true and accurate to the best of my knowledge.
               </Text>
@@ -1747,14 +1747,14 @@ function ReviewStep({
                   complianceAgreement: checked === true,
                 })
               }
-              marginTop="$1"
+              mt="$1"
             />
             <YStack>
               <Text fontSize="$3" fontWeight="500" color="$color12">
                 Agreement to Compliance Requirements{' '}
                 <Text color="$red10">*</Text>
               </Text>
-              <Text fontSize="$1" color="$color11" marginTop="$1">
+              <Text fontSize="$1" color="$color11" mt="$1">
                 I agree to comply with all insurance, safety, and policy
                 requirements established by the General Contractor.
               </Text>
@@ -1763,7 +1763,7 @@ function ReviewStep({
         </Card>
 
         <YStack>
-          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
             Digital Signature <Text color="$red10">*</Text>
           </Text>
           <Input
@@ -1784,7 +1784,7 @@ function ReviewStep({
               })
             }
           />
-          <Text fontSize="$1" color="$color11" marginTop="$1">
+          <Text fontSize="$1" color="$color11" mt="$1">
             By typing your name, you are providing a legal digital signature
           </Text>
         </YStack>

@@ -218,7 +218,7 @@ function SignupPage() {
             backgroundColor="$red2"
             borderWidth={1}
             borderColor="$red6"
-            borderRadius="$md"
+            borderRadius="$3"
             padding="$4"
             gap="$2"
           >

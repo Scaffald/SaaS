@@ -96,7 +96,7 @@ export default function TemplateSelector({
     return (
       <YStack alignItems="center" justifyContent="center" height={256}>
         <Spinner size="large" />
-        <Text color="$color10" marginTop="$4">Loading templates...</Text>
+        <Text color="$color10" mt="$4">Loading templates...</Text>
       </YStack>
     );
   }
@@ -104,7 +104,7 @@ export default function TemplateSelector({
   if (error) {
     return (
       <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$4" padding="$4">
-        <Text color="$red11" marginBottom="$2">Error: {error}</Text>
+        <Text color="$red11" mb="$2">Error: {error}</Text>
         <Button
           onPress={() => loadTemplates()}
           fontSize="$3"
@@ -173,7 +173,7 @@ export default function TemplateSelector({
       {/* Template Grid */}
       {filteredTemplates.length === 0 ? (
         <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowOpacity={0.1} shadowRadius={2} padding="$8">
-          <Text color="$color10" textAlign="center">No templates found for this type.</Text>
+          <Text color="$color10" style={{ textAlign: 'center' }}>No templates found for this type.</Text>
         </Card>
       ) : (
         <XStack flexWrap="wrap" gap="$4">
@@ -194,24 +194,24 @@ export default function TemplateSelector({
               width="100%"
               maxWidth={{ $gtMd: 'calc(50% - 8px)', $gtLg: 'calc(33.333% - 11px)' }}
             >
-              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+              <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
                 <Text fontSize="$9">{getTypeIcon(template.type)}</Text>
                 <Text fontSize="$1" fontWeight="500" color="$blue10" backgroundColor="$blue2" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
                   v{template.version}
                 </Text>
               </XStack>
 
-              <Text fontSize="$5" fontWeight="600" color="$color12" marginBottom="$2">{template.name}</Text>
+              <Text fontSize="$5" fontWeight="600" color="$color12" mb="$2">{template.name}</Text>
 
-              <Text fontSize="$3" color="$color10" marginBottom="$3">{formatCoverage(template)}</Text>
+              <Text fontSize="$3" color="$color10" mb="$3">{formatCoverage(template)}</Text>
 
               {template.description && (
-                <Text fontSize="$2" color="$color9" marginBottom="$3" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                <Text fontSize="$2" color="$color9" mb="$3" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {template.description}
                 </Text>
               )}
 
-              <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <YStack mt="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                 <YStack gap="$1">
                   <Text fontSize="$2" color="$color9">
                     {template.requirement_definition.required_endorsements.length} endorsements
@@ -222,7 +222,7 @@ export default function TemplateSelector({
                 </YStack>
               </YStack>
 
-              <XStack marginTop="$4">
+              <XStack mt="$4">
                 <Text fontSize="$3" fontWeight="500" color="$blue10">Use Template →</Text>
               </XStack>
             </Card>
@@ -246,7 +246,7 @@ export default function TemplateSelector({
       >
         <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
           <YStack flex={1} minWidth="200px">
-            <Text fontSize="$5" fontWeight="600" color="$color12" marginBottom="$2">
+            <Text fontSize="$5" fontWeight="600" color="$color12" mb="$2">
               Create Custom Requirement
             </Text>
             <Text fontSize="$3" color="$color10">

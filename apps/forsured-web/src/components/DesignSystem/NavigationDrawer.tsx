@@ -201,7 +201,7 @@ export default function NavigationDrawer({
                         </View>
                       </XStack>
                       {isExpanded && (
-                        <YStack marginLeft="$4" marginTop="$1" gap="$1">
+                        <YStack ml="$4" mt="$1" gap="$1">
                           {item.children.map((child) => (
                             <View
                               key={child.id}

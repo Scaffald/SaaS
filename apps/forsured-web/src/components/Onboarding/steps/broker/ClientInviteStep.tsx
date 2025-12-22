@@ -41,8 +41,8 @@ function ClientInviteStep({ onComplete, initialData = {}, isLoading = false }: C
 
   return (
     <YStack>
-      <H2 marginBottom="$2">Add Your First Client (Optional)</H2>
-      <Text marginBottom="$6" color="$color10">
+      <H2 mb="$2">Add Your First Client (Optional)</H2>
+      <Text mb="$6" color="$color10">
         You can skip this step and add clients later from your dashboard
       </Text>
       <YStack tag="form" onSubmit={handleSubmit} gap="$4">
@@ -64,7 +64,7 @@ function ClientInviteStep({ onComplete, initialData = {}, isLoading = false }: C
           <Text fontSize="$2" color="$color10">We'll send them an invitation to connect</Text>
           {errors.clientEmail && <Text color="$red10" fontSize="$2">{errors.clientEmail}</Text>}
         </YStack>
-        <YStack marginTop="$6">
+        <YStack mt="$6">
           <Button
             onPress={handleSubmit}
             variant="primary"

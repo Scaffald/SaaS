@@ -61,8 +61,8 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
 
   return (
     <YStack>
-      <H2 marginBottom="$2">Default Insurance Requirements</H2>
-      <Text marginBottom="$6" color="$color10">
+      <H2 mb="$2">Default Insurance Requirements</H2>
+      <Text mb="$6" color="$color10">
         Set your default insurance requirements for subcontractors
       </Text>
       <YStack tag="form" onSubmit={handleSubmit} gap="$4">
@@ -87,7 +87,7 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
           </YStack>
         </YStack>
 
-        <YStack marginTop="$6" gap="$3">
+        <YStack mt="$6" gap="$3">
           <XStack alignItems="center" gap="$2">
             <Checkbox
               checked={wcRequired}
@@ -111,7 +111,7 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
           </XStack>
         </YStack>
 
-        <YStack marginTop="$6">
+        <YStack mt="$6">
           <Button
             onPress={handleSubmit}
             variant="primary"

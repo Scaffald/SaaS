@@ -28,7 +28,7 @@ const CardContainer = styled(YStack, {
   gap: '$8',
   padding: '$10',
   backgroundColor: '$backgroundHover',
-  borderRadius: '$xl',
+  borderRadius: '$5',
   shadowColor: '$shadowColor',
   shadowRadius: 20,
   shadowOffset: { width: 0, height: 10 },
@@ -39,7 +39,7 @@ const LogoContainer = styled(YStack, {
   width: 64,
   height: 64,
   backgroundColor: '$blue9',
-  borderRadius: '$xl',
+  borderRadius: '$5',
   alignItems: 'center',
   justifyContent: 'center',
   shadowColor: '$shadowColor',
@@ -154,7 +154,7 @@ export const LoginPage: React.FC = () => {
             backgroundColor="$red2"
             borderWidth={1}
             borderColor="$red6"
-            borderRadius="$md"
+            borderRadius="$3"
             padding="$4"
             gap="$3"
           >
@@ -203,7 +203,7 @@ export const LoginPage: React.FC = () => {
             backgroundColor="$blue2"
             borderWidth={1}
             borderColor="$blue6"
-            borderRadius="$md"
+            borderRadius="$3"
             padding="$4"
             gap="$3"
           >
@@ -221,12 +221,12 @@ export const LoginPage: React.FC = () => {
 
           {/* TEMPORARY: Test Login Buttons */}
           <YStack
-            marginTop="$4"
+            mt="$4"
             padding="$4"
             backgroundColor="$yellow2"
             borderWidth={1}
             borderColor="$yellow6"
-            borderRadius="$md"
+            borderRadius="$3"
             gap="$3"
           >
             <Text fontSize="$3" fontWeight="600" color="$yellow11">
@@ -235,7 +235,7 @@ export const LoginPage: React.FC = () => {
             <Text fontSize="$2" color="$yellow10">
               Real Supabase login with seeded test users. Run migrations first.
             </Text>
-            <YStack gap="$2" marginTop="$2">
+            <YStack gap="$2" mt="$2">
               <CoreButton
                 onPress={() => handleTestLogin('gc')}
                 variant="secondary"
@@ -305,8 +305,8 @@ export const LoginPage: React.FC = () => {
         </YStack>
 
         {/* Security Notice */}
-        <YStack marginTop="$6">
-          <Text fontSize="$1" textAlign="center" color="$color9">
+        <YStack mt="$6">
+          <Text fontSize="$1" style={{ textAlign: 'center' }} color="$color9">
             Secured with OAuth 2.0 + PKCE
           </Text>
         </YStack>

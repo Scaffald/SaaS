@@ -66,6 +66,7 @@ const BrokerAcknowledgementList = lazy(() => import('./components/BrokerAcknowle
 
 // Shared components
 const ProjectDetailPage = lazy(() => import('./components/Project/ProjectDetailPage'));
+const ProjectCreatePage = lazy(() => import('./components/Project/ProjectCreatePage'));
 const InsuranceMarketplace = lazy(() => import('./components/Features/InsuranceMarketplace'));
 const IntegrationsMarketplace = lazy(() => import('./components/Features/IntegrationsMarketplace'));
 const NotificationsAndApprovalsPage = lazy(() => import('./components/Notifications/NotificationsAndApprovalsPage'));
@@ -197,6 +198,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedTypes={['manager']}>
               <ManagerProjectsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="manager/projects/new"
+          element={
+            <ProtectedRoute allowedTypes={['manager']}>
+              <ProjectCreatePage />
             </ProtectedRoute>
           }
         />

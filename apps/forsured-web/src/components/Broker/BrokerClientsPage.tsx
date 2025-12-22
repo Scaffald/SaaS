@@ -108,7 +108,7 @@ export default function BrokerClientsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$3">Total Clients</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
                 {stats.total}
               </Text>
             </YStack>
@@ -116,7 +116,7 @@ export default function BrokerClientsPage() {
               <Briefcase color="$blue10" size={24} />
             </YStack>
           </XStack>
-          <Text marginTop="$3" fontSize="$3" color="$color11">
+          <Text mt="$3" fontSize="$3" color="$color11">
             {stats.active} active accounts
           </Text>
         </Card>
@@ -134,7 +134,7 @@ export default function BrokerClientsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$3">Avg Compliance</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$green10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$green10" mt="$1">
                 {stats.avgCompliance}%
               </Text>
             </YStack>
@@ -142,8 +142,8 @@ export default function BrokerClientsPage() {
               <Shield color="$green10" size={24} />
             </YStack>
           </XStack>
-          <XStack marginTop="$3" fontSize="$3" color="$green10" alignItems="center">
-            <TrendingUp size={14} marginRight="$1" color="$green10" />
+          <XStack mt="$3" fontSize="$3" color="$green10" alignItems="center">
+            <TrendingUp size={14} mr="$1" color="$green10" />
             <Text fontSize="$3" color="$green10">Above target</Text>
           </XStack>
         </Card>
@@ -161,7 +161,7 @@ export default function BrokerClientsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$3">High Risk</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$red10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$red10" mt="$1">
                 {stats.highRisk}
               </Text>
             </YStack>
@@ -169,7 +169,7 @@ export default function BrokerClientsPage() {
               <AlertTriangle color="$red10" size={24} />
             </YStack>
           </XStack>
-          <Text marginTop="$3" fontSize="$3" color="$color11">
+          <Text mt="$3" fontSize="$3" color="$color11">
             Require attention
           </Text>
         </Card>
@@ -187,7 +187,7 @@ export default function BrokerClientsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$3">Active Projects</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
                 {projects.filter((p) => p.status === 'active').length}
               </Text>
             </YStack>
@@ -195,7 +195,7 @@ export default function BrokerClientsPage() {
               <Briefcase color="$blue10" size={24} />
             </YStack>
           </XStack>
-          <Text marginTop="$3" fontSize="$3" color="$color11">
+          <Text mt="$3" fontSize="$3" color="$color11">
             Across all clients
           </Text>
         </Card>
@@ -209,7 +209,7 @@ export default function BrokerClientsPage() {
         borderColor="$borderColor"
         padding="$6"
       >
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
           Client Overview
         </H2>
         <XStack
@@ -219,7 +219,7 @@ export default function BrokerClientsPage() {
           flexWrap="wrap"
         >
           <YStack flex={1} minWidth="30%">
-            <Text fontSize="$3" color="$color11" marginBottom="$2">By Type</Text>
+            <Text fontSize="$3" color="$color11" mb="$2">By Type</Text>
             <YStack gap="$2">
               <XStack alignItems="center" justifyContent="space-between">
                 <Text fontSize="$3" color="$color12">
@@ -248,7 +248,7 @@ export default function BrokerClientsPage() {
           </YStack>
 
           <YStack flex={1} minWidth="30%">
-            <Text fontSize="$3" color="$color11" marginBottom="$2">By Risk Level</Text>
+            <Text fontSize="$3" color="$color11" mb="$2">By Risk Level</Text>
             <YStack gap="$2">
               <XStack alignItems="center" justifyContent="space-between">
                 <Text fontSize="$3" color="$green10">Low Risk</Text>
@@ -272,7 +272,7 @@ export default function BrokerClientsPage() {
           </YStack>
 
           <YStack flex={1} minWidth="30%">
-            <Text fontSize="$3" color="$color11" marginBottom="$2">Active Policies</Text>
+            <Text fontSize="$3" color="$color11" mb="$2">Active Policies</Text>
             <YStack gap="$2">
               <XStack alignItems="center" justifyContent="space-between">
                 <Text fontSize="$3" color="$color12">Total Active</Text>

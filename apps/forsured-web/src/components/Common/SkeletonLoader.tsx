@@ -9,7 +9,7 @@ import { YStack, XStack, styled } from '@unicornlove/ui';
 const SkeletonBox = styled(YStack, {
   name: 'SkeletonBox',
   backgroundColor: '$color4',
-  borderRadius: '$md',
+  borderRadius: '$3',
   animation: 'pulse',
   // Remove animationDuration - use Tamagui's animation system instead
   // animationDuration is handled by the 'pulse' animation config
@@ -30,7 +30,7 @@ export default function SkeletonLoader({
         return (
           <YStack
             backgroundColor="$backgroundHover"
-            borderRadius="$md"
+            borderRadius="$3"
             shadowColor="$shadowColor"
             shadowRadius={4}
             shadowOffset={{ width: 0, height: 2 }}
@@ -38,8 +38,8 @@ export default function SkeletonLoader({
             borderColor="$borderColor"
             padding="$6"
           >
-            <SkeletonBox height={24} width="33%" marginBottom="$4" />
-            <SkeletonBox height={16} width="66%" marginBottom="$2" />
+            <SkeletonBox height={24} width="33%" mb="$4" />
+            <SkeletonBox height={16} width="66%" mb="$2" />
             <SkeletonBox height={16} width="50%" />
           </YStack>
         );
@@ -48,7 +48,7 @@ export default function SkeletonLoader({
         return (
           <YStack
             backgroundColor="$backgroundHover"
-            borderRadius="$md"
+            borderRadius="$3"
             shadowColor="$shadowColor"
             shadowRadius={4}
             shadowOffset={{ width: 0, height: 2 }}
@@ -86,7 +86,7 @@ export default function SkeletonLoader({
         return (
           <YStack
             backgroundColor="$backgroundHover"
-            borderRadius="$md"
+            borderRadius="$3"
             shadowColor="$shadowColor"
             shadowRadius={4}
             shadowOffset={{ width: 0, height: 2 }}
@@ -129,7 +129,7 @@ export default function SkeletonLoader({
   return (
     <>
       {[...Array(count)].map((_, index) => (
-        <YStack key={index} marginBottom={count > 1 ? '$4' : 0}>
+        <YStack key={index} mb={count > 1 ? '$4' : 0}>
           {renderSkeleton()}
         </YStack>
       ))}
@@ -156,7 +156,7 @@ export function DashboardSkeleton() {
             flex={1}
             minWidth={200}
             backgroundColor="$backgroundHover"
-            borderRadius="$md"
+            borderRadius="$3"
             shadowColor="$shadowColor"
             shadowRadius={4}
             shadowOffset={{ width: 0, height: 2 }}
@@ -165,11 +165,11 @@ export function DashboardSkeleton() {
             padding="$6"
             gap="$4"
           >
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-              <SkeletonBox width={48} height={48} borderRadius="$md" />
+            <XStack alignItems="center" justifyContent="space-between" mb="$4">
+              <SkeletonBox width={48} height={48} borderRadius="$3" />
               <SkeletonBox height={32} width={64} />
             </XStack>
-            <SkeletonBox height={16} width="66%" marginBottom="$2" />
+            <SkeletonBox height={16} width="66%" mb="$2" />
             <SkeletonBox height={12} width="50%" />
           </YStack>
         ))}

@@ -275,26 +275,26 @@ export default function BrokerOnboarding() {
           <X size={18} />
         </TamaguiButton>
 
-        <YStack alignItems="center" marginBottom="$8">
-          <YStack marginBottom="$6">
+        <YStack alignItems="center" mb="$8">
+          <YStack mb="$6">
             <ForsuredLogo />
           </YStack>
-          <H1 fontSize="$8" fontWeight="bold" color="$color12" marginBottom="$2">
+          <H1 fontSize="$8" fontWeight="bold" color="$color12" mb="$2">
             Welcome, Insurance Broker
           </H1>
           <Text color="$color11">Set up your brokerage profile</Text>
         </YStack>
 
         <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$8">
-          <XStack alignItems="center" justifyContent="center" width={64} height={64} backgroundColor="$green3" borderRadius={9999} marginX="auto" marginBottom="$6">
+          <XStack alignItems="center" justifyContent="center" width={64} height={64} backgroundColor="$green3" borderRadius={9999} marginX="auto" mb="$6">
             <Briefcase color="$green9" size={32} />
           </XStack>
 
           <YStack as="form" onSubmit={handleSubmit} gap="$8">
             {/* Brokerage Details Section */}
             <YStack>
-              <XStack alignItems="center" marginBottom="$4">
-                <Building2 size={20} color="$blue9" marginRight="$2" />
+              <XStack alignItems="center" mb="$4">
+                <Building2 size={20} color="$blue9" mr="$2" />
                 <H2 fontSize="$6" fontWeight="600" color="$color12">
                   Brokerage Details
                 </H2>
@@ -302,7 +302,7 @@ export default function BrokerOnboarding() {
 
               <YStack gap="$4">
                 <YStack>
-                  <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                  <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                     Brokerage Name <Text color="$red9">*</Text>
                   </Text>
                   <Input
@@ -324,13 +324,13 @@ export default function BrokerOnboarding() {
                     }
                   />
                   {errors.brokerageName && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.brokerageName}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{errors.brokerageName}</Text>
                   )}
                 </YStack>
 
                 <YStack>
-                  <XStack alignItems="center" marginBottom="$2">
-                    <FileText size={16} marginRight="$1" />
+                  <XStack alignItems="center" mb="$2">
+                    <FileText size={16} mr="$1" />
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       License Number <Text color="$red9">*</Text>
                     </Text>
@@ -354,13 +354,13 @@ export default function BrokerOnboarding() {
                     }
                   />
                   {errors.licenseNumber && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.licenseNumber}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{errors.licenseNumber}</Text>
                   )}
                 </YStack>
 
                 <YStack>
-                  <XStack alignItems="center" marginBottom="$2">
-                    <MapPin size={16} marginRight="$1" />
+                  <XStack alignItems="center" mb="$2">
+                    <MapPin size={16} mr="$1" />
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       Location <Text color="$red9">*</Text>
                     </Text>
@@ -381,7 +381,7 @@ export default function BrokerOnboarding() {
                     }
                   />
                   {errors.location && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.location}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{errors.location}</Text>
                   )}
                 </YStack>
               </YStack>
@@ -389,20 +389,20 @@ export default function BrokerOnboarding() {
 
             {/* Administrator Account Section */}
             <YStack>
-              <XStack alignItems="center" marginBottom="$4">
-                <Shield size={20} color="$blue9" marginRight="$2" />
+              <XStack alignItems="center" mb="$4">
+                <Shield size={20} color="$blue9" mr="$2" />
                 <H2 fontSize="$6" fontWeight="600" color="$color12">
                   Administrator Account
                 </H2>
               </XStack>
-              <Text fontSize="$3" color="$color11" marginBottom="$4">
+              <Text fontSize="$3" color="$color11" mb="$4">
                 You will be the administrator and main contact for this brokerage.
               </Text>
 
               <YStack gap="$4">
                 <YStack>
-                  <XStack alignItems="center" marginBottom="$2">
-                    <User size={16} marginRight="$1" />
+                  <XStack alignItems="center" mb="$2">
+                    <User size={16} mr="$1" />
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       Full Name <Text color="$red9">*</Text>
                     </Text>
@@ -426,13 +426,13 @@ export default function BrokerOnboarding() {
                     }
                   />
                   {errors.adminName && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminName}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{errors.adminName}</Text>
                   )}
                 </YStack>
 
                 <YStack>
-                  <XStack alignItems="center" marginBottom="$2">
-                    <Mail size={16} marginRight="$1" />
+                  <XStack alignItems="center" mb="$2">
+                    <Mail size={16} mr="$1" />
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       Email Address <Text color="$red9">*</Text>
                     </Text>
@@ -456,13 +456,13 @@ export default function BrokerOnboarding() {
                     }
                   />
                   {errors.adminEmail && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminEmail}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{errors.adminEmail}</Text>
                   )}
                 </YStack>
 
                 <YStack>
-                  <XStack alignItems="center" marginBottom="$2">
-                    <Phone size={16} marginRight="$1" />
+                  <XStack alignItems="center" mb="$2">
+                    <Phone size={16} mr="$1" />
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       Phone Number <Text color="$red9">*</Text>
                     </Text>
@@ -486,13 +486,13 @@ export default function BrokerOnboarding() {
                     }
                   />
                   {errors.adminPhone && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminPhone}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{errors.adminPhone}</Text>
                   )}
                 </YStack>
 
                 <YStack>
-                  <XStack alignItems="center" marginBottom="$2">
-                    <Lock size={16} marginRight="$1" />
+                  <XStack alignItems="center" mb="$2">
+                    <Lock size={16} mr="$1" />
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       Password <Text color="$red9">*</Text>
                     </Text>
@@ -531,17 +531,17 @@ export default function BrokerOnboarding() {
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </TamaguiButton>
                   </XStack>
-                  <Text fontSize="$1" color="$color11" marginTop="$1">
+                  <Text fontSize="$1" color="$color11" mt="$1">
                     Must be at least 8 characters with a number and special character
                   </Text>
                   {errors.adminPassword && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminPassword}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{errors.adminPassword}</Text>
                   )}
                 </YStack>
 
                 <YStack>
-                  <XStack alignItems="center" marginBottom="$2">
-                    <Lock size={16} marginRight="$1" />
+                  <XStack alignItems="center" mb="$2">
+                    <Lock size={16} mr="$1" />
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       Confirm Password <Text color="$red9">*</Text>
                     </Text>
@@ -581,7 +581,7 @@ export default function BrokerOnboarding() {
                     </TamaguiButton>
                   </XStack>
                   {errors.adminConfirmPassword && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminConfirmPassword}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{errors.adminConfirmPassword}</Text>
                   )}
                 </YStack>
               </YStack>
@@ -589,22 +589,22 @@ export default function BrokerOnboarding() {
 
             {/* Team Members Invitation Section */}
             <YStack>
-              <XStack alignItems="center" marginBottom="$4">
-                <Users size={20} color="$blue9" marginRight="$2" />
+              <XStack alignItems="center" mb="$4">
+                <Users size={20} color="$blue9" mr="$2" />
                 <H2 fontSize="$6" fontWeight="600" color="$color12">
                   Invite Team Members
                 </H2>
-                <Text marginLeft="$2" fontSize="$1" color="$color11">(Optional)</Text>
+                <Text ml="$2" fontSize="$1" color="$color11">(Optional)</Text>
               </XStack>
-              <Text fontSize="$3" color="$color11" marginBottom="$4">
+              <Text fontSize="$3" color="$color11" mb="$4">
                 Invite colleagues to join your brokerage. They will receive an email with a signup link.
               </Text>
 
               <YStack gap="$4">
                 {/* Input for adding new team member email */}
                 <YStack>
-                  <XStack alignItems="center" marginBottom="$2">
-                    <Mail size={16} marginRight="$1" />
+                  <XStack alignItems="center" mb="$2">
+                    <Mail size={16} mr="$1" />
                     <Text fontSize="$3" fontWeight="500" color="$color12">
                       Team Member Email
                     </Text>
@@ -642,7 +642,7 @@ export default function BrokerOnboarding() {
                     </TamaguiButton>
                   </XStack>
                   {teamEmailError && (
-                    <Text color="$red9" fontSize="$3" marginTop="$1">{teamEmailError}</Text>
+                    <Text color="$red9" fontSize="$3" mt="$1">{teamEmailError}</Text>
                   )}
                 </YStack>
 

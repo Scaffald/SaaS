@@ -155,7 +155,7 @@ function StartPage() {
         gap="$8"
         padding="$10"
         backgroundColor="$background"
-        borderRadius="$xl"
+        borderRadius="$5"
         shadowColor="$shadowColor"
         shadowRadius={20}
         shadowOffset={{ width: 0, height: 8 }}
@@ -166,7 +166,7 @@ function StartPage() {
             width={64}
             height={64}
             backgroundColor="$blue9"
-            borderRadius="$xl"
+            borderRadius="$5"
             alignItems="center"
             justifyContent="center"
             shadowColor="$shadowColor"
@@ -289,7 +289,7 @@ function StartPage() {
           backgroundColor="$yellow2"
           borderWidth={1}
           borderColor="$yellow6"
-          borderRadius="$md"
+          borderRadius="$3"
           gap="$3"
         >
           <Text fontSize="$3" fontWeight="600" color="$yellow11">

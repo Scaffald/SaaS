@@ -27,11 +27,10 @@ const CardContainer = styled(YStack, {
   gap: '$8',
   padding: '$10',
   backgroundColor: '$backgroundHover',
-  borderRadius: '$xl',
+  borderRadius: '$5',
   shadowColor: '$shadowColor',
   shadowRadius: 20,
   shadowOffset: { width: 0, height: 10 },
-  textAlign: 'center',
 })
 
 const SpinnerContainer = styled(YStack, {
@@ -77,7 +76,7 @@ export const CallbackPage: React.FC = () => {
   if (isProcessing && !error) {
     return (
       <PageContainer>
-        <CardContainer>
+        <CardContainer style={{ textAlign: 'center' }}>
           {/* Loading Animation */}
           <YStack alignItems="center" gap="$6">
             <SpinnerContainer>
@@ -112,7 +111,7 @@ export const CallbackPage: React.FC = () => {
           </YStack>
 
           {/* Progress Steps */}
-          <YStack gap="$3" marginTop="$8" alignItems="flex-start">
+          <YStack gap="$3" mt="$8" alignItems="flex-start">
             <XStack alignItems="center" gap="$3">
               <CheckCircle size={20} color="currentColor" />
               <Text fontSize="$2" color="$color11">
@@ -180,7 +179,7 @@ export const CallbackPage: React.FC = () => {
             backgroundColor="$red2"
             borderWidth={1}
             borderColor="$red6"
-            borderRadius="$md"
+            borderRadius="$3"
             padding="$4"
             gap="$1"
           >
@@ -188,7 +187,7 @@ export const CallbackPage: React.FC = () => {
               <Text fontWeight="600">Error:</Text> {error.message}
             </Text>
             {error.code && (
-              <Text fontSize="$1" color="$red10" marginTop="$1">
+              <Text fontSize="$1" color="$red10" mt="$1">
                 Code: {error.code}
               </Text>
             )}

@@ -196,7 +196,7 @@ export default function SubcontractorTasksPanel({
   return (
     <Card elevation={1} borderWidth={1} borderColor="$borderColor">
       <YStack padding="$6" borderBottomWidth={1} borderBottomColor="$borderColor">
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <XStack alignItems="center" justifyContent="space-between" mb="$4">
           <YStack>
             <H1 fontSize="$6" fontWeight="600" color="$color12">
               My Tasks
@@ -269,9 +269,9 @@ export default function SubcontractorTasksPanel({
                 borderColor={severityColors.borderColor}
                 onPress={() => onTaskClick?.(task)}
               >
-                <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+                <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
                   <YStack flex={1}>
-                    <XStack alignItems="center" gap="$2" marginBottom="$2" flexWrap="wrap">
+                    <XStack alignItems="center" gap="$2" mb="$2" flexWrap="wrap">
                       <XStack
                         display="inline-flex"
                         alignItems="center"
@@ -316,21 +316,21 @@ export default function SubcontractorTasksPanel({
                       </XStack>
                     </XStack>
 
-                    <Text fontSize="$2" fontWeight="600" color="$color12" marginBottom="$1">
+                    <Text fontSize="$2" fontWeight="600" color="$color12" mb="$1">
                       {task.title}
                     </Text>
                     {task.description && (
-                      <Text fontSize="$2" color="$color11" marginBottom="$2">
+                      <Text fontSize="$2" color="$color11" mb="$2">
                         {task.description}
                       </Text>
                     )}
 
                     {/* Project and GC Info */}
                     {(task.project_name || task.gc_company_name) && (
-                      <XStack alignItems="center" gap="$4" marginBottom="$2">
+                      <XStack alignItems="center" gap="$4" mb="$2">
                         {task.project_name && (
                           <XStack alignItems="center">
-                            <Building size={12} marginRight="$1" />
+                            <Building size={12} mr="$1" />
                             <Text fontSize="$1" color="$color11">
                               {task.project_name}
                             </Text>
@@ -346,14 +346,14 @@ export default function SubcontractorTasksPanel({
 
                     {/* Policy Number */}
                     {task.policy_number && (
-                      <Text fontSize="$1" color="$color11" marginBottom="$2">
+                      <Text fontSize="$1" color="$color11" mb="$2">
                         Policy: {task.policy_number}
                       </Text>
                     )}
 
                     {/* Metadata Details */}
                     {metadata && (
-                      <YStack marginTop="$2" gap="$1">
+                      <YStack mt="$2" gap="$1">
                         {metadata.missing_endorsement && (
                           <Text fontSize="$1" color="$color11">
                             <Text fontWeight="bold">Missing:</Text>{' '}
@@ -388,7 +388,7 @@ export default function SubcontractorTasksPanel({
                             backgroundColor="$red3"
                             padding="$2"
                             borderRadius="$2"
-                            marginTop="$2"
+                            mt="$2"
                           >
                             <Text fontSize="$1" color="$red10">
                               <Text fontWeight="bold">Rejection Reason:</Text>{' '}
@@ -401,11 +401,11 @@ export default function SubcontractorTasksPanel({
                   </YStack>
                 </XStack>
 
-                <XStack alignItems="center" justifyContent="space-between" marginTop="$3" paddingTop="$3" borderTopWidth={1} borderTopColor="$borderColor" opacity={0.5}>
+                <XStack alignItems="center" justifyContent="space-between" mt="$3" paddingTop="$3" borderTopWidth={1} borderTopColor="$borderColor" opacity={0.5}>
                   <XStack alignItems="center" gap="$4">
                     {task.created_by && (
                       <XStack alignItems="center">
-                        <Building size={12} marginRight="$1" />
+                        <Building size={12} mr="$1" />
                         <Text fontSize="$1" color="$color11">
                           {task.created_by.name}
                         </Text>
@@ -413,7 +413,7 @@ export default function SubcontractorTasksPanel({
                     )}
                     {task.due_date && (
                       <XStack alignItems="center">
-                        <Clock size={12} marginRight="$1" />
+                        <Clock size={12} mr="$1" />
                         {isOverdue(task.due_date) ? (
                           <Text fontSize="$1" color="$red10" fontWeight="500">
                             Overdue!
@@ -438,7 +438,7 @@ export default function SubcontractorTasksPanel({
                         }}
                         onPress={(e) => e.stopPropagation()}
                       >
-                        <FileText size={12} marginRight="$1" />
+                        <FileText size={12} mr="$1" />
                         <Text fontSize="$1">View Doc</Text>
                       </XStack>
                     )}
@@ -537,8 +537,8 @@ export default function SubcontractorTasksPanel({
 
         {sortedTasks.length === 0 && (
           <YStack alignItems="center" paddingVertical="$12">
-            <CheckCircle color="$green10" size={48} marginBottom="$3" />
-            <Text color="$color12" fontWeight="500" marginBottom="$2">
+            <CheckCircle color="$green10" size={48} mb="$3" />
+            <Text color="$color12" fontWeight="500" mb="$2">
               All caught up!
             </Text>
             <Text color="$color11" fontSize="$2">

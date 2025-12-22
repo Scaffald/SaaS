@@ -55,8 +55,8 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
 
   return (
     <YStack>
-      <H2 marginBottom="$2">Your Insurance Information</H2>
-      <Text marginBottom="$6" color="$color10">
+      <H2 mb="$2">Your Insurance Information</H2>
+      <Text mb="$6" color="$color10">
         Provide your current insurance policy details
       </Text>
       <YStack tag="form" onSubmit={handleSubmit} gap="$4">
@@ -107,7 +107,7 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
           />
           {errors.glExpirationDate && <Text color="$red10" fontSize="$2">{errors.glExpirationDate}</Text>}
         </YStack>
-        <YStack marginTop="$6">
+        <YStack mt="$6">
           <Button
             onPress={handleSubmit}
             variant="primary"

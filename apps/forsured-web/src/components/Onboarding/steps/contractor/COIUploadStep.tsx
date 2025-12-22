@@ -37,14 +37,14 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
 
   return (
     <YStack>
-      <H2 marginBottom="$2">Upload Certificates of Insurance (Optional)</H2>
-      <Text marginBottom="$6" color="$color10">
+      <H2 mb="$2">Upload Certificates of Insurance (Optional)</H2>
+      <Text mb="$6" color="$color10">
         You can skip this step and upload certificates later. PDF files only.
       </Text>
       <YStack tag="form" onSubmit={handleSubmit} gap="$6">
         <YStack gap="$4">
           <YStack>
-            <Label marginBottom="$2" display="block">General Liability COI</Label>
+            <Label mb="$2" display="block">General Liability COI</Label>
             <XStack alignItems="center" gap="$4">
               <XStack
                 tag="label"
@@ -78,7 +78,7 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
           </YStack>
 
           <YStack>
-            <Label marginBottom="$2" display="block">Workers Compensation COI</Label>
+            <Label mb="$2" display="block">Workers Compensation COI</Label>
             <XStack alignItems="center" gap="$4">
               <XStack
                 tag="label"
@@ -112,7 +112,7 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
           </YStack>
 
           <YStack>
-            <Label marginBottom="$2" display="block">Auto Liability COI</Label>
+            <Label mb="$2" display="block">Auto Liability COI</Label>
             <XStack alignItems="center" gap="$4">
               <XStack
                 tag="label"
@@ -146,7 +146,7 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
           </YStack>
         </YStack>
 
-        <YStack marginTop="$6">
+        <YStack mt="$6">
           <Button
             onPress={handleSubmit}
             variant="primary"

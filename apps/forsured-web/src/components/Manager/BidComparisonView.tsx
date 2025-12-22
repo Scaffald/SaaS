@@ -290,7 +290,7 @@ export default function BidComparisonView({
       <Modal isOpen={isOpen} onClose={onClose} title="Bid Comparison" size="xl">
         <YStack gap="$6">
           <YStack>
-            <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$1">
+            <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$1">
               {project.name}
             </H2>
             <Text color="$color11">
@@ -331,15 +331,15 @@ export default function BidComparisonView({
 
           {loading ? (
             <YStack alignItems="center" paddingVertical="$12">
-              <Spinner size="large" color="$blue10" marginBottom="$2" />
+              <Spinner size="large" color="$blue10" mb="$2" />
               <Text color="$color11">Loading bids...</Text>
             </YStack>
           ) : filteredAndSortedBids.length === 0 ? (
             <YStack alignItems="center" paddingVertical="$12">
-              <YStack alignItems="center" marginBottom="$4">
+              <YStack alignItems="center" mb="$4">
                 <Trophy color="$color10" size={48} />
               </YStack>
-              <Text color="$color12" fontWeight="500" marginBottom="$2">
+              <Text color="$color12" fontWeight="500" mb="$2">
                 No bids found
               </Text>
               <Text color="$color11" fontSize="$3">
@@ -357,9 +357,9 @@ export default function BidComparisonView({
                   padding="$6"
                   hoverStyle={{ borderColor: '$blue8' }}
                 >
-                  <XStack flexWrap="wrap" gap="$4" marginBottom="$4">
+                  <XStack flexWrap="wrap" gap="$4" mb="$4">
                     <YStack flex={2} minWidth="calc(33.333% - 11px)">
-                      <Text fontSize="$3" color="$color10" marginBottom="$1">
+                      <Text fontSize="$3" color="$color10" mb="$1">
                         Subcontractor
                       </Text>
                       <Text fontWeight="600" color="$color12">
@@ -367,7 +367,7 @@ export default function BidComparisonView({
                       </Text>
                     </YStack>
                     <YStack flex={1} minWidth="calc(16.666% - 11px)">
-                      <Text fontSize="$3" color="$color10" marginBottom="$1">
+                      <Text fontSize="$3" color="$color10" mb="$1">
                         Bid Amount
                       </Text>
                       <Text fontWeight="600" color="$color12">
@@ -375,7 +375,7 @@ export default function BidComparisonView({
                       </Text>
                     </YStack>
                     <YStack flex={1} minWidth="calc(16.666% - 11px)">
-                      <Text fontSize="$3" color="$color10" marginBottom="$1">
+                      <Text fontSize="$3" color="$color10" mb="$1">
                         Compliance Score
                       </Text>
                       <XStack
@@ -389,13 +389,13 @@ export default function BidComparisonView({
                         <Text fontWeight="700" fontSize="$7" color={getScoreColorProps(bid.score.overallScore).color}>
                           {bid.score.overallScore}
                         </Text>
-                        <Text fontSize="$1" marginLeft="$1" color={getScoreColorProps(bid.score.overallScore).color}>
+                        <Text fontSize="$1" ml="$1" color={getScoreColorProps(bid.score.overallScore).color}>
                           /100
                         </Text>
                       </XStack>
                     </YStack>
                     <YStack flex={1} minWidth="calc(16.666% - 11px)">
-                      <Text fontSize="$3" color="$color10" marginBottom="$1">
+                      <Text fontSize="$3" color="$color10" mb="$1">
                         Response Time
                       </Text>
                       <Text fontWeight="500" color="$color12">
@@ -403,7 +403,7 @@ export default function BidComparisonView({
                       </Text>
                     </YStack>
                     <YStack flex={1} minWidth="calc(16.666% - 11px)">
-                      <Text fontSize="$3" color="$color10" marginBottom="$1">Status</Text>
+                      <Text fontSize="$3" color="$color10" mb="$1">Status</Text>
                       <Text
                         paddingHorizontal="$2"
                         paddingVertical="$1"
@@ -433,7 +433,7 @@ export default function BidComparisonView({
 
                   {/* AI Processing Indicator */}
                   {bid.aiProcessingState && (
-                    <YStack marginBottom="$4">
+                    <YStack mb="$4">
                       <AIProcessingIndicator
                         state={bid.aiProcessingState}
                         message={
@@ -454,8 +454,8 @@ export default function BidComparisonView({
 
                   {/* Score Breakdown */}
                   {!bid.aiProcessingState && (
-                    <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4" marginBottom="$4">
-                      <Text fontSize="$1" fontWeight="500" color="$color11" marginBottom="$3">
+                    <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4" mb="$4">
+                      <Text fontSize="$1" fontWeight="500" color="$color11" mb="$3">
                         Score Breakdown
                       </Text>
                       <XStack flexWrap="wrap" gap="$3" fontSize="$1">
@@ -500,8 +500,8 @@ export default function BidComparisonView({
                   {/* Coverage Gaps */}
                   {!bid.aiProcessingState &&
                     bid.score.coverageGaps.length > 0 && (
-                      <Card backgroundColor="$orange2" borderWidth={1} borderColor="$orange8" borderRadius="$4" padding="$3" marginBottom="$4">
-                        <Text fontSize="$1" fontWeight="500" color="$orange12" marginBottom="$2">
+                      <Card backgroundColor="$orange2" borderWidth={1} borderColor="$orange8" borderRadius="$4" padding="$3" mb="$4">
+                        <Text fontSize="$1" fontWeight="500" color="$orange12" mb="$2">
                           Coverage Gaps
                         </Text>
                         <YStack gap="$1">
@@ -521,8 +521,8 @@ export default function BidComparisonView({
 
                   {/* Risk Assessment */}
                   {!bid.aiProcessingState && (
-                    <YStack marginBottom="$4">
-                      <Text fontSize="$1" fontWeight="500" color="$color11" marginBottom="$1">
+                    <YStack mb="$4">
+                      <Text fontSize="$1" fontWeight="500" color="$color11" mb="$1">
                         Risk Assessment
                       </Text>
                       <Text fontSize="$3" color="$color12">

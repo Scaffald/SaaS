@@ -210,8 +210,8 @@ export default function SubcontractorsPage() {
     return (
       <YStack alignItems="center" justifyContent="center" minHeight={400}>
         <YStack alignItems="center">
-          <AlertTriangle color="$red10" size={48} marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <AlertTriangle color="$red10" size={48} mb="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             Failed to load subcontractors
           </H3>
           <Text color="$color11">{error.message}</Text>
@@ -228,7 +228,7 @@ export default function SubcontractorsPage() {
           <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
             Subcontractors
           </H1>
-          <Text color="$color11" fontSize="$6" marginTop="$1">
+          <Text color="$color11" fontSize="$6" mt="$1">
             Manage your project subcontractors
           </Text>
         </YStack>
@@ -252,7 +252,7 @@ export default function SubcontractorsPage() {
           <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
             Subcontractors
           </H1>
-          <Text color="$color11" fontSize="$6" marginTop="$1">
+          <Text color="$color11" fontSize="$6" mt="$1">
             Manage {subcontractors.length} subcontractors across your projects
           </Text>
         </YStack>
@@ -348,7 +348,7 @@ export default function SubcontractorsPage() {
                   fontSize="$1"
                   fontWeight="500"
                   color="$color11"
-                  marginBottom="$2"
+                  mb="$2"
                 >
                   Status
                 </Text>
@@ -381,7 +381,7 @@ export default function SubcontractorsPage() {
                   fontSize="$1"
                   fontWeight="500"
                   color="$color11"
-                  marginBottom="$2"
+                  mb="$2"
                 >
                   Sort By
                 </Text>
@@ -459,9 +459,9 @@ export default function SubcontractorsPage() {
             $gtLg={{ minWidth: 'calc(33.333% - 11px)' }}
           >
             <YStack padding="$5">
-              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+              <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
                 <YStack flex={1}>
-                  <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$1">
+                  <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$1">
                     {sub.company_name}
                   </H3>
                   <Text fontSize="$3" color="$color10">{sub.trade_type}</Text>
@@ -469,8 +469,8 @@ export default function SubcontractorsPage() {
                 {getStatusIcon(sub.complianceStatus)}
               </XStack>
 
-              <YStack marginBottom="$4">
-                <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+              <YStack mb="$4">
+                <XStack alignItems="center" justifyContent="space-between" mb="$1">
                   <Text fontSize="$1" color="$color10">
                     Compliance Score
                   </Text>
@@ -515,7 +515,7 @@ export default function SubcontractorsPage() {
               </XStack>
 
               {sub.contact_name && (
-                <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
+                <YStack mt="$3" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
                   <XStack alignItems="center" gap="$2">
                     <Users size={14} color="$color10" />
                     <Text fontSize="$1" color="$color11">
@@ -531,8 +531,8 @@ export default function SubcontractorsPage() {
 
       {filteredAndSortedSubs.length === 0 && (
         <Card alignItems="center" paddingVertical="$16" backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
-          <Building color="$color10" size={64} marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <Building color="$color10" size={64} mb="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             No subcontractors found
           </H3>
           <Text color="$color11">

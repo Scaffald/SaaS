@@ -24,7 +24,7 @@ function VerifyEmailPage() {
         gap="$8"
         padding="$10"
         backgroundColor="$background"
-        borderRadius="$xl"
+        borderRadius="$5"
         shadowColor="$shadowColor"
         shadowRadius={20}
         shadowOffset={{ width: 0, height: 8 }}

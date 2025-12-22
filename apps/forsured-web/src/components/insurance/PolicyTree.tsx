@@ -92,7 +92,7 @@ export default function PolicyTree({
           <Text fontWeight="500" color="$color10">
             No insurance policies found
           </Text>
-          <Text fontSize="$2" color="$color10" marginTop="$1">
+          <Text fontSize="$2" color="$color10" mt="$1">
             Create your first insurance policy to get started
           </Text>
         </YStack>

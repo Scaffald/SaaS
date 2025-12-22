@@ -19,7 +19,7 @@ export interface TaskViewToggleProps {
 const ToggleContainer = styled(XStack, {
   name: 'TaskViewToggle',
   display: 'inline-flex',
-  borderRadius: '$md',
+  borderRadius: '$3',
   backgroundColor: '$backgroundHover',
   borderWidth: 1,
   borderColor: '$borderColor',
@@ -36,7 +36,7 @@ const ToggleButton = styled(Button, {
   paddingVertical: '$2',
   fontSize: '$2',
   fontWeight: '500',
-  borderRadius: '$md',
+  borderRadius: '$3',
   backgroundColor: 'transparent',
   borderWidth: 1,
   borderColor: 'transparent',

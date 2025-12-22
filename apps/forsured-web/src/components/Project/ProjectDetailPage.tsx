@@ -152,9 +152,9 @@ export default function ProjectDetailPage() {
   if (error || !project) {
     return (
       <YStack alignItems="center" paddingVertical="$12">
-        <AlertCircle size={48} color="$red10" marginBottom="$4" />
-        <H3 marginBottom="$2">Project not found</H3>
-        <Text color="$color11" marginBottom="$4">
+        <AlertCircle size={48} color="$red10" mb="$4" />
+        <H3 mb="$2">Project not found</H3>
+        <Text color="$color11" mb="$4">
           {error?.message || 'The project you are looking for does not exist.'}
         </Text>
         <Button onClick={() => navigate(-1)} leftIcon={ArrowLeft}>
@@ -222,7 +222,7 @@ export default function ProjectDetailPage() {
         <YStack gap="$6">
           <XStack flexWrap="wrap" gap="$4">
             <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-              <XStack alignItems="center" gap="$2" marginBottom="$2">
+              <XStack alignItems="center" gap="$2" mb="$2">
                 <Calendar size={18} color="$color10" />
                 <Text fontSize="$3" fontWeight="500" color="$color11">
                   Start Date
@@ -233,7 +233,7 @@ export default function ProjectDetailPage() {
               </Text>
             </Card>
             <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-              <XStack alignItems="center" gap="$2" marginBottom="$2">
+              <XStack alignItems="center" gap="$2" mb="$2">
                 <Calendar size={18} color="$color10" />
                 <Text fontSize="$3" fontWeight="500" color="$color11">
                   End Date
@@ -245,7 +245,7 @@ export default function ProjectDetailPage() {
             </Card>
             {project.location && (
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-                <XStack alignItems="center" gap="$2" marginBottom="$2">
+                <XStack alignItems="center" gap="$2" mb="$2">
                   <MapPin size={18} color="$color10" />
                   <Text fontSize="$3" fontWeight="500" color="$color11">
                     Location
@@ -258,7 +258,7 @@ export default function ProjectDetailPage() {
             )}
             {project.contract_value && (
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-                <XStack alignItems="center" gap="$2" marginBottom="$2">
+                <XStack alignItems="center" gap="$2" mb="$2">
                   <Building size={18} color="$color10" />
                   <Text fontSize="$3" fontWeight="500" color="$color11">
                     Contract Value
@@ -271,7 +271,7 @@ export default function ProjectDetailPage() {
             )}
             {project.project_manager && (
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-                <XStack alignItems="center" gap="$2" marginBottom="$2">
+                <XStack alignItems="center" gap="$2" mb="$2">
                   <Users size={18} color="$color10" />
                   <Text fontSize="$3" fontWeight="500" color="$color11">
                     Project Manager
@@ -283,7 +283,7 @@ export default function ProjectDetailPage() {
               </Card>
             )}
             <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-              <XStack alignItems="center" gap="$2" marginBottom="$2">
+              <XStack alignItems="center" gap="$2" mb="$2">
                 <Shield size={18} color="$color10" />
                 <Text fontSize="$3" fontWeight="500" color="$color11">
                   Compliance Status
@@ -305,7 +305,7 @@ export default function ProjectDetailPage() {
           </XStack>
           {project.description && (
             <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$2">
+              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$2">
                 Description
               </H3>
               <Text color="$color11">{project.description}</Text>
@@ -321,7 +321,7 @@ export default function ProjectDetailPage() {
       content: (
         <YStack gap="$6">
           <YStack>
-            <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+            <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
               Insurance Requirements
             </H3>
             {requiredCoverages.length > 0 ? (
@@ -339,7 +339,7 @@ export default function ProjectDetailPage() {
                       <Text fontSize="$3" fontWeight="500" color="$color12">
                         {coverage.name}
                       </Text>
-                      <Text fontSize="$2" color="$color10" marginTop="$1">
+                      <Text fontSize="$2" color="$color10" mt="$1">
                         Type: {coverage.type}
                       </Text>
                     </YStack>
@@ -361,7 +361,7 @@ export default function ProjectDetailPage() {
             project.additional_insureds?.length ||
             project.certificate_holder) && (
             <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                 Additional Requirements
               </H3>
               <YStack gap="$3">
@@ -384,7 +384,7 @@ export default function ProjectDetailPage() {
                 {project.additional_insureds &&
                   project.additional_insureds.length > 0 && (
                     <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4">
-                      <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                      <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                         Additional Insureds:
                       </Text>
                       <YStack gap="$1">
@@ -402,7 +402,7 @@ export default function ProjectDetailPage() {
                   )}
                 {project.certificate_holder && (
                   <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4">
-                    <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
+                    <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
                       Certificate Holder:
                     </Text>
                     <Text fontSize="$3" color="$color11">
@@ -416,7 +416,7 @@ export default function ProjectDetailPage() {
 
           {project.special_provisions && (
             <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$2">
+              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$2">
                 Special Provisions
               </H3>
               <Text color="$color11" whiteSpace="pre-wrap">
@@ -483,7 +483,7 @@ export default function ProjectDetailPage() {
             </YStack>
           ) : (
             <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <Users size={32} color="$color10" marginBottom="$2" />
+              <Users size={32} color="$color10" mb="$2" />
               <Text>No participants yet</Text>
             </YStack>
           )}
@@ -501,7 +501,7 @@ export default function ProjectDetailPage() {
           {compliance && (
             <XStack flexWrap="wrap" gap="$4">
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                   Overall Score
                 </Text>
                 <Text fontSize="$8" fontWeight="700" color="$color12">
@@ -509,7 +509,7 @@ export default function ProjectDetailPage() {
                 </Text>
               </Card>
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                   My Issues
                 </Text>
                 <Text fontSize="$8" fontWeight="700" color="$red10">
@@ -517,7 +517,7 @@ export default function ProjectDetailPage() {
                 </Text>
               </Card>
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                   Total Issues
                 </Text>
                 <Text fontSize="$8" fontWeight="700" color="$yellow10">
@@ -545,15 +545,15 @@ export default function ProjectDetailPage() {
 
           {userIssues.length > 0 ? (
             <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                 Your Open Issues
               </H3>
               <YStack gap="$3">
                 {userIssues.map((issue) => (
                   <Card key={issue.id} padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-                    <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                    <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
                       <YStack flex={1}>
-                        <XStack alignItems="center" gap="$2" marginBottom="$1">
+                        <XStack alignItems="center" gap="$2" mb="$1">
                           <XStack
                             paddingHorizontal="$2"
                             paddingVertical="$0.5"
@@ -585,7 +585,7 @@ export default function ProjectDetailPage() {
                       </XStack>
                     </XStack>
                       {issue.due_date && (
-                      <Text fontSize="$2" color="$color10" marginTop="$2">
+                      <Text fontSize="$2" color="$color10" mt="$2">
                           Due: {formatDate(issue.due_date)}
                       </Text>
                     )}
@@ -595,9 +595,9 @@ export default function ProjectDetailPage() {
             </YStack>
           ) : (
             <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <CheckCircle size={32} color="$green10" marginBottom="$2" />
+              <CheckCircle size={32} color="$green10" mb="$2" />
               <Text color="$green11" fontWeight="500">No issues assigned to you</Text>
-              <Text fontSize="$2" marginTop="$1">
+              <Text fontSize="$2" mt="$1">
                 You have no compliance issues to address in this project.
               </Text>
             </YStack>
@@ -616,7 +616,7 @@ export default function ProjectDetailPage() {
           {compliance && (
             <XStack flexWrap="wrap" gap="$4">
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                   Overall Score
                 </Text>
                 <Text fontSize="$8" fontWeight="700" color="$color12">
@@ -624,7 +624,7 @@ export default function ProjectDetailPage() {
                 </Text>
               </Card>
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                   Total Issues
                 </Text>
                 <Text fontSize="$8" fontWeight="700" color="$red10">
@@ -632,7 +632,7 @@ export default function ProjectDetailPage() {
                 </Text>
               </Card>
               <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                   Your Issues
                 </Text>
                 <Text fontSize="$8" fontWeight="700" color="$yellow10">
@@ -650,7 +650,7 @@ export default function ProjectDetailPage() {
 
           {allOpenIssues.length > 0 ? (
             <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                 All Open Issues ({allOpenIssues.length})
               </H3>
               <YStack gap="$3">
@@ -664,9 +664,9 @@ export default function ProjectDetailPage() {
                     borderRadius="$4"
                     opacity={issue.assigned_to === currentUser?.id ? 0.3 : 1}
                   >
-                    <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                    <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
                       <YStack flex={1}>
-                        <XStack alignItems="center" gap="$2" marginBottom="$1">
+                        <XStack alignItems="center" gap="$2" mb="$1">
                           <XStack
                             paddingHorizontal="$2"
                             paddingVertical="$0.5"
@@ -705,7 +705,7 @@ export default function ProjectDetailPage() {
                       </XStack>
                     </XStack>
                       {issue.due_date && (
-                      <Text fontSize="$2" color="$color10" marginTop="$2">
+                      <Text fontSize="$2" color="$color10" mt="$2">
                           Due: {formatDate(issue.due_date)}
                       </Text>
                     )}
@@ -715,9 +715,9 @@ export default function ProjectDetailPage() {
             </YStack>
           ) : (
             <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <CheckCircle size={32} color="$green10" marginBottom="$2" />
+              <CheckCircle size={32} color="$green10" mb="$2" />
               <Text color="$green11" fontWeight="500">No compliance issues</Text>
-              <Text fontSize="$2" marginTop="$1">
+              <Text fontSize="$2" mt="$1">
                 This project has no open compliance issues.
               </Text>
             </YStack>
@@ -732,9 +732,9 @@ export default function ProjectDetailPage() {
       content: (
         <YStack gap="$4">
           <YStack alignItems="center" paddingVertical="$8" color="$color10">
-            <FileText size={32} color="$color10" marginBottom="$2" />
+            <FileText size={32} color="$color10" mb="$2" />
             <Text>Document management coming soon</Text>
-            <Text fontSize="$2" marginTop="$1">
+            <Text fontSize="$2" mt="$1">
               This will show all project-related documents (COIs, endorsements,
               contracts)
             </Text>
@@ -761,7 +761,7 @@ export default function ProjectDetailPage() {
                   borderRadius="$4"
                 >
                   <YStack flex={1}>
-                    <XStack alignItems="center" gap="$2" marginBottom="$1">
+                    <XStack alignItems="center" gap="$2" mb="$1">
                       <Text fontSize="$3" fontWeight="500" color="$color12">
                         {task.title}
                       </Text>
@@ -782,7 +782,7 @@ export default function ProjectDetailPage() {
                       </Text>
                     )}
                     {task.due_date && (
-                      <Text fontSize="$2" color="$color10" marginTop="$1">
+                      <Text fontSize="$2" color="$color10" mt="$1">
                         Due: {formatDate(task.due_date)}
                       </Text>
                     )}
@@ -792,7 +792,7 @@ export default function ProjectDetailPage() {
             </YStack>
           ) : (
             <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <CheckCircle size={32} color="$color10" marginBottom="$2" />
+              <CheckCircle size={32} color="$color10" mb="$2" />
               <Text>No tasks yet</Text>
             </YStack>
           )}
@@ -806,9 +806,9 @@ export default function ProjectDetailPage() {
       content: (
         <YStack gap="$4">
           <YStack alignItems="center" paddingVertical="$8" color="$color10">
-            <HistoryIcon size={32} color="$color10" marginBottom="$2" />
+            <HistoryIcon size={32} color="$color10" mb="$2" />
             <Text>Activity log coming soon</Text>
-            <Text fontSize="$2" marginTop="$1">
+            <Text fontSize="$2" mt="$1">
               This will show project activity with timestamps and user actions
             </Text>
           </YStack>
@@ -831,7 +831,7 @@ export default function ProjectDetailPage() {
                   backgroundColor="$backgroundHover"
                   borderRadius="$4"
                 >
-                  <XStack alignItems="center" gap="$2" marginBottom="$2">
+                  <XStack alignItems="center" gap="$2" mb="$2">
                     <XStack
                       width={32}
                       height={32}
@@ -861,7 +861,7 @@ export default function ProjectDetailPage() {
             </YStack>
           ) : (
             <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <MessageSquare size={32} color="$color10" marginBottom="$2" />
+              <MessageSquare size={32} color="$color10" mb="$2" />
               <Text>No notes yet</Text>
             </YStack>
           )}
@@ -887,7 +887,7 @@ export default function ProjectDetailPage() {
             <H1 fontSize="$8" fontWeight="700" color="$color12">
               {project.name}
             </H1>
-            <XStack alignItems="center" gap="$4" marginTop="$1">
+            <XStack alignItems="center" gap="$4" mt="$1">
               <XStack
                 alignItems="center"
                 paddingHorizontal="$2"

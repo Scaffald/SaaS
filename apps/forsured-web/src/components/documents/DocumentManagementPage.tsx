@@ -130,18 +130,18 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
       paddingHorizontal={{ sm: '$4', md: '$6', lg: '$8' }}
       paddingVertical="$8"
     >
-      <YStack marginBottom="$8">
+      <YStack mb="$8">
         <H1 fontSize="$9" fontWeight="bold" color="$color12">
           Documents
         </H1>
-        <Text marginTop="$2" fontSize="$3" color="$color11">
+        <Text mt="$2" fontSize="$3" color="$color11">
           Upload and manage insurance certificates for this project.
         </Text>
       </YStack>
 
       {error && (
         <Card
-          marginBottom="$6"
+          mb="$6"
           backgroundColor="$red2"
           borderWidth={1}
           borderColor="$red6"
@@ -152,12 +152,12 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
             <XStack flexShrink={0}>
               <X size={20} color="$red10" />
             </XStack>
-            <XStack flex={1} marginLeft="$3">
+            <XStack flex={1} ml="$3">
               <Text fontSize="$3" fontWeight="500" color="$red12">
                 {error}
               </Text>
             </XStack>
-            <XStack marginLeft="auto" paddingLeft="$3">
+            <XStack ml="auto" paddingLeft="$3">
               <XStack
                 as="button"
                 display="inline-flex"
@@ -174,7 +174,7 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
       )}
 
       {canUpload() && (
-        <YStack marginBottom="$8">
+        <YStack mb="$8">
           <FileUploadZone
             projectId={projectId}
             uploaderId={currentUser.id}

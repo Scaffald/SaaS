@@ -70,7 +70,7 @@ const IconButtonBase = styled(Button, {
     },
     shape: {
       square: {
-        borderRadius: '$md',
+        borderRadius: '$3',
       },
       round: {
         borderRadius: '$10',

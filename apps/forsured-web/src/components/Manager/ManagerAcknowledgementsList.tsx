@@ -128,7 +128,7 @@ export default function ManagerAcknowledgementsList() {
           <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
             Broker Acknowledgements
           </H1>
-          <Text color="$color11" fontSize="$6" marginTop="$1">
+          <Text color="$color11" fontSize="$6" mt="$1">
             Review and manage broker acknowledgement packets for compliance
             verification
           </Text>
@@ -140,7 +140,7 @@ export default function ManagerAcknowledgementsList() {
 
       <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
         <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1} flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+          <XStack alignItems="center" justifyContent="space-between" mb="$3">
             <YStack width={40} height={40} backgroundColor="$blue2" borderRadius="$4" alignItems="center" justifyContent="center">
               <FileText color="$blue10" size={20} />
             </YStack>
@@ -154,7 +154,7 @@ export default function ManagerAcknowledgementsList() {
         </Card>
 
         <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1} flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+          <XStack alignItems="center" justifyContent="space-between" mb="$3">
             <YStack width={40} height={40} backgroundColor="$green2" borderRadius="$4" alignItems="center" justifyContent="center">
               <CheckCircle color="$green10" size={20} />
             </YStack>
@@ -166,7 +166,7 @@ export default function ManagerAcknowledgementsList() {
         </Card>
 
         <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1} flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+          <XStack alignItems="center" justifyContent="space-between" mb="$3">
             <YStack width={40} height={40} backgroundColor="$blue2" borderRadius="$4" alignItems="center" justifyContent="center">
               <Clock color="$blue10" size={20} />
             </YStack>
@@ -182,7 +182,7 @@ export default function ManagerAcknowledgementsList() {
         </Card>
 
         <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1} flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+          <XStack alignItems="center" justifyContent="space-between" mb="$3">
             <YStack width={40} height={40} backgroundColor="$orange2" borderRadius="$4" alignItems="center" justifyContent="center">
               <AlertTriangle color="$orange10" size={20} />
             </YStack>
@@ -254,13 +254,13 @@ export default function ManagerAcknowledgementsList() {
 
       {filteredPackets.length === 0 ? (
         <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
-          <FileText size={48} color="$color11" marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <FileText size={48} color="$color11" mb="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             {searchTerm || statusFilter !== 'ALL'
               ? 'No packets found'
               : 'No acknowledgement packets yet'}
           </H3>
-          <Text color="$color11" marginBottom="$6">
+          <Text color="$color11" mb="$6">
             {searchTerm || statusFilter !== 'ALL'
               ? 'Try adjusting your search or filter criteria'
               : 'Create your first broker acknowledgement packet to get started'}
@@ -285,9 +285,9 @@ export default function ManagerAcknowledgementsList() {
                 onPress={() => setSelectedPacketId(packet.id)}
               >
                 <YStack padding="$6">
-                  <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
                     <YStack flex={1}>
-                      <XStack alignItems="center" gap="$3" marginBottom="$2">
+                      <XStack alignItems="center" gap="$3" mb="$2">
                         <H3 fontSize="$6" fontWeight="600" color="$color12">
                           {getProjectName(packet.project_id)}
                         </H3>
@@ -339,9 +339,9 @@ export default function ManagerAcknowledgementsList() {
                     </YStack>
                   </XStack>
 
-                  <XStack flexWrap="wrap" gap="$4" marginBottom="$4" $gtMd={{ flexWrap: 'wrap' }}>
+                  <XStack flexWrap="wrap" gap="$4" mb="$4" $gtMd={{ flexWrap: 'wrap' }}>
                     <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$3" flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
-                      <Text fontSize="$1" color="$color11" marginBottom="$1">
+                      <Text fontSize="$1" color="$color11" mb="$1">
                         Effective Date
                       </Text>
                       <XStack alignItems="center" gap="$1">
@@ -353,7 +353,7 @@ export default function ManagerAcknowledgementsList() {
                     </Card>
 
                     <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$3" flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
-                      <Text fontSize="$1" color="$color11" marginBottom="$1">
+                      <Text fontSize="$1" color="$color11" mb="$1">
                         E&O Coverage
                       </Text>
                       <Text fontSize="$3" fontWeight="500" color="$color12">
@@ -363,7 +363,7 @@ export default function ManagerAcknowledgementsList() {
                     </Card>
 
                     <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$3" flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
-                      <Text fontSize="$1" color="$color11" marginBottom="$1">
+                      <Text fontSize="$1" color="$color11" mb="$1">
                         Licensed States
                       </Text>
                       <Text fontSize="$3" fontWeight="500" color="$color12">

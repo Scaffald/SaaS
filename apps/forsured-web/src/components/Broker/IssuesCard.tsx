@@ -27,14 +27,14 @@ export default function IssuesCard({ count, onClick }: IssuesCardProps) {
             <Text fontSize="$3" fontWeight="500" color="$color11">
               Critical Issues
             </Text>
-            <XStack alignItems="center" gap="$2" marginTop="$1">
+            <XStack alignItems="center" gap="$2" mt="$1">
               <Text fontSize="$9" fontWeight="bold" color="$red10">{count}</Text>
             </XStack>
           </YStack>
         </XStack>
         <ChevronRight color="$color10" size={20} />
       </XStack>
-      <YStack marginTop="$4">
+      <YStack mt="$4">
         <Text fontSize="$1" color="$color11">Policy issues to address</Text>
       </YStack>
     </Card>

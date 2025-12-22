@@ -78,7 +78,7 @@ export default function ManagerTasksPanel({
   return (
     <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" elevation={1}>
       <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
           Task Management
         </H2>
 
@@ -229,7 +229,7 @@ export default function ManagerTasksPanel({
                         {task.title}
                       </Text>
                       {task.description && (
-                        <Text fontSize="$1" color="$color11" numberOfLines={1} marginTop="$0.5">
+                        <Text fontSize="$1" color="$color11" numberOfLines={1} mt="$0.5">
                           {task.description}
                         </Text>
                       )}
@@ -284,7 +284,7 @@ export default function ManagerTasksPanel({
                         color={isOverdue(task.due_date) ? '$red10' : '$color12'}
                         fontWeight={isOverdue(task.due_date) ? '500' : 'normal'}
                       >
-                        <Clock size={14} marginRight="$1.5" />
+                        <Clock size={14} mr="$1.5" />
                         <Text fontSize="$3" color={isOverdue(task.due_date) ? '$red10' : '$color12'} fontWeight={isOverdue(task.due_date) ? '500' : 'normal'}>
                           {formatDate(task.due_date)}
                         </Text>
@@ -325,7 +325,7 @@ export default function ManagerTasksPanel({
             <CheckCircle
               color="$color10"
               size={48}
-              marginBottom="$3"
+              mb="$3"
             />
             <Text color="$color11">
               No {activeView.replace('_', ' ')} tasks

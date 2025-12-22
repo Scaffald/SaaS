@@ -467,7 +467,7 @@ export function RequirementsList({
       {isLoading ? (
         <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
           <LoadingSpinner />
-          <Text marginLeft="$2" color="$gray11">Loading requirements...</Text>
+          <Text ml="$2" color="$gray11">Loading requirements...</Text>
         </XStack>
       ) : (
         <YStack borderWidth={1} borderColor="$gray6" borderRadius="$4" overflow="hidden">

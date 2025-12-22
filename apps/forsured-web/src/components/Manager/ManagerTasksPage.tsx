@@ -293,10 +293,10 @@ export default function ManagerTasksPage() {
     return (
       <YStack alignItems="center" justifyContent="center" minHeight={400}>
         <YStack alignItems="center">
-          <YStack alignItems="center" marginBottom="$4">
+          <YStack alignItems="center" mb="$4">
             <AlertCircle color="$red10" size={48} />
           </YStack>
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             Failed to load tasks
           </H3>
           <Text color="$color11">{error.message}</Text>
@@ -312,7 +312,7 @@ export default function ManagerTasksPage() {
           <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
             Tasks
           </H1>
-          <Text color="$color11" fontSize="$6" marginTop="$1">
+          <Text color="$color11" fontSize="$6" mt="$1">
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
         </YStack>
@@ -409,7 +409,7 @@ export default function ManagerTasksPage() {
             </Text>
             {activeFilterCount > 0 && (
               <Text
-                marginLeft="$1"
+                ml="$1"
                 paddingHorizontal="$2"
                 paddingVertical="$0.5"
                 backgroundColor="$blue10"
@@ -433,7 +433,7 @@ export default function ManagerTasksPage() {
                   fontSize="$1"
                   fontWeight="500"
                   color="$color11"
-                  marginBottom="$2"
+                  mb="$2"
                 >
                   Status
                 </Text>
@@ -469,7 +469,7 @@ export default function ManagerTasksPage() {
                   fontSize="$1"
                   fontWeight="500"
                   color="$color11"
-                  marginBottom="$2"
+                  mb="$2"
                 >
                   Priority
                 </Text>
@@ -505,7 +505,7 @@ export default function ManagerTasksPage() {
                   fontSize="$1"
                   fontWeight="500"
                   color="$color11"
-                  marginBottom="$2"
+                  mb="$2"
                 >
                   Project
                 </Text>
@@ -540,7 +540,7 @@ export default function ManagerTasksPage() {
                 fontSize="$1"
                 fontWeight="500"
                 color="$color11"
-                marginBottom="$2"
+                mb="$2"
               >
                 Tags
               </Text>
@@ -669,9 +669,9 @@ export default function ManagerTasksPage() {
               elevation={1}
             >
               <YStack padding="$5">
-                <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+                <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
                   <YStack flex={1}>
-                    <XStack alignItems="center" gap="$3" marginBottom="$2">
+                    <XStack alignItems="center" gap="$3" mb="$2">
                       <H3 fontSize="$5" fontWeight="600" color="$color12">
                         {task.title}
                       </H3>
@@ -697,7 +697,7 @@ export default function ManagerTasksPage() {
                         {formatLabel(task.status)}
                       </Text>
                     </XStack>
-                    <Text fontSize="$3" color="$color11" marginBottom="$3">
+                    <Text fontSize="$3" color="$color11" mb="$3">
                       {task.description}
                     </Text>
                     <XStack alignItems="center" gap="$4" fontSize="$1" color="$color10">
@@ -776,10 +776,10 @@ export default function ManagerTasksPage() {
 
       {filteredAndSortedTasks.length === 0 && (
         <Card alignItems="center" paddingVertical="$16" backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
-          <YStack alignItems="center" marginBottom="$4">
+          <YStack alignItems="center" mb="$4">
             <CheckCircle color="$color10" size={64} />
           </YStack>
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             No tasks found
           </H3>
           <Text color="$color11">

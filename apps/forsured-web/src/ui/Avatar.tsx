@@ -37,7 +37,7 @@ const AvatarBox = styled(XStack, {
     },
     shape: {
       circle: { borderRadius: '$full' },
-      square: { borderRadius: '$lg' },
+      square: { borderRadius: '$4' },
     },
   } as const,
 });

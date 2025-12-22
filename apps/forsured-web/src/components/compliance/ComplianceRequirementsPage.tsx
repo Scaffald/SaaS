@@ -273,7 +273,7 @@ export function ComplianceRequirementsPage() {
     return (
       <YStack padding="$8" alignItems="center">
         <Text color="$red9">Error loading requirements: {error.message}</Text>
-        <Button variant="outlined" marginTop="$4" onPress={() => window.location.reload()}>
+        <Button variant="outlined" mt="$4" onPress={() => window.location.reload()}>
           Retry
         </Button>
       </YStack>
@@ -288,7 +288,7 @@ export function ComplianceRequirementsPage() {
           <H1 fontSize="$10" fontWeight="700" color="$color12">
             Compliance Requirements
           </H1>
-          <Text fontSize="$6" color="$color11" marginTop="$1">
+          <Text fontSize="$6" color="$color11" mt="$1">
             Manage insurance compliance requirements and templates
           </Text>
         </YStack>
@@ -328,7 +328,7 @@ export function ComplianceRequirementsPage() {
           <FileText size={18} />
           <Text>All</Text>
           <Text
-            marginLeft="$1"
+            ml="$1"
             paddingHorizontal="$2"
             paddingVertical="$1"
             fontSize="$2"
@@ -430,7 +430,7 @@ export function ComplianceRequirementsPage() {
               <Text>Filters</Text>
               {activeFilterCount > 0 && (
                 <Text
-                  marginLeft="$1"
+                  ml="$1"
                   paddingHorizontal="$2"
                   paddingVertical="$1"
                   backgroundColor="$blue9"
@@ -450,7 +450,7 @@ export function ComplianceRequirementsPage() {
               <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }} $gtLg={{ flexDirection: 'row' }}>
                 {/* Coverage Type Filter */}
                 <YStack flex={1} minWidth="200px">
-                  <Text fontSize="$2" fontWeight="500" color="$color11" marginBottom="$2">
+                  <Text fontSize="$2" fontWeight="500" color="$color11" mb="$2">
                     Coverage Type
                   </Text>
                   <XStack flexWrap="wrap" gap="$2">
@@ -477,7 +477,7 @@ export function ComplianceRequirementsPage() {
 
                 {/* Status Filter */}
                 <YStack flex={1} minWidth="200px">
-                  <Text fontSize="$2" fontWeight="500" color="$color11" marginBottom="$2">
+                  <Text fontSize="$2" fontWeight="500" color="$color11" mb="$2">
                     Status
                   </Text>
                   <XStack flexWrap="wrap" gap="$2">
@@ -504,7 +504,7 @@ export function ComplianceRequirementsPage() {
 
                 {/* Include Archived Toggle */}
                 <YStack flex={1} minWidth="200px">
-                  <Text fontSize="$2" fontWeight="500" color="$color11" marginBottom="$2">
+                  <Text fontSize="$2" fontWeight="500" color="$color11" mb="$2">
                     Options
                   </Text>
                   <XStack alignItems="center" gap="$2" cursor="pointer">
@@ -768,7 +768,7 @@ export function ComplianceRequirementsPage() {
                           <Text
                             fontSize="$2"
                             color="$color10"
-                            marginTop="$0.5"
+                            mt="$0.5"
                             numberOfLines={1}
                             maxWidth="300px"
                           >

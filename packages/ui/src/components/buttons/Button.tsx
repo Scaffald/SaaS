@@ -1,4 +1,4 @@
-import { type ForwardRefExoticComponent, forwardRef, type RefAttributes } from 'react'
+import React, { type ForwardRefExoticComponent, forwardRef, type RefAttributes } from 'react'
 import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 'tamagui'
 
 /**
@@ -56,7 +56,7 @@ import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 
 
 type ButtonTone = 'blue' | 'gray' | 'info' | 'success' | 'error' | 'accent'
 
-export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme' | 'fullWidth' | 'fullwidth' | 'width'> {
+export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme' | 'fullWidth' | 'fullwidth' | 'icon'> {
   /**
    * Visual style variant
    * @default 'primary'
@@ -70,29 +70,47 @@ export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme
    * Make button full width
    */
   fullWidth?: boolean
+  /**
+   * Icon to display on the left side of the button
+   * Can be a React component (e.g., Lucide icon)
+   */
+  leftIcon?: React.ComponentType<{ size?: number; color?: string }>
+  /**
+   * Icon to display on the right side of the button
+   * Can be a React component (e.g., Lucide icon)
+   */
+  rightIcon?: React.ComponentType<{ size?: number; color?: string }>
+  /**
+   * Tamagui icon prop (use leftIcon/rightIcon instead)
+   */
+  icon?: TamaguiButtonProps['icon']
 }
 
 const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', theme, fullWidth, ...restProps }, ref) => {
+  ({ variant = 'primary', theme, fullWidth, leftIcon: LeftIcon, rightIcon: RightIcon, icon, ...restProps }, ref) => {
     // Extract fullWidth to prevent it from being passed to DOM
     // Convert fullWidth to width prop for Tamagui
     const widthProp = fullWidth ? { width: '100%' } : {}
-    
-    // Explicitly filter out fullWidth, fullwidth, and width from restProps
+
+    // Explicitly filter out fullWidth, fullwidth, leftIcon, rightIcon from restProps
     // This prevents React warnings about unknown DOM props
-    // We set width separately via widthProp, so we must exclude it from spread
     // Use Object.keys to avoid inherited properties and ensure proper filtering
     const {
       fullWidth: _fullWidth,
       fullwidth: _fullwidth,
-      width: _width,
+      leftIcon: _leftIcon,
+      rightIcon: _rightIcon,
       ...cleanProps
     } = restProps as {
       fullWidth?: unknown;
       fullwidth?: unknown;
-      width?: unknown;
+      leftIcon?: unknown;
+      rightIcon?: unknown;
       [key: string]: unknown;
     }
+
+    // Handle icon prop - leftIcon takes precedence for backwards compatibility
+    const iconElement = LeftIcon ? <LeftIcon size={16} /> : icon
     
     /**
      * Variant style definitions
@@ -237,11 +255,16 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const toneStyle = theme ? toneStyles[theme] : undefined
 
+    // Handle rightIcon as iconAfter
+    const iconAfterElement = RightIcon ? <RightIcon size={16} /> : undefined
+
     return (
       <TamaguiButton
         ref={ref}
         fontWeight="600" // Semibold for all buttons
         animation="quick" // Fast, responsive animations
+        icon={iconElement}
+        iconAfter={iconAfterElement}
         {...variantStyles[variant]}
         {...toneStyle}
         {...widthProp}

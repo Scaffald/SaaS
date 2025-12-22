@@ -103,13 +103,13 @@ export default function ProjectCard({
       hoverStyle={onClick ? { shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, borderColor: '$blue9' } : undefined}
       padding="$6"
     >
-      <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+      <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
         <XStack alignItems="flex-start" gap="$3" flex={1}>
           <YStack
             width={48}
             height={48}
             backgroundColor="$orange3"
-            borderRadius="$md"
+            borderRadius="$3"
             alignItems="center"
             justifyContent="center"
             flexShrink={0}
@@ -121,20 +121,20 @@ export default function ProjectCard({
               {project.name}
             </Text>
             {project.description && (
-              <Text fontSize="$2" color="$color10" numberOfLines={2} marginTop="$1">
+              <Text fontSize="$2" color="$color10" numberOfLines={2} mt="$1">
                 {project.description}
               </Text>
             )}
           </YStack>
         </XStack>
-        <YStack alignItems="flex-end" marginLeft="$4">
+        <YStack alignItems="flex-end" ml="$4">
           <Badge variant={getComplianceVariant()} size="sm">
             {project.compliance_status}
           </Badge>
         </YStack>
       </XStack>
 
-      <YStack gap="$3" marginBottom="$4">
+      <YStack gap="$3" mb="$4">
         <XStack flexWrap="wrap" gap="$4">
           {project.location && (
             <XStack alignItems="center" gap="$2" color="$color10">
@@ -164,7 +164,7 @@ export default function ProjectCard({
 
         {requiredCoverages.length > 0 && (
           <YStack paddingTop="$3" borderTopWidth={1} borderTopColor="$borderColor" gap="$2">
-            <XStack alignItems="flex-start" gap="$2" marginBottom="$2">
+            <XStack alignItems="flex-start" gap="$2" mb="$2">
               <Shield size={14} color="currentColor" style={{ marginTop: 2 }} />
               <Text fontSize="$1" fontWeight="500" color="$color10">
                 Required Insurance:
@@ -178,7 +178,7 @@ export default function ProjectCard({
               ))}
             </XStack>
             {project.waiver_of_subrogation_required && (
-              <YStack marginTop="$2">
+              <YStack mt="$2">
                 <Badge variant="warning" size="sm">
                   Waiver of Subrogation Required
                 </Badge>
@@ -204,7 +204,7 @@ export default function ProjectCard({
       {showActions &&
         userRole === 'manager' &&
         (onInviteUser || onCreateTask) && (
-          <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor" marginTop="$4">
+          <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor" mt="$4">
             <XStack gap="$2">
               {onInviteUser && (
                 <CoreButton
@@ -243,7 +243,7 @@ export default function ProjectCard({
         )}
 
       {userRole === 'subcontractor' && project.notes && (
-        <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor" marginTop="$4">
+        <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor" mt="$4">
           <Text fontSize="$1" color="$color10">
             {project.notes}
           </Text>

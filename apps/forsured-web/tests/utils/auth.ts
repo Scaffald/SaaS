@@ -1,11 +1,9 @@
 // tests/utils/auth.ts
 // Test user authentication utilities for E2E tests
 //
-// Supports two modes:
-// 1. Mock mode (default): Uses mock tokens and API interception
-// 2. Real database mode: Uses real Supabase profiles with mock Scaffald auth
-//
-// Set REAL_DB_TESTS=true in playwright.config.ts to use real database mode.
+// REQ-9: Testing Policy - Always use real Supabase, no mocking internal services
+// Tests should use real Supabase database with seeded test users.
+// Use test login buttons on /start page for authentication.
 
 import { Page } from '@playwright/test';
 
@@ -670,10 +668,8 @@ export async function loginAs(
   // Set up E2E test user for mock Scaffald client
   await setupTestUser(page, user);
 
-  // In mock mode, also set up mock Supabase responses
-  if (!USE_REAL_DATABASE) {
-    await setupMockProfile(page, user);
-  }
+  // REQ-9: Testing Policy - Always use real Supabase, no mocking internal services
+  // Removed setupMockProfile - tests should use real Supabase database
 
   // Navigate to appropriate page if requested
   if (options.navigate !== false) {

@@ -481,11 +481,11 @@ export function DependencyVisualizer({
         borderWidth={1}
         borderColor="$red6"
       >
-        <AlertTriangle color="$red10" size={32} marginBottom="$2" />
+        <AlertTriangle color="$red10" size={32} mb="$2" />
         <Text color="$red11" fontWeight="500">
           Failed to load dependency tree
         </Text>
-        <Text color="$red10" fontSize="$3" marginTop="$1">
+        <Text color="$red10" fontSize="$3" mt="$1">
           {error.message}
         </Text>
       </YStack>
@@ -504,7 +504,7 @@ export function DependencyVisualizer({
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Info color="$color10" size={32} marginBottom="$2" />
+        <Info color="$color10" size={32} mb="$2" />
         <Text color="$color11">No dependency data available</Text>
       </YStack>
     );
@@ -530,11 +530,11 @@ export function DependencyVisualizer({
           borderColor="$borderColor"
           alignItems="center"
         >
-          <Info color="$color10" size={32} marginBottom="$2" />
+          <Info color="$color10" size={32} mb="$2" />
           <Text color="$color11" fontWeight="500">
             No dependencies
           </Text>
-          <Text color="$color10" fontSize="$3" marginTop="$1">
+          <Text color="$color10" fontSize="$3" mt="$1">
             This requirement has no dependencies defined
           </Text>
         </YStack>
@@ -563,7 +563,7 @@ export function DependencyVisualizer({
           <Button variant="secondary" size="sm" onClick={handleResetView} title="Reset View">
             <Maximize size={16} />
           </Button>
-          <Text fontSize="$1" color="$color10" marginLeft="$2">
+          <Text fontSize="$1" color="$color10" ml="$2">
             {Math.round(zoom * 100)}%
           </Text>
         </XStack>
@@ -661,7 +661,7 @@ export function DependencyVisualizer({
               <Text fontSize="$3" color="$color11">
                 {selectedNode.type.replace('_', ' ')} | Level {selectedNode.depth}
                 {selectedNode.dependency_type && (
-                  <Text marginLeft="$2">
+                  <Text ml="$2">
                     ({dependencyTypeLabels[selectedNode.dependency_type] || selectedNode.dependency_type})
                   </Text>
                 )}

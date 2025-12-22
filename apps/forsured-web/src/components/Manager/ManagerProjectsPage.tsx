@@ -150,31 +150,31 @@ export default function ManagerProjectsPage() {
       <XStack alignItems="center" gap="$6" fontSize="$3">
         <XStack alignItems="center">
           <Text fontWeight="600" color="$color12">{stats.total}</Text>
-          <Text color="$color11" marginLeft="$1">Projects</Text>
+          <Text color="$color11" ml="$1">Projects</Text>
         </XStack>
         <YStack height={16} width={1} backgroundColor="$borderColor" />
         <XStack alignItems="center">
           <Text fontWeight="600" color="$green10">
             {stats.compliant}
           </Text>
-          <Text color="$color11" marginLeft="$1">Compliant</Text>
+          <Text color="$color11" ml="$1">Compliant</Text>
         </XStack>
         <YStack height={16} width={1} backgroundColor="$borderColor" />
         <XStack alignItems="center">
           <Text fontWeight="600" color="$orange10">
             {stats.warning}
           </Text>
-          <Text color="$color11" marginLeft="$1">Warning</Text>
+          <Text color="$color11" ml="$1">Warning</Text>
         </XStack>
         <YStack height={16} width={1} backgroundColor="$borderColor" />
         <XStack alignItems="center">
           <Text fontWeight="600" color="$red10">{stats.critical}</Text>
-          <Text color="$color11" marginLeft="$1">Critical</Text>
+          <Text color="$color11" ml="$1">Critical</Text>
         </XStack>
       </XStack>
 
       <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6" elevation={1}>
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <XStack alignItems="center" justifyContent="space-between" mb="$4">
           <XStack alignItems="center" gap="$2">
             <Filter size={20} color="$color11" />
             <H2 fontSize="$6" fontWeight="600" color="$color12">
@@ -208,7 +208,7 @@ export default function ManagerProjectsPage() {
               fontSize="$3"
               fontWeight="500"
               color="$color11"
-              marginBottom="$2"
+              mb="$2"
             >
               Compliance Status
             </Text>
@@ -380,7 +380,7 @@ export default function ManagerProjectsPage() {
                       >
                         <Building color="$blue10" size={20} />
                       </YStack>
-                      <YStack marginLeft="$4">
+                      <YStack ml="$4">
                         <Text fontSize="$3" fontWeight="500" color="$color12">
                           {project.name}
                         </Text>
@@ -457,8 +457,8 @@ export default function ManagerProjectsPage() {
 
         {filteredProjects.length === 0 && (
           <YStack padding="$12" alignItems="center">
-            <Building color="$color10" size={48} marginBottom="$4" />
-            <Text color="$color12" fontWeight="500" marginBottom="$2">
+            <Building color="$color10" size={48} mb="$4" />
+            <Text color="$color12" fontWeight="500" mb="$2">
               No projects found
             </Text>
             <Text color="$color11" fontSize="$3">
@@ -507,7 +507,7 @@ export default function ManagerProjectsPage() {
 
             <YStack padding="$6" gap="$6">
               <YStack>
-                <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
+                <H3 fontSize="$3" fontWeight="500" color="$color11" mb="$2">
                   Description
                 </H3>
                 <Text color="$color12">
@@ -517,7 +517,7 @@ export default function ManagerProjectsPage() {
 
               <XStack flexWrap="wrap" gap="$4">
                 <YStack flex={1} minWidth="calc(50% - 8px)">
-                  <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
+                  <H3 fontSize="$3" fontWeight="500" color="$color11" mb="$2">
                     Location
                   </H3>
                   <Text color="$color12">
@@ -525,7 +525,7 @@ export default function ManagerProjectsPage() {
                   </Text>
                 </YStack>
                 <YStack flex={1} minWidth="calc(50% - 8px)">
-                  <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
+                  <H3 fontSize="$3" fontWeight="500" color="$color11" mb="$2">
                     Project Manager
                   </H3>
                   <Text color="$color12">
@@ -535,7 +535,7 @@ export default function ManagerProjectsPage() {
               </XStack>
 
               <YStack>
-                <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$3">
+                <H3 fontSize="$3" fontWeight="500" color="$color11" mb="$3">
                   Insurance Requirements
                 </H3>
                 <XStack flexWrap="wrap" gap="$4">
@@ -611,7 +611,7 @@ export default function ManagerProjectsPage() {
               {selectedProject.additional_insureds &&
                 selectedProject.additional_insureds.length > 0 && (
                   <YStack>
-                    <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
+                    <H3 fontSize="$3" fontWeight="500" color="$color11" mb="$2">
                       Additional Insureds
                     </H3>
                     <YStack gap="$1">
@@ -628,7 +628,7 @@ export default function ManagerProjectsPage() {
 
               {selectedProject.special_provisions && (
                 <YStack>
-                  <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
+                  <H3 fontSize="$3" fontWeight="500" color="$color11" mb="$2">
                     Special Provisions
                   </H3>
                   <Text fontSize="$3" color="$color12">

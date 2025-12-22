@@ -80,8 +80,8 @@ export default function BrokerClientProfilePage() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <AlertTriangle color="$red10" size={64} marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <AlertTriangle color="$red10" size={64} mb="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             Client Not Found
           </H3>
           <Text color="$color11">
@@ -128,7 +128,7 @@ export default function BrokerClientProfilePage() {
             flexWrap="wrap"
           >
             <Card backgroundColor="$gray2" borderRadius="$4" padding="$4" flex={1} minWidth="20%">
-              <XStack alignItems="center" gap="$2" marginBottom="$2">
+              <XStack alignItems="center" gap="$2" mb="$2">
                 <Shield color="$color10" size={18} />
                 <Text fontSize="$3" fontWeight="500" color="$color11">
                   Compliance Score
@@ -139,7 +139,7 @@ export default function BrokerClientProfilePage() {
               </Text>
             </Card>
             <Card backgroundColor="$gray2" borderRadius="$4" padding="$4" flex={1} minWidth="20%">
-              <XStack alignItems="center" gap="$2" marginBottom="$2">
+              <XStack alignItems="center" gap="$2" mb="$2">
                 <FileText color="$color10" size={18} />
                 <Text fontSize="$3" fontWeight="500" color="$color11">
                   Active Policies
@@ -150,7 +150,7 @@ export default function BrokerClientProfilePage() {
               </Text>
             </Card>
             <Card backgroundColor="$gray2" borderRadius="$4" padding="$4" flex={1} minWidth="20%">
-              <XStack alignItems="center" gap="$2" marginBottom="$2">
+              <XStack alignItems="center" gap="$2" mb="$2">
                 <Building color="$color10" size={18} />
                 <Text fontSize="$3" fontWeight="500" color="$color11">
                   Active Projects
@@ -161,7 +161,7 @@ export default function BrokerClientProfilePage() {
               </Text>
             </Card>
             <Card backgroundColor="$gray2" borderRadius="$4" padding="$4" flex={1} minWidth="20%">
-              <XStack alignItems="center" gap="$2" marginBottom="$2">
+              <XStack alignItems="center" gap="$2" mb="$2">
                 <TrendingUp color="$color10" size={18} />
                 <Text fontSize="$3" fontWeight="500" color="$color11">
                   Risk Level
@@ -191,7 +191,7 @@ export default function BrokerClientProfilePage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Contact Information
             </H3>
             <XStack
@@ -247,7 +247,7 @@ export default function BrokerClientProfilePage() {
               borderColor="$borderColor"
               padding="$6"
             >
-              <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">Notes</H3>
+              <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">Notes</H3>
               <Text color="$color11">{client.notes}</Text>
             </Card>
           )}
@@ -267,10 +267,10 @@ export default function BrokerClientProfilePage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Compliance Overview
             </H3>
-            <XStack alignItems="center" gap="$4" marginBottom="$6">
+            <XStack alignItems="center" gap="$4" mb="$6">
               <YStack width={128} height={128} position="relative">
                 <YStack
                   position="absolute"
@@ -304,7 +304,7 @@ export default function BrokerClientProfilePage() {
                 </svg>
               </YStack>
               <YStack flex={1}>
-                <Text color="$color11" marginBottom="$2">
+                <Text color="$color11" mb="$2">
                   {client.compliance_score >= 90
                     ? 'Excellent compliance status. All requirements are being met.'
                     : client.compliance_score >= 70
@@ -336,7 +336,7 @@ export default function BrokerClientProfilePage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Coverage Status
             </H3>
             <YStack gap="$4">
@@ -378,7 +378,7 @@ export default function BrokerClientProfilePage() {
                   );
                 })
               ) : (
-                <Text color="$color11" textAlign="center" paddingVertical="$4">
+                <Text color="$color11" style={{ textAlign: 'center' }} paddingVertical="$4">
                   No policies found for this client.
                 </Text>
               )}
@@ -412,7 +412,7 @@ export default function BrokerClientProfilePage() {
                   hoverStyle={{ borderColor: '$blue8' }}
                   cursor="pointer"
                 >
-                  <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
                     <YStack>
                       <Text fontSize="$4" fontWeight="600" color="$color12">{policy.policy_type}</Text>
                       <Text fontSize="$3" color="$color11">{policy.carrier}</Text>
@@ -472,8 +472,8 @@ export default function BrokerClientProfilePage() {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <FileText color="$color10" size={48} marginBottom="$4" />
-              <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+              <FileText color="$color10" size={48} mb="$4" />
+              <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
                 No Policies Found
               </H3>
               <Text color="$color11">
@@ -510,11 +510,11 @@ export default function BrokerClientProfilePage() {
                   cursor="pointer"
                   onClick={() => navigate(`/broker/projects/${project.id}`)}
                 >
-                  <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
                     <YStack>
                       <Text fontSize="$4" fontWeight="600" color="$color12">{project.name}</Text>
                       {project.location && (
-                        <XStack alignItems="center" gap="$1" fontSize="$3" color="$color11" marginTop="$1">
+                        <XStack alignItems="center" gap="$1" fontSize="$3" color="$color11" mt="$1">
                           <MapPin size={14} color="$color11" />
                           <Text fontSize="$3" color="$color11">{project.location}</Text>
                         </XStack>
@@ -558,8 +558,8 @@ export default function BrokerClientProfilePage() {
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Building color="$color10" size={48} marginBottom="$4" />
-              <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+              <Building color="$color10" size={48} mb="$4" />
+              <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
                 No Projects Found
               </H3>
               <Text color="$color11">
@@ -583,8 +583,8 @@ export default function BrokerClientProfilePage() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <FileText color="$color10" size={48} marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <FileText color="$color10" size={48} mb="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             Documents Coming Soon
           </H3>
           <Text color="$color11">
@@ -611,7 +611,7 @@ export default function BrokerClientProfilePage() {
             <H1 fontSize="$8" fontWeight="bold" color="$color12">
               {client.company_name}
             </H1>
-            <XStack alignItems="center" gap="$3" marginTop="$1">
+            <XStack alignItems="center" gap="$3" mt="$1">
               <XStack
                 alignItems="center"
                 paddingHorizontal="$2"

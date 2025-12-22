@@ -37,7 +37,7 @@ export const AuditHistoryPanel: React.FC<AuditHistoryPanelProps> = ({ auditHisto
         padding="$4"
       >
         <XStack alignItems="center" color="$color10">
-          <History size={20} marginRight="$2" />
+          <History size={20} mr="$2" />
           <Text fontSize="$3">No audit history</Text>
         </XStack>
       </Card>
@@ -59,7 +59,7 @@ export const AuditHistoryPanel: React.FC<AuditHistoryPanelProps> = ({ auditHisto
         cursor="pointer"
       >
         <XStack alignItems="center">
-          <History size={20} color="$color10" marginRight="$2" />
+          <History size={20} color="$color10" mr="$2" />
           <Text fontSize="$3" fontWeight="500" color="$color12">
             Audit History ({auditHistory.length} {auditHistory.length === 1 ? 'entry' : 'entries'})
           </Text>
@@ -92,7 +92,7 @@ export const AuditHistoryPanel: React.FC<AuditHistoryPanelProps> = ({ auditHisto
                   <Text fontSize="$3" fontWeight="500" color="$color12">
                     {entry.fieldName}
                   </Text>
-                  <YStack marginTop="$1" fontSize="$3" color="$color11" gap="$1">
+                  <YStack mt="$1" fontSize="$3" color="$color11" gap="$1">
                     <Text>
                       <Text fontWeight="500">From:</Text>{' '}
                       <Text color="$red10">{formatValue(entry.oldValue)}</Text>
@@ -102,7 +102,7 @@ export const AuditHistoryPanel: React.FC<AuditHistoryPanelProps> = ({ auditHisto
                       <Text color="$green10">{formatValue(entry.newValue)}</Text>
                     </Text>
                   </YStack>
-                  <XStack marginTop="$2" alignItems="center" gap="$3" fontSize="$1" color="$color10">
+                  <XStack mt="$2" alignItems="center" gap="$3" fontSize="$1" color="$color10">
                     <Text>
                       <Text fontWeight="500">Changed by:</Text> {entry.changedBy}
                     </Text>
@@ -112,7 +112,7 @@ export const AuditHistoryPanel: React.FC<AuditHistoryPanelProps> = ({ auditHisto
                   </XStack>
                 </YStack>
               </XStack>
-              <Text marginTop="$2" fontSize="$1" color="$color9">
+              <Text mt="$2" fontSize="$1" color="$color9">
                 {formatDate(entry.changedAt)}
               </Text>
             </YStack>

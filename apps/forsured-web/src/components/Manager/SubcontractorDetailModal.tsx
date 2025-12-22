@@ -214,10 +214,10 @@ export default function SubcontractorDetailModal({
       <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
         <YStack alignItems="center" justifyContent="center" minHeight={400}>
           <YStack alignItems="center">
-            <YStack alignItems="center" marginBottom="$4">
+            <YStack alignItems="center" mb="$4">
               <AlertTriangle color="$red10" size={48} />
             </YStack>
-            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
               Subcontractor not found
             </H3>
             <Text color="$color11">The requested subcontractor could not be loaded.</Text>
@@ -286,7 +286,7 @@ export default function SubcontractorDetailModal({
         <YStack gap="$6">
           <XStack alignItems="flex-start" justifyContent="space-between">
             <YStack flex={1}>
-              <XStack alignItems="center" gap="$3" marginBottom="$2">
+              <XStack alignItems="center" gap="$3" mb="$2">
                 <H2 fontSize="$9" fontWeight="700" color="$color12">
                   {subcontractor.company_name}
                 </H2>
@@ -399,7 +399,7 @@ export default function SubcontractorDetailModal({
               </Text>
               {allIssues.length > 0 && (
                 <Text
-                  marginLeft="$2"
+                  ml="$2"
                   paddingHorizontal="$1.5"
                   paddingVertical="$0.5"
                   backgroundColor="$red10"
@@ -417,7 +417,7 @@ export default function SubcontractorDetailModal({
             <YStack gap="$6">
               <XStack flexWrap="wrap" gap="$4">
                 <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <Building color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">
                       Trade Type
@@ -429,7 +429,7 @@ export default function SubcontractorDetailModal({
                 </Card>
 
                 <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <Shield color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">
                       Active Policies
@@ -441,7 +441,7 @@ export default function SubcontractorDetailModal({
                 </Card>
 
                 <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <AlertTriangle color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">
                       Open Issues
@@ -453,7 +453,7 @@ export default function SubcontractorDetailModal({
                 </Card>
 
                 <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <FileText color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">Risk Level</Text>
                   </XStack>
@@ -465,7 +465,7 @@ export default function SubcontractorDetailModal({
 
               {people.length > 0 && (
                 <YStack>
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$3">
                     Team Members
                   </H3>
                   <YStack gap="$2">
@@ -524,7 +524,7 @@ export default function SubcontractorDetailModal({
 
               {projects.length > 0 && (
                 <YStack>
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$3">
                     Projects
                   </H3>
                   <YStack gap="$2">
@@ -646,7 +646,7 @@ export default function SubcontractorDetailModal({
                       </XStack>
                       {policy.limits && Object.keys(policy.limits).length > 0 && (
                         <YStack>
-                          <Text fontSize="$3" color="$color10" marginBottom="$1">
+                          <Text fontSize="$3" color="$color10" mb="$1">
                             Coverage Limits
                           </Text>
                           <YStack gap="$1">
@@ -674,7 +674,7 @@ export default function SubcontractorDetailModal({
                 })
               ) : (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" marginBottom="$3">
+                  <YStack alignItems="center" mb="$3">
                     <Shield color="$color10" size={48} />
                   </YStack>
                   <Text color="$color11">
@@ -714,15 +714,15 @@ export default function SubcontractorDetailModal({
 
               {documentsLoading ? (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <Spinner size="large" color="$blue10" marginBottom="$2" />
+                  <Spinner size="large" color="$blue10" mb="$2" />
                   <Text color="$color11">Loading documents...</Text>
                 </YStack>
               ) : filteredDocuments.length === 0 ? (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" marginBottom="$3">
+                  <YStack alignItems="center" mb="$3">
                     <FileText color="$color10" size={48} />
                   </YStack>
-                  <Text color="$color11" marginBottom="$4">
+                  <Text color="$color11" mb="$4">
                     No documents uploaded yet
                   </Text>
                   <Button variant="primary" leftIcon={Upload}>
@@ -764,7 +764,7 @@ export default function SubcontractorDetailModal({
                       >
                         <XStack alignItems="flex-start" justifyContent="space-between">
                           <YStack flex={1}>
-                            <XStack alignItems="center" gap="$3" marginBottom="$2">
+                            <XStack alignItems="center" gap="$3" mb="$2">
                               <FileText
                                 color="$blue10"
                                 size={20}
@@ -801,7 +801,7 @@ export default function SubcontractorDetailModal({
                                   status.slice(1)}
                               </Text>
                             </XStack>
-                            <XStack flexWrap="wrap" gap="$4" marginLeft="$8">
+                            <XStack flexWrap="wrap" gap="$4" ml="$8">
                               <YStack flex={1} minWidth="calc(50% - 8px)">
                                 <Text fontSize="$3" color="$color10">
                                   Uploaded:
@@ -912,12 +912,12 @@ export default function SubcontractorDetailModal({
 
               {issuesLoading ? (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <Spinner size="large" color="$blue10" marginBottom="$2" />
+                  <Spinner size="large" color="$blue10" mb="$2" />
                   <Text color="$color11">Loading issues...</Text>
                 </YStack>
               ) : filteredIssues.length === 0 ? (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" marginBottom="$3">
+                  <YStack alignItems="center" mb="$3">
                     <CheckCircle color="$green10" size={48} />
                   </YStack>
                   <Text color="$green10" fontWeight="500">
@@ -959,7 +959,7 @@ export default function SubcontractorDetailModal({
                         borderRadius="$4"
                         backgroundColor={severityBgColors[issue.severity] || '$backgroundHover'}
                       >
-                        <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                        <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
                           <XStack alignItems="center" gap="$2">
                             <AlertTriangle
                               color={
@@ -1024,10 +1024,10 @@ export default function SubcontractorDetailModal({
                             </Text>
                           </XStack>
                         </XStack>
-                        <Text fontSize="$3" color="$color11" marginBottom="$3" marginLeft="$6">
+                        <Text fontSize="$3" color="$color11" mb="$3" ml="$6">
                           {issue.description}
                         </Text>
-                        <XStack alignItems="center" justifyContent="space-between" marginLeft="$6">
+                        <XStack alignItems="center" justifyContent="space-between" ml="$6">
                           <XStack gap="$3" fontSize="$1" color="$color10">
                             <Text fontSize="$1" color="$color10">
                               Type: {issue.issue_type.replace('_', ' ')}
@@ -1110,7 +1110,7 @@ export default function SubcontractorDetailModal({
               fontSize="$3"
               fontWeight="500"
               color="$color11"
-              marginBottom="$2"
+              mb="$2"
             >
               Message to {subcontractor.company_name}
             </Text>

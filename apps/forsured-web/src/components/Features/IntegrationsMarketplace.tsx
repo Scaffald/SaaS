@@ -427,7 +427,7 @@ export default function IntegrationsMarketplace() {
               <CheckCircle size={24} color="$green11" />
             </XStack>
           </XStack>
-          <Text fontSize="$3" color="$color11" marginTop="$3">
+          <Text fontSize="$3" color="$color11" mt="$3">
             Active integrations
           </Text>
         </Card>
@@ -444,7 +444,7 @@ export default function IntegrationsMarketplace() {
               <Star size={24} color="$blue11" />
             </XStack>
           </XStack>
-          <Text fontSize="$3" color="$color11" marginTop="$3">
+          <Text fontSize="$3" color="$color11" mt="$3">
             Suggested for you
           </Text>
         </Card>
@@ -461,7 +461,7 @@ export default function IntegrationsMarketplace() {
               <Settings size={24} color="$color11" />
             </XStack>
           </XStack>
-          <Text fontSize="$3" color="$color11" marginTop="$3">
+          <Text fontSize="$3" color="$color11" mt="$3">
             Total integrations
           </Text>
         </Card>
@@ -476,7 +476,7 @@ export default function IntegrationsMarketplace() {
               <Clock size={24} color="$gray10" />
             </XStack>
           </XStack>
-          <Text fontSize="$3" color="$color11" marginTop="$3">Average setup</Text>
+          <Text fontSize="$3" color="$color11" mt="$3">Average setup</Text>
         </Card>
       </XStack>
 
@@ -544,7 +544,7 @@ export default function IntegrationsMarketplace() {
                 position="absolute"
                 top="100%"
                 right={0}
-                marginTop="$2"
+                mt="$2"
                 width={288}
                 backgroundColor="$background"
                 borderWidth={1}
@@ -621,7 +621,7 @@ export default function IntegrationsMarketplace() {
       {/* Featured/Recommended Section */}
       {!showConnected && selectedCategory === 'all' && (
         <Card backgroundColor="$blue2" borderRadius="$4" padding="$6" borderWidth={1} borderColor="$blue6">
-          <XStack alignItems="center" gap="$2" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" mb="$4">
             <Star size={20} color="$blue11" />
             <H2 fontSize="$6" fontWeight="600" color="$color12">
               Recommended for Construction Teams
@@ -643,7 +643,7 @@ export default function IntegrationsMarketplace() {
                   minWidth="45%"
                   $gtMd={{ minWidth: '30%' }}
                 >
-                  <XStack alignItems="center" gap="$3" marginBottom="$3">
+                  <XStack alignItems="center" gap="$3" mb="$3">
                     <Text fontSize="$8">{integration.logo}</Text>
                     <YStack>
                       <Text fontWeight="500" color="$color12">
@@ -657,7 +657,7 @@ export default function IntegrationsMarketplace() {
                       </XStack>
                     </YStack>
                   </XStack>
-                  <Text fontSize="$3" color="$color11" marginBottom="$3">
+                  <Text fontSize="$3" color="$color11" mb="$3">
                     {integration.description}
                   </Text>
                   <TamaguiButton
@@ -697,15 +697,15 @@ export default function IntegrationsMarketplace() {
           >
             <YStack padding="$6">
               {/* Header */}
-              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
                 <YStack flex={1}>
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <Text fontSize="$9">{integration.logo}</Text>
                     <H3 fontSize="$6" fontWeight="600" color="$color12">
                       {integration.name}
                     </H3>
                   </XStack>
-                  <XStack alignItems="center" gap="$2" marginBottom="$2" flexWrap="wrap">
+                  <XStack alignItems="center" gap="$2" mb="$2" flexWrap="wrap">
                     {integration.popular && (
                       <Text fontSize="$2" paddingHorizontal="$2" paddingVertical="$1" backgroundColor="$green2" color="$green12" borderRadius={9999}>
                         Popular
@@ -726,13 +726,13 @@ export default function IntegrationsMarketplace() {
               </XStack>
 
               {/* Description */}
-              <Text color="$color11" marginBottom="$4" fontSize="$3">
+              <Text color="$color11" mb="$4" fontSize="$3">
                 {integration.description}
               </Text>
 
               {/* Features */}
-              <YStack marginBottom="$4">
-                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+              <YStack mb="$4">
+                <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                   Key Features
                 </Text>
                 <YStack gap="$1">
@@ -752,8 +752,8 @@ export default function IntegrationsMarketplace() {
               </YStack>
 
               {/* Data Sync */}
-              <YStack marginBottom="$4">
-                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+              <YStack mb="$4">
+                <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                   Data Sync
                 </Text>
                 <XStack flexWrap="wrap" gap="$1">
@@ -779,7 +779,7 @@ export default function IntegrationsMarketplace() {
               </YStack>
 
               {/* Setup Info */}
-              <XStack alignItems="center" justifyContent="space-between" fontSize="$3" color="$color11" marginBottom="$4">
+              <XStack alignItems="center" justifyContent="space-between" fontSize="$3" color="$color11" mb="$4">
                 <XStack alignItems="center" gap="$1">
                   <Clock size={14} />
                   <Text>{integration.setupTime} setup</Text>
@@ -862,8 +862,8 @@ export default function IntegrationsMarketplace() {
       {/* Empty State */}
       {filteredIntegrations.length === 0 && (
         <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
-          <Search size={48} color="$gray8" marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
+          <Search size={48} color="$gray8" mb="$4" />
+          <H3 fontSize="$6" fontWeight="500" color="$color12" mb="$2">
             No integrations found
           </H3>
           <Text color="$color11">

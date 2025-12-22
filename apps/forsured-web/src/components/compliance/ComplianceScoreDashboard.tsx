@@ -69,7 +69,7 @@ export const ComplianceScoreDashboard = ({
 
   return (
     <Card padding="$6" elevation={2} borderRadius="$4">
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+      <XStack alignItems="center" justifyContent="space-between" mb="$6">
         <H2 fontSize="$8" fontWeight="bold" color="$color12">
           Compliance Score
         </H2>
@@ -88,11 +88,11 @@ export const ComplianceScoreDashboard = ({
       </XStack>
 
       {/* Score Display */}
-      <YStack alignItems="center" marginBottom="$8">
+      <YStack alignItems="center" mb="$8">
         <Text fontSize="$10" fontWeight="bold" color={getScoreColor(evaluation.score)}>
           {evaluation.score}
         </Text>
-        <Text color="$color10" fontSize="$2" marginTop="$2">
+        <Text color="$color10" fontSize="$2" mt="$2">
           out of 100
         </Text>
       </YStack>
@@ -136,7 +136,7 @@ export const ComplianceScoreDashboard = ({
       </YStack>
 
       {/* Evaluation Metadata */}
-      <YStack marginTop="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
+      <YStack mt="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
         <XStack justifyContent="space-between">
           <Text fontSize="$1" color="$color10">
             Evaluated: {new Date(evaluation.evaluated_at).toLocaleString()}
@@ -145,7 +145,7 @@ export const ComplianceScoreDashboard = ({
             Duration: {evaluation.metadata.evaluation_duration_ms}ms
           </Text>
         </XStack>
-        <Text fontSize="$1" color="$color10" marginTop="$1">
+        <Text fontSize="$1" color="$color10" mt="$1">
           Engine Version: {evaluation.metadata.rule_engine_version}
         </Text>
       </YStack>

@@ -19,12 +19,23 @@ export interface AccordionProps {
 
 const AccordionContainer = styled(YStack, {
   name: 'AccordionContainer',
-  divideColor: '$borderColor',
-  divideWidth: 1,
   borderWidth: 1,
   borderColor: '$borderColor',
-  borderRadius: '$lg',
+  borderRadius: '$4',
   overflow: 'hidden',
+});
+
+const AccordionItem = styled(YStack, {
+  name: 'AccordionItem',
+  borderTopWidth: 1,
+  borderTopColor: '$borderColor',
+  variants: {
+    first: {
+      true: {
+        borderTopWidth: 0,
+      },
+    },
+  } as const,
 });
 
 const AccordionButton = styled(Button, {
@@ -100,12 +111,12 @@ export default function Accordion({
 
   return (
     <AccordionContainer className={className}>
-      {items.map((item) => {
+      {items.map((item, index) => {
         const Icon = item.icon;
         const isOpen = openItems.includes(item.id);
 
         return (
-          <YStack key={item.id}>
+          <AccordionItem key={item.id} first={index === 0}>
             <AccordionButton
               onPress={() => !item.disabled && toggleItem(item.id)}
               disabled={item.disabled}
@@ -128,7 +139,7 @@ export default function Accordion({
             <AccordionContent open={isOpen}>
               <AccordionContentInner>{item.content}</AccordionContentInner>
             </AccordionContent>
-          </YStack>
+          </AccordionItem>
         );
       })}
     </AccordionContainer>

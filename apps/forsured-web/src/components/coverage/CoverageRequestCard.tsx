@@ -76,7 +76,7 @@ export default function CoverageRequestCard({
         <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
           {/* Left: Request Info */}
           <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" marginBottom="$2">
+            <XStack alignItems="center" gap="$3" mb="$2">
               <FileQuestion color="$blue10" size={24} />
               <YStack>
                 <Text fontSize="$6" fontWeight="600" color="$color12">
@@ -92,7 +92,7 @@ export default function CoverageRequestCard({
             <XStack
               flexWrap="wrap"
               gap="$4"
-              marginTop="$3"
+              mt="$3"
               $gtMd={{ flexDirection: 'row' }}
             >
               {/* Quote Amount (if quoted) */}
@@ -142,12 +142,12 @@ export default function CoverageRequestCard({
             {/* Quote Details (if available) */}
             {request.quote_details && (
               <YStack
-                marginTop="$3"
+                mt="$3"
                 padding="$3"
                 backgroundColor="$color2"
                 borderRadius="$2"
               >
-                <Text fontSize="$1" fontWeight="600" color="$color12" marginBottom="$1">
+                <Text fontSize="$1" fontWeight="600" color="$color12" mb="$1">
                   Quote Details:
                 </Text>
                 <Text
@@ -170,7 +170,7 @@ export default function CoverageRequestCard({
             />
 
             {/* Action Buttons */}
-            <YStack gap="$2" marginTop="$2">
+            <YStack gap="$2" mt="$2">
               {/* Broker: Provide Quote */}
               {canBrokerProvideQuote && onProvideQuote && (
                 <Button

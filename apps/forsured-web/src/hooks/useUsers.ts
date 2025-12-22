@@ -33,10 +33,11 @@ export function useUsers(role?: 'broker' | 'manager' | 'subcontractor') {
       }
 
       // TODO: Add role filtering via join with core.role_assignments
-      // For now, fetch all users ordered by name
+      // For now, fetch all users ordered by display_name or username
+      // Note: core.users doesn't have a 'name' column - use display_name or username
       const { data, error: queryError } = await coreQuery('users', client)
         .select('*')
-        .order('name', { ascending: true, nullsFirst: false })
+        .order('display_name', { ascending: true, nullsFirst: false })
 
       if (queryError) {
         throw queryError

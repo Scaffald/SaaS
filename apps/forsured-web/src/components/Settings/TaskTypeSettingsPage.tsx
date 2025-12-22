@@ -243,7 +243,7 @@ export default function TaskTypeSettingsPage({
           <H1 fontSize="$9" fontWeight="bold" color="$color12">
             Task Type Settings
           </H1>
-          <Text color="$color11" fontSize="$6" marginTop="$1">
+          <Text color="$color11" fontSize="$6" mt="$1">
             Manage task types and their default configurations
           </Text>
         </YStack>
@@ -297,13 +297,13 @@ export default function TaskTypeSettingsPage({
         <YStack overflowX="auto">
           <YStack>
             <XStack padding="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Category</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Description</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Default Priority</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Due Date Offset</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
-              <Text flex={1} textAlign="right" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Category</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Description</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Default Priority</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Due Date Offset</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
+              <Text flex={1} style={{ textAlign: 'right' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
             </XStack>
             <YStack>
               {isLoading ? (

@@ -198,7 +198,7 @@ export default function InsuranceMarketplace() {
         borderRadius="$4"
         backgroundColor="$blue2"
       >
-        <XStack alignItems="center" gap="$2" marginBottom="$4">
+        <XStack alignItems="center" gap="$2" mb="$4">
           <Award color="$blue9" size={20} />
           <Text fontSize="$6" fontWeight="600" color="$color12">
             Recommended for Construction Projects
@@ -218,7 +218,7 @@ export default function InsuranceMarketplace() {
                 flex={1}
                 minWidth="200px"
               >
-                <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                <XStack alignItems="center" justifyContent="space-between" mb="$2">
                   <Text fontWeight="500" color="$color12">
                     {product.type}
                   </Text>
@@ -229,7 +229,7 @@ export default function InsuranceMarketplace() {
                     </SizableText>
                   </XStack>
                 </XStack>
-                <SizableText size="$3" color="$color11" marginBottom="$3">
+                <SizableText size="$3" color="$color11" mb="$3">
                   {product.provider}
                 </SizableText>
                 <XStack alignItems="center" justifyContent="space-between">
@@ -268,9 +268,9 @@ export default function InsuranceMarketplace() {
           >
             <YStack padding="$6">
               {/* Header */}
-              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
                 <YStack>
-                  <XStack alignItems="center" gap="$2" marginBottom="$1">
+                  <XStack alignItems="center" gap="$2" mb="$1">
                     <Text fontSize="$6" fontWeight="600" color="$color12">
                       {product.type}
                     </Text>
@@ -298,7 +298,7 @@ export default function InsuranceMarketplace() {
               </XStack>
 
               {/* Pricing */}
-              <YStack marginBottom="$4">
+              <YStack mb="$4">
                 <XStack alignItems="baseline" gap="$2">
                   <Text fontSize="$9" fontWeight="700" color="$color12">
                     ${product.price.toLocaleString()}
@@ -311,7 +311,7 @@ export default function InsuranceMarketplace() {
               </YStack>
 
               {/* Features */}
-              <YStack marginBottom="$6">
+              <YStack mb="$6">
                 <YStack gap="$2">
                   {product.features.map((feature, index) => (
                     <XStack key={index} alignItems="center" gap="$2">
@@ -421,7 +421,7 @@ export default function InsuranceMarketplace() {
                   <Text fontWeight="700">$3,200/yr</Text>
                 </XStack>
               </YStack>
-              <YStack marginTop="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <YStack mt="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                 <XStack alignItems="center" justifyContent="space-between">
                   <Text fontSize="$6" fontWeight="700">
                     Total:
@@ -434,7 +434,7 @@ export default function InsuranceMarketplace() {
                   flex={1}
                   size="$5"
                   variant="primary"
-                  marginTop="$4"
+                  mt="$4"
                 >
                   Proceed to Checkout
                 </Button>
@@ -454,8 +454,8 @@ export default function InsuranceMarketplace() {
           padding="$12"
           alignItems="center"
         >
-          <Search size={48} color="$color6" marginBottom="$4" />
-          <Text fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
+          <Search size={48} color="$color6" mb="$4" />
+          <Text fontSize="$6" fontWeight="500" color="$color12" mb="$2">
             No insurance products found
           </Text>
           <SizableText color="$color11">

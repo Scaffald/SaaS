@@ -99,7 +99,7 @@ export default function MyManagersPage() {
       {/* Stats Cards */}
       <XStack flexWrap="wrap" gap="$4">
         <Card padding="$4" flex={1} minWidth={200}>
-          <XStack alignItems="center" gap="$2" marginBottom="$2">
+          <XStack alignItems="center" gap="$2" mb="$2">
             <Building size={20} color="currentColor" />
             <Text fontSize="$2" color="$color10">Total Managers</Text>
           </XStack>
@@ -109,7 +109,7 @@ export default function MyManagersPage() {
         </Card>
 
         <Card padding="$4" flex={1} minWidth={200}>
-          <XStack alignItems="center" gap="$2" marginBottom="$2">
+          <XStack alignItems="center" gap="$2" mb="$2">
             <CheckCircle size={20} color="currentColor" />
             <Text fontSize="$2" color="$color10">Active</Text>
           </XStack>
@@ -119,7 +119,7 @@ export default function MyManagersPage() {
         </Card>
 
         <Card padding="$4" flex={1} minWidth={200}>
-          <XStack alignItems="center" gap="$2" marginBottom="$2">
+          <XStack alignItems="center" gap="$2" mb="$2">
             <Users size={20} color="currentColor" />
             <Text fontSize="$2" color="$color10">Total Projects</Text>
           </XStack>
@@ -129,7 +129,7 @@ export default function MyManagersPage() {
         </Card>
 
         <Card padding="$4" flex={1} minWidth={200}>
-          <XStack alignItems="center" gap="$2" marginBottom="$2">
+          <XStack alignItems="center" gap="$2" mb="$2">
             <TrendingUp size={20} color="currentColor" />
             <Text fontSize="$2" color="$color10">Avg Compliance</Text>
           </XStack>
