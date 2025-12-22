@@ -44,6 +44,7 @@ export function useApprovals(options: UseApprovalsOptions = {}) {
   const fetchApprovals = async () => {
     try {
       setLoading(true);
+      setError(null); // Clear previous errors
 
       let query = supabase.schema('forsured').from('approvals').select('*');
 
@@ -69,13 +70,25 @@ export function useApprovals(options: UseApprovalsOptions = {}) {
       const { data, error: supabaseError } = await query;
 
       if (supabaseError) {
-        throw formatSupabaseError(supabaseError, 'fetching approvals');
+        // Handle table not found or permission errors gracefully
+        if (supabaseError.code === '42P01' || supabaseError.code === 'PGRST116') {
+          // Table doesn't exist - return empty array instead of throwing
+          console.warn('[useApprovals] Approvals table not found, returning empty array');
+          setApprovals([]);
+          return;
+        }
+        // For other errors, log but don't throw to prevent 500 errors
+        console.warn('[useApprovals] Error fetching approvals:', supabaseError);
+        setApprovals([]);
+        return;
       }
 
       setApprovals(data || []);
     } catch (err) {
-      console.error('[useApprovals] Error fetching approvals:', err);
+      // Catch any unexpected errors and handle gracefully
+      console.warn('[useApprovals] Unexpected error fetching approvals:', err);
       setError(err as Error);
+      setApprovals([]); // Return empty array instead of crashing
     } finally {
       setLoading(false);
     }
