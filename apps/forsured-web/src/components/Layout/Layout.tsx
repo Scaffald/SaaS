@@ -40,7 +40,7 @@ export default function Layout() {
 
   // Redirect unauthenticated users to start page
   if (!user) {
-    return <Navigate to="/start" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Redirect users without profile to signup

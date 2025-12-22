@@ -221,7 +221,7 @@ function CallbackPage() {
       console.error('Auth callback error:', err);
       clearMemoryTokens();
       setError(err.message || 'Authentication failed. Please try again.');
-      navigate('/start', { state: { error: err.message || 'Authentication failed.' } });
+      navigate('/', { state: { error: err.message || 'Authentication failed.' } });
     }
   }
 
@@ -241,7 +241,7 @@ function CallbackPage() {
           <Text fontSize="$4" color="$color11">
             {error}
           </Text>
-          <CoreButton onClick={() => navigate('/start')}>
+          <CoreButton onClick={() => navigate('/')}>
             Try Again
           </CoreButton>
         </YStack>

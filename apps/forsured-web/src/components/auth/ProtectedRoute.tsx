@@ -58,13 +58,13 @@ export function ProtectedRoute({
   if (isLoading) return <LoadingSpinner />
 
   if (!user) {
-    return <Navigate to="/start" />
+    return <Navigate to="/" />
   }
 
   if (!profile) {
-    // User authenticated but no ForSured profile - redirect to start for now
+    // User authenticated but no ForSured profile - redirect to login for now
     // TODO: Create dedicated signup flow for new users
-    return <Navigate to="/start" />
+    return <Navigate to="/" />
   }
 
   // Map database type to route type for comparisons

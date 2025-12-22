@@ -129,7 +129,6 @@ const AppRoutes = () => {
       <Routes>
         {/* Public routes - always accessible */}
         <Route path="/" element={<StartPage />} />
-        <Route path="/start" element={<StartPage />} />
         <Route path="/callback" element={<CallbackPage />} />
         <Route path="/auth/callback" element={<CallbackPage />} />
         <Route path="/auth/verify" element={<VerifyEmailPage />} />

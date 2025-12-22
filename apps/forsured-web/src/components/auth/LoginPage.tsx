@@ -10,9 +10,8 @@ import { YStack, XStack, Text, styled } from '@unicornlove/ui'
 import { Button as CoreButton } from '@unicornlove/ui'
 import { Spinner } from 'tamagui'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 import type { AuthError } from '../../lib/auth/types'
-import type { UserProfile } from '../../types'
-import type { User as ScaffaldUser } from '../../lib/scaffald/types'
 
 const PageContainer = styled(YStack, {
   name: 'LoginPageContainer',
@@ -49,67 +48,21 @@ const LogoContainer = styled(YStack, {
 })
 
 /**
- * Map database user types to route prefixes
+ * Test user credentials (seeded in database via migration 248)
+ * Password for all test users: ForsuredTest123!
  */
-const USER_TYPE_TO_ROUTE: Record<string, string> = {
-  gc: 'manager',
-  manager: 'manager',
-  contractor: 'subcontractor',
-  subcontractor: 'subcontractor',
-  broker: 'broker',
-  admin: 'admin',
-}
-
-/**
- * Create a mock user and profile for testing
- * Note: The database stores 'gc' and 'contractor', but UserProfile type expects route types.
- * We use route types to satisfy TypeScript, matching how ProtectedRoute expects them.
- */
-function createMockSession(userType: 'gc' | 'contractor' | 'broker' | 'admin'): {
-  user: ScaffaldUser
-  profile: UserProfile
-} {
-  const userId = `test-${userType}-${Date.now()}`
-  const now = new Date().toISOString()
-
-  const user: ScaffaldUser = {
-    id: userId,
-    email: `test-${userType}@forsured.test`,
-    name: `Test ${userType === 'gc' ? 'GC' : userType === 'contractor' ? 'Contractor' : userType.charAt(0).toUpperCase() + userType.slice(1)}`,
-  }
-
-  // Map database types to route types for UserProfile interface
-  // Database uses: gc, contractor, broker, admin
-  // UserProfile type expects: manager, subcontractor, broker, admin
-  const routeTypeMap: Record<
-    'gc' | 'contractor' | 'broker' | 'admin',
-    'manager' | 'subcontractor' | 'broker' | 'admin'
-  > = {
-    gc: 'manager',
-    contractor: 'subcontractor',
-    broker: 'broker',
-    admin: 'admin',
-  }
-
-  const profile: UserProfile = {
-    id: `profile-${userId}`,
-    scaffald_user_id: userId,
-    user_type: routeTypeMap[userType],
-    onboarding_completed: true,
-    company_connected: false,
-    onboarding_step: 5,
-    onboarding_data: {},
-    created_at: now,
-    updated_at: now,
-  }
-
-  return { user, profile }
+const TEST_USERS: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
+  gc: { email: 'test-gc@forsured.test', password: 'ForsuredTest123!' },
+  contractor: { email: 'test-contractor@forsured.test', password: 'ForsuredTest123!' },
+  broker: { email: 'test-broker@forsured.test', password: 'ForsuredTest123!' },
+  admin: { email: 'test-admin@forsured.test', password: 'ForsuredTest123!' },
 }
 
 export const LoginPage: React.FC = () => {
   const { login, isLoading } = useAuth()
   const navigate = useNavigate()
   const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [testLoginLoading, setTestLoginLoading] = useState<string | null>(null)
   const [error, setError] = useState<AuthError | null>(null)
 
   const handleLogin = async () => {
@@ -125,31 +78,55 @@ export const LoginPage: React.FC = () => {
   }
 
   /**
-   * Temporary test function to bypass login and set a session for a specific user type
-   * This allows testing logged-in functionality without OAuth
-   * Note: With httpOnly cookie mode, this only sets in-memory auth state
-   * For E2E tests, use the proper auth flow via /start page
+   * Test login using real Supabase authentication
+   * Uses seeded test users from migration 248_forsured_seed_test_users.sql
    */
-  const handleTestLogin = (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
+  const handleTestLogin = async (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
+    const testUser = TEST_USERS[userType]
+    setTestLoginLoading(userType)
+    setError(null)
+
     try {
-      const { user, profile } = createMockSession(userType)
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: testUser.email,
+        password: testUser.password,
+      })
 
-      // With httpOnly cookie mode, we can only set in-memory state
-      // This is for quick UI testing only - not suitable for E2E tests
-      // E2E tests should use the proper auth flow via magic link or OAuth
+      if (signInError) {
+        console.error('[LoginPage] Test login error:', signInError)
+        if (signInError.message.includes('Invalid login credentials')) {
+          setError({
+            message: 'Test user not found. Run migrations to seed test users: pnpm supabase db reset',
+            code: 'USER_NOT_FOUND',
+          } as AuthError)
+        } else {
+          setError({ message: signInError.message, code: 'AUTH_ERROR' } as AuthError)
+        }
+        setTestLoginLoading(null)
+        return
+      }
 
-      // Save mock user for Scaffald client to retrieve (still needed for mock client)
-      localStorage.setItem('mock_scaffald_current_user', JSON.stringify(user))
+      if (!data.session || !data.user) {
+        setError({ message: 'Login succeeded but no session was created', code: 'NO_SESSION' } as AuthError)
+        setTestLoginLoading(null)
+        return
+      }
 
-      // Set auth context with mock user and profile
-      login({ user, profile })
-
-      // profile.user_type is already a route type (manager, subcontractor, broker, admin)
-      // Use it directly as the route prefix
-      navigate(`/${profile.user_type}/dashboard`)
+      console.log('[LoginPage] Test login successful:', data.user.email)
+      // Navigate to the appropriate dashboard based on user type
+      const dashboardRoutes: Record<string, string> = {
+        gc: '/manager/dashboard',
+        contractor: '/subcontractor/dashboard',
+        broker: '/broker/dashboard',
+        admin: '/admin/dashboard',
+      }
+      const targetRoute = dashboardRoutes[userType] || '/manager/dashboard'
+      console.log('[LoginPage] Navigating to:', targetRoute)
+      navigate(targetRoute)
     } catch (err) {
-      console.error('Test login failed:', err)
-      setError(err as AuthError)
+      console.error('[LoginPage] Test login unexpected error:', err)
+      setError({ message: err instanceof Error ? err.message : 'Test login failed', code: 'UNKNOWN' } as AuthError)
+      setTestLoginLoading(null)
     }
   }
 
@@ -256,7 +233,7 @@ export const LoginPage: React.FC = () => {
               🧪 Temporary Test Login
             </Text>
             <Text fontSize="$2" color="$yellow10">
-              Bypass OAuth for testing. These buttons will be removed once OAuth is complete.
+              Real Supabase login with seeded test users. Run migrations first.
             </Text>
             <YStack gap="$2" marginTop="$2">
               <CoreButton
@@ -264,32 +241,64 @@ export const LoginPage: React.FC = () => {
                 variant="secondary"
                 fullWidth
                 size="$3"
+                disabled={testLoginLoading !== null}
               >
-                <Text>Test as GC / Manager</Text>
+                {testLoginLoading === 'gc' ? (
+                  <XStack gap="$2" alignItems="center">
+                    <Spinner size="small" />
+                    <Text>Signing in...</Text>
+                  </XStack>
+                ) : (
+                  <Text>Test as GC / Manager</Text>
+                )}
               </CoreButton>
               <CoreButton
                 onPress={() => handleTestLogin('contractor')}
                 variant="secondary"
                 fullWidth
                 size="$3"
+                disabled={testLoginLoading !== null}
               >
-                <Text>Test as Contractor / Subcontractor</Text>
+                {testLoginLoading === 'contractor' ? (
+                  <XStack gap="$2" alignItems="center">
+                    <Spinner size="small" />
+                    <Text>Signing in...</Text>
+                  </XStack>
+                ) : (
+                  <Text>Test as Contractor / Subcontractor</Text>
+                )}
               </CoreButton>
               <CoreButton
                 onPress={() => handleTestLogin('broker')}
                 variant="secondary"
                 fullWidth
                 size="$3"
+                disabled={testLoginLoading !== null}
               >
-                <Text>Test as Broker</Text>
+                {testLoginLoading === 'broker' ? (
+                  <XStack gap="$2" alignItems="center">
+                    <Spinner size="small" />
+                    <Text>Signing in...</Text>
+                  </XStack>
+                ) : (
+                  <Text>Test as Broker</Text>
+                )}
               </CoreButton>
               <CoreButton
                 onPress={() => handleTestLogin('admin')}
                 variant="secondary"
                 fullWidth
                 size="$3"
+                disabled={testLoginLoading !== null}
               >
-                <Text>Test as Admin</Text>
+                {testLoginLoading === 'admin' ? (
+                  <XStack gap="$2" alignItems="center">
+                    <Spinner size="small" />
+                    <Text>Signing in...</Text>
+                  </XStack>
+                ) : (
+                  <Text>Test as Admin</Text>
+                )}
               </CoreButton>
             </YStack>
           </YStack>

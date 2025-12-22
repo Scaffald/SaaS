@@ -8,60 +8,26 @@ import { Button as CoreButton } from '@unicornlove/ui';
 import { Input as TextInput } from '@unicornlove/ui';
 import { initiateOAuth } from '../lib/auth/oauth';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import type { UserProfile } from '../types';
-import type { User as ScaffaldUser } from '../lib/scaffald/types';
 
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
 /**
- * Create a mock user and profile for testing
+ * Test user credentials (seeded in database via migration 248)
+ * Password for all test users: ForsuredTest123!
  */
-function createMockSession(userType: 'gc' | 'contractor' | 'broker' | 'admin'): {
-  user: ScaffaldUser;
-  profile: UserProfile;
-} {
-  const userId = `test-${userType}-${Date.now()}`;
-  const now = new Date().toISOString();
-
-  const user: ScaffaldUser = {
-    id: userId,
-    email: `test-${userType}@forsured.test`,
-    name: `Test ${userType === 'gc' ? 'GC' : userType === 'contractor' ? 'Contractor' : userType.charAt(0).toUpperCase() + userType.slice(1)}`,
-  };
-
-  // Map database types to route types for UserProfile interface
-  const routeTypeMap: Record<
-    'gc' | 'contractor' | 'broker' | 'admin',
-    'manager' | 'subcontractor' | 'broker' | 'admin'
-  > = {
-    gc: 'manager',
-    contractor: 'subcontractor',
-    broker: 'broker',
-    admin: 'admin',
-  };
-
-  const profile: UserProfile = {
-    id: `profile-${userId}`,
-    scaffald_user_id: userId,
-    user_type: routeTypeMap[userType],
-    onboarding_completed: true,
-    company_connected: false,
-    onboarding_step: 5,
-    onboarding_data: {},
-    created_at: now,
-    updated_at: now,
-  };
-
-  return { user, profile };
-}
+const TEST_USERS: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
+  gc: { email: 'test-gc@forsured.test', password: 'ForsuredTest123!' },
+  contractor: { email: 'test-contractor@forsured.test', password: 'ForsuredTest123!' },
+  broker: { email: 'test-broker@forsured.test', password: 'ForsuredTest123!' },
+  admin: { email: 'test-admin@forsured.test', password: 'ForsuredTest123!' },
+};
 
 
 function StartPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [testLoginLoading, setTestLoginLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleEmailContinue = async (e: React.FormEvent) => {
@@ -117,26 +83,61 @@ function StartPage() {
   };
 
   /**
-   * Test login using mock session
-   * This allows testing logged-in functionality without real database users
+   * Test login using real Supabase authentication
+   * Uses seeded test users from migration 248_forsured_seed_test_users.sql
+   *
+   * IMPORTANT: You must run the seed migration to create these users:
+   * pnpm supabase db reset (or apply migration 248)
    */
-  const handleTestLogin = (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
+  const handleTestLogin = async (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
+    const testUser = TEST_USERS[userType];
+    setTestLoginLoading(userType);
+    setError(null);
+
+    console.log('[StartPage] Attempting test login for:', testUser.email);
+
     try {
-      const { user, profile } = createMockSession(userType);
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: testUser.email,
+        password: testUser.password,
+      });
 
-      // Save mock user for any code that checks localStorage
-      localStorage.setItem('mock_scaffald_current_user', JSON.stringify(user));
+      if (signInError) {
+        console.error('[StartPage] Test login error:', signInError);
+        if (signInError.message.includes('Invalid login credentials')) {
+          setError(
+            `Test user not found. Please run migrations to seed test users:\n` +
+            `pnpm supabase db reset`
+          );
+        } else {
+          setError(signInError.message);
+        }
+        setTestLoginLoading(null);
+        return;
+      }
 
-      // Set auth context with mock user and profile
-      login({ user, profile });
+      if (!data.session || !data.user) {
+        setError('Login succeeded but no session was created');
+        setTestLoginLoading(null);
+        return;
+      }
 
-      console.log('[StartPage] Test login successful:', user.email, profile.user_type);
+      console.log('[StartPage] Test login successful:', data.user.email);
 
-      // Navigate to the appropriate dashboard
-      navigate(`/${profile.user_type}/dashboard`);
+      // Navigate to the appropriate dashboard based on user type
+      const dashboardRoutes: Record<string, string> = {
+        gc: '/manager/dashboard',
+        contractor: '/subcontractor/dashboard',
+        broker: '/broker/dashboard',
+        admin: '/admin/dashboard',
+      };
+      const targetRoute = dashboardRoutes[userType] || '/manager/dashboard';
+      console.log('[StartPage] Navigating to:', targetRoute);
+      navigate(targetRoute);
     } catch (err) {
-      console.error('[StartPage] Test login error:', err);
+      console.error('[StartPage] Test login unexpected error:', err);
       setError(err instanceof Error ? err.message : 'Test login failed');
+      setTestLoginLoading(null);
     }
   };
 
@@ -295,7 +296,7 @@ function StartPage() {
             🧪 Temporary Test Login
           </Text>
           <Text fontSize="$2" color="$yellow10">
-            Bypass OAuth for testing. These buttons will be removed once OAuth is complete.
+            Real Supabase login with seeded test users. Run migrations first.
           </Text>
           <YStack gap="$2" marginTop="$2">
             <CoreButton
@@ -303,32 +304,64 @@ function StartPage() {
               variant="secondary"
               fullWidth
               size="$3"
+              disabled={testLoginLoading !== null}
             >
-              <Text>Test as GC / Manager</Text>
+              {testLoginLoading === 'gc' ? (
+                <XStack gap="$2" alignItems="center">
+                  <Spinner size="small" />
+                  <Text>Signing in...</Text>
+                </XStack>
+              ) : (
+                <Text>Test as GC / Manager</Text>
+              )}
             </CoreButton>
             <CoreButton
               onClick={() => handleTestLogin('contractor')}
               variant="secondary"
               fullWidth
               size="$3"
+              disabled={testLoginLoading !== null}
             >
-              <Text>Test as Contractor / Subcontractor</Text>
+              {testLoginLoading === 'contractor' ? (
+                <XStack gap="$2" alignItems="center">
+                  <Spinner size="small" />
+                  <Text>Signing in...</Text>
+                </XStack>
+              ) : (
+                <Text>Test as Contractor / Subcontractor</Text>
+              )}
             </CoreButton>
             <CoreButton
               onClick={() => handleTestLogin('broker')}
               variant="secondary"
               fullWidth
               size="$3"
+              disabled={testLoginLoading !== null}
             >
-              <Text>Test as Broker</Text>
+              {testLoginLoading === 'broker' ? (
+                <XStack gap="$2" alignItems="center">
+                  <Spinner size="small" />
+                  <Text>Signing in...</Text>
+                </XStack>
+              ) : (
+                <Text>Test as Broker</Text>
+              )}
             </CoreButton>
             <CoreButton
               onClick={() => handleTestLogin('admin')}
               variant="secondary"
               fullWidth
               size="$3"
+              disabled={testLoginLoading !== null}
             >
-              <Text>Test as Admin</Text>
+              {testLoginLoading === 'admin' ? (
+                <XStack gap="$2" alignItems="center">
+                  <Spinner size="small" />
+                  <Text>Signing in...</Text>
+                </XStack>
+              ) : (
+                <Text>Test as Admin</Text>
+              )}
             </CoreButton>
           </YStack>
         </YStack>
