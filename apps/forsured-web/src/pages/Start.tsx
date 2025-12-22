@@ -8,12 +8,58 @@ import { Button as CoreButton } from '@unicornlove/ui';
 import { Input as TextInput } from '@unicornlove/ui';
 import { initiateOAuth } from '../lib/auth/oauth';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import type { UserProfile } from '../types';
+import type { User as ScaffaldUser } from '../lib/scaffald/types';
 
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
+
+/**
+ * Create a mock user and profile for testing
+ */
+function createMockSession(userType: 'gc' | 'contractor' | 'broker' | 'admin'): {
+  user: ScaffaldUser;
+  profile: UserProfile;
+} {
+  const userId = `test-${userType}-${Date.now()}`;
+  const now = new Date().toISOString();
+
+  const user: ScaffaldUser = {
+    id: userId,
+    email: `test-${userType}@forsured.test`,
+    name: `Test ${userType === 'gc' ? 'GC' : userType === 'contractor' ? 'Contractor' : userType.charAt(0).toUpperCase() + userType.slice(1)}`,
+  };
+
+  // Map database types to route types for UserProfile interface
+  const routeTypeMap: Record<
+    'gc' | 'contractor' | 'broker' | 'admin',
+    'manager' | 'subcontractor' | 'broker' | 'admin'
+  > = {
+    gc: 'manager',
+    contractor: 'subcontractor',
+    broker: 'broker',
+    admin: 'admin',
+  };
+
+  const profile: UserProfile = {
+    id: `profile-${userId}`,
+    scaffald_user_id: userId,
+    user_type: routeTypeMap[userType],
+    onboarding_completed: true,
+    company_connected: false,
+    onboarding_step: 5,
+    onboarding_data: {},
+    created_at: now,
+    updated_at: now,
+  };
+
+  return { user, profile };
+}
 
 
 function StartPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,60 +117,26 @@ function StartPage() {
   };
 
   /**
-   * Test login using real seeded database users
-   * This allows testing logged-in functionality with actual data
+   * Test login using mock session
+   * This allows testing logged-in functionality without real database users
    */
-  const handleTestLogin = async (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
-    setIsLoading(true);
-    setError(null);
-
+  const handleTestLogin = (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
     try {
-      // Map user types to seeded test accounts
-      const testAccounts: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
-        gc: { email: 'gc-active@forsured-test.com', password: 'ForsuredTest123!' },
-        contractor: { email: 'contractor-active@forsured-test.com', password: 'ForsuredTest123!' },
-        broker: { email: 'broker-active@forsured-test.com', password: 'ForsuredTest123!' },
-        admin: { email: 'admin@forsured-test.com', password: 'ForsuredTest123!' },
-      };
+      const { user, profile } = createMockSession(userType);
 
-      const credentials = testAccounts[userType];
+      // Save mock user for any code that checks localStorage
+      localStorage.setItem('mock_scaffald_current_user', JSON.stringify(user));
 
-      // Sign in with Supabase using real credentials
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password,
-      });
+      // Set auth context with mock user and profile
+      login({ user, profile });
 
-      if (signInError) {
-        console.error('[StartPage] Test login failed:', signInError);
-        setError(`Test login failed: ${signInError.message}`);
-        setIsLoading(false);
-        return;
-      }
-
-      if (!data.user) {
-        setError('Test login failed: No user returned');
-        setIsLoading(false);
-        return;
-      }
-
-      console.log('[StartPage] Test login successful, user:', data.user.email);
-
-      // Map database user types to route types
-      const routeTypeMap: Record<'gc' | 'contractor' | 'broker' | 'admin', 'manager' | 'subcontractor' | 'broker' | 'admin'> = {
-        gc: 'manager',
-        contractor: 'subcontractor',
-        broker: 'broker',
-        admin: 'admin',
-      };
+      console.log('[StartPage] Test login successful:', user.email, profile.user_type);
 
       // Navigate to the appropriate dashboard
-      // The AuthContext will handle fetching the real profile data
-      navigate(`/${routeTypeMap[userType]}/dashboard`);
+      navigate(`/${profile.user_type}/dashboard`);
     } catch (err) {
       console.error('[StartPage] Test login error:', err);
       setError(err instanceof Error ? err.message : 'Test login failed');
-      setIsLoading(false);
     }
   };
 
