@@ -321,7 +321,7 @@ export default function BidComparisonView({
             />
             <Button
               variant="ghost"
-              size="sm"
+              size="$2"
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               leftIcon={ArrowUpDown}
             >
@@ -536,7 +536,7 @@ export default function BidComparisonView({
                     <XStack alignItems="center" gap="$2" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                       <Button
                         variant="success"
-                        size="sm"
+                        size="$2"
                         onClick={() => {
                           setSelectedBid(bid.id);
                           setShowAwardModal(true);
@@ -547,7 +547,7 @@ export default function BidComparisonView({
                       </Button>
                       <Button
                         variant="secondary"
-                        size="sm"
+                        size="$2"
                         onClick={() => {
                           setSelectedBid(bid.id);
                           setShowClarificationModal(true);
@@ -558,7 +558,7 @@ export default function BidComparisonView({
                       </Button>
                       <Button
                         variant="danger"
-                        size="sm"
+                        size="$2"
                         onClick={() => {
                           setSelectedBid(bid.id);
                           setShowRejectModal(true);
@@ -569,7 +569,7 @@ export default function BidComparisonView({
                       </Button>
                       <Button
                         variant="outline"
-                        size="sm"
+                        size="$2"
                         onClick={() => setShowAISummary(bid.id)}
                         leftIcon={Sparkles}
                       >

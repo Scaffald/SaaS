@@ -656,7 +656,7 @@ export default function GCProfilePage() {
                               <XStack alignItems="center" gap="$3" mt="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                                 <Button
                                   variant="primary"
-                                  size="sm"
+                                  size="$2"
                                   leftIcon={Eye}
                                   onPress={(e) => handleViewFullProfile(e, sub.id)}
                                   data-testid="view-profile-btn"
@@ -665,7 +665,7 @@ export default function GCProfilePage() {
                                 </Button>
                                 <Button
                                   variant="outline"
-                                  size="sm"
+                                  size="$2"
                                   leftIcon={StickyNote}
                                   onPress={(e) => handleAddNote(e, sub.id)}
                                   data-testid="add-note-btn"
@@ -674,7 +674,7 @@ export default function GCProfilePage() {
                                 </Button>
                                 <Button
                                   variant="outline"
-                                  size="sm"
+                                  size="$2"
                                   leftIcon={MessageSquare}
                                   onPress={(e) => handleSendMessage(e, sub.id)}
                                   data-testid="send-message-btn"

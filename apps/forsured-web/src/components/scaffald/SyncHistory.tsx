@@ -79,7 +79,7 @@ function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
         const result = row.original.result;
         const variant = result === 'success' ? 'success' : result === 'error' ? 'error' : 'warning';
         return (
-          <Badge variant={variant} size="sm">
+          <Badge variant={variant} size="$2">
             {result}
           </Badge>
         );

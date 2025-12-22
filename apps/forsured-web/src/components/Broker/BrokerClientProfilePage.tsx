@@ -644,10 +644,10 @@ export default function BrokerClientProfilePage() {
           </YStack>
         </XStack>
         <XStack alignItems="center" gap="$3">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="$2">
             Edit Client
           </Button>
-          <Button variant="primary" size="sm">
+          <Button variant="primary" size="$2">
             Add Policy
           </Button>
         </XStack>

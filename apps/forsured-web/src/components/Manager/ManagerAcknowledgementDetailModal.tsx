@@ -186,7 +186,7 @@ export default function ManagerAcknowledgementDetailModal({
           </YStack>
           <XStack gap="$2">
             {currentPacket.pdf_artifacts.length > 0 && (
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="$2">
                 <XStack alignItems="center" gap="$2">
                   <Download size={16} />
                   <Text>Download PDF</Text>

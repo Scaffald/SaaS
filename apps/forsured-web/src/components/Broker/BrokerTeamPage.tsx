@@ -186,10 +186,10 @@ export default function BrokerTeamPage() {
                 </XStack>
 
                 <XStack alignItems="center" gap="$2">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="$2">
                     Edit Access
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="$2">
                     View Activity
                   </Button>
                 </XStack>

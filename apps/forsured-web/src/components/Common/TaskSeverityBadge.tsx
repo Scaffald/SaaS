@@ -159,7 +159,7 @@ export function CompactSeverityIndicator({
   return (
     <Badge
       variant={variant}
-      size="sm"
+      size="$2"
       title={`${config.label} severity`}
       aria-label={`${config.label} severity`}
     >

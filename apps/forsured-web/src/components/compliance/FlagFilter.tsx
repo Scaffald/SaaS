@@ -161,7 +161,7 @@ export const FlagFilter: React.FC<FlagFilterProps> = ({
               <Text>{getFilterLabel(option)}</Text>
               <Badge
                 variant={isSelected ? 'default' : 'default'}
-                size="sm"
+                size="$2"
                 opacity={count === 0 ? 0.5 : 1}
               >
                 {count}

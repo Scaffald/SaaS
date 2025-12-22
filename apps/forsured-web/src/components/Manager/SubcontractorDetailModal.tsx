@@ -842,7 +842,7 @@ export default function SubcontractorDetailModal({
                           <XStack alignItems="center" gap="$2">
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="$2"
                               onClick={() =>
                                 setSelectedDocument({
                                   id: doc.id,
@@ -864,7 +864,7 @@ export default function SubcontractorDetailModal({
                             {doc.file_url && (
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="$2"
                                 onClick={() =>
                                   window.open(doc.file_url, '_blank')
                                 }
@@ -1039,7 +1039,7 @@ export default function SubcontractorDetailModal({
                           {issue.status === 'open' && (
                             <Button
                               variant="outline"
-                              size="sm"
+                              size="$2"
                               onClick={() => handleMarkIssueResolved(issue.id)}
                             >
                               Mark Resolved

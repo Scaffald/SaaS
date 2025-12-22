@@ -127,15 +127,15 @@ export default function BrokerTaskDetailPage() {
           <Text color="$color11">Back to Tasks</Text>
         </XStack>
         <XStack alignItems="center" gap="$3">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="$2">
             <Paperclip size={16} mr="$2" />
             Attachments
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="$2">
             <MessageSquare size={16} mr="$2" />
             Comments
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="$2">
             <MoreHorizontal size={16} />
           </Button>
         </XStack>

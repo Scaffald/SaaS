@@ -658,7 +658,7 @@ export function RequirementEditorForm({
                     </Button>
                   </XStack>
                 ))}
-                <Button type="button" variant="secondary" size="sm" onPress={addEndorsement}>
+                <Button type="button" variant="secondary" size="$2" onPress={addEndorsement}>
                   <XStack alignItems="center" gap="$1">
                     <Plus size={16} />
                     <Text>Add Endorsement</Text>
@@ -724,7 +724,7 @@ export function RequirementEditorForm({
                     </Button>
                   </XStack>
                 ))}
-                <Button type="button" variant="secondary" size="sm" onPress={addCondition}>
+                <Button type="button" variant="secondary" size="$2" onPress={addCondition}>
                   <XStack alignItems="center" gap="$1">
                     <Plus size={16} />
                     <Text>Add Condition</Text>
@@ -792,7 +792,7 @@ export function RequirementEditorForm({
                     </Button>
                   </XStack>
                 ))}
-                <Button type="button" variant="secondary" size="sm" onPress={addDocumentationRequirement}>
+                <Button type="button" variant="secondary" size="$2" onPress={addDocumentationRequirement}>
                   <XStack alignItems="center" gap="$1">
                     <Plus size={16} />
                     <Text>Add Documentation Requirement</Text>

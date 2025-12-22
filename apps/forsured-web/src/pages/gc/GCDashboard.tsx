@@ -99,7 +99,7 @@ function GCDashboard() {
                       </Text>
                     </YStack>
                   </XStack>
-                  <Badge variant="success" size="sm">
+                  <Badge variant="success" size="$2">
                     {project.status}
                   </Badge>
                 </XStack>

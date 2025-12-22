@@ -427,7 +427,7 @@ export default function ManagerProjectsPage() {
                     <XStack alignItems="center" gap="$2">
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="$2"
                         onClick={() =>
                           navigate(`/manager/projects/${project.id}`)
                         }
@@ -439,7 +439,7 @@ export default function ManagerProjectsPage() {
                       </Button>
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="$2"
                         onClick={() => handleInviteUser(project)}
                       >
                         <XStack alignItems="center" gap="$1">

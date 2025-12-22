@@ -139,7 +139,7 @@ export default function ClientModal({
           </H2>
           <Button
             variant="ghost"
-            size="sm"
+            size="$2"
             onPress={onClose}
             aria-label="Close modal"
           >

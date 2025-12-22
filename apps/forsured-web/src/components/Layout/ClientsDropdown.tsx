@@ -230,7 +230,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                         </XStack>
                         <Badge
                           variant={getComplianceVariant(client.compliance_score)}
-                          size="sm"
+                          size="$2"
                           data-testid={`compliance-badge-${client.id}`}
                         >
                           {client.compliance_score}%
@@ -282,7 +282,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                         </XStack>
                         <Badge
                           variant={getComplianceVariant(client.compliance_score)}
-                          size="sm"
+                          size="$2"
                           data-testid={`compliance-badge-${client.id}`}
                         >
                           {client.compliance_score}%

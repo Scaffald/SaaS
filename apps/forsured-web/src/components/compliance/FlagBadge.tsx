@@ -82,7 +82,7 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
     return (
       <Badge
         variant={variant}
-        size="sm"
+        size="$2"
         aria-label={`${label}: ${config.label} severity`}
         title={title || `${label} - ${config.label}`}
       >
@@ -110,14 +110,14 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
 
         <YStack flex={1} minWidth={0} gap="$1">
           <XStack alignItems="center" gap="$2" flexWrap="wrap">
-            <Badge variant="default" size="sm">
+            <Badge variant="default" size="$2">
               <XStack alignItems="center" gap="$1">
                 {getEntityTypeIcon(entityType)}
                 <Text>{label}</Text>
               </XStack>
             </Badge>
 
-            <Badge variant={variant} size="sm">
+            <Badge variant={variant} size="$2">
               {config.label}
             </Badge>
 

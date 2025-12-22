@@ -734,7 +734,7 @@ export default function UnifiedTaskDetailModal({
                     </Text>
                     <label style={{ cursor: 'pointer' }}>
                       <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
-                      <Button variant="secondary" leftIcon={Upload} size="sm">
+                      <Button variant="secondary" leftIcon={Upload} size="$2">
                         Upload File
                       </Button>
                     </label>

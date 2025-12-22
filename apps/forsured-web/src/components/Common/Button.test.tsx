@@ -88,14 +88,14 @@ describe('Button Component', () => {
     });
 
     it('should render small size when specified', () => {
-      render(<Button size="sm">Small</Button>);
+      render(<Button size="$2">Small</Button>);
 
       const button = screen.getByRole('button');
       expect(button).toBeInTheDocument();
     });
 
     it('should render large size when specified', () => {
-      render(<Button size="lg">Large</Button>);
+      render(<Button size="$4">Large</Button>);
 
       const button = screen.getByRole('button');
       expect(button).toBeInTheDocument();

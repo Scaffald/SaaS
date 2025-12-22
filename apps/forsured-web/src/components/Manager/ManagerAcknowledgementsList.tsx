@@ -425,7 +425,7 @@ export default function ManagerAcknowledgementsList() {
 
                       <Button
                         variant="outline"
-                        size="sm"
+                        size="$2"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedPacketId(packet.id);

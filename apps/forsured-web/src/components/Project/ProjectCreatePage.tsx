@@ -114,7 +114,7 @@ export default function ProjectCreatePage() {
           variant="ghost"
           onClick={() => navigate('/manager/projects')}
           leftIcon={ArrowLeft}
-          size="sm"
+          size="$2"
         >
           Back
         </Button>

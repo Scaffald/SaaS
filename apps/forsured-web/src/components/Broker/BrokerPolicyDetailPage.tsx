@@ -137,10 +137,10 @@ export default function BrokerPolicyDetailPage() {
           </YStack>
         </XStack>
         <XStack alignItems="center" gap="$3">
-          <Button variant="outline" size="sm" leftIcon={Paperclip}>
+          <Button variant="outline" size="$2" leftIcon={Paperclip}>
             Documents
           </Button>
-          <Button variant="primary" size="sm" leftIcon={Edit}>
+          <Button variant="primary" size="$2" leftIcon={Edit}>
             Edit Policy
           </Button>
         </XStack>
@@ -166,7 +166,7 @@ export default function BrokerPolicyDetailPage() {
             </Text>
           </YStack>
           <XStack ml="auto">
-            <Button variant="primary" size="sm">
+            <Button variant="primary" size="$2">
               Start Renewal
             </Button>
           </XStack>

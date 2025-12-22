@@ -99,7 +99,7 @@ export default function RelationshipCard({
             <Text fontSize="$5" fontWeight="600" color="$color11">
               {organizationName}
             </Text>
-            <Badge variant={getTypeBadgeVariant()} size="sm">
+            <Badge variant={getTypeBadgeVariant()} size="$2">
               {getTypeLabel()}
             </Badge>
           </YStack>

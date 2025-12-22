@@ -554,13 +554,13 @@ export function DependencyVisualizer({
         borderColor="$borderColor"
       >
         <XStack alignItems="center" gap="$2">
-          <Button variant="secondary" size="sm" onClick={handleZoomIn} title="Zoom In">
+          <Button variant="secondary" size="$2" onClick={handleZoomIn} title="Zoom In">
             <ZoomIn size={16} />
           </Button>
-          <Button variant="secondary" size="sm" onClick={handleZoomOut} title="Zoom Out">
+          <Button variant="secondary" size="$2" onClick={handleZoomOut} title="Zoom Out">
             <ZoomOut size={16} />
           </Button>
-          <Button variant="secondary" size="sm" onClick={handleResetView} title="Reset View">
+          <Button variant="secondary" size="$2" onClick={handleResetView} title="Reset View">
             <Maximize size={16} />
           </Button>
           <Text fontSize="$1" color="$color10" ml="$2">
@@ -669,7 +669,7 @@ export function DependencyVisualizer({
             </YStack>
             <Button
               variant="secondary"
-              size="sm"
+              size="$2"
               onClick={() => setSelectedNode(null)}
             >
               Clear

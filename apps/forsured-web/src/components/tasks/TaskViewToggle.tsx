@@ -85,7 +85,7 @@ export function TaskViewToggle({
         <Text>My Inbox</Text>
         <Badge
           variant={currentView === 'inbox' ? 'default' : 'default'}
-          size="sm"
+          size="$2"
         >
           {inboxCount}
         </Badge>
@@ -105,7 +105,7 @@ export function TaskViewToggle({
         <Text>Assigned by Me</Text>
         <Badge
           variant={currentView === 'assigned-by-me' ? 'default' : 'default'}
-          size="sm"
+          size="$2"
         >
           {assignedByMeCount}
         </Badge>

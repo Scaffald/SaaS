@@ -1012,7 +1012,7 @@ function LicensingInfoStep({
             <Text fontSize="$3" color="$color11" mb="$2">
               Drag and drop or click to upload
             </Text>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="$2">
               Choose File
             </Button>
           </Card>
@@ -1079,7 +1079,7 @@ function InsuranceInfoStep({
             <Text fontSize="$3" color="$color11" mb="$2">
               Upload current W-9 form
             </Text>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="$2">
               Choose File
             </Button>
           </Card>
@@ -1095,7 +1095,7 @@ function InsuranceInfoStep({
             <Text fontSize="$3" color="$color11" mb="$2">
               Upload current COI
             </Text>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="$2">
               Choose File
             </Button>
           </Card>

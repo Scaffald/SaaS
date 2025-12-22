@@ -196,7 +196,7 @@ export default function TaskDetailModal({
                     !selectedAssignee ||
                     selectedAssignee === task.assigned_to_user_id
                   }
-                  size="sm"
+                  size="$2"
                 >
                   Reassign
                 </Button>
@@ -295,7 +295,7 @@ export default function TaskDetailModal({
             <Button
               onClick={handleAddComment}
               disabled={!comment.trim()}
-              size="sm"
+              size="$2"
             >
               Add
             </Button>

@@ -128,7 +128,7 @@ export default function ProjectCard({
           </YStack>
         </XStack>
         <YStack alignItems="flex-end" ml="$4">
-          <Badge variant={getComplianceVariant()} size="sm">
+          <Badge variant={getComplianceVariant()} size="$2">
             {project.compliance_status}
           </Badge>
         </YStack>
@@ -172,14 +172,14 @@ export default function ProjectCard({
             </XStack>
             <XStack flexWrap="wrap" gap="$2">
               {requiredCoverages.map((coverage, index) => (
-                <Badge key={index} variant="info" size="sm">
+                <Badge key={index} variant="info" size="$2">
                   {coverage.name}: {formatCurrency(coverage.amount)}
                 </Badge>
               ))}
             </XStack>
             {project.waiver_of_subrogation_required && (
               <YStack mt="$2">
-                <Badge variant="warning" size="sm">
+                <Badge variant="warning" size="$2">
                   Waiver of Subrogation Required
                 </Badge>
               </YStack>

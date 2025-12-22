@@ -879,7 +879,7 @@ export default function ProjectDetailPage() {
             variant="ghost"
             onClick={() => navigate(-1)}
             leftIcon={ArrowLeft}
-            size="sm"
+            size="$2"
           >
             Back
           </Button>

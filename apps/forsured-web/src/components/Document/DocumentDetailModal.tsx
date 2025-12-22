@@ -274,7 +274,7 @@ export default function DocumentDetailModal({
           <XStack alignItems="center" gap="$2">
             <Button
               variant={viewMode === 'inline' ? 'primary' : 'ghost'}
-              size="sm"
+              size="$2"
               onClick={() => handleViewModeChange('inline')}
               leftIcon={Maximize2}
             >
@@ -282,7 +282,7 @@ export default function DocumentDetailModal({
             </Button>
             <Button
               variant={viewMode === 'modal' ? 'primary' : 'ghost'}
-              size="sm"
+              size="$2"
               onClick={() => handleViewModeChange('modal')}
               leftIcon={Minimize2}
             >
@@ -290,7 +290,7 @@ export default function DocumentDetailModal({
             </Button>
             <Button
               variant={viewMode === 'split-screen' ? 'primary' : 'ghost'}
-              size="sm"
+              size="$2"
               onClick={() => handleViewModeChange('split-screen')}
               leftIcon={Layout}
             >
@@ -509,7 +509,7 @@ export default function DocumentDetailModal({
                     <YStack mt="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
                       <Button
                         variant="secondary"
-                        size="sm"
+                        size="$2"
                         onClick={handleExtractFields}
                         fullWidth
                       >
