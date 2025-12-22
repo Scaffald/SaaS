@@ -1,17 +1,18 @@
 /**
  * Login Page Component - Using Tamagui
  * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
  */
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
-import { Spinner } from 'tamagui';
-import { useAuth } from '../../contexts/AuthContext';
-import { AuthError } from '../../lib/auth/types';
-import { UserProfile } from '../../types';
-import { User as ScaffaldUser } from '../../lib/scaffald/types';
-import { saveTokens } from '../../lib/scaffald/auth';
+import type React from 'react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { YStack, XStack, Text, styled } from '@unicornlove/ui'
+import { Button as CoreButton } from '@unicornlove/ui'
+import { Spinner } from 'tamagui'
+import { useAuth } from '../../contexts/AuthContext'
+import type { AuthError } from '../../lib/auth/types'
+import type { UserProfile } from '../../types'
+import type { User as ScaffaldUser } from '../../lib/scaffald/types'
 
 const PageContainer = styled(YStack, {
   name: 'LoginPageContainer',
@@ -19,7 +20,7 @@ const PageContainer = styled(YStack, {
   alignItems: 'center',
   justifyContent: 'center',
   backgroundColor: '$background',
-});
+})
 
 const CardContainer = styled(YStack, {
   name: 'LoginCardContainer',
@@ -32,7 +33,7 @@ const CardContainer = styled(YStack, {
   shadowColor: '$shadowColor',
   shadowRadius: 20,
   shadowOffset: { width: 0, height: 10 },
-});
+})
 
 const LogoContainer = styled(YStack, {
   name: 'LogoContainer',
@@ -45,7 +46,7 @@ const LogoContainer = styled(YStack, {
   shadowColor: '$shadowColor',
   shadowRadius: 10,
   shadowOffset: { width: 0, height: 4 },
-});
+})
 
 /**
  * Map database user types to route prefixes
@@ -57,34 +58,38 @@ const USER_TYPE_TO_ROUTE: Record<string, string> = {
   subcontractor: 'subcontractor',
   broker: 'broker',
   admin: 'admin',
-};
+}
 
 /**
  * Create a mock user and profile for testing
  * Note: The database stores 'gc' and 'contractor', but UserProfile type expects route types.
  * We use route types to satisfy TypeScript, matching how ProtectedRoute expects them.
  */
-function createMockSession(
-  userType: 'gc' | 'contractor' | 'broker' | 'admin'
-): { user: ScaffaldUser; profile: UserProfile } {
-  const userId = `test-${userType}-${Date.now()}`;
-  const now = new Date().toISOString();
+function createMockSession(userType: 'gc' | 'contractor' | 'broker' | 'admin'): {
+  user: ScaffaldUser
+  profile: UserProfile
+} {
+  const userId = `test-${userType}-${Date.now()}`
+  const now = new Date().toISOString()
 
   const user: ScaffaldUser = {
     id: userId,
     email: `test-${userType}@forsured.test`,
     name: `Test ${userType === 'gc' ? 'GC' : userType === 'contractor' ? 'Contractor' : userType.charAt(0).toUpperCase() + userType.slice(1)}`,
-  };
+  }
 
   // Map database types to route types for UserProfile interface
   // Database uses: gc, contractor, broker, admin
   // UserProfile type expects: manager, subcontractor, broker, admin
-  const routeTypeMap: Record<'gc' | 'contractor' | 'broker' | 'admin', 'manager' | 'subcontractor' | 'broker' | 'admin'> = {
+  const routeTypeMap: Record<
+    'gc' | 'contractor' | 'broker' | 'admin',
+    'manager' | 'subcontractor' | 'broker' | 'admin'
+  > = {
     gc: 'manager',
     contractor: 'subcontractor',
     broker: 'broker',
     admin: 'admin',
-  };
+  }
 
   const profile: UserProfile = {
     id: `profile-${userId}`,
@@ -96,83 +101,57 @@ function createMockSession(
     onboarding_data: {},
     created_at: now,
     updated_at: now,
-  };
+  }
 
-  return { user, profile };
+  return { user, profile }
 }
 
 export const LoginPage: React.FC = () => {
-  const { login, state } = useAuth();
-  const navigate = useNavigate();
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [error, setError] = useState<AuthError | null>(null);
+  const { login, state } = useAuth()
+  const navigate = useNavigate()
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [error, setError] = useState<AuthError | null>(null)
 
   const handleLogin = async () => {
     try {
-      setIsLoggingIn(true);
-      setError(null);
-      await login();
+      setIsLoggingIn(true)
+      setError(null)
+      await login()
     } catch (err) {
-      console.error('Login failed:', err);
-      setError(err as AuthError);
-      setIsLoggingIn(false);
+      console.error('Login failed:', err)
+      setError(err as AuthError)
+      setIsLoggingIn(false)
     }
-  };
+  }
 
   /**
    * Temporary test function to bypass login and set a session for a specific user type
    * This allows testing logged-in functionality without OAuth
+   * Note: With httpOnly cookie mode, this only sets in-memory auth state
+   * For E2E tests, use the proper auth flow via /start page
    */
   const handleTestLogin = (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
     try {
-      const { user, profile } = createMockSession(userType);
+      const { user, profile } = createMockSession(userType)
 
-      // Save mock Scaffald tokens to localStorage
-      saveTokens({
-        access_token: `mock-test-token-${user.id}`,
-        refresh_token: `mock-test-refresh-${user.id}`,
-        expires_in: 3600,
-        token_type: 'Bearer',
-        created_at: Math.floor(Date.now() / 1000),
-      });
+      // With httpOnly cookie mode, we can only set in-memory state
+      // This is for quick UI testing only - not suitable for E2E tests
+      // E2E tests should use the proper auth flow via magic link or OAuth
 
-      // Save mock Supabase session to localStorage
-      localStorage.setItem('sb-auth-token', JSON.stringify({
-        access_token: `mock-supabase-token-${user.id}`,
-        refresh_token: `mock-supabase-refresh-${user.id}`,
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-        expires_in: 3600,
-        token_type: 'bearer',
-        user: {
-          id: user.id,
-          email: user.email,
-          aud: 'authenticated',
-          role: 'authenticated',
-          app_metadata: {},
-          user_metadata: {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      }));
+      // Save mock user for Scaffald client to retrieve (still needed for mock client)
+      localStorage.setItem('mock_scaffald_current_user', JSON.stringify(user))
 
-      // CRITICAL FIX: Save mock user for Scaffald client to retrieve
-      // The mock Scaffald client checks this key when getUser() is called
-      localStorage.setItem('mock_scaffald_current_user', JSON.stringify(user));
-
-      // CRITICAL FIX: Save mock profile for AuthContext to retrieve
-      // This ensures profile persists across navigation
-      localStorage.setItem('mock_forsured_profile', JSON.stringify(profile));
-
-      login({ user, profile });
+      // Set auth context with mock user and profile
+      login({ user, profile })
 
       // profile.user_type is already a route type (manager, subcontractor, broker, admin)
       // Use it directly as the route prefix
-      navigate(`/${profile.user_type}/dashboard`);
+      navigate(`/${profile.user_type}/dashboard`)
     } catch (err) {
-      console.error('Test login failed:', err);
-      setError(err as AuthError);
+      console.error('Test login failed:', err)
+      setError(err as AuthError)
     }
-  };
+  }
 
   return (
     <PageContainer>
@@ -204,7 +183,9 @@ export const LoginPage: React.FC = () => {
           >
             <XStack gap="$3">
               <YStack flexShrink={0}>
-                <Text fontSize="$4" color="$red9">✕</Text>
+                <Text fontSize="$4" color="$red9">
+                  ✕
+                </Text>
               </YStack>
               <YStack flex={1} gap="$1">
                 <Text fontSize="$2" fontWeight="500" color="$red11">
@@ -251,7 +232,9 @@ export const LoginPage: React.FC = () => {
           >
             <XStack gap="$3">
               <YStack flexShrink={0}>
-                <Text fontSize="$4" color="$blue9">ℹ</Text>
+                <Text fontSize="$4" color="$blue9">
+                  ℹ
+                </Text>
               </YStack>
               <Text fontSize="$2" color="$blue11" flex={1}>
                 You'll be redirected to Scaffald to sign in with your existing credentials.
@@ -320,5 +303,5 @@ export const LoginPage: React.FC = () => {
         </YStack>
       </CardContainer>
     </PageContainer>
-  );
-};
+  )
+}

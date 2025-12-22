@@ -254,16 +254,13 @@ test.describe('Admin User Flow', () => {
     });
 
     // Mock RPC endpoint - admin dashboard makes RPC calls for user profiles
+    // RPC calls return the data directly (not wrapped in array)
     await page.route('**/rest/v1/rpc/get_user_profile_by_scaffald_id*', async (route) => {
-      const headers = route.request().headers();
-      const acceptHeader = headers['accept'] || '';
-      const isSingleQuery = acceptHeader.includes('vnd.pgrst.object');
-
-      // Return the admin profile
+      // Return the admin profile directly for RPC calls
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(isSingleQuery ? ADMIN_PROFILE : [ADMIN_PROFILE]),
+        body: JSON.stringify(ADMIN_PROFILE),
       });
     });
 

@@ -1,11 +1,19 @@
 // src/contexts/AuthContext.tsx
 // REQ-126: OAuth 2.0 + RBAC Authentication System
+// REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
 //
 // Authentication context provider for managing user sessions
+// Uses httpOnly cookies for secure token storage (XSS protection)
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { scaffaldClient } from '../lib/scaffald/client';
-import { getTokens, isTokenExpired, refreshAccessToken, clearTokens } from '../lib/scaffald/auth';
+import {
+  getSession,
+  refreshSessionTokens,
+  logout as authLogout,
+  clearMemoryTokens,
+  getMemoryTokens,
+  isTokenExpired,
+} from '../lib/scaffald/auth';
 import { User as ScaffaldUser } from '../lib/scaffald/types';
 import { UserProfile } from '../types';
 import { initiateOAuth } from '../lib/auth/oauth';
@@ -30,65 +38,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   /**
-   * Load user and profile from stored tokens on mount/refresh
+   * Load user and profile from session on mount/refresh
    */
   const loadUserAndProfile = useCallback(async () => {
     setIsLoading(true);
     try {
-      let tokens = getTokens();
-      if (tokens) {
-        // Refresh token if expired
-        if (isTokenExpired(tokens)) {
-          console.log('[AuthContext] Token expired, refreshing...');
-          tokens = await refreshAccessToken();
-          if (!tokens) {
-            console.log('[AuthContext] Token refresh failed, clearing session');
-            clearTokens();
-            setUser(null);
-            setProfile(null);
-            return;
-          }
-        }
+      console.log('[AuthContext] Loading session from httpOnly cookie');
+      const session = await getSession();
 
-        // Get user info from Scaffald
-        const scaffaldUser = await scaffaldClient.auth.getUser();
-        if (scaffaldUser) {
-          setUser(scaffaldUser);
+      if (session.valid && session.user) {
+        const scaffaldUser: ScaffaldUser = {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.name,
+          avatar_url: session.user.avatar_url || null,
+        };
+        setUser(scaffaldUser);
 
-          // Load ForSured profile from Supabase or localStorage (for test users)
-          // Profile fetch errors are non-fatal - user may be new without a profile yet
-          try {
-            // First check for mock profile in localStorage (set by test login)
-            const mockProfileJson = localStorage.getItem('mock_forsured_profile');
-            if (mockProfileJson) {
-              const mockProfile = JSON.parse(mockProfileJson);
-              // Verify the mock profile matches the current user
-              if (mockProfile.scaffald_user_id === scaffaldUser.id) {
-                setProfile(mockProfile);
-                console.log('[AuthContext] Session restored (mock):', scaffaldUser.email, mockProfile.user_type);
-                return;
-              } else {
-                // Mock profile is for a different user, clear it
-                console.log('[AuthContext] Mock profile user mismatch, clearing');
-                localStorage.removeItem('mock_forsured_profile');
-              }
-            }
-
-            // Fetch real profile from database
-            const userProfile = await getProfile(scaffaldUser.id);
-            setProfile(userProfile);
-            console.log('[AuthContext] Session restored:', scaffaldUser.email, userProfile?.user_type);
-          } catch (profileErr) {
-            console.warn('[AuthContext] Could not load profile (may be new user):', profileErr);
-            setProfile(null);
-          }
+        // Load ForSured profile
+        try {
+          const userProfile = await getProfile(scaffaldUser.id);
+          setProfile(userProfile);
+          console.log('[AuthContext] Session restored:', scaffaldUser.email, userProfile?.user_type);
+        } catch (profileErr) {
+          console.warn('[AuthContext] Could not load profile:', profileErr);
+          setProfile(null);
         }
       } else {
-        console.log('[AuthContext] No stored tokens');
+        console.log('[AuthContext] No valid session');
+        setUser(null);
+        setProfile(null);
       }
     } catch (err) {
       console.error('[AuthContext] Failed to load user session:', err);
-      clearTokens();
+      clearMemoryTokens();
       setUser(null);
       setProfile(null);
     } finally {
@@ -104,13 +87,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Set up proactive token refresh
   useEffect(() => {
     const interval = setInterval(async () => {
-      const tokens = getTokens();
-      if (tokens && isTokenExpired(tokens)) {
-        console.log('[AuthContext] Proactive token refresh');
-        const newTokens = await refreshAccessToken();
-        if (!newTokens) {
-          // Token refresh failed - log the user out
-          console.log('[AuthContext] Proactive refresh failed, logging out');
+      const memTokens = getMemoryTokens();
+      if (memTokens && isTokenExpired(memTokens)) {
+        console.log('[AuthContext] Proactive session refresh');
+        const success = await refreshSessionTokens();
+        if (!success) {
+          console.log('[AuthContext] Session refresh failed, logging out');
           setUser(null);
           setProfile(null);
         }
@@ -144,10 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    */
   const logout = useCallback(async () => {
     console.log('[AuthContext] Logging out');
-    await scaffaldClient.auth.signOut();
-    clearTokens();
-    // Clear mock profile from localStorage
-    localStorage.removeItem('mock_forsured_profile');
+    await authLogout();
     setUser(null);
     setProfile(null);
   }, []);

@@ -2,14 +2,13 @@
  * Unauthorized Page - Using Tamagui
  * REQ-126: OAuth 2.0 + RBAC Authentication System
  */
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
-import { Link } from 'tamagui';
-import { Lock } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { usePermissions } from '../../hooks/usePermissions';
+import type React from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { YStack, XStack, Text, styled } from '@unicornlove/ui'
+import { Button as CoreButton } from '@unicornlove/ui'
+import { Lock } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
+import { usePermissions } from '../../hooks/usePermissions'
 
 const PageContainer = styled(YStack, {
   name: 'UnauthorizedPageContainer',
@@ -17,7 +16,7 @@ const PageContainer = styled(YStack, {
   alignItems: 'center',
   justifyContent: 'center',
   backgroundColor: '$background',
-});
+})
 
 const CardContainer = styled(YStack, {
   name: 'UnauthorizedCardContainer',
@@ -30,7 +29,7 @@ const CardContainer = styled(YStack, {
   shadowColor: '$shadowColor',
   shadowRadius: 20,
   shadowOffset: { width: 0, height: 10 },
-});
+})
 
 const IconContainer = styled(YStack, {
   name: 'IconContainer',
@@ -40,29 +39,40 @@ const IconContainer = styled(YStack, {
   borderRadius: '$10',
   alignItems: 'center',
   justifyContent: 'center',
-});
+})
+
+const SupportLink = styled(Text, {
+  name: 'SupportLink',
+  tag: 'a',
+  color: '$blue9',
+  cursor: 'pointer',
+  hoverStyle: {
+    color: '$blue11',
+    textDecorationLine: 'underline',
+  },
+})
 
 export const UnauthorizedPage: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { state, logout } = useAuth();
-  const { currentRole } = usePermissions();
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { user, profile, logout } = useAuth()
+  const { currentRole } = usePermissions()
 
-  const reason = (location.state as any)?.reason || 'insufficient_permissions';
-  const from = (location.state as any)?.from?.pathname || '/';
+  const reason = (location.state as any)?.reason || 'insufficient_permissions'
+  const from = (location.state as any)?.from?.pathname || '/'
 
   const handleGoBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   const handleGoToDashboard = () => {
-    navigate('/dashboard');
-  };
+    navigate('/dashboard')
+  }
 
   const handleSwitchAccount = async () => {
-    await logout();
-    navigate('/login');
-  };
+    await logout()
+    navigate('/login')
+  }
 
   return (
     <PageContainer>
@@ -83,7 +93,7 @@ export const UnauthorizedPage: React.FC = () => {
         </YStack>
 
         {/* User Info */}
-        {state.user && (
+        {user && (
           <YStack
             backgroundColor="$blue2"
             borderWidth={1}
@@ -94,15 +104,17 @@ export const UnauthorizedPage: React.FC = () => {
           >
             <XStack gap="$3">
               <YStack flexShrink={0}>
-                <Text fontSize="$4" color="$blue9">👤</Text>
+                <Text fontSize="$4" color="$blue9">
+                  👤
+                </Text>
               </YStack>
               <YStack flex={1} gap="$1">
                 <Text fontSize="$2" color="$blue11">
-                  <Text fontWeight="600">Current User:</Text> {state.user.email}
+                  <Text fontWeight="600">Current User:</Text> {user.email}
                 </Text>
                 <Text fontSize="$2" color="$blue11" marginTop="$1">
                   <Text fontWeight="600">Role:</Text>{' '}
-                  <Text textTransform="capitalize">{currentRole || 'Unknown'}</Text>
+                  <Text textTransform="capitalize">{currentRole || profile?.user_type || 'Unknown'}</Text>
                 </Text>
               </YStack>
             </XStack>
@@ -112,8 +124,16 @@ export const UnauthorizedPage: React.FC = () => {
         {/* Attempted Path */}
         {from && from !== '/' && (
           <YStack backgroundColor="$backgroundHover" borderRadius="$md" padding="$4" gap="$1">
-            <Text fontSize="$1" color="$color9">Attempted to access:</Text>
-            <Text fontSize="$2" color="$color11" fontFamily="$mono" marginTop="$1" numberOfLines={3}>
+            <Text fontSize="$1" color="$color9">
+              Attempted to access:
+            </Text>
+            <Text
+              fontSize="$2"
+              color="$color11"
+              fontFamily="$mono"
+              marginTop="$1"
+              numberOfLines={3}
+            >
               {from}
             </Text>
           </YStack>
@@ -121,25 +141,13 @@ export const UnauthorizedPage: React.FC = () => {
 
         {/* Actions */}
         <YStack gap="$3">
-          <CoreButton
-            onPress={handleGoToDashboard}
-            variant="primary"
-            fullWidth
-          >
+          <CoreButton onPress={handleGoToDashboard} variant="primary" fullWidth>
             Go to Dashboard
           </CoreButton>
-          <CoreButton
-            onPress={handleGoBack}
-            variant="outlined"
-            fullWidth
-          >
+          <CoreButton onPress={handleGoBack} variant="outlined" fullWidth>
             Go Back
           </CoreButton>
-          <CoreButton
-            onPress={handleSwitchAccount}
-            variant="outlined"
-            fullWidth
-          >
+          <CoreButton onPress={handleSwitchAccount} variant="outlined" fullWidth>
             Switch Account
           </CoreButton>
         </YStack>
@@ -148,12 +156,12 @@ export const UnauthorizedPage: React.FC = () => {
         <YStack marginTop="$6" alignItems="center">
           <Text fontSize="$1" color="$color9" textAlign="center">
             If you believe this is an error, please{' '}
-            <Link href="mailto:support@forsured.com" color="$blue9" hoverStyle={{ color: '$blue11' }}>
+            <SupportLink href="mailto:support@forsured.com">
               contact support
-            </Link>
+            </SupportLink>
           </Text>
         </YStack>
       </CardContainer>
     </PageContainer>
-  );
-};
+  )
+}

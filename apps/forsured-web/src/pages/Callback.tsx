@@ -1,15 +1,15 @@
 /**
  * Callback Page - OAuth callback handler using Tamagui
+ * REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
  */
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { YStack, Text, Button } from '@unicornlove/ui';
+import { YStack, Text } from '@unicornlove/ui';
 import { Button as CoreButton } from '@unicornlove/ui';
 import LoadingSpinner from '../components/Common/LoadingSpinner';
-import { scaffaldClient } from '../lib/scaffald/client';
 import { useAuth } from '../contexts/AuthContext';
 import { getProfile, createProfile } from '../services/userProfileService';
-import { saveTokens, clearTokens } from '../lib/scaffald/auth';
+import { exchangeCodeForTokens, clearMemoryTokens } from '../lib/scaffald/auth';
 import { supabase } from '../lib/supabase';
 
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
@@ -45,7 +45,7 @@ function CallbackPage() {
   async function handleCallback() {
     try {
       if (USE_OAUTH) {
-        // OAuth mode: Handle OAuth callback
+        // OAuth mode: Handle OAuth callback via edge function
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const state = urlParams.get('state');
@@ -62,12 +62,23 @@ function CallbackPage() {
         // Clear state after successful verification
         sessionStorage.removeItem('oauth_state');
 
-        // Exchange code for tokens
-        const tokens = await scaffaldClient.auth.exchangeCodeForTokens(code);
-        saveTokens(tokens);
+        // Exchange code for tokens via edge function (httpOnly cookie mode)
+        console.log('[Callback] Exchanging code for tokens via edge function');
+        const codeVerifier = sessionStorage.getItem('oauth_code_verifier') || undefined;
+        sessionStorage.removeItem('oauth_code_verifier');
 
-        // Get user info from Scaffald using the obtained access token
-        const scaffaldUser = await scaffaldClient.auth.getUser();
+        const result = await exchangeCodeForTokens(
+          code,
+          `${window.location.origin}/callback`,
+          codeVerifier
+        );
+
+        if (!result.success || !result.user) {
+          throw new Error(result.error || 'Token exchange failed');
+        }
+
+        const scaffaldUser = result.user;
+        console.log('[Callback] Token exchange successful:', scaffaldUser.email);
 
         let forsuredProfile = await getProfile(scaffaldUser.id);
 
@@ -104,15 +115,15 @@ function CallbackPage() {
         // Supabase magic links redirect to /auth/callback with hash fragments (#access_token=...&type=magiclink)
         // The Supabase client automatically processes these hash fragments and sets the session
         // We need to wait for Supabase to process the hash fragments before getting the session
-        
+
         // Check if we have hash fragments (magic link callback)
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const hasMagicLinkHash = hashParams.has('access_token') || hashParams.has('type');
-        
+
         // Also check query params (some Supabase configs use query params)
         const queryParams = new URLSearchParams(window.location.search);
         const hasQueryToken = queryParams.has('token') || queryParams.has('type');
-        
+
         if (!hasMagicLinkHash && !hasQueryToken) {
           // No auth parameters - check if we already have a session
           const { data: existingSession } = await supabase.auth.getSession();
@@ -123,7 +134,7 @@ function CallbackPage() {
             throw new Error('No authentication parameters found. Please request a new magic link.');
           }
         }
-        
+
         if (hasMagicLinkHash || hasQueryToken) {
           console.log('[Callback] Magic link detected, waiting for Supabase to process...');
           // Wait for Supabase to process the hash fragments
@@ -131,29 +142,29 @@ function CallbackPage() {
           // We need to wait a bit for the session to be established
           await new Promise((resolve) => setTimeout(resolve, 1500));
         }
-        
+
         // Try to get session - Supabase should have processed the hash fragments by now
         let session = null;
         let sessionError = null;
-        
+
         // Retry getting session a few times in case Supabase is still processing
         for (let i = 0; i < 5; i++) {
           const result = await supabase.auth.getSession();
           session = result.data?.session;
           sessionError = result.error;
-          
+
           if (session?.user) {
             console.log('[Callback] Session established successfully');
             break;
           }
-          
+
           // Wait a bit before retrying
           if (i < 4) {
             console.log(`[Callback] Waiting for session... (attempt ${i + 1}/5)`);
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
         }
-        
+
         if (sessionError || !session?.user) {
           console.error('[Callback] Session error:', sessionError);
           console.error('[Callback] Session data:', session);
@@ -208,7 +219,7 @@ function CallbackPage() {
 
     } catch (err: any) {
       console.error('Auth callback error:', err);
-      clearTokens();
+      clearMemoryTokens();
       setError(err.message || 'Authentication failed. Please try again.');
       navigate('/start', { state: { error: err.message || 'Authentication failed.' } });
     }
