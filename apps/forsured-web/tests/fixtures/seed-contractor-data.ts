@@ -158,11 +158,12 @@ async function createTestProjects(
 
   // Active project
   // Note: projects table only has: id, name, organization_id, manager_id, scaffald_project_id, created_at, updated_at
+  // manager_id is nullable and references core.users(id), so we set it to null to avoid FK constraint issues
   const project1 = await forsured('projects')
     .insert({
       name: 'Downtown Office Renovation',
       organization_id: contractorOrgId,
-      manager_id: managerUserId,
+      manager_id: null, // Set to null to avoid FK constraint (manager_id references core.users(id))
       created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
       updated_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
     })
@@ -174,7 +175,7 @@ async function createTestProjects(
     .insert({
       name: 'Residential Complex',
       organization_id: contractorOrgId,
-      manager_id: managerUserId,
+      manager_id: null, // Set to null to avoid FK constraint (manager_id references core.users(id))
       created_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
       updated_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
     })
@@ -200,38 +201,86 @@ async function createTestDocuments(
 ): Promise<Array<{ id: string; name: string }>> {
   const documents = [];
 
+  // Note: documents table requires project_id and subcontractor_id (both non-nullable)
+  // If no projectId provided, we need to create a project first or skip document creation
+  if (!projectId) {
+    // Create a temporary project for documents if none provided
+    const tempProject = await forsured('projects')
+      .insert({
+        name: 'Test Project for Documents',
+        organization_id: contractorOrgId,
+        manager_id: null,
+      })
+      .select('id')
+      .single();
+    
+    if (tempProject.error) {
+      throw new Error(`Failed to create temp project for documents: ${tempProject.error.message}`);
+    }
+    projectId = tempProject.data.id;
+  }
+
+  // Get or create a subcontractor record for this organization
+  // Note: subcontractor_id is required, so we need to ensure it exists
+  const subcontractor = await forsured('subcontractors')
+    .select('id')
+    .eq('organization_id', contractorOrgId)
+    .maybeSingle();
+  
+  if (subcontractor.error) {
+    throw new Error(`Failed to lookup subcontractor: ${subcontractor.error.message}`);
+  }
+  
+  let subcontractorId: string;
+  if (!subcontractor.data) {
+    // Create subcontractor record if it doesn't exist
+    // Note: subcontractors table columns: id, organization_id, created_at, updated_at
+    const newSubcontractor = await forsured('subcontractors')
+      .insert({
+        organization_id: contractorOrgId,
+      })
+      .select('id')
+      .single();
+    
+    if (newSubcontractor.error) {
+      throw new Error(`Failed to create subcontractor: ${newSubcontractor.error.message}`);
+    }
+    subcontractorId = newSubcontractor.data.id;
+  } else {
+    subcontractorId = subcontractor.data.id;
+  }
+
   // Approved document
+  // Note: documents table columns: file_name, file_type, file_url, file_size, upload_date, project_id, subcontractor_id, status
   const doc1 = await forsured('documents')
     .insert({
-      name: 'General Liability Insurance.pdf',
-      type: 'insurance',
+      file_name: 'General Liability Insurance.pdf',
+      file_type: 'application/pdf',
+      file_url: 'https://example.com/test-documents/general-liability.pdf',
+      file_size: 102400,
       status: 'approved',
       organization_id: contractorOrgId,
-      project_id: projectId || null,
-      uploaded_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-      file_path: 'test-documents/general-liability.pdf',
-      file_size: 102400,
-      mime_type: 'application/pdf',
+      project_id: projectId,
+      subcontractor_id: subcontractorId,
+      upload_date: new Date().toISOString(),
     })
-    .select('id, name')
+    .select('id, file_name as name')
     .single();
 
   // Pending document
   const doc2 = await forsured('documents')
     .insert({
-      name: 'Workers Compensation.pdf',
-      type: 'insurance',
+      file_name: 'Workers Compensation.pdf',
+      file_type: 'application/pdf',
+      file_url: 'https://example.com/test-documents/workers-comp.pdf',
+      file_size: 98304,
       status: 'pending',
       organization_id: contractorOrgId,
-      project_id: projectId || null,
-      uploaded_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      expires_at: new Date(Date.now() + 300 * 24 * 60 * 60 * 1000).toISOString(),
-      file_path: 'test-documents/workers-comp.pdf',
-      file_size: 98304,
-      mime_type: 'application/pdf',
+      project_id: projectId,
+      subcontractor_id: subcontractorId,
+      upload_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     })
-    .select('id, name')
+    .select('id, file_name as name')
     .single();
 
   if (doc1.error || doc2.error) {
