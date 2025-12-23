@@ -1,6 +1,6 @@
 // src/pages/help/HelpArticle.tsx
 import React from 'react';
-import { YStack, H1 } from '@unicornlove/ui';
+import { YStack, H1, Text, Card, XStack } from '@unicornlove/ui';
 import { HelpArticle as ArticleType } from '../../services/helpArticleService';
 
 interface HelpArticleProps {
@@ -8,14 +8,16 @@ interface HelpArticleProps {
 }
 
 /**
- * Simple markdown to HTML converter for help articles
- * Handles: headings, bold, lists, links, paragraphs
+ * Enhanced markdown to HTML converter for help articles
+ * Handles: headings, bold, lists, links, paragraphs with better styling
  */
 function markdownToHtml(markdown: string): string {
   const lines = markdown.split('\n');
   const htmlLines: string[] = [];
   let inList = false;
   let listType: 'ul' | 'ol' | null = null;
+  let inStepSection = false;
+  let stepNumber = 0;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
@@ -27,35 +29,52 @@ function markdownToHtml(markdown: string): string {
         inList = false;
         listType = null;
       }
+      if (inStepSection) {
+        htmlLines.push('</div>');
+        inStepSection = false;
+      }
       continue;
     }
 
-    // Headings
-    if (line.startsWith('### ')) {
-      if (inList) {
-        htmlLines.push(`</${listType}>`);
-        inList = false;
-        listType = null;
-      }
-      htmlLines.push(`<h3>${line.substring(4)}</h3>`);
+    // H1 - Main title (skip, we render it separately)
+    if (line.startsWith('# ')) {
       continue;
     }
+
+    // H2 - Section headers (like "Step 1:", "What Happens Next?")
     if (line.startsWith('## ')) {
       if (inList) {
         htmlLines.push(`</${listType}>`);
         inList = false;
         listType = null;
       }
-      htmlLines.push(`<h2>${line.substring(3)}</h2>`);
+      if (inStepSection) {
+        htmlLines.push('</div>');
+        inStepSection = false;
+      }
+      
+      const headerText = line.substring(3);
+      const isStep = /^Step \d+:/.test(headerText);
+      
+      if (isStep) {
+        stepNumber++;
+        htmlLines.push(`<div class="step-section">`);
+        htmlLines.push(`<h2 class="step-header">${headerText}</h2>`);
+        inStepSection = true;
+      } else {
+        htmlLines.push(`<h2 class="section-header">${headerText}</h2>`);
+      }
       continue;
     }
-    if (line.startsWith('# ')) {
+
+    // H3 - Subsections
+    if (line.startsWith('### ')) {
       if (inList) {
         htmlLines.push(`</${listType}>`);
         inList = false;
         listType = null;
       }
-      htmlLines.push(`<h1>${line.substring(2)}</h1>`);
+      htmlLines.push(`<h3 class="subsection-header">${line.substring(4)}</h3>`);
       continue;
     }
 
@@ -66,11 +85,14 @@ function markdownToHtml(markdown: string): string {
         if (inList) {
           htmlLines.push(`</${listType}>`);
         }
-        htmlLines.push('<ol>');
+        htmlLines.push('<ol class="help-list">');
         inList = true;
         listType = 'ol';
       }
-      htmlLines.push(`<li>${numberedMatch[2]}</li>`);
+      const content = numberedMatch[2];
+      let processedContent = content;
+      processedContent = processedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      htmlLines.push(`<li>${processedContent}</li>`);
       continue;
     }
 
@@ -80,11 +102,15 @@ function markdownToHtml(markdown: string): string {
         if (inList) {
           htmlLines.push(`</${listType}>`);
         }
-        htmlLines.push('<ul>');
+        htmlLines.push('<ul class="help-list">');
         inList = true;
         listType = 'ul';
       }
-      htmlLines.push(`<li>${line.substring(2)}</li>`);
+      const content = line.substring(2);
+      let processedContent = content;
+      processedContent = processedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      processedContent = processedContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="help-link">$1</a>');
+      htmlLines.push(`<li>${processedContent}</li>`);
       continue;
     }
 
@@ -98,14 +124,17 @@ function markdownToHtml(markdown: string): string {
     // Process inline formatting (bold, links)
     let processedLine = line;
     processedLine = processedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    processedLine = processedLine.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: var(--blue-9); text-decoration: underline;">$1</a>');
+    processedLine = processedLine.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="help-link">$1</a>');
     
-    htmlLines.push(`<p>${processedLine}</p>`);
+    htmlLines.push(`<p class="help-paragraph">${processedLine}</p>`);
   }
 
-  // Close any open list
+  // Close any open elements
   if (inList && listType) {
     htmlLines.push(`</${listType}>`);
+  }
+  if (inStepSection) {
+    htmlLines.push('</div>');
   }
 
   return htmlLines.join('\n');
@@ -115,19 +144,120 @@ function HelpArticle({ article }: HelpArticleProps) {
   const htmlContent = markdownToHtml(article.content);
 
   return (
-    <YStack padding="$6">
-      <H1 fontSize="$9" fontWeight="bold" marginBottom="$4">{article.title}</H1>
-      {/* Use a regular div for dangerouslySetInnerHTML on web - Tamagui View doesn't support it */}
-      {/* This prevents "Unexpected text node" errors from React Native/Tamagui */}
+    <YStack maxWidth={900} width="100%">
+      {/* Hero Section */}
+      <YStack marginBottom="$8">
+        <H1 
+          fontSize="$10" 
+          fontWeight="700" 
+          marginBottom="$3"
+          color="$gray12"
+          lineHeight="$10"
+        >
+          {article.title}
+        </H1>
+        <Text 
+          fontSize="$5" 
+          color="$gray11" 
+          lineHeight="$6"
+          marginTop="$2"
+        >
+          Welcome to ForSured! This guide will help you set up your account and start managing subcontractor compliance in minutes.
+        </Text>
+      </YStack>
+
+      {/* Content with enhanced styling */}
       <div
         dangerouslySetInnerHTML={{ __html: htmlContent }}
+        className="help-article-content"
         style={{
-          // Match Tamagui text styling
-          color: 'var(--color-12)',
-          fontSize: '14px',
-          lineHeight: '1.5',
+          color: 'var(--gray-12)',
+          fontSize: '16px',
+          lineHeight: '1.7',
         }}
       />
+
+      <style>{`
+        .help-article-content {
+          width: 100%;
+        }
+
+        .help-article-content .section-header {
+          font-size: 24px;
+          font-weight: 600;
+          color: hsla(28, 9%, 18%, 1);
+          margin-top: 48px;
+          margin-bottom: 16px;
+          line-height: 1.4;
+        }
+
+        .help-article-content .step-section {
+          background: hsla(40, 16%, 97%, 1);
+          border: 1px solid hsla(37, 12%, 89%, 1);
+          border-radius: 12px;
+          padding: 24px;
+          margin-top: 24px;
+          margin-bottom: 24px;
+        }
+
+        .help-article-content .step-header {
+          font-size: 20px;
+          font-weight: 600;
+          color: hsla(191, 72%, 35%, 1);
+          margin-top: 0;
+          margin-bottom: 16px;
+          line-height: 1.4;
+        }
+
+        .help-article-content .subsection-header {
+          font-size: 18px;
+          font-weight: 600;
+          color: hsla(30, 9%, 24%, 1);
+          margin-top: 24px;
+          margin-bottom: 12px;
+          line-height: 1.4;
+        }
+
+        .help-article-content .help-paragraph {
+          margin: 16px 0;
+          color: hsla(30, 9%, 24%, 1);
+          line-height: 1.7;
+        }
+
+        .help-article-content .help-list {
+          margin: 16px 0;
+          padding-left: 24px;
+          color: hsla(30, 9%, 24%, 1);
+        }
+
+        .help-article-content .help-list li {
+          margin: 8px 0;
+          line-height: 1.7;
+        }
+
+        .help-article-content .help-list strong {
+          color: hsla(28, 9%, 18%, 1);
+          font-weight: 600;
+        }
+
+        .help-article-content .help-link {
+          color: hsla(191, 72%, 35%, 1);
+          text-decoration: none;
+          font-weight: 500;
+          border-bottom: 1px solid hsla(191, 55%, 62%, 1);
+          transition: all 0.2s ease;
+        }
+
+        .help-article-content .help-link:hover {
+          color: hsla(191, 77%, 28%, 1);
+          border-bottom-color: hsla(191, 72%, 35%, 1);
+        }
+
+        .help-article-content strong {
+          color: hsla(28, 9%, 18%, 1);
+          font-weight: 600;
+        }
+      `}</style>
     </YStack>
   );
 }

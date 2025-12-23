@@ -1,8 +1,7 @@
 /**
  * HelpCenterLayout - Help center layout using Tamagui
  */
-import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { XStack, YStack, Text } from '@unicornlove/ui';
 
 interface HelpCenterLayoutProps {
@@ -10,6 +9,8 @@ interface HelpCenterLayoutProps {
 }
 
 function HelpCenterLayout({ userType }: HelpCenterLayoutProps) {
+  const location = useLocation();
+  
   const helpLinks = [
     { path: `/${userType}/help/getting-started`, label: 'Getting Started' },
     { path: `/${userType}/help/dashboard`, label: 'Dashboard Overview' },
@@ -17,39 +18,65 @@ function HelpCenterLayout({ userType }: HelpCenterLayoutProps) {
   ];
 
   return (
-    <XStack minHeight="100vh">
+    <XStack minH="100vh" backgroundColor="$gray1">
       <YStack
-        as="aside"
-        width={256}
-        backgroundColor="$backgroundHover"
-        shadowColor="$shadowColor"
-        shadowRadius={8}
-        shadowOffset={{ width: 4, height: 0 }}
-        padding="$4"
+        width={280}
+        backgroundColor="$gray2"
+        borderRightWidth={1}
+        borderRightColor="$gray4"
+        padding="$6"
         gap="$6"
       >
-        <Text fontSize="$6" fontWeight="600">
-          Help Center
-        </Text>
-        <YStack as="nav" gap="$2">
-          {helpLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              style={({ isActive }) => ({
-                display: 'block',
-                padding: '8px 12px',
-                borderRadius: 6,
-                backgroundColor: isActive ? '$blue9' : 'transparent',
-                color: isActive ? '$color1' : '$color11',
-              })}
-            >
-              {link.label}
-            </NavLink>
-          ))}
+        <YStack gap="$1">
+          <Text fontSize="$7" fontWeight="700" color="$gray12">
+            Help Center
+          </Text>
+          <Text fontSize="$3" color="$gray10">
+            Find answers and guides
+          </Text>
+        </YStack>
+        <YStack gap="$1">
+          {helpLinks.map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                style={{
+                  display: 'block',
+                  padding: '12px 16px',
+                  borderRadius: 8,
+                  backgroundColor: isActive ? 'hsla(191, 55%, 89%, 1)' : 'transparent',
+                  color: isActive ? 'hsla(191, 82%, 22%, 1)' : 'hsla(30, 9%, 24%, 1)',
+                  fontWeight: isActive ? 600 : 400,
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                  borderLeft: isActive ? '3px solid hsla(191, 72%, 35%, 1)' : '3px solid transparent',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'hsla(38, 14%, 94%, 1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
+              >
+                {link.label}
+              </NavLink>
+            );
+          })}
         </YStack>
       </YStack>
-      <YStack as="main" flex={1} padding="$6">
+      <YStack 
+        flex={1} 
+        padding="$8"
+        paddingHorizontal="$10"
+        maxWidth={1200}
+        width="100%"
+      >
         <Outlet />
       </YStack>
     </XStack>
