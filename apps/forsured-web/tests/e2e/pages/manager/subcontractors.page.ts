@@ -14,46 +14,36 @@ export class ManagerSubcontractorsPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.table = new DataTableComponent(page);
-    // Use flexible selector that works with Tamagui button rendering
-    // Button text might be in children or split across nodes
-    this.addButton = page.locator('button').filter({ hasText: /add subcontractor/i }).first();
+    // Use role-based selector - most reliable for accessibility and works with Tamagui
+    // Verified via Playwright MCP browser inspection
+    this.addButton = page.getByRole('button', { name: 'Add Subcontractor' });
     this.searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');
     this.filterDropdown = page.locator('[data-testid="filter-dropdown"], select[name="filter"]');
     this.subcontractorCards = page.locator('[data-testid="subcontractor-card"], .subcontractor-card');
   }
-  
-  /**
-   * Find the Add Subcontractor button using multiple strategies
-   * This handles cases where Tamagui renders button text in different ways
-   */
-  async findAddButton(): Promise<Locator | null> {
-    // Strategy 1: Direct text match
-    let button = this.page.locator('button:has-text("Add Subcontractor")').first();
-    if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
-      return button;
-    }
-    
-    // Strategy 2: Filter by text content
-    button = this.page.locator('button').filter({ hasText: /add subcontractor/i }).first();
-    if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
-      return button;
-    }
-    
-    // Strategy 3: Check all buttons for text content
-    const buttons = await this.page.locator('button').all();
-    for (const btn of buttons) {
-      const text = await btn.textContent().catch(() => '');
-      if (text && /add subcontractor/i.test(text.trim())) {
-        return btn;
-      }
-    }
-    
-    return null;
-  }
 
   async expectSubcontractorsVisible() {
-    await this.waitForLoading();
+    // Wait for navigation to complete
+    await this.page.waitForLoadState('domcontentloaded');
+    
+    // Wait for the Dashboard link to appear (indicates page has loaded)
     await this.page.getByRole('link', { name: 'Dashboard' }).first().waitFor({ state: 'visible', timeout: 15000 });
+    
+    // Wait for loading to complete
+    await this.waitForLoading();
+    
+    // Wait for either the page heading or empty state to appear
+    // This ensures the page content has rendered
+    await Promise.race([
+      this.page.getByRole('heading', { name: 'Subcontractors' }).waitFor({ state: 'visible', timeout: 10000 }),
+      this.page.getByText('No Subcontractors Yet').waitFor({ state: 'visible', timeout: 10000 }),
+      this.page.getByText(/manage.*subcontractor/i).waitFor({ state: 'visible', timeout: 10000 }),
+    ]).catch(() => {
+      // If none found, continue - button check will provide better error
+    });
+    
+    // Additional wait for React to finish rendering
+    await this.page.waitForTimeout(1000);
   }
 
   async getSubcontractorCount(): Promise<number> {
@@ -63,30 +53,12 @@ export class ManagerSubcontractorsPage extends BasePage {
   }
 
   async clickAddSubcontractor() {
-    // Try to use the stored button first
-    const isVisible = await this.addButton.isVisible({ timeout: 2000 }).catch(() => false);
-    if (isVisible) {
-      await this.addButton.click();
-      return;
-    }
-    
-    // Fallback: find button dynamically
-    const button = await this.findAddButton();
-    if (button) {
-      await button.click();
-    } else {
-      throw new Error('Add Subcontractor button not found');
-    }
+    await this.addButton.click();
   }
 
   async expectAddButtonVisible() {
-    // Try multiple strategies to find the button
-    const button = await this.findAddButton();
-    if (button) {
-      await expect(button).toBeVisible();
-    } else {
-      // Fallback to stored button
-      await expect(this.addButton).toBeVisible({ timeout: 5000 });
-    }
+    // Use role-based selector - verified via Playwright MCP browser inspection
+    const addButton = this.page.getByRole('button', { name: 'Add Subcontractor' });
+    await expect(addButton).toBeVisible({ timeout: 15000 });
   }
 }
