@@ -101,7 +101,8 @@ export default function Sidebar({
       label: t('nav.acknowledgements'),
       icon: ClipboardCheck,
     },
-    { path: '/manager/integrations', label: t('nav.integrations'), icon: Settings },
+    // TODO: Re-enable when integrations feature is ready
+    // { path: '/manager/integrations', label: t('nav.integrations'), icon: Settings },
     { path: '/manager/help', label: t('nav.help'), icon: LifeBuoy },
   ];
 

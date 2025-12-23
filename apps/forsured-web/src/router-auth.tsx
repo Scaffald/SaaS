@@ -52,7 +52,8 @@ import UserManagementPage from './components/User/UserManagementPage';
 
 // Features
 import InsuranceMarketplace from './components/Features/InsuranceMarketplace';
-import IntegrationsMarketplace from './components/Features/IntegrationsMarketplace';
+// TODO: Re-enable when integrations feature is ready
+// import IntegrationsMarketplace from './components/Features/IntegrationsMarketplace';
 
 // Hooks
 import { usePermissions } from './hooks/usePermissions';
@@ -121,7 +122,8 @@ const AuthenticatedAppRoutes = () => {
                 <Route path="subcontractors" element={<SubcontractorsPage />} />
                 <Route path="documents" element={<DocumentsPage />} />
                 <Route path="marketplace" element={<InsuranceMarketplace />} />
-                <Route path="integrations" element={<IntegrationsMarketplace />} />
+                {/* TODO: Re-enable when integrations feature is ready */}
+                {/* <Route path="integrations" element={<IntegrationsMarketplace />} /> */}
                 <Route path="acknowledgements" element={<ManagerAcknowledgementsList />} />
                 <Route path="notifications" element={<NotificationsAndApprovalsPage />} />
                 <Route

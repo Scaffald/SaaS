@@ -68,7 +68,8 @@ const BrokerAcknowledgementList = lazy(() => import('./components/BrokerAcknowle
 const ProjectDetailPage = lazy(() => import('./components/Project/ProjectDetailPage'));
 const ProjectCreatePage = lazy(() => import('./components/Project/ProjectCreatePage'));
 const InsuranceMarketplace = lazy(() => import('./components/Features/InsuranceMarketplace'));
-const IntegrationsMarketplace = lazy(() => import('./components/Features/IntegrationsMarketplace'));
+// TODO: Re-enable when integrations feature is ready
+// const IntegrationsMarketplace = lazy(() => import('./components/Features/IntegrationsMarketplace'));
 const NotificationsAndApprovalsPage = lazy(() => import('./components/Notifications/NotificationsAndApprovalsPage'));
 const UserManagementPage = lazy(() => import('./components/User/UserManagementPage'));
 const ClientProfilePage = lazy(() => import('./app/(dashboard)/clients/[clientId]/page')); // REQ-274
@@ -249,14 +250,15 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* TODO: Re-enable when integrations feature is ready */}
+        {/* <Route
           path="manager/integrations"
           element={
             <ProtectedRoute allowedTypes={['manager']}>
               <IntegrationsMarketplace />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path="manager/acknowledgements"
           element={
