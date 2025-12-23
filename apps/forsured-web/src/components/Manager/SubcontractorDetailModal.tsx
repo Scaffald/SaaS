@@ -6,7 +6,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Upload,
-  MessageSquare,
   Download,
   Eye,
 } from 'lucide-react';
@@ -89,8 +88,6 @@ export default function SubcontractorDetailModal({
   const [activeTab, setActiveTab] = useState<
     'overview' | 'policies' | 'documents' | 'issues'
   >('overview');
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [message, setMessage] = useState('');
   const [documentFilter, setDocumentFilter] = useState<string>('all');
   const [documentStatusFilter, setDocumentStatusFilter] =
     useState<string>('all');
@@ -314,14 +311,6 @@ export default function SubcontractorDetailModal({
       await updateIssue(issueId, { status: 'resolved' });
     } catch (error) {
       console.error('Failed to resolve issue:', error);
-    }
-  };
-
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      console.log('Sending message:', message, 'to:', subcontractorId);
-      setMessage('');
-      setShowMessageModal(false);
     }
   };
 
@@ -1099,16 +1088,6 @@ export default function SubcontractorDetailModal({
             </YStack>
           )}
 
-          <XStack gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-            <Button
-              variant="secondary"
-              onClick={() => setShowMessageModal(true)}
-              leftIcon={MessageSquare}
-              flex={1}
-            >
-              Send Message
-            </Button>
-          </XStack>
         </YStack>
       </ModalOverlay>
 
@@ -1129,77 +1108,6 @@ export default function SubcontractorDetailModal({
         />
       )}
 
-      {showMessageModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1001,
-          }}
-          onClick={() => setShowMessageModal(false)}
-        >
-          <Card
-            backgroundColor="$background"
-            padding="$6"
-            borderRadius="$4"
-            width={400}
-            maxWidth="90vw"
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-          >
-            <Text fontSize="$6" fontWeight="bold" color="$color12" marginBottom="$4">
-              Send Message
-            </Text>
-            <YStack gap="$4">
-              <YStack>
-                <Text
-                  fontSize="$3"
-                  fontWeight="500"
-                  color="$color11"
-                  marginBottom="$2"
-                >
-                  Message to {subcontractor.company_name}
-                </Text>
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={4}
-                  placeholder="Type your message here..."
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: 'var(--background)',
-                    border: '1px solid var(--borderColor)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--color12)',
-                    fontFamily: 'inherit',
-                  }}
-                />
-              </YStack>
-              <XStack gap="$3">
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowMessageModal(false)}
-                  flex={1}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleSendMessage}
-                  flex={1}
-                >
-                  Send Message
-                </Button>
-              </XStack>
-            </YStack>
-          </Card>
-        </div>
-      )}
     </>
   );
 }
