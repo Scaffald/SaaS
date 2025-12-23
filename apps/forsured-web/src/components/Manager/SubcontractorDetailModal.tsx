@@ -131,31 +131,53 @@ export default function SubcontractorDetailModal({
       setLoadingData(true);
 
       try {
-        const [subResult, policiesResult, projectsResult, usersResult] = await Promise.all([
-          forsured('subcontractors').select('*').eq('id', subcontractorId).single(),
-          forsured('policies').select('*').eq('subcontractor_id', subcontractorId),
-          forsured('projects').select('*'),
-          forsured('users').select('*'),
-        ]);
+        // Fetch subcontractor first - this is required
+        const subResult = await forsured('subcontractors')
+          .select('*')
+          .eq('id', subcontractorId)
+          .single();
 
-        if (subResult.error) throw subResult.error;
-        if (policiesResult.error) throw policiesResult.error;
-        if (projectsResult.error) throw projectsResult.error;
-        if (usersResult.error) throw usersResult.error;
+        if (subResult.error) {
+          console.error('[SubcontractorDetailModal] Error fetching subcontractor:', subResult.error);
+          throw subResult.error;
+        }
 
         // Map database fields to component interface
         const mappedSubcontractor = subResult.data ? {
           ...subResult.data,
-          company_name: subResult.data.company || '', // Map 'company' to 'company_name'
-          contact_name: subResult.data.name || '', // Map 'name' to 'contact_name'
+          company_name: subResult.data.company || '',
+          contact_name: subResult.data.name || '',
         } : null;
 
         setSubcontractor(mappedSubcontractor);
-        setPolicies(policiesResult.data || []);
-        setProjects(projectsResult.data || []);
-        setUsers(usersResult.data || []);
+
+        // Fetch related data - these are optional, don't fail if they error
+        try {
+          const policiesResult = await forsured('insurance_policies')
+            .select('*')
+            .eq('subcontractor_id', subcontractorId);
+          if (!policiesResult.error) {
+            setPolicies(policiesResult.data || []);
+          }
+        } catch (e) {
+          console.warn('[SubcontractorDetailModal] Could not fetch policies:', e);
+        }
+
+        try {
+          const projectsResult = await forsured('projects').select('*');
+          if (!projectsResult.error) {
+            setProjects(projectsResult.data || []);
+          }
+        } catch (e) {
+          console.warn('[SubcontractorDetailModal] Could not fetch projects:', e);
+        }
+
+        // Skip users query for now - it's not critical
+        setUsers([]);
+
       } catch (err) {
         const error = err as Error;
+        console.error('[SubcontractorDetailModal] Error:', error);
         toast.error(error.message || 'Failed to load subcontractor details');
       } finally {
         setLoadingData(false);
