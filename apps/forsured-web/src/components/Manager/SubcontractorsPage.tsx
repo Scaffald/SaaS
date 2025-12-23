@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -11,11 +11,14 @@ import {
   ChevronDown,
   Loader2,
   UserPlus,
+  X,
 } from 'lucide-react';
-import { EmptyState, YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle } from '@unicornlove/ui';
+import { EmptyState, YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle, Input, Button as TamaguiButton } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import SubcontractorDetailModal from './SubcontractorDetailModal';
 import { useDatabase } from '../../contexts/DatabaseContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { getUserOrganizationId } from '../../lib/supabase';
 import { toast } from 'sonner';
 
 type ComplianceStatus = 'compliant' | 'warning' | 'critical' | 'all';
@@ -52,6 +55,7 @@ interface Subcontractor {
 
 export default function SubcontractorsPage() {
   const { forsured } = useDatabase();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // State for data fetching
@@ -71,40 +75,117 @@ export default function SubcontractorsPage() {
     string | null
   >(null);
 
-  // Fetch subcontractors from database on mount
+  // Add subcontractor modal state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    company: '',
+    name: '',
+    email: '',
+    phone: '',
+    trade_type: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  // Fetch organization ID on mount
   useEffect(() => {
-    async function fetchSubcontractors() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const { data, error: queryError } = await forsured('subcontractors')
-          .select('*')
-          .order('company', { ascending: true }); // Use 'company' column from DB
-
-        if (queryError) {
-          throw queryError;
-        }
-
-        // Map database fields to component interface
-        const mappedData = (data || []).map((sub: any) => ({
-          ...sub,
-          company_name: sub.company || '', // Map 'company' to 'company_name' for compatibility
-          contact_name: sub.name || '', // Map 'name' to 'contact_name' for compatibility
-        }));
-
-        setSubcontractors(mappedData);
-      } catch (err) {
-        const error = err as Error;
-        setError(error);
-        toast.error(error.message || 'Failed to load subcontractors');
-      } finally {
-        setLoading(false);
+    async function fetchOrg() {
+      if (user?.id) {
+        const orgId = await getUserOrganizationId(user.id);
+        setOrganizationId(orgId);
       }
     }
+    fetchOrg();
+  }, [user?.id]);
 
-    fetchSubcontractors();
+  // Fetch subcontractors - reusable function
+  const fetchSubcontractors = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error: queryError } = await forsured('subcontractors')
+        .select('*')
+        .order('company', { ascending: true }); // Use 'company' column from DB
+
+      if (queryError) {
+        throw queryError;
+      }
+
+      // Map database fields to component interface
+      const mappedData = (data || []).map((sub: any) => ({
+        ...sub,
+        company_name: sub.company || '', // Map 'company' to 'company_name' for compatibility
+        contact_name: sub.name || '', // Map 'name' to 'contact_name' for compatibility
+      }));
+
+      setSubcontractors(mappedData);
+    } catch (err) {
+      const error = err as Error;
+      setError(error);
+      toast.error(error.message || 'Failed to load subcontractors');
+    } finally {
+      setLoading(false);
+    }
   }, [forsured]);
+
+  // Fetch subcontractors on mount
+  useEffect(() => {
+    fetchSubcontractors();
+  }, [fetchSubcontractors]);
+
+  // Handle form submission
+  const handleAddSubcontractor = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!organizationId) {
+      toast.error('No organization found. Please try again.');
+      return;
+    }
+
+    if (!formData.company.trim() || !formData.name.trim()) {
+      toast.error('Company name and contact name are required.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const { error: insertError } = await forsured('subcontractors').insert({
+        company: formData.company.trim(),
+        name: formData.name.trim(),
+        organization_id: organizationId,
+        contact_info: {
+          email: formData.email.trim() || null,
+          phone: formData.phone.trim() || null,
+        },
+        trade_type: formData.trade_type.trim() || null,
+        status: 'active',
+        compliance_score: 100, // Start with perfect score
+        risk_level: 'low',
+      });
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      toast.success('Subcontractor added successfully!');
+      setShowAddModal(false);
+      setFormData({ company: '', name: '', email: '', phone: '', trade_type: '' });
+      fetchSubcontractors(); // Refresh the list
+    } catch (err) {
+      const error = err as Error;
+      console.error('[SubcontractorsPage] Error adding subcontractor:', error);
+      toast.error(error.message || 'Failed to add subcontractor');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Close modal handler
+  const handleCloseModal = () => {
+    setShowAddModal(false);
+    setFormData({ company: '', name: '', email: '', phone: '', trade_type: '' });
+  };
 
   // Derive compliance status from compliance_score
   const subcontractorsWithStatus = useMemo(() => {
@@ -220,28 +301,161 @@ export default function SubcontractorsPage() {
     );
   }
 
+  // Reusable modal component
+  const addSubcontractorModal = showAddModal && (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+      onClick={handleCloseModal}
+    >
+      <Card
+        backgroundColor="$background"
+        padding="$6"
+        borderRadius="$4"
+        width={500}
+        maxHeight="90vh"
+        overflow="auto"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        data-testid="add-subcontractor-modal"
+      >
+        <XStack justifyContent="space-between" alignItems="center" marginBottom="$4">
+          <Text fontSize="$6" fontWeight="bold" color="$color12">
+            Add Subcontractor
+          </Text>
+          <XStack
+            onPress={handleCloseModal}
+            padding="$2"
+            borderRadius="$2"
+            hoverStyle={{ backgroundColor: '$backgroundHover' }}
+            cursor="pointer"
+          >
+            <X size={20} color="$color11" />
+          </XStack>
+        </XStack>
+
+        <form onSubmit={handleAddSubcontractor}>
+          <YStack gap="$4">
+            <YStack gap="$2">
+              <Text fontSize="$2" fontWeight="500" color="$color11">
+                Company Name *
+              </Text>
+              <Input
+                placeholder="Enter company name"
+                value={formData.company}
+                onChangeText={(text: string) => setFormData({ ...formData, company: text })}
+                autoFocus
+              />
+            </YStack>
+
+            <YStack gap="$2">
+              <Text fontSize="$2" fontWeight="500" color="$color11">
+                Contact Name *
+              </Text>
+              <Input
+                placeholder="Enter contact person's name"
+                value={formData.name}
+                onChangeText={(text: string) => setFormData({ ...formData, name: text })}
+              />
+            </YStack>
+
+            <YStack gap="$2">
+              <Text fontSize="$2" fontWeight="500" color="$color11">
+                Email
+              </Text>
+              <Input
+                placeholder="Enter email address"
+                value={formData.email}
+                onChangeText={(text: string) => setFormData({ ...formData, email: text })}
+              />
+            </YStack>
+
+            <YStack gap="$2">
+              <Text fontSize="$2" fontWeight="500" color="$color11">
+                Phone
+              </Text>
+              <Input
+                placeholder="Enter phone number"
+                value={formData.phone}
+                onChangeText={(text: string) => setFormData({ ...formData, phone: text })}
+              />
+            </YStack>
+
+            <YStack gap="$2">
+              <Text fontSize="$2" fontWeight="500" color="$color11">
+                Trade Type
+              </Text>
+              <Input
+                placeholder="e.g., Electrical, Plumbing, HVAC"
+                value={formData.trade_type}
+                onChangeText={(text: string) => setFormData({ ...formData, trade_type: text })}
+              />
+            </YStack>
+
+            <XStack justifyContent="flex-end" gap="$3" marginTop="$2">
+              <TamaguiButton
+                variant="outlined"
+                onPress={handleCloseModal}
+                disabled={submitting}
+              >
+                Cancel
+              </TamaguiButton>
+              <TamaguiButton
+                backgroundColor="$blue9"
+                color="white"
+                onPress={() => {
+                  const form = document.querySelector('form');
+                  if (form) form.requestSubmit();
+                }}
+                disabled={submitting || !formData.company.trim() || !formData.name.trim()}
+              >
+                {submitting ? (
+                  <XStack alignItems="center" gap="$2">
+                    <Loader2 size={16} className="animate-spin" />
+                    <Text color="white">Adding...</Text>
+                  </XStack>
+                ) : (
+                  'Add Subcontractor'
+                )}
+              </TamaguiButton>
+            </XStack>
+          </YStack>
+        </form>
+      </Card>
+    </div>
+  );
+
   // Show empty state when no subcontractors exist
   if (subcontractors.length === 0) {
     return (
-      <YStack gap="$6">
-        <YStack>
-          <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
-            Subcontractors
-          </H1>
-          <Text color="$color11" fontSize="$6" mt="$1">
-            Manage your project subcontractors
-          </Text>
+      <>
+        <YStack gap="$6">
+          <YStack>
+            <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
+              Subcontractors
+            </H1>
+            <Text color="$color11" fontSize="$6" mt="$1">
+              Manage your project subcontractors
+            </Text>
+          </YStack>
+          <EmptyState
+            icon={UserPlus}
+            title="No Subcontractors Yet"
+            description="Invite subcontractors to your projects to track their compliance and insurance requirements."
+            action={{
+              label: 'Add Subcontractor',
+              onClick: () => setShowAddModal(true),
+            }}
+          />
         </YStack>
-        <EmptyState
-          icon={UserPlus}
-          title="No Subcontractors Yet"
-          description="Invite subcontractors to your projects to track their compliance and insurance requirements."
-          action={{
-            label: 'Add Subcontractor',
-            onClick: () => navigate('/manager/subcontractors/new'),
-          }}
-        />
-      </YStack>
+        {addSubcontractorModal}
+      </>
     );
   }
 
@@ -259,7 +473,7 @@ export default function SubcontractorsPage() {
         <Button
           variant="primary"
           leftIcon={Plus}
-          onPress={() => navigate('/manager/subcontractors/new')}
+          onPress={() => setShowAddModal(true)}
         >
           Add Subcontractor
         </Button>
@@ -550,6 +764,8 @@ export default function SubcontractorsPage() {
         isOpen={!!selectedSubcontractor}
         onClose={() => setSelectedSubcontractor(null)}
       />
+
+      {addSubcontractorModal}
     </YStack>
   );
 }
