@@ -135,7 +135,13 @@ export class DocumentService {
     // Sanitize file name
     const sanitizedName = this.sanitizeFileName(uploadData.file.name)
 
-    console.log('[DocumentService] Uploading via Scaffald')
+    console.log('[DocumentService] Uploading via Scaffald', {
+      organizationId: uploadData.organizationId,
+      fileName: sanitizedName,
+      fileSize: uploadData.file.size,
+      category: uploadData.category || 'compliance',
+      tags: uploadData.tags,
+    })
     try {
       const scaffaldResponse = await this.uploadToScaffald({
         organizationId: uploadData.organizationId,
@@ -150,11 +156,14 @@ export class DocumentService {
         folderId: uploadData.folderId,
       })
 
+      console.log('[DocumentService] Upload successful', { documentId: scaffaldResponse.id })
+
       // Convert Scaffald response to local Document format
       return this.scaffaldToLocalDocument(scaffaldResponse, uploadData)
     } catch (error) {
-      console.error('[DocumentService] Scaffald upload failed:', error)
-      throw error
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      console.error('[DocumentService] Scaffald upload failed:', errorMessage, error)
+      throw new Error(`Document upload failed: ${errorMessage}`)
     }
   }
 

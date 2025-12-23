@@ -15,6 +15,9 @@ interface FileUploadZoneProps {
   organizationId: string;
   subcontractorId?: string;
   maxFiles?: number;
+  category?: 'compliance' | 'insurance' | 'contract' | 'general';
+  description?: string;
+  tags?: string[];
   onUpload?: (document: Document) => void;
   onError?: (error: string) => void;
 }
@@ -33,6 +36,9 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   organizationId,
   subcontractorId,
   maxFiles = 10,
+  category = 'compliance',
+  description,
+  tags = [],
   onUpload,
   onError
 }) => {
@@ -136,12 +142,16 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
         );
       }, 200);
 
-      // Upload the document
+      // Upload the document with proper categorization
+      console.log('[FileUploadZone] Uploading document with category:', category);
       const document = await documentService.uploadDocument({
         projectId,
         uploadedBy: uploaderId,
         organizationId,
-        file: queueItem.file
+        file: queueItem.file,
+        category,
+        description,
+        tags: [...tags, 'forsured', category],
       });
 
       clearInterval(progressInterval);

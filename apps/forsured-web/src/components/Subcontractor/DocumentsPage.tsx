@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   FileText,
   Upload,
@@ -7,13 +7,16 @@ import {
   AlertTriangle,
   Calendar,
   Eye,
+  RefreshCw,
 } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button, H1 } from '@unicornlove/ui';
+import { YStack, XStack, Text, Card, Button, H1, Spinner } from '@unicornlove/ui';
 import CommonButton from '../Common/Button';
 import DocumentDetailModal from '../Document/DocumentDetailModal';
 import Modal from '../Common/Modal';
 import { FileUploadZone } from '../documents/FileUploadZone';
 import { useUser } from '../../contexts/UserContext';
+import { DocumentService } from '../../lib/documents/documentService';
+import { scaffaldClient } from '../../lib/scaffald/client';
 import type { Document } from '../../types/document';
 
 interface DocumentItem {
@@ -37,89 +40,34 @@ export default function DocumentsPage() {
   );
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const documentService = new DocumentService();
 
-  const mockDocuments: DocumentItem[] = [
-    {
-      id: '1',
-      name: 'General Liability Certificate',
-      type: 'coi',
-      status: 'verified',
-      uploadDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      expiryDate: new Date(
-        Date.now() + 335 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      fileSize: '2.4 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '2',
-      name: 'Contractors License',
-      type: 'license',
-      status: 'verified',
-      uploadDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-      expiryDate: new Date(
-        Date.now() + 305 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      fileSize: '1.8 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '3',
-      name: 'Performance Bond',
-      type: 'bond',
-      status: 'verified',
-      uploadDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-      expiryDate: new Date(
-        Date.now() + 350 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      fileSize: '3.1 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '4',
-      name: 'Workers Compensation Certificate',
-      type: 'coi',
-      status: 'expiring',
-      uploadDate: new Date(
-        Date.now() - 330 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      expiryDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString(),
-      fileSize: '2.2 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '5',
-      name: 'OSHA 30 Certification',
-      type: 'certification',
-      status: 'verified',
-      uploadDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-      expiryDate: new Date(
-        Date.now() + 1005 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      fileSize: '1.5 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '6',
-      name: 'W-9 Tax Form',
-      type: 'w9',
-      status: 'pending',
-      uploadDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      fileSize: '890 KB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-  ];
+  // Convert real documents to display format
+  const displayDocuments: DocumentItem[] = documents.map((doc) => ({
+    id: doc.id,
+    name: doc.filename,
+    type: doc.docType as any,
+    status: doc.status as any,
+    uploadDate: doc.uploadedAt,
+    expiryDate: doc.expiresAt || undefined,
+    fileSize: `${(doc.fileSize / 1024).toFixed(1)} KB`,
+    uploadedBy: doc.uploadedBy || 'Unknown',
+  }));
 
-  const filteredDocuments = mockDocuments.filter((doc) => {
+  const filteredDocuments = displayDocuments.filter((doc) => {
     if (filter === 'all') return true;
     return doc.status === filter;
   });
 
   const stats = {
-    total: mockDocuments.length,
-    verified: mockDocuments.filter((d) => d.status === 'verified').length,
-    pending: mockDocuments.filter((d) => d.status === 'pending').length,
-    expiring: mockDocuments.filter(
+    total: displayDocuments.length,
+    verified: displayDocuments.filter((d) => d.status === 'verified').length,
+    pending: displayDocuments.filter((d) => d.status === 'pending').length,
+    expiring: displayDocuments.filter(
       (d) => d.status === 'expiring' || d.status === 'expired'
     ).length,
   };
@@ -158,16 +106,86 @@ export default function DocumentsPage() {
     return days;
   };
 
-  const handleUploadDocument = (document: Document) => {
-    console.log('Document uploaded:', document);
-    // TODO: Refresh document list after upload
-    // This would typically refetch documents from the API
-  };
+  // Load documents from Scaffald API
+  const loadDocuments = useCallback(async () => {
+    if (!currentUser?.organization_id) {
+      console.log('[DocumentsPage] No organization ID, skipping document load');
+      return;
+    }
 
-  const handleUploadError = (error: string) => {
+    try {
+      setLoading(true);
+      setLoadError(null);
+      console.log('[DocumentsPage] Loading documents for organization:', currentUser.organization_id);
+
+      // Fetch documents from Scaffald API
+      const response = await scaffaldClient.documents.list({
+        organizationId: currentUser.organization_id,
+        category: 'compliance', // Focus on compliance documents (COIs, insurance)
+        limit: 100,
+      });
+
+      console.log('[DocumentsPage] Loaded documents:', response.documents?.length || 0);
+      
+      // Map Scaffald documents to our Document type
+      const mappedDocs: Document[] = (response.documents || []).map((doc) => ({
+        id: doc.id,
+        filename: doc.name,
+        docType: 'coi' as const, // Default to COI for insurance documents
+        status: 'pending', // Default status
+        clientId: currentUser.organization_id || '',
+        clientName: '',
+        clientType: 'contractor',
+        projectId: null,
+        projectName: null,
+        contentPreview: null,
+        fileSize: doc.latestSizeBytes || 0,
+        mimeType: doc.latestMimeType || 'application/pdf',
+        uploadedBy: currentUser.id || '',
+        uploadedAt: doc.createdAt,
+        verifiedAt: null,
+        expiresAt: null,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+      }));
+
+      setDocuments(mappedDocs);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load documents';
+      console.error('[DocumentsPage] Error loading documents:', errorMessage);
+      setLoadError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser?.organization_id, currentUser?.id]);
+
+  // Load documents on mount and when organization changes
+  useEffect(() => {
+    loadDocuments();
+  }, [loadDocuments]);
+
+  const handleUploadDocument = useCallback(async (document: Document) => {
+    console.log('[DocumentsPage] Document uploaded successfully:', document.id);
+    setUploadSuccess('Document uploaded successfully!');
+    
+    // Clear success message after 3 seconds
+    setTimeout(() => {
+      setUploadSuccess(null);
+    }, 3000);
+
+    // Refresh document list to show the newly uploaded document
+    await loadDocuments();
+  }, [loadDocuments]);
+
+  const handleUploadError = useCallback((error: string) => {
     setUploadError(error);
-    console.error('Upload error:', error);
-  };
+    console.error('[DocumentsPage] Upload error:', error);
+    
+    // Clear error after 5 seconds
+    setTimeout(() => {
+      setUploadError(null);
+    }, 5000);
+  }, []);
 
   return (
     <YStack gap="$6">
@@ -180,13 +198,66 @@ export default function DocumentsPage() {
             Manage your certificates, licenses, and compliance documents
           </Text>
         </YStack>
-        <CommonButton onPress={() => setUploadModalOpen(true)}>
-          <XStack alignItems="center" gap="$2">
-            <Upload size={18} />
-            <Text>Upload Document</Text>
-          </XStack>
-        </CommonButton>
+        <XStack gap="$2">
+          <CommonButton 
+            onPress={() => {
+              console.log('[DocumentsPage] Upload button clicked');
+              setUploadModalOpen(true);
+              setUploadError(null);
+              setUploadSuccess(null);
+            }}
+          >
+            <XStack alignItems="center" gap="$2">
+              <Upload size={18} />
+              <Text>Upload Document</Text>
+            </XStack>
+          </CommonButton>
+          <CommonButton 
+            variant="ghost" 
+            onPress={loadDocuments}
+            disabled={loading}
+          >
+            <XStack alignItems="center" gap="$2">
+              <RefreshCw size={18} />
+              {loading && <Spinner size="small" />}
+              {!loading && <Text>Refresh</Text>}
+            </XStack>
+          </CommonButton>
+        </XStack>
       </XStack>
+
+      {/* Success message */}
+      {uploadSuccess && (
+        <Card
+          backgroundColor="$green2"
+          borderColor="$green6"
+          borderWidth={1}
+          borderRadius="$4"
+          padding="$4"
+        >
+          <XStack alignItems="center" gap="$2">
+            <CheckCircle color="$green10" size={20} />
+            <Text color="$green11" fontSize="$3" fontWeight="500">
+              {uploadSuccess}
+            </Text>
+          </XStack>
+        </Card>
+      )}
+
+      {/* Load error message */}
+      {loadError && (
+        <Card
+          backgroundColor="$red2"
+          borderColor="$red6"
+          borderWidth={1}
+          borderRadius="$4"
+          padding="$4"
+        >
+          <Text color="$red11" fontSize="$3">
+            Error loading documents: {loadError}
+          </Text>
+        </Card>
+      )}
 
       <XStack
         flexWrap="wrap"
@@ -299,7 +370,7 @@ export default function DocumentsPage() {
               backgroundColor: filter === 'all' ? '$blue9' : '$gray4',
             }}
           >
-            All ({mockDocuments.length})
+            All ({displayDocuments.length})
           </Button>
           <Button
             onPress={() => setFilter('verified')}
@@ -350,7 +421,13 @@ export default function DocumentsPage() {
       </Card>
 
       <Card elevation={1} borderWidth={1} borderColor="$borderColor">
-        <YStack overflowX="auto">
+        {loading && (
+          <YStack alignItems="center" paddingVertical="$8">
+            <Spinner size="large" />
+            <Text color="$color11" mt="$4">Loading documents...</Text>
+          </YStack>
+        )}
+        {!loading && <YStack overflowX="auto">
           <table width="100%">
             <thead>
               <tr>
@@ -510,21 +587,21 @@ export default function DocumentsPage() {
               })}
             </tbody>
           </table>
-        </YStack>
 
-        {filteredDocuments.length === 0 && (
-          <YStack alignItems="center" paddingVertical="$12" gap="$4">
-            <FileText color="$color10" size={48} />
-            <YStack alignItems="center" gap="$2">
-              <Text color="$color12" fontWeight="500">
-              No documents found
-            </Text>
-              <Text color="$color11" fontSize="$2">
-                Upload documents to get started
+          {filteredDocuments.length === 0 && (
+            <YStack alignItems="center" paddingVertical="$12" gap="$4">
+              <FileText color="$color10" size={48} />
+              <YStack alignItems="center" gap="$2">
+                <Text color="$color12" fontWeight="500">
+                No documents found
               </Text>
+                <Text color="$color11" fontSize="$2">
+                  Upload documents to get started
+                </Text>
+              </YStack>
             </YStack>
-          </YStack>
-        )}
+          )}
+        </YStack>}
       </Card>
 
       {/* Document Detail Modal */}
@@ -579,6 +656,9 @@ export default function DocumentsPage() {
               organizationId={currentUser.organization_id}
               subcontractorId={currentUser.id}
               maxFiles={5}
+              category="compliance"
+              description="Insurance and compliance documents"
+              tags={['coi', 'insurance', 'compliance']}
               onUpload={handleUploadDocument}
               onError={handleUploadError}
             />

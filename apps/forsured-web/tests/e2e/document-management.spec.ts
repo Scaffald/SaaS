@@ -109,8 +109,8 @@ test.describe('GC Document Management', () => {
     await page.goto('/manager/documents');
     await page.waitForLoadState('networkidle');
 
-    // Look for upload button
-    const uploadButton = page.locator('button:has-text("Upload"), input[type="file"]').first();
+    // Look for upload button - button text is "Upload Document"
+    const uploadButton = page.locator('button:has-text("Upload Document"), button:has-text("Upload"), input[type="file"]').first();
 
     // Upload UI should be present
     const hasUploadUI = await uploadButton.count() > 0;
@@ -183,8 +183,8 @@ test.describe('GC Document Management', () => {
     await page.goto('/manager/documents');
     await page.waitForLoadState('networkidle');
 
-    // Should show content (empty state or upload prompt)
-    const hasContent = await page.locator('h1, h2, [data-testid*="empty"], button:has-text("Upload")').count() > 0;
+    // Should show content (empty state or upload prompt) - button text is "Upload Document"
+    const hasContent = await page.locator('h1, h2, [data-testid*="empty"], button:has-text("Upload Document"), button:has-text("Upload")').count() > 0;
     expect(hasContent).toBeTruthy();
   });
 
@@ -533,8 +533,8 @@ test.describe('Document Upload Flow (Critical Path)', () => {
     await page.goto('/manager/documents');
     await page.waitForLoadState('networkidle');
 
-    // Upload button should be present
-    const uploadButton = page.locator('button:has-text("Upload"), input[type="file"]').first();
+    // Upload button should be present - button text is "Upload Document"
+    const uploadButton = page.locator('button:has-text("Upload Document"), button:has-text("Upload"), input[type="file"]').first();
     const hasUploadUI = await uploadButton.count() > 0;
     expect(hasUploadUI).toBeTruthy();
   });

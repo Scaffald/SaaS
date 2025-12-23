@@ -6,7 +6,6 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DocumentService } from './documentService';
-import mockDatabase from '../../utils/mockDataStore';
 import type { DocumentUpload } from '../../types/document';
 import { MAX_FILE_SIZE, MIN_FILE_SIZE } from '../../types/document';
 
