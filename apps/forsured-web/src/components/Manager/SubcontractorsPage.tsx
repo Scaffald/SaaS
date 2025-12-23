@@ -188,9 +188,10 @@ export default function SubcontractorsPage() {
   const subcontractorsWithStatus = useMemo(() => {
     return subcontractors.map((sub) => {
       let complianceStatus: 'compliant' | 'warning' | 'critical';
-      if (sub.risk_level === 'critical' || sub.compliance_score < 60) {
+      const score = sub.compliance_score ?? 0;
+      if (sub.risk_level === 'critical' || score < 60) {
         complianceStatus = 'critical';
-      } else if (sub.risk_level === 'medium' || sub.compliance_score < 80) {
+      } else if (sub.risk_level === 'medium' || score < 80) {
         complianceStatus = 'warning';
       } else {
         complianceStatus = 'compliant';
@@ -222,13 +223,13 @@ export default function SubcontractorsPage() {
       if (sortBy === 'name') {
         comparison = a.company_name.localeCompare(b.company_name);
       } else if (sortBy === 'compliance') {
-        comparison = b.compliance_score - a.compliance_score;
+        comparison = (b.compliance_score ?? 0) - (a.compliance_score ?? 0);
       } else if (sortBy === 'issues') {
         // Sort by risk level (critical > medium > low) then by compliance score
         const riskOrder: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
         comparison = (riskOrder[a.risk_level] ?? 4) - (riskOrder[b.risk_level] ?? 4);
         if (comparison === 0) {
-          comparison = a.compliance_score - b.compliance_score;
+          comparison = (a.compliance_score ?? 0) - (b.compliance_score ?? 0);
         }
       }
 
@@ -679,23 +680,25 @@ export default function SubcontractorsPage() {
                     Compliance Score
                   </Text>
                   <Text fontSize="$1" fontWeight="600" color="$color12">
-                    {Math.round(sub.compliance_score)}%
+                    {sub.compliance_score != null ? `${Math.round(sub.compliance_score)}%` : 'No data yet'}
                   </Text>
                 </XStack>
-                <YStack width="100%" height={8} backgroundColor="$gray8" borderRadius={9999}>
-                  <YStack
-                    height="100%"
-                    borderRadius={9999}
-                    backgroundColor={
-                      sub.compliance_score >= 90
-                        ? '$green10'
-                        : sub.compliance_score >= 70
-                          ? '$orange10'
-                          : '$red10'
-                    }
-                    width={`${sub.compliance_score}%`}
-                  />
-                </YStack>
+                {sub.compliance_score != null && (
+                  <YStack width="100%" height={8} backgroundColor="$gray8" borderRadius={9999}>
+                    <YStack
+                      height="100%"
+                      borderRadius={9999}
+                      backgroundColor={
+                        sub.compliance_score >= 90
+                          ? '$green10'
+                          : sub.compliance_score >= 70
+                            ? '$orange10'
+                            : '$red10'
+                      }
+                      width={`${sub.compliance_score}%`}
+                    />
+                  </YStack>
+                )}
               </YStack>
 
               <XStack flexWrap="wrap" gap="$3">

@@ -20,7 +20,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { YStack, XStack, Text, H2, H3, Spinner, Card } from '@unicornlove/ui';
-import Modal from '../Common/Modal';
+// Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import Button from '../Common/Button';
 import StatusBadge from '../Common/StatusBadge';
 import Select from '../Common/Select';
@@ -195,23 +195,55 @@ export default function SubcontractorDetailModal({
 
   if (!subcontractorId) return null;
 
+  // Simple overlay wrapper for modal content
+  const ModalOverlay = ({ children }: { children: React.ReactNode }) => (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <Card
+        backgroundColor="$background"
+        padding="$6"
+        borderRadius="$4"
+        width={900}
+        maxWidth="95vw"
+        maxHeight="90vh"
+        overflow="auto"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        data-testid="subcontractor-detail-modal"
+      >
+        {children}
+      </Card>
+    </div>
+  );
+
+  if (!isOpen) return null;
+
   // Show loading while fetching data
   if (loadingData) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
+      <ModalOverlay>
         <YStack alignItems="center" justifyContent="center" minHeight={400}>
           <YStack alignItems="center" gap="$4">
             <Spinner size="large" color="$blue10" />
             <Text color="$color11" fontSize="$4">Loading subcontractor details...</Text>
           </YStack>
         </YStack>
-      </Modal>
+      </ModalOverlay>
     );
   }
 
   if (!subcontractor) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
+      <ModalOverlay>
         <YStack alignItems="center" justifyContent="center" minHeight={400}>
           <YStack alignItems="center">
             <YStack alignItems="center" mb="$4">
@@ -223,7 +255,7 @@ export default function SubcontractorDetailModal({
             <Text color="$color11">The requested subcontractor could not be loaded.</Text>
           </YStack>
         </YStack>
-      </Modal>
+      </ModalOverlay>
     );
   }
 
@@ -282,7 +314,7 @@ export default function SubcontractorDetailModal({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
+      <ModalOverlay>
         <YStack gap="$6">
           <XStack alignItems="flex-start" justifyContent="space-between">
             <YStack flex={1}>
@@ -322,7 +354,7 @@ export default function SubcontractorDetailModal({
             </YStack>
             <YStack alignItems="flex-end">
               <Text fontSize="$10" fontWeight="700" color="$color12">
-                {complianceScore}%
+                {complianceScore != null && !isNaN(complianceScore) ? `${complianceScore}%` : 'No data yet'}
               </Text>
               <Text fontSize="$1" color="$color10">Compliance Score</Text>
             </YStack>
@@ -1077,7 +1109,7 @@ export default function SubcontractorDetailModal({
             )}
           </XStack>
         </YStack>
-      </Modal>
+      </ModalOverlay>
 
       {/* Document Detail Modal */}
       {selectedDocument && (
@@ -1096,59 +1128,77 @@ export default function SubcontractorDetailModal({
         />
       )}
 
-      <Modal
-        isOpen={showMessageModal}
-        onClose={() => setShowMessageModal(false)}
-        title="Send Message"
-        size="sm"
-      >
-        <YStack gap="$4">
-          <YStack>
-            <Text
-              as="label"
-              display="block"
-              fontSize="$3"
-              fontWeight="500"
-              color="$color11"
-              mb="$2"
-            >
-              Message to {subcontractor.company_name}
-            </Text>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={4}
-              placeholder="Type your message here..."
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: 'var(--color12)',
-                fontFamily: 'inherit',
-              }}
-            />
-          </YStack>
-          <XStack gap="$3">
-            <Button
-              variant="secondary"
-              onClick={() => setShowMessageModal(false)}
-              flex={1}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSendMessage}
-              flex={1}
-            >
+      {showMessageModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1001,
+          }}
+          onClick={() => setShowMessageModal(false)}
+        >
+          <Card
+            backgroundColor="$background"
+            padding="$6"
+            borderRadius="$4"
+            width={400}
+            maxWidth="90vw"
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+            <Text fontSize="$6" fontWeight="bold" color="$color12" marginBottom="$4">
               Send Message
-            </Button>
-          </XStack>
-        </YStack>
-      </Modal>
+            </Text>
+            <YStack gap="$4">
+              <YStack>
+                <Text
+                  fontSize="$3"
+                  fontWeight="500"
+                  color="$color11"
+                  marginBottom="$2"
+                >
+                  Message to {subcontractor.company_name}
+                </Text>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={4}
+                  placeholder="Type your message here..."
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--borderColor)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: 'var(--color12)',
+                    fontFamily: 'inherit',
+                  }}
+                />
+              </YStack>
+              <XStack gap="$3">
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowMessageModal(false)}
+                  flex={1}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleSendMessage}
+                  flex={1}
+                >
+                  Send Message
+                </Button>
+              </XStack>
+            </YStack>
+          </Card>
+        </div>
+      )}
     </>
   );
 }
