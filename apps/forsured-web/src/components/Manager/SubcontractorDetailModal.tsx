@@ -1,23 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
-  X,
-  Mail,
-  Phone,
   Building,
-  Calendar,
   Shield,
   FileText,
   AlertTriangle,
   CheckCircle,
   Upload,
   MessageSquare,
-  UserX,
-  UserCheck,
   Download,
   Eye,
-  Clock,
-  Filter,
-  Loader2,
 } from 'lucide-react';
 import { YStack, XStack, Text, H2, H3, Spinner, Card } from '@unicornlove/ui';
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
@@ -1117,18 +1108,6 @@ export default function SubcontractorDetailModal({
             >
               Send Message
             </Button>
-            <Button variant="secondary" leftIcon={FileText} flex={1}>
-              View Full Profile
-            </Button>
-            {allIssues.length > 0 ? (
-              <Button variant="danger" leftIcon={UserX} flex={1}>
-                Restrict Access
-              </Button>
-            ) : (
-              <Button variant="success" leftIcon={UserCheck} flex={1}>
-                Approve
-              </Button>
-            )}
           </XStack>
         </YStack>
       </ModalOverlay>
