@@ -1,11 +1,3 @@
-Using workdir packages
-WARN: environment variable is unset: APPLE_CLIENT_ID
-WARN: environment variable is unset: APPLE_SECRET
-WARN: environment variable is unset: EXPO_PUBLIC_SUPABASE_REDIRECT_URI
-WARN: environment variable is unset: EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
-WARN: environment variable is unset: GOOGLE_SECRET
-WARN: environment variable is unset: EXPO_PUBLIC_SUPABASE_REDIRECT_URI
-Connecting to db 5432
 export type Json =
   | string
   | number
@@ -1377,8 +1369,11 @@ export type Database = {
           assigned_at: string | null
           assigned_by: string | null
           assigned_to: string | null
+          attachment_metadata: Json | null
+          completed_steps: string[] | null
           cover_letter_url: string | null
           created_at: string
+          current_step: string | null
           id: string
           is_shortlisted: boolean | null
           job_id: string
@@ -1386,6 +1381,10 @@ export type Database = {
           reject_reasons: string[] | null
           rejected_at: string | null
           resume_url: string | null
+          score_breakdown: Json | null
+          score_calculated_at: string | null
+          score_total: number | null
+          screening_answers: Json | null
           stage_changed_at: string | null
           status: string
           updated_at: string
@@ -1397,8 +1396,11 @@ export type Database = {
           assigned_at?: string | null
           assigned_by?: string | null
           assigned_to?: string | null
+          attachment_metadata?: Json | null
+          completed_steps?: string[] | null
           cover_letter_url?: string | null
           created_at?: string
+          current_step?: string | null
           id?: string
           is_shortlisted?: boolean | null
           job_id: string
@@ -1406,6 +1408,10 @@ export type Database = {
           reject_reasons?: string[] | null
           rejected_at?: string | null
           resume_url?: string | null
+          score_breakdown?: Json | null
+          score_calculated_at?: string | null
+          score_total?: number | null
+          screening_answers?: Json | null
           stage_changed_at?: string | null
           status?: string
           updated_at?: string
@@ -1417,8 +1423,11 @@ export type Database = {
           assigned_at?: string | null
           assigned_by?: string | null
           assigned_to?: string | null
+          attachment_metadata?: Json | null
+          completed_steps?: string[] | null
           cover_letter_url?: string | null
           created_at?: string
+          current_step?: string | null
           id?: string
           is_shortlisted?: boolean | null
           job_id?: string
@@ -1426,6 +1435,10 @@ export type Database = {
           reject_reasons?: string[] | null
           rejected_at?: string | null
           resume_url?: string | null
+          score_breakdown?: Json | null
+          score_calculated_at?: string | null
+          score_total?: number | null
+          screening_answers?: Json | null
           stage_changed_at?: string | null
           status?: string
           updated_at?: string
@@ -4148,95 +4161,309 @@ export type Database = {
       jobs: {
         Row: {
           address: Json | null
+          affirmative_action_plan: boolean | null
+          application_deadline: string | null
+          application_expiry_days: number | null
+          assessment_details: string | null
+          assigned_team_id: string | null
+          auto_reject_criteria: Json | null
+          background_check_type: string | null
+          benefits_summary: string | null
+          bonus_details: string | null
           closes_at: string | null
           compensation: Json | null
+          cost_center: string | null
           created_at: string
           created_by_user_id: string | null
+          custom_application_questions: Json | null
+          department: string | null
           description: Json | null
+          drivers_license_type: string | null
+          eeo_job_category: string | null
           employment_type: string | null
+          enable_auto_reject: boolean | null
+          equity_details: string | null
+          estimated_application_time_minutes: number | null
+          estimated_hire_date: string | null
+          external_application_url: string | null
+          featured_until: string | null
           geo: unknown
+          has_bonus_structure: boolean | null
+          has_equity: boolean | null
+          has_relocation_package: boolean | null
+          hiring_manager_id: string | null
           id: string
           inquiry_capability_questions: Json | null
+          internal_job_code: string | null
+          is_confidential: boolean | null
+          is_disability_friendly: boolean | null
+          is_featured: boolean | null
+          is_veteran_friendly: boolean | null
+          job_category: string | null
+          language_requirements: Json | null
           location: string | null
           min_reputation: number | null
+          minimum_education_level: string | null
+          minimum_score: number | null
+          minimum_years_experience: number | null
+          number_of_openings: number | null
           organization_id: string
+          overtime_eligible: boolean | null
+          pay_frequency: string | null
           pay_range_max_cents: number | null
           pay_range_min_cents: number | null
           pay_range_type: string | null
+          physical_requirements: Json | null
           position_level: string | null
           posted_at: string | null
+          posting_channels: Json | null
+          priority_level: string | null
+          recruiter_id: string | null
+          relocation_assistance_details: string | null
+          relocation_assistance_offered: boolean | null
+          relocation_package_details: string | null
           remote_option: string | null
+          require_background_check: boolean | null
+          require_current_location: boolean | null
+          require_drivers_license: boolean | null
+          require_drug_test: boolean | null
+          require_earliest_start_date: boolean | null
+          require_relocation_willingness: boolean | null
+          require_work_authorization: boolean | null
+          required_attachments: Json | null
           required_soft_skills: Json
+          requires_assessment: boolean | null
+          requires_video_interview: boolean | null
+          requisition_number: string | null
           scheduled_publish_at: string | null
           search_tsv: unknown
+          security_clearance_required: string | null
+          seo_keywords: string[] | null
+          shift_requirements: string | null
+          show_team_on_posting: boolean | null
+          sign_on_bonus_cents: number | null
           slug: string | null
+          source_tracking_enabled: boolean | null
           status: string
+          target_start_date: string | null
           team_id: string | null
+          team_ids: string[] | null
+          team_visibility: string | null
+          timezone: string | null
           title: string
+          travel_percentage: number | null
           updated_at: string
+          utm_parameters: Json | null
           visibility: string | null
+          work_locations: Json | null
+          work_schedule_details: string | null
         }
         Insert: {
           address?: Json | null
+          affirmative_action_plan?: boolean | null
+          application_deadline?: string | null
+          application_expiry_days?: number | null
+          assessment_details?: string | null
+          assigned_team_id?: string | null
+          auto_reject_criteria?: Json | null
+          background_check_type?: string | null
+          benefits_summary?: string | null
+          bonus_details?: string | null
           closes_at?: string | null
           compensation?: Json | null
+          cost_center?: string | null
           created_at?: string
           created_by_user_id?: string | null
+          custom_application_questions?: Json | null
+          department?: string | null
           description?: Json | null
+          drivers_license_type?: string | null
+          eeo_job_category?: string | null
           employment_type?: string | null
+          enable_auto_reject?: boolean | null
+          equity_details?: string | null
+          estimated_application_time_minutes?: number | null
+          estimated_hire_date?: string | null
+          external_application_url?: string | null
+          featured_until?: string | null
           geo?: unknown
+          has_bonus_structure?: boolean | null
+          has_equity?: boolean | null
+          has_relocation_package?: boolean | null
+          hiring_manager_id?: string | null
           id?: string
           inquiry_capability_questions?: Json | null
+          internal_job_code?: string | null
+          is_confidential?: boolean | null
+          is_disability_friendly?: boolean | null
+          is_featured?: boolean | null
+          is_veteran_friendly?: boolean | null
+          job_category?: string | null
+          language_requirements?: Json | null
           location?: string | null
           min_reputation?: number | null
+          minimum_education_level?: string | null
+          minimum_score?: number | null
+          minimum_years_experience?: number | null
+          number_of_openings?: number | null
           organization_id: string
+          overtime_eligible?: boolean | null
+          pay_frequency?: string | null
           pay_range_max_cents?: number | null
           pay_range_min_cents?: number | null
           pay_range_type?: string | null
+          physical_requirements?: Json | null
           position_level?: string | null
           posted_at?: string | null
+          posting_channels?: Json | null
+          priority_level?: string | null
+          recruiter_id?: string | null
+          relocation_assistance_details?: string | null
+          relocation_assistance_offered?: boolean | null
+          relocation_package_details?: string | null
           remote_option?: string | null
+          require_background_check?: boolean | null
+          require_current_location?: boolean | null
+          require_drivers_license?: boolean | null
+          require_drug_test?: boolean | null
+          require_earliest_start_date?: boolean | null
+          require_relocation_willingness?: boolean | null
+          require_work_authorization?: boolean | null
+          required_attachments?: Json | null
           required_soft_skills?: Json
+          requires_assessment?: boolean | null
+          requires_video_interview?: boolean | null
+          requisition_number?: string | null
           scheduled_publish_at?: string | null
           search_tsv?: unknown
+          security_clearance_required?: string | null
+          seo_keywords?: string[] | null
+          shift_requirements?: string | null
+          show_team_on_posting?: boolean | null
+          sign_on_bonus_cents?: number | null
           slug?: string | null
+          source_tracking_enabled?: boolean | null
           status?: string
+          target_start_date?: string | null
           team_id?: string | null
+          team_ids?: string[] | null
+          team_visibility?: string | null
+          timezone?: string | null
           title: string
+          travel_percentage?: number | null
           updated_at?: string
+          utm_parameters?: Json | null
           visibility?: string | null
+          work_locations?: Json | null
+          work_schedule_details?: string | null
         }
         Update: {
           address?: Json | null
+          affirmative_action_plan?: boolean | null
+          application_deadline?: string | null
+          application_expiry_days?: number | null
+          assessment_details?: string | null
+          assigned_team_id?: string | null
+          auto_reject_criteria?: Json | null
+          background_check_type?: string | null
+          benefits_summary?: string | null
+          bonus_details?: string | null
           closes_at?: string | null
           compensation?: Json | null
+          cost_center?: string | null
           created_at?: string
           created_by_user_id?: string | null
+          custom_application_questions?: Json | null
+          department?: string | null
           description?: Json | null
+          drivers_license_type?: string | null
+          eeo_job_category?: string | null
           employment_type?: string | null
+          enable_auto_reject?: boolean | null
+          equity_details?: string | null
+          estimated_application_time_minutes?: number | null
+          estimated_hire_date?: string | null
+          external_application_url?: string | null
+          featured_until?: string | null
           geo?: unknown
+          has_bonus_structure?: boolean | null
+          has_equity?: boolean | null
+          has_relocation_package?: boolean | null
+          hiring_manager_id?: string | null
           id?: string
           inquiry_capability_questions?: Json | null
+          internal_job_code?: string | null
+          is_confidential?: boolean | null
+          is_disability_friendly?: boolean | null
+          is_featured?: boolean | null
+          is_veteran_friendly?: boolean | null
+          job_category?: string | null
+          language_requirements?: Json | null
           location?: string | null
           min_reputation?: number | null
+          minimum_education_level?: string | null
+          minimum_score?: number | null
+          minimum_years_experience?: number | null
+          number_of_openings?: number | null
           organization_id?: string
+          overtime_eligible?: boolean | null
+          pay_frequency?: string | null
           pay_range_max_cents?: number | null
           pay_range_min_cents?: number | null
           pay_range_type?: string | null
+          physical_requirements?: Json | null
           position_level?: string | null
           posted_at?: string | null
+          posting_channels?: Json | null
+          priority_level?: string | null
+          recruiter_id?: string | null
+          relocation_assistance_details?: string | null
+          relocation_assistance_offered?: boolean | null
+          relocation_package_details?: string | null
           remote_option?: string | null
+          require_background_check?: boolean | null
+          require_current_location?: boolean | null
+          require_drivers_license?: boolean | null
+          require_drug_test?: boolean | null
+          require_earliest_start_date?: boolean | null
+          require_relocation_willingness?: boolean | null
+          require_work_authorization?: boolean | null
+          required_attachments?: Json | null
           required_soft_skills?: Json
+          requires_assessment?: boolean | null
+          requires_video_interview?: boolean | null
+          requisition_number?: string | null
           scheduled_publish_at?: string | null
           search_tsv?: unknown
+          security_clearance_required?: string | null
+          seo_keywords?: string[] | null
+          shift_requirements?: string | null
+          show_team_on_posting?: boolean | null
+          sign_on_bonus_cents?: number | null
           slug?: string | null
+          source_tracking_enabled?: boolean | null
           status?: string
+          target_start_date?: string | null
           team_id?: string | null
+          team_ids?: string[] | null
+          team_visibility?: string | null
+          timezone?: string | null
           title?: string
+          travel_percentage?: number | null
           updated_at?: string
+          utm_parameters?: Json | null
           visibility?: string | null
+          work_locations?: Json | null
+          work_schedule_details?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "jobs_assigned_team_id_fkey"
+            columns: ["assigned_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "jobs_created_by_user_id_fkey"
             columns: ["created_by_user_id"]
@@ -4252,10 +4479,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "jobs_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
           {
@@ -4710,6 +4965,8 @@ export type Database = {
       oauth_apps: {
         Row: {
           allowed_scopes: string[]
+          approved_at: string | null
+          approved_by: string | null
           client_id: string
           client_secret_hash: string
           created_at: string
@@ -4721,12 +4978,17 @@ export type Database = {
           logo_url: string | null
           name: string
           owner_email: string | null
+          privacy_policy_url: string | null
           redirect_uris: string[]
+          requires_approval: boolean
           status: string
+          terms_of_service_url: string | null
           updated_at: string
         }
         Insert: {
           allowed_scopes?: string[]
+          approved_at?: string | null
+          approved_by?: string | null
           client_id: string
           client_secret_hash: string
           created_at?: string
@@ -4738,12 +5000,17 @@ export type Database = {
           logo_url?: string | null
           name: string
           owner_email?: string | null
+          privacy_policy_url?: string | null
           redirect_uris?: string[]
+          requires_approval?: boolean
           status?: string
+          terms_of_service_url?: string | null
           updated_at?: string
         }
         Update: {
           allowed_scopes?: string[]
+          approved_at?: string | null
+          approved_by?: string | null
           client_id?: string
           client_secret_hash?: string
           created_at?: string
@@ -4755,11 +5022,28 @@ export type Database = {
           logo_url?: string | null
           name?: string
           owner_email?: string | null
+          privacy_policy_url?: string | null
           redirect_uris?: string[]
+          requires_approval?: boolean
           status?: string
+          terms_of_service_url?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "oauth_apps_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_apps_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "oauth_apps_created_by_fkey"
             columns: ["created_by"]
@@ -4776,6 +5060,70 @@ export type Database = {
           },
         ]
       }
+      oauth_authorization_codes: {
+        Row: {
+          code_challenge: string
+          code_challenge_method: string
+          code_hash: string
+          created_at: string
+          expires_at: string
+          id: string
+          oauth_app_id: string
+          redirect_uri: string
+          scopes: string[]
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_challenge: string
+          code_challenge_method?: string
+          code_hash: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          oauth_app_id: string
+          redirect_uri: string
+          scopes?: string[]
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_challenge?: string
+          code_challenge_method?: string
+          code_hash?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          oauth_app_id?: string
+          redirect_uri?: string
+          scopes?: string[]
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oauth_authorization_codes_oauth_app_id_fkey"
+            columns: ["oauth_app_id"]
+            isOneToOne: false
+            referencedRelation: "oauth_apps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_authorization_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_authorization_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       oauth_scopes: {
         Row: {
           category: string
@@ -4784,6 +5132,8 @@ export type Database = {
           display_name: string
           id: string
           is_sensitive: boolean
+          rbac_permissions: string[]
+          requires_admin_approval: boolean
           requires_consent: boolean
           scope: string
         }
@@ -4794,6 +5144,8 @@ export type Database = {
           display_name: string
           id?: string
           is_sensitive?: boolean
+          rbac_permissions?: string[]
+          requires_admin_approval?: boolean
           requires_consent?: boolean
           scope: string
         }
@@ -4804,6 +5156,8 @@ export type Database = {
           display_name?: string
           id?: string
           is_sensitive?: boolean
+          rbac_permissions?: string[]
+          requires_admin_approval?: boolean
           requires_consent?: boolean
           scope?: string
         }
@@ -4869,6 +5223,64 @@ export type Database = {
           },
           {
             foreignKeyName: "oauth_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      oauth_user_consents: {
+        Row: {
+          consented_at: string
+          created_at: string
+          expires_at: string
+          granted_scopes: string[]
+          id: string
+          oauth_app_id: string
+          revoked_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consented_at?: string
+          created_at?: string
+          expires_at?: string
+          granted_scopes?: string[]
+          id?: string
+          oauth_app_id: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consented_at?: string
+          created_at?: string
+          expires_at?: string
+          granted_scopes?: string[]
+          id?: string
+          oauth_app_id?: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oauth_user_consents_oauth_app_id_fkey"
+            columns: ["oauth_app_id"]
+            isOneToOne: false
+            referencedRelation: "oauth_apps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_user_consents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_user_consents_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
@@ -9578,6 +9990,14 @@ export type Database = {
         Returns: string
       }
       archive_expired_external_jobs: { Args: never; Returns: Json }
+      auto_reject_application: {
+        Args: { p_application_id: string }
+        Returns: boolean
+      }
+      calculate_application_score: {
+        Args: { p_application_id: string }
+        Returns: number
+      }
       calculate_next_attempt: { Args: { p_attempts: number }; Returns: string }
       calculate_time_entries_total_hours: {
         Args: { time_entries: Json }
@@ -9619,6 +10039,18 @@ export type Database = {
       enqueue_due_success_fees: { Args: never; Returns: number }
       enqueue_duration_check_success_fees: { Args: never; Returns: number }
       extract_tiptap_plain_text: { Args: { content: Json }; Returns: string }
+      generate_application_attachment_path: {
+        Args: {
+          application_id: string
+          attachment_type: string
+          user_id: string
+        }
+        Returns: string
+      }
+      generate_oauth_token: {
+        Args: { p_oauth_app_id: string; p_scopes: string[]; p_user_id: string }
+        Returns: Json
+      }
       get_current_verification: {
         Args: { p_worker_user_id: string }
         Returns: {
@@ -9707,6 +10139,10 @@ export type Database = {
         Args: { p_error_message: string; p_job_name: string }
         Returns: number
       }
+      preview_auto_rejection: {
+        Args: { p_application_id: string }
+        Returns: Json
+      }
       process_daily_digest: { Args: never; Returns: number }
       process_notification_queue: { Args: never; Returns: number }
       process_weekly_digest: { Args: never; Returns: number }
@@ -9764,6 +10200,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      revoke_oauth_app_tokens: {
+        Args: { p_oauth_app_id: string }
+        Returns: number
+      }
       rotate_stripe_secret: {
         Args: { p_secret: string; p_secret_type?: string }
         Returns: string
@@ -9789,6 +10229,10 @@ export type Database = {
       validate_address_in_site: {
         Args: { p_address_id: string; p_site_id: string }
         Returns: boolean
+      }
+      validate_oauth_scope: {
+        Args: { p_requested_scopes: string[]; p_user_id: string }
+        Returns: string[]
       }
     }
     Enums: {
@@ -10692,6 +11136,54 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_sessions: {
+        Row: {
+          access_token_encrypted: string | null
+          access_token_secret_id: string | null
+          created_at: string
+          id: string
+          ip_address: unknown
+          last_used_at: string
+          refresh_token_encrypted: string | null
+          refresh_token_secret_id: string | null
+          scaffald_user_id: string
+          session_expires_at: string
+          supabase_user_id: string | null
+          token_expires_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          access_token_encrypted?: string | null
+          access_token_secret_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          last_used_at?: string
+          refresh_token_encrypted?: string | null
+          refresh_token_secret_id?: string | null
+          scaffald_user_id: string
+          session_expires_at?: string
+          supabase_user_id?: string | null
+          token_expires_at: string
+          user_agent?: string | null
+        }
+        Update: {
+          access_token_encrypted?: string | null
+          access_token_secret_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          last_used_at?: string
+          refresh_token_encrypted?: string | null
+          refresh_token_secret_id?: string | null
+          scaffald_user_id?: string
+          session_expires_at?: string
+          supabase_user_id?: string | null
+          token_expires_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       bids: {
         Row: {
           bid_amount: number
@@ -10863,6 +11355,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      broker_clients: {
+        Row: {
+          broker_org_id: string
+          client_org_id: string
+          client_type: string
+          company_name: string
+          compliance_score: number | null
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          last_activity_at: string | null
+          notes: string | null
+          risk_level: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          broker_org_id: string
+          client_org_id: string
+          client_type: string
+          company_name: string
+          compliance_score?: number | null
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          last_activity_at?: string | null
+          notes?: string | null
+          risk_level?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          broker_org_id?: string
+          client_org_id?: string
+          client_type?: string
+          company_name?: string
+          compliance_score?: number | null
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          last_activity_at?: string | null
+          notes?: string | null
+          risk_level?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       broker_delegations: {
         Row: {
@@ -11132,6 +11681,13 @@ export type Database = {
             referencedRelation: "subcontractors"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "compliance_flags_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors_extended"
+            referencedColumns: ["id"]
+          },
         ]
       }
       compliance_issues: {
@@ -11195,6 +11751,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      compliance_records: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          issues_count: number | null
+          last_review_date: string
+          next_review_date: string | null
+          notes: string | null
+          organization_id: string
+          overall_score: number
+          policies_expiring_soon: number | null
+          reviewed_by_user_id: string | null
+          risk_level: string
+          updated_at: string
+          warnings_count: number | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          issues_count?: number | null
+          last_review_date?: string
+          next_review_date?: string | null
+          notes?: string | null
+          organization_id: string
+          overall_score: number
+          policies_expiring_soon?: number | null
+          reviewed_by_user_id?: string | null
+          risk_level: string
+          updated_at?: string
+          warnings_count?: number | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          issues_count?: number | null
+          last_review_date?: string
+          next_review_date?: string | null
+          notes?: string | null
+          organization_id?: string
+          overall_score?: number
+          policies_expiring_soon?: number | null
+          reviewed_by_user_id?: string | null
+          risk_level?: string
+          updated_at?: string
+          warnings_count?: number | null
+        }
+        Relationships: []
       }
       compliance_requirement_dependencies: {
         Row: {
@@ -11446,11 +12053,14 @@ export type Database = {
       compliance_scores: {
         Row: {
           created_at: string
+          expires_at: string | null
           gaps: Json | null
           id: string
           last_evaluated: string
+          notes: string | null
           organization_id: string
           project_id: string
+          risk_level: string | null
           score: number
           status: string
           subcontractor_id: string
@@ -11458,11 +12068,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          expires_at?: string | null
           gaps?: Json | null
           id?: string
           last_evaluated?: string
+          notes?: string | null
           organization_id: string
           project_id: string
+          risk_level?: string | null
           score: number
           status: string
           subcontractor_id: string
@@ -11470,11 +12083,14 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          expires_at?: string | null
           gaps?: Json | null
           id?: string
           last_evaluated?: string
+          notes?: string | null
           organization_id?: string
           project_id?: string
+          risk_level?: string | null
           score?: number
           status?: string
           subcontractor_id?: string
@@ -11493,6 +12109,13 @@ export type Database = {
             columns: ["subcontractor_id"]
             isOneToOne: false
             referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_compliance_scores_subcontractor"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors_extended"
             referencedColumns: ["id"]
           },
         ]
@@ -11733,6 +12356,13 @@ export type Database = {
             columns: ["subcontractor_id"]
             isOneToOne: false
             referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_documents_subcontractor"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors_extended"
             referencedColumns: ["id"]
           },
         ]
@@ -12313,33 +12943,231 @@ export type Database = {
           },
         ]
       }
-      projects: {
+      project_requirements: {
         Row: {
           created_at: string
+          evaluated_by_user_id: string | null
+          evaluation_notes: string | null
           id: string
-          manager_id: string | null
-          name: string
+          is_met: boolean | null
+          is_required: boolean | null
+          last_evaluated_at: string | null
+          met_by_document_id: string | null
+          met_by_policy_id: string | null
+          minimum_amount_override: number | null
           organization_id: string
-          scaffald_project_id: string | null
+          override_notes: string | null
+          project_id: string
+          requirement_id: string
           updated_at: string
         }
         Insert: {
           created_at?: string
+          evaluated_by_user_id?: string | null
+          evaluation_notes?: string | null
           id?: string
-          manager_id?: string | null
-          name: string
+          is_met?: boolean | null
+          is_required?: boolean | null
+          last_evaluated_at?: string | null
+          met_by_document_id?: string | null
+          met_by_policy_id?: string | null
+          minimum_amount_override?: number | null
           organization_id: string
-          scaffald_project_id?: string | null
+          override_notes?: string | null
+          project_id: string
+          requirement_id: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          evaluated_by_user_id?: string | null
+          evaluation_notes?: string | null
           id?: string
+          is_met?: boolean | null
+          is_required?: boolean | null
+          last_evaluated_at?: string | null
+          met_by_document_id?: string | null
+          met_by_policy_id?: string | null
+          minimum_amount_override?: number | null
+          organization_id?: string
+          override_notes?: string | null
+          project_id?: string
+          requirement_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_project_requirements_document"
+            columns: ["met_by_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_project_requirements_policy"
+            columns: ["met_by_policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_project_requirements_project"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_project_requirements_requirement"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_subcontractors: {
+        Row: {
+          created_at: string | null
+          id: string
+          invited_at: string | null
+          invited_by: string | null
+          notes: string | null
+          project_id: string
+          status: string | null
+          subcontractor_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          invited_by?: string | null
+          notes?: string | null
+          project_id: string
+          status?: string | null
+          subcontractor_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          invited_by?: string | null
+          notes?: string | null
+          project_id?: string
+          status?: string | null
+          subcontractor_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_project_subcontractors_project"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_project_subcontractors_subcontractor"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_project_subcontractors_subcontractor"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors_extended"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          additional_insureds: string[] | null
+          auto_liability_required: number | null
+          builders_risk_required: number | null
+          certificate_holder: string | null
+          compliance_status: string | null
+          contract_value: number | null
+          created_at: string
+          description: string | null
+          end_date: string | null
+          general_liability_required: number | null
+          id: string
+          location: string | null
+          manager_id: string | null
+          name: string
+          organization_id: string
+          pollution_liability_required: number | null
+          primary_non_contributory_required: boolean | null
+          professional_liability_required: number | null
+          project_manager: string | null
+          scaffald_project_id: string | null
+          special_provisions: string | null
+          start_date: string | null
+          umbrella_required: number | null
+          updated_at: string
+          waiver_of_subrogation_required: boolean | null
+          workers_comp_required: number | null
+        }
+        Insert: {
+          additional_insureds?: string[] | null
+          auto_liability_required?: number | null
+          builders_risk_required?: number | null
+          certificate_holder?: string | null
+          compliance_status?: string | null
+          contract_value?: number | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          general_liability_required?: number | null
+          id?: string
+          location?: string | null
+          manager_id?: string | null
+          name: string
+          organization_id: string
+          pollution_liability_required?: number | null
+          primary_non_contributory_required?: boolean | null
+          professional_liability_required?: number | null
+          project_manager?: string | null
+          scaffald_project_id?: string | null
+          special_provisions?: string | null
+          start_date?: string | null
+          umbrella_required?: number | null
+          updated_at?: string
+          waiver_of_subrogation_required?: boolean | null
+          workers_comp_required?: number | null
+        }
+        Update: {
+          additional_insureds?: string[] | null
+          auto_liability_required?: number | null
+          builders_risk_required?: number | null
+          certificate_holder?: string | null
+          compliance_status?: string | null
+          contract_value?: number | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          general_liability_required?: number | null
+          id?: string
+          location?: string | null
           manager_id?: string | null
           name?: string
           organization_id?: string
+          pollution_liability_required?: number | null
+          primary_non_contributory_required?: boolean | null
+          professional_liability_required?: number | null
+          project_manager?: string | null
           scaffald_project_id?: string | null
+          special_provisions?: string | null
+          start_date?: string | null
+          umbrella_required?: number | null
           updated_at?: string
+          waiver_of_subrogation_required?: boolean | null
+          workers_comp_required?: number | null
         }
         Relationships: []
       }
@@ -12539,30 +13367,51 @@ export type Database = {
       subcontractors: {
         Row: {
           company: string
+          compliance_score: number | null
           contact_info: Json | null
           created_at: string
           id: string
+          last_activity_at: string | null
+          license_number: string | null
           name: string
           organization_id: string
+          risk_level: string | null
           scaffald_company_id: string | null
+          status: string | null
+          trade_type: string | null
+          updated_at: string | null
         }
         Insert: {
           company: string
+          compliance_score?: number | null
           contact_info?: Json | null
           created_at?: string
           id?: string
+          last_activity_at?: string | null
+          license_number?: string | null
           name: string
           organization_id: string
+          risk_level?: string | null
           scaffald_company_id?: string | null
+          status?: string | null
+          trade_type?: string | null
+          updated_at?: string | null
         }
         Update: {
           company?: string
+          compliance_score?: number | null
           contact_info?: Json | null
           created_at?: string
           id?: string
+          last_activity_at?: string | null
+          license_number?: string | null
           name?: string
           organization_id?: string
+          risk_level?: string | null
           scaffald_company_id?: string | null
+          status?: string | null
+          trade_type?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -12784,6 +13633,13 @@ export type Database = {
             columns: ["subcontractor_id"]
             isOneToOne: false
             referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_tasks_subcontractor"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors_extended"
             referencedColumns: ["id"]
           },
         ]
@@ -13050,6 +13906,82 @@ export type Database = {
       }
     }
     Views: {
+      compliance_scores_extended: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          gaps: Json | null
+          id: string | null
+          last_evaluated: string | null
+          last_evaluated_at: string | null
+          notes: string | null
+          organization_id: string | null
+          overall_score: number | null
+          project_id: string | null
+          risk_level: string | null
+          score: number | null
+          status: string | null
+          subcontractor_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          gaps?: Json | null
+          id?: string | null
+          last_evaluated?: string | null
+          last_evaluated_at?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          overall_score?: number | null
+          project_id?: string | null
+          risk_level?: string | null
+          score?: number | null
+          status?: string | null
+          subcontractor_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          gaps?: Json | null
+          id?: string | null
+          last_evaluated?: string | null
+          last_evaluated_at?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          overall_score?: number | null
+          project_id?: string | null
+          risk_level?: string | null
+          score?: number | null
+          status?: string | null
+          subcontractor_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_compliance_scores_project"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_compliance_scores_subcontractor"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_compliance_scores_subcontractor"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors_extended"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gl_provision_display: {
         Row: {
           created_at: string | null
@@ -13103,6 +14035,60 @@ export type Database = {
           },
         ]
       }
+      subcontractors_extended: {
+        Row: {
+          company: string | null
+          company_name: string | null
+          compliance_score: number | null
+          contact_info: Json | null
+          created_at: string | null
+          id: string | null
+          last_activity_at: string | null
+          license_number: string | null
+          name: string | null
+          organization_id: string | null
+          risk_level: string | null
+          scaffald_company_id: string | null
+          status: string | null
+          trade_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company?: string | null
+          company_name?: string | null
+          compliance_score?: number | null
+          contact_info?: Json | null
+          created_at?: string | null
+          id?: string | null
+          last_activity_at?: string | null
+          license_number?: string | null
+          name?: string | null
+          organization_id?: string | null
+          risk_level?: string | null
+          scaffald_company_id?: string | null
+          status?: string | null
+          trade_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company?: string | null
+          company_name?: string | null
+          compliance_score?: number | null
+          contact_info?: Json | null
+          created_at?: string | null
+          id?: string | null
+          last_activity_at?: string | null
+          license_number?: string | null
+          name?: string | null
+          organization_id?: string | null
+          risk_level?: string | null
+          scaffald_company_id?: string | null
+          status?: string | null
+          trade_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_audit_hash: {
@@ -13126,6 +14112,44 @@ export type Database = {
           p_organization_id?: string
           p_permission: Database["forsured"]["Enums"]["compliance_permission"]
           p_user_id: string
+        }
+        Returns: boolean
+      }
+      cleanup_expired_auth_sessions: { Args: never; Returns: number }
+      create_auth_session: {
+        Args: {
+          p_access_token: string
+          p_ip_address?: unknown
+          p_refresh_token: string
+          p_scaffald_user_id: string
+          p_supabase_user_id: string
+          p_token_expires_at: string
+          p_user_agent?: string
+        }
+        Returns: string
+      }
+      delete_auth_session: { Args: { p_session_id: string }; Returns: boolean }
+      get_auth_session: {
+        Args: { p_session_id: string }
+        Returns: {
+          access_token: string
+          last_used_at: string
+          refresh_token: string
+          scaffald_user_id: string
+          session_expires_at: string
+          session_id: string
+          supabase_user_id: string
+          token_expires_at: string
+        }[]
+      }
+      get_encryption_key: { Args: never; Returns: string }
+      is_vault_available: { Args: never; Returns: boolean }
+      update_auth_session_tokens: {
+        Args: {
+          p_access_token: string
+          p_refresh_token: string
+          p_session_id: string
+          p_token_expires_at: string
         }
         Returns: boolean
       }
@@ -15419,35 +16443,35 @@ export type Database = {
       addgeometrycolumn:
         | {
             Args: {
+              column_name: string
+              new_dim: number
+              new_srid: number
+              new_type: string
+              schema_name: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              column_name: string
+              new_dim: number
+              new_srid: number
+              new_type: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
               catalog_name: string
               column_name: string
               new_dim: number
               new_srid_in: number
               new_type: string
               schema_name: string
-              table_name: string
-              use_typmod?: boolean
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              column_name: string
-              new_dim: number
-              new_srid: number
-              new_type: string
-              schema_name: string
-              table_name: string
-              use_typmod?: boolean
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              column_name: string
-              new_dim: number
-              new_srid: number
-              new_type: string
               table_name: string
               use_typmod?: boolean
             }
@@ -15462,15 +16486,6 @@ export type Database = {
       dropgeometrycolumn:
         | {
             Args: {
-              catalog_name: string
-              column_name: string
-              schema_name: string
-              table_name: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
               column_name: string
               schema_name: string
               table_name: string
@@ -15478,7 +16493,18 @@ export type Database = {
             Returns: string
           }
         | { Args: { column_name: string; table_name: string }; Returns: string }
+        | {
+            Args: {
+              catalog_name: string
+              column_name: string
+              schema_name: string
+              table_name: string
+            }
+            Returns: string
+          }
       dropgeometrytable:
+        | { Args: { schema_name: string; table_name: string }; Returns: string }
+        | { Args: { table_name: string }; Returns: string }
         | {
             Args: {
               catalog_name: string
@@ -15487,8 +16513,6 @@ export type Database = {
             }
             Returns: string
           }
-        | { Args: { schema_name: string; table_name: string }; Returns: string }
-        | { Args: { table_name: string }; Returns: string }
       enablelongtransactions: { Args: never; Returns: string }
       equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       gen_random_uuid: { Args: never; Returns: string }
@@ -15672,8 +16696,8 @@ export type Database = {
         Returns: Record<string, unknown>[]
       }
       populate_geometry_columns:
-        | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
         | { Args: { use_typmod?: boolean }; Returns: string }
+        | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
       postgis_constraint_dims: {
         Args: { geomcolumn: string; geomschema: string; geomtable: string }
         Returns: number
@@ -15781,14 +16805,6 @@ export type Database = {
       st_asewkt: { Args: { "": string }; Returns: string }
       st_asgeojson:
         | {
-            Args: { geog: unknown; maxdecimaldigits?: number; options?: number }
-            Returns: string
-          }
-        | {
-            Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
-            Returns: string
-          }
-        | {
             Args: {
               geom_column?: string
               maxdecimaldigits?: number
@@ -15797,32 +16813,18 @@ export type Database = {
             }
             Returns: string
           }
-        | { Args: { "": string }; Returns: string }
-      st_asgml:
-        | {
-            Args: {
-              geog: unknown
-              id?: string
-              maxdecimaldigits?: number
-              nprefix?: string
-              options?: number
-            }
-            Returns: string
-          }
         | {
             Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
             Returns: string
           }
-        | { Args: { "": string }; Returns: string }
         | {
-            Args: {
-              geog: unknown
-              id?: string
-              maxdecimaldigits?: number
-              nprefix?: string
-              options?: number
-              version: number
-            }
+            Args: { geog: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_asgml:
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
             Returns: string
           }
         | {
@@ -15836,13 +16838,35 @@ export type Database = {
             }
             Returns: string
           }
-      st_askml:
         | {
-            Args: { geog: unknown; maxdecimaldigits?: number; nprefix?: string }
+            Args: {
+              geog: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+              version: number
+            }
             Returns: string
           }
         | {
+            Args: {
+              geog: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+            }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_askml:
+        | {
             Args: { geom: unknown; maxdecimaldigits?: number; nprefix?: string }
+            Returns: string
+          }
+        | {
+            Args: { geog: unknown; maxdecimaldigits?: number; nprefix?: string }
             Returns: string
           }
         | { Args: { "": string }; Returns: string }
@@ -15863,11 +16887,11 @@ export type Database = {
       }
       st_assvg:
         | {
-            Args: { geog: unknown; maxdecimaldigits?: number; rel?: number }
+            Args: { geom: unknown; maxdecimaldigits?: number; rel?: number }
             Returns: string
           }
         | {
-            Args: { geom: unknown; maxdecimaldigits?: number; rel?: number }
+            Args: { geog: unknown; maxdecimaldigits?: number; rel?: number }
             Returns: string
           }
         | { Args: { "": string }; Returns: string }
@@ -15875,7 +16899,8 @@ export type Database = {
       st_astwkb:
         | {
             Args: {
-              geom: unknown
+              geom: unknown[]
+              ids: number[]
               prec?: number
               prec_m?: number
               prec_z?: number
@@ -15886,8 +16911,7 @@ export type Database = {
           }
         | {
             Args: {
-              geom: unknown[]
-              ids: number[]
+              geom: unknown
               prec?: number
               prec_m?: number
               prec_z?: number
@@ -15901,8 +16925,8 @@ export type Database = {
         Returns: string
       }
       st_azimuth:
-        | { Args: { geog1: unknown; geog2: unknown }; Returns: number }
         | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: number }
       st_boundingdiagonal: {
         Args: { fits?: boolean; geom: unknown }
         Returns: unknown
@@ -15967,11 +16991,11 @@ export type Database = {
         Returns: boolean
       }
       st_distance:
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
         | {
             Args: { geog1: unknown; geog2: unknown; use_spheroid?: boolean }
             Returns: number
           }
-        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
       st_distancesphere:
         | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
         | {
@@ -15993,11 +17017,6 @@ export type Database = {
       }
       st_equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       st_expand:
-        | { Args: { box: unknown; dx: number; dy: number }; Returns: unknown }
-        | {
-            Args: { box: unknown; dx: number; dy: number; dz?: number }
-            Returns: unknown
-          }
         | {
             Args: {
               dm?: number
@@ -16008,6 +17027,11 @@ export type Database = {
             }
             Returns: unknown
           }
+        | {
+            Args: { box: unknown; dx: number; dy: number; dz?: number }
+            Returns: unknown
+          }
+        | { Args: { box: unknown; dx: number; dy: number }; Returns: unknown }
       st_force3d: { Args: { geom: unknown; zvalue?: number }; Returns: unknown }
       st_force3dm: {
         Args: { geom: unknown; mvalue?: number }
@@ -16030,8 +17054,8 @@ export type Database = {
       st_geogfromtext: { Args: { "": string }; Returns: unknown }
       st_geographyfromtext: { Args: { "": string }; Returns: unknown }
       st_geohash:
-        | { Args: { geog: unknown; maxchars?: number }; Returns: string }
         | { Args: { geom: unknown; maxchars?: number }; Returns: string }
+        | { Args: { geog: unknown; maxchars?: number }; Returns: string }
       st_geomcollfromtext: { Args: { "": string }; Returns: unknown }
       st_geometricmedian: {
         Args: {
@@ -16075,8 +17099,8 @@ export type Database = {
         Returns: unknown
       }
       st_intersects:
-        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
         | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
       st_isvaliddetail: {
         Args: { flags?: number; geom: unknown }
         Returns: Database["public"]["CompositeTypes"]["valid_detail"]
@@ -16229,8 +17253,8 @@ export type Database = {
         Returns: unknown
       }
       st_setsrid:
-        | { Args: { geog: unknown; srid: number }; Returns: unknown }
         | { Args: { geom: unknown; srid: number }; Returns: unknown }
+        | { Args: { geog: unknown; srid: number }; Returns: unknown }
       st_sharedpaths: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
@@ -16253,8 +17277,8 @@ export type Database = {
         Returns: Record<string, unknown>[]
       }
       st_srid:
-        | { Args: { geog: unknown }; Returns: number }
         | { Args: { geom: unknown }; Returns: number }
+        | { Args: { geog: unknown }; Returns: number }
       st_subdivide: {
         Args: { geom: unknown; gridsize?: number; maxvertices?: number }
         Returns: unknown[]
@@ -16283,15 +17307,15 @@ export type Database = {
       }
       st_touches: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       st_transform:
-        | {
-            Args: { from_proj: string; geom: unknown; to_proj: string }
-            Returns: unknown
-          }
+        | { Args: { geom: unknown; to_proj: string }; Returns: unknown }
         | {
             Args: { from_proj: string; geom: unknown; to_srid: number }
             Returns: unknown
           }
-        | { Args: { geom: unknown; to_proj: string }; Returns: unknown }
+        | {
+            Args: { from_proj: string; geom: unknown; to_proj: string }
+            Returns: unknown
+          }
       st_triangulatepolygon: { Args: { g1: unknown }; Returns: unknown }
       st_union:
         | { Args: { geom1: unknown; geom2: unknown }; Returns: unknown }
@@ -16876,6 +17900,9 @@ export type Database = {
               limits?: number
               offsets?: number
               prefix: string
+              search?: string
+              sortcolumn?: string
+              sortorder?: string
             }
             Returns: {
               created_at: string
@@ -16893,9 +17920,6 @@ export type Database = {
               limits?: number
               offsets?: number
               prefix: string
-              search?: string
-              sortcolumn?: string
-              sortorder?: string
             }
             Returns: {
               created_at: string
@@ -16953,12 +17977,16 @@ export type Database = {
               levels?: number
               limits?: number
               prefix: string
+              sort_column?: string
+              sort_column_after?: string
+              sort_order?: string
               start_after?: string
             }
             Returns: {
               created_at: string
               id: string
               key: string
+              last_accessed_at: string
               metadata: Json
               name: string
               updated_at: string
@@ -16970,16 +17998,12 @@ export type Database = {
               levels?: number
               limits?: number
               prefix: string
-              sort_column?: string
-              sort_column_after?: string
-              sort_order?: string
               start_after?: string
             }
             Returns: {
               created_at: string
               id: string
               key: string
-              last_accessed_at: string
               metadata: Json
               name: string
               updated_at: string
