@@ -15,8 +15,10 @@ import Button from '../Common/Button';
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import { useDatabase } from '../../contexts/DatabaseContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
 import { useEnums } from '../../hooks/useEnums';
+import { useProjects } from '../../hooks/useProjects';
 
 // New database schema types
 type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'submitted' | 'in_review' | 'approved' | 'rejected' | 'needs_info';
@@ -35,7 +37,6 @@ interface Task {
   due_date: string;
   task_type: string;
   origin_role: string;
-  target_role: string;
   metadata?: {
     blockers?: string[];
     quick_actions?: string[];
@@ -47,8 +48,42 @@ interface Task {
   updated_at: string;
 }
 
+// Interface for project dropdown (includes organization_id for task creation)
+interface ProjectOption {
+  id: string;
+  name: string;
+  organization_id: string;
+}
+
+// Interface for subcontractor dropdown
+interface Subcontractor {
+  id: string;
+  name: string;
+}
+
+// Interface for new task form
+interface NewTaskForm {
+  title: string;
+  description: string;
+  project_id: string;
+  subcontractor_id: string;
+  priority: TaskPriority;
+  due_date: string;
+}
+
+const initialFormState: NewTaskForm = {
+  title: '',
+  description: '',
+  project_id: '',
+  subcontractor_id: '',
+  priority: 'medium',
+  due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default to 1 week from now
+};
+
 export default function ManagerTasksPage() {
   const { forsured } = useDatabase();
+  const { user } = useAuth();
+  const { projects: projectsData } = useProjects();
 
   // Fetch enums
   const { data: taskStatuses, isLoading: loadingStatuses } = useEnums('task_status');
@@ -58,6 +93,15 @@ export default function ManagerTasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  // Projects and subcontractors for form dropdowns
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([]);
+
+  // Create task form state
+  const [newTaskForm, setNewTaskForm] = useState<NewTaskForm>(initialFormState);
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof NewTaskForm, string>>>({});
 
   // Filter and sort state
   const [searchQuery, setSearchQuery] = useState('');
@@ -100,6 +144,138 @@ export default function ManagerTasksPage() {
 
     fetchTasks();
   }, [forsured]);
+
+  // Fetch subcontractors for the form dropdown
+  useEffect(() => {
+    async function fetchSubcontractors() {
+      try {
+        const { data, error: queryError } = await forsured('subcontractors')
+          .select('id, company')
+          .order('company', { ascending: true });
+
+        if (queryError) {
+          throw queryError;
+        }
+
+        // Map to our Subcontractor interface
+        const mapped = (data || []).map((sub: { id: string; company: string }) => ({
+          id: sub.id,
+          name: sub.company,
+        }));
+        setSubcontractors(mapped);
+      } catch (err) {
+        console.error('Failed to fetch subcontractors:', err);
+      }
+    }
+
+    fetchSubcontractors();
+  }, [forsured]);
+
+  // Map projects from useProjects hook to our Project interface
+  useEffect(() => {
+    if (projectsData) {
+      const mapped = projectsData.map((p) => ({
+        id: p.id,
+        name: p.name,
+        organization_id: p.organization_id,
+      }));
+      setProjects(mapped);
+    }
+  }, [projectsData]);
+
+  // Form validation
+  const validateForm = (): boolean => {
+    const errors: Partial<Record<keyof NewTaskForm, string>> = {};
+
+    if (!newTaskForm.title.trim()) {
+      errors.title = 'Title is required';
+    }
+    if (!newTaskForm.project_id) {
+      errors.project_id = 'Project is required';
+    }
+    if (!newTaskForm.due_date) {
+      errors.due_date = 'Due date is required';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Handle form field changes
+  const handleFormChange = (field: keyof NewTaskForm, value: string) => {
+    setNewTaskForm((prev) => ({ ...prev, [field]: value }));
+    // Clear error for this field when user starts typing
+    if (formErrors[field]) {
+      setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  // Handle task creation
+  const handleCreateTask = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    if (!user) {
+      toast.error('You must be logged in to create a task');
+      return;
+    }
+
+    // Get the selected project to get its organization_id
+    const selectedProject = projects.find((p) => p.id === newTaskForm.project_id);
+    if (!selectedProject) {
+      toast.error('Please select a valid project');
+      return;
+    }
+
+    setIsCreatingTask(true);
+
+    try {
+      const taskData = {
+        project_id: newTaskForm.project_id,
+        organization_id: selectedProject.organization_id,
+        title: newTaskForm.title.trim(),
+        description: newTaskForm.description.trim() || null,
+        status: 'pending' as TaskStatus,
+        priority: newTaskForm.priority,
+        due_date: newTaskForm.due_date,
+        subcontractor_id: newTaskForm.subcontractor_id || null,
+        created_by_user_id: user.id,
+        task_type: 'manual',
+        origin_role: 'manager',
+      };
+
+      const { data, error: insertError } = await forsured('tasks')
+        .insert(taskData)
+        .select()
+        .single();
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      // Add the new task to the list
+      setTasks((prev) => [data, ...prev]);
+
+      // Reset form and close modal
+      setNewTaskForm(initialFormState);
+      setShowCreateTask(false);
+      toast.success('Task created successfully');
+    } catch (err) {
+      const error = err as Error;
+      console.error('Failed to create task:', error);
+      toast.error(error.message || 'Failed to create task');
+    } finally {
+      setIsCreatingTask(false);
+    }
+  };
+
+  // Reset form when modal closes
+  const handleCloseCreateTask = () => {
+    setShowCreateTask(false);
+    setNewTaskForm(initialFormState);
+    setFormErrors({});
+  };
 
   const allProjects = useMemo(() => {
     const projects = new Set(
@@ -810,37 +986,226 @@ export default function ManagerTasksPage() {
             justifyContent: 'center',
             zIndex: 1000,
           }}
-          onClick={() => setShowCreateTask(false)}
+          onClick={handleCloseCreateTask}
         >
           <Card
             backgroundColor="$background"
             padding="$6"
             borderRadius="$4"
-            width={500}
+            width={560}
+            maxHeight="90vh"
+            overflow="auto"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            data-testid="task-modal"
           >
-            <YStack gap="$4">
-              <H2 fontSize="$6" fontWeight="600" color="$color12">
-                Create New Task
-              </H2>
-              <Text color="$color11" fontSize="$4">
-                Task creation form will be implemented here.
-              </Text>
-              <XStack gap="$3" justifyContent="flex-end">
+            <YStack gap="$5">
+              <XStack alignItems="center" justifyContent="space-between">
+                <H2 fontSize="$6" fontWeight="600" color="$color12">
+                  Create New Task
+                </H2>
+                <XStack
+                  onPress={handleCloseCreateTask}
+                  padding="$2"
+                  borderRadius="$2"
+                  hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                  cursor="pointer"
+                >
+                  <X size={20} color="var(--color11)" />
+                </XStack>
+              </XStack>
+
+              {/* Title Field */}
+              <YStack gap="$2">
+                <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
+                  Title <Text color="$red10">*</Text>
+                </Text>
+                <input
+                  type="text"
+                  placeholder="Enter task title..."
+                  value={newTaskForm.title}
+                  onChange={(e) => handleFormChange('title', e.target.value)}
+                  data-testid="task-title-input"
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    backgroundColor: 'var(--background)',
+                    border: formErrors.title ? '1px solid var(--red8)' : '1px solid var(--borderColor)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: 'var(--color12)',
+                    fontFamily: 'inherit',
+                  }}
+                />
+                {formErrors.title && (
+                  <Text fontSize="$1" color="$red10">{formErrors.title}</Text>
+                )}
+              </YStack>
+
+              {/* Description Field */}
+              <YStack gap="$2">
+                <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
+                  Description
+                </Text>
+                <textarea
+                  placeholder="Enter task description (optional)..."
+                  value={newTaskForm.description}
+                  onChange={(e) => handleFormChange('description', e.target.value)}
+                  data-testid="task-description-input"
+                  rows={3}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--borderColor)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: 'var(--color12)',
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
+                  }}
+                />
+              </YStack>
+
+              {/* Project and Subcontractor Row */}
+              <XStack gap="$4">
+                <YStack gap="$2" flex={1}>
+                  <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
+                    Project <Text color="$red10">*</Text>
+                  </Text>
+                  <select
+                    value={newTaskForm.project_id}
+                    onChange={(e) => handleFormChange('project_id', e.target.value)}
+                    data-testid="task-project-select"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: formErrors.project_id ? '1px solid var(--red8)' : '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color12)',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    <option value="">Select a project...</option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </select>
+                  {formErrors.project_id && (
+                    <Text fontSize="$1" color="$red10">{formErrors.project_id}</Text>
+                  )}
+                </YStack>
+
+                <YStack gap="$2" flex={1}>
+                  <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
+                    Subcontractor
+                  </Text>
+                  <select
+                    value={newTaskForm.subcontractor_id}
+                    onChange={(e) => handleFormChange('subcontractor_id', e.target.value)}
+                    data-testid="task-subcontractor-select"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color12)',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    <option value="">None (optional)</option>
+                    {subcontractors.map((sub) => (
+                      <option key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </option>
+                    ))}
+                  </select>
+                </YStack>
+              </XStack>
+
+              {/* Priority and Due Date Row */}
+              <XStack gap="$4">
+                <YStack gap="$2" flex={1}>
+                  <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
+                    Priority
+                  </Text>
+                  <select
+                    value={newTaskForm.priority}
+                    onChange={(e) => handleFormChange('priority', e.target.value)}
+                    data-testid="task-priority-select"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color12)',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    {taskPriorities?.map((priority) => (
+                      <option key={priority.value} value={priority.value}>
+                        {priority.display_name}
+                      </option>
+                    ))}
+                  </select>
+                </YStack>
+
+                <YStack gap="$2" flex={1}>
+                  <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
+                    Due Date <Text color="$red10">*</Text>
+                  </Text>
+                  <input
+                    type="date"
+                    value={newTaskForm.due_date}
+                    onChange={(e) => handleFormChange('due_date', e.target.value)}
+                    data-testid="task-due-date-input"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: formErrors.due_date ? '1px solid var(--red8)' : '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color12)',
+                      fontFamily: 'inherit',
+                    }}
+                  />
+                  {formErrors.due_date && (
+                    <Text fontSize="$1" color="$red10">{formErrors.due_date}</Text>
+                  )}
+                </YStack>
+              </XStack>
+
+              {/* Action Buttons */}
+              <XStack gap="$3" justifyContent="flex-end" marginTop="$2">
                 <Button
                   variant="outlined"
-                  onPress={() => setShowCreateTask(false)}
+                  onPress={handleCloseCreateTask}
+                  disabled={isCreatingTask}
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="primary"
-                  onPress={() => {
-                    toast.info('Task creation functionality coming soon');
-                    setShowCreateTask(false);
-                  }}
+                  onPress={handleCreateTask}
+                  disabled={isCreatingTask}
+                  data-testid="submit-create-task-btn"
                 >
-                  Create Task
+                  {isCreatingTask ? (
+                    <XStack alignItems="center" gap="$2">
+                      <Loader2 size={16} className="animate-spin" />
+                      <Text>Creating...</Text>
+                    </XStack>
+                  ) : (
+                    'Create Task'
+                  )}
                 </Button>
               </XStack>
             </YStack>
