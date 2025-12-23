@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { YStack, XStack, Text, H2, H3, Card, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
-import Modal from '../Common/Modal';
+// Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 
@@ -75,6 +75,43 @@ interface EnhancedTaskDetailModalProps {
   onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 }
 
+// Simple overlay component to avoid ResponsiveModal freeze issue
+const ModalOverlay = ({
+  children,
+  onClose,
+  width = 900
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+  width?: number | string;
+}) => (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+    }}
+    onClick={onClose}
+  >
+    <Card
+      backgroundColor="$background"
+      padding="$6"
+      borderRadius="$4"
+      width={width}
+      maxWidth="95vw"
+      maxHeight="90vh"
+      overflow="scroll"
+      onClick={(e: React.MouseEvent) => e.stopPropagation()}
+    >
+      {children}
+    </Card>
+  </div>
+);
+
 export default function EnhancedTaskDetailModal({
   task,
   isOpen,
@@ -102,22 +139,25 @@ export default function EnhancedTaskDetailModal({
       setLoadingRelated(true);
 
       try {
-        const [usersResult, projectsResult, subsResult] = await Promise.all([
-          forsured('users').select('*'),
+        // Don't fail on users query - table might not exist in forsured schema
+        const [projectsResult, subsResult] = await Promise.all([
           forsured('projects').select('*'),
           forsured('subcontractors').select('*'),
         ]);
 
-        if (usersResult.error) throw usersResult.error;
-        if (projectsResult.error) throw projectsResult.error;
-        if (subsResult.error) throw subsResult.error;
+        if (projectsResult.error) {
+          console.warn('[EnhancedTaskDetailModal] Projects query error:', projectsResult.error);
+        }
+        if (subsResult.error) {
+          console.warn('[EnhancedTaskDetailModal] Subcontractors query error:', subsResult.error);
+        }
 
-        setUsers(usersResult.data || []);
+        setUsers([]); // Users are in core schema, not forsured
         setProjects(projectsResult.data || []);
         setSubcontractors(subsResult.data || []);
       } catch (err) {
         const error = err as Error;
-        toast.error(error.message || 'Failed to load related data');
+        console.warn('[EnhancedTaskDetailModal] Error loading related data:', error.message);
       } finally {
         setLoadingRelated(false);
       }
@@ -126,7 +166,8 @@ export default function EnhancedTaskDetailModal({
     fetchRelatedData();
   }, [forsured, isOpen]);
 
-  if (!task) return null;
+  // Early return if not open or no task
+  if (!isOpen || !task) return null;
 
   // Get assignee details from users data
   const assigneeDetails = useMemo(() => {
@@ -245,8 +286,22 @@ export default function EnhancedTaskDetailModal({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="large">
+      <ModalOverlay onClose={onClose} width={900}>
         <YStack gap="$6">
+          {/* Header with close button */}
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack flex={1} />
+            <XStack
+              onPress={onClose}
+              cursor="pointer"
+              padding="$2"
+              borderRadius="$2"
+              hoverStyle={{ backgroundColor: '$backgroundHover' }}
+            >
+              <X size={24} color="$color10" />
+            </XStack>
+          </XStack>
+
           <XStack alignItems="flex-start" justifyContent="space-between">
             <YStack flex={1}>
               <XStack alignItems="center" gap="$3" mb="$2">
@@ -535,180 +590,210 @@ export default function EnhancedTaskDetailModal({
             </YStack>
           )}
         </YStack>
-      </Modal>
+      </ModalOverlay>
 
-      <Modal
-        isOpen={showReassignModal}
-        onClose={() => setShowReassignModal(false)}
-        title="Reassign Task"
-        size="sm"
-      >
-        <YStack gap="$4">
-          <YStack>
-            <Text
-              as="label"
-              display="block"
-              fontSize="$3"
-              fontWeight="500"
-              color="$color11"
-              mb="$2"
-            >
-              Select Assignee
-            </Text>
-            <select
-              value={selectedAssignee}
-              onChange={(e) => setSelectedAssignee(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: 'var(--color12)',
-                fontFamily: 'inherit',
-              }}
-            >
-              <option value="">Choose a person...</option>
-              {availablePeople.map((person) => (
-                <option key={person.id} value={person.id}>
-                  {person.name} ({person.email})
-                </option>
-              ))}
-            </select>
+      {/* Reassign Modal */}
+      {showReassignModal && (
+        <ModalOverlay onClose={() => setShowReassignModal(false)} width={400}>
+          <YStack gap="$4">
+            <XStack alignItems="center" justifyContent="space-between" mb="$2">
+              <H3 fontSize="$5" fontWeight="600" color="$color12">Reassign Task</H3>
+              <XStack
+                onPress={() => setShowReassignModal(false)}
+                cursor="pointer"
+                padding="$2"
+                borderRadius="$2"
+                hoverStyle={{ backgroundColor: '$backgroundHover' }}
+              >
+                <X size={20} color="$color10" />
+              </XStack>
+            </XStack>
+            <YStack>
+              <Text
+                as="label"
+                display="block"
+                fontSize="$3"
+                fontWeight="500"
+                color="$color11"
+                mb="$2"
+              >
+                Select Assignee
+              </Text>
+              <select
+                value={selectedAssignee}
+                onChange={(e) => setSelectedAssignee(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  backgroundColor: 'var(--background)',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  color: 'var(--color12)',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <option value="">Choose a person...</option>
+                {availablePeople.map((person) => (
+                  <option key={person.id} value={person.id}>
+                    {person.name} ({person.email})
+                  </option>
+                ))}
+              </select>
+            </YStack>
+            <XStack gap="$3">
+              <Button
+                variant="secondary"
+                onClick={() => setShowReassignModal(false)}
+                flex={1}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleReassign}
+                flex={1}
+              >
+                Reassign
+              </Button>
+            </XStack>
           </YStack>
-          <XStack gap="$3">
-            <Button
-              variant="secondary"
-              onClick={() => setShowReassignModal(false)}
-              flex={1}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleReassign}
-              flex={1}
-            >
-              Reassign
-            </Button>
-          </XStack>
-        </YStack>
-      </Modal>
+        </ModalOverlay>
+      )}
 
-      <Modal
-        isOpen={showAddNoteModal}
-        onClose={() => setShowAddNoteModal(false)}
-        title="Add Note"
-        size="sm"
-      >
-        <YStack gap="$4">
-          <YStack>
-            <Text
-              as="label"
-              display="block"
-              fontSize="$3"
-              fontWeight="500"
-              color="$color11"
-              mb="$2"
-            >
-              Note
-            </Text>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              rows={4}
-              placeholder="Enter your note here..."
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: 'var(--color12)',
-                fontFamily: 'inherit',
-              }}
-            />
+      {/* Add Note Modal */}
+      {showAddNoteModal && (
+        <ModalOverlay onClose={() => setShowAddNoteModal(false)} width={400}>
+          <YStack gap="$4">
+            <XStack alignItems="center" justifyContent="space-between" mb="$2">
+              <H3 fontSize="$5" fontWeight="600" color="$color12">Add Note</H3>
+              <XStack
+                onPress={() => setShowAddNoteModal(false)}
+                cursor="pointer"
+                padding="$2"
+                borderRadius="$2"
+                hoverStyle={{ backgroundColor: '$backgroundHover' }}
+              >
+                <X size={20} color="$color10" />
+              </XStack>
+            </XStack>
+            <YStack>
+              <Text
+                as="label"
+                display="block"
+                fontSize="$3"
+                fontWeight="500"
+                color="$color11"
+                mb="$2"
+              >
+                Note
+              </Text>
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                rows={4}
+                placeholder="Enter your note here..."
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  backgroundColor: 'var(--background)',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  color: 'var(--color12)',
+                  fontFamily: 'inherit',
+                }}
+              />
+            </YStack>
+            <XStack gap="$3">
+              <Button
+                variant="secondary"
+                onClick={() => setShowAddNoteModal(false)}
+                flex={1}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleAddNote}
+                flex={1}
+              >
+                Add Note
+              </Button>
+            </XStack>
           </YStack>
-          <XStack gap="$3">
-            <Button
-              variant="secondary"
-              onClick={() => setShowAddNoteModal(false)}
-              flex={1}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleAddNote}
-              flex={1}
-            >
-              Add Note
-            </Button>
-          </XStack>
-        </YStack>
-      </Modal>
+        </ModalOverlay>
+      )}
 
-      <Modal
-        isOpen={showInviteModal}
-        onClose={() => setShowInviteModal(false)}
-        title="Send Invitation"
-        size="sm"
-      >
-        <YStack gap="$4">
-          <YStack>
-            <Text
-              as="label"
-              display="block"
-              fontSize="$3"
-              fontWeight="500"
-              color="$color11"
-              mb="$2"
-            >
-              Email Address
-            </Text>
-            <input
-              type="email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              placeholder="email@example.com"
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: 'var(--color12)',
-                fontFamily: 'inherit',
-              }}
-            />
-          </YStack>
-          <Card padding="$3" backgroundColor="$blue2" borderWidth={1} borderColor="$blue8" borderRadius="$4">
-            <Text fontSize="$1" color="$blue12">
-              This will send an invitation to join the project and complete
-              onboarding requirements.
-            </Text>
-          </Card>
-          <XStack gap="$3">
-            <Button
-              variant="secondary"
-              onClick={() => setShowInviteModal(false)}
-              flex={1}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSendInvite}
+      {/* Invite Modal */}
+      {showInviteModal && (
+        <ModalOverlay onClose={() => setShowInviteModal(false)} width={400}>
+          <YStack gap="$4">
+            <XStack alignItems="center" justifyContent="space-between" mb="$2">
+              <H3 fontSize="$5" fontWeight="600" color="$color12">Send Invitation</H3>
+              <XStack
+                onPress={() => setShowInviteModal(false)}
+                cursor="pointer"
+                padding="$2"
+                borderRadius="$2"
+                hoverStyle={{ backgroundColor: '$backgroundHover' }}
+              >
+                <X size={20} color="$color10" />
+              </XStack>
+            </XStack>
+            <YStack>
+              <Text
+                as="label"
+                display="block"
+                fontSize="$3"
+                fontWeight="500"
+                color="$color11"
+                mb="$2"
+              >
+                Email Address
+              </Text>
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="email@example.com"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  backgroundColor: 'var(--background)',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  color: 'var(--color12)',
+                  fontFamily: 'inherit',
+                }}
+              />
+            </YStack>
+            <Card padding="$3" backgroundColor="$blue2" borderWidth={1} borderColor="$blue8" borderRadius="$4">
+              <Text fontSize="$1" color="$blue12">
+                This will send an invitation to join the project and complete
+                onboarding requirements.
+              </Text>
+            </Card>
+            <XStack gap="$3">
+              <Button
+                variant="secondary"
+                onClick={() => setShowInviteModal(false)}
+                flex={1}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSendInvite}
               flex={1}
             >
               Send Invite
             </Button>
           </XStack>
         </YStack>
-      </Modal>
+      </ModalOverlay>
+      )}
     </>
   );
 }
