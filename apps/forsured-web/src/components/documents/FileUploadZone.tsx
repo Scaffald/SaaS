@@ -3,7 +3,7 @@
  * Drag-and-drop file upload zone with validation and progress tracking
  */
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { Upload, X, CheckCircle, XCircle } from 'lucide-react';
 import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import { DocumentService } from '../../lib/documents/documentService';
@@ -45,7 +45,13 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [fileQueue, setFileQueue] = useState<FileQueueItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const documentService = new DocumentService();
+  
+  // Use useRef to maintain a stable DocumentService instance
+  const documentServiceRef = useRef<DocumentService | null>(null);
+  if (!documentServiceRef.current) {
+    documentServiceRef.current = new DocumentService();
+  }
+  const documentService = documentServiceRef.current;
 
   const generateFileId = () => `file-${Date.now()}-${Math.random()}`;
 
@@ -94,8 +100,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
     newQueueItems.forEach(item => {
       uploadFile(item);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [maxFiles, onError]);
+  }, [maxFiles, onError, documentService]);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();

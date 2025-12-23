@@ -248,20 +248,30 @@ export async function getCurrentUser() {
 }
 
 /**
- * Helper to get user's organization ID from core schema
+ * Helper to get user's organization ID from role_assignments
+ * Uses scope_org_id from role_assignments table where user has a role
  */
 export async function getUserOrganizationId(userId: string): Promise<string | null> {
-  const { data, error } = await core('users')
-    .select('organization_id')
-    .eq('id', userId)
+  // Query role_assignments to find user's organization
+  // Get the first organization where user has any role assignment
+  const { data, error } = await core('role_assignments')
+    .select('scope_org_id')
+    .eq('user_id', userId)
+    .not('scope_org_id', 'is', null)
+    .limit(1)
     .single();
 
   if (error) {
+    // PGRST116 means no rows found - user has no org assignment
+    if (error.code === 'PGRST116') {
+      console.log('[Supabase] No organization assignment found for user:', userId);
+      return null;
+    }
     console.error('[Supabase] Error getting user organization:', error);
     return null;
   }
 
-  return data?.organization_id || null;
+  return data?.scope_org_id || null;
 }
 
 /**
