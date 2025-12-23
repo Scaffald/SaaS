@@ -1,13 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { YStack, XStack, Text, Card, Button as TamaguiButton } from '@unicornlove/ui';
 import { useBrokerAcknowledgements } from '../../hooks/useBrokerAcknowledgements';
 import { useProjects } from '../../hooks/useProjects';
+import { useRelationships } from '../../hooks/useRelationships';
+import { useDatabase } from '../../contexts/DatabaseContext';
+import { authorizationService } from '../../lib/auth/authorizationService';
 import Button from '../Common/Button';
 
 interface CreateBrokerAckFormModalProps {
   onClose: () => void;
   onCreated: (formId: string) => void;
+}
+
+interface SubcontractorOption {
+  id: string;
+  org_id: string;
+  company_name: string;
 }
 
 export default function CreateBrokerAckFormModal({
@@ -16,8 +25,13 @@ export default function CreateBrokerAckFormModal({
 }: CreateBrokerAckFormModalProps) {
   const { createForm } = useBrokerAcknowledgements();
   const { projects } = useProjects();
+  const { forsured } = useDatabase();
+  const managerOrgId = authorizationService.getOrganizationId();
+  const { relationships, loading: relationshipsLoading } = useRelationships(managerOrgId || undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [subcontractors, setSubcontractors] = useState<SubcontractorOption[]>([]);
+  const [loadingSubcontractors, setLoadingSubcontractors] = useState(false);
 
   const [formData, setFormData] = useState({
     project_id: '',
@@ -36,6 +50,59 @@ export default function CreateBrokerAckFormModal({
 
   const selectedProject = projects.find((p) => p.id === formData.project_id);
 
+  // Get subcontractor organization IDs from relationships
+  const subcontractorOrgIds = useMemo(() => {
+    if (!managerOrgId || !relationships.length) return [];
+    return relationships
+      .filter((rel) => rel.manager_org_id === managerOrgId)
+      .map((rel) => rel.subcontractor_org_id);
+  }, [managerOrgId, relationships]);
+
+  // Fetch subcontractors based on relationships
+  useEffect(() => {
+    async function fetchSubcontractors() {
+      if (!subcontractorOrgIds.length || !forsured) {
+        setSubcontractors([]);
+        return;
+      }
+
+      setLoadingSubcontractors(true);
+      try {
+        const { data, error: queryError } = await forsured('subcontractors')
+          .select('id, organization_id, company')
+          .in('organization_id', subcontractorOrgIds)
+          .order('company', { ascending: true });
+
+        if (queryError) {
+          console.error('Failed to fetch subcontractors:', queryError);
+          setSubcontractors([]);
+          return;
+        }
+
+        // Map and deduplicate by organization_id (since form uses subcontractor_org_id)
+        const orgMap = new Map<string, SubcontractorOption>();
+        (data || []).forEach((sub: { id: string; organization_id: string; company: string }) => {
+          if (!orgMap.has(sub.organization_id)) {
+            orgMap.set(sub.organization_id, {
+              id: sub.id,
+              org_id: sub.organization_id,
+              company_name: sub.company,
+            });
+          }
+        });
+
+        setSubcontractors(Array.from(orgMap.values()));
+      } catch (err) {
+        console.error('Error fetching subcontractors:', err);
+        setSubcontractors([]);
+      } finally {
+        setLoadingSubcontractors(false);
+      }
+    }
+
+    fetchSubcontractors();
+  }, [subcontractorOrgIds, forsured]);
+
   useEffect(() => {
     if (selectedProject) {
       setFormData((prev) => ({
@@ -44,6 +111,19 @@ export default function CreateBrokerAckFormModal({
       }));
     }
   }, [selectedProject]);
+
+  // Update form data when subcontractor is selected
+  useEffect(() => {
+    if (formData.subcontractor_org_id) {
+      const selectedSub = subcontractors.find((sub) => sub.org_id === formData.subcontractor_org_id);
+      if (selectedSub) {
+        setFormData((prev) => ({
+          ...prev,
+          subcontractor_company_name: selectedSub.company_name,
+        }));
+      }
+    }
+  }, [formData.subcontractor_org_id, subcontractors]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +134,8 @@ export default function CreateBrokerAckFormModal({
       if (!formData.project_id) {
         throw new Error('Please select a project');
       }
-      if (!formData.subcontractor_company_name) {
-        throw new Error('Please enter subcontractor company name');
+      if (!formData.subcontractor_org_id) {
+        throw new Error('Please select a subcontractor');
       }
       if (!formData.broker_agency_name) {
         throw new Error('Please enter broker agency name');
@@ -193,26 +273,42 @@ export default function CreateBrokerAckFormModal({
               <YStack gap="$4">
                 <YStack>
                   <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-                    Company Name <Text color="$red10">*</Text>
+                    Subcontractor <Text color="$red10">*</Text>
                   </Text>
-                  <input
-                    type="text"
-                    value={formData.subcontractor_company_name}
-                    onChange={(e) =>
+                  <select
+                    value={formData.subcontractor_org_id}
+                    onChange={(e) => {
+                      const selectedSub = subcontractors.find((sub) => sub.org_id === e.target.value);
                       setFormData({
                         ...formData,
-                        subcontractor_company_name: e.target.value,
-                      })
-                    }
+                        subcontractor_org_id: e.target.value,
+                        subcontractor_company_name: selectedSub?.company_name || '',
+                      });
+                    }}
                     required
+                    disabled={loadingSubcontractors || relationshipsLoading || subcontractors.length === 0}
                     style={{
                       width: '100%',
                       paddingHorizontal: 'var(--space-4)',
                       paddingVertical: 'var(--space-2)',
                       border: '1px solid var(--color-border)',
                       borderRadius: 'var(--radius-4)',
+                      opacity: loadingSubcontractors || relationshipsLoading ? 0.6 : 1,
                     }}
-                  />
+                  >
+                    <option value="">
+                      {loadingSubcontractors || relationshipsLoading
+                        ? 'Loading subcontractors...'
+                        : subcontractors.length === 0
+                        ? 'No subcontractors available'
+                        : 'Select a subcontractor'}
+                    </option>
+                    {subcontractors.map((sub) => (
+                      <option key={sub.org_id} value={sub.org_id}>
+                        {sub.company_name}
+                      </option>
+                    ))}
+                  </select>
                 </YStack>
               </YStack>
             </YStack>
