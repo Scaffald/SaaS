@@ -968,9 +968,31 @@ export default function ManagerTasksPage() {
         task={selectedTask}
         isOpen={!!selectedTask}
         onClose={() => setSelectedTask(null)}
-        onUpdateTask={(taskId, updates) => {
-          console.log('Updating task:', taskId, updates);
-          setSelectedTask(null);
+        onUpdateTask={async (taskId, updates) => {
+          try {
+            const { error: updateError } = await forsured('tasks')
+              .update({ ...updates, updated_at: new Date().toISOString() })
+              .eq('id', taskId);
+
+            if (updateError) {
+              throw updateError;
+            }
+
+            // Update local state
+            setTasks((prev) =>
+              prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
+            );
+
+            // Update selected task to reflect changes
+            if (selectedTask && selectedTask.id === taskId) {
+              setSelectedTask({ ...selectedTask, ...updates });
+            }
+
+            toast.success('Task updated successfully');
+          } catch (err) {
+            const error = err as Error;
+            toast.error(error.message || 'Failed to update task');
+          }
         }}
       />
 

@@ -259,7 +259,18 @@ export default function EnhancedTaskDetailModal({
 
   const handleAddNote = () => {
     if (note.trim()) {
-      console.log('Adding note:', note);
+      // Add note to task metadata
+      const existingNotes = (task.metadata?.notes as Array<{ text: string; timestamp: string }>) || [];
+      const newNote = {
+        text: note.trim(),
+        timestamp: new Date().toISOString(),
+      };
+      onUpdateTask?.(task.id, {
+        metadata: {
+          ...task.metadata,
+          notes: [...existingNotes, newNote],
+        },
+      });
       setShowAddNoteModal(false);
       setNote('');
     }
