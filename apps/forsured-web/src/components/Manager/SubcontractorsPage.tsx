@@ -150,6 +150,8 @@ export default function SubcontractorsPage() {
 
     setSubmitting(true);
     try {
+      // Only insert columns that exist in the database table
+      // compliance_score, status, risk_level are derived from other tables
       const { error: insertError } = await forsured('subcontractors').insert({
         company: formData.company.trim(),
         name: formData.name.trim(),
@@ -157,11 +159,8 @@ export default function SubcontractorsPage() {
         contact_info: {
           email: formData.email.trim() || null,
           phone: formData.phone.trim() || null,
+          trade_type: formData.trade_type.trim() || null,
         },
-        trade_type: formData.trade_type.trim() || null,
-        status: 'active',
-        compliance_score: 100, // Start with perfect score
-        risk_level: 'low',
       });
 
       if (insertError) {
