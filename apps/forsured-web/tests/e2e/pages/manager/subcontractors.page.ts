@@ -14,7 +14,7 @@ export class ManagerSubcontractorsPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.table = new DataTableComponent(page);
-    this.addButton = page.locator('button:has-text("Add"), button:has-text("Invite"), button:has-text("New")');
+    this.addButton = page.locator('button:has-text("Add Subcontractor")');
     this.searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');
     this.filterDropdown = page.locator('[data-testid="filter-dropdown"], select[name="filter"]');
     this.subcontractorCards = page.locator('[data-testid="subcontractor-card"], .subcontractor-card');

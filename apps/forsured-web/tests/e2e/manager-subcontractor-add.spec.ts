@@ -21,21 +21,16 @@ test.describe('Manager Add Subcontractor', () => {
   test('Add Subcontractor button is visible on subcontractors page', async ({ page, assertNoErrors }) => {
     const subcontractorsPage = new ManagerSubcontractorsPage(page);
     await subcontractorsPage.goto();
+    
+    // Wait for page to fully load - wait for either the header or empty state
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000); // Wait for component to render
-
-    // Check if button exists (either in header or empty state)
+    
+    // Wait for the page title to appear (indicates page has loaded)
+    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 10000 });
+    
+    // The button should be visible in either header or empty state
     const addButton = page.locator('button:has-text("Add Subcontractor")');
-    const isVisible = await addButton.isVisible({ timeout: 5000 }).catch(() => false);
-
-    if (isVisible) {
-      await expect(addButton).toBeVisible();
-    } else {
-      // Button might be in empty state with different text
-      const emptyStateButton = page.locator('button:has-text("Add"), button:has-text("Create")');
-      const emptyStateVisible = await emptyStateButton.isVisible({ timeout: 5000 }).catch(() => false);
-      expect(emptyStateVisible).toBeTruthy();
-    }
+    await expect(addButton).toBeVisible({ timeout: 5000 });
 
     await assertNoErrors();
   });
@@ -43,36 +38,24 @@ test.describe('Manager Add Subcontractor', () => {
   test('Clicking Add Subcontractor button navigates to new route', async ({ page, assertNoErrors }) => {
     const subcontractorsPage = new ManagerSubcontractorsPage(page);
     await subcontractorsPage.goto();
+    
+    // Wait for page to fully load
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000); // Wait for component to render
+    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 10000 });
 
-    // Find the Add Subcontractor button
+    // Find and click the Add Subcontractor button
     const addButton = page.locator('button:has-text("Add Subcontractor")');
-    const isVisible = await addButton.isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(addButton).toBeVisible({ timeout: 5000 });
+    
+    // Click the button
+    await addButton.click();
+    
+    // Wait for navigation (the route redirects back to /manager/subcontractors)
+    await page.waitForURL(/\/manager\/subcontractors/, { timeout: 5000 });
 
-    if (isVisible) {
-      // Click the button
-      await addButton.click();
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(500);
-
-      // Should navigate to /manager/subcontractors/new (or redirect back if route doesn't exist yet)
-      const currentUrl = page.url();
-      expect(currentUrl).toMatch(/\/manager\/subcontractors/);
-    } else {
-      // If button not visible, might be empty state - try clicking empty state button
-      const emptyStateButton = page.locator('button:has-text("Add Subcontractor"), button:has-text("Add")').first();
-      const emptyStateVisible = await emptyStateButton.isVisible({ timeout: 5000 }).catch(() => false);
-      
-      if (emptyStateVisible) {
-        await emptyStateButton.click();
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(500);
-        
-        const currentUrl = page.url();
-        expect(currentUrl).toMatch(/\/manager\/subcontractors/);
-      }
-    }
+    // Verify we're still on the subcontractors page (since the route redirects)
+    const currentUrl = page.url();
+    expect(currentUrl).toMatch(/\/manager\/subcontractors/);
 
     await assertNoErrors();
   });
@@ -80,22 +63,23 @@ test.describe('Manager Add Subcontractor', () => {
   test('Add Subcontractor button works from page object', async ({ page, assertNoErrors }) => {
     const subcontractorsPage = new ManagerSubcontractorsPage(page);
     await subcontractorsPage.goto();
+    
+    // Wait for page to fully load
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
+    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 10000 });
 
     // Check if add button is visible
-    const isVisible = await subcontractorsPage.addButton.isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(subcontractorsPage.addButton).toBeVisible({ timeout: 5000 });
     
-    if (isVisible) {
-      // Use page object method
-      await subcontractorsPage.clickAddSubcontractor();
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(500);
+    // Use page object method
+    await subcontractorsPage.clickAddSubcontractor();
+    
+    // Wait for navigation
+    await page.waitForURL(/\/manager\/subcontractors/, { timeout: 5000 });
 
-      // Verify navigation occurred
-      const currentUrl = page.url();
-      expect(currentUrl).toMatch(/\/manager\/subcontractors/);
-    }
+    // Verify navigation occurred
+    const currentUrl = page.url();
+    expect(currentUrl).toMatch(/\/manager\/subcontractors/);
 
     await assertNoErrors();
   });
@@ -103,17 +87,22 @@ test.describe('Manager Add Subcontractor', () => {
   test('Empty state shows Add Subcontractor action', async ({ page, assertNoErrors }) => {
     const subcontractorsPage = new ManagerSubcontractorsPage(page);
     await subcontractorsPage.goto();
+    
+    // Wait for page to fully load
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000);
-
-    // Check for empty state
-    const emptyState = page.locator('text=/no subcontractors|no contractors yet/i');
-    const isEmpty = await emptyState.isVisible({ timeout: 5000 }).catch(() => false);
+    
+    // Check for empty state - look for the empty state title
+    const emptyStateTitle = page.locator('h2:has-text("No Subcontractors Yet")');
+    const isEmpty = await emptyStateTitle.isVisible({ timeout: 10000 }).catch(() => false);
 
     if (isEmpty) {
-      // Empty state should have an action button
-      const emptyStateButton = page.locator('button:has-text("Add Subcontractor"), button:has-text("Add")');
-      await expect(emptyStateButton.first()).toBeVisible();
+      // Empty state should have an action button with "Add Subcontractor" text
+      const emptyStateButton = page.locator('button:has-text("Add Subcontractor")');
+      await expect(emptyStateButton).toBeVisible({ timeout: 5000 });
+    } else {
+      // If not empty, button should still be visible in header
+      const headerButton = page.locator('button:has-text("Add Subcontractor")');
+      await expect(headerButton).toBeVisible({ timeout: 5000 });
     }
 
     await assertNoErrors();
@@ -122,8 +111,10 @@ test.describe('Manager Add Subcontractor', () => {
   test('Add Subcontractor button is accessible from list view', async ({ page, assertNoErrors }) => {
     const subcontractorsPage = new ManagerSubcontractorsPage(page);
     await subcontractorsPage.goto();
+    
+    // Wait for page to fully load
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000);
+    await page.waitForSelector('h1:has-text("Subcontractors")', { timeout: 10000 });
 
     // Check if we have subcontractors (list view) or empty state
     const hasSubcontractors = await subcontractorsPage.getSubcontractorCount() > 0;
@@ -131,12 +122,13 @@ test.describe('Manager Add Subcontractor', () => {
     if (hasSubcontractors) {
       // In list view, button should be in header
       const headerButton = page.locator('button:has-text("Add Subcontractor")');
-      const isVisible = await headerButton.isVisible({ timeout: 5000 }).catch(() => false);
-      
-      if (isVisible) {
-        await expect(headerButton).toBeVisible();
-        await expect(headerButton).toBeEnabled();
-      }
+      await expect(headerButton).toBeVisible({ timeout: 5000 });
+      await expect(headerButton).toBeEnabled();
+    } else {
+      // Even in empty state, button should be accessible
+      const addButton = page.locator('button:has-text("Add Subcontractor")');
+      await expect(addButton).toBeVisible({ timeout: 5000 });
+      await expect(addButton).toBeEnabled();
     }
 
     await assertNoErrors();

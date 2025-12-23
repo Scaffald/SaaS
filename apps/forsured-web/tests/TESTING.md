@@ -19,7 +19,18 @@ pnpm supa start
 
 # Verify Supabase is running
 pnpm supa status
+
+# Apply all database migrations (REQUIRED)
+pnpm supa db push
 ```
+
+**Important:** The test suite automatically verifies that required database tables exist before running tests. If tables are missing, tests will fail with a clear error message instructing you to run `pnpm supa db push`.
+
+Required tables are verified:
+- `forsured.approvals`
+- `forsured.relationships`
+
+These are created by migration `208_forsured_create_remaining_tables.sql`.
 
 ## Test Fixtures
 
