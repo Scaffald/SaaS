@@ -140,12 +140,24 @@ export default function ManagerProjectsPage() {
 
   return (
     <YStack gap="$6">
-      <YStack>
-        <H1 fontSize="$9" fontWeight="700" color="$color12">Projects</H1>
-        <Text color="$color11" fontSize="$4">
-          Manage projects and insurance requirements
-        </Text>
-      </YStack>
+      <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
+        <YStack flex={1}>
+          <H1 fontSize="$9" fontWeight="700" color="$color12">Projects</H1>
+          <Text color="$color11" fontSize="$4">
+            Manage projects and insurance requirements
+          </Text>
+        </YStack>
+        <Button
+          variant="primary"
+          size="$4"
+          onPress={() => navigate('/manager/projects/new')}
+        >
+          <XStack alignItems="center" gap="$2">
+            <FolderPlus size={18} />
+            <Text>Add Project</Text>
+          </XStack>
+        </Button>
+      </XStack>
 
       <XStack alignItems="center" gap="$6" fontSize="$3">
         <XStack alignItems="center">

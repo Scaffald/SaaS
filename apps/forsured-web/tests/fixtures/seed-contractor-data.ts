@@ -83,21 +83,17 @@ async function createTestManagers(
     .select('id, name')
     .single();
 
-  // Handle missing table gracefully
-  if (manager1.error || manager2.error) {
-    const errorMsg = manager1.error?.message || manager2.error?.message || 'Unknown error';
-    // If table doesn't exist, return empty array instead of throwing
-    if (errorMsg.includes('does not exist') || errorMsg.includes('relation') || errorMsg.includes('42P01')) {
-      console.warn('[seed-contractor-data] core.organizations table not found, skipping manager creation');
-      return [];
-    }
-    throw new Error(`Failed to create test managers: ${errorMsg}`);
+  // Throw errors - global test setup will catch missing tables before tests run
+  if (manager1.error) {
+    throw new Error(`Failed to create test manager 1: ${manager1.error.message}`);
+  }
+  if (manager2.error) {
+    throw new Error(`Failed to create test manager 2: ${manager2.error.message}`);
   }
 
   // Check if data exists before accessing
   if (!manager1.data || !manager2.data) {
-    console.warn('[seed-contractor-data] Manager data not returned, skipping manager creation');
-    return [];
+    throw new Error('Manager data not returned from database');
   }
 
   return [
@@ -113,7 +109,7 @@ async function createTestRelationships(
   managerOrgIds: Array<{ id: string; name: string }>,
   contractorOrgId: string
 ): Promise<Array<{ id: string; manager_org_id: string; subcontractor_org_id: string }>> {
-  const relationships = [];
+  const relationships: Array<{ id: string; manager_org_id: string; subcontractor_org_id: string }> = [];
 
   // Active relationship
   const rel1 = await forsured('relationships')
@@ -141,25 +137,24 @@ async function createTestRelationships(
     .select('id, manager_org_id, subcontractor_org_id')
     .single();
 
-  // Handle missing table gracefully
-  if (rel1.error || rel2.error) {
-    const errorMsg = rel1.error?.message || rel2.error?.message || 'Unknown error';
-    // If table doesn't exist, return empty array instead of throwing
-    if (errorMsg.includes('does not exist') || errorMsg.includes('relation') || errorMsg.includes('42P01')) {
-      console.warn('[seed-contractor-data] forsured.relationships table not found, skipping relationship creation');
-      return [];
-    }
-    throw new Error(`Failed to create test relationships: ${errorMsg}`);
+  // Throw errors - global test setup will catch missing tables before tests run
+  if (rel1.error) {
+    throw new Error(`Failed to create test relationship 1: ${rel1.error.message}`);
+  }
+  if (rel2.error) {
+    throw new Error(`Failed to create test relationship 2: ${rel2.error.message}`);
   }
 
   // Check if data exists before accessing
-  if (rel1.data) {
-    relationships.push({
-      id: rel1.data.id,
-      manager_org_id: rel1.data.manager_org_id,
-      subcontractor_org_id: rel1.data.subcontractor_org_id,
-    });
+  if (!rel1.data || !rel2.data) {
+    throw new Error('Relationship data not returned from database');
   }
+
+  relationships.push({
+    id: rel1.data.id,
+    manager_org_id: rel1.data.manager_org_id,
+    subcontractor_org_id: rel1.data.subcontractor_org_id,
+  });
   relationships.push({
     id: rel2.data.id,
     manager_org_id: rel2.data.manager_org_id,
@@ -177,7 +172,7 @@ async function createTestProjects(
   managerOrgIds: Array<{ id: string; name: string }>,
   managerUserId: string = TEST_USER_IDS.manager
 ): Promise<Array<{ id: string; name: string }>> {
-  const projects = [];
+  const projects: Array<{ id: string; name: string }> = [];
 
   // Active project
   // Note: projects table only has: id, name, organization_id, manager_id, scaffald_project_id, created_at, updated_at
@@ -209,6 +204,10 @@ async function createTestProjects(
     throw new Error(`Failed to create test projects: ${project1.error?.message || project2.error?.message}`);
   }
 
+  if (!project1.data || !project2.data) {
+    throw new Error('Project data not returned from database');
+  }
+
   projects.push({ id: project1.data.id, name: project1.data.name });
   projects.push({ id: project2.data.id, name: project2.data.name });
 
@@ -222,7 +221,7 @@ async function createTestDocuments(
   contractorOrgId: string,
   projectId?: string
 ): Promise<Array<{ id: string; name: string }>> {
-  const documents = [];
+  const documents: Array<{ id: string; name: string }> = [];
 
   // Note: documents table requires project_id and subcontractor_id (both non-nullable)
   // If no projectId provided, we need to create a project first or skip document creation
@@ -328,6 +327,10 @@ async function createTestDocuments(
     throw new Error(`Failed to create test documents: ${doc1.error?.message || doc2.error?.message}`);
   }
 
+  if (!doc1.data || !doc2.data) {
+    throw new Error('Document data not returned from database');
+  }
+
   documents.push({ id: doc1.data.id, name: doc1.data.file_name });
   documents.push({ id: doc2.data.id, name: doc2.data.file_name });
 
@@ -343,7 +346,7 @@ async function createTestNotifications(
   projectId?: string,
   taskId?: string
 ): Promise<Array<{ id: string; title: string }>> {
-  const notifications = [];
+  const notifications: Array<{ id: string; title: string }> = [];
 
   // Generate valid UUIDs for entity_id if not provided
   // Using crypto.randomUUID() for valid UUIDs
@@ -396,6 +399,10 @@ async function createTestNotifications(
     throw new Error(`Failed to create test notifications: ${notif1.error?.message || notif2.error?.message}`);
   }
 
+  if (!notif1.data || !notif2.data) {
+    throw new Error('Notification data not returned from database');
+  }
+
   notifications.push({ id: notif1.data.id, title: notif1.data.title });
   notifications.push({ id: notif2.data.id, title: notif2.data.title });
 
@@ -410,7 +417,7 @@ async function createTestTasks(
   contractorOrgId: string,
   projectId?: string
 ): Promise<Array<{ id: string; title: string }>> {
-  const tasks = [];
+  const tasks: Array<{ id: string; title: string }> = [];
 
   // Pending task
   const task1 = await forsured('tasks')
@@ -446,6 +453,10 @@ async function createTestTasks(
     throw new Error(`Failed to create test tasks: ${task1.error?.message || task2.error?.message}`);
   }
 
+  if (!task1.data || !task2.data) {
+    throw new Error('Task data not returned from database');
+  }
+
   tasks.push({ id: task1.data.id, title: task1.data.title });
   tasks.push({ id: task2.data.id, title: task2.data.title });
 
@@ -456,7 +467,7 @@ async function createTestTasks(
  * Create test help articles for contractor
  */
 async function createTestHelpArticles(): Promise<Array<{ id: string; slug: string }>> {
-  const articles = [];
+  const articles: Array<{ id: string; slug: string }> = [];
 
   // Getting started article
   const article1 = await forsured('help_articles')
@@ -475,7 +486,7 @@ async function createTestHelpArticles(): Promise<Array<{ id: string; slug: strin
   if (article1.error) {
     // Help articles might already exist, that's okay
     console.warn('Help article creation failed (may already exist):', article1.error.message);
-  } else {
+  } else if (article1.data) {
     articles.push({ id: article1.data.id, slug: article1.data.slug });
   }
 
@@ -565,10 +576,12 @@ export async function seedContractorTestData(
   }
 
   // Create documents (only if we have projects)
-  let documents: Array<{ id: string; file_name: string }> = [];
+  let documents: Array<{ id: string; name: string }> = [];
   if (projects.length > 0) {
     try {
-      documents = await createTestDocuments(contractorOrgId, projects[0]?.id);
+      const docResults = await createTestDocuments(contractorOrgId, projects[0]?.id);
+      // Map file_name to name for consistency
+      documents = docResults.map(doc => ({ id: doc.id, name: doc.name }));
     } catch (error) {
       console.warn('[seed-contractor-data] Failed to create documents, continuing without them:', error);
       documents = [];

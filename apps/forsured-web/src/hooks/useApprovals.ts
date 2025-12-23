@@ -70,25 +70,19 @@ export function useApprovals(options: UseApprovalsOptions = {}) {
       const { data, error: supabaseError } = await query;
 
       if (supabaseError) {
-        // Handle table not found or permission errors gracefully
-        if (supabaseError.code === '42P01' || supabaseError.code === 'PGRST116') {
-          // Table doesn't exist - return empty array instead of throwing
-          console.warn('[useApprovals] Approvals table not found, returning empty array');
-          setApprovals([]);
-          return;
-        }
-        // For other errors, log but don't throw to prevent 500 errors
-        console.warn('[useApprovals] Error fetching approvals:', supabaseError);
-        setApprovals([]);
+        const formattedError = formatSupabaseError(supabaseError, 'fetching approvals');
+        setError(formattedError);
+        // Don't set empty array - error state will be available to component
+        // Global test setup will catch missing tables before tests run
         return;
       }
 
       setApprovals(data || []);
+      setError(null);
     } catch (err) {
-      // Catch any unexpected errors and handle gracefully
-      console.warn('[useApprovals] Unexpected error fetching approvals:', err);
+      console.error('[useApprovals] Error fetching approvals:', err);
       setError(err as Error);
-      setApprovals([]); // Return empty array instead of crashing
+      // Don't set empty array - let error state indicate the problem
     } finally {
       setLoading(false);
     }

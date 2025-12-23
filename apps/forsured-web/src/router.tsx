@@ -226,6 +226,14 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="manager/subcontractors/new"
+          element={
+            <ProtectedRoute allowedTypes={['manager']}>
+              <Navigate to="/manager/subcontractors" replace />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="manager/documents"
           element={
             <ProtectedRoute allowedTypes={['manager']}>

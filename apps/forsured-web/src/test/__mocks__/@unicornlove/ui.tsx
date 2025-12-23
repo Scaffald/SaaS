@@ -7,7 +7,7 @@
  *
  * IMPORTANT: This mock does NOT import from tamagui to avoid react-native deps.
  */
-import { forwardRef, createContext, useContext, useState, type ReactNode, type ComponentProps, type CSSProperties } from 'react';
+import { forwardRef, createContext, useContext, useState, type ReactNode, type ComponentProps, type ComponentType, type CSSProperties } from 'react';
 
 // Theme context for useTheme hook
 const ThemeContext = createContext({ theme: 'light' as string });
@@ -20,6 +20,8 @@ interface ButtonProps extends ComponentProps<'button'> {
   size?: 'sm' | 'md' | 'lg' | '$4' | string;
   width?: string | number;
   onPress?: () => void;
+  leftIcon?: ComponentType<{ size?: number; color?: string }>;
+  icon?: ComponentType<{ size?: number; color?: string }>;
   children?: ReactNode;
 }
 
@@ -29,7 +31,8 @@ const ButtonIcon = ({ children }: { children?: ReactNode }) => (
 
 export const Button = Object.assign(
   forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ variant, size, width, onPress, disabled, children, style, ...props }, ref) => {
+    ({ variant, size, width, onPress, disabled, leftIcon: LeftIcon, icon: Icon, children, style, ...props }, ref) => {
+      const IconComponent = LeftIcon || Icon;
       return (
         <button
           ref={ref}
@@ -42,6 +45,7 @@ export const Button = Object.assign(
           } as CSSProperties}
           {...props}
         >
+          {IconComponent && <IconComponent size={18} />}
           {children}
         </button>
       );
@@ -753,3 +757,66 @@ export const ToastViewport = () => null;
 export const Toast = ({ children }: { children?: ReactNode }) => <div role="alert">{children}</div>;
 export const useToastState = () => ({ currentToast: null });
 export const useToastController = () => ({ show: () => {}, hide: () => {} });
+
+// EmptyState component
+interface EmptyStateProps {
+  icon?: ComponentType<{ size?: number; color?: string }>;
+  title: string;
+  description?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+  };
+  children?: ReactNode;
+}
+
+export const EmptyState = ({
+  icon: Icon,
+  title,
+  description,
+  action,
+  secondaryAction,
+  children,
+}: EmptyStateProps) => (
+  <div data-testid="empty-state">
+    {Icon && <Icon size={32} />}
+    <h2>{title}</h2>
+    {description && <p>{description}</p>}
+    {action && (
+      <button onClick={action.onClick} data-testid="empty-state-action">
+        {action.label}
+      </button>
+    )}
+    {secondaryAction && (
+      <button onClick={secondaryAction.onClick} data-testid="empty-state-secondary-action">
+        {secondaryAction.label}
+      </button>
+    )}
+    {children}
+  </div>
+);
+
+// Circle component
+interface CircleProps extends StackProps {
+  size?: string | number;
+}
+
+export const Circle = forwardRef<HTMLDivElement, CircleProps>(
+  ({ size, ...props }, ref) => (
+    <div
+      ref={ref}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        ...(typeof props.style === 'object' ? props.style : {}),
+      }}
+      {...props}
+    />
+  )
+);
+Circle.displayName = 'Circle';

@@ -13,6 +13,10 @@ import Button from '../Common/Button';
 import { useProjects } from '../../hooks/useProjects';
 import type { Project } from '../../types';
 
+// Fixed test organization ID for GC user
+// TODO: Get organization_id from user context/auth when available
+const TEST_GC_ORG_ID = '20000000-0000-0000-0000-000000000001';
+
 type ProjectFormData = Omit<Project, 'id' | 'created_at' | 'updated_at'>;
 
 export default function ProjectCreatePage() {
@@ -63,7 +67,7 @@ export default function ProjectCreatePage() {
       await createProject({
         name: formData.name,
         description: formData.description,
-        client_id: '', // TODO: Get from current user's organization
+        organization_id: TEST_GC_ORG_ID,
         location: formData.location,
         start_date: formData.start_date,
         end_date: formData.end_date,

@@ -30,4 +30,12 @@ export class ManagerSubcontractorsPage extends BasePage {
     const cardCount = await this.subcontractorCards.count();
     return Math.max(tableCount, cardCount);
   }
+
+  async clickAddSubcontractor() {
+    await this.addButton.click();
+  }
+
+  async expectAddButtonVisible() {
+    await expect(this.addButton).toBeVisible();
+  }
 }

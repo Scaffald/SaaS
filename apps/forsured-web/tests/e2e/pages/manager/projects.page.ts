@@ -13,7 +13,7 @@ export class ManagerProjectsPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.table = new DataTableComponent(page);
-    this.createButton = page.locator('button:has-text("Create"), button:has-text("New Project"), a:has-text("Create")');
+    this.createButton = page.locator('button:has-text("Create"), button:has-text("New Project"), button:has-text("Add Project"), a:has-text("Create")');
     this.projectCards = page.locator('[data-testid="project-card"], .project-card');
     this.searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');
   }

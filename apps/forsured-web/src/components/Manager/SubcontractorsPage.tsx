@@ -256,7 +256,11 @@ export default function SubcontractorsPage() {
             Manage {subcontractors.length} subcontractors across your projects
           </Text>
         </YStack>
-        <Button variant="primary" icon={Plus}>
+        <Button
+          variant="primary"
+          leftIcon={Plus}
+          onPress={() => navigate('/manager/subcontractors/new')}
+        >
           Add Subcontractor
         </Button>
       </XStack>

@@ -486,13 +486,15 @@ export default function IntegrationsMarketplace() {
           {/* Search Bar */}
           <XStack position="relative" flex={1}>
             <Search
-              position="absolute"
-              left={12}
-              top="50%"
-              style={{ transform: 'translateY(-50%)' }}
               size={20}
-              color="$color10"
-              zIndex={1}
+              color="var(--color-10)"
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 1
+              }}
             />
             <Input
               type="text"
