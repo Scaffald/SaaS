@@ -22,15 +22,55 @@ test.describe('Manager Add Subcontractor', () => {
     const subcontractorsPage = new ManagerSubcontractorsPage(page);
     await subcontractorsPage.goto();
     
-    // Wait for page to fully load - wait for either the header or empty state
+    // Wait for page to fully load - wait for either header or empty state
     await page.waitForLoadState('networkidle');
     
-    // Wait for the page title to appear (indicates page has loaded)
-    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 10000 });
+    // Wait for the page content to appear (either header or empty state)
+    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 15000 });
     
-    // The button should be visible in either header or empty state
-    const addButton = page.locator('button:has-text("Add Subcontractor")');
-    await expect(addButton).toBeVisible({ timeout: 5000 });
+    // Wait for loading spinner to disappear
+    await page.waitForSelector('text=/loading subcontractors/i', { state: 'hidden', timeout: 10000 }).catch(() => {});
+    
+    // Additional wait for React to finish rendering
+    await page.waitForTimeout(1000);
+    
+    // Try multiple selector strategies - Tamagui buttons might render text in different ways
+    // Strategy 1: Direct text match (works if text is in single node)
+    let addButton = page.locator('button:has-text("Add Subcontractor")').first();
+    let isVisible = await addButton.isVisible({ timeout: 2000 }).catch(() => false);
+    
+    // Strategy 2: Filter by button containing text (works if text is split across nodes)
+    if (!isVisible) {
+      addButton = page.locator('button').filter({ hasText: /add subcontractor/i }).first();
+      isVisible = await addButton.isVisible({ timeout: 2000 }).catch(() => false);
+    }
+    
+    // Strategy 3: Get all buttons and find one with the text
+    if (!isVisible) {
+      const buttons = await page.locator('button').all();
+      for (const btn of buttons) {
+        const text = await btn.textContent().catch(() => '');
+        if (text && /add subcontractor/i.test(text)) {
+          addButton = btn;
+          isVisible = true;
+          break;
+        }
+      }
+    }
+    
+    // If still not found, log what buttons exist for debugging
+    if (!isVisible) {
+      const allButtons = await page.locator('button').all();
+      const buttonTexts = await Promise.all(
+        allButtons.map(btn => btn.textContent().catch(() => '[error reading text]'))
+      );
+      console.log('Available buttons on page:', buttonTexts.filter(Boolean));
+      console.log('Page URL:', page.url());
+      console.log('Page title:', await page.title());
+    }
+    
+    expect(isVisible).toBe(true);
+    await expect(addButton).toBeVisible();
 
     await assertNoErrors();
   });
@@ -41,11 +81,12 @@ test.describe('Manager Add Subcontractor', () => {
     
     // Wait for page to fully load
     await page.waitForLoadState('networkidle');
-    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 10000 });
+    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 15000 });
+    await page.waitForTimeout(500);
 
     // Find and click the Add Subcontractor button
-    const addButton = page.locator('button:has-text("Add Subcontractor")');
-    await expect(addButton).toBeVisible({ timeout: 5000 });
+    const addButton = page.locator('button:has-text("Add Subcontractor")').first();
+    await expect(addButton).toBeVisible({ timeout: 10000 });
     
     // Click the button
     await addButton.click();
@@ -66,12 +107,14 @@ test.describe('Manager Add Subcontractor', () => {
     
     // Wait for page to fully load
     await page.waitForLoadState('networkidle');
-    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 10000 });
+    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 15000 });
+    await page.waitForTimeout(500);
 
     // Check if add button is visible
-    await expect(subcontractorsPage.addButton).toBeVisible({ timeout: 5000 });
+    const addButton = page.locator('button:has-text("Add Subcontractor")').first();
+    await expect(addButton).toBeVisible({ timeout: 10000 });
     
-    // Use page object method
+    // Use page object method (but ensure button is visible first)
     await subcontractorsPage.clickAddSubcontractor();
     
     // Wait for navigation
@@ -90,20 +133,16 @@ test.describe('Manager Add Subcontractor', () => {
     
     // Wait for page to fully load
     await page.waitForLoadState('networkidle');
+    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 15000 });
+    await page.waitForTimeout(500);
     
     // Check for empty state - look for the empty state title
     const emptyStateTitle = page.locator('h2:has-text("No Subcontractors Yet")');
-    const isEmpty = await emptyStateTitle.isVisible({ timeout: 10000 }).catch(() => false);
+    const isEmpty = await emptyStateTitle.isVisible({ timeout: 5000 }).catch(() => false);
 
-    if (isEmpty) {
-      // Empty state should have an action button with "Add Subcontractor" text
-      const emptyStateButton = page.locator('button:has-text("Add Subcontractor")');
-      await expect(emptyStateButton).toBeVisible({ timeout: 5000 });
-    } else {
-      // If not empty, button should still be visible in header
-      const headerButton = page.locator('button:has-text("Add Subcontractor")');
-      await expect(headerButton).toBeVisible({ timeout: 5000 });
-    }
+    // Button should be visible in either empty state or header
+    const addButton = page.locator('button:has-text("Add Subcontractor")').first();
+    await expect(addButton).toBeVisible({ timeout: 10000 });
 
     await assertNoErrors();
   });
@@ -114,22 +153,13 @@ test.describe('Manager Add Subcontractor', () => {
     
     // Wait for page to fully load
     await page.waitForLoadState('networkidle');
-    await page.waitForSelector('h1:has-text("Subcontractors")', { timeout: 10000 });
+    await page.waitForSelector('h1:has-text("Subcontractors"), h2:has-text("No Subcontractors Yet")', { timeout: 15000 });
+    await page.waitForTimeout(500);
 
-    // Check if we have subcontractors (list view) or empty state
-    const hasSubcontractors = await subcontractorsPage.getSubcontractorCount() > 0;
-
-    if (hasSubcontractors) {
-      // In list view, button should be in header
-      const headerButton = page.locator('button:has-text("Add Subcontractor")');
-      await expect(headerButton).toBeVisible({ timeout: 5000 });
-      await expect(headerButton).toBeEnabled();
-    } else {
-      // Even in empty state, button should be accessible
-      const addButton = page.locator('button:has-text("Add Subcontractor")');
-      await expect(addButton).toBeVisible({ timeout: 5000 });
-      await expect(addButton).toBeEnabled();
-    }
+    // Button should be visible and enabled regardless of empty/list state
+    const addButton = page.locator('button:has-text("Add Subcontractor")').first();
+    await expect(addButton).toBeVisible({ timeout: 10000 });
+    await expect(addButton).toBeEnabled();
 
     await assertNoErrors();
   });

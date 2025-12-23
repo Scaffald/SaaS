@@ -13,7 +13,7 @@ import {
 import { YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
-import Modal from '../Common/Modal';
+// Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 import { useEnums } from '../../hooks/useEnums';
@@ -798,35 +798,55 @@ export default function ManagerTasksPage() {
         }}
       />
 
-      <Modal
-        isOpen={showCreateTask}
-        onClose={() => setShowCreateTask(false)}
-        title="Create New Task"
-        size="large"
-      >
-        <YStack gap="$4" padding="$4">
-          <Text color="$color11" fontSize="$4">
-            Task creation form will be implemented here.
-          </Text>
-          <XStack gap="$3" justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              onPress={() => setShowCreateTask(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onPress={() => {
-                toast.info('Task creation functionality coming soon');
-                setShowCreateTask(false);
-              }}
-            >
-              Create Task
-            </Button>
-          </XStack>
-        </YStack>
-      </Modal>
+      {/* Simple overlay modal - avoiding ResponsiveModal freeze issue */}
+      {showCreateTask && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => setShowCreateTask(false)}
+        >
+          <Card
+            backgroundColor="$background"
+            padding="$6"
+            borderRadius="$4"
+            width={500}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+            <YStack gap="$4">
+              <H2 fontSize="$6" fontWeight="600" color="$color12">
+                Create New Task
+              </H2>
+              <Text color="$color11" fontSize="$4">
+                Task creation form will be implemented here.
+              </Text>
+              <XStack gap="$3" justifyContent="flex-end">
+                <Button
+                  variant="outlined"
+                  onPress={() => setShowCreateTask(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onPress={() => {
+                    toast.info('Task creation functionality coming soon');
+                    setShowCreateTask(false);
+                  }}
+                >
+                  Create Task
+                </Button>
+              </XStack>
+            </YStack>
+          </Card>
+        </div>
+      )}
     </YStack>
   );
 }
