@@ -83,7 +83,6 @@ export default function SubcontractorsPage() {
     name: '',
     email: '',
     phone: '',
-    trade_type: '',
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -159,7 +158,6 @@ export default function SubcontractorsPage() {
         contact_info: {
           email: formData.email.trim() || null,
           phone: formData.phone.trim() || null,
-          trade_type: formData.trade_type.trim() || null,
         },
       });
 
@@ -169,7 +167,7 @@ export default function SubcontractorsPage() {
 
       toast.success('Subcontractor added successfully!');
       setShowAddModal(false);
-      setFormData({ company: '', name: '', email: '', phone: '', trade_type: '' });
+      setFormData({ company: '', name: '', email: '', phone: '' });
       fetchSubcontractors(); // Refresh the list
     } catch (err) {
       const error = err as Error;
@@ -183,7 +181,7 @@ export default function SubcontractorsPage() {
   // Close modal handler
   const handleCloseModal = () => {
     setShowAddModal(false);
-    setFormData({ company: '', name: '', email: '', phone: '', trade_type: '' });
+    setFormData({ company: '', name: '', email: '', phone: '' });
   };
 
   // Derive compliance status from compliance_score
@@ -383,17 +381,6 @@ export default function SubcontractorsPage() {
                 placeholder="Enter phone number"
                 value={formData.phone}
                 onChangeText={(text: string) => setFormData({ ...formData, phone: text })}
-              />
-            </YStack>
-
-            <YStack gap="$2">
-              <Text fontSize="$2" fontWeight="500" color="$color11">
-                Trade Type
-              </Text>
-              <Input
-                placeholder="e.g., Electrical, Plumbing, HVAC"
-                value={formData.trade_type}
-                onChangeText={(text: string) => setFormData({ ...formData, trade_type: text })}
               />
             </YStack>
 
