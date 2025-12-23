@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Building,
@@ -10,18 +10,201 @@ import {
   CheckCircle,
   FolderPlus,
   X,
+  Plus,
+  Users,
+  Loader2,
 } from 'lucide-react';
-import { EmptyState, YStack, XStack, Text, H1, H2, H3, Card } from '@unicornlove/ui';
+import { EmptyState, YStack, XStack, Text, H1, H2, H3, Card, Input } from '@unicornlove/ui';
 import { useProjects } from '../../hooks/useProjects';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 import Button from '../Common/Button';
 import { Project } from '../../types';
+import { useDatabase } from '../../contexts/DatabaseContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { getUserOrganizationId } from '../../lib/supabase';
+import { toast } from 'sonner';
+
+interface Subcontractor {
+  id: string;
+  organization_id: string;
+  name: string;
+  company: string;
+  contact_info?: {
+    email?: string;
+    phone?: string;
+  };
+  trade_type?: string;
+  status?: string;
+  created_at: string;
+}
+
+interface ProjectSubcontractor {
+  id: string;
+  project_id: string;
+  subcontractor_id: string;
+  status: string;
+  invited_at: string;
+}
 
 export default function ManagerProjectsPage() {
   const navigate = useNavigate();
+  const { forsured } = useDatabase();
+  const { user } = useAuth();
   const { projects, loading: projectsLoading } = useProjects();
   const [complianceFilter, setComplianceFilter] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // Invite modal state
+  const [inviteModalProject, setInviteModalProject] = useState<Project | null>(null);
+  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([]);
+  const [existingInvites, setExistingInvites] = useState<ProjectSubcontractor[]>([]);
+  const [loadingSubcontractors, setLoadingSubcontractors] = useState(false);
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
+  const [inviteTab, setInviteTab] = useState<'select' | 'create'>('select');
+  const [selectedSubcontractorId, setSelectedSubcontractorId] = useState<string | null>(null);
+  const [inviting, setInviting] = useState(false);
+  const [newSubForm, setNewSubForm] = useState({
+    company: '',
+    name: '',
+    email: '',
+    phone: '',
+  });
+
+  // Fetch organization ID
+  useEffect(() => {
+    async function fetchOrg() {
+      if (user?.id) {
+        const orgId = await getUserOrganizationId(user.id);
+        setOrganizationId(orgId);
+      }
+    }
+    fetchOrg();
+  }, [user?.id]);
+
+  // Fetch subcontractors when invite modal opens
+  const fetchSubcontractors = useCallback(async () => {
+    if (!inviteModalProject) return;
+
+    setLoadingSubcontractors(true);
+    try {
+      // Fetch all subcontractors
+      const { data: subs, error: subsError } = await forsured('subcontractors')
+        .select('*')
+        .order('company', { ascending: true });
+
+      if (subsError) throw subsError;
+      setSubcontractors(subs || []);
+
+      // Fetch existing invites for this project
+      const { data: invites, error: invitesError } = await forsured('project_subcontractors')
+        .select('*')
+        .eq('project_id', inviteModalProject.id);
+
+      if (invitesError) throw invitesError;
+      setExistingInvites(invites || []);
+    } catch (err) {
+      const error = err as Error;
+      toast.error(error.message || 'Failed to load subcontractors');
+    } finally {
+      setLoadingSubcontractors(false);
+    }
+  }, [forsured, inviteModalProject]);
+
+  useEffect(() => {
+    if (inviteModalProject) {
+      fetchSubcontractors();
+    }
+  }, [inviteModalProject, fetchSubcontractors]);
+
+  // Handle inviting an existing subcontractor
+  const handleInviteExisting = async () => {
+    if (!selectedSubcontractorId || !inviteModalProject || !user?.id) return;
+
+    setInviting(true);
+    try {
+      const { error } = await forsured('project_subcontractors')
+        .insert({
+          project_id: inviteModalProject.id,
+          subcontractor_id: selectedSubcontractorId,
+          invited_by: user.id,
+          status: 'invited',
+        });
+
+      if (error) throw error;
+
+      toast.success('Subcontractor invited to project');
+      setInviteModalProject(null);
+      setSelectedSubcontractorId(null);
+    } catch (err) {
+      const error = err as Error;
+      if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
+        toast.error('This subcontractor is already invited to this project');
+      } else {
+        toast.error(error.message || 'Failed to invite subcontractor');
+      }
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  // Handle creating and inviting a new subcontractor
+  const handleCreateAndInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!organizationId || !inviteModalProject || !user?.id) return;
+
+    if (!newSubForm.company.trim() || !newSubForm.name.trim()) {
+      toast.error('Company name and contact name are required');
+      return;
+    }
+
+    setInviting(true);
+    try {
+      // Create the subcontractor first
+      const { data: newSub, error: createError } = await forsured('subcontractors')
+        .insert({
+          organization_id: organizationId,
+          company: newSubForm.company.trim(),
+          name: newSubForm.name.trim(),
+          contact_info: {
+            email: newSubForm.email.trim(),
+            phone: newSubForm.phone.trim(),
+          },
+          status: 'active',
+        })
+        .select()
+        .single();
+
+      if (createError) throw createError;
+
+      // Then invite them to the project
+      const { error: inviteError } = await forsured('project_subcontractors')
+        .insert({
+          project_id: inviteModalProject.id,
+          subcontractor_id: newSub.id,
+          invited_by: user.id,
+          status: 'invited',
+        });
+
+      if (inviteError) throw inviteError;
+
+      toast.success('Subcontractor created and invited to project');
+      setInviteModalProject(null);
+      setNewSubForm({ company: '', name: '', email: '', phone: '' });
+    } catch (err) {
+      const error = err as Error;
+      toast.error(error.message || 'Failed to create subcontractor');
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  // Close invite modal and reset state
+  const closeInviteModal = () => {
+    setInviteModalProject(null);
+    setSelectedSubcontractorId(null);
+    setInviteTab('select');
+    setNewSubForm({ company: '', name: '', email: '', phone: '' });
+  };
 
   const filteredProjects = projects.filter((project) => {
     if (
@@ -95,7 +278,12 @@ export default function ManagerProjectsPage() {
     }
   };
   const handleInviteUser = (project: Project) => {
-    console.log('Invite user to project:', project.id);
+    setInviteModalProject(project);
+  };
+
+  // Check if a subcontractor is already invited
+  const isAlreadyInvited = (subId: string) => {
+    return existingInvites.some((inv) => inv.subcontractor_id === subId);
   };
 
   const getProjectStats = () => {
@@ -651,6 +839,269 @@ export default function ManagerProjectsPage() {
             </YStack>
           </Card>
         </YStack>
+      )}
+
+      {/* Invite Subcontractor Modal */}
+      {inviteModalProject && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={closeInviteModal}
+        >
+          <Card
+            backgroundColor="$background"
+            padding="$6"
+            borderRadius="$4"
+            width={560}
+            maxWidth="95vw"
+            maxHeight="85vh"
+            overflow="scroll"
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <XStack alignItems="center" justifyContent="space-between" mb="$4">
+              <YStack>
+                <H2 fontSize="$6" fontWeight="600" color="$color12">
+                  Invite Subcontractor
+                </H2>
+                <Text fontSize="$3" color="$color11">
+                  {inviteModalProject.name}
+                </Text>
+              </YStack>
+              <XStack
+                onPress={closeInviteModal}
+                cursor="pointer"
+                padding="$2"
+                hoverStyle={{ backgroundColor: '$gray4' }}
+                borderRadius="$2"
+              >
+                <X size={20} color="$color11" />
+              </XStack>
+            </XStack>
+
+            {/* Tabs */}
+            <XStack gap="$2" mb="$4">
+              <Button
+                variant={inviteTab === 'select' ? 'primary' : 'ghost'}
+                size="$3"
+                onPress={() => setInviteTab('select')}
+              >
+                <XStack alignItems="center" gap="$2">
+                  <Users size={16} />
+                  <Text>Select Existing</Text>
+                </XStack>
+              </Button>
+              <Button
+                variant={inviteTab === 'create' ? 'primary' : 'ghost'}
+                size="$3"
+                onPress={() => setInviteTab('create')}
+              >
+                <XStack alignItems="center" gap="$2">
+                  <Plus size={16} />
+                  <Text>Add New</Text>
+                </XStack>
+              </Button>
+            </XStack>
+
+            {/* Content */}
+            {inviteTab === 'select' && (
+              <YStack gap="$4">
+                {loadingSubcontractors ? (
+                  <XStack justifyContent="center" padding="$6">
+                    <Loader2 size={24} className="animate-spin" />
+                  </XStack>
+                ) : subcontractors.length === 0 ? (
+                  <YStack alignItems="center" padding="$6" gap="$2">
+                    <Users size={32} color="$color10" />
+                    <Text color="$color11">No subcontractors found</Text>
+                    <Button
+                      variant="ghost"
+                      size="$2"
+                      onPress={() => setInviteTab('create')}
+                    >
+                      <Text color="$teal10">Add your first subcontractor</Text>
+                    </Button>
+                  </YStack>
+                ) : (
+                  <>
+                    <YStack gap="$2" maxHeight={300} overflow="scroll">
+                      {subcontractors.map((sub) => {
+                        const alreadyInvited = isAlreadyInvited(sub.id);
+                        const isSelected = selectedSubcontractorId === sub.id;
+
+                        return (
+                          <XStack
+                            key={sub.id}
+                            alignItems="center"
+                            padding="$3"
+                            borderRadius="$3"
+                            borderWidth={1}
+                            borderColor={isSelected ? '$teal8' : '$borderColor'}
+                            backgroundColor={isSelected ? '$teal2' : alreadyInvited ? '$gray3' : '$background'}
+                            opacity={alreadyInvited ? 0.6 : 1}
+                            cursor={alreadyInvited ? 'not-allowed' : 'pointer'}
+                            hoverStyle={alreadyInvited ? {} : { backgroundColor: '$gray3' }}
+                            onPress={() => {
+                              if (!alreadyInvited) {
+                                setSelectedSubcontractorId(isSelected ? null : sub.id);
+                              }
+                            }}
+                            gap="$3"
+                          >
+                            <YStack
+                              width={40}
+                              height={40}
+                              backgroundColor="$blue2"
+                              borderRadius="$3"
+                              alignItems="center"
+                              justifyContent="center"
+                            >
+                              <Building size={20} color="$blue10" />
+                            </YStack>
+                            <YStack flex={1}>
+                              <Text fontSize="$3" fontWeight="500" color="$color12">
+                                {sub.company}
+                              </Text>
+                              <Text fontSize="$2" color="$color11">
+                                {sub.name}
+                                {sub.trade_type && ` • ${sub.trade_type}`}
+                              </Text>
+                            </YStack>
+                            {alreadyInvited && (
+                              <Text fontSize="$2" color="$green10" fontWeight="500">
+                                Already invited
+                              </Text>
+                            )}
+                            {isSelected && !alreadyInvited && (
+                              <CheckCircle size={20} color="$teal10" />
+                            )}
+                          </XStack>
+                        );
+                      })}
+                    </YStack>
+
+                    <XStack gap="$3" justifyContent="flex-end">
+                      <Button
+                        variant="ghost"
+                        size="$3"
+                        onPress={closeInviteModal}
+                      >
+                        <Text>Cancel</Text>
+                      </Button>
+                      <Button
+                        variant="primary"
+                        size="$3"
+                        disabled={!selectedSubcontractorId || inviting}
+                        onPress={handleInviteExisting}
+                      >
+                        <XStack alignItems="center" gap="$2">
+                          {inviting ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <UserPlus size={16} />
+                          )}
+                          <Text>{inviting ? 'Inviting...' : 'Invite'}</Text>
+                        </XStack>
+                      </Button>
+                    </XStack>
+                  </>
+                )}
+              </YStack>
+            )}
+
+            {inviteTab === 'create' && (
+              <form onSubmit={handleCreateAndInvite}>
+                <YStack gap="$4">
+                  <YStack gap="$2">
+                    <Text as="label" fontSize="$3" fontWeight="500" color="$color11">
+                      Company Name *
+                    </Text>
+                    <Input
+                      placeholder="Enter company name"
+                      value={newSubForm.company}
+                      onChangeText={(text: string) =>
+                        setNewSubForm((prev) => ({ ...prev, company: text }))
+                      }
+                    />
+                  </YStack>
+
+                  <YStack gap="$2">
+                    <Text as="label" fontSize="$3" fontWeight="500" color="$color11">
+                      Contact Name *
+                    </Text>
+                    <Input
+                      placeholder="Enter contact name"
+                      value={newSubForm.name}
+                      onChangeText={(text: string) =>
+                        setNewSubForm((prev) => ({ ...prev, name: text }))
+                      }
+                    />
+                  </YStack>
+
+                  <XStack gap="$4">
+                    <YStack flex={1} gap="$2">
+                      <Text as="label" fontSize="$3" fontWeight="500" color="$color11">
+                        Email
+                      </Text>
+                      <Input
+                        placeholder="email@company.com"
+                        value={newSubForm.email}
+                        onChangeText={(text: string) =>
+                          setNewSubForm((prev) => ({ ...prev, email: text }))
+                        }
+                      />
+                    </YStack>
+                    <YStack flex={1} gap="$2">
+                      <Text as="label" fontSize="$3" fontWeight="500" color="$color11">
+                        Phone
+                      </Text>
+                      <Input
+                        placeholder="(555) 123-4567"
+                        value={newSubForm.phone}
+                        onChangeText={(text: string) =>
+                          setNewSubForm((prev) => ({ ...prev, phone: text }))
+                        }
+                      />
+                    </YStack>
+                  </XStack>
+
+                  <XStack gap="$3" justifyContent="flex-end" mt="$2">
+                    <Button
+                      variant="ghost"
+                      size="$3"
+                      onPress={closeInviteModal}
+                      type="button"
+                    >
+                      <Text>Cancel</Text>
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="$3"
+                      disabled={inviting || !newSubForm.company.trim() || !newSubForm.name.trim()}
+                      type="submit"
+                    >
+                      <XStack alignItems="center" gap="$2">
+                        {inviting ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <Plus size={16} />
+                        )}
+                        <Text>{inviting ? 'Creating...' : 'Create & Invite'}</Text>
+                      </XStack>
+                    </Button>
+                  </XStack>
+                </YStack>
+              </form>
+            )}
+          </Card>
+        </div>
       )}
     </YStack>
   );

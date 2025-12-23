@@ -158,6 +158,8 @@ export const table = {
   // User Set Types (REQ-4: Multi-Industry Support)
   userSetTypes: 'forsured.user_set_types',
   userSetTypeLexicon: 'forsured.user_set_type_lexicon',
+  // Project-Subcontractor relationship
+  projectSubcontractors: 'forsured.project_subcontractors',
 
   // Core schema tables (Uni-Construct/Scaffald - read-only)
   coreUsers: 'core.users',
