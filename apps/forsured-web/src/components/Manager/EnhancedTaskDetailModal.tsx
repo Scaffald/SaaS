@@ -166,15 +166,15 @@ export default function EnhancedTaskDetailModal({
     fetchRelatedData();
   }, [forsured, isOpen]);
 
-  // Early return if not open or no task
-  if (!isOpen || !task) return null;
-
-  // Get assignee details from users data
+  // Get assignee details from users data - MUST be before any early returns
   const assigneeDetails = useMemo(() => {
-    if (!task.assigned_to_user_id) return [];
+    if (!task?.assigned_to_user_id) return [];
     const user = users.find(u => u.id === task.assigned_to_user_id);
     return user ? [{ id: user.id, name: user.name, email: user.email }] : [];
-  }, [task.assigned_to_user_id, users]);
+  }, [task?.assigned_to_user_id, users]);
+
+  // Early return if not open or no task
+  if (!isOpen || !task) return null;
 
   // Get related project and subcontractor
   const relatedProject = projects.find(p => p.id === task.project_id);
