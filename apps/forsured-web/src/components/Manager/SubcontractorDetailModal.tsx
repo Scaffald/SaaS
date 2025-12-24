@@ -8,6 +8,7 @@ import {
   Upload,
   Download,
   Eye,
+  TrendingUp,
 } from 'lucide-react';
 import { YStack, XStack, Text, H2, H3, Spinner, Card } from '@unicornlove/ui';
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
@@ -15,6 +16,8 @@ import Button from '../Common/Button';
 import StatusBadge from '../Common/StatusBadge';
 import Select from '../Common/Select';
 import DocumentDetailModal from '../Document/DocumentDetailModal';
+import { RiskBadge } from '../compliance/RiskBadge';
+import type { RiskLevel } from '../../lib/compliance/riskCalculationService';
 import { useAttachments } from '../../hooks/useAttachments';
 import { useComplianceIssues } from '../../hooks/useComplianceIssues';
 import { EntityType, SeverityLevel } from '../../types';
@@ -354,11 +357,17 @@ export default function SubcontractorDetailModal({
                 {subcontractor.trade_type} · {subcontractor.status}
               </Text>
             </YStack>
-            <YStack alignItems="flex-end">
+            <YStack alignItems="flex-end" gap="$2" data-testid="compliance-header">
               <Text fontSize="$10" fontWeight="700" color="$color12">
                 {complianceScore != null && !isNaN(complianceScore) ? `${complianceScore}%` : 'No data yet'}
               </Text>
               <Text fontSize="$1" color="$color10">Compliance Score</Text>
+              {subcontractor.risk_level && (
+                <RiskBadge
+                  level={(subcontractor.risk_level as RiskLevel)}
+                  size="sm"
+                />
+              )}
             </YStack>
           </XStack>
 
@@ -486,14 +495,19 @@ export default function SubcontractorDetailModal({
                   </Text>
                 </Card>
 
-                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)" data-testid="risk-level-card">
                   <XStack alignItems="center" gap="$3" mb="$2">
-                    <FileText color="$color10" size={20} />
+                    <TrendingUp color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">Risk Level</Text>
                   </XStack>
-                  <Text fontSize="$5" fontWeight="500" color="$color12" textTransform="capitalize">
-                    {subcontractor.risk_level}
-                  </Text>
+                  <YStack alignItems="flex-start">
+                    <RiskBadge
+                      level={(subcontractor.risk_level as RiskLevel) || 'medium'}
+                      score={complianceScore}
+                      showScore
+                      size="md"
+                    />
+                  </YStack>
                 </Card>
               </XStack>
 
