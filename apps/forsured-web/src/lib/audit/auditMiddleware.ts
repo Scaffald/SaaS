@@ -27,26 +27,41 @@
  */
 
 import { auditService } from './AuditService';
-import type { AuditCategory, AuditSeverity } from './types';
+import type { AuditCategory, AuditSeverity, AuditOperation } from './types';
+
+/**
+ * Map tRPC operation types to AuditOperation types
+ */
+function mapOperationType(type: 'query' | 'mutation' | 'subscription'): AuditOperation {
+  switch (type) {
+    case 'query':
+      return 'SELECT';
+    case 'mutation':
+      return 'EXECUTE';
+    case 'subscription':
+      return 'EXECUTE';
+  }
+}
 
 // Fields that should never be logged (PII, credentials, etc.)
+// All entries must be lowercase for case-insensitive matching
 const SENSITIVE_FIELDS = new Set([
   'password',
   'token',
   'secret',
-  'apiKey',
+  'apikey',
   'api_key',
-  'accessToken',
+  'accesstoken',
   'access_token',
-  'refreshToken',
+  'refreshtoken',
   'refresh_token',
   'ssn',
   'social_security',
-  'creditCard',
+  'creditcard',
   'credit_card',
   'cvv',
   'pin',
-  'privateKey',
+  'privatekey',
   'private_key',
 ]);
 
@@ -253,7 +268,7 @@ export function createAuditMiddleware(options: AuditMiddlewareOptions = {}) {
       request_id: requestId,
       resource_type: 'trpc_procedure',
       resource_name: path,
-      operation: type,
+      operation: mapOperationType(type),
       metadata: {
         procedure_path: path,
         procedure_type: type,
@@ -386,7 +401,7 @@ export function createTRPCAuditMiddleware<T extends { middleware: (fn: unknown) 
       request_id: requestId,
       resource_type: 'trpc_procedure',
       resource_name: path,
-      operation: type,
+      operation: mapOperationType(type),
       metadata: {
         procedure_path: path,
         procedure_type: type,
