@@ -8,6 +8,7 @@ import ClientsDropdown from './ClientsDropdown';
 import { useAuth } from '../../contexts/AuthContext';
 import { useApprovals } from '../../hooks/useApprovals';
 import LoadingSpinner from '../Common/LoadingSpinner';
+import { PageViewTracker } from '../../hooks/usePageView';
 
 /**
  * Map database user types to UI user types
@@ -61,6 +62,8 @@ export default function Layout() {
 
   return (
     <XStack height="100vh" backgroundColor="$backgroundHover">
+      {/* Track page views for audit logging */}
+      <PageViewTracker excludePaths={['/api', '/health']} />
       <Sidebar
         userRole={uiUserType}
         user={profile}
