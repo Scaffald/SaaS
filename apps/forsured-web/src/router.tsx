@@ -45,12 +45,14 @@ const ManagerTasksPage = lazy(() => import('./components/Manager/ManagerTasksPag
 const ManagerProjectsPage = lazy(() => import('./components/Manager/ManagerProjectsPage'));
 const SubcontractorsPage = lazy(() => import('./components/Manager/SubcontractorsPage'));
 const ManagerAcknowledgementsList = lazy(() => import('./components/Manager/ManagerAcknowledgementsList'));
+const ManagerMyBrokerPage = lazy(() => import('./pages/manager/MyBrokerPage'));
 
 // Subcontractor components
 const MyManagersPage = lazy(() => import('./components/Subcontractor/MyManagersPage'));
 const SubcontractorProjectsPage = lazy(() => import('./components/Subcontractor/SubcontractorProjectsPage'));
 const DocumentsPage = lazy(() => import('./components/Subcontractor/DocumentsPage'));
 const ContractorTasks = lazy(() => import('./pages/contractor/ContractorTasks'));
+const SubcontractorMyBrokerPage = lazy(() => import('./pages/subcontractor/MyBrokerPage'));
 
 // Broker components
 const BrokerProjectsPage = lazy(() => import('./components/Broker/BrokerProjectsPage'));
@@ -227,6 +229,14 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="manager/broker"
+          element={
+            <ProtectedRoute allowedTypes={['manager']}>
+              <ManagerMyBrokerPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="manager/subcontractors/new"
           element={
             <ProtectedRoute allowedTypes={['manager']}>
@@ -358,6 +368,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedTypes={['subcontractor']}>
               <MyManagersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="subcontractor/broker"
+          element={
+            <ProtectedRoute allowedTypes={['subcontractor']}>
+              <SubcontractorMyBrokerPage />
             </ProtectedRoute>
           }
         />

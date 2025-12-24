@@ -55,7 +55,9 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, profile, isLoading } = useAuth()
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
 
   if (!user) {
     return <Navigate to="/" />

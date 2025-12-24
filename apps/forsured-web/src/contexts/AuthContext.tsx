@@ -44,7 +44,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadUserAndProfile = useCallback(async () => {
     setIsLoading(true);
     try {
-      console.log('[AuthContext] Loading session from httpOnly cookie');
       const session = await getSession();
 
       if (session.valid && session.user) {
@@ -60,13 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           const userProfile = await getProfile(scaffaldUser.id);
           setProfile(userProfile);
-          console.log('[AuthContext] Session restored:', scaffaldUser.email, userProfile?.user_type);
         } catch (profileErr) {
           console.warn('[AuthContext] Could not load profile:', profileErr);
           setProfile(null);
         }
       } else {
-        console.log('[AuthContext] No valid session');
         setUser(null);
         setProfile(null);
       }
@@ -88,8 +85,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Listen for Supabase auth state changes (e.g., test login switching users)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[AuthContext] Auth state changed:', event, session?.user?.email);
-
       if (event === 'SIGNED_IN' && session?.user) {
         // User signed in (or switched) - update user immediately, profile will load via separate effect
         const scaffaldUser: ScaffaldUser = {
@@ -98,10 +93,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: session.user.user_metadata?.name || session.user.email || '',
           avatar_url: session.user.user_metadata?.avatar_url || null,
         };
+        // CRITICAL: Set isLoading FIRST to prevent ProtectedRoute from redirecting
+        // while profile is being fetched. This prevents the race condition where
+        // profile=null and isLoading=false momentarily.
+        setIsLoading(true);
         setUser(scaffaldUser);
         // Set profile to null to trigger re-fetch - don't call getProfile here to avoid deadlock
         setProfile(null);
-        setIsLoading(true);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setProfile(null);
@@ -117,11 +115,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Fetch profile when user changes (deferred from auth state change)
   useEffect(() => {
     if (user && !profile) {
-      console.log('[AuthContext] Fetching profile for user:', user.id);
       getProfile(user.id)
         .then((userProfile) => {
           setProfile(userProfile);
-          console.log('[AuthContext] Profile loaded:', userProfile?.user_type);
           setIsLoading(false);
         })
         .catch((err) => {
@@ -137,10 +133,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const interval = setInterval(async () => {
       const memTokens = getMemoryTokens();
       if (memTokens && isTokenExpired(memTokens)) {
-        console.log('[AuthContext] Proactive session refresh');
         const success = await refreshSessionTokens();
         if (!success) {
-          console.log('[AuthContext] Session refresh failed, logging out');
           setUser(null);
           setProfile(null);
         }
@@ -157,11 +151,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback((data?: { user?: ScaffaldUser; profile?: UserProfile }) => {
     if (data?.user) {
       setUser(data.user);
-      console.log('[AuthContext] User set:', data.user.email);
     }
     if (data?.profile) {
       setProfile(data.profile);
-      console.log('[AuthContext] Profile set:', data.profile.user_type);
     }
     // If login is called without data, initiate OAuth redirect
     if (!data) {
@@ -173,7 +165,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * Logout - clear all auth state
    */
   const logout = useCallback(async () => {
-    console.log('[AuthContext] Logging out');
     await authLogout();
     setUser(null);
     setProfile(null);
@@ -187,7 +178,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Cannot update profile: no user logged in');
     }
 
-    console.log('[AuthContext] Updating profile:', Object.keys(data));
     const updatedProfile = await updateProfileByScaffaldId(user.id, data);
     setProfile(updatedProfile);
   }, [user]);
@@ -198,7 +188,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshProfile = useCallback(async () => {
     if (!user) return;
 
-    console.log('[AuthContext] Refreshing profile');
     const freshProfile = await getProfile(user.id);
     setProfile(freshProfile);
   }, [user]);

@@ -1,357 +1,185 @@
 // tests/utils/auth.ts
-// Test user authentication utilities for E2E tests
+// ============================================================================
+// CENTRAL AUTH HANDLER FOR E2E TESTS
+// ============================================================================
+//
+// This is the single entry point for test authentication. It auto-detects the
+// authentication mode based on VITE_FORSURED_USE_OAUTH environment variable:
+//
+// - VITE_FORSURED_USE_OAUTH=false (default): Uses Supabase password auth
+//   → Delegates to supabaseAuth.ts
+//   → Uses signInWithPassword + localStorage session injection
+//   → Matches the "Test Login" buttons on Start.tsx
+//
+// - VITE_FORSURED_USE_OAUTH=true: Uses httpOnly cookie auth (OAuth mode)
+//   → Delegates to httpOnlyAuth.ts
+//   → Creates httpOnly cookie sessions + mocks edge functions
+//   → Matches production OAuth flow with Scaffald
+//
+// USAGE:
+//   import { setupAuthAs, loginAs, TEST_USERS } from '../utils/auth';
+//
+//   test('example', async ({ page }) => {
+//     await setupAuthAs(page, 'test-gc@forsured.test');
+//     await page.goto('/manager/dashboard');
+//   });
 //
 // REQ-9: Testing Policy - Always use real Supabase, no mocking internal services
-// Uses real Supabase signInWithPassword with seeded test users.
+// ============================================================================
 
 import { Page } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration for local dev
-// IMPORTANT: Must use 'localhost' not '127.0.0.1' to match the app's storage key
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'http://localhost:54321';
-const SUPABASE_ANON_KEY =
-  process.env.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+// Import from implementation modules
+import {
+  loginAs as supabaseLoginAs,
+  setupAuthAs as supabaseSetupAuthAs,
+  getTestUserProfile as supabaseGetTestUserProfile,
+  TEST_USERS as SUPABASE_TEST_USERS,
+} from './supabaseAuth';
 
-// Storage key for Supabase auth - matches the HARDCODED key in src/lib/supabase.ts
-// The app uses a fixed key 'sb-auth-token', not a URL-derived key
-const STORAGE_KEY = 'sb-auth-token';
+import { setupHttpOnlyAuth } from './httpOnlyAuth';
 
-/**
- * Test credentials - must match seeded test users from Start.tsx TEST_CREDENTIALS
- * These users are created in the local Supabase instance.
- * Password for all test users: ForsuredTest123!
- */
-const TEST_PASSWORD = 'ForsuredTest123!';
+// Re-export shared constants (same for both modes)
+export { TEST_USERS, TEST_USER_IDS } from './supabaseAuth';
 
 /**
- * Actual seeded test user emails (from Start.tsx TEST_CREDENTIALS)
- * Format: test-{role}@forsured.test
- */
-const SEEDED_USERS = {
-  gc: 'test-gc@forsured.test',
-  contractor: 'test-contractor@forsured.test',
-  broker: 'test-broker@forsured.test',
-  admin: 'test-admin@forsured.test',
-} as const;
-
-/**
- * Test user IDs - these are the IDs assigned by Supabase auth
- * Note: These are generated at runtime when users are created
- */
-export const TEST_USER_IDS = {
-  // IDs are determined by the seeded auth.users entries
-  // We use placeholder IDs here as the actual IDs come from Supabase
-  GC_ACTIVE: '10000000-0000-0000-0000-000000000001',
-  CONTRACTOR_ACTIVE: '20000000-0000-0000-0000-000000000002',
-  BROKER_ACTIVE: '30000000-0000-0000-0000-000000000003',
-  ADMIN: '40000000-0000-0000-0000-000000000004',
-} as const;
-
-/**
- * Test user profiles - maps legacy email format to actual seeded users
+ * Wait for profile to be loaded in React state
  *
- * The test fixture calls setupAuthAs with legacy emails like 'active.gc@test.forsured.com'
- * We map these to the actual seeded users: 'test-gc@forsured.test'
+ * Use this after setupAuthAs + navigation if you need to ensure profile is ready.
+ * loginAs already calls this internally.
+ *
+ * @param page - Playwright page object
+ * @param userType - The user type ('gc', 'contractor', 'broker', 'admin')
+ * @param timeout - Max time to wait in ms (default 15000)
  */
-export const TEST_USERS: Record<
-  string,
-  {
-    id: string;
-    email: string;
-    password: string;
-    name: string;
-    user_type: 'gc' | 'contractor' | 'broker' | 'admin';
-    onboarding_completed: boolean;
-    onboarding_step: number;
-    company_connected: boolean;
+export async function waitForProfileReady(page: Page, userType: string, timeout = 15000): Promise<void> {
+  console.log(`[Auth] Waiting for profile to be ready (${userType})...`);
+
+  try {
+    // Wait for dashboard content - Tamagui uses Text components, not semantic headings
+    // We wait for the sidebar navigation OR dashboard text to be visible
+    // These only render when ProtectedRoute allows access (profile loaded)
+    await page.waitForFunction(
+      () => {
+        // Check for sidebar navigation (all dashboard layouts have this)
+        const hasSidebar = document.querySelector('[data-testid="sidebar"], nav');
+        if (hasSidebar) return true;
+
+        // Check for dashboard text content
+        const bodyText = document.body.textContent || '';
+        if (bodyText.includes('Dashboard') && !bodyText.includes('Welcome to ForSured')) {
+          return true;
+        }
+
+        // Check for common dashboard elements
+        const hasProjects = bodyText.includes('Projects') || bodyText.includes('Tasks');
+        const hasNavLinks = document.querySelectorAll('a[href*="/dashboard"], a[href*="/projects"]').length > 0;
+        return hasProjects || hasNavLinks;
+      },
+      { timeout }
+    );
+
+    console.log('[Auth] Profile ready - dashboard content visible');
+  } catch (error) {
+    console.warn('[Auth] Timeout waiting for profile - continuing anyway');
   }
-> = {
-  // GC Users - all GC aliases map to test-gc@forsured.test
-  'fresh.gc@test.forsured.com': {
-    id: TEST_USER_IDS.GC_ACTIVE,
-    email: SEEDED_USERS.gc,
-    password: TEST_PASSWORD,
-    name: 'Test GC User',
-    user_type: 'gc',
-    onboarding_completed: true, // Seeded user is fully onboarded
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'onboarding.gc@test.forsured.com': {
-    id: TEST_USER_IDS.GC_ACTIVE,
-    email: SEEDED_USERS.gc,
-    password: TEST_PASSWORD,
-    name: 'Test GC User',
-    user_type: 'gc',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'active.gc@test.forsured.com': {
-    id: TEST_USER_IDS.GC_ACTIVE,
-    email: SEEDED_USERS.gc,
-    password: TEST_PASSWORD,
-    name: 'Test GC User',
-    user_type: 'gc',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'multiproject.gc@test.forsured.com': {
-    id: TEST_USER_IDS.GC_ACTIVE,
-    email: SEEDED_USERS.gc,
-    password: TEST_PASSWORD,
-    name: 'Test GC User',
-    user_type: 'gc',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'test-gc@forsured.test': {
-    id: TEST_USER_IDS.GC_ACTIVE,
-    email: SEEDED_USERS.gc,
-    password: TEST_PASSWORD,
-    name: 'Test GC User',
-    user_type: 'gc',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  // Contractor Users - all contractor aliases map to test-contractor@forsured.test
-  'fresh.contractor@test.forsured.com': {
-    id: TEST_USER_IDS.CONTRACTOR_ACTIVE,
-    email: SEEDED_USERS.contractor,
-    password: TEST_PASSWORD,
-    name: 'Test Contractor User',
-    user_type: 'contractor',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'active.contractor@test.forsured.com': {
-    id: TEST_USER_IDS.CONTRACTOR_ACTIVE,
-    email: SEEDED_USERS.contractor,
-    password: TEST_PASSWORD,
-    name: 'Test Contractor User',
-    user_type: 'contractor',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'noncompliant.contractor@test.forsured.com': {
-    id: TEST_USER_IDS.CONTRACTOR_ACTIVE,
-    email: SEEDED_USERS.contractor,
-    password: TEST_PASSWORD,
-    name: 'Test Contractor User',
-    user_type: 'contractor',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'test-contractor@forsured.test': {
-    id: TEST_USER_IDS.CONTRACTOR_ACTIVE,
-    email: SEEDED_USERS.contractor,
-    password: TEST_PASSWORD,
-    name: 'Test Contractor User',
-    user_type: 'contractor',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  // Broker Users - all broker aliases map to test-broker@forsured.test
-  'fresh.broker@test.forsured.com': {
-    id: TEST_USER_IDS.BROKER_ACTIVE,
-    email: SEEDED_USERS.broker,
-    password: TEST_PASSWORD,
-    name: 'Test Broker User',
-    user_type: 'broker',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'active.broker@test.forsured.com': {
-    id: TEST_USER_IDS.BROKER_ACTIVE,
-    email: SEEDED_USERS.broker,
-    password: TEST_PASSWORD,
-    name: 'Test Broker User',
-    user_type: 'broker',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'test-broker@forsured.test': {
-    id: TEST_USER_IDS.BROKER_ACTIVE,
-    email: SEEDED_USERS.broker,
-    password: TEST_PASSWORD,
-    name: 'Test Broker User',
-    user_type: 'broker',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  // Admin Users
-  'admin@test.forsured.com': {
-    id: TEST_USER_IDS.ADMIN,
-    email: SEEDED_USERS.admin,
-    password: TEST_PASSWORD,
-    name: 'Test Admin User',
-    user_type: 'admin',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-  'test-admin@forsured.test': {
-    id: TEST_USER_IDS.ADMIN,
-    email: SEEDED_USERS.admin,
-    password: TEST_PASSWORD,
-    name: 'Test Admin User',
-    user_type: 'admin',
-    onboarding_completed: true,
-    onboarding_step: 4,
-    company_connected: true,
-  },
-};
-
-interface SupabaseSession {
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-  expires_in: number;
-  token_type: string;
-  user: Record<string, unknown>;
 }
 
 /**
- * Sign in via Supabase password auth and return session
+ * Detect authentication mode from environment variable
+ * In Playwright tests, we read from process.env (Node.js context)
  */
-async function signInWithPassword(
-  email: string,
-  password: string
-): Promise<SupabaseSession> {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    throw new Error(`Failed to sign in as ${email}: ${error.message}`);
-  }
-
-  if (!data.session) {
-    throw new Error(`No session returned for ${email}`);
-  }
-
-  const { session } = data;
-
-  return {
-    access_token: session.access_token,
-    refresh_token: session.refresh_token ?? session.access_token,
-    expires_at: session.expires_at ?? Math.floor(Date.now() / 1000) + 3600,
-    expires_in: session.expires_in ?? 3600,
-    token_type: session.token_type ?? 'bearer',
-    user: JSON.parse(JSON.stringify(session.user)),
-  };
+function useOAuthMode(): boolean {
+  return process.env.VITE_FORSURED_USE_OAUTH === 'true';
 }
 
 /**
- * Inject Supabase session into page localStorage
- * First navigates to base URL to trigger init script, then session is available
- */
-async function injectSession(page: Page, session: SupabaseSession): Promise<void> {
-  // Register init script that will run on every page load
-  await page.addInitScript(
-    ({ storageKey, session }) => {
-      try {
-        // Supabase v2 stores the session directly in localStorage
-        // The format is the raw session object, not wrapped in currentSession
-        window.localStorage.setItem(storageKey, JSON.stringify(session));
-
-        console.log('[E2E Auth] Injected Supabase session for', session.user.email);
-      } catch (error) {
-        console.error('[E2E Auth] Failed to inject session:', error);
-      }
-    },
-    { storageKey: STORAGE_KEY, session }
-  );
-
-  // Navigate to base URL to trigger init script and establish session
-  // This ensures the session is in localStorage before any auth-dependent navigation
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(1000); // Allow session to be processed by Supabase client
-}
-
-/**
- * Map user_type to URL path segment
- */
-function mapUserTypeToPath(
-  userType: 'gc' | 'contractor' | 'broker' | 'admin'
-): string {
-  const paths: Record<string, string> = {
-    gc: 'manager',
-    contractor: 'subcontractor',
-    broker: 'broker',
-    admin: 'admin',
-  };
-  return paths[userType];
-}
-
-/**
- * Log in as a test user using real Supabase authentication
+ * Log in as a test user using the appropriate auth method
+ *
+ * Automatically detects auth mode from VITE_FORSURED_USE_OAUTH:
+ * - false: Uses Supabase password auth (supabaseAuth.ts)
+ * - true: Uses httpOnly cookie auth (httpOnlyAuth.ts)
  *
  * @param page - Playwright page object
  * @param email - Test user email (legacy or new format, must be in TEST_USERS)
- * @param options - Optional settings
+ * @param options - Optional settings (navigate: boolean)
  */
 export async function loginAs(
   page: Page,
   email: string,
   options: { navigate?: boolean } = { navigate: true }
 ): Promise<void> {
-  const user = TEST_USERS[email];
+  if (useOAuthMode()) {
+    console.log('[Auth] Using OAuth mode (httpOnly cookies)');
+    // httpOnlyAuth doesn't have navigation option, so we handle it here
+    await setupHttpOnlyAuth(page, email);
 
-  if (!user) {
-    throw new Error(
-      `Unknown test user: ${email}. Available users: ${Object.keys(TEST_USERS).join(', ')}`
-    );
-  }
+    if (options.navigate !== false) {
+      const user = SUPABASE_TEST_USERS[email];
+      if (!user) {
+        throw new Error(`Unknown test user: ${email}`);
+      }
 
-  // Sign in via real Supabase auth
-  const session = await signInWithPassword(user.email, user.password);
+      const pathMap: Record<string, string> = {
+        gc: 'manager',
+        contractor: 'subcontractor',
+        broker: 'broker',
+        admin: 'admin',
+      };
+      const pathSegment = pathMap[user.user_type];
 
-  // Inject session into page
-  await injectSession(page, session);
+      if (user.user_type === 'admin') {
+        await page.goto('/admin/dashboard');
+      } else if (!user.onboarding_completed) {
+        await page.goto(`/${pathSegment}/onboarding`);
+      } else {
+        await page.goto(`/${pathSegment}/dashboard`);
+      }
 
-  // Navigate to appropriate page if requested
-  if (options.navigate !== false) {
-    const pathSegment = mapUserTypeToPath(user.user_type);
+      await page.waitForLoadState('networkidle');
 
-    if (user.user_type === 'admin') {
-      await page.goto('/admin/dashboard');
-    } else if (!user.onboarding_completed) {
-      await page.goto(`/${pathSegment}/onboarding`);
-    } else {
-      await page.goto(`/${pathSegment}/dashboard`);
+      // CRITICAL: Wait for profile to be loaded in React state
+      await waitForProfileReady(page, user.user_type);
     }
-
-    await page.waitForLoadState('networkidle');
+  } else {
+    console.log('[Auth] Using Supabase password auth mode');
+    await supabaseLoginAs(page, email, options);
   }
 }
 
 /**
  * Log in as a test user without navigation
  * Useful when you need to set up auth before navigating to a specific page.
+ *
+ * Automatically detects auth mode from VITE_FORSURED_USE_OAUTH.
+ *
+ * @param page - Playwright page object
+ * @param email - Test user email (legacy or new format, must be in TEST_USERS)
  */
 export async function setupAuthAs(page: Page, email: string): Promise<void> {
-  return loginAs(page, email, { navigate: false });
+  if (useOAuthMode()) {
+    console.log('[Auth] Using OAuth mode (httpOnly cookies)');
+    await setupHttpOnlyAuth(page, email);
+  } else {
+    console.log('[Auth] Using Supabase password auth mode');
+    await supabaseSetupAuthAs(page, email);
+  }
 }
 
 /**
  * Get the profile for a test user
+ *
+ * @param email - Test user email
+ * @returns Test user profile or undefined if not found
  */
 export function getTestUserProfile(email: string) {
-  return TEST_USERS[email];
+  return supabaseGetTestUserProfile(email);
+}
+
+/**
+ * Check which auth mode is active
+ * Useful for debugging and conditional test logic
+ */
+export function getAuthMode(): 'oauth' | 'supabase' {
+  return useOAuthMode() ? 'oauth' : 'supabase';
 }
