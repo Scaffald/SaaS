@@ -21,3 +21,9 @@ export { FlagList } from './FlagList';
 export type { FlagListProps } from './FlagList';
 export { FlagFilter, FilterableFlagList } from './FlagFilter';
 export type { FlagFilterProps, FilterableFlagListProps, FilterOption } from './FlagFilter';
+
+// Phase 5: Risk Calculation Display
+export { RiskBadge, RiskIndicator } from './RiskBadge';
+export type { RiskBadgeProps } from './RiskBadge';
+export { RiskBreakdown, RiskSummary } from './RiskBreakdown';
+export type { RiskBreakdownProps } from './RiskBreakdown';
