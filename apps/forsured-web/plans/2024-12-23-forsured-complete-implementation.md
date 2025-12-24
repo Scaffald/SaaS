@@ -825,9 +825,23 @@ git commit -m "fix(subcontractor): replace mock data with real project query"
 
 ---
 
-## Phase 3: Subcontractor Invitation Acceptance Workflow
+## Phase 3: Subcontractor Invitation Acceptance Workflow ✅ COMPLETE
 
-See separate plan: `2024-12-23-subcontractor-invitation-workflow.md`
+**Status:** Completed on 2024-12-23 by parallel implementation effort.
+
+**Implementation:** The bidirectional connection and referral system fully supersedes the original Phase 3 plan. See:
+- `BIDIRECTIONAL_CONNECTIONS_IMPLEMENTATION.md` - Implementation details
+- `BIDIRECTIONAL_SYSTEM_SUMMARY.md` - Complete feature summary
+
+**Key Deliverables:**
+- Database migrations 270-272 (relationship_invitations, referrals, admin management)
+- Services: connectionCodes.ts, relationshipInvitations.ts, referrals.ts, referralCredits.ts
+- UI Pages: MyBrokerPage (subcontractor/manager), ReferralSettings, AdminReferralManagement
+- E2E Tests: Comprehensive Playwright tests with httpOnly cookie auth
+- BKR/CTR/MGR relationship codes for broker/contractor/manager connections
+- RFR referral codes for general business referrals
+
+Original separate plan is now obsolete: `2024-12-23-subcontractor-invitation-workflow.md`
 
 ---
 
@@ -849,6 +863,100 @@ See separate plan: `2024-12-23-testing-strategy-no-mocks.md`
 
 ---
 
+## Phase 7: Test Infrastructure - httpOnly Cookie Authentication
+
+### Task 7.1: Create Shared httpOnly Cookie Test Handler
+
+**Problem:** The application switched from localStorage-based Supabase auth to httpOnly cookie-based Scaffald OAuth authentication. All existing Playwright tests use `setupAuthAs()` which injects Supabase sessions into localStorage, but the app now expects httpOnly cookies.
+
+**Solution:** Create a shared test handler that properly sets up httpOnly cookie authentication for all Playwright tests.
+
+**Files:**
+- Create: `apps/forsured-web/tests/utils/httpOnlyAuth.ts`
+- Update: `apps/forsured-web/tests/fixtures/base.ts` (integrate new handler)
+- Update: `apps/forsured-web/tests/e2e/my-broker-page.spec.ts` (use new handler)
+
+**Implementation Steps:**
+
+1. **Create httpOnly cookie authentication handler:**
+   - Use Playwright's `page.context().addCookies()` to set httpOnly cookies
+   - Create cookies that match the Scaffald OAuth session format
+   - Support both test user authentication and session refresh
+   - Handle cookie expiration and refresh logic
+
+2. **Create test helper functions:**
+   - `setupHttpOnlyAuth(page, email)` - Sets up httpOnly cookie auth for a test user
+   - `waitForAuthReady(page)` - Waits for AuthContext to load user and profile
+   - `verifyAuthState(page)` - Verifies authentication is working correctly
+
+3. **Update base fixtures:**
+   - Add `setupHttpOnlyAuth` to BaseFixtures interface
+   - Integrate with existing `setupAuthAs` or replace it
+   - Ensure backward compatibility during migration
+
+4. **Test the handler:**
+   - Update `my-broker-page.spec.ts` to use new handler
+   - Verify tests pass with httpOnly cookies
+   - Ensure profile loading works correctly
+
+**Acceptance Criteria:**
+- [ ] httpOnly cookie handler created and tested
+- [ ] `my-broker-page.spec.ts` passes with new handler
+- [ ] Handler properly waits for AuthContext to load profile
+- [ ] Handler supports all test user types (contractor, manager, broker, admin)
+- [ ] Documentation added for using the handler
+
+**Dependencies:** None (foundational test infrastructure)
+
+---
+
+## Phase 8: Migrate All Tests to httpOnly Cookie Authentication
+
+### Task 8.1: Replace localStorage Auth with httpOnly Cookie Handler
+
+**Problem:** All existing Playwright tests use localStorage-based authentication (`setupAuthAs` with Supabase session injection), but the app now uses httpOnly cookies. All tests need to be migrated to use the new shared handler.
+
+**Solution:** Systematically replace all `setupAuthAs()` calls with `setupHttpOnlyAuth()` across all test files.
+
+**Files to Update:**
+- `apps/forsured-web/tests/e2e/*.spec.ts` (all test files)
+- `apps/forsured-web/tests/utils/auth.ts` (deprecate localStorage functions)
+- Any test helpers that use authentication
+
+**Implementation Steps:**
+
+1. **Audit all test files:**
+   - Find all files using `setupAuthAs` or localStorage auth
+   - Document which tests need migration
+   - Prioritize by test importance and frequency of use
+
+2. **Migrate tests systematically:**
+   - Start with critical path tests (login, dashboard, core workflows)
+   - Update each test to use `setupHttpOnlyAuth`
+   - Verify each test passes after migration
+   - Update test documentation as needed
+
+3. **Deprecate old auth utilities:**
+   - Mark localStorage-based functions as deprecated
+   - Add migration guide comments
+   - Remove old code after all tests migrated
+
+4. **Verify test suite:**
+   - Run full test suite to ensure no regressions
+   - Fix any issues discovered during migration
+   - Update CI/CD if needed
+
+**Acceptance Criteria:**
+- [ ] All test files migrated to httpOnly cookie handler
+- [ ] All tests pass with new authentication method
+- [ ] Old localStorage auth utilities removed or deprecated
+- [ ] Test documentation updated
+- [ ] No test failures introduced
+
+**Dependencies:** Phase 7 (Task 7.1) - requires shared handler to exist first
+
+---
+
 ## Execution Order
 
 1. **Week 1: Schema Foundation**
@@ -864,8 +972,14 @@ See separate plan: `2024-12-23-testing-strategy-no-mocks.md`
 
 4. **Week 4: Testing & Polish**
    - Phase 6: Comprehensive testing
+   - Phase 7: httpOnly cookie test handler (foundational)
    - Integration testing
    - Bug fixes
+
+5. **Week 5: Test Infrastructure Migration**
+   - Phase 8: Migrate all tests to httpOnly cookies
+   - Verify all tests pass
+   - Remove deprecated localStorage auth code
 
 ---
 

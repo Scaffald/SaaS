@@ -41,10 +41,13 @@ class DashboardService {
   async getOverview(): Promise<DashboardOverview> {
     try {
       // Get all compliance scores (use compliance_scores instead of compliance_records)
-      const { data: complianceScores = [] } = await supabase.schema('forsured').from('compliance_scores').select('*')
+      const { data: complianceScoresData } = await supabase.schema('forsured').from('compliance_scores').select('*')
+      const complianceScores = complianceScoresData ?? []
       // Get all subcontractors (use subcontractors instead of broker_clients)
-      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
-      const { data: projects = [] } = await supabase.schema('forsured').from('projects').select('*')
+      const { data: subcontractorsData } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const subcontractors = subcontractorsData ?? []
+      const { data: projectsData } = await supabase.schema('forsured').from('projects').select('*')
+      const projects = projectsData ?? []
 
       // Calculate compliance status distribution
       let compliantCount = 0
@@ -91,14 +94,21 @@ class DashboardService {
   async getSubcontractorScores(filters?: DashboardFilters): Promise<SubcontractorScore[]> {
     try {
       // Use subcontractors instead of broker_clients
-      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const { data: subcontractorsData } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const subcontractors = subcontractorsData ?? []
       // Use compliance_scores instead of compliance_records
-      const { data: complianceScores = [] } = await supabase.schema('forsured').from('compliance_scores').select('*')
-      const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
-      const { data: documents = [] } = await supabase.schema('forsured').from('documents').select('*')
-      const { data: policies = [] } = await supabase.schema('forsured').from('policies').select('*')
-      const { data: projects = [] } = await supabase.schema('forsured').from('projects').select('*')
-      const { data: projectSubcontractors = [] } = await supabase.schema('forsured').from('project_subcontractors').select('*')
+      const { data: complianceScoresData } = await supabase.schema('forsured').from('compliance_scores').select('*')
+      const complianceScores = complianceScoresData ?? []
+      const { data: tasksData } = await supabase.schema('forsured').from('tasks').select('*')
+      const tasks = tasksData ?? []
+      const { data: documentsData } = await supabase.schema('forsured').from('documents').select('*')
+      const documents = documentsData ?? []
+      const { data: policiesData } = await supabase.schema('forsured').from('policies').select('*')
+      const policies = policiesData ?? []
+      const { data: projectsData } = await supabase.schema('forsured').from('projects').select('*')
+      const projects = projectsData ?? []
+      const { data: projectSubcontractorsData } = await supabase.schema('forsured').from('project_subcontractors').select('*')
+      const projectSubcontractors = projectSubcontractorsData ?? []
 
       // Build a map of document_id to subcontractor_id for policy lookups
       const documentSubcontractorMap = new Map<string, string>()
@@ -191,7 +201,8 @@ class DashboardService {
    */
   async getTaskSummary(): Promise<TaskSummary> {
     try {
-      const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
+      const { data: tasksData } = await supabase.schema('forsured').from('tasks').select('*')
+      const tasks = tasksData ?? []
 
       // Filter to open tasks only
       const openTasks = tasks.filter((t) => t.status !== 'completed' && t.status !== 'cancelled')
@@ -237,11 +248,15 @@ class DashboardService {
    */
   async getExpiringPolicies(days: number = 30): Promise<ExpiringPolicy[]> {
     try {
-      const { data: policies = [] } = await supabase.schema('forsured').from('policies').select('*')
-      const { data: documents = [] } = await supabase.schema('forsured').from('documents').select('*')
+      const { data: policiesData } = await supabase.schema('forsured').from('policies').select('*')
+      const policies = policiesData ?? []
+      const { data: documentsData } = await supabase.schema('forsured').from('documents').select('*')
+      const documents = documentsData ?? []
       // Use subcontractors instead of broker_clients
-      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
-      const { data: projectSubcontractors = [] } = await supabase.schema('forsured').from('project_subcontractors').select('*')
+      const { data: subcontractorsData } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const subcontractors = subcontractorsData ?? []
+      const { data: projectSubcontractorsData } = await supabase.schema('forsured').from('project_subcontractors').select('*')
+      const projectSubcontractors = projectSubcontractorsData ?? []
 
       // Build maps for lookups
       const documentSubcontractorMap = new Map<string, string>()
@@ -301,11 +316,15 @@ class DashboardService {
     try {
       // In a real implementation, this would query an activity log table
       // For now, we'll generate synthetic activities from existing data
-      const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
-      const { data: policies = [] } = await supabase.schema('forsured').from('policies').select('*')
-      const { data: documents = [] } = await supabase.schema('forsured').from('documents').select('*')
+      const { data: tasksData } = await supabase.schema('forsured').from('tasks').select('*')
+      const tasks = tasksData ?? []
+      const { data: policiesData } = await supabase.schema('forsured').from('policies').select('*')
+      const policies = policiesData ?? []
+      const { data: documentsData } = await supabase.schema('forsured').from('documents').select('*')
+      const documents = documentsData ?? []
       // Use subcontractors instead of broker_clients
-      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const { data: subcontractorsData } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const subcontractors = subcontractorsData ?? []
 
       // Build document to subcontractor map
       const documentSubcontractorMap = new Map<string, string>()
@@ -394,7 +413,8 @@ class DashboardService {
       // In a real implementation, this would query historical compliance data
       // For now, generate synthetic trend data
       // Use compliance_scores instead of compliance_records
-      const { data: complianceScores = [] } = await supabase.schema('forsured').from('compliance_scores').select('*')
+      const { data: complianceScoresData } = await supabase.schema('forsured').from('compliance_scores').select('*')
+      const complianceScores = complianceScoresData ?? []
       // Use 'score' column instead of 'overall_score'
       const currentOverallScore =
         complianceScores.reduce((sum, r) => sum + (r.score || 0), 0) /
@@ -451,8 +471,10 @@ class DashboardService {
         previousValue > 0 ? ((currentValue - previousValue) / previousValue) * 100 : 0
 
       // Get contributing factors
-      const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
-      const { data: policies = [] } = await supabase.schema('forsured').from('policies').select('*')
+      const { data: tasksData } = await supabase.schema('forsured').from('tasks').select('*')
+      const tasks = tasksData ?? []
+      const { data: policiesData } = await supabase.schema('forsured').from('policies').select('*')
+      const policies = policiesData ?? []
 
       const openTasks = tasks.filter((t) => t.status !== 'completed' && t.status !== 'cancelled')
       const now = new Date()
@@ -508,29 +530,33 @@ class DashboardService {
       }
 
       // Use compliance_scores instead of compliance_records
-      const { data: complianceScores = [] } = await supabase.schema('forsured').from('compliance_scores')
+      const { data: complianceScoresData } = await supabase.schema('forsured').from('compliance_scores')
         .select('*')
         .eq('subcontractor_id', subcontractorId)
+      const complianceScores = complianceScoresData ?? []
       const compliance = complianceScores[0]
 
       // Get documents for this subcontractor to find policies
-      const { data: documents = [] } = await supabase.schema('forsured').from('documents')
+      const { data: documentsData } = await supabase.schema('forsured').from('documents')
         .select('*')
         .eq('subcontractor_id', subcontractorId)
+      const documents = documentsData ?? []
 
       const documentIds = documents.map((d) => d.id)
-      const { data: policies = [] } = documentIds.length > 0
+      const policiesResult = documentIds.length > 0
         ? await supabase.schema('forsured').from('policies')
             .select('*')
             .in('document_id', documentIds)
         : { data: [] }
+      const policies = policiesResult.data ?? []
 
       // Use subcontractor_id instead of client_id
-      const { data: tasks = [] } = await supabase.schema('forsured').from('tasks')
+      const { data: tasksData } = await supabase.schema('forsured').from('tasks')
         .select('*')
         .eq('subcontractor_id', subcontractorId)
         .neq('status', 'completed')
         .neq('status', 'cancelled')
+      const tasks = tasksData ?? []
 
       const now = new Date()
       // Use 'score' column instead of 'overall_score'
@@ -682,7 +708,8 @@ class DashboardService {
   async getTaskSeveritySummary(): Promise<TaskSeveritySummary> {
     try {
       const baseSummary = await this.getTaskSummary()
-      const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
+      const { data: tasksData } = await supabase.schema('forsured').from('tasks').select('*')
+      const tasks = tasksData ?? []
 
       // Filter to open tasks only
       const openTasks = tasks.filter((t) => t.status !== 'completed' && t.status !== 'cancelled')
@@ -711,9 +738,11 @@ class DashboardService {
    */
   async getRiskDistribution(): Promise<RiskDistribution> {
     try {
-      const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
+      const { data: tasksData } = await supabase.schema('forsured').from('tasks').select('*')
+      const tasks = tasksData ?? []
       // Use subcontractors instead of broker_clients
-      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const { data: subcontractorsData } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const subcontractors = subcontractorsData ?? []
 
       // Filter to open tasks
       const openTasks = tasks.filter((t) => t.status !== 'completed' && t.status !== 'cancelled')
@@ -775,9 +804,11 @@ class DashboardService {
    */
   async getClientRiskProfiles(): Promise<ClientRiskProfile[]> {
     try {
-      const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
+      const { data: tasksData } = await supabase.schema('forsured').from('tasks').select('*')
+      const tasks = tasksData ?? []
       // Use subcontractors instead of broker_clients
-      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const { data: subcontractorsData } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const subcontractors = subcontractorsData ?? []
 
       // Filter to open tasks
       const openTasks = tasks.filter((t) => t.status !== 'completed' && t.status !== 'cancelled')
