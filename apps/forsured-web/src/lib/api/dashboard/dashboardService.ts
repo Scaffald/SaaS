@@ -40,9 +40,10 @@ class DashboardService {
    */
   async getOverview(): Promise<DashboardOverview> {
     try {
-      // Get all compliance records
-      const { data: complianceRecords = [] } = await supabase.schema('forsured').from('compliance_records').select('*')
-      const { data: clients = [] } = await supabase.schema('forsured').from('broker_clients').select('*')
+      // Get all compliance scores (use compliance_scores instead of compliance_records)
+      const { data: complianceScores = [] } = await supabase.schema('forsured').from('compliance_scores').select('*')
+      // Get all subcontractors (use subcontractors instead of broker_clients)
+      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
       const { data: projects = [] } = await supabase.schema('forsured').from('projects').select('*')
 
       // Calculate compliance status distribution
@@ -50,10 +51,11 @@ class DashboardService {
       let warningCount = 0
       let criticalCount = 0
 
-      complianceRecords.forEach((record) => {
-        if (record.overall_score >= 90) {
+      complianceScores.forEach((record) => {
+        // Use 'score' column (not 'overall_score')
+        if (record.score >= 90) {
           compliantCount++
-        } else if (record.overall_score >= 70) {
+        } else if (record.score >= 70) {
           warningCount++
         } else {
           criticalCount++
@@ -61,22 +63,20 @@ class DashboardService {
       })
 
       // Calculate overall score
-      const totalScore = complianceRecords.reduce((sum, record) => sum + record.overall_score, 0)
-      const overallScore = complianceRecords.length > 0 ? totalScore / complianceRecords.length : 0
+      const totalScore = complianceScores.reduce((sum, record) => sum + (record.score || 0), 0)
+      const overallScore = complianceScores.length > 0 ? totalScore / complianceScores.length : 0
 
-      // Count active projects
-      const activeProjects = projects.filter(
-        (p) => p.compliance_status !== 'non_compliant' && new Date(p.end_date) > new Date()
-      )
+      // Count active projects (projects table doesn't have end_date, just count all)
+      const activeProjects = projects.length
 
       return {
         overall_compliance_score: Math.round(overallScore),
-        total_subcontractors: clients.length,
+        total_subcontractors: subcontractors.length,
         compliant_count: compliantCount,
         warning_count: warningCount,
         critical_count: criticalCount,
         total_projects: projects.length,
-        active_projects: activeProjects.length,
+        active_projects: activeProjects,
         last_updated: new Date().toISOString(),
       }
     } catch (error) {
@@ -90,63 +90,82 @@ class DashboardService {
    */
   async getSubcontractorScores(filters?: DashboardFilters): Promise<SubcontractorScore[]> {
     try {
-      const { data: clients = [] } = await supabase.schema('forsured').from('broker_clients').select('*')
-      const { data: complianceRecords = [] } = await supabase.schema('forsured').from('compliance_records').select('*')
+      // Use subcontractors instead of broker_clients
+      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
+      // Use compliance_scores instead of compliance_records
+      const { data: complianceScores = [] } = await supabase.schema('forsured').from('compliance_scores').select('*')
       const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
+      const { data: documents = [] } = await supabase.schema('forsured').from('documents').select('*')
       const { data: policies = [] } = await supabase.schema('forsured').from('policies').select('*')
       const { data: projects = [] } = await supabase.schema('forsured').from('projects').select('*')
+      const { data: projectSubcontractors = [] } = await supabase.schema('forsured').from('project_subcontractors').select('*')
 
-      let scores: SubcontractorScore[] = clients.map((client) => {
-        const compliance = complianceRecords.find((c) => c.client_id === client.id)
-        const clientTasks = tasks.filter(
-          (t) => t.client_id === client.id && t.status !== 'completed' && t.status !== 'cancelled'
+      // Build a map of document_id to subcontractor_id for policy lookups
+      const documentSubcontractorMap = new Map<string, string>()
+      documents.forEach((doc) => {
+        if (doc.subcontractor_id) {
+          documentSubcontractorMap.set(doc.id, doc.subcontractor_id)
+        }
+      })
+
+      let scores: SubcontractorScore[] = subcontractors.map((subcontractor) => {
+        // Find compliance score for this subcontractor
+        const compliance = complianceScores.find((c) => c.subcontractor_id === subcontractor.id)
+        // Use subcontractor_id instead of client_id
+        const subcontractorTasks = tasks.filter(
+          (t) => t.subcontractor_id === subcontractor.id && t.status !== 'completed' && t.status !== 'cancelled'
         )
-        const clientPolicies = policies.filter((p) => p.client_id === client.id)
+        // Policies are linked through documents
+        const subcontractorPolicies = policies.filter((p) => {
+          const subId = documentSubcontractorMap.get(p.document_id)
+          return subId === subcontractor.id
+        })
 
         // Count policies expiring within 30 days
         const now = new Date()
         const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-        const expiringPolicies = clientPolicies.filter((p) => {
+        const expiringPolicies = subcontractorPolicies.filter((p) => {
           const endDate = new Date(p.end_date)
           return endDate > now && endDate <= thirtyDaysFromNow
         })
 
-        // Determine compliance status
-        const score = compliance?.overall_score || client.compliance_score || 0
+        // Determine compliance status - use 'score' column (not 'overall_score')
+        const score = compliance?.score || subcontractor.compliance_score || 0
         let status: 'compliant' | 'warning' | 'critical' | 'non_compliant' | 'partial'
         if (score >= 90) status = 'compliant'
         else if (score >= 70) status = 'warning'
         else if (score >= 50) status = 'partial'
         else status = 'critical'
 
-        // Count projects for this client
-        const clientProjects = projects.filter(
-          (p) => p.client_id === client.id && new Date(p.end_date) > now
-        )
+        // Count projects for this subcontractor via project_subcontractors junction
+        const subcontractorProjectIds = projectSubcontractors
+          .filter((ps) => ps.subcontractor_id === subcontractor.id && ps.status === 'active')
+          .map((ps) => ps.project_id)
 
         return {
-          id: client.id,
-          company_name: client.company_name,
+          id: subcontractor.id,
+          // Use 'company' column (not 'company_name')
+          company_name: subcontractor.company,
           compliance_score: Math.round(score),
           status,
-          open_tasks_count: clientTasks.length,
+          open_tasks_count: subcontractorTasks.length,
           policies_expiring_count: expiringPolicies.length,
-          last_updated: compliance?.updated_at || client.updated_at,
-          project_count: clientProjects.length,
-          risk_level: client.risk_level,
+          last_updated: compliance?.updated_at || subcontractor.updated_at,
+          project_count: subcontractorProjectIds.length,
+          risk_level: subcontractor.risk_level || 'low',
         }
       })
 
       // Apply filters
       if (filters) {
         if (filters.project_ids && filters.project_ids.length > 0) {
-          // Get clients associated with these projects
-          const projectClients = new Set<string>()
-          projects
-            .filter((p) => filters.project_ids?.includes(p.id))
-            .forEach((p) => projectClients.add(p.client_id))
+          // Get subcontractors associated with these projects via junction table
+          const projectSubIds = new Set<string>()
+          projectSubcontractors
+            .filter((ps) => filters.project_ids?.includes(ps.project_id))
+            .forEach((ps) => projectSubIds.add(ps.subcontractor_id))
 
-          scores = scores.filter((s) => projectClients.has(s.id))
+          scores = scores.filter((s) => projectSubIds.has(s.id))
         }
 
         if (filters.status_filter && filters.status_filter.length > 0) {
@@ -219,8 +238,18 @@ class DashboardService {
   async getExpiringPolicies(days: number = 30): Promise<ExpiringPolicy[]> {
     try {
       const { data: policies = [] } = await supabase.schema('forsured').from('policies').select('*')
-      const { data: clients = [] } = await supabase.schema('forsured').from('broker_clients').select('*')
-      const { data: projects = [] } = await supabase.schema('forsured').from('projects').select('*')
+      const { data: documents = [] } = await supabase.schema('forsured').from('documents').select('*')
+      // Use subcontractors instead of broker_clients
+      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
+      const { data: projectSubcontractors = [] } = await supabase.schema('forsured').from('project_subcontractors').select('*')
+
+      // Build maps for lookups
+      const documentSubcontractorMap = new Map<string, string>()
+      documents.forEach((doc) => {
+        if (doc.subcontractor_id) {
+          documentSubcontractorMap.set(doc.id, doc.subcontractor_id)
+        }
+      })
 
       const now = new Date()
       const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000)
@@ -230,9 +259,13 @@ class DashboardService {
       policies.forEach((policy) => {
         const endDate = new Date(policy.end_date)
         if (endDate > now && endDate <= futureDate) {
-          const client = clients.find((c) => c.id === policy.client_id)
-          const clientProjects = projects.filter(
-            (p) => p.client_id === policy.client_id && new Date(p.end_date) > now
+          // Get subcontractor via document
+          const subcontractorId = documentSubcontractorMap.get(policy.document_id)
+          const subcontractor = subcontractors.find((s) => s.id === subcontractorId)
+
+          // Count projects for this subcontractor
+          const subProjects = projectSubcontractors.filter(
+            (ps) => ps.subcontractor_id === subcontractorId && ps.status === 'active'
           )
 
           const daysRemaining = Math.ceil(
@@ -242,13 +275,13 @@ class DashboardService {
           expiringPolicies.push({
             id: policy.id,
             policy_number: policy.policy_number,
-            policy_type: policy.policy_type,
-            subcontractor_id: policy.client_id,
-            subcontractor_name: client?.company_name || 'Unknown',
+            policy_type: policy.coverage_type, // Use coverage_type instead of policy_type
+            subcontractor_id: subcontractorId || '',
+            subcontractor_name: subcontractor?.company || 'Unknown', // Use 'company' column
             expiration_date: policy.end_date,
             days_remaining: daysRemaining,
-            project_count: clientProjects.length,
-            status: policy.status === 'expired' ? 'expired' : 'active',
+            project_count: subProjects.length,
+            status: endDate < now ? 'expired' : 'active',
           })
         }
       })
@@ -270,8 +303,17 @@ class DashboardService {
       // For now, we'll generate synthetic activities from existing data
       const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
       const { data: policies = [] } = await supabase.schema('forsured').from('policies').select('*')
-      const { data: clients = [] } = await supabase.schema('forsured').from('broker_clients').select('*')
-      const { data: projects = [] } = await supabase.schema('forsured').from('projects').select('*')
+      const { data: documents = [] } = await supabase.schema('forsured').from('documents').select('*')
+      // Use subcontractors instead of broker_clients
+      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
+
+      // Build document to subcontractor map
+      const documentSubcontractorMap = new Map<string, string>()
+      documents.forEach((doc) => {
+        if (doc.subcontractor_id) {
+          documentSubcontractorMap.set(doc.id, doc.subcontractor_id)
+        }
+      })
 
       const activities: ActivityEvent[] = []
 
@@ -279,13 +321,14 @@ class DashboardService {
       tasks
         .filter((t) => t.status === 'completed')
         .forEach((task) => {
-          const client = clients.find((c) => c.id === task.client_id)
+          // Use subcontractor_id instead of client_id
+          const subcontractor = subcontractors.find((s) => s.id === task.subcontractor_id)
           activities.push({
             id: `task-completed-${task.id}`,
             event_type: 'task_completed',
             description: `Task "${task.title}" completed`,
-            subcontractor_id: task.client_id,
-            subcontractor_name: client?.company_name,
+            subcontractor_id: task.subcontractor_id,
+            subcontractor_name: subcontractor?.company, // Use 'company' column
             project_id: task.project_id,
             timestamp: task.updated_at,
           })
@@ -293,13 +336,14 @@ class DashboardService {
 
       // Generate activities from recent policies
       policies.forEach((policy) => {
-        const client = clients.find((c) => c.id === policy.client_id)
+        const subcontractorId = documentSubcontractorMap.get(policy.document_id)
+        const subcontractor = subcontractors.find((s) => s.id === subcontractorId)
         activities.push({
           id: `policy-uploaded-${policy.id}`,
           event_type: 'policy_uploaded',
-          description: `${policy.policy_type} policy uploaded`,
-          subcontractor_id: policy.client_id,
-          subcontractor_name: client?.company_name,
+          description: `${policy.coverage_type} policy uploaded`, // Use coverage_type
+          subcontractor_id: subcontractorId,
+          subcontractor_name: subcontractor?.company, // Use 'company' column
           timestamp: policy.created_at,
         })
       })
@@ -307,15 +351,16 @@ class DashboardService {
       // Generate activities from expired policies
       const now = new Date()
       policies
-        .filter((p) => p.status === 'expired' || new Date(p.end_date) < now)
+        .filter((p) => new Date(p.end_date) < now)
         .forEach((policy) => {
-          const client = clients.find((c) => c.id === policy.client_id)
+          const subcontractorId = documentSubcontractorMap.get(policy.document_id)
+          const subcontractor = subcontractors.find((s) => s.id === subcontractorId)
           activities.push({
             id: `policy-expired-${policy.id}`,
             event_type: 'policy_expired',
-            description: `${policy.policy_type} policy expired`,
-            subcontractor_id: policy.client_id,
-            subcontractor_name: client?.company_name,
+            description: `${policy.coverage_type} policy expired`, // Use coverage_type
+            subcontractor_id: subcontractorId,
+            subcontractor_name: subcontractor?.company, // Use 'company' column
             timestamp: policy.end_date,
           })
         })
@@ -348,10 +393,12 @@ class DashboardService {
     try {
       // In a real implementation, this would query historical compliance data
       // For now, generate synthetic trend data
-      const { data: complianceRecords = [] } = await supabase.schema('forsured').from('compliance_records').select('*')
+      // Use compliance_scores instead of compliance_records
+      const { data: complianceScores = [] } = await supabase.schema('forsured').from('compliance_scores').select('*')
+      // Use 'score' column instead of 'overall_score'
       const currentOverallScore =
-        complianceRecords.reduce((sum, r) => sum + r.overall_score, 0) /
-        (complianceRecords.length || 1)
+        complianceScores.reduce((sum, r) => sum + (r.score || 0), 0) /
+        (complianceScores.length || 1)
 
       const trendData: ComplianceTrendData[] = []
       const now = new Date()
@@ -367,8 +414,9 @@ class DashboardService {
         let warningCount = 0
         let criticalCount = 0
 
-        complianceRecords.forEach((record) => {
-          const adjustedScore = Math.max(0, Math.min(100, record.overall_score + variation))
+        complianceScores.forEach((record) => {
+          // Use 'score' column
+          const adjustedScore = Math.max(0, Math.min(100, (record.score || 0) + variation))
           if (adjustedScore >= 90) compliantCount++
           else if (adjustedScore >= 70) warningCount++
           else criticalCount++
@@ -449,32 +497,44 @@ class DashboardService {
    */
   async getSubcontractorDetail(subcontractorId: string): Promise<SubcontractorDetail> {
     try {
-      const { data: client } = await supabase.schema('forsured').from('broker_clients')
+      // Use subcontractors instead of broker_clients
+      const { data: subcontractor } = await supabase.schema('forsured').from('subcontractors')
         .select('*')
         .eq('id', subcontractorId)
         .single()
 
-      if (!client) {
+      if (!subcontractor) {
         throw new Error('Subcontractor not found')
       }
 
-      const { data: complianceRecords = [] } = await supabase.schema('forsured').from('compliance_records')
+      // Use compliance_scores instead of compliance_records
+      const { data: complianceScores = [] } = await supabase.schema('forsured').from('compliance_scores')
         .select('*')
-        .eq('client_id', subcontractorId)
-      const compliance = complianceRecords[0]
+        .eq('subcontractor_id', subcontractorId)
+      const compliance = complianceScores[0]
 
-      const { data: policies = [] } = await supabase.schema('forsured').from('policies')
+      // Get documents for this subcontractor to find policies
+      const { data: documents = [] } = await supabase.schema('forsured').from('documents')
         .select('*')
-        .eq('client_id', subcontractorId)
+        .eq('subcontractor_id', subcontractorId)
 
+      const documentIds = documents.map((d) => d.id)
+      const { data: policies = [] } = documentIds.length > 0
+        ? await supabase.schema('forsured').from('policies')
+            .select('*')
+            .in('document_id', documentIds)
+        : { data: [] }
+
+      // Use subcontractor_id instead of client_id
       const { data: tasks = [] } = await supabase.schema('forsured').from('tasks')
         .select('*')
-        .eq('client_id', subcontractorId)
+        .eq('subcontractor_id', subcontractorId)
         .neq('status', 'completed')
         .neq('status', 'cancelled')
 
       const now = new Date()
-      const score = compliance?.overall_score || client.compliance_score || 0
+      // Use 'score' column instead of 'overall_score'
+      const score = compliance?.score || subcontractor.compliance_score || 0
       let status: 'compliant' | 'warning' | 'critical' | 'non_compliant' | 'partial'
       if (score >= 90) status = 'compliant'
       else if (score >= 70) status = 'warning'
@@ -482,7 +542,7 @@ class DashboardService {
       else status = 'critical'
 
       // Map policies
-      const policyInfos = policies.map((p) => {
+      const policyInfos = (policies || []).map((p) => {
         const endDate = new Date(p.end_date)
         const daysRemaining = Math.ceil((endDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
 
@@ -494,8 +554,8 @@ class DashboardService {
         return {
           id: p.id,
           policy_number: p.policy_number,
-          policy_type: p.policy_type,
-          provider: p.provider,
+          policy_type: p.coverage_type, // Use coverage_type
+          provider: p.carrier, // Use carrier instead of provider
           expiration_date: p.end_date,
           days_remaining: Math.max(0, daysRemaining),
           status: policyStatus,
@@ -503,7 +563,7 @@ class DashboardService {
       })
 
       // Map tasks
-      const taskInfos = tasks.map((t) => {
+      const taskInfos = (tasks || []).map((t) => {
         let daysUntilDue: number | undefined
         if (t.due_date) {
           daysUntilDue = Math.ceil(
@@ -531,8 +591,8 @@ class DashboardService {
       const complianceHistory = await this.getComplianceTrend(30)
 
       return {
-        id: client.id,
-        company_name: client.company_name,
+        id: subcontractor.id,
+        company_name: subcontractor.company, // Use 'company' column
         compliance_score: Math.round(score),
         status,
         policies: policyInfos,
@@ -652,7 +712,8 @@ class DashboardService {
   async getRiskDistribution(): Promise<RiskDistribution> {
     try {
       const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
-      const { data: clients = [] } = await supabase.schema('forsured').from('broker_clients').select('*')
+      // Use subcontractors instead of broker_clients
+      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
 
       // Filter to open tasks
       const openTasks = tasks.filter((t) => t.status !== 'completed' && t.status !== 'cancelled')
@@ -661,16 +722,17 @@ class DashboardService {
       const enrichedTasks = enrichTasksWithSeverity(openTasks)
       const severityBreakdown = countTasksBySeverity(enrichedTasks)
 
-      // Count clients with critical tasks (compliance gaps)
-      const clientsWithCriticalTasks = new Set<string>()
+      // Count subcontractors with critical tasks (compliance gaps)
+      // Use subcontractor_id instead of client_id
+      const subcontractorsWithCriticalTasks = new Set<string>()
       enrichedTasks.forEach((task) => {
-        if (task.severity === 'critical' && task.client_id) {
-          clientsWithCriticalTasks.add(task.client_id)
+        if (task.severity === 'critical' && task.subcontractor_id) {
+          subcontractorsWithCriticalTasks.add(task.subcontractor_id)
         }
       })
 
-      const clientsWithGaps = clientsWithCriticalTasks.size
-      const totalClients = clients.length
+      const clientsWithGaps = subcontractorsWithCriticalTasks.size
+      const totalClients = subcontractors.length
       const complianceRate =
         totalClients > 0 ? Math.round(((totalClients - clientsWithGaps) / totalClients) * 100) : 100
 
@@ -709,12 +771,13 @@ class DashboardService {
   }
 
   /**
-   * Get risk profiles for all clients based on task severity
+   * Get risk profiles for all subcontractors based on task severity
    */
   async getClientRiskProfiles(): Promise<ClientRiskProfile[]> {
     try {
       const { data: tasks = [] } = await supabase.schema('forsured').from('tasks').select('*')
-      const { data: clients = [] } = await supabase.schema('forsured').from('broker_clients').select('*')
+      // Use subcontractors instead of broker_clients
+      const { data: subcontractors = [] } = await supabase.schema('forsured').from('subcontractors').select('*')
 
       // Filter to open tasks
       const openTasks = tasks.filter((t) => t.status !== 'completed' && t.status !== 'cancelled')
@@ -722,14 +785,15 @@ class DashboardService {
       // Enrich tasks with severity
       const enrichedTasks = enrichTasksWithSeverity(openTasks)
 
-      // Build risk profile for each client
-      const profiles: ClientRiskProfile[] = clients.map((client) => {
-        const clientTasks = enrichedTasks.filter((t) => t.client_id === client.id)
-        const severityCounts = countTasksBySeverity(clientTasks)
+      // Build risk profile for each subcontractor
+      const profiles: ClientRiskProfile[] = subcontractors.map((subcontractor) => {
+        // Use subcontractor_id instead of client_id
+        const subcontractorTasks = enrichedTasks.filter((t) => t.subcontractor_id === subcontractor.id)
+        const severityCounts = countTasksBySeverity(subcontractorTasks)
         const urgentCount = severityCounts.critical + severityCounts.high
         const hasCritical = severityCounts.critical > 0
 
-        // Determine risk level for this client
+        // Determine risk level for this subcontractor
         let riskLevel: 'low' | 'medium' | 'high' | 'critical'
         if (severityCounts.critical > 0) {
           riskLevel = 'critical'
@@ -742,8 +806,8 @@ class DashboardService {
         }
 
         return {
-          client_id: client.id,
-          client_name: client.company_name,
+          client_id: subcontractor.id,
+          client_name: subcontractor.company, // Use 'company' column
           task_severity_counts: severityCounts,
           risk_level: riskLevel,
           has_compliance_gap: hasCritical,
