@@ -20,7 +20,10 @@
  */
 
 import { test as baseTest, expect, Page } from '@playwright/test';
-import { loginAs, setupAuthAs, TEST_USERS } from '../../utils/auth';
+// Central auth handler - auto-detects VITE_FORSURED_USE_OAUTH and uses appropriate method
+import { loginAs, setupAuthAs, TEST_USERS, getAuthMode } from '../../utils/auth';
+// Direct imports for explicit control (use central handler when possible)
+import { setupHttpOnlyAuth, verifyAuthState } from '../../utils/httpOnlyAuth';
 
 interface ConsoleMessage {
   type: string;
@@ -47,6 +50,8 @@ interface BaseFixtures {
   getNetworkErrors: () => NetworkLog[];
   loginAs: typeof loginAs;
   setupAuthAs: typeof setupAuthAs;
+  setupHttpOnlyAuth: typeof setupHttpOnlyAuth;
+  verifyAuthState: typeof verifyAuthState;
   testUsers: typeof TEST_USERS;
 }
 
@@ -331,9 +336,28 @@ export const test = baseTest.extend<BaseFixtures>({
 
   /**
    * Convenience: setupAuthAs helper from auth utils
+   * RECOMMENDED: This auto-detects VITE_FORSURED_USE_OAUTH and uses the right method
+   * - VITE_FORSURED_USE_OAUTH=false: Uses Supabase password auth (localStorage)
+   * - VITE_FORSURED_USE_OAUTH=true: Uses httpOnly cookie auth
    */
   setupAuthAs: async ({}, use) => {
     await use(setupAuthAs);
+  },
+
+  /**
+   * Convenience: setupHttpOnlyAuth for explicit httpOnly cookie auth
+   * NOTE: Prefer using setupAuthAs which auto-detects the right method
+   * Only use this when you specifically need httpOnly cookie auth regardless of env
+   */
+  setupHttpOnlyAuth: async ({}, use) => {
+    await use(setupHttpOnlyAuth);
+  },
+
+  /**
+   * Convenience: verifyAuthState helper to check if authentication is working
+   */
+  verifyAuthState: async ({}, use) => {
+    await use(verifyAuthState);
   },
 
   /**

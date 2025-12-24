@@ -12,6 +12,9 @@ import {
   Loader2,
   UserPlus,
   X,
+  Mail,
+  Copy,
+  Clock,
 } from 'lucide-react';
 import { EmptyState, YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle, Input, Button as TamaguiButton } from '@unicornlove/ui';
 import Button from '../Common/Button';
@@ -20,6 +23,12 @@ import { useDatabase } from '../../contexts/DatabaseContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { getUserOrganizationId } from '../../lib/supabase';
 import { toast } from 'sonner';
+import {
+  createRelationshipInvitation,
+  getUserInvitations,
+  type RelationshipInvitation,
+} from '../../lib/relationshipInvitations';
+import { generateRelationshipCode } from '../../lib/connectionCodes';
 
 type ComplianceStatus = 'compliant' | 'warning' | 'critical' | 'all';
 
@@ -86,6 +95,18 @@ export default function SubcontractorsPage() {
   });
   const [submitting, setSubmitting] = useState(false);
 
+  // Invitation state
+  const [managerCode, setManagerCode] = useState<string>('');
+  const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([]);
+  const [showInviteSection, setShowInviteSection] = useState(false);
+  const [inviteFormData, setInviteFormData] = useState({
+    email: '',
+    name: '',
+    company: '',
+    phone: '',
+  });
+  const [sendingInvite, setSendingInvite] = useState(false);
+
   // Fetch organization ID on mount
   useEffect(() => {
     async function fetchOrg() {
@@ -95,6 +116,29 @@ export default function SubcontractorsPage() {
       }
     }
     fetchOrg();
+  }, [user?.id]);
+
+  // Generate/fetch manager's MGR- code
+  useEffect(() => {
+    async function initManagerCode() {
+      if (!user?.id) return;
+
+      try {
+        // Generate MGR- code
+        const code = generateRelationshipCode('MGR');
+        setManagerCode(code);
+
+        // Fetch pending invitations
+        const invitations = await getUserInvitations(user.id, 'pending');
+        const contractorInvites = invitations.filter(
+          inv => inv.invitee_type === 'subcontractor' && inv.inviter_type === 'manager'
+        );
+        setPendingInvitations(contractorInvites);
+      } catch (error) {
+        console.error('[SubcontractorsPage] Error initializing manager code:', error);
+      }
+    }
+    initManagerCode();
   }, [user?.id]);
 
   // Fetch subcontractors - reusable function
@@ -132,6 +176,71 @@ export default function SubcontractorsPage() {
   useEffect(() => {
     fetchSubcontractors();
   }, [fetchSubcontractors]);
+
+  // Handle invitation submit
+  const handleSendInvitation = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!user?.id || !organizationId) {
+      toast.error('Unable to send invitation. Please ensure you are logged in.');
+      return;
+    }
+
+    if (!inviteFormData.email || !inviteFormData.name) {
+      toast.error('Contractor email and name are required');
+      return;
+    }
+
+    setSendingInvite(true);
+
+    try {
+      const invitation = await createRelationshipInvitation({
+        inviterOrgId: organizationId,
+        inviterUserId: user.id,
+        inviterType: 'manager',
+        inviteeEmail: inviteFormData.email.trim(),
+        inviteeName: inviteFormData.name.trim(),
+        inviteeCompany: inviteFormData.company.trim(),
+        inviteePhone: inviteFormData.phone.trim(),
+        inviteeType: 'subcontractor',
+        connectionMethod: 'both',
+      });
+
+      toast.success('Contractor invitation sent!', {
+        description: `${inviteFormData.name} can connect using code ${invitation.relationship_code}`,
+      });
+
+      // Reset form
+      setInviteFormData({
+        email: '',
+        name: '',
+        company: '',
+        phone: '',
+      });
+
+      // Refresh pending invitations
+      if (user?.id) {
+        const invitations = await getUserInvitations(user.id, 'pending');
+        const contractorInvites = invitations.filter(
+          inv => inv.invitee_type === 'subcontractor' && inv.inviter_type === 'manager'
+        );
+        setPendingInvitations(contractorInvites);
+      }
+    } catch (error) {
+      console.error('[SubcontractorsPage] Error sending invitation:', error);
+      toast.error('Failed to send invitation. Please try again.');
+    } finally {
+      setSendingInvite(false);
+    }
+  };
+
+  // Copy manager code to clipboard
+  const copyManagerCode = () => {
+    if (!managerCode) return;
+
+    navigator.clipboard.writeText(managerCode);
+    toast.success('Manager code copied to clipboard');
+  };
 
   // Handle form submission
   const handleAddSubcontractor = async (e: React.FormEvent) => {
@@ -465,6 +574,193 @@ export default function SubcontractorsPage() {
           Add Subcontractor
         </Button>
       </XStack>
+
+      {/* Contractor Invitation Section */}
+      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1}>
+        <YStack gap="$4">
+          <XStack justifyContent="space-between" alignItems="center">
+            <YStack gap="$1">
+              <H3 fontSize="$5" fontWeight="600" color="$color12">
+                Invite Contractors
+              </H3>
+              <Text fontSize="$3" color="$color11">
+                Invite contractors to connect with your projects
+              </Text>
+            </YStack>
+            <TamaguiButton
+              size="$3"
+              variant="outlined"
+              onPress={() => setShowInviteSection(!showInviteSection)}
+            >
+              {showInviteSection ? 'Hide' : 'Show Invitations'}
+            </TamaguiButton>
+          </XStack>
+
+          {showInviteSection && (
+            <YStack gap="$4" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+              {/* Manager Code Display */}
+              <YStack gap="$2">
+                <Text fontSize="$3" fontWeight="500" color="$color11">
+                  Your Manager Code
+                </Text>
+                <XStack gap="$2" alignItems="center">
+                  <Card
+                    backgroundColor="$blue2"
+                    borderColor="$blue6"
+                    borderWidth={1}
+                    borderRadius="$3"
+                    padding="$3"
+                    flex={1}
+                  >
+                    <Text
+                      fontSize="$5"
+                      fontWeight="700"
+                      color="$blue11"
+                      fontFamily="$mono"
+                      textAlign="center"
+                    >
+                      {managerCode || 'Loading...'}
+                    </Text>
+                  </Card>
+                  <TamaguiButton
+                    size="$3"
+                    icon={<Copy size={16} />}
+                    onPress={copyManagerCode}
+                    disabled={!managerCode}
+                  >
+                    Copy
+                  </TamaguiButton>
+                </XStack>
+                <Text fontSize="$2" color="$color10">
+                  Share this code with contractors so they can connect with you
+                </Text>
+              </YStack>
+
+              {/* Invitation Form */}
+              <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                <Text fontSize="$4" fontWeight="600" color="$color12">
+                  Send Invitation Email
+                </Text>
+                <form onSubmit={handleSendInvitation}>
+                  <YStack gap="$3">
+                    <YStack gap="$2">
+                      <Text fontSize="$2" fontWeight="500" color="$color11">
+                        Contractor Email *
+                      </Text>
+                      <Input
+                        placeholder="contractor@example.com"
+                        value={inviteFormData.email}
+                        onChangeText={(text: string) =>
+                          setInviteFormData({ ...inviteFormData, email: text })
+                        }
+                        disabled={sendingInvite}
+                      />
+                    </YStack>
+
+                    <YStack gap="$2">
+                      <Text fontSize="$2" fontWeight="500" color="$color11">
+                        Contractor Name *
+                      </Text>
+                      <Input
+                        placeholder="John Doe"
+                        value={inviteFormData.name}
+                        onChangeText={(text: string) =>
+                          setInviteFormData({ ...inviteFormData, name: text })
+                        }
+                        disabled={sendingInvite}
+                      />
+                    </YStack>
+
+                    <XStack gap="$3">
+                      <YStack gap="$2" flex={1}>
+                        <Text fontSize="$2" fontWeight="500" color="$color11">
+                          Company (Optional)
+                        </Text>
+                        <Input
+                          placeholder="Acme Construction"
+                          value={inviteFormData.company}
+                          onChangeText={(text: string) =>
+                            setInviteFormData({ ...inviteFormData, company: text })
+                          }
+                          disabled={sendingInvite}
+                        />
+                      </YStack>
+
+                      <YStack gap="$2" flex={1}>
+                        <Text fontSize="$2" fontWeight="500" color="$color11">
+                          Phone (Optional)
+                        </Text>
+                        <Input
+                          placeholder="(555) 123-4567"
+                          value={inviteFormData.phone}
+                          onChangeText={(text: string) =>
+                            setInviteFormData({ ...inviteFormData, phone: text })
+                          }
+                          disabled={sendingInvite}
+                        />
+                      </YStack>
+                    </XStack>
+
+                    <TamaguiButton
+                      size="$3"
+                      backgroundColor="$blue9"
+                      color="white"
+                      icon={sendingInvite ? <Loader2 size={16} /> : <Mail size={16} />}
+                      disabled={sendingInvite || !inviteFormData.email || !inviteFormData.name}
+                      onPress={handleSendInvitation}
+                    >
+                      {sendingInvite ? 'Sending...' : 'Send Invitation'}
+                    </TamaguiButton>
+                  </YStack>
+                </form>
+              </YStack>
+
+              {/* Pending Invitations */}
+              {pendingInvitations.length > 0 && (
+                <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                  <Text fontSize="$4" fontWeight="600" color="$color12">
+                    Pending Invitations ({pendingInvitations.length})
+                  </Text>
+                  <YStack gap="$2">
+                    {pendingInvitations.map(inv => (
+                      <Card
+                        key={inv.id}
+                        backgroundColor="$background"
+                        borderColor="$borderColor"
+                        borderWidth={1}
+                        borderRadius="$3"
+                        padding="$3"
+                      >
+                        <XStack justifyContent="space-between" alignItems="center">
+                          <YStack gap="$1" flex={1}>
+                            <Text fontSize="$3" fontWeight="600" color="$color12">
+                              {inv.metadata?.name || inv.invitee_email}
+                            </Text>
+                            <Text fontSize="$2" color="$color11">
+                              {inv.invitee_email}
+                            </Text>
+                            {inv.metadata?.company && (
+                              <Text fontSize="$2" color="$color10">
+                                {inv.metadata.company}
+                              </Text>
+                            )}
+                          </YStack>
+                          <XStack gap="$2" alignItems="center">
+                            <Clock size={14} color="$orange10" />
+                            <Text fontSize="$2" color="$orange10">
+                              Pending
+                            </Text>
+                          </XStack>
+                        </XStack>
+                      </Card>
+                    ))}
+                  </YStack>
+                </YStack>
+              )}
+            </YStack>
+          )}
+        </YStack>
+      </Card>
 
       <XStack alignItems="center" gap="$4" fontSize="$3">
         <XStack alignItems="center" gap="$2">

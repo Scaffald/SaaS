@@ -1,3 +1,15 @@
+
+> scaffald@ env-local /Users/mattbernier/projects/unicorn/UNI-Construct
+> cross-env NODE_ENV=development APP_ENV=development dotenv -f .env run pnpx supabase --workdir packages gen types typescript --local
+
+Using workdir packages
+WARN: environment variable is unset: EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+WARN: environment variable is unset: GOOGLE_SECRET
+WARN: environment variable is unset: EXPO_PUBLIC_SUPABASE_REDIRECT_URI
+WARN: environment variable is unset: APPLE_CLIENT_ID
+WARN: environment variable is unset: APPLE_SECRET
+WARN: environment variable is unset: EXPO_PUBLIC_SUPABASE_REDIRECT_URI
+Connecting to db 5432
 export type Json =
   | string
   | number
@@ -10857,102 +10869,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ai_extractions: {
-        Row: {
-          carrier: string | null
-          confidence: number
-          coverage_amounts: Json | null
-          created_at: string
-          document_id: string
-          effective_date: string | null
-          expiry_date: string | null
-          id: string
-          named_insureds: string[] | null
-          organization_id: string
-          policy_number: string | null
-          updated_at: string
-        }
-        Insert: {
-          carrier?: string | null
-          confidence: number
-          coverage_amounts?: Json | null
-          created_at?: string
-          document_id: string
-          effective_date?: string | null
-          expiry_date?: string | null
-          id?: string
-          named_insureds?: string[] | null
-          organization_id: string
-          policy_number?: string | null
-          updated_at?: string
-        }
-        Update: {
-          carrier?: string | null
-          confidence?: number
-          coverage_amounts?: Json | null
-          created_at?: string
-          document_id?: string
-          effective_date?: string | null
-          expiry_date?: string | null
-          id?: string
-          named_insureds?: string[] | null
-          organization_id?: string
-          policy_number?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      approvals: {
-        Row: {
-          created_at: string
-          description: string
-          due_date: string | null
-          id: string
-          metadata: Json | null
-          organization_id: string
-          priority: string
-          related_items: Json | null
-          requested_at: string
-          requested_by: string
-          status: string
-          title: string
-          type: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description: string
-          due_date?: string | null
-          id?: string
-          metadata?: Json | null
-          organization_id: string
-          priority?: string
-          related_items?: Json | null
-          requested_at?: string
-          requested_by: string
-          status?: string
-          title: string
-          type: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string
-          due_date?: string | null
-          id?: string
-          metadata?: Json | null
-          organization_id?: string
-          priority?: string
-          related_items?: Json | null
-          requested_at?: string
-          requested_by?: string
-          status?: string
-          title?: string
-          type?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       attachments: {
         Row: {
           created_at: string
@@ -11184,65 +11100,6 @@ export type Database = {
         }
         Relationships: []
       }
-      bids: {
-        Row: {
-          bid_amount: number
-          compliance_score: number | null
-          coverage_gaps: Json | null
-          created_at: string
-          documents: Json | null
-          id: string
-          project_id: string
-          proposed_timeline: Json
-          risk_assessment: string | null
-          scope_of_work: string
-          status: string
-          subcontractor_id: string
-          submitted_at: string | null
-          updated_at: string
-        }
-        Insert: {
-          bid_amount: number
-          compliance_score?: number | null
-          coverage_gaps?: Json | null
-          created_at?: string
-          documents?: Json | null
-          id?: string
-          project_id: string
-          proposed_timeline: Json
-          risk_assessment?: string | null
-          scope_of_work: string
-          status?: string
-          subcontractor_id: string
-          submitted_at?: string | null
-          updated_at?: string
-        }
-        Update: {
-          bid_amount?: number
-          compliance_score?: number | null
-          coverage_gaps?: Json | null
-          created_at?: string
-          documents?: Json | null
-          id?: string
-          project_id?: string
-          proposed_timeline?: Json
-          risk_assessment?: string | null
-          scope_of_work?: string
-          status?: string
-          subcontractor_id?: string
-          submitted_at?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bids_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       broker_acknowledgements: {
         Row: {
           broker_agency_name: string
@@ -11409,51 +11266,6 @@ export type Database = {
           notes?: string | null
           risk_level?: string | null
           status?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      broker_delegations: {
-        Row: {
-          broker_org_id: string
-          client_org_id: string
-          created_at: string
-          expires_at: string | null
-          granted_at: string
-          granted_by_user_id: string
-          id: string
-          notes: string | null
-          permissions: string[]
-          revoked_at: string | null
-          scope: string
-          updated_at: string
-        }
-        Insert: {
-          broker_org_id: string
-          client_org_id: string
-          created_at?: string
-          expires_at?: string | null
-          granted_at?: string
-          granted_by_user_id: string
-          id?: string
-          notes?: string | null
-          permissions: string[]
-          revoked_at?: string | null
-          scope: string
-          updated_at?: string
-        }
-        Update: {
-          broker_org_id?: string
-          client_org_id?: string
-          created_at?: string
-          expires_at?: string | null
-          granted_at?: string
-          granted_by_user_id?: string
-          id?: string
-          notes?: string | null
-          permissions?: string[]
-          revoked_at?: string | null
-          scope?: string
           updated_at?: string
         }
         Relationships: []
@@ -11686,68 +11498,6 @@ export type Database = {
             columns: ["subcontractor_id"]
             isOneToOne: false
             referencedRelation: "subcontractors_extended"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      compliance_issues: {
-        Row: {
-          created_at: string
-          description: string
-          due_date: string | null
-          id: string
-          organization_id: string
-          project_id: string | null
-          related_document_id: string | null
-          resolution_notes: string | null
-          resolved_at: string | null
-          severity: string
-          status: string
-          subcontractor_id: string
-          title: string
-          type: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description: string
-          due_date?: string | null
-          id?: string
-          organization_id: string
-          project_id?: string | null
-          related_document_id?: string | null
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          severity: string
-          status?: string
-          subcontractor_id: string
-          title: string
-          type: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string
-          due_date?: string | null
-          id?: string
-          organization_id?: string
-          project_id?: string | null
-          related_document_id?: string | null
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          severity?: string
-          status?: string
-          subcontractor_id?: string
-          title?: string
-          type?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "compliance_issues_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -12255,45 +12005,6 @@ export type Database = {
         }
         Relationships: []
       }
-      document_versions: {
-        Row: {
-          created_at: string
-          document_id: string
-          file_name: string
-          file_size: number
-          file_url: string | null
-          id: string
-          organization_id: string
-          uploaded_at: string
-          uploaded_by: string
-          version_number: number
-        }
-        Insert: {
-          created_at?: string
-          document_id: string
-          file_name: string
-          file_size: number
-          file_url?: string | null
-          id?: string
-          organization_id: string
-          uploaded_at?: string
-          uploaded_by: string
-          version_number: number
-        }
-        Update: {
-          created_at?: string
-          document_id?: string
-          file_name?: string
-          file_size?: number
-          file_url?: string | null
-          id?: string
-          organization_id?: string
-          uploaded_at?: string
-          uploaded_by?: string
-          version_number?: number
-        }
-        Relationships: []
-      }
       documents: {
         Row: {
           created_at: string
@@ -12575,128 +12286,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      integration_connections: {
-        Row: {
-          auth_method: string
-          created_at: string
-          credentials: Json | null
-          error_message: string | null
-          id: string
-          integration_id: string
-          last_sync: string | null
-          organization_id: string
-          status: string
-          sync_settings: Json
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          auth_method: string
-          created_at?: string
-          credentials?: Json | null
-          error_message?: string | null
-          id?: string
-          integration_id: string
-          last_sync?: string | null
-          organization_id: string
-          status?: string
-          sync_settings: Json
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          auth_method?: string
-          created_at?: string
-          credentials?: Json | null
-          error_message?: string | null
-          id?: string
-          integration_id?: string
-          last_sync?: string | null
-          organization_id?: string
-          status?: string
-          sync_settings?: Json
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      manager_acknowledgements: {
-        Row: {
-          attestations: Json
-          audit_log: Json | null
-          broker_company_id: string
-          created_at: string
-          effective_at: string
-          eo_policy: Json
-          expires_at: string | null
-          gc_company_id: string
-          id: string
-          jurisdiction: string
-          licensing: Json
-          limits_liability: Json
-          links: Json | null
-          pdf_artifacts: Json | null
-          project_id: string | null
-          responsibilities: string[] | null
-          signers: Json
-          status: string
-          updated_at: string
-          version: string
-        }
-        Insert: {
-          attestations: Json
-          audit_log?: Json | null
-          broker_company_id: string
-          created_at?: string
-          effective_at: string
-          eo_policy: Json
-          expires_at?: string | null
-          gc_company_id: string
-          id?: string
-          jurisdiction: string
-          licensing: Json
-          limits_liability: Json
-          links?: Json | null
-          pdf_artifacts?: Json | null
-          project_id?: string | null
-          responsibilities?: string[] | null
-          signers: Json
-          status?: string
-          updated_at?: string
-          version: string
-        }
-        Update: {
-          attestations?: Json
-          audit_log?: Json | null
-          broker_company_id?: string
-          created_at?: string
-          effective_at?: string
-          eo_policy?: Json
-          expires_at?: string | null
-          gc_company_id?: string
-          id?: string
-          jurisdiction?: string
-          licensing?: Json
-          limits_liability?: Json
-          links?: Json | null
-          pdf_artifacts?: Json | null
-          project_id?: string | null
-          responsibilities?: string[] | null
-          signers?: Json
-          status?: string
-          updated_at?: string
-          version?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "manager_acknowledgements_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       notifications: {
         Row: {
@@ -13170,6 +12759,402 @@ export type Database = {
           workers_comp_required?: number | null
         }
         Relationships: []
+      }
+      referral_campaigns: {
+        Row: {
+          campaign_code: string | null
+          created_at: string
+          created_by: string | null
+          credit_amount: number | null
+          credit_multiplier: number | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          max_participants: number | null
+          max_total_credits: number | null
+          name: string
+          starts_at: string | null
+          status: string
+          target_relationship_types: string[] | null
+          target_user_types: string[] | null
+          total_connections: number | null
+          total_credits_granted: number | null
+          total_invitations: number | null
+          updated_at: string
+        }
+        Insert: {
+          campaign_code?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_amount?: number | null
+          credit_multiplier?: number | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          max_participants?: number | null
+          max_total_credits?: number | null
+          name: string
+          starts_at?: string | null
+          status?: string
+          target_relationship_types?: string[] | null
+          target_user_types?: string[] | null
+          total_connections?: number | null
+          total_credits_granted?: number | null
+          total_invitations?: number | null
+          updated_at?: string
+        }
+        Update: {
+          campaign_code?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_amount?: number | null
+          credit_multiplier?: number | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          max_participants?: number | null
+          max_total_credits?: number | null
+          name?: string
+          starts_at?: string | null
+          status?: string
+          target_relationship_types?: string[] | null
+          target_user_types?: string[] | null
+          total_connections?: number | null
+          total_credits_granted?: number | null
+          total_invitations?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      referral_program_settings: {
+        Row: {
+          broker_relationship_multiplier: number | null
+          contractor_relationship_multiplier: number | null
+          created_at: string
+          credit_currency: string
+          credits_expiry_days: number | null
+          default_credit_amount: number
+          duplicate_email_cooldown_days: number | null
+          general_referral_credit_amount: number | null
+          general_referral_enabled: boolean
+          id: string
+          is_active: boolean
+          manager_relationship_multiplier: number | null
+          max_credits_per_user: number | null
+          max_invitations_per_day: number | null
+          max_invitations_per_month: number | null
+          min_account_age_hours: number | null
+          program_description: string | null
+          program_name: string
+          require_company_setup: boolean
+          require_email_verification: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          broker_relationship_multiplier?: number | null
+          contractor_relationship_multiplier?: number | null
+          created_at?: string
+          credit_currency?: string
+          credits_expiry_days?: number | null
+          default_credit_amount?: number
+          duplicate_email_cooldown_days?: number | null
+          general_referral_credit_amount?: number | null
+          general_referral_enabled?: boolean
+          id?: string
+          is_active?: boolean
+          manager_relationship_multiplier?: number | null
+          max_credits_per_user?: number | null
+          max_invitations_per_day?: number | null
+          max_invitations_per_month?: number | null
+          min_account_age_hours?: number | null
+          program_description?: string | null
+          program_name?: string
+          require_company_setup?: boolean
+          require_email_verification?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          broker_relationship_multiplier?: number | null
+          contractor_relationship_multiplier?: number | null
+          created_at?: string
+          credit_currency?: string
+          credits_expiry_days?: number | null
+          default_credit_amount?: number
+          duplicate_email_cooldown_days?: number | null
+          general_referral_credit_amount?: number | null
+          general_referral_enabled?: boolean
+          id?: string
+          is_active?: boolean
+          manager_relationship_multiplier?: number | null
+          max_credits_per_user?: number | null
+          max_invitations_per_day?: number | null
+          max_invitations_per_month?: number | null
+          min_account_age_hours?: number | null
+          program_description?: string | null
+          program_name?: string
+          require_company_setup?: boolean
+          require_email_verification?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      referral_rewards: {
+        Row: {
+          admin_notes: string | null
+          approved_at: string | null
+          approved_by: string | null
+          campaign_id: string | null
+          claimed_at: string | null
+          created_at: string
+          credit_amount: number
+          expires_at: string | null
+          id: string
+          organization_id: string
+          reward_type: string
+          source_invitation_id: string | null
+          source_referral_id: string | null
+          status: string
+          updated_at: string
+          used_amount: number | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          campaign_id?: string | null
+          claimed_at?: string | null
+          created_at?: string
+          credit_amount: number
+          expires_at?: string | null
+          id?: string
+          organization_id: string
+          reward_type: string
+          source_invitation_id?: string | null
+          source_referral_id?: string | null
+          status?: string
+          updated_at?: string
+          used_amount?: number | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          campaign_id?: string | null
+          claimed_at?: string | null
+          created_at?: string
+          credit_amount?: number
+          expires_at?: string | null
+          id?: string
+          organization_id?: string
+          reward_type?: string
+          source_invitation_id?: string | null
+          source_referral_id?: string | null
+          status?: string
+          updated_at?: string
+          used_amount?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_rewards_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "referral_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_rewards_source_invitation_id_fkey"
+            columns: ["source_invitation_id"]
+            isOneToOne: false
+            referencedRelation: "relationship_invitations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_rewards_source_referral_id_fkey"
+            columns: ["source_referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          credit_amount: number | null
+          credit_granted_at: string | null
+          credit_status: string | null
+          credited_at: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json | null
+          referral_code: string
+          referral_source: string | null
+          referred_at: string | null
+          referred_email: string
+          referred_org_id: string | null
+          referred_user_id: string | null
+          referrer_org_id: string
+          referrer_user_id: string
+          source_relationship_id: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          credit_amount?: number | null
+          credit_granted_at?: string | null
+          credit_status?: string | null
+          credited_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          referral_code: string
+          referral_source?: string | null
+          referred_at?: string | null
+          referred_email: string
+          referred_org_id?: string | null
+          referred_user_id?: string | null
+          referrer_org_id: string
+          referrer_user_id: string
+          source_relationship_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          credit_amount?: number | null
+          credit_granted_at?: string | null
+          credit_status?: string | null
+          credited_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          referral_code?: string
+          referral_source?: string | null
+          referred_at?: string | null
+          referred_email?: string
+          referred_org_id?: string | null
+          referred_user_id?: string | null
+          referrer_org_id?: string
+          referrer_user_id?: string
+          source_relationship_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_source_relationship_id_fkey"
+            columns: ["source_relationship_id"]
+            isOneToOne: false
+            referencedRelation: "relationship_invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      relationship_invitations: {
+        Row: {
+          accepted_at: string | null
+          connected_at: string | null
+          connection_method: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          invited_at: string | null
+          invitee_company: string | null
+          invitee_email: string
+          invitee_name: string | null
+          invitee_org_id: string | null
+          invitee_phone: string | null
+          invitee_type: string
+          invitee_user_id: string | null
+          inviter_org_id: string
+          inviter_type: string
+          inviter_user_id: string
+          metadata: Json | null
+          referral_credit_granted: boolean | null
+          referral_credit_id: string | null
+          relationship_code: string
+          relationship_id: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          connected_at?: string | null
+          connection_method?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          invited_at?: string | null
+          invitee_company?: string | null
+          invitee_email: string
+          invitee_name?: string | null
+          invitee_org_id?: string | null
+          invitee_phone?: string | null
+          invitee_type: string
+          invitee_user_id?: string | null
+          inviter_org_id: string
+          inviter_type: string
+          inviter_user_id: string
+          metadata?: Json | null
+          referral_credit_granted?: boolean | null
+          referral_credit_id?: string | null
+          relationship_code: string
+          relationship_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          connected_at?: string | null
+          connection_method?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          invited_at?: string | null
+          invitee_company?: string | null
+          invitee_email?: string
+          invitee_name?: string | null
+          invitee_org_id?: string | null
+          invitee_phone?: string | null
+          invitee_type?: string
+          invitee_user_id?: string | null
+          inviter_org_id?: string
+          inviter_type?: string
+          inviter_user_id?: string
+          metadata?: Json | null
+          referral_credit_granted?: boolean | null
+          referral_credit_id?: string | null
+          relationship_code?: string
+          relationship_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_relationship_invitations_referral_credit"
+            columns: ["referral_credit_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "relationship_invitations_relationship_id_fkey"
+            columns: ["relationship_id"]
+            isOneToOne: false
+            referencedRelation: "relationships"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       relationships: {
         Row: {
@@ -13786,6 +13771,45 @@ export type Database = {
           },
         ]
       }
+      user_referral_codes: {
+        Row: {
+          completed_referrals: number | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          org_id: string
+          referral_code: string
+          total_credit: number | null
+          total_referrals: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_referrals?: number | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          org_id: string
+          referral_code: string
+          total_credit?: number | null
+          total_referrals?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_referrals?: number | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          org_id?: string
+          referral_code?: string
+          total_credit?: number | null
+          total_referrals?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_set_type_lexicon: {
         Row: {
           category: string
@@ -14034,6 +14058,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      referral_analytics: {
+        Row: {
+          broker_invitations: number | null
+          contractor_invitations: number | null
+          conversion_rate_percent: number | null
+          credits_granted_count: number | null
+          date: string | null
+          expired_invitations: number | null
+          manager_invitations: number | null
+          pending_invitations: number | null
+          successful_connections: number | null
+          total_invitations: number | null
+        }
+        Relationships: []
       }
       subcontractors_extended: {
         Row: {
@@ -15815,6 +15854,153 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_extractions: {
+        Row: {
+          carrier: string | null
+          confidence: number
+          coverage_amounts: Json | null
+          created_at: string
+          document_id: string
+          effective_date: string | null
+          expiry_date: string | null
+          id: string
+          named_insureds: string[] | null
+          organization_id: string
+          policy_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          carrier?: string | null
+          confidence: number
+          coverage_amounts?: Json | null
+          created_at?: string
+          document_id: string
+          effective_date?: string | null
+          expiry_date?: string | null
+          id?: string
+          named_insureds?: string[] | null
+          organization_id: string
+          policy_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          carrier?: string | null
+          confidence?: number
+          coverage_amounts?: Json | null
+          created_at?: string
+          document_id?: string
+          effective_date?: string | null
+          expiry_date?: string | null
+          id?: string
+          named_insureds?: string[] | null
+          organization_id?: string
+          policy_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      approvals: {
+        Row: {
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          metadata: Json | null
+          organization_id: string
+          priority: string
+          related_items: Json | null
+          requested_at: string
+          requested_by: string
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          due_date?: string | null
+          id?: string
+          metadata?: Json | null
+          organization_id: string
+          priority?: string
+          related_items?: Json | null
+          requested_at?: string
+          requested_by: string
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          metadata?: Json | null
+          organization_id?: string
+          priority?: string
+          related_items?: Json | null
+          requested_at?: string
+          requested_by?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bids: {
+        Row: {
+          bid_amount: number
+          compliance_score: number | null
+          coverage_gaps: Json | null
+          created_at: string
+          documents: Json | null
+          id: string
+          project_id: string
+          proposed_timeline: Json
+          risk_assessment: string | null
+          scope_of_work: string
+          status: string
+          subcontractor_id: string
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          bid_amount: number
+          compliance_score?: number | null
+          coverage_gaps?: Json | null
+          created_at?: string
+          documents?: Json | null
+          id?: string
+          project_id: string
+          proposed_timeline: Json
+          risk_assessment?: string | null
+          scope_of_work: string
+          status?: string
+          subcontractor_id: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bid_amount?: number
+          compliance_score?: number | null
+          coverage_gaps?: Json | null
+          created_at?: string
+          documents?: Json | null
+          id?: string
+          project_id?: string
+          proposed_timeline?: Json
+          risk_assessment?: string | null
+          scope_of_work?: string
+          status?: string
+          subcontractor_id?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       breach_notifications: {
         Row: {
           affected_california_residents: number
@@ -15944,6 +16130,105 @@ export type Database = {
           user_notification_method?: string | null
           user_notification_sent?: boolean
           user_notification_sent_at?: string | null
+        }
+        Relationships: []
+      }
+      broker_delegations: {
+        Row: {
+          broker_org_id: string
+          client_org_id: string
+          created_at: string
+          expires_at: string | null
+          granted_at: string
+          granted_by_user_id: string
+          id: string
+          notes: string | null
+          permissions: string[]
+          revoked_at: string | null
+          scope: string
+          updated_at: string
+        }
+        Insert: {
+          broker_org_id: string
+          client_org_id: string
+          created_at?: string
+          expires_at?: string | null
+          granted_at?: string
+          granted_by_user_id: string
+          id?: string
+          notes?: string | null
+          permissions: string[]
+          revoked_at?: string | null
+          scope: string
+          updated_at?: string
+        }
+        Update: {
+          broker_org_id?: string
+          client_org_id?: string
+          created_at?: string
+          expires_at?: string | null
+          granted_at?: string
+          granted_by_user_id?: string
+          id?: string
+          notes?: string | null
+          permissions?: string[]
+          revoked_at?: string | null
+          scope?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      compliance_issues: {
+        Row: {
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          organization_id: string
+          project_id: string | null
+          related_document_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          subcontractor_id: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          due_date?: string | null
+          id?: string
+          organization_id: string
+          project_id?: string | null
+          related_document_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          severity: string
+          status?: string
+          subcontractor_id: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          organization_id?: string
+          project_id?: string | null
+          related_document_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          subcontractor_id?: string
+          title?: string
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -16115,6 +16400,159 @@ export type Database = {
           vendor_contact_phone?: string | null
           vendor_name?: string
           vendor_type?: string
+        }
+        Relationships: []
+      }
+      document_versions: {
+        Row: {
+          created_at: string
+          document_id: string
+          file_name: string
+          file_size: number
+          file_url: string | null
+          id: string
+          organization_id: string
+          uploaded_at: string
+          uploaded_by: string
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          file_name: string
+          file_size: number
+          file_url?: string | null
+          id?: string
+          organization_id: string
+          uploaded_at?: string
+          uploaded_by: string
+          version_number: number
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          file_name?: string
+          file_size?: number
+          file_url?: string | null
+          id?: string
+          organization_id?: string
+          uploaded_at?: string
+          uploaded_by?: string
+          version_number?: number
+        }
+        Relationships: []
+      }
+      integration_connections: {
+        Row: {
+          auth_method: string
+          created_at: string
+          credentials: Json | null
+          error_message: string | null
+          id: string
+          integration_id: string
+          last_sync: string | null
+          organization_id: string
+          status: string
+          sync_settings: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auth_method: string
+          created_at?: string
+          credentials?: Json | null
+          error_message?: string | null
+          id?: string
+          integration_id: string
+          last_sync?: string | null
+          organization_id: string
+          status?: string
+          sync_settings: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auth_method?: string
+          created_at?: string
+          credentials?: Json | null
+          error_message?: string | null
+          id?: string
+          integration_id?: string
+          last_sync?: string | null
+          organization_id?: string
+          status?: string
+          sync_settings?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      manager_acknowledgements: {
+        Row: {
+          attestations: Json
+          audit_log: Json | null
+          broker_company_id: string
+          created_at: string
+          effective_at: string
+          eo_policy: Json
+          expires_at: string | null
+          gc_company_id: string
+          id: string
+          jurisdiction: string
+          licensing: Json
+          limits_liability: Json
+          links: Json | null
+          pdf_artifacts: Json | null
+          project_id: string | null
+          responsibilities: string[] | null
+          signers: Json
+          status: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          attestations: Json
+          audit_log?: Json | null
+          broker_company_id: string
+          created_at?: string
+          effective_at: string
+          eo_policy: Json
+          expires_at?: string | null
+          gc_company_id: string
+          id?: string
+          jurisdiction: string
+          licensing: Json
+          limits_liability: Json
+          links?: Json | null
+          pdf_artifacts?: Json | null
+          project_id?: string | null
+          responsibilities?: string[] | null
+          signers: Json
+          status?: string
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          attestations?: Json
+          audit_log?: Json | null
+          broker_company_id?: string
+          created_at?: string
+          effective_at?: string
+          eo_policy?: Json
+          expires_at?: string | null
+          gc_company_id?: string
+          id?: string
+          jurisdiction?: string
+          licensing?: Json
+          limits_liability?: Json
+          links?: Json | null
+          pdf_artifacts?: Json | null
+          project_id?: string | null
+          responsibilities?: string[] | null
+          signers?: Json
+          status?: string
+          updated_at?: string
+          version?: string
         }
         Relationships: []
       }
@@ -16443,29 +16881,6 @@ export type Database = {
       addgeometrycolumn:
         | {
             Args: {
-              column_name: string
-              new_dim: number
-              new_srid: number
-              new_type: string
-              schema_name: string
-              table_name: string
-              use_typmod?: boolean
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              column_name: string
-              new_dim: number
-              new_srid: number
-              new_type: string
-              table_name: string
-              use_typmod?: boolean
-            }
-            Returns: string
-          }
-        | {
-            Args: {
               catalog_name: string
               column_name: string
               new_dim: number
@@ -16477,13 +16892,46 @@ export type Database = {
             }
             Returns: string
           }
+        | {
+            Args: {
+              column_name: string
+              new_dim: number
+              new_srid: number
+              new_type: string
+              schema_name: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              column_name: string
+              new_dim: number
+              new_srid: number
+              new_type: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
       calculate_years_of_experience: {
         Args: { p_user_id: string }
         Returns: number
       }
+      can_send_invitation: { Args: { user_uuid: string }; Returns: boolean }
       dearmor: { Args: { "": string }; Returns: string }
       disablelongtransactions: { Args: never; Returns: string }
       dropgeometrycolumn:
+        | {
+            Args: {
+              catalog_name: string
+              column_name: string
+              schema_name: string
+              table_name: string
+            }
+            Returns: string
+          }
         | {
             Args: {
               column_name: string
@@ -16493,26 +16941,17 @@ export type Database = {
             Returns: string
           }
         | { Args: { column_name: string; table_name: string }; Returns: string }
+      dropgeometrytable:
         | {
             Args: {
               catalog_name: string
-              column_name: string
               schema_name: string
               table_name: string
             }
             Returns: string
           }
-      dropgeometrytable:
         | { Args: { schema_name: string; table_name: string }; Returns: string }
         | { Args: { table_name: string }; Returns: string }
-        | {
-            Args: {
-              catalog_name: string
-              schema_name: string
-              table_name: string
-            }
-            Returns: string
-          }
       enablelongtransactions: { Args: never; Returns: string }
       equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       gen_random_uuid: { Args: never; Returns: string }
@@ -16616,6 +17055,16 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_active_referral_settings: {
+        Args: never
+        Returns: Database["forsured"]["Tables"]["referral_program_settings"]["Row"]
+        SetofOptions: {
+          from: "*"
+          to: "referral_program_settings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       get_jobs_with_coords: {
         Args: never
         Returns: {
@@ -16679,6 +17128,10 @@ export type Database = {
         }[]
       }
       get_skill_parent_ids: { Args: { p_skill_id: string }; Returns: string[] }
+      get_user_available_credits: {
+        Args: { user_uuid: string }
+        Returns: number
+      }
       get_user_profile_by_scaffald_id: {
         Args: { p_scaffald_user_id: string }
         Returns: Database["forsured"]["Tables"]["user_profiles"]["Row"]
@@ -16696,8 +17149,8 @@ export type Database = {
         Returns: Record<string, unknown>[]
       }
       populate_geometry_columns:
-        | { Args: { use_typmod?: boolean }; Returns: string }
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
+        | { Args: { use_typmod?: boolean }; Returns: string }
       postgis_constraint_dims: {
         Args: { geomcolumn: string; geomschema: string; geomtable: string }
         Returns: number
@@ -16735,6 +17188,7 @@ export type Database = {
       }
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
+      refresh_referral_analytics: { Args: never; Returns: undefined }
       search_parent_skills: {
         Args: {
           p_industry_id: string
@@ -16805,6 +17259,14 @@ export type Database = {
       st_asewkt: { Args: { "": string }; Returns: string }
       st_asgeojson:
         | {
+            Args: { geog: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | {
             Args: {
               geom_column?: string
               maxdecimaldigits?: number
@@ -16813,18 +17275,32 @@ export type Database = {
             }
             Returns: string
           }
-        | {
-            Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
-            Returns: string
-          }
-        | {
-            Args: { geog: unknown; maxdecimaldigits?: number; options?: number }
-            Returns: string
-          }
         | { Args: { "": string }; Returns: string }
       st_asgml:
         | {
+            Args: {
+              geog: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+            }
+            Returns: string
+          }
+        | {
             Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+        | {
+            Args: {
+              geog: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+              version: number
+            }
             Returns: string
           }
         | {
@@ -16838,35 +17314,13 @@ export type Database = {
             }
             Returns: string
           }
-        | {
-            Args: {
-              geog: unknown
-              id?: string
-              maxdecimaldigits?: number
-              nprefix?: string
-              options?: number
-              version: number
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              geog: unknown
-              id?: string
-              maxdecimaldigits?: number
-              nprefix?: string
-              options?: number
-            }
-            Returns: string
-          }
-        | { Args: { "": string }; Returns: string }
       st_askml:
         | {
-            Args: { geom: unknown; maxdecimaldigits?: number; nprefix?: string }
+            Args: { geog: unknown; maxdecimaldigits?: number; nprefix?: string }
             Returns: string
           }
         | {
-            Args: { geog: unknown; maxdecimaldigits?: number; nprefix?: string }
+            Args: { geom: unknown; maxdecimaldigits?: number; nprefix?: string }
             Returns: string
           }
         | { Args: { "": string }; Returns: string }
@@ -16887,11 +17341,11 @@ export type Database = {
       }
       st_assvg:
         | {
-            Args: { geom: unknown; maxdecimaldigits?: number; rel?: number }
+            Args: { geog: unknown; maxdecimaldigits?: number; rel?: number }
             Returns: string
           }
         | {
-            Args: { geog: unknown; maxdecimaldigits?: number; rel?: number }
+            Args: { geom: unknown; maxdecimaldigits?: number; rel?: number }
             Returns: string
           }
         | { Args: { "": string }; Returns: string }
@@ -16899,8 +17353,7 @@ export type Database = {
       st_astwkb:
         | {
             Args: {
-              geom: unknown[]
-              ids: number[]
+              geom: unknown
               prec?: number
               prec_m?: number
               prec_z?: number
@@ -16911,7 +17364,8 @@ export type Database = {
           }
         | {
             Args: {
-              geom: unknown
+              geom: unknown[]
+              ids: number[]
               prec?: number
               prec_m?: number
               prec_z?: number
@@ -16925,8 +17379,8 @@ export type Database = {
         Returns: string
       }
       st_azimuth:
-        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
         | { Args: { geog1: unknown; geog2: unknown }; Returns: number }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
       st_boundingdiagonal: {
         Args: { fits?: boolean; geom: unknown }
         Returns: unknown
@@ -16991,11 +17445,11 @@ export type Database = {
         Returns: boolean
       }
       st_distance:
-        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
         | {
             Args: { geog1: unknown; geog2: unknown; use_spheroid?: boolean }
             Returns: number
           }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
       st_distancesphere:
         | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
         | {
@@ -17017,6 +17471,11 @@ export type Database = {
       }
       st_equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       st_expand:
+        | { Args: { box: unknown; dx: number; dy: number }; Returns: unknown }
+        | {
+            Args: { box: unknown; dx: number; dy: number; dz?: number }
+            Returns: unknown
+          }
         | {
             Args: {
               dm?: number
@@ -17027,11 +17486,6 @@ export type Database = {
             }
             Returns: unknown
           }
-        | {
-            Args: { box: unknown; dx: number; dy: number; dz?: number }
-            Returns: unknown
-          }
-        | { Args: { box: unknown; dx: number; dy: number }; Returns: unknown }
       st_force3d: { Args: { geom: unknown; zvalue?: number }; Returns: unknown }
       st_force3dm: {
         Args: { geom: unknown; mvalue?: number }
@@ -17054,8 +17508,8 @@ export type Database = {
       st_geogfromtext: { Args: { "": string }; Returns: unknown }
       st_geographyfromtext: { Args: { "": string }; Returns: unknown }
       st_geohash:
-        | { Args: { geom: unknown; maxchars?: number }; Returns: string }
         | { Args: { geog: unknown; maxchars?: number }; Returns: string }
+        | { Args: { geom: unknown; maxchars?: number }; Returns: string }
       st_geomcollfromtext: { Args: { "": string }; Returns: unknown }
       st_geometricmedian: {
         Args: {
@@ -17099,8 +17553,8 @@ export type Database = {
         Returns: unknown
       }
       st_intersects:
-        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
         | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       st_isvaliddetail: {
         Args: { flags?: number; geom: unknown }
         Returns: Database["public"]["CompositeTypes"]["valid_detail"]
@@ -17253,8 +17707,8 @@ export type Database = {
         Returns: unknown
       }
       st_setsrid:
-        | { Args: { geom: unknown; srid: number }; Returns: unknown }
         | { Args: { geog: unknown; srid: number }; Returns: unknown }
+        | { Args: { geom: unknown; srid: number }; Returns: unknown }
       st_sharedpaths: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
@@ -17277,8 +17731,8 @@ export type Database = {
         Returns: Record<string, unknown>[]
       }
       st_srid:
-        | { Args: { geom: unknown }; Returns: number }
         | { Args: { geog: unknown }; Returns: number }
+        | { Args: { geom: unknown }; Returns: number }
       st_subdivide: {
         Args: { geom: unknown; gridsize?: number; maxvertices?: number }
         Returns: unknown[]
@@ -17307,15 +17761,15 @@ export type Database = {
       }
       st_touches: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       st_transform:
-        | { Args: { geom: unknown; to_proj: string }; Returns: unknown }
-        | {
-            Args: { from_proj: string; geom: unknown; to_srid: number }
-            Returns: unknown
-          }
         | {
             Args: { from_proj: string; geom: unknown; to_proj: string }
             Returns: unknown
           }
+        | {
+            Args: { from_proj: string; geom: unknown; to_srid: number }
+            Returns: unknown
+          }
+        | { Args: { geom: unknown; to_proj: string }; Returns: unknown }
       st_triangulatepolygon: { Args: { g1: unknown }; Returns: unknown }
       st_union:
         | { Args: { geom1: unknown; geom2: unknown }; Returns: unknown }
@@ -17900,9 +18354,6 @@ export type Database = {
               limits?: number
               offsets?: number
               prefix: string
-              search?: string
-              sortcolumn?: string
-              sortorder?: string
             }
             Returns: {
               created_at: string
@@ -17920,6 +18371,9 @@ export type Database = {
               limits?: number
               offsets?: number
               prefix: string
+              search?: string
+              sortcolumn?: string
+              sortorder?: string
             }
             Returns: {
               created_at: string
@@ -17977,16 +18431,12 @@ export type Database = {
               levels?: number
               limits?: number
               prefix: string
-              sort_column?: string
-              sort_column_after?: string
-              sort_order?: string
               start_after?: string
             }
             Returns: {
               created_at: string
               id: string
               key: string
-              last_accessed_at: string
               metadata: Json
               name: string
               updated_at: string
@@ -17998,12 +18448,16 @@ export type Database = {
               levels?: number
               limits?: number
               prefix: string
+              sort_column?: string
+              sort_column_after?: string
+              sort_order?: string
               start_after?: string
             }
             Returns: {
               created_at: string
               id: string
               key: string
+              last_accessed_at: string
               metadata: Json
               name: string
               updated_at: string

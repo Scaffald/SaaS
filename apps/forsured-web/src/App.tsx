@@ -1,4 +1,5 @@
 import React from 'react';
+import { Toaster } from 'sonner';
 import AppRoutes from './router';
 import ThemeSwitcher from './components/Common/ThemeSwitcher';
 
@@ -7,6 +8,7 @@ function App() {
     <>
       <AppRoutes />
       <ThemeSwitcher />
+      <Toaster position="top-right" />
     </>
   );
 }

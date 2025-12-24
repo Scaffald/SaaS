@@ -1,24 +1,149 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Briefcase, TrendingUp, AlertTriangle, Shield, Users } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, Card } from '@unicornlove/ui';
+import { Briefcase, TrendingUp, AlertTriangle, Shield, Users, Mail, Copy, Clock, Loader2 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card, Input, Button as TamaguiButton } from '@unicornlove/ui';
 import { EmptyState } from '@unicornlove/ui';
 import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
 import { useProjects } from '../../hooks/useProjects';
 import { useCompliance } from '../../hooks/useCompliance';
+import { useAuth } from '../../contexts/AuthContext';
 import ClientsTable from './ClientsTable';
 import ClientModal from './ClientModal';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 import { BrokerClient } from '../../types';
+import { toast } from 'sonner';
+import { getUserOrganizationId } from '../../lib/supabase';
+import {
+  createRelationshipInvitation,
+  getUserInvitations,
+  type RelationshipInvitation,
+} from '../../lib/relationshipInvitations';
+import { generateRelationshipCode } from '../../lib/connectionCodes';
 
 export default function BrokerClientsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { clients, loading: clientsLoading, addClient } = useClients();
   const { policies, loading: policiesLoading } = usePolicies();
   const { projects, loading: projectsLoading } = useProjects();
   const { complianceData, loading: complianceLoading } = useCompliance();
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
+
+  // Invitation state
+  const [brokerCode, setBrokerCode] = useState<string>('');
+  const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([]);
+  const [showInviteSection, setShowInviteSection] = useState(false);
+  const [inviteClientType, setInviteClientType] = useState<'manager' | 'subcontractor'>('manager');
+  const [inviteFormData, setInviteFormData] = useState({
+    email: '',
+    name: '',
+    company: '',
+    phone: '',
+  });
+  const [sendingInvite, setSendingInvite] = useState(false);
+
+  // Fetch organization ID on mount
+  useEffect(() => {
+    async function fetchOrg() {
+      if (user?.id) {
+        const orgId = await getUserOrganizationId(user.id);
+        setOrganizationId(orgId);
+      }
+    }
+    fetchOrg();
+  }, [user?.id]);
+
+  // Generate/fetch broker's BKR- code
+  useEffect(() => {
+    async function initBrokerCode() {
+      if (!user?.id) return;
+
+      try {
+        // Generate BKR- code
+        const code = generateRelationshipCode('BKR');
+        setBrokerCode(code);
+
+        // Fetch pending invitations
+        const invitations = await getUserInvitations(user.id, 'pending');
+        const clientInvites = invitations.filter(
+          inv => inv.inviter_type === 'broker' && 
+                 (inv.invitee_type === 'manager' || inv.invitee_type === 'subcontractor')
+        );
+        setPendingInvitations(clientInvites);
+      } catch (error) {
+        console.error('[BrokerClientsPage] Error initializing broker code:', error);
+      }
+    }
+    initBrokerCode();
+  }, [user?.id]);
+
+  // Handle invitation submit
+  const handleSendInvitation = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!user?.id || !organizationId) {
+      toast.error('Unable to send invitation. Please ensure you are logged in.');
+      return;
+    }
+
+    if (!inviteFormData.email || !inviteFormData.name) {
+      toast.error('Client email and name are required');
+      return;
+    }
+
+    setSendingInvite(true);
+
+    try {
+      const invitation = await createRelationshipInvitation({
+        inviterOrgId: organizationId,
+        inviterUserId: user.id,
+        inviterType: 'broker',
+        inviteeEmail: inviteFormData.email.trim(),
+        inviteeName: inviteFormData.name.trim(),
+        inviteeCompany: inviteFormData.company.trim(),
+        inviteePhone: inviteFormData.phone.trim(),
+        inviteeType: inviteClientType,
+        connectionMethod: 'both',
+      });
+
+      toast.success('Client invitation sent!', {
+        description: `${inviteFormData.name} can connect using code ${invitation.relationship_code}`,
+      });
+
+      // Reset form
+      setInviteFormData({
+        email: '',
+        name: '',
+        company: '',
+        phone: '',
+      });
+
+      // Refresh pending invitations
+      if (user?.id) {
+        const invitations = await getUserInvitations(user.id, 'pending');
+        const clientInvites = invitations.filter(
+          inv => inv.inviter_type === 'broker' && 
+                 (inv.invitee_type === 'manager' || inv.invitee_type === 'subcontractor')
+        );
+        setPendingInvitations(clientInvites);
+      }
+    } catch (error) {
+      console.error('[BrokerClientsPage] Error sending invitation:', error);
+      toast.error('Failed to send invitation. Please try again.');
+    } finally {
+      setSendingInvite(false);
+    }
+  };
+
+  // Copy broker code to clipboard
+  const copyBrokerCode = () => {
+    if (!brokerCode) return;
+
+    navigator.clipboard.writeText(brokerCode);
+    toast.success('Broker code copied to clipboard');
+  };
 
   const getClientStats = () => {
     const totalClients = clients.length;
@@ -88,6 +213,225 @@ export default function BrokerClientsPage() {
             Manage your client portfolio and monitor compliance
           </Text>
         </YStack>
+
+        {/* Client Invitation Section */}
+        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1}>
+          <YStack gap="$4">
+            <XStack justifyContent="space-between" alignItems="center">
+              <YStack gap="$1">
+                <H3 fontSize="$5" fontWeight="600" color="$color12">
+                  Invite Clients
+                </H3>
+                <Text fontSize="$3" color="$color11">
+                  Invite managers or contractors to connect as your clients
+                </Text>
+              </YStack>
+              <TamaguiButton
+                size="$3"
+                variant="outlined"
+                onPress={() => setShowInviteSection(!showInviteSection)}
+              >
+                {showInviteSection ? 'Hide' : 'Show Invitations'}
+              </TamaguiButton>
+            </XStack>
+
+            {showInviteSection && (
+              <YStack gap="$4" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                {/* Broker Code Display */}
+                <YStack gap="$2">
+                  <Text fontSize="$3" fontWeight="500" color="$color11">
+                    Your Broker Code
+                  </Text>
+                  <XStack gap="$2" alignItems="center">
+                    <Card
+                      backgroundColor="$blue2"
+                      borderColor="$blue6"
+                      borderWidth={1}
+                      borderRadius="$3"
+                      padding="$3"
+                      flex={1}
+                    >
+                      <Text
+                        fontSize="$5"
+                        fontWeight="700"
+                        color="$blue11"
+                        fontFamily="$mono"
+                        textAlign="center"
+                      >
+                        {brokerCode || 'Loading...'}
+                      </Text>
+                    </Card>
+                    <TamaguiButton
+                      size="$3"
+                      icon={<Copy size={16} />}
+                      onPress={copyBrokerCode}
+                      disabled={!brokerCode}
+                    >
+                      Copy
+                    </TamaguiButton>
+                  </XStack>
+                  <Text fontSize="$2" color="$color10">
+                    Share this code with clients so they can connect with you
+                  </Text>
+                </YStack>
+
+                {/* Invitation Form */}
+                <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                  <Text fontSize="$4" fontWeight="600" color="$color12">
+                    Send Invitation Email
+                  </Text>
+                  <form onSubmit={handleSendInvitation}>
+                    <YStack gap="$3">
+                      {/* Client Type Selector */}
+                      <YStack gap="$2">
+                        <Text fontSize="$2" fontWeight="500" color="$color11">
+                          Client Type *
+                        </Text>
+                        <XStack gap="$2">
+                          <TamaguiButton
+                            size="$3"
+                            variant={inviteClientType === 'manager' ? 'outlined' : 'outlined'}
+                            backgroundColor={inviteClientType === 'manager' ? '$blue9' : '$background'}
+                            color={inviteClientType === 'manager' ? 'white' : '$color11'}
+                            onPress={() => setInviteClientType('manager')}
+                          >
+                            Manager/GC
+                          </TamaguiButton>
+                          <TamaguiButton
+                            size="$3"
+                            variant={inviteClientType === 'subcontractor' ? 'outlined' : 'outlined'}
+                            backgroundColor={inviteClientType === 'subcontractor' ? '$blue9' : '$background'}
+                            color={inviteClientType === 'subcontractor' ? 'white' : '$color11'}
+                            onPress={() => setInviteClientType('subcontractor')}
+                          >
+                            Contractor
+                          </TamaguiButton>
+                        </XStack>
+                      </YStack>
+
+                      <YStack gap="$2">
+                        <Text fontSize="$2" fontWeight="500" color="$color11">
+                          Client Email *
+                        </Text>
+                        <Input
+                          placeholder="client@example.com"
+                          value={inviteFormData.email}
+                          onChangeText={(text: string) =>
+                            setInviteFormData({ ...inviteFormData, email: text })
+                          }
+                          disabled={sendingInvite}
+                        />
+                      </YStack>
+
+                      <YStack gap="$2">
+                        <Text fontSize="$2" fontWeight="500" color="$color11">
+                          Client Name *
+                        </Text>
+                        <Input
+                          placeholder="John Doe"
+                          value={inviteFormData.name}
+                          onChangeText={(text: string) =>
+                            setInviteFormData({ ...inviteFormData, name: text })
+                          }
+                          disabled={sendingInvite}
+                        />
+                      </YStack>
+
+                      <XStack gap="$3">
+                        <YStack gap="$2" flex={1}>
+                          <Text fontSize="$2" fontWeight="500" color="$color11">
+                            Company (Optional)
+                          </Text>
+                          <Input
+                            placeholder="Acme Construction"
+                            value={inviteFormData.company}
+                            onChangeText={(text: string) =>
+                              setInviteFormData({ ...inviteFormData, company: text })
+                            }
+                            disabled={sendingInvite}
+                          />
+                        </YStack>
+
+                        <YStack gap="$2" flex={1}>
+                          <Text fontSize="$2" fontWeight="500" color="$color11">
+                            Phone (Optional)
+                          </Text>
+                          <Input
+                            placeholder="(555) 123-4567"
+                            value={inviteFormData.phone}
+                            onChangeText={(text: string) =>
+                              setInviteFormData({ ...inviteFormData, phone: text })
+                            }
+                            disabled={sendingInvite}
+                          />
+                        </YStack>
+                      </XStack>
+
+                      <TamaguiButton
+                        size="$3"
+                        backgroundColor="$blue9"
+                        color="white"
+                        icon={sendingInvite ? <Loader2 size={16} /> : <Mail size={16} />}
+                        disabled={sendingInvite || !inviteFormData.email || !inviteFormData.name}
+                        onPress={handleSendInvitation}
+                      >
+                        {sendingInvite ? 'Sending...' : 'Send Invitation'}
+                      </TamaguiButton>
+                    </YStack>
+                  </form>
+                </YStack>
+
+                {/* Pending Invitations */}
+                {pendingInvitations.length > 0 && (
+                  <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                      Pending Invitations ({pendingInvitations.length})
+                    </Text>
+                    <YStack gap="$2">
+                      {pendingInvitations.map(inv => (
+                        <Card
+                          key={inv.id}
+                          backgroundColor="$background"
+                          borderColor="$borderColor"
+                          borderWidth={1}
+                          borderRadius="$3"
+                          padding="$3"
+                        >
+                          <XStack justifyContent="space-between" alignItems="center">
+                            <YStack gap="$1" flex={1}>
+                              <XStack gap="$2" alignItems="center">
+                                <Text fontSize="$3" fontWeight="600" color="$color12">
+                                  {inv.metadata?.name || inv.invitee_email}
+                                </Text>
+                                <Text fontSize="$2" color="$color10" backgroundColor="$gray3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
+                                  {inv.invitee_type === 'manager' ? 'Manager' : 'Contractor'}
+                                </Text>
+                              </XStack>
+                              <Text fontSize="$2" color="$color11">
+                                {inv.invitee_email}
+                              </Text>
+                              {inv.metadata?.company && (
+                                <Text fontSize="$2" color="$color10">
+                                  {inv.metadata.company}
+                                </Text>
+                              )}
+                            </YStack>
+                            <XStack gap="$2" alignItems="center">
+                              <Clock size={14} color="$orange10" />
+                              <Text fontSize="$2" color="$orange10">
+                                Pending
+                              </Text>
+                            </XStack>
+                          </XStack>
+                        </Card>
+                      ))}
+                    </YStack>
+                  </YStack>
+                )}
+              </YStack>
+            )}
+          </YStack>
+        </Card>
 
       <XStack
         flexDirection="column"

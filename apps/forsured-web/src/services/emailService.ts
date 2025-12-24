@@ -25,6 +25,8 @@ const APP_URL = import.meta.env.VITE_APP_URL || 'https://app.forsured.com';
 
 export type EmailTemplate =
   | 'broker-invitation'
+  | 'relationship-invitation'
+  | 'referral-invitation'
   | 'welcome'
   | 'onboarding-complete'
   | 'breach-notification';
@@ -146,6 +148,65 @@ class ForSuredEmailService {
     };
 
     return this.sendEmail('broker-invitation', options.email, context);
+  }
+
+  /**
+   * Send a relationship invitation email
+   * Used for bidirectional broker/contractor/manager connections
+   */
+  async sendRelationshipInvitation(options: {
+    email: string;
+    inviteeName?: string;
+    inviterName: string;
+    inviterType: 'broker' | 'subcontractor' | 'manager';
+    inviteeType: 'broker' | 'subcontractor' | 'manager';
+    relationshipCode: string;
+    inviterCompany?: string;
+  }): Promise<SendResult> {
+    const inviterTypeLabel = {
+      broker: 'Insurance Broker',
+      subcontractor: 'Contractor',
+      manager: 'General Contractor',
+    }[options.inviterType];
+
+    const inviteeTypeLabel = {
+      broker: 'Insurance Broker',
+      subcontractor: 'Contractor',
+      manager: 'General Contractor',
+    }[options.inviteeType];
+
+    const context = {
+      inviteeName: options.inviteeName || '',
+      inviterName: options.inviterName,
+      inviterType: inviterTypeLabel,
+      inviteeType: inviteeTypeLabel,
+      inviterCompany: options.inviterCompany || '',
+      relationshipCode: options.relationshipCode,
+      signupUrl: `${APP_URL}/signup?code=${options.relationshipCode}`,
+      loginUrl: `${APP_URL}/login?code=${options.relationshipCode}`,
+    };
+
+    return this.sendEmail('relationship-invitation', options.email, context);
+  }
+
+  /**
+   * Send a referral invitation email
+   * Used for general business referrals with RFR- codes
+   */
+  async sendReferralInvitation(options: {
+    email: string;
+    referrerName: string;
+    referrerCompany?: string;
+    referralCode: string;
+  }): Promise<SendResult> {
+    const context = {
+      referrerName: options.referrerName,
+      referrerCompany: options.referrerCompany || '',
+      referralCode: options.referralCode,
+      signupUrl: `${APP_URL}/signup?referral=${options.referralCode}`,
+    };
+
+    return this.sendEmail('referral-invitation', options.email, context);
   }
 
   /**

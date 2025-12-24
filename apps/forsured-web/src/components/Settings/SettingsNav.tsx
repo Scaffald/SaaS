@@ -12,6 +12,7 @@ import {
   Plug,
   FileText,
   Briefcase,
+  Gift,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -72,6 +73,7 @@ function SettingsNav({ userType }: SettingsNavProps) {
     { path: `/${routePrefix}/settings/notifications`, label: 'Notifications', icon: Bell },
     { path: `/${routePrefix}/settings/team`, label: 'Team', icon: Users },
     { path: `/${routePrefix}/settings/integrations`, label: 'Integrations', icon: Plug },
+    { path: `/${routePrefix}/settings/referrals`, label: 'Referrals', icon: Gift },
   ];
 
   const contractorLinks: NavLinkItem[] = [
@@ -80,6 +82,7 @@ function SettingsNav({ userType }: SettingsNavProps) {
     { path: `/${routePrefix}/settings/insurance`, label: 'Insurance Info', icon: Shield },
     { path: `/${routePrefix}/settings/notifications`, label: 'Notifications', icon: Bell },
     { path: `/${routePrefix}/settings/documents`, label: 'Documents', icon: FileText },
+    { path: `/${routePrefix}/settings/referrals`, label: 'Referrals', icon: Gift },
   ];
 
   const brokerLinks: NavLinkItem[] = [
@@ -87,6 +90,7 @@ function SettingsNav({ userType }: SettingsNavProps) {
     { path: `/${routePrefix}/settings/agency`, label: 'Agency', icon: Briefcase },
     { path: `/${routePrefix}/settings/clients`, label: 'Clients', icon: Users },
     { path: `/${routePrefix}/settings/notifications`, label: 'Notifications', icon: Bell },
+    { path: `/${routePrefix}/settings/referrals`, label: 'Referrals', icon: Gift },
   ];
 
   const adminLinks: NavLinkItem[] = [

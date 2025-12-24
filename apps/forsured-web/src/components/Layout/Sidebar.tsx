@@ -95,6 +95,7 @@ export default function Sidebar({
     { path: '/manager/tasks', label: t('nav.tasks'), icon: CheckSquare },
     { path: '/manager/projects', label: t('nav.projects'), icon: Building },
     { path: '/manager/subcontractors', label: t('nav.contractors'), icon: Users },
+    { path: '/manager/broker', label: 'My Broker', icon: Shield },
     { path: '/manager/documents', label: t('nav.documents'), icon: FileText },
     {
       path: '/manager/acknowledgements',
@@ -116,6 +117,11 @@ export default function Sidebar({
       path: '/subcontractor/relationships',
       label: t('nav.managers'),
       icon: Handshake,
+    },
+    {
+      path: '/subcontractor/broker',
+      label: 'My Broker',
+      icon: Briefcase,
     },
     { path: '/subcontractor/projects', label: t('nav.projects'), icon: Building },
     { path: '/subcontractor/documents', label: t('nav.documents'), icon: FileText },
