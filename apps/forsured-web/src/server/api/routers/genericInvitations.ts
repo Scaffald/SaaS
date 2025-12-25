@@ -302,4 +302,81 @@ export const genericInvitationsRouter = createTRPCRouter({
       await invitationService.removeRelationship(input.relationshipId, ctx.userId)
       return { success: true }
     }),
+
+  // =========================================================================
+  // Admin Procedures for Rule Management
+  // =========================================================================
+
+  /**
+   * Get all invitation rules (including inactive) - Admin only
+   */
+  adminGetAllRules: protectedProcedure.query(async ({ ctx }) => {
+    // TODO: Add admin role check when role system is implemented
+    const invitationService = getInvitationService(ctx)
+    return invitationService.getAllRulesAdmin()
+  }),
+
+  /**
+   * Get invitation statistics - Admin only
+   */
+  adminGetStats: protectedProcedure.query(async ({ ctx }) => {
+    const invitationService = getInvitationService(ctx)
+    return invitationService.getInvitationStats()
+  }),
+
+  /**
+   * Update an invitation rule - Admin only
+   */
+  adminUpdateRule: protectedProcedure
+    .input(
+      z.object({
+        ruleId: z.string().uuid(),
+        name: z.string().min(1).max(100).optional(),
+        description: z.string().max(500).optional(),
+        constraint_message: z.string().max(500).optional(),
+        allow_referral_only: z.boolean().optional(),
+        is_active: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { ruleId, ...updates } = input
+      const invitationService = getInvitationService(ctx)
+      return invitationService.updateRule(ruleId, updates, ctx.userId)
+    }),
+
+  /**
+   * Toggle rule active status - Admin only
+   */
+  adminToggleRule: protectedProcedure
+    .input(
+      z.object({
+        ruleId: z.string().uuid(),
+        isActive: z.boolean(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
+      return invitationService.toggleRuleActive(input.ruleId, input.isActive, ctx.userId)
+    }),
+
+  /**
+   * Create a new invitation rule - Admin only
+   */
+  adminCreateRule: protectedProcedure
+    .input(
+      z.object({
+        source_role: z.string().min(1).max(50),
+        target_role: z.string().min(1).max(50),
+        relationship_type: z.enum(['one-to-one', 'one-to-many', 'one-to-many-via-project']),
+        name: z.string().min(1).max(100),
+        description: z.string().max(500).optional(),
+        requires_project: z.boolean().optional(),
+        constraint_message: z.string().max(500).optional(),
+        allow_referral_only: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
+      return invitationService.createRule(input, ctx.userId)
+    }),
 })

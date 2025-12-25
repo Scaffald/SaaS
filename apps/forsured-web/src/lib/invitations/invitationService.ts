@@ -517,6 +517,145 @@ export function createInvitationService(client?: SupabaseClient) {
         status: 'success',
       })
     },
+
+    // =========================================================================
+    // Admin Methods for Rule Management
+    // =========================================================================
+
+    /**
+     * Get all invitation rules (including inactive) for admin
+     */
+    async getAllRulesAdmin(): Promise<InvitationRule[]> {
+      const { data, error } = await core('invitation_rules')
+        .select('*')
+        .order('source_role')
+        .order('target_role')
+
+      if (error) throw error
+      return data || []
+    },
+
+    /**
+     * Update an invitation rule
+     */
+    async updateRule(
+      ruleId: string,
+      updates: {
+        name?: string
+        description?: string
+        constraint_message?: string
+        allow_referral_only?: boolean
+        is_active?: boolean
+      },
+      adminUserId: string
+    ): Promise<InvitationRule> {
+      const { data, error } = await core('invitation_rules')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', ruleId)
+        .select()
+        .single()
+
+      if (error) throw error
+
+      await auditService.log({
+        category: 'data_modification',
+        action: 'invitation_rule_updated',
+        severity: 'high',
+        user_id: adminUserId,
+        resource_type: 'invitation_rule',
+        resource_id: ruleId,
+        status: 'success',
+        metadata: { updates },
+      })
+
+      return data
+    },
+
+    /**
+     * Toggle a rule's active status
+     */
+    async toggleRuleActive(
+      ruleId: string,
+      isActive: boolean,
+      adminUserId: string
+    ): Promise<InvitationRule> {
+      return this.updateRule(ruleId, { is_active: isActive }, adminUserId)
+    },
+
+    /**
+     * Create a new invitation rule
+     */
+    async createRule(
+      input: {
+        source_role: string
+        target_role: string
+        relationship_type: 'one-to-one' | 'one-to-many' | 'one-to-many-via-project'
+        name: string
+        description?: string
+        requires_project?: boolean
+        constraint_message?: string
+        allow_referral_only?: boolean
+      },
+      adminUserId: string
+    ): Promise<InvitationRule> {
+      const { data, error } = await core('invitation_rules')
+        .insert({
+          ...input,
+          is_active: true,
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+
+      await auditService.log({
+        category: 'data_modification',
+        action: 'invitation_rule_created',
+        severity: 'high',
+        user_id: adminUserId,
+        resource_type: 'invitation_rule',
+        resource_id: data.id,
+        status: 'success',
+        metadata: { input },
+      })
+
+      return data
+    },
+
+    /**
+     * Get invitation statistics for admin dashboard
+     */
+    async getInvitationStats(): Promise<{
+      totalInvitations: number
+      pendingInvitations: number
+      acceptedInvitations: number
+      declinedInvitations: number
+      totalReferrals: number
+      activeRelationships: number
+    }> {
+      const [invitationsResult, relationshipsResult] = await Promise.all([
+        core('generic_invitations')
+          .select('status')
+          .then(({ data }) => data || []),
+        core('user_relationships')
+          .select('id')
+          .eq('status', 'active')
+          .then(({ data }) => data || []),
+      ])
+
+      const invitations = invitationsResult
+      return {
+        totalInvitations: invitations.length,
+        pendingInvitations: invitations.filter((i) => i.status === 'pending').length,
+        acceptedInvitations: invitations.filter((i) => i.status === 'accepted').length,
+        declinedInvitations: invitations.filter((i) => i.status === 'declined').length,
+        totalReferrals: invitations.filter((i) => i.status === 'accepted').length, // Simplified
+        activeRelationships: relationshipsResult.length,
+      }
+    },
   }
 }
 
