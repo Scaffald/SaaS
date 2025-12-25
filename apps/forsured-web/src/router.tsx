@@ -111,6 +111,7 @@ const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 const AdminUserSetTypes = lazy(() => import('./pages/admin/UserSetTypes'));
 const AdminLexiconEditor = lazy(() => import('./pages/admin/LexiconEditor'));
 const AdminCCPA = lazy(() => import('./app/(dashboard)/admin/ccpa/page'));
+const AdminInvitationRules = lazy(() => import('./app/(dashboard)/admin/invitation-rules/page'));
 
 // Privacy Settings (REQ-3: CCPA Compliance)
 const PrivacySettings = lazy(() => import('./app/(dashboard)/settings/privacy/page'));
@@ -681,6 +682,7 @@ const AppRoutes = () => {
         <Route path="user-set-types" element={<AdminUserSetTypes />} />
         <Route path="lexicon" element={<AdminLexiconEditor />} />
         <Route path="ccpa" element={<AdminCCPA />} />
+        <Route path="invitation-rules" element={<AdminInvitationRules />} />
       </Route>
 
         {/* Catch-all redirect */}
