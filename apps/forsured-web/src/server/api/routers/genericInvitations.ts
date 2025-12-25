@@ -9,8 +9,21 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc'
-import { invitationService } from '../../../lib/invitations/invitationService'
+import { invitationService as defaultInvitationService, createInvitationService } from '../../../lib/invitations/invitationService'
 import { sendEmail } from '../../../lib/email/emailConfig'
+
+/**
+ * Get the invitation service to use
+ * In production, uses the default service
+ * In tests, can be overridden via context.db
+ */
+function getInvitationService(ctx?: { db?: unknown }) {
+  // If a db client is provided in context (for tests), use it
+  if (ctx?.db && typeof ctx.db === 'object' && 'schema' in ctx.db) {
+    return createInvitationService(ctx.db as Parameters<typeof createInvitationService>[0])
+  }
+  return defaultInvitationService
+}
 
 /**
  * Build invitation email HTML
@@ -84,7 +97,8 @@ export const genericInvitationsRouter = createTRPCRouter({
   /**
    * Get all active invitation rules
    */
-  getRules: protectedProcedure.query(async () => {
+  getRules: protectedProcedure.query(async ({ ctx }) => {
+    const invitationService = getInvitationService(ctx)
     return invitationService.getRules()
   }),
 
@@ -93,7 +107,8 @@ export const genericInvitationsRouter = createTRPCRouter({
    */
   getRulesForRole: protectedProcedure
     .input(z.object({ sourceRole: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       return invitationService.getRulesForRole(input.sourceRole)
     }),
 
@@ -107,7 +122,8 @@ export const genericInvitationsRouter = createTRPCRouter({
         inviteeEmail: z.string().email(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       return invitationService.checkConstraint(input.ruleId, input.inviteeEmail)
     }),
 
@@ -126,6 +142,7 @@ export const genericInvitationsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       const invitation = await invitationService.create(
         input,
         ctx.userId,
@@ -178,6 +195,7 @@ export const genericInvitationsRouter = createTRPCRouter({
     if (!userEmail) {
       return []
     }
+    const invitationService = getInvitationService(ctx)
     return invitationService.getPendingForEmail(userEmail)
   }),
 
@@ -185,6 +203,7 @@ export const genericInvitationsRouter = createTRPCRouter({
    * Get invitations sent by the current user
    */
   getSent: protectedProcedure.query(async ({ ctx }) => {
+    const invitationService = getInvitationService(ctx)
     return invitationService.getSentByUser(ctx.userId)
   }),
 
@@ -193,7 +212,8 @@ export const genericInvitationsRouter = createTRPCRouter({
    */
   getById: protectedProcedure
     .input(z.object({ invitationId: z.string().uuid() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       const invitation = await invitationService.getById(input.invitationId)
       if (!invitation) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Invitation not found' })
@@ -207,7 +227,8 @@ export const genericInvitationsRouter = createTRPCRouter({
    */
   getByCode: publicProcedure
     .input(z.object({ code: z.string().min(1).max(20) }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       const invitation = await invitationService.getByReferralCode(input.code)
       if (!invitation) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Invitation not found or expired' })
@@ -241,6 +262,7 @@ export const genericInvitationsRouter = createTRPCRouter({
   accept: protectedProcedure
     .input(z.object({ invitationId: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       return invitationService.accept(input.invitationId, ctx.userId)
     }),
 
@@ -255,6 +277,7 @@ export const genericInvitationsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       await invitationService.decline(input.invitationId, ctx.userId, input.reason)
       return { success: true }
     }),
@@ -265,6 +288,7 @@ export const genericInvitationsRouter = createTRPCRouter({
   getRelationships: protectedProcedure
     .input(z.object({ type: z.string().optional() }).optional())
     .query(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       return invitationService.getRelationships(ctx.userId, input?.type)
     }),
 
@@ -274,6 +298,7 @@ export const genericInvitationsRouter = createTRPCRouter({
   removeRelationship: protectedProcedure
     .input(z.object({ relationshipId: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
+      const invitationService = getInvitationService(ctx)
       await invitationService.removeRelationship(input.relationshipId, ctx.userId)
       return { success: true }
     }),
