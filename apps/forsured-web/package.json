@@ -30,6 +30,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@bernierllc/email-manager": "^0.2.0",
     "@scf/supabase": "workspace:*",
     "@supabase/supabase-js": "catalog:",
     "@tamagui/lucide-icons": "catalog:",

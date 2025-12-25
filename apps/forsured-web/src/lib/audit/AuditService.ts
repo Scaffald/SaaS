@@ -12,7 +12,7 @@
  * - Context enrichment (IP, user-agent, geolocation)
  */
 
-import crypto from 'crypto';
+// Note: Using browser's global crypto (Web Crypto API), not Node.js crypto module
 import type {
   AuditLogRecord,
   AuditSeverity,
@@ -93,6 +93,7 @@ export class AuditService {
     );
 
     const { error } = await supabaseClient
+      .schema('forsured')
       .from('audit_log')
       .insert(enrichedEvents);
 
@@ -108,7 +109,7 @@ export class AuditService {
    * @returns Search result with pagination
    */
   async query(filters: AuditLogFilters): Promise<AuditLogSearchResult> {
-    let query = supabaseClient.from('audit_log').select('*', { count: 'exact' });
+    let query = supabaseClient.schema('forsured').from('audit_log').select('*', { count: 'exact' });
 
     // Apply filters
     if (filters.start_date) {
@@ -339,7 +340,7 @@ export class AuditService {
       throw new Error('Supabase client not initialized. Call initializeAuditService() first.');
     }
 
-    return await supabaseClient.from('audit_log').insert(event);
+    return await supabaseClient.schema('forsured').from('audit_log').insert(event);
   }
 
   /**

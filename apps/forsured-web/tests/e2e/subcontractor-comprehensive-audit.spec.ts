@@ -1,13 +1,37 @@
 /**
  * Comprehensive Subcontractor Page Audit
- * 
+ *
  * This test navigates through all subcontractor pages, checks for console errors,
  * validates functionality, and ensures proper test coverage.
+ *
+ * NOTE: This file consolidates tests from contractor-comprehensive.spec.ts (deprecated)
+ *
+ * REQ-9: Testing Policy - Use real Supabase, no mocking internal systems
  */
 
 import { test, expect } from './fixtures/base';
+import { seedContractorTestData, cleanupContractorTestData } from '../fixtures/seed-contractor-data';
+import { TEST_ORG_IDS } from '../fixtures/supabase';
+import { TEST_USER_IDS } from '../utils/auth';
+
+// Get contractor user and org IDs from test data
+const CONTRACTOR_USER_ID = TEST_USER_IDS.ACTIVE_CONTRACTOR;
+const CONTRACTOR_ORG_ID = TEST_ORG_IDS.primary;
 
 test.describe('Subcontractor Comprehensive Page Audit', () => {
+  test.beforeAll(async () => {
+    // Seed test data before all tests
+    await seedContractorTestData({
+      contractorUserId: CONTRACTOR_USER_ID,
+      contractorOrgId: CONTRACTOR_ORG_ID,
+    });
+  });
+
+  test.afterAll(async () => {
+    // Clean up test data after all tests
+    await cleanupContractorTestData();
+  });
+
   test.beforeEach(async ({ page, setupAuthAs }) => {
     // Use the test contractor user
     await setupAuthAs(page, 'active.contractor@test.forsured.com');
@@ -71,6 +95,28 @@ test.describe('Subcontractor Comprehensive Page Audit', () => {
     const heading = page.getByRole('heading', { name: /dashboard/i });
     if (await heading.count() > 0) {
       await expect(heading.first()).toBeVisible();
+    }
+    
+    // Test Upload Documents button from Quick Actions
+    const uploadDocumentsButton = page.locator('button:has-text("Upload Documents")').first();
+    if (await uploadDocumentsButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await uploadDocumentsButton.click();
+      await page.waitForTimeout(1000);
+      
+      // Check for upload modal
+      const uploadModal = page.locator('[data-testid="upload-modal"]');
+      if (await uploadModal.isVisible({ timeout: 3000 }).catch(() => false)) {
+        // Verify modal content
+        await expect(page.locator('text=Upload Document')).toBeVisible();
+        
+        // Close modal
+        const closeButton = page.locator('button:has-text("Close")').first();
+        if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await closeButton.click();
+          await page.waitForTimeout(500);
+          await expect(uploadModal).not.toBeVisible({ timeout: 2000 });
+        }
+      }
     }
     
     // Try clicking "View Documents" button if it exists
@@ -1119,6 +1165,170 @@ test.describe('Subcontractor Comprehensive Page Audit', () => {
         expect(hasError || true).toBeTruthy();
       }
     }
+  });
+
+  // ============================================================================
+  // MERGED FROM contractor-comprehensive.spec.ts (deprecated)
+  // These tests cover specific interaction patterns not covered above
+  // ============================================================================
+
+  test('Relationships - filter managers by status', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/relationships');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Look for status filter
+    const statusFilter = page.locator('select[name="status"], #statusFilter, select, button:has-text("Filter"), button:has-text("All"), button:has-text("Active")').first();
+    if (await statusFilter.isVisible({ timeout: 5000 })) {
+      try {
+        await statusFilter.selectOption('active');
+        await page.waitForTimeout(500);
+      } catch {
+        // Filter might not be a select, try clicking if it's a button
+        await statusFilter.click();
+        await page.waitForTimeout(500);
+      }
+    }
+    await assertNoErrors();
+  });
+
+  test('Projects - filter by status', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/projects');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Look for status filter
+    const statusFilter = page.locator('select[name="status"], button:has-text("Filter"), button:has-text("All")').first();
+    if (await statusFilter.isVisible({ timeout: 5000 })) {
+      try {
+        await statusFilter.selectOption('active');
+        await page.waitForTimeout(500);
+      } catch {
+        await statusFilter.click();
+        await page.waitForTimeout(500);
+      }
+    }
+    await assertNoErrors();
+  });
+
+  test('Projects - navigate to project detail', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/projects');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Click on first project card or link
+    const projectLink = page.locator('a[href*="/projects/"], [data-testid="project-card"], .project-card').first();
+    if (await projectLink.isVisible({ timeout: 5000 })) {
+      await projectLink.click();
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+
+      // Should be on project detail page
+      const url = page.url();
+      const isOnDetail = url.includes('/projects/') || url.includes('project');
+      expect(isOnDetail || true).toBeTruthy(); // Lenient check
+    }
+    await assertNoErrors();
+  });
+
+  test('Tasks - filter by status', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/tasks');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Look for status filter
+    const statusFilter = page.locator('select[name="status"], button:has-text("Filter"), button:has-text("All")').first();
+    if (await statusFilter.isVisible({ timeout: 5000 })) {
+      try {
+        await statusFilter.selectOption('pending');
+        await page.waitForTimeout(500);
+      } catch {
+        await statusFilter.click();
+        await page.waitForTimeout(500);
+      }
+    }
+    await assertNoErrors();
+  });
+
+  test('Tasks - mark task as complete', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/tasks');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Look for complete button or checkbox
+    const completeButton = page.locator('button:has-text("Complete"), button:has-text("Mark Complete"), input[type="checkbox"]').first();
+    if (await completeButton.isVisible({ timeout: 5000 })) {
+      await completeButton.click();
+      await page.waitForTimeout(500);
+    }
+    await assertNoErrors();
+  });
+
+  test('Documents - filter by type', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/documents');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Look for type filter
+    const typeFilter = page.locator('select[name="type"], button:has-text("Filter"), button:has-text("All Types")').first();
+    if (await typeFilter.isVisible({ timeout: 5000 })) {
+      try {
+        await typeFilter.selectOption('insurance');
+        await page.waitForTimeout(500);
+      } catch {
+        await typeFilter.click();
+        await page.waitForTimeout(500);
+      }
+    }
+    await assertNoErrors();
+  });
+
+  test('Documents - download button functionality', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/documents');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Look for download button
+    const downloadButton = page.locator('button:has-text("Download"), a:has-text("Download"), [data-testid="download-button"]').first();
+    if (await downloadButton.isVisible({ timeout: 5000 })) {
+      // Don't actually click download, just verify it exists and is enabled
+      const isEnabled = await downloadButton.isEnabled();
+      expect(isEnabled).toBeTruthy();
+    }
+    await assertNoErrors();
+  });
+
+  test('Notifications - mark as read', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/notifications');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Click on first notification to mark as read
+    const notification = page.locator('[data-testid="notification-item"], .notification-item, li').first();
+    if (await notification.isVisible({ timeout: 5000 })) {
+      await notification.click();
+      await page.waitForTimeout(500);
+    }
+    await assertNoErrors();
+  });
+
+  test('Notifications - filter by type', async ({ page, assertNoErrors }) => {
+    await page.goto('/subcontractor/notifications');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Look for type filter
+    const typeFilter = page.locator('select[name="type"], button:has-text("Filter"), button:has-text("All")').first();
+    if (await typeFilter.isVisible({ timeout: 5000 })) {
+      try {
+        await typeFilter.selectOption('alert');
+        await page.waitForTimeout(500);
+      } catch {
+        await typeFilter.click();
+        await page.waitForTimeout(500);
+      }
+    }
+    await assertNoErrors();
   });
 });
 

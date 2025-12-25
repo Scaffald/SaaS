@@ -1,4 +1,14 @@
 // tests/e2e/contractor-comprehensive.spec.ts
+//
+// ⚠️ DEPRECATED - 2024-12-24
+// ============================================================================
+// This file is DEPRECATED. Tests have been merged into:
+//   subcontractor-comprehensive-audit.spec.ts
+//
+// This file will be removed in a future cleanup. Do not add new tests here.
+// See: plans/contractor-ui-test-improvements.md (Phase 5, Task 5.1)
+// ============================================================================
+//
 // Comprehensive UI tests for Contractor/Subcontractor pages
 //
 // Tests ALL interactive elements on Contractor pages:

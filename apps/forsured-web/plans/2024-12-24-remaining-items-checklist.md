@@ -6,51 +6,81 @@
 
 ---
 
+## Working Policy
+
+**When executing plan items:**
+1. **Fix issues in code we're touching** - Linting issues, bugs, or problems in files we're actively modifying should be fixed immediately
+2. **Log issues in code we're NOT touching** - Problems discovered in unrelated code that don't block us should be added to the "Discovered Issues" section below for later handling
+3. **Update plans accordingly** - Keep this checklist current as work progresses
+
+---
+
+## Discovered Issues (To Be Addressed Later)
+
+| Issue | Location | Severity | Discovered During | Notes |
+|-------|----------|----------|-------------------|-------|
+| *(none yet)* | | | | |
+
+---
+
 ## Summary
 
 | Plan | Completion | Priority |
 |------|------------|----------|
-| [Risk Calculation Algorithm](#risk-calculation-algorithm) | 100% ✅ | Complete |
-| [Testing Strategy No Mocks](#testing-strategy-no-mocks) | 100% ✅ | Complete |
-| [Hybrid Audit Logging](#hybrid-audit-logging) | 95% ⚠️ | Low - SendGrid webhook remaining |
-| [Subcontractor Invitation Workflow](#subcontractor-invitation-workflow) | 30% ❌ | **HIGH** - Core functionality |
-| [Email Communication Auditability](#email-communication-auditability) | 0% ❌ | **HIGH** - New requirement |
+| [Hybrid Audit Logging](#hybrid-audit-logging) | **100%** ✅ | Complete - All components implemented |
+| [Generic Invitation System](#generic-invitation-system) | 5% ❌ | **HIGH** - New comprehensive design |
+| [Email Communication Auditability](#email-communication-auditability) | 0% ❌ | Medium - Extended audit features |
 
 ---
 
-## Risk Calculation Algorithm
+## All Plans Overview (Prioritized by Least Dependency)
 
-**Plan:** [2024-12-23-risk-calculation-algorithm.md](./2024-12-23-risk-calculation-algorithm.md)
+> **Last Evaluated:** 2024-12-24
+> **Purpose:** Reality check of all plan files against actual codebase implementation
 
-**Status: COMPLETE** ✅
+### Priority 1: LOW DEPENDENCY (Can work independently)
 
-- [x] Migration `276_forsured_risk_calculation_function.sql` - PostgreSQL function
-- [x] `riskCalculationService.ts` - TypeScript service
-- [x] `RiskBadge.tsx` component
-- [x] `RiskBreakdown.tsx` component
-- [x] `RiskBadge.test.tsx` - Component test
-- [x] `RiskBreakdown.test.tsx` - Component test
-- [x] `riskCalculation.pg.test.ts` - PostgreSQL function test
-- [x] `riskCalculationService.test.ts` - Service tests
-- [x] `risk-display.spec.ts` - E2E Playwright test
-- [x] Dashboard integration - RiskBadge in dashboard and modals
+| Plan | Claimed | Actual | Notes |
+|------|---------|--------|-------|
+| [Hybrid Audit Logging](./2024-12-23-hybrid-audit-logging.md) | 100% | **100%** ✅ | Complete! Part 4 (email-manager integration) done. All components implemented. |
+| [Fix React Prop Warnings](./fix-react-prop-warnings.md) | ~100% | **100%** ✅ | Fixed: JSX file extension, crypto import, audit_log schema. 0 warnings in broker audit. |
+| [Contractor UI Test Improvements](./contractor-ui-test-improvements.md) | All Phases | **100%** ✅ | All 5 phases complete. 14 tests in contractor-flow, 9 merged tests in comprehensive-audit. |
+| [Replace Internal API Mocks](./2025-01-23-replace-internal-api-mocks.md) | Audited | **15%** ⚠️ | Audit complete: 21 E2E files with mocks. Plan updated with progress tracker. ~5 files for error testing (allowed), ~16 with data mocks (need conversion). Large effort. |
+
+### Priority 2: REFERENCE DOCUMENTS (No implementation needed)
+
+| Plan | Status | Notes |
+|------|--------|-------|
+| [Contractor UI Coverage Analysis](./contractor-ui-coverage-analysis.md) | **100%** ✅ | Analysis document only. Documents 14 pages/routes with risk ratings. Use as reference. |
+
+### Priority 3: TO DELETE/ARCHIVE
+
+| Plan | Status | Notes |
+|------|--------|-------|
+| [Subcontractor Invitation Workflow](./2024-12-23-subcontractor-invitation-workflow.md) | **SUPERSEDED** 🗑️ | Superseded by Generic Invitation System. Manager-side UI exists, but subcontractor acceptance flow should follow new plan. Delete or archive this file. |
+
+### Priority 4: LARGE EFFORTS (Significant remaining work)
+
+| Plan | Claimed | Actual | Notes |
+|------|---------|--------|-------|
+| [Generic Invitation System](./2024-12-24-generic-invitation-system.md) | Design only | **5%** ❌ | 4 new DB tables NOT created. invitationService.ts NOT implemented. Only legacy migration exists. Large effort. |
+| [GAP-ANALYSIS FRS-Prototype](./GAP-ANALYSIS-FRS-Prototype-vs-Implementation.md) | Analysis | **10%** ⚠️ | Gap analysis document. Most P0/P1 issues still exist. Some gaps depend on Generic Invitation System. |
 
 ---
 
-## Testing Strategy No Mocks
+### Recommended Action Order
 
-**Plan:** [2024-12-23-testing-strategy-no-mocks.md](./2024-12-23-testing-strategy-no-mocks.md)
+1. ~~**Fix React Prop Warnings**~~ ✅ COMPLETED - Fixed JSX extension, crypto import, audit_log schema
+2. ~~**Contractor UI Test Improvements (Phase 5)**~~ ✅ COMPLETED - All 5 phases complete, 14 + 9 tests passing
+3. **Replace Internal API Mocks** - Audited 21 files, ~16 need conversion (large effort)
+4. ~~**Hybrid Audit Logging (Part 4)**~~ ✅ COMPLETED - Installed email-manager, created webhook, integrated with AuditService
+5. **Generic Invitation System** - Major effort, blocks some GAP-ANALYSIS items
+6. **Email Communication Auditability** - Extended features (auth audit, communication dashboard)
+7. **GAP-ANALYSIS items** - Address P0/P1 issues after invitation system complete
 
-**Status: COMPLETE** ✅
+### Files to Delete/Archive
 
-- [x] `src/test/testDb.ts` - Real database connection utilities
-- [x] `src/test/factories/index.ts` - Base factory utilities
-- [x] `src/test/factories/projectFactory.ts` - Project test data
-- [x] `src/test/factories/subcontractorFactory.ts` - Subcontractor test data
-- [x] `src/test/factories/taskFactory.ts` - Task test data
-- [x] `src/test/factories/complianceFactory.ts` - Compliance scores/issues
-- [x] `src/test/mocks/externalServices.ts` - SendGrid, Stripe, OCR mocks
-- [x] `src/test/setup.ts` - localStorage/sessionStorage mocks for Supabase auth
+- `apps/forsured-web/plans/2024-12-23-subcontractor-invitation-workflow.md` - Superseded
 
 ---
 
@@ -58,92 +88,73 @@
 
 **Plan:** [2024-12-23-hybrid-audit-logging.md](./2024-12-23-hybrid-audit-logging.md)
 
-**Status: MOSTLY COMPLETE (95%)** ⚠️
+**Status: COMPLETE (100%)** ✅
 
 ### Completed Items
 
 - [x] Migration `275_forsured_audit_triggers.sql` - Database triggers
 - [x] `src/lib/audit/AuditService.ts` - Full implementation with logging, querying, exporting
 - [x] `src/lib/audit/useAuditLog.ts` - React hook for components
-- [x] `src/hooks/usePageView.ts` - Page view tracking hook
+- [x] `src/hooks/usePageView.tsx` - Page view tracking hook (renamed from .ts)
 - [x] `src/lib/audit/StorageTierManager.ts` - Tiered storage management
 - [x] `src/lib/audit/types/` - Complete type definitions
 - [x] `src/lib/audit/__tests__/auditTriggers.integration.test.ts` - Integration test
 - [x] E2E audit tests - Multiple spec files exist
-- [x] `src/lib/audit/auditMiddleware.ts` - tRPC middleware for API call logging ✅ **NEW**
-- [x] `src/lib/audit/auditQueries.ts` - Fine-grained compliance queries ✅ **NEW**
+- [x] `src/lib/audit/auditMiddleware.ts` - tRPC middleware for API call logging
+- [x] `src/lib/audit/auditQueries.ts` - Fine-grained compliance queries
 
-### Remaining Items
+### Part 4: Email Tracking ✅ COMPLETE (2024-12-24)
 
-- [ ] **SendGrid Webhook Handler** - See [Email Communication Auditability](#email-communication-auditability) section below
-  - This is now part of the comprehensive email auditability strategy
+- [x] **Installed `@bernierllc/email-manager`** v0.2.0
+- [x] **Created email configuration** - `src/lib/email/emailConfig.ts`
+- [x] **Created SendGrid webhook handler** - `src/api/webhooks/sendgrid.ts`
+- [x] **Integrated with AuditService** - Email events logged for compliance
+- [ ] **Configure environment variables** - `SENDGRID_API_KEY`, `SENDGRID_WEBHOOK_SIGNING_SECRET` (runtime config)
 
 ---
 
-## Subcontractor Invitation Workflow
+## Generic Invitation System
 
-**Plan:** [2024-12-23-subcontractor-invitation-workflow.md](./2024-12-23-subcontractor-invitation-workflow.md)
+**Full Plan:** [2024-12-24-generic-invitation-system.md](./2024-12-24-generic-invitation-system.md)
 
-**Status: NOT COMPLETE (30%)** ❌ **HIGH PRIORITY**
+**Status: DESIGN COMPLETE, IMPLEMENTATION 5%** ❌ **HIGH PRIORITY**
 
-### Completed Items
+> **Supersedes:** [2024-12-23-subcontractor-invitation-workflow.md](./2024-12-23-subcontractor-invitation-workflow.md)
 
-- [x] Migration `270_forsured_create_relationship_invitations.sql` - Database schema
-- [x] `src/lib/invitations.ts` - Partial (broker invitations only)
-- [x] `tests/e2e/manager-subcontractors-invitations.spec.ts` - Manager-side E2E test
+### Quick Summary
 
-### Remaining Items
+A rule-based invitation system that handles ALL ForSured relationship types:
+- **Broker → Client** (one-to-one constraint)
+- **Manager → Broker** (one-to-many)
+- **Manager → Contractor** (one-to-many-via-project)
+- **Contractor → Broker** (one-to-many)
 
-#### Task 1: Create Invitation Response tRPC Endpoints
+**Key Features:**
+- Admin-managed invitation rules (no code changes for new types)
+- Referral tracking with cookie + localStorage (credit on signup only)
+- Personal messages on invitations
+- Graceful constraint handling with user-friendly messaging
 
-- [ ] **`src/server/routers/invitations.ts`** - tRPC router
-  - Location in plan: Task 1, Step 3
-  - Endpoints needed:
-    - `getPendingInvitations` - Query pending invitations for subcontractor
-    - `getInvitation` - Get single invitation details
-    - `acceptInvitation` - Mutation to accept invitation
-    - `declineInvitation` - Mutation to decline with optional reason
-    - `getRelationships` - Query all relationships by status
+### Implementation Tasks (8 total)
 
-- [ ] **`src/server/routers/__tests__/invitations.test.ts`** - Router tests
-  - Location in plan: Task 1, Step 1
+See [full plan](./2024-12-24-generic-invitation-system.md) for detailed implementation steps.
 
-#### Task 2: Create Subcontractor Relationships Page
+| Task | Description | Status |
+|------|-------------|--------|
+| 1. Database Schema | 4 new tables: `invitation_rules`, `invitations`, `referrals`, `user_relationships` | ❌ |
+| 2. Invitation Service | `invitationService.ts` with CRUD operations | ❌ |
+| 3. Referral Tracking | Cookie/localStorage utilities + React hook | ❌ |
+| 4. tRPC Router | Generic invitations router with all endpoints | ❌ |
+| 5. Admin UI | Rule management page and editor | ❌ |
+| 6. Invite Components | Universal `InviteModal` and `InviteButton` | ❌ |
+| 7. Landing Page | `/invite/[code]` for referral links | ❌ |
+| 8. Dashboard Integration | Pending invitations + referral stats | ❌ |
 
-- [ ] **`src/components/Subcontractor/InvitationCard.tsx`** - Invitation card component
-  - Location in plan: Task 2, Step 1
-  - Features: Accept/decline buttons, project details, invitation date
+### Existing Work (Carried Forward)
 
-- [ ] **`src/components/Subcontractor/PendingInvitations.tsx`** - Pending invitations list
-  - Location in plan: Task 2, Step 2
-  - Features: List of InvitationCards with loading/empty states
-
-- [ ] **`src/app/subcontractor/relationships/page.tsx`** - Relationships page
-  - Location in plan: Task 2, Step 3
-  - Tabs: Pending Invitations, Active Projects, History
-
-#### Task 3: Dashboard Integration
-
-- [ ] **Update `src/components/Dashboard/SubcontractorDashboard.tsx`**
-  - Location in plan: Task 3, Step 1
-  - Add pending invitations section with count badge
-  - Show first pending invitation preview
-  - Link to relationships page
-
-#### Task 4: Email Notifications
-
-- [ ] **Invitation email template** - See [Email Communication Auditability](#email-communication-auditability) section
-  - Will use @bernierllc/email-manager package
-
-#### E2E Tests
-
-- [ ] **`tests/e2e/accept-invitation.spec.ts`** - Subcontractor acceptance flow
-  - Location in plan: Test Requirements table
-  - Scenarios: See pending, navigate, view details, accept, verify active
-
-- [ ] **`tests/e2e/decline-invitation.spec.ts`** - Subcontractor decline flow
-  - Location in plan: Test Requirements table
-  - Scenarios: Decline with reason, verify history, manager notification
+- [x] Migration `270_forsured_create_relationship_invitations.sql` - Legacy schema
+- [x] `src/lib/invitations.ts` - Partial implementation (to be replaced)
+- [x] `tests/e2e/manager-subcontractors-invitations.spec.ts` - Manager-side E2E
 
 ---
 
@@ -586,7 +597,7 @@
 ### Phase 1: Critical Path (Immediate)
 
 1. ✅ Create auditMiddleware.ts and auditQueries.ts
-2. **Subcontractor Invitation Workflow** - Core functionality missing
+2. **[Generic Invitation System](#generic-invitation-system)** - See full plan for implementation
 3. **Email Integration with @bernierllc/email-manager** - Foundation for all email
 
 ### Phase 2: Email Auditability (Next Sprint)
@@ -608,39 +619,55 @@
 
 ```
 apps/forsured-web/
+├── plans/
+│   └── 2024-12-24-generic-invitation-system.md      # ✅ Comprehensive invitation plan
 ├── src/
 │   ├── app/
+│   │   ├── admin/
+│   │   │   └── invitation-rules/page.tsx            # MISSING - Admin rule management
 │   │   ├── api/webhooks/
-│   │   │   ├── sendgrid/route.ts                   # MISSING - Production handler
-│   │   │   └── sendgrid-capture/route.ts           # MISSING - Test capture
-│   │   ├── auth/callback/route.ts                  # UPDATE - Add audit logging
-│   │   └── subcontractor/relationships/page.tsx    # MISSING
+│   │   │   ├── sendgrid/route.ts                    # MISSING - Production handler
+│   │   │   └── sendgrid-capture/route.ts            # MISSING - Test capture
+│   │   ├── auth/callback/route.ts                   # UPDATE - Add audit logging
+│   │   └── invite/
+│   │       └── [code]/page.tsx                      # MISSING - Referral landing page
 │   ├── components/
 │   │   ├── Admin/
-│   │   │   └── CommunicationHistory.tsx            # MISSING
-│   │   └── Subcontractor/
-│   │       ├── InvitationCard.tsx                  # MISSING
-│   │       └── PendingInvitations.tsx              # MISSING
+│   │   │   ├── CommunicationHistory.tsx             # MISSING
+│   │   │   └── InvitationRuleEditor.tsx             # MISSING
+│   │   └── Invitations/
+│   │       ├── InviteModal.tsx                      # MISSING - Universal invite modal
+│   │       └── InviteButton.tsx                     # MISSING
 │   ├── hooks/
-│   │   └── useAuthAudit.ts                         # MISSING
+│   │   └── useAuthAudit.ts                          # MISSING
 │   ├── lib/
 │   │   ├── audit/
-│   │   │   ├── auditMiddleware.ts                  # ✅ CREATED
-│   │   │   └── auditQueries.ts                     # ✅ CREATED
-│   │   └── email/
-│   │       ├── emailIntegration.ts                 # MISSING
-│   │       └── webhookProcessor.ts                 # MISSING
+│   │   │   ├── auditMiddleware.ts                   # ✅ CREATED
+│   │   │   └── auditQueries.ts                      # ✅ CREATED
+│   │   ├── email/
+│   │   │   ├── emailIntegration.ts                  # MISSING
+│   │   │   └── webhookProcessor.ts                  # MISSING
+│   │   ├── invitations/
+│   │   │   ├── types.ts                             # MISSING - Invitation types
+│   │   │   └── invitationService.ts                 # MISSING - Core service
+│   │   └── referrals/
+│   │       ├── referralTracking.ts                  # MISSING - Cookie/localStorage
+│   │       └── useReferral.ts                       # MISSING - React hook
 │   └── server/
 │       └── routers/
-│           └── invitations.ts                      # MISSING
+│           └── invitations.ts                       # MISSING - Generic router
+├── supabase/
+│   └── migrations/
+│       └── XXXXXX_generic_invitation_system.sql     # MISSING - New schema
 ├── scripts/
-│   └── test-email-sending.ts                       # MISSING
+│   └── test-email-sending.ts                        # MISSING
 ├── docs/
-│   └── sendgrid-webhook-payloads.md                # MISSING - Document after testing
+│   └── sendgrid-webhook-payloads.md                 # MISSING - Document after testing
 └── tests/
     └── e2e/
-        ├── accept-invitation.spec.ts               # MISSING
-        └── decline-invitation.spec.ts              # MISSING
+        ├── generic-invitation-flow.spec.ts          # MISSING
+        ├── referral-attribution.spec.ts             # MISSING
+        └── constraint-handling.spec.ts              # MISSING
 ```
 
 ---
