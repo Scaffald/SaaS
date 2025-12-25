@@ -1,6 +1,7 @@
 /**
  * E2E Tests for Admin Compliance Management Workflows
  * REQ-2, TASK-21: Test admin compliance requirement management UI
+ * REQ-9: Testing Policy - Use real Supabase, no mocking internal systems
  *
  * Tests the admin compliance management features including:
  * - Compliance requirements list navigation
@@ -9,18 +10,25 @@
  * - Version history viewing
  * - Bulk import/export operations
  *
- * NOTE: These tests will be enabled when the compliance admin pages are implemented.
- * Currently includes mock data and API route handlers for testing.
+ * NOTE: These tests are currently skipped waiting for compliance admin pages
+ * to be implemented. When enabled, they will use real database calls with
+ * seed data from tests/fixtures/seed-compliance-data.ts (to be created).
+ *
+ * Implementation checklist when enabling these tests:
+ * 1. Create seed-compliance-data.ts fixture (see seed-admin-data.ts for pattern)
+ * 2. Import seedComplianceTestData/cleanupComplianceTestData
+ * 3. Add beforeAll/afterAll hooks for seeding
+ * 4. Remove test.skip() from individual tests
  */
 
-import { test, expect, Page, Route } from '@playwright/test';
-import { loginAs, TEST_USERS, TEST_USER_IDS } from '../utils/auth';
+import { test, expect } from './fixtures/base';
+import { TEST_USER_IDS } from '../utils/auth';
 
 // =============================================================================
 // Test Constants
 // =============================================================================
 
-const TEST_ORG_ID = `org-${TEST_USER_IDS.ADMIN}`;
+// These IDs will be populated by seed data when tests are enabled
 const TEST_REQUIREMENT_IDS = {
   generalLiability: 'req-gl-001-test',
   workersComp: 'req-wc-001-test',
@@ -28,250 +36,23 @@ const TEST_REQUIREMENT_IDS = {
 };
 
 // =============================================================================
-// Mock Data
-// =============================================================================
-
-const MOCK_REQUIREMENTS = [
-  {
-    id: TEST_REQUIREMENT_IDS.generalLiability,
-    code: 'GL-001',
-    name: 'General Liability $1M/$2M',
-    type: 'general_liability',
-    description: 'Standard general liability coverage requirement',
-    status: 'active',
-    is_template: false,
-    effective_date: '2024-01-01',
-    expiration_date: null,
-    organization_id: TEST_ORG_ID,
-    requirement_definition: {
-      coverage_limits: {
-        per_occurrence: 1000000,
-        aggregate: 2000000,
-      },
-      required_endorsements: ['Additional Insured', 'Waiver of Subrogation'],
-      policy_conditions: [],
-      documentation_requirements: ['COI', 'Policy Declaration'],
-    },
-    current_version: 1,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: TEST_REQUIREMENT_IDS.workersComp,
-    code: 'WC-001',
-    name: 'Workers Compensation',
-    type: 'workers_comp',
-    description: 'Statutory workers compensation coverage',
-    status: 'active',
-    is_template: false,
-    effective_date: '2024-01-01',
-    expiration_date: null,
-    organization_id: TEST_ORG_ID,
-    requirement_definition: {
-      coverage_limits: {},
-      required_endorsements: [],
-      policy_conditions: ['Statutory Limits'],
-      documentation_requirements: ['COI'],
-    },
-    current_version: 1,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: TEST_REQUIREMENT_IDS.umbrella,
-    code: 'UMB-001',
-    name: 'Umbrella $5M',
-    type: 'umbrella',
-    description: 'Excess liability coverage over underlying policies',
-    status: 'active',
-    is_template: false,
-    effective_date: '2024-01-01',
-    expiration_date: null,
-    organization_id: TEST_ORG_ID,
-    requirement_definition: {
-      coverage_limits: {
-        per_occurrence: 5000000,
-        aggregate: 5000000,
-      },
-      required_endorsements: [],
-      policy_conditions: [],
-      documentation_requirements: ['COI'],
-    },
-    current_version: 1,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
-
-const MOCK_DEPENDENCIES = [
-  {
-    id: 'dep-001',
-    requirement_id: TEST_REQUIREMENT_IDS.umbrella,
-    depends_on_id: TEST_REQUIREMENT_IDS.generalLiability,
-    dependency_type: 'requires',
-    notes: 'Umbrella requires underlying GL coverage',
-    created_at: new Date().toISOString(),
-    depends_on: {
-      id: TEST_REQUIREMENT_IDS.generalLiability,
-      code: 'GL-001',
-      name: 'General Liability $1M/$2M',
-      type: 'general_liability',
-    },
-  },
-];
-
-const MOCK_VERSION_HISTORY = [
-  {
-    id: 'v-001',
-    requirement_id: TEST_REQUIREMENT_IDS.generalLiability,
-    version: 1,
-    changed_at: '2024-01-01T00:00:00Z',
-    change_summary: 'Initial version',
-    changed_by: TEST_USER_IDS.ADMIN,
-    changed_fields: null,
-  },
-];
-
-// =============================================================================
-// Mock API Setup
-// =============================================================================
-
-/**
- * Set up mock tRPC API responses for compliance endpoints
- */
-async function setupComplianceMocks(page: Page) {
-  // Mock compliance requirements list
-  await page.route('**/api/trpc/compliance.requirements.list*', async (route: Route) => {
-    const method = route.request().method();
-    if (method === 'GET') {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          result: {
-            data: {
-              data: MOCK_REQUIREMENTS,
-              totalCount: MOCK_REQUIREMENTS.length,
-              page: 1,
-              pageSize: 10,
-              totalPages: 1,
-            },
-          },
-        }),
-      });
-    }
-    return route.continue();
-  });
-
-  // Mock get single requirement
-  await page.route('**/api/trpc/compliance.requirements.get*', async (route: Route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: MOCK_REQUIREMENTS[0],
-        },
-      }),
-    });
-  });
-
-  // Mock create requirement
-  await page.route('**/api/trpc/compliance.requirements.create*', async (route: Route) => {
-    const method = route.request().method();
-    if (method === 'POST') {
-      const newRequirement = {
-        ...MOCK_REQUIREMENTS[0],
-        id: `req-new-${Date.now()}`,
-        code: 'NEW-001',
-        name: 'New Requirement',
-        created_at: new Date().toISOString(),
-      };
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          result: {
-            data: newRequirement,
-          },
-        }),
-      });
-    }
-    return route.continue();
-  });
-
-  // Mock dependencies list
-  await page.route('**/api/trpc/compliance.dependencies.list*', async (route: Route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: MOCK_DEPENDENCIES,
-        },
-      }),
-    });
-  });
-
-  // Mock version history
-  await page.route('**/api/trpc/compliance.requirements.getVersionHistory*', async (route: Route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: MOCK_VERSION_HISTORY,
-        },
-      }),
-    });
-  });
-
-  // Mock bulk operations
-  await page.route('**/api/trpc/compliance.bulk.importPreview*', async (route: Route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: {
-            totalRows: 2,
-            validRows: 2,
-            invalidRows: 0,
-            duplicateCodes: [],
-            canProceed: true,
-            rows: [],
-          },
-        },
-      }),
-    });
-  });
-
-  await page.route('**/api/trpc/compliance.bulk.export*', async (route: Route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: {
-            data: JSON.stringify({ requirements: MOCK_REQUIREMENTS }),
-            filename: 'requirements-export.json',
-            mimeType: 'application/json',
-            totalRecords: MOCK_REQUIREMENTS.length,
-          },
-        },
-      }),
-    });
-  });
-}
-
-// =============================================================================
 // Test Suite
 // =============================================================================
 
 test.describe('Admin Compliance Management', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupComplianceMocks(page);
-    await loginAs(page, 'admin@test.forsured.com');
+  // TODO: When compliance admin pages are implemented, add:
+  // test.beforeAll(async () => {
+  //   await seedComplianceTestData();
+  // });
+  //
+  // test.afterAll(async () => {
+  //   await cleanupComplianceTestData();
+  // });
+
+  test.beforeEach(async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, 'admin@test.forsured.com');
+    await page.goto('/admin/dashboard');
+    await page.waitForLoadState('networkidle');
   });
 
   // ===========================================================================
@@ -563,11 +344,12 @@ test.describe('Admin Compliance Management', () => {
       await expect(page.getByRole('button', { name: /export/i })).toBeVisible();
     });
 
-    test.skip('should hide admin features for non-admin users', async ({ page }) => {
+    test.skip('should hide admin features for non-admin users', async ({ page, setupAuthAs }) => {
       // TODO: Enable when broker compliance view is implemented
       // Login as broker instead
-      await loginAs(page, 'active.broker@test.forsured.com');
+      await setupAuthAs(page, 'active.broker@test.forsured.com');
       await page.goto('/broker/compliance/requirements');
+      await page.waitForLoadState('networkidle');
 
       // Broker should not see admin action buttons
       await expect(page.getByRole('button', { name: /create/i })).not.toBeVisible();
@@ -582,13 +364,15 @@ test.describe('Admin Compliance Management', () => {
 
 // TODO: Smoke tests need admin dashboard fix - skipping temporarily
 test.describe.skip('Compliance Management Smoke Tests', () => {
-  test('admin can access dashboard', async ({ page }) => {
-    await loginAs(page, 'admin@test.forsured.com');
+  test('admin can access dashboard', async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, 'admin@test.forsured.com');
+    await page.goto('/admin/dashboard');
     await expect(page).toHaveURL(/\/admin\/dashboard/);
   });
 
-  test('admin dashboard loads without errors', async ({ page }) => {
-    await loginAs(page, 'admin@test.forsured.com');
+  test('admin dashboard loads without errors', async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, 'admin@test.forsured.com');
+    await page.goto('/admin/dashboard');
 
     // Check for no critical errors in console
     const errors: string[] = [];

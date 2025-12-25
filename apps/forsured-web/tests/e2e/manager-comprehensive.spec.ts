@@ -1,5 +1,6 @@
 // tests/e2e/manager-comprehensive.spec.ts
 // Comprehensive UI tests for GC/Manager pages
+// REQ-9: Testing Policy - Use real Supabase, no mocking internal systems
 //
 // Tests ALL interactive elements on Manager pages:
 // - Tasks page interactions (filters, detail view, status changes)
@@ -12,228 +13,17 @@
 // - Documents page with upload flow
 //
 // Phase 7: Complete UI test coverage
+// Uses real database calls with seeded test data
 
 import { test, expect } from './fixtures/base';
 
-// Mock data for manager tests
-const MOCK_TASKS = [
-  {
-    id: 'task-1',
-    title: 'Review Insurance Documents',
-    description: 'Review insurance documents for Contractor A',
-    status: 'pending',
-    priority: 'high',
-    assigned_to: 'active.gc@test.forsured.com',
-    created_at: new Date().toISOString(),
-    due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'task-2',
-    title: 'Approve Subcontractor',
-    description: 'Approve new subcontractor application',
-    status: 'in_progress',
-    priority: 'medium',
-    assigned_to: 'active.gc@test.forsured.com',
-    created_at: new Date().toISOString(),
-    due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'task-3',
-    title: 'Update Project Status',
-    description: 'Update project status for ongoing work',
-    status: 'completed',
-    priority: 'low',
-    assigned_to: 'active.gc@test.forsured.com',
-    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    due_date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
-const MOCK_PROJECT_DETAIL = {
-  id: 'project-123',
-  name: 'Downtown Office Renovation',
-  address: '123 Main St, San Francisco, CA',
-  status: 'active',
-  start_date: '2025-01-01',
-  end_date: '2025-06-30',
-  gc_id: 'gc-1',
-  budget: 500000,
-  created_at: new Date().toISOString(),
-  subcontractors: [
-    { id: 'sub-1', name: 'Acme Electrical', status: 'approved', compliance_status: 'compliant' },
-    { id: 'sub-2', name: 'Best Plumbing', status: 'pending', compliance_status: 'pending' },
-  ],
-  documents: [
-    { id: 'doc-1', name: 'Insurance Certificate', type: 'insurance', uploaded_at: new Date().toISOString() },
-    { id: 'doc-2', name: 'Contract Agreement', type: 'contract', uploaded_at: new Date().toISOString() },
-  ],
-};
-
-const MOCK_INSURANCE_PRODUCTS = [
-  {
-    id: 'product-1',
-    name: 'General Liability Insurance',
-    provider: 'ABC Insurance',
-    coverage_amount: 1000000,
-    premium: 5000,
-    description: 'Comprehensive general liability coverage',
-  },
-  {
-    id: 'product-2',
-    name: 'Workers Compensation',
-    provider: 'XYZ Insurance',
-    coverage_amount: 500000,
-    premium: 3000,
-    description: 'Workers compensation insurance',
-  },
-];
-
-const MOCK_INTEGRATIONS = [
-  {
-    id: 'int-1',
-    name: 'Scaffald',
-    description: 'Construction project management platform',
-    status: 'connected',
-    icon: 'scaffald-icon.png',
-  },
-  {
-    id: 'int-2',
-    name: 'Procore',
-    description: 'Project management software',
-    status: 'available',
-    icon: 'procore-icon.png',
-  },
-];
-
-const MOCK_ACKNOWLEDGEMENTS = [
-  {
-    id: 'ack-1',
-    title: 'Safety Training Acknowledgement',
-    description: 'Acknowledge completion of safety training',
-    status: 'pending',
-    required_by: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'ack-2',
-    title: 'Code of Conduct',
-    description: 'Acknowledge code of conduct',
-    status: 'completed',
-    completed_at: new Date().toISOString(),
-  },
-];
-
-const MOCK_NOTIFICATIONS = [
-  {
-    id: 'notif-1',
-    type: 'approval_request',
-    title: 'New Subcontractor Approval',
-    message: 'Contractor ABC requests approval for project Downtown',
-    read: false,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'notif-2',
-    type: 'document_uploaded',
-    title: 'Insurance Document Uploaded',
-    message: 'Contractor XYZ uploaded insurance certificate',
-    read: true,
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
-const MOCK_TEAM_MEMBERS = [
-  {
-    id: 'user-1',
-    name: 'John Doe',
-    email: 'john@testgc.com',
-    role: 'project_manager',
-    status: 'active',
-  },
-  {
-    id: 'user-2',
-    name: 'Jane Smith',
-    email: 'jane@testgc.com',
-    role: 'admin',
-    status: 'active',
-  },
-];
-
-// Mock enum values for status and priority filters
-const MOCK_TASK_STATUS_ENUMS = [
-  { id: 1, enum_type: 'task_status', value: 'pending', display_name: 'Pending', sort_order: 1 },
-  { id: 2, enum_type: 'task_status', value: 'in_progress', display_name: 'In Progress', sort_order: 2 },
-  { id: 3, enum_type: 'task_status', value: 'completed', display_name: 'Completed', sort_order: 3 },
-  { id: 4, enum_type: 'task_status', value: 'cancelled', display_name: 'Cancelled', sort_order: 4 },
-];
-
-const MOCK_TASK_PRIORITY_ENUMS = [
-  { id: 10, enum_type: 'task_priority', value: 'urgent', display_name: 'Urgent', sort_order: 1 },
-  { id: 11, enum_type: 'task_priority', value: 'high', display_name: 'High', sort_order: 2 },
-  { id: 12, enum_type: 'task_priority', value: 'medium', display_name: 'Medium', sort_order: 3 },
-  { id: 13, enum_type: 'task_priority', value: 'low', display_name: 'Low', sort_order: 4 },
-];
-
 // TODO: Manager tasks tests need fix - skipping temporarily
+// Uses real database - enum_values and tasks tables
 test.describe.skip('Manager Tasks Page - Comprehensive', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock enum values API (used by useEnums hook for task status/priority dropdowns)
-    await page.route('**/rest/v1/enum_values*', async (route) => {
-      const url = route.request().url();
-      const urlObj = new URL(url);
-      const enumType = urlObj.searchParams.get('enum_type');
-
-      let data = [...MOCK_TASK_STATUS_ENUMS, ...MOCK_TASK_PRIORITY_ENUMS];
-      if (enumType) {
-        if (enumType.includes('task_status')) {
-          data = MOCK_TASK_STATUS_ENUMS;
-        } else if (enumType.includes('task_priority')) {
-          data = MOCK_TASK_PRIORITY_ENUMS;
-        }
-      }
-
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(data),
-      });
-    });
-
-    // Mock tasks API
-    await page.route('**/rest/v1/tasks*', async (route) => {
-      const url = route.request().url();
-      const method = route.request().method();
-
-      if (method === 'GET') {
-        // Check for filters in query string
-        const urlObj = new URL(url);
-        const status = urlObj.searchParams.get('status');
-        const priority = urlObj.searchParams.get('priority');
-
-        let filteredTasks = [...MOCK_TASKS];
-        if (status) filteredTasks = filteredTasks.filter(t => t.status === status);
-        if (priority) filteredTasks = filteredTasks.filter(t => t.priority === priority);
-
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(filteredTasks),
-        });
-      }
-
-      if (method === 'PATCH') {
-        const updates = JSON.parse(route.request().postData() || '{}');
-        const updatedTask = { ...MOCK_TASKS[0], ...updates };
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([updatedTask]),
-        });
-      }
-
-      return route.continue();
-    });
+    await page.goto('/manager/tasks');
+    await page.waitForLoadState('networkidle');
   });
 
   test('should display tasks list with all columns', async ({ page }) => {
@@ -354,40 +144,12 @@ test.describe.skip('Manager Tasks Page - Comprehensive', () => {
   });
 });
 
+// Uses real database - projects, project_subcontractors, documents tables
 test.describe('Manager Project Detail Page - Comprehensive', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock project detail API
-    await page.route('**/rest/v1/projects*', async (route) => {
-      const url = route.request().url();
-      if (url.includes('project-123')) {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([MOCK_PROJECT_DETAIL]),
-        });
-      }
-      return route.continue();
-    });
-
-    // Mock subcontractors for project
-    await page.route('**/rest/v1/project_subcontractors*', async (route) => {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_PROJECT_DETAIL.subcontractors),
-      });
-    });
-
-    // Mock project documents
-    await page.route('**/rest/v1/documents*', async (route) => {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_PROJECT_DETAIL.documents),
-      });
-    });
+    // Note: Tests use a test project ID that may not exist in dev DB
+    // Tests are defensive with fallback checks
   });
 
   test('should display project details', async ({ page }) => {
@@ -470,18 +232,10 @@ test.describe('Manager Project Detail Page - Comprehensive', () => {
   });
 });
 
+// Uses real database - insurance_products table
 test.describe('Manager Insurance Marketplace - Comprehensive', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock insurance products API
-    await page.route('**/rest/v1/insurance_products*', async (route) => {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_INSURANCE_PRODUCTS),
-      });
-    });
   });
 
   test('should display insurance marketplace page', async ({ page }) => {
@@ -531,18 +285,10 @@ test.describe('Manager Insurance Marketplace - Comprehensive', () => {
   });
 });
 
+// Uses real database - integrations table
 test.describe('Manager Integrations Marketplace - Comprehensive', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock integrations API
-    await page.route('**/rest/v1/integrations*', async (route) => {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_INTEGRATIONS),
-      });
-    });
   });
 
   test('should display integrations marketplace page', async ({ page }) => {
@@ -597,18 +343,10 @@ test.describe('Manager Integrations Marketplace - Comprehensive', () => {
   });
 });
 
+// Uses real database - acknowledgements table
 test.describe('Manager Acknowledgements - Comprehensive', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock acknowledgements API
-    await page.route('**/rest/v1/acknowledgements*', async (route) => {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_ACKNOWLEDGEMENTS),
-      });
-    });
   });
 
   test('should display acknowledgements list', async ({ page }) => {
@@ -666,34 +404,10 @@ test.describe('Manager Acknowledgements - Comprehensive', () => {
   });
 });
 
+// Uses real database - notifications table
 test.describe('Manager Notifications - Comprehensive', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock notifications API
-    await page.route('**/rest/v1/notifications*', async (route) => {
-      const method = route.request().method();
-
-      if (method === 'GET') {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(MOCK_NOTIFICATIONS),
-        });
-      }
-
-      if (method === 'PATCH') {
-        const updates = JSON.parse(route.request().postData() || '{}');
-        const updatedNotif = { ...MOCK_NOTIFICATIONS[0], ...updates };
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([updatedNotif]),
-        });
-      }
-
-      return route.continue();
-    });
   });
 
   test('should display notifications page', async ({ page }) => {
@@ -759,18 +473,10 @@ test.describe('Manager Notifications - Comprehensive', () => {
   });
 });
 
+// Uses real database - team_members table
 test.describe('Manager User Management - Comprehensive', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock team members API
-    await page.route('**/rest/v1/team_members*', async (route) => {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_TEAM_MEMBERS),
-      });
-    });
   });
 
   test('should display user management page', async ({ page }) => {
@@ -809,39 +515,10 @@ test.describe('Manager User Management - Comprehensive', () => {
   });
 });
 
+// Uses real database - user_profiles table
 test.describe('Manager Settings - Form Interactions', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock user profile API
-    await page.route('**/rest/v1/user_profiles*', async (route) => {
-      const method = route.request().method();
-
-      if (method === 'GET') {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([{
-            id: 'profile-1',
-            name: 'Test GC User',
-            email: 'active.gc@test.forsured.com',
-            phone: '555-1234',
-            company: 'Test GC Company',
-          }]),
-        });
-      }
-
-      if (method === 'PATCH') {
-        const updates = JSON.parse(route.request().postData() || '{}');
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([{ id: 'profile-1', ...updates }]),
-        });
-      }
-
-      return route.continue();
-    });
   });
 
   test('should display profile settings form', async ({ page }) => {
@@ -975,53 +652,10 @@ test.describe('Manager Settings - Form Interactions', () => {
   });
 });
 
+// Uses real database - documents table and storage bucket
 test.describe('Manager Documents - Upload Flow', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock documents API
-    await page.route('**/rest/v1/documents*', async (route) => {
-      const method = route.request().method();
-
-      if (method === 'GET') {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([
-            {
-              id: 'doc-1',
-              name: 'Insurance Certificate.pdf',
-              type: 'insurance',
-              size: 1024000,
-              uploaded_at: new Date().toISOString(),
-            },
-          ]),
-        });
-      }
-
-      if (method === 'POST') {
-        return route.fulfill({
-          status: 201,
-          contentType: 'application/json',
-          body: JSON.stringify([{
-            id: 'doc-new',
-            name: 'New Document.pdf',
-            uploaded_at: new Date().toISOString(),
-          }]),
-        });
-      }
-
-      return route.continue();
-    });
-
-    // Mock storage upload endpoint
-    await page.route('**/storage/v1/**', async (route) => {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ path: 'documents/new-file.pdf' }),
-      });
-    });
   });
 
   test('should display documents page with upload button', async ({ page }) => {
@@ -1084,45 +718,10 @@ test.describe('Manager Documents - Upload Flow', () => {
   });
 });
 
+// Uses real database - help_articles table
 test.describe('Manager Help Page - Comprehensive', () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-
-    // Mock help articles API with proper field structure
-    await page.route('**/rest/v1/help_articles*', async (route) => {
-      const url = route.request().url();
-
-      // Mock article matching the format expected by helpArticleService
-      const mockGettingStarted = {
-        id: 'gc-getting-started',
-        slug: 'getting-started',
-        title: 'Getting Started as a General Contractor',
-        content: '# Getting Started as a General Contractor\n\nWelcome to ForSured!',
-        user_types: ['gc', 'manager'],
-        category: 'getting-started',
-        sort_order: 1,
-        video_url: null,
-        is_published: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      // For single article queries (eq.slug), return single object
-      if (url.includes('eq.slug')) {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(mockGettingStarted),
-        });
-      }
-
-      // For list queries, return array
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([mockGettingStarted]),
-      });
-    });
   });
 
   test('should display help center page', async ({ page }) => {
