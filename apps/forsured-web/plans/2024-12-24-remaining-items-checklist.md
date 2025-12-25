@@ -28,7 +28,7 @@
 | Plan | Completion | Priority |
 |------|------------|----------|
 | [Hybrid Audit Logging](#hybrid-audit-logging) | **100%** ✅ | Complete - All components implemented |
-| [Generic Invitation System](#generic-invitation-system) | 5% ❌ | **HIGH** - New comprehensive design |
+| [Generic Invitation System](#generic-invitation-system) | **50%** ⚠️ | In Progress - Tasks 1-4 Complete, Tasks 5-8 Pending |
 | [Email Communication Auditability](#email-communication-auditability) | 0% ❌ | Medium - Extended audit features |
 
 ---
@@ -63,7 +63,7 @@
 
 | Plan | Claimed | Actual | Notes |
 |------|---------|--------|-------|
-| [Generic Invitation System](./2024-12-24-generic-invitation-system.md) | Design only | **5%** ❌ | 4 new DB tables NOT created. invitationService.ts NOT implemented. Only legacy migration exists. Large effort. |
+| [Generic Invitation System](./2024-12-24-generic-invitation-system.md) | Design + Tasks 1-4 | **50%** ⚠️ | Tasks 1-4 COMPLETE: DB schema, invitationService, referral tracking, tRPC router. Tasks 5-8 PENDING: Admin UI, Universal Invite Modal, Landing Page, Dashboard Integration. |
 | [GAP-ANALYSIS FRS-Prototype](./GAP-ANALYSIS-FRS-Prototype-vs-Implementation.md) | Analysis | **10%** ⚠️ | Gap analysis document. Most P0/P1 issues still exist. Some gaps depend on Generic Invitation System. |
 
 ---
@@ -117,7 +117,7 @@
 
 **Full Plan:** [2024-12-24-generic-invitation-system.md](./2024-12-24-generic-invitation-system.md)
 
-**Status: DESIGN COMPLETE, IMPLEMENTATION 5%** ❌ **HIGH PRIORITY**
+**Status: IN PROGRESS (50%)** ⚠️ **HIGH PRIORITY**
 
 > **Supersedes:** [2024-12-23-subcontractor-invitation-workflow.md](./2024-12-23-subcontractor-invitation-workflow.md)
 
@@ -141,19 +141,46 @@ See [full plan](./2024-12-24-generic-invitation-system.md) for detailed implemen
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 1. Database Schema | 4 new tables: `invitation_rules`, `invitations`, `referrals`, `user_relationships` | ❌ |
-| 2. Invitation Service | `invitationService.ts` with CRUD operations | ❌ |
-| 3. Referral Tracking | Cookie/localStorage utilities + React hook | ❌ |
-| 4. tRPC Router | Generic invitations router with all endpoints | ❌ |
+| 1. Database Schema | 3 new tables: `invitation_rules`, `generic_invitations`, `user_relationships` | ✅ |
+| 2. Invitation Service | `invitationService.ts` with CRUD operations | ✅ |
+| 3. Referral Tracking | Cookie/localStorage utilities + React hook | ✅ |
+| 4. tRPC Router | Generic invitations router with all endpoints | ✅ |
 | 5. Admin UI | Rule management page and editor | ❌ |
 | 6. Invite Components | Universal `InviteModal` and `InviteButton` | ❌ |
 | 7. Landing Page | `/invite/[code]` for referral links | ❌ |
 | 8. Dashboard Integration | Pending invitations + referral stats | ❌ |
 
+### Completed Work (Tasks 1-4)
+
+**Database Schema (Task 1):**
+- [x] Migration `280_generic_invitation_system.sql` - New tables created
+- [x] `core.invitation_rules` - Admin-managed invitation types
+- [x] `core.generic_invitations` - Unified invitation tracking
+- [x] `core.user_relationships` - Non-project relationships
+- [x] Seed data for 4 default invitation rules
+- [x] RLS policies and indexes
+
+**Invitation Service (Task 2):**
+- [x] `src/lib/invitations/types.ts` - Complete type definitions
+- [x] `src/lib/invitations/invitationService.ts` - Full CRUD implementation
+- [x] Constraint checking for one-to-one relationships
+- [x] Audit logging integration
+
+**Referral Tracking (Task 3):**
+- [x] `src/lib/referrals/referralTracking.ts` - Cookie/localStorage persistence
+- [x] `src/lib/referrals/useReferral.ts` - React hooks
+- [x] Referral attribution on signup
+
+**tRPC Router (Task 4):**
+- [x] `src/server/api/routers/genericInvitations.ts` - All endpoints
+- [x] Public `getByCode` endpoint for landing pages
+- [x] Email sending integration
+- [x] Registered in appRouter
+
 ### Existing Work (Carried Forward)
 
-- [x] Migration `270_forsured_create_relationship_invitations.sql` - Legacy schema
-- [x] `src/lib/invitations.ts` - Partial implementation (to be replaced)
+- [x] Migration `270_forsured_create_relationship_invitations.sql` - Legacy schema (still works)
+- [x] `src/lib/invitations.ts` - Legacy broker invitations (still works)
 - [x] `tests/e2e/manager-subcontractors-invitations.spec.ts` - Manager-side E2E
 
 ---
