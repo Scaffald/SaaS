@@ -314,8 +314,9 @@ export const jobsRouter = t.router({
 
       if (Array.isArray(job.external_job_industries)) {
         for (const eji of job.external_job_industries) {
-          if (eji.industry?.name) {
-            industries.add(eji.industry.name)
+          const industry = Array.isArray(eji.industry) ? eji.industry[0] : eji.industry
+          if (industry?.name) {
+            industries.add(industry.name)
           }
         }
       }
@@ -447,7 +448,7 @@ export const jobsRouter = t.router({
                   jc.certification
               )
               .filter(Boolean)
-          : [],
+          : [] as any,
         skills: transformJobSkills(job.job_skills || []),
       }))
 
@@ -1098,8 +1099,9 @@ export const jobsRouter = t.router({
 
       if (Array.isArray(job.job_certifications)) {
         for (const jc of job.job_certifications) {
-          if (jc.certification?.name) {
-            certifications.add(jc.certification.name)
+          const cert = Array.isArray(jc.certification) ? jc.certification[0] : jc.certification
+          if (cert?.name) {
+            certifications.add(cert.name)
           }
         }
       }

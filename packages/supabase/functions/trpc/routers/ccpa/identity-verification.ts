@@ -144,8 +144,8 @@ export async function initiateEmailVerification(
       user_id: request.user_id,
       title: 'CCPA Verification Code',
       message: `Your verification code is: ${otp}. This code expires in ${EMAIL_OTP_EXPIRY_MINUTES} minutes.`,
-      type: 'ccpa_verification',
-      severity: 'info',
+      type: 'ccpa_verification' as any,
+      severity: 'info' as any,
       metadata: {
         request_id: requestId,
         verification_type: 'email_otp',
@@ -462,8 +462,8 @@ export async function requestManualVerification(
         user_id: adminUserId,
         title: 'Manual CCPA Verification Required',
         message: `A CCPA request requires manual verification. Reason: ${reason}`,
-        type: 'ccpa_manual_verification',
-        severity: 'warning',
+        type: 'ccpa_manual_verification' as any,
+        severity: 'warning' as any,
         metadata: {
           request_id: requestId,
           verification_type: 'manual',
