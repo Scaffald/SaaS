@@ -11,6 +11,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Layout - loaded immediately (needed for all routes)
 import Layout from './components/Layout/Layout';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Suspense wrapper for lazy components
 const LazyRoute = ({ children }: { children: React.ReactNode }) => (
@@ -26,7 +27,9 @@ const TestSupabase = lazy(() => import('./pages/TestSupabase'));
 const SignupPage = lazy(() => import('./pages/Signup'));
 const StartPage = lazy(() => import('./pages/Start'));
 const CallbackPage = lazy(() => import('./pages/Callback'));
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmail'));
 const UnauthorizedPage = lazy(() => import('./pages/Unauthorized'));
+const InvitationLandingPage = lazy(() => import('./pages/InvitationLanding'));
 
 // Dashboards
 const EnhancedManagerDashboard = lazy(() => import('./components/Dashboard/EnhancedManagerDashboard'));
@@ -43,12 +46,14 @@ const ManagerTasksPage = lazy(() => import('./components/Manager/ManagerTasksPag
 const ManagerProjectsPage = lazy(() => import('./components/Manager/ManagerProjectsPage'));
 const SubcontractorsPage = lazy(() => import('./components/Manager/SubcontractorsPage'));
 const ManagerAcknowledgementsList = lazy(() => import('./components/Manager/ManagerAcknowledgementsList'));
+const ManagerMyBrokerPage = lazy(() => import('./pages/manager/MyBrokerPage'));
 
 // Subcontractor components
 const MyManagersPage = lazy(() => import('./components/Subcontractor/MyManagersPage'));
 const SubcontractorProjectsPage = lazy(() => import('./components/Subcontractor/SubcontractorProjectsPage'));
 const DocumentsPage = lazy(() => import('./components/Subcontractor/DocumentsPage'));
 const ContractorTasks = lazy(() => import('./pages/contractor/ContractorTasks'));
+const SubcontractorMyBrokerPage = lazy(() => import('./pages/subcontractor/MyBrokerPage'));
 
 // Broker components
 const BrokerProjectsPage = lazy(() => import('./components/Broker/BrokerProjectsPage'));
@@ -64,8 +69,10 @@ const BrokerAcknowledgementList = lazy(() => import('./components/BrokerAcknowle
 
 // Shared components
 const ProjectDetailPage = lazy(() => import('./components/Project/ProjectDetailPage'));
+const ProjectCreatePage = lazy(() => import('./components/Project/ProjectCreatePage'));
 const InsuranceMarketplace = lazy(() => import('./components/Features/InsuranceMarketplace'));
-const IntegrationsMarketplace = lazy(() => import('./components/Features/IntegrationsMarketplace'));
+// TODO: Re-enable when integrations feature is ready
+// const IntegrationsMarketplace = lazy(() => import('./components/Features/IntegrationsMarketplace'));
 const NotificationsAndApprovalsPage = lazy(() => import('./components/Notifications/NotificationsAndApprovalsPage'));
 const UserManagementPage = lazy(() => import('./components/User/UserManagementPage'));
 const ClientProfilePage = lazy(() => import('./app/(dashboard)/clients/[clientId]/page')); // REQ-274
@@ -91,8 +98,9 @@ const BrokerAgencySettings = lazy(() => import('./pages/broker/settings/AgencySe
 const BrokerClientSettings = lazy(() => import('./pages/broker/settings/ClientSettings'));
 const BrokerNotificationSettings = lazy(() => import('./pages/broker/settings/NotificationSettings'));
 
-// Admin
-const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+// Admin - AdminLayout is NOT lazy loaded to prevent esbuild service crashes
+// Layout components should be eagerly loaded to avoid dependency resolution issues
+import AdminLayout from './components/admin/AdminLayout';
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminUsers = lazy(() => import('./pages/admin/Users'));
 const AdminBrokers = lazy(() => import('./pages/admin/Brokers'));
@@ -103,6 +111,7 @@ const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 const AdminUserSetTypes = lazy(() => import('./pages/admin/UserSetTypes'));
 const AdminLexiconEditor = lazy(() => import('./pages/admin/LexiconEditor'));
 const AdminCCPA = lazy(() => import('./app/(dashboard)/admin/ccpa/page'));
+const AdminInvitationRules = lazy(() => import('./app/(dashboard)/admin/invitation-rules/page'));
 
 // Privacy Settings (REQ-3: CCPA Compliance)
 const PrivacySettings = lazy(() => import('./app/(dashboard)/settings/privacy/page'));
@@ -121,23 +130,17 @@ const ContractorHelp = lazy(() => import('./pages/contractor/help/index'));
 const BrokerHelp = lazy(() => import('./pages/broker/help/index'));
 
 const AppRoutes = () => {
-  const { isLoading } = useAuth();
-
-  // Show loading spinner while auth state is being determined
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
         {/* Public routes - always accessible */}
         <Route path="/" element={<StartPage />} />
-        <Route path="/start" element={<StartPage />} />
         <Route path="/callback" element={<CallbackPage />} />
         <Route path="/auth/callback" element={<CallbackPage />} />
+        <Route path="/auth/verify" element={<VerifyEmailPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Route path="/invite/:code" element={<InvitationLandingPage />} />
         <Route path="/design-system" element={<DesignSystemHome />} />
         <Route path="/colors" element={<Colors />} />
         <Route path="/testing" element={<TestingPage />} />
@@ -205,6 +208,14 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="manager/projects/new"
+          element={
+            <ProtectedRoute allowedTypes={['manager']}>
+              <ProjectCreatePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="manager/projects/:projectId"
           element={
             <ProtectedRoute allowedTypes={['manager']}>
@@ -217,6 +228,22 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedTypes={['manager']}>
               <SubcontractorsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="manager/broker"
+          element={
+            <ProtectedRoute allowedTypes={['manager']}>
+              <ManagerMyBrokerPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="manager/subcontractors/new"
+          element={
+            <ProtectedRoute allowedTypes={['manager']}>
+              <Navigate to="/manager/subcontractors" replace />
             </ProtectedRoute>
           }
         />
@@ -236,14 +263,15 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* TODO: Re-enable when integrations feature is ready */}
+        {/* <Route
           path="manager/integrations"
           element={
             <ProtectedRoute allowedTypes={['manager']}>
               <IntegrationsMarketplace />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path="manager/acknowledgements"
           element={
@@ -343,6 +371,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedTypes={['subcontractor']}>
               <MyManagersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="subcontractor/broker"
+          element={
+            <ProtectedRoute allowedTypes={['subcontractor']}>
+              <SubcontractorMyBrokerPage />
             </ProtectedRoute>
           }
         />
@@ -624,13 +660,15 @@ const AppRoutes = () => {
         />
       </Route>
 
-      {/* Admin routes with AdminLayout */}
+      {/* Admin routes with AdminLayout and ErrorBoundary */}
       <Route
         path="/admin"
         element={
-          <ProtectedRoute allowedTypes={['admin']} requireOnboarding={false}>
-            <AdminLayout />
-          </ProtectedRoute>
+          <ErrorBoundary>
+            <ProtectedRoute allowedTypes={['admin']} requireOnboarding={false}>
+              <AdminLayout />
+            </ProtectedRoute>
+          </ErrorBoundary>
         }
       >
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
@@ -644,6 +682,7 @@ const AppRoutes = () => {
         <Route path="user-set-types" element={<AdminUserSetTypes />} />
         <Route path="lexicon" element={<AdminLexiconEditor />} />
         <Route path="ccpa" element={<AdminCCPA />} />
+        <Route path="invitation-rules" element={<AdminInvitationRules />} />
       </Route>
 
         {/* Catch-all redirect */}

@@ -32,11 +32,11 @@ export const ValidationFeedback: React.FC<ValidationFeedbackProps> = ({ validati
       >
         <XStack>
           <CheckCircle size={20} color="$green10" aria-hidden="true" />
-          <YStack marginLeft="$3">
+          <YStack ml="$3">
             <Text fontSize="$3" fontWeight="500" color="$green12">
               All fields are valid
             </Text>
-            <Text fontSize="$3" color="$green11" marginTop="$1">
+            <Text fontSize="$3" color="$green11" mt="$1">
               You can save these changes and trigger compliance re-evaluation.
             </Text>
           </YStack>
@@ -61,11 +61,11 @@ export const ValidationFeedback: React.FC<ValidationFeedbackProps> = ({ validati
         >
           <XStack>
             <AlertCircle size={20} color="$red10" aria-hidden="true" />
-            <YStack flex={1} marginLeft="$3">
+            <YStack flex={1} ml="$3">
               <Text fontSize="$3" fontWeight="500" color="$red12">
                 {errors.length} {errors.length === 1 ? 'error' : 'errors'} found
               </Text>
-              <YStack marginTop="$2" fontSize="$3" color="$red11" gap="$1">
+              <YStack mt="$2" fontSize="$3" color="$red11" gap="$1">
                 {errors.map((error, index) => (
                   <Text key={`${error.field}-${index}`}>• {error.message}</Text>
                 ))}
@@ -89,11 +89,11 @@ export const ValidationFeedback: React.FC<ValidationFeedbackProps> = ({ validati
         >
           <XStack>
             <AlertTriangle size={20} color="$yellow10" aria-hidden="true" />
-            <YStack flex={1} marginLeft="$3">
+            <YStack flex={1} ml="$3">
               <Text fontSize="$3" fontWeight="500" color="$yellow12">
                 {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}
               </Text>
-              <YStack marginTop="$2" fontSize="$3" color="$yellow11" gap="$1">
+              <YStack mt="$2" fontSize="$3" color="$yellow11" gap="$1">
                 {warnings.map((warning, index) => (
                   <Text key={`${warning.field}-${index}`}>• {warning.message}</Text>
                 ))}

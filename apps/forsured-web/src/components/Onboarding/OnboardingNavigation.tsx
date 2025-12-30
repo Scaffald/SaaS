@@ -31,7 +31,7 @@ function OnboardingNavigation({
     <XStack
       alignItems="center"
       justifyContent="space-between"
-      marginTop="$8"
+      mt="$8"
     >
       <Button
         variant="outlined"

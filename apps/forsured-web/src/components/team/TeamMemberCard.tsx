@@ -178,7 +178,7 @@ export function TeamMemberCard({
               {member.email}
             </SizableText>
             {member.company && (
-              <SizableText fontSize="$1" color="$color10" marginTop="$0.5">
+              <SizableText fontSize="$1" color="$color10" mt="$0.5">
                 {member.company}
               </SizableText>
             )}
@@ -220,7 +220,7 @@ export function TeamMemberCard({
                 <Card
                   position="absolute"
                   right={0}
-                  marginTop="$1"
+                  mt="$1"
                   width={144}
                   backgroundColor="$background"
                   borderRadius="$2"

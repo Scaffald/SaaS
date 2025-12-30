@@ -28,7 +28,7 @@ const CopyButton = styled(Button, {
   backgroundColor: '$gray11',
   color: '$color1',
   fontSize: '$1',
-  borderRadius: '$md',
+  borderRadius: '$3',
   transition: 'opacity 0.2s ease-in-out',
   hoverStyle: {
     backgroundColor: '$gray10',
@@ -38,7 +38,7 @@ const CopyButton = styled(Button, {
 const CodeBlockWrapper = styled(YStack, {
   name: 'CodeBlockWrapper',
   backgroundColor: '$gray12',
-  borderRadius: '$lg',
+  borderRadius: '$4',
   overflow: 'hidden',
 });
 

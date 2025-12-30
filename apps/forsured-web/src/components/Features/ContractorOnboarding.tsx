@@ -213,7 +213,7 @@ export default function ContractorOnboarding() {
                     </Text>
                   )}
                 </YStack>
-                <YStack marginLeft="$3">
+                <YStack ml="$3">
                   <Text
                     fontWeight="500"
                     color={currentStep >= step.id ? "$color12" : "$color11"}
@@ -237,7 +237,7 @@ export default function ContractorOnboarding() {
       {currentStep === 1 && (
         <YStack gap="$6">
           <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+            <XStack alignItems="center" justifyContent="space-between" mb="$6">
               <H2 fontSize="$6" fontWeight="600" color="$color12">
                 Upload Your Insurance Documents
               </H2>
@@ -258,10 +258,10 @@ export default function ContractorOnboarding() {
             </XStack>
 
             {/* Document Types Guide */}
-            <XStack flexWrap="wrap" gap="$4" marginBottom="$6">
+            <XStack flexWrap="wrap" gap="$4" mb="$6">
               <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <FileText size={24} color="$blue10" marginBottom="$2" />
-                <H3 fontWeight="500" color="$color12" marginBottom="$1">
+                <FileText size={24} color="$blue10" mb="$2" />
+                <H3 fontWeight="500" color="$color12" mb="$1">
                   Certificate of Insurance
                 </H3>
                 <Text fontSize="$3" color="$color11">
@@ -269,8 +269,8 @@ export default function ContractorOnboarding() {
                 </Text>
               </Card>
               <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <Shield size={24} color="$green10" marginBottom="$2" />
-                <H3 fontWeight="500" color="$color12" marginBottom="$1">
+                <Shield size={24} color="$green10" mb="$2" />
+                <H3 fontWeight="500" color="$color12" mb="$1">
                   Insurance Policies
                 </H3>
                 <Text fontSize="$3" color="$color11">
@@ -278,15 +278,15 @@ export default function ContractorOnboarding() {
                 </Text>
               </Card>
               <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <Award size={24} color="$gray10" marginBottom="$2" />
-                <H3 fontWeight="500" color="$color12" marginBottom="$1">Licenses</H3>
+                <Award size={24} color="$gray10" mb="$2" />
+                <H3 fontWeight="500" color="$color12" mb="$1">Licenses</H3>
                 <Text fontSize="$3" color="$color11">
                   Professional and trade licenses
                 </Text>
               </Card>
               <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <DollarSign size={24} color="$gray11" marginBottom="$2" />
-                <H3 fontWeight="500" color="$color12" marginBottom="$1">Bonds</H3>
+                <DollarSign size={24} color="$gray11" mb="$2" />
+                <H3 fontWeight="500" color="$color12" mb="$1">Bonds</H3>
                 <Text fontSize="$3" color="$color11">
                   Surety bonds and guarantees
                 </Text>
@@ -348,7 +348,7 @@ export default function ContractorOnboarding() {
               ))}
             </YStack>
 
-            <XStack marginTop="$6" justifyContent="flex-end">
+            <XStack mt="$6" justifyContent="flex-end">
               <TamaguiButton
                 onPress={() => setCurrentStep(2)}
                 backgroundColor="$blue10"
@@ -369,7 +369,7 @@ export default function ContractorOnboarding() {
       {currentStep === 2 && (
         <YStack gap="$6">
           <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$6">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$6">
               Document Verification Status
             </H2>
 
@@ -382,7 +382,7 @@ export default function ContractorOnboarding() {
                   borderColor="$borderColor"
                   borderRadius="$4"
                 >
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$3">
                     <H3 fontWeight="500" color="$color12">
                       {doc.name}
                     </H3>
@@ -391,7 +391,7 @@ export default function ContractorOnboarding() {
 
                   {doc.status === 'verified' && (
                     <Card backgroundColor="$green2" padding="$3" borderRadius="$4">
-                      <XStack alignItems="center" gap="$2" marginBottom="$2">
+                      <XStack alignItems="center" gap="$2" mb="$2">
                         <CheckCircle size={16} color="$green11" />
                         <Text fontSize="$3" fontWeight="500" color="$green12">
                           Verification Complete
@@ -454,7 +454,7 @@ export default function ContractorOnboarding() {
               ))}
             </YStack>
 
-            <XStack marginTop="$6" justifyContent="space-between">
+            <XStack mt="$6" justifyContent="space-between">
               <TamaguiButton
                 onPress={() => setCurrentStep(1)}
                 paddingHorizontal="$6"
@@ -488,7 +488,7 @@ export default function ContractorOnboarding() {
         <YStack gap="$6">
           {/* Overall Score */}
           <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+            <XStack alignItems="center" justifyContent="space-between" mb="$6">
               <YStack>
                 <H2 fontSize="$6" fontWeight="600" color="$color12">
                   Coverage Assessment
@@ -505,7 +505,7 @@ export default function ContractorOnboarding() {
                   borderRadius={9999}
                   alignItems="center"
                   justifyContent="center"
-                  marginBottom="$2"
+                  mb="$2"
                 >
                   <Text fontSize="$8" fontWeight="700" color="$blue11">
                     {getCompletionPercentage()}%
@@ -517,17 +517,17 @@ export default function ContractorOnboarding() {
 
             <XStack flexWrap="wrap" gap="$6">
               <Card alignItems="center" padding="$4" backgroundColor="$green2" borderRadius="$4" flex={1} minWidth="30%">
-                <TrendingUp size={24} color="$green11" marginBottom="$2" />
+                <TrendingUp size={24} color="$green11" mb="$2" />
                 <Text fontWeight="500" color="$green12">Above Average</Text>
                 <Text fontSize="$3" color="$green11">1 coverage type</Text>
               </Card>
               <Card alignItems="center" padding="$4" backgroundColor="$orange2" borderRadius="$4" flex={1} minWidth="30%">
-                <AlertTriangle size={24} color="$orange11" marginBottom="$2" />
+                <AlertTriangle size={24} color="$orange11" mb="$2" />
                 <Text fontWeight="500" color="$orange12">Needs Improvement</Text>
                 <Text fontSize="$3" color="$orange11">3 coverage types</Text>
               </Card>
               <Card alignItems="center" padding="$4" backgroundColor="$blue2" borderRadius="$4" flex={1} minWidth="30%">
-                <Shield size={24} color="$blue11" marginBottom="$2" />
+                <Shield size={24} color="$blue11" mb="$2" />
                 <Text fontWeight="500" color="$blue12">Total Coverage</Text>
                 <Text fontSize="$3" color="$blue11">$3M current</Text>
               </Card>
@@ -551,7 +551,7 @@ export default function ContractorOnboarding() {
                     borderRadius="$4"
                     padding="$4"
                   >
-                    <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                    <XStack alignItems="center" justifyContent="space-between" mb="$3">
                       <H3 fontWeight="500" color="$color12">
                         {assessment.type}
                       </H3>
@@ -571,7 +571,7 @@ export default function ContractorOnboarding() {
                       </XStack>
                     </XStack>
 
-                    <XStack gap="$4" marginBottom="$4">
+                    <XStack gap="$4" mb="$4">
                       <YStack alignItems="center" flex={1}>
                         <Text fontSize="$3" color="$color11">
                           Your Coverage
@@ -602,7 +602,7 @@ export default function ContractorOnboarding() {
 
                     <Card backgroundColor="$backgroundHover" padding="$3" borderRadius="$4">
                       <XStack alignItems="flex-start" gap="$2">
-                        <Info size={16} color="$blue11" marginTop="$0.5" />
+                        <Info size={16} color="$blue11" mt="$0.5" />
                         <Text fontSize="$3" color="$color12">
                           {assessment.reasoning}
                         </Text>
@@ -646,14 +646,14 @@ export default function ContractorOnboarding() {
       {currentStep === 4 && (
         <YStack gap="$6">
           <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$6">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$6">
               Personalized Coverage Recommendations
             </H2>
 
             <YStack gap="$6">
               {/* Priority Recommendations */}
               <Card backgroundColor="$orange2" borderWidth={1} borderColor="$orange6" borderRadius="$4" padding="$4">
-                <XStack alignItems="center" gap="$2" marginBottom="$3">
+                <XStack alignItems="center" gap="$2" mb="$3">
                   <AlertTriangle size={20} color="$orange11" />
                   <H3 fontWeight="500" color="$orange12">
                     Priority Actions
@@ -691,7 +691,7 @@ export default function ContractorOnboarding() {
 
               {/* Additional Recommendations */}
               <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
-                <XStack alignItems="center" gap="$2" marginBottom="$3">
+                <XStack alignItems="center" gap="$2" mb="$3">
                   <Info size={20} color="$blue11" />
                   <H3 fontWeight="500" color="$blue12">
                     Additional Recommendations
@@ -729,7 +729,7 @@ export default function ContractorOnboarding() {
 
               {/* Cost Estimate */}
               <Card backgroundColor="$green2" borderWidth={1} borderColor="$green6" borderRadius="$4" padding="$4">
-                <H3 fontWeight="500" color="$green12" marginBottom="$3">
+                <H3 fontWeight="500" color="$green12" mb="$3">
                   Estimated Annual Cost
                 </H3>
                 <XStack gap="$4">
@@ -750,14 +750,14 @@ export default function ContractorOnboarding() {
                     </Text>
                   </YStack>
                 </XStack>
-                <Text fontSize="$3" color="$green12" marginTop="$2">
+                <Text fontSize="$3" color="$green12" mt="$2">
                   Additional $2,800/year for comprehensive coverage that meets
                   industry standards
                 </Text>
               </Card>
             </YStack>
 
-            <XStack marginTop="$6" justifyContent="space-between">
+            <XStack mt="$6" justifyContent="space-between">
               <TamaguiButton
                 onPress={() => setCurrentStep(3)}
                 paddingHorizontal="$6"
@@ -797,7 +797,7 @@ export default function ContractorOnboarding() {
           zIndex={50}
         >
           <Card backgroundColor="$background" borderRadius="$4" padding="$6" width="100%" maxWidth={600}>
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+            <XStack alignItems="center" justifyContent="space-between" mb="$4">
               <H3 fontSize="$6" fontWeight="600" color="$color12">
                 Upload Documents
               </H3>
@@ -819,11 +819,11 @@ export default function ContractorOnboarding() {
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
-              <Upload size={48} color="$color10" marginBottom="$4" />
-              <Text fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
+              <Upload size={48} color="$color10" mb="$4" />
+              <Text fontSize="$6" fontWeight="500" color="$color12" mb="$2">
                 Drop files here or click to upload
               </Text>
-              <Text fontSize="$3" color="$color11" marginBottom="$4">
+              <Text fontSize="$3" color="$color11" mb="$4">
                 Supported formats: PDF, JPG, PNG (max 10MB)
               </Text>
               <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
@@ -831,7 +831,7 @@ export default function ContractorOnboarding() {
               </TamaguiButton>
             </YStack>
 
-            <YStack marginTop="$4">
+            <YStack mt="$4">
               <Text fontSize="$2" color="$color11">• Certificates of Insurance (COI)</Text>
               <Text fontSize="$2" color="$color11">• Full insurance policies</Text>
               <Text fontSize="$2" color="$color11">• Professional licenses</Text>

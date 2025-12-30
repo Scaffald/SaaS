@@ -60,7 +60,7 @@ export default function BrokerAcknowledgementList() {
           <Text fontSize="$8" fontWeight="bold" color="$color12">
             Broker Acknowledgement Forms
           </Text>
-          <Text color="$color11" marginTop="$1">
+          <Text color="$color11" mt="$1">
             Manage insurance verification forms for subcontractor projects
           </Text>
         </YStack>
@@ -135,13 +135,13 @@ export default function BrokerAcknowledgementList() {
 
       {filteredForms.length === 0 ? (
         <Card borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
-          <FileText size={48} color="$color11" marginBottom="$4" />
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <FileText size={48} color="$color11" mb="$4" />
+          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             {searchTerm || statusFilter !== 'all'
               ? 'No forms found'
               : 'No acknowledgement forms yet'}
           </Text>
-          <Text color="$color11" marginBottom="$6">
+          <Text color="$color11" mb="$6">
             {searchTerm || statusFilter !== 'all'
               ? 'Try adjusting your search or filter criteria'
               : 'Create your first broker acknowledgement form to get started'}
@@ -169,9 +169,9 @@ export default function BrokerAcknowledgementList() {
               }}
               onPress={() => navigate(`/broker/acknowledgements/${form.id}`)}
             >
-              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
                 <YStack flex={1}>
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <Text fontSize="$6" fontWeight="600" color="$color12">
                       {form.subcontractor_company_name}
                     </Text>
@@ -194,7 +194,7 @@ export default function BrokerAcknowledgementList() {
               <XStack
                 flexWrap="wrap"
                 gap="$4"
-                marginBottom="$4"
+                mb="$4"
                 $gtMd={{
                   flexWrap: 'nowrap',
                 }}
@@ -235,7 +235,7 @@ export default function BrokerAcknowledgementList() {
                       <AlertCircle
                         size={16}
                         color="$orange10"
-                        marginTop="$0.5"
+                        mt="$0.5"
                         flexShrink={0}
                       />
                       <YStack>
@@ -243,7 +243,7 @@ export default function BrokerAcknowledgementList() {
                           {form.missing_endorsements.length} Missing Endorsement
                           {form.missing_endorsements.length !== 1 ? 's' : ''}
                         </Text>
-                        <Text fontSize="$1" color="$orange10" marginTop="$1">
+                        <Text fontSize="$1" color="$orange10" mt="$1">
                           Click to view details and resolve issues
                         </Text>
                       </YStack>
@@ -263,7 +263,7 @@ export default function BrokerAcknowledgementList() {
                     <CheckCircle
                       size={16}
                       color="$green10"
-                      marginTop="$0.5"
+                      mt="$0.5"
                       flexShrink={0}
                     />
                     <YStack>
@@ -272,7 +272,7 @@ export default function BrokerAcknowledgementList() {
                         {new Date(form.date_reviewed).toLocaleDateString()}
                       </Text>
                       {form.manager_notes && (
-                        <Text fontSize="$1" color="$green10" marginTop="$1">
+                        <Text fontSize="$1" color="$green10" mt="$1">
                           {form.manager_notes}
                         </Text>
                       )}

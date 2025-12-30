@@ -12,7 +12,7 @@ interface AIProcessingIndicatorProps {
 const Container = styled(YStack, {
   name: 'AIProcessingIndicator',
   padding: '$4',
-  borderRadius: '$md',
+  borderRadius: '$3',
   borderWidth: 1,
 
   variants: {

@@ -131,7 +131,7 @@ export function DocumentFilterPanel({
       borderColor="$borderColor"
       padding="$4"
     >
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+      <XStack alignItems="center" justifyContent="space-between" mb="$4">
         <Text fontSize="$3" fontWeight="500" color="$color12">
           Filters
         </Text>
@@ -336,7 +336,7 @@ export function DocumentFilterPanel({
 
       {/* Loading indicator */}
       {loading && (
-        <XStack alignItems="center" marginTop="$3" fontSize="$3" color="$color10" gap="$2">
+        <XStack alignItems="center" mt="$3" fontSize="$3" color="$color10" gap="$2">
           <Spinner size="small" color="$teal9" />
           <Text>Updating filters...</Text>
         </XStack>

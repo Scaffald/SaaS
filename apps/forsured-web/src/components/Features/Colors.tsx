@@ -18,7 +18,7 @@ const SwatchBox = styled(XStack, {
   name: 'ColorSwatchBox',
   width: 80, // w-20
   height: 80, // h-20
-  borderRadius: '$lg',
+  borderRadius: '$4',
   shadowColor: '$shadowColor',
   shadowRadius: 5,
   shadowOffset: { width: 0, height: 2 },
@@ -54,7 +54,7 @@ function ColorSwatch({ name, colorVar, weight }: ColorSwatchProps) {
         <Text fontSize="$2" fontFamily="$mono" color="$color11">
           {colorVar}
         </Text>
-        <Text fontSize="$1" fontFamily="$mono" color="$color10" marginTop="$1">
+        <Text fontSize="$1" fontFamily="$mono" color="$color10" mt="$1">
           rgb(var({colorVar}))
         </Text>
       </SwatchInfo>
@@ -71,7 +71,7 @@ interface ColorPaletteProps {
 const PaletteCard = styled(YStack, {
   name: 'ColorPaletteCard',
   backgroundColor: '$background',
-  borderRadius: '$xl',
+  borderRadius: '$5',
   shadowColor: '$shadowColor',
   shadowRadius: 10,
   shadowOffset: { width: 0, height: 5 },
@@ -94,7 +94,7 @@ const BaseColorBox = styled(XStack, {
   name: 'BaseColorBox',
   width: 48, // w-12
   height: 48, // h-12
-  borderRadius: '$lg',
+  borderRadius: '$4',
   shadowColor: '$shadowColor',
   shadowRadius: 5,
   shadowOffset: { width: 0, height: 2 },
@@ -134,7 +134,7 @@ function ColorPalette({ name, displayName, baseColor }: ColorPaletteProps) {
 const HeroSection = styled(YStack, {
   name: 'ColorsHeroSection',
   background: 'linear-gradient(to right, $blue9, $teal9)',
-  borderRadius: '$xl',
+  borderRadius: '$5',
   padding: '$8',
   color: '$color1',
   shadowColor: '$shadowColor',
@@ -146,14 +146,14 @@ const HeroIconContainer = styled(XStack, {
   name: 'HeroIconContainer',
   backgroundColor: 'rgba(255, 255, 255, 0.2)',
   padding: '$4',
-  borderRadius: '$xl',
+  borderRadius: '$5',
   backdropFilter: 'blur(10px)',
 });
 
 const InfoCard = styled(YStack, {
   name: 'InfoCard',
   backgroundColor: '$background',
-  borderRadius: '$xl',
+  borderRadius: '$5',
   shadowColor: '$shadowColor',
   shadowRadius: 10,
   shadowOffset: { width: 0, height: 5 },
@@ -165,7 +165,7 @@ const InfoCard = styled(YStack, {
 const CodeBlock = styled(YStack, {
   name: 'CodeBlock',
   backgroundColor: '$backgroundSecondary',
-  borderRadius: '$lg',
+  borderRadius: '$4',
   padding: '$4',
   fontFamily: '$mono',
   fontSize: '$2',
@@ -193,7 +193,7 @@ export default function Colors() {
             <Text fontSize="$7" fontWeight="bold" color="$color1">
               Color System
             </Text>
-            <Text fontSize="$4" color="rgba(255, 255, 255, 0.9)" marginTop="$1">
+            <Text fontSize="$4" color="rgba(255, 255, 255, 0.9)" mt="$1">
               Complete 100-900 weight color scales for all brand colors
             </Text>
           </YStack>
@@ -201,7 +201,7 @@ export default function Colors() {
       </HeroSection>
 
       <InfoCard>
-        <Text fontSize="$4" fontWeight="600" color="$color11" marginBottom="$4">
+        <Text fontSize="$4" fontWeight="600" color="$color11" mb="$4">
           Color Scale Structure
         </Text>
         <YStack gap="$2">
@@ -236,12 +236,12 @@ export default function Colors() {
       </XStack>
 
       <InfoCard>
-        <Text fontSize="$4" fontWeight="600" color="$color11" marginBottom="$4">
+        <Text fontSize="$4" fontWeight="600" color="$color11" mb="$4">
           Usage Examples
         </Text>
         <YStack gap="$4">
           <YStack>
-            <Text fontSize="$2" fontWeight="600" color="$color11" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="600" color="$color11" mb="$2">
               Tamagui Theme Tokens
             </Text>
             <CodeBlock>
@@ -252,7 +252,7 @@ export default function Colors() {
           </YStack>
 
           <YStack>
-            <Text fontSize="$2" fontWeight="600" color="$color11" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="600" color="$color11" mb="$2">
               CSS Variables
             </Text>
             <CodeBlock>

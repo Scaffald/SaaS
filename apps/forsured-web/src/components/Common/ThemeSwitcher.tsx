@@ -40,7 +40,7 @@ export default function ThemeSwitcher() {
     gap: '$3',
     paddingHorizontal: '$4',
     paddingVertical: '$3',
-    borderRadius: '$md',
+    borderRadius: '$3',
     backgroundColor: 'transparent',
     
     variants: {
@@ -82,9 +82,9 @@ export default function ThemeSwitcher() {
               position="absolute"
               bottom="100%"
               right={0}
-              marginBottom="$3"
+              mb="$3"
               backgroundColor="$backgroundHover"
-              borderRadius="$xl"
+              borderRadius="$5"
               shadowColor="$shadowColor"
               shadowRadius={20}
               shadowOffset={{ width: 0, height: 8 }}

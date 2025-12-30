@@ -59,7 +59,7 @@ const NavLinkWrapper = ({ to, children }: { to: string; children: (props: { isAc
           gap="$2.5"
           paddingHorizontal="$3"
           paddingVertical="$2.5"
-          borderRadius="$md"
+          borderRadius="$3"
           backgroundColor={isActive ? '$blue9' : 'transparent'}
           color={isActive ? '$color1' : '$color10'}
           shadowColor={isActive ? '$shadowColor' : 'transparent'}
@@ -95,13 +95,15 @@ export default function Sidebar({
     { path: '/manager/tasks', label: t('nav.tasks'), icon: CheckSquare },
     { path: '/manager/projects', label: t('nav.projects'), icon: Building },
     { path: '/manager/subcontractors', label: t('nav.contractors'), icon: Users },
+    { path: '/manager/broker', label: 'My Broker', icon: Shield },
     { path: '/manager/documents', label: t('nav.documents'), icon: FileText },
     {
       path: '/manager/acknowledgements',
       label: t('nav.acknowledgements'),
       icon: ClipboardCheck,
     },
-    { path: '/manager/integrations', label: t('nav.integrations'), icon: Settings },
+    // TODO: Re-enable when integrations feature is ready
+    // { path: '/manager/integrations', label: t('nav.integrations'), icon: Settings },
     { path: '/manager/help', label: t('nav.help'), icon: LifeBuoy },
   ];
 
@@ -115,6 +117,11 @@ export default function Sidebar({
       path: '/subcontractor/relationships',
       label: t('nav.managers'),
       icon: Handshake,
+    },
+    {
+      path: '/subcontractor/broker',
+      label: 'My Broker',
+      icon: Briefcase,
     },
     { path: '/subcontractor/projects', label: t('nav.projects'), icon: Building },
     { path: '/subcontractor/documents', label: t('nav.documents'), icon: FileText },
@@ -211,7 +218,7 @@ export default function Sidebar({
           gap="$2"
           paddingHorizontal="$2"
           paddingVertical="$1.5"
-          borderRadius="$md"
+          borderRadius="$3"
           backgroundColor="$backgroundHover"
         >
           <XStack
@@ -231,9 +238,9 @@ export default function Sidebar({
             </Text>
             {/* REQ-4: Use lexicon for role display */}
             <Text fontSize="$1" color="$color10">
-              {user.role === 'broker'
+              {userRole === 'broker'
                 ? `CMR (${t('role.broker')} View)`
-                : user.role === 'manager'
+                : userRole === 'manager'
                   ? `MRC (${t('role.manager_view')})`
                   : getContractorLabel()}
             </Text>

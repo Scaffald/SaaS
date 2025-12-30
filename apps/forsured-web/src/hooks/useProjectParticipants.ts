@@ -31,6 +31,15 @@ export function useProjectParticipants(projectId?: string) {
       return;
     }
 
+    // Validate UUID format before querying
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(projectId)) {
+      console.warn('[useProjectParticipants] Invalid projectId format (expected UUID):', projectId);
+      setParticipants([]);
+      setLoading(false);
+      setError('Invalid project ID format');
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);

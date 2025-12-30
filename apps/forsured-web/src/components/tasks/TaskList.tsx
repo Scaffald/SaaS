@@ -105,10 +105,10 @@ export const TaskList: React.FC<TaskListProps> = ({
     return (
       <YStack alignItems="center" paddingVertical="$12">
         <FileText size={48} color="var(--color10)" />
-        <Text fontSize="$3" fontWeight="500" color="$color12" marginTop="$2">
+        <Text fontSize="$3" fontWeight="500" color="$color12" mt="$2">
           No tasks found
         </Text>
-        <SizableText fontSize="$3" color="$color10" marginTop="$1">
+        <SizableText fontSize="$3" color="$color10" mt="$1">
           Try adjusting your filters or search query.
         </SizableText>
       </YStack>

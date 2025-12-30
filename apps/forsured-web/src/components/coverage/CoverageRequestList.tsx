@@ -52,7 +52,7 @@ export default function CoverageRequestList({
     return (
       <YStack alignItems="center" justifyContent="center" padding="$8">
         <YStack alignItems="center">
-          <Spinner size="large" color="$blue10" marginBottom="$4" />
+          <Spinner size="large" color="$blue10" mb="$4" />
           <Text fontSize="$2" color="$color10">
             Loading coverage requests...
           </Text>
@@ -69,18 +69,18 @@ export default function CoverageRequestList({
         borderColor="$red6"
         borderRadius="$4"
       >
-        <XStack alignItems="center" gap="$2" marginBottom="$2">
+        <XStack alignItems="center" gap="$2" mb="$2">
           <FileQuestion color="$red10" size={20} />
           <H3 fontSize="$2" fontWeight="600" color="$red11">
             Error Loading Requests
           </H3>
         </XStack>
-        <Text fontSize="$2" color="$red11" marginBottom="$3">
+        <Text fontSize="$2" color="$red11" mb="$3">
           {error}
         </Text>
         <Button
           onPress={loadRequests}
-          marginTop="$3"
+          mt="$3"
           paddingHorizontal="$4"
           paddingVertical="$2"
           fontSize="$2"
@@ -107,8 +107,8 @@ export default function CoverageRequestList({
         borderStyle="dashed"
         borderColor="$borderColor"
       >
-        <FileQuestion color="$color9" size={48} marginBottom="$4" />
-        <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+        <FileQuestion color="$color9" size={48} mb="$4" />
+        <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
           No Coverage Requests
         </H3>
         <Text fontSize="$2" color="$color10">
@@ -122,10 +122,10 @@ export default function CoverageRequestList({
 
   return (
     <YStack gap="$4">
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+      <XStack alignItems="center" justifyContent="space-between" mb="$4">
         <H2 fontSize="$7" fontWeight="600" color="$color12">
           Coverage Requests
-          <Text fontSize="$2" fontWeight="400" color="$color10" marginLeft="$2">
+          <Text fontSize="$2" fontWeight="400" color="$color10" ml="$2">
             ({requests.length} {requests.length === 1 ? 'request' : 'requests'})
           </Text>
         </H2>

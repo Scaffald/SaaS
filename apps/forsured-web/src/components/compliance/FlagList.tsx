@@ -94,11 +94,11 @@ export const FlagList = ({
         padding="$6"
         alignItems="center"
       >
-        <CheckCircle color="$green10" size={32} marginBottom="$2" />
-        <Text color="$green11" fontWeight="500" marginBottom="$1">
+        <CheckCircle color="$green10" size={32} mb="$2" />
+        <Text color="$green11" fontWeight="500" mb="$1">
           {emptyMessage}
         </Text>
-        <Text color="$green10" fontSize="$2" marginTop="$1">
+        <Text color="$green10" fontSize="$2" mt="$1">
           All compliance requirements are met
         </Text>
       </Card>
@@ -153,7 +153,7 @@ export const FlagList = ({
         {/* Critical Flags */}
         {grouped.critical.length > 0 && (
           <YStack>
-            <XStack alignItems="center" gap="$2" marginBottom="$3">
+            <XStack alignItems="center" gap="$2" mb="$3">
               {getSeverityIcon('critical')}
               <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('critical')}>
                 Critical Issues ({grouped.critical.length})
@@ -179,7 +179,7 @@ export const FlagList = ({
         {/* Warning Flags */}
         {grouped.warning.length > 0 && (
           <YStack>
-            <XStack alignItems="center" gap="$2" marginBottom="$3">
+            <XStack alignItems="center" gap="$2" mb="$3">
               {getSeverityIcon('warning')}
               <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('warning')}>
                 Warnings ({grouped.warning.length})
@@ -205,7 +205,7 @@ export const FlagList = ({
         {/* Info Flags */}
         {grouped.info.length > 0 && (
           <YStack>
-            <XStack alignItems="center" gap="$2" marginBottom="$3">
+            <XStack alignItems="center" gap="$2" mb="$3">
               {getSeverityIcon('info')}
               <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('info')}>
                 Information ({grouped.info.length})
@@ -268,7 +268,7 @@ const FlagSection = ({
 }: FlagSectionProps) => {
   return (
     <YStack>
-      <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$3">
+      <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$3">
         {title} ({flags.length})
       </H3>
       <YStack gap="$3">

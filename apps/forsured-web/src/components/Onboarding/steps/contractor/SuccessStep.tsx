@@ -1,9 +1,7 @@
 // src/components/onboarding/steps/contractor/SuccessStep.tsx
 // REQ-126: Contractor Onboarding - Success/Completion Step
-import { YStack, XStack, Circle } from 'tamagui';
-import { Button } from '@unicornlove/ui';
-import { Heading2, BodyText } from '@unicornlove/ui';
-import { Check } from '@unicornlove/ui';
+import { CheckCircle } from 'lucide-react';
+import { YStack, Text, H2, Button } from '@unicornlove/ui';
 
 interface SuccessStepProps {
   onComplete: () => Promise<void>;
@@ -13,23 +11,25 @@ interface SuccessStepProps {
 function SuccessStep({ onComplete, isLoading = false }: SuccessStepProps) {
   return (
     <YStack alignItems="center" paddingVertical="$8">
-      <YStack alignItems="center" marginBottom="$6">
-        <Circle
-          size={64}
-          backgroundColor="$green3"
-          marginBottom="$4"
+      <YStack alignItems="center" mb="$6">
+        <YStack
           alignItems="center"
           justifyContent="center"
+          width={64}
+          height={64}
+          borderRadius={9999}
+          backgroundColor="$green2"
+          mb="$4"
         >
-          <Check size={32} color="$green10" />
-        </Circle>
-        <Heading2 marginBottom="$2" textAlign="center">Onboarding Complete!</Heading2>
-        <BodyText color="$color10" textAlign="center">
+          <CheckCircle size={32} color="var(--green10)" />
+        </YStack>
+        <H2 mb="$2" style={{ textAlign: 'center' }}>Onboarding Complete!</H2>
+        <Text color="$color10" style={{ textAlign: 'center' }}>
           You're all set to work with general contractors and manage your insurance compliance.
-        </BodyText>
+        </Text>
       </YStack>
       <Button
-        onClick={onComplete}
+        onPress={onComplete}
         variant="primary"
         disabled={isLoading}
         size="lg"

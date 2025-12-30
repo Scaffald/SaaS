@@ -3,7 +3,7 @@
  * Service for managing project-requirement associations
  */
 
-import { forsured } from '@scf/supabase/forsured-client'
+import { supabase } from '../supabase'
 import {
   type ProjectRequirement,
   type CreateProjectRequirementInput,
@@ -46,7 +46,7 @@ export async function associateRequirementWithProject(
   }
 
   // Check for existing association
-  const { data: existing } = await forsured('project_requirements')
+  const { data: existing } = await supabase.schema('forsured').from('project_requirements')
     .select('*')
     .eq('project_id', input.project_id)
     .eq('requirement_id', input.requirement_id)
@@ -56,7 +56,7 @@ export async function associateRequirementWithProject(
   }
 
   // Create the association
-  const { data: association, error } = await forsured('project_requirements')
+  const { data: association, error } = await supabase.schema('forsured').from('project_requirements')
     .insert({
       ...input,
       assigned_at: new Date().toISOString(),
@@ -81,7 +81,7 @@ export async function getProjectRequirements(
   projectId: string,
   mandatoryOnly: boolean = false
 ): Promise<ProjectRequirementWithDetails[]> {
-  let query = forsured('project_requirements').select('*').eq('project_id', projectId)
+  let query = supabase.schema('forsured').from('project_requirements').select('*').eq('project_id', projectId)
 
   if (mandatoryOnly) {
     query = query.eq('is_mandatory', true)
@@ -121,7 +121,7 @@ export async function getProjectRequirements(
  * @param associationId The ID of the project-requirement association
  */
 export async function removeRequirementFromProject(associationId: string): Promise<void> {
-  const { error } = await forsured('project_requirements').delete().eq('id', associationId)
+  const { error } = await supabase.schema('forsured').from('project_requirements').delete().eq('id', associationId)
 
   if (error) {
     throw new Error(`Failed to remove requirement from project: ${error.message}`)
@@ -138,7 +138,7 @@ export async function updateProjectRequirement(
   associationId: string,
   updates: { is_mandatory?: boolean }
 ): Promise<ProjectRequirement> {
-  const { data, error } = await forsured('project_requirements')
+  const { data, error } = await supabase.schema('forsured').from('project_requirements')
     .update(updates)
     .eq('id', associationId)
     .select()
@@ -157,7 +157,7 @@ export async function updateProjectRequirement(
  * @returns True if requirement is not assigned to any projects
  */
 export async function canDeleteRequirement(requirementId: string): Promise<boolean> {
-  const { data: associations } = await forsured('project_requirements')
+  const { data: associations } = await supabase.schema('forsured').from('project_requirements')
     .select('*')
     .eq('requirement_id', requirementId)
 
@@ -170,7 +170,7 @@ export async function canDeleteRequirement(requirementId: string): Promise<boole
  * @returns Array of project IDs
  */
 export async function getProjectsUsingRequirement(requirementId: string): Promise<string[]> {
-  const { data: associations } = await forsured('project_requirements')
+  const { data: associations } = await supabase.schema('forsured').from('project_requirements')
     .select('*')
     .eq('requirement_id', requirementId)
 

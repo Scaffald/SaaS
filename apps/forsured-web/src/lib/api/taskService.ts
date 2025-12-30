@@ -17,7 +17,7 @@ import { createStatusChangeNotifications } from '../tasks/statusNotificationServ
 import { updateComplianceScoreOnStatusChange } from '../tasks/complianceScoreService'
 // REQ-260: Task assignment view filtering
 import { filterTasksForInbox, filterTasksForAssignedByMe } from '../tasks/taskAssignmentTypeService'
-import { forsured } from '@scf/supabase/forsured-client'
+import { supabase } from '../supabase'
 
 export interface TaskFilters {
   status?: TaskStatus[]
@@ -129,7 +129,7 @@ export const taskService = {
     sort_by: string = 'created_at',
     sort_order: 'asc' | 'desc' = 'desc'
   ): Promise<TaskListResponse> {
-    const { data, error } = await forsured('tasks')
+    const { data, error } = await supabase.schema('forsured').from('tasks')
       .select('*')
       .order(sort_by, { ascending: sort_order === 'asc' })
 
@@ -217,7 +217,7 @@ export const taskService = {
    * REQ-266: Task is enriched with calculated severity
    */
   async getTask(task_id: string): Promise<Task> {
-    const { data, error } = await forsured('tasks').select('*').eq('id', task_id).single()
+    const { data, error } = await supabase.schema('forsured').from('tasks').select('*').eq('id', task_id).single()
 
     if (error) throw error
     if (!data) throw new Error(`Task not found: ${task_id}`)
@@ -235,14 +235,14 @@ export const taskService = {
     // REQ-259: Get current task to capture old status for audit log and notifications
     let oldStatus: TaskStatus | undefined
     if (updates.status) {
-      const { data: existingTask } = await forsured('tasks')
+      const { data: existingTask } = await supabase.schema('forsured').from('tasks')
         .select('status')
         .eq('id', task_id)
         .single()
       oldStatus = existingTask?.status
     }
 
-    const { data: task, error } = await forsured('tasks')
+    const { data: task, error } = await supabase.schema('forsured').from('tasks')
       .update(updates)
       .eq('id', task_id)
       .select()
@@ -302,7 +302,7 @@ export const taskService = {
       mentions,
     }
 
-    const { data, error } = await forsured('task_comments').insert(comment).select().single()
+    const { data, error } = await supabase.schema('forsured').from('task_comments').insert(comment).select().single()
 
     if (error) throw error
     return data as TaskComment
@@ -312,7 +312,7 @@ export const taskService = {
    * Get comments for task
    */
   async getComments(task_id: string): Promise<TaskComment[]> {
-    const { data, error } = await forsured('task_comments')
+    const { data, error } = await supabase.schema('forsured').from('task_comments')
       .select('*')
       .eq('task_id', task_id)
       .order('created_at', { ascending: true })
@@ -340,7 +340,7 @@ export const taskService = {
       url: URL.createObjectURL(file), // Temporary mock URL - replace with storage URL
     }
 
-    const { data, error } = await forsured('task_attachments').insert(attachment).select().single()
+    const { data, error } = await supabase.schema('forsured').from('task_attachments').insert(attachment).select().single()
 
     if (error) throw error
     return data as TaskAttachment
@@ -350,7 +350,7 @@ export const taskService = {
    * Get attachments for task
    */
   async getAttachments(task_id: string): Promise<TaskAttachment[]> {
-    const { data, error } = await forsured('task_attachments')
+    const { data, error } = await supabase.schema('forsured').from('task_attachments')
       .select('*')
       .eq('task_id', task_id)
       .order('uploaded_at', { ascending: false })
@@ -363,7 +363,7 @@ export const taskService = {
    * Get task history
    */
   async getHistory(task_id: string): Promise<TaskHistory[]> {
-    const { data, error } = await forsured('task_history')
+    const { data, error } = await supabase.schema('forsured').from('task_history')
       .select('*')
       .eq('task_id', task_id)
       .order('created_at', { ascending: false })
@@ -400,7 +400,7 @@ export const taskService = {
   async getOverdueTasks(): Promise<Task[]> {
     const now = new Date().toISOString()
 
-    const { data, error } = await forsured('tasks')
+    const { data, error } = await supabase.schema('forsured').from('tasks')
       .select('*')
       .lt('due_date', now)
       .neq('status', 'completed')
@@ -433,7 +433,7 @@ export const taskService = {
     sort_order: 'asc' | 'desc' = 'desc'
   ): Promise<TaskListResponse> {
     // Get all tasks first
-    const { data, error } = await forsured('tasks')
+    const { data, error } = await supabase.schema('forsured').from('tasks')
       .select('*')
       .order(sort_by, { ascending: sort_order === 'asc' })
 
@@ -532,7 +532,7 @@ export const taskService = {
     sort_order: 'asc' | 'desc' = 'desc'
   ): Promise<TaskListResponse> {
     // Get all tasks first
-    const { data, error } = await forsured('tasks')
+    const { data, error } = await supabase.schema('forsured').from('tasks')
       .select('*')
       .order(sort_by, { ascending: sort_order === 'asc' })
 

@@ -4,7 +4,14 @@
 //
 // Scaffald API client with feature flag support for mock/real modes
 
-import { getTokens, isTokenExpired, refreshAccessToken, clearTokens } from './auth';
+import {
+  getValidAccessToken,
+  getMemoryTokens,
+  logout,
+  clearMemoryTokens,
+  isTokenExpired,
+  refreshSessionTokens,
+} from './auth';
 import type {
   ScaffaldDocument,
   ScaffaldDocumentVersion,
@@ -161,25 +168,23 @@ interface ScaffaldClient {
 
 /**
  * Fetch with automatic token refresh and retry
+ * Uses httpOnly cookie session for secure token management
  */
 async function fetchWithAuth(
   url: string,
   options: RequestInit = {},
   retries = 3
 ): Promise<Response> {
-  let tokens = getTokens();
-  if (tokens && isTokenExpired(tokens)) {
-    tokens = await refreshAccessToken();
-    if (!tokens) {
-      clearTokens();
-      window.location.href = '/start';
-      throw new Error('Failed to refresh access token');
-    }
+  // Get valid access token (refreshes via edge function if needed)
+  const accessToken = await getValidAccessToken();
+
+  if (!accessToken) {
+    clearMemoryTokens();
+    window.location.href = '/';
+    throw new Error('No valid access token available');
   }
 
-  const authHeaders = tokens
-    ? { Authorization: `Bearer ${tokens.access_token}` }
-    : {};
+  const authHeaders = { Authorization: `Bearer ${accessToken}` };
 
   try {
     const response = await fetch(url, {
@@ -194,8 +199,8 @@ async function fetchWithAuth(
     if (!response.ok) {
       if (response.status === 401 && retries > 0) {
         // Token might have expired during the request, try refreshing and retrying
-        const newTokens = await refreshAccessToken();
-        if (newTokens) {
+        const refreshed = await refreshSessionTokens();
+        if (refreshed) {
           return fetchWithAuth(url, options, retries - 1);
         }
       }
@@ -245,30 +250,18 @@ function createRealScaffaldClient(config: {
       },
 
       async refreshToken() {
-        const tokens = getTokens();
-        if (!tokens?.refresh_token) {
-          throw new Error('No refresh token available');
-        }
-
-        const response = await fetch(config.tokenEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({
-            grant_type: 'refresh_token',
-            client_id: config.clientId,
-            refresh_token: tokens.refresh_token,
-          }),
-        });
-
-        if (!response.ok) {
+        // Refresh via edge function (httpOnly cookie mode)
+        const success = await refreshSessionTokens();
+        if (!success) {
           throw new Error('Token refresh failed');
         }
-
-        return response.json();
+        // Return memory tokens after refresh
+        return getMemoryTokens();
       },
 
       async getSession() {
-        const tokens = getTokens();
+        // Check memory tokens (refreshed via edge function on page load)
+        const tokens = getMemoryTokens();
         if (!tokens || isTokenExpired(tokens)) {
           return null;
         }
@@ -303,9 +296,8 @@ function createRealScaffaldClient(config: {
       },
 
       async signOut() {
-        clearTokens();
-        // Optionally call Scaffald logout endpoint
-        // await fetch(`${config.baseUrl}/api/v1/logout`, { method: 'POST' });
+        // Logout via edge function (clears httpOnly cookie session)
+        await logout();
       },
     },
 
@@ -643,7 +635,7 @@ function createMockScaffaldClient(): ScaffaldClient {
       },
       async getSession() {
         console.log('[Mock ScaffaldClient] getSession()');
-        const tokens = getTokens();
+        const tokens = getMemoryTokens();
         if (!tokens) return null;
         return { user: await this.getUser() };
       },
@@ -659,7 +651,7 @@ function createMockScaffaldClient(): ScaffaldClient {
       },
       async signOut() {
         console.log('[Mock ScaffaldClient] signOut()');
-        clearTokens();
+        clearMemoryTokens();
         // Clear cached mock user so next login can use a different user
         localStorage.removeItem(MOCK_CURRENT_USER_KEY);
       },

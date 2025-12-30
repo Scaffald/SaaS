@@ -46,7 +46,7 @@ function OnboardingWizard({
     <YStack maxWidth={672} width="100%" alignSelf="center" paddingHorizontal="$4" paddingVertical="$8">
       <OnboardingProgress current={currentStep} total={totalSteps} />
 
-      <YStack marginTop="$8">
+      <YStack mt="$8">
         {children}
       </YStack>
 

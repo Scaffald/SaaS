@@ -278,7 +278,7 @@ export default function TaskTypeForm({
           />
 
           <YStack flex={1} minWidth="45%">
-            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1.5" display="block">
+            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$1.5" display="block">
               Color
             </Label>
             <XStack alignItems="center" gap="$3">

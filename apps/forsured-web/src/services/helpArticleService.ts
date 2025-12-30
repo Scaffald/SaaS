@@ -264,17 +264,33 @@ const mockArticles: HelpArticle[] = [
     title: 'Getting Started as a General Contractor',
     content: `# Getting Started as a General Contractor
 
-Welcome to ForSured! This guide will help you set up your account and start
-managing subcontractor compliance in minutes.
+Welcome to ForSured! This guide will help you set up your account and start managing subcontractor compliance in minutes.
 
 ## Step 1: Complete Your Company Profile
 
-After signing up, you'll be guided through setting up your company profile.
+After signing up, you'll be guided through setting up your company profile:
+
+### Company Information
+
+- Enter your company name and address
+- Add your phone number
+- Upload your company logo (optional)
+
+### Default Insurance Requirements
+
+- Set your standard GL limits (e.g., $1M per occurrence / $2M aggregate)
+- Configure Workers' Comp requirements
+- Set Auto Liability requirements
+- Specify if you require Additional Insured endorsements
+- Specify if you require Waiver of Subrogation
 
 ## Step 2: Create Your First Project
 
 1. Click **"New Project"** from your dashboard
-2. Enter the project details
+2. Enter the project details:
+   - Project name
+   - Job site address
+   - Start and end dates
 3. Customize insurance requirements (or use your defaults)
 4. Click **"Create Project"**
 
@@ -283,9 +299,18 @@ After signing up, you'll be guided through setting up your company profile.
 1. Open your project
 2. Click **"Invite Contractor"**
 3. Enter the contractor's email address
+4. They'll receive an invitation to join ForSured and your project
+
+## What Happens Next?
+
+- Contractors accept your invitation
+- They upload their certificates of insurance (COIs)
+- ForSured automatically validates compliance
+- You see real-time compliance status on your dashboard
 
 ## Need Help?
 
+- **Video**: [Watch the 3-minute quick start guide](/gc/help/video)
 - **FAQ**: [Common questions answered](/gc/help/faq)
 - **Support**: [Contact us](/support)`,
     userTypes: ['gc'],

@@ -58,11 +58,11 @@ export const ChecklistItem = ({ item, onPress }: ChecklistItemProps) => {
             fontSize="$4"
             fontWeight="500"
             color={item.complete ? '$color10' : '$color12'}
-            textAlign="left"
+            style={{ textAlign: 'left' }}
           >
             {item.title}
           </Text>
-          <Text fontSize="$2" color="$color9" lineHeight="$1" textAlign="left">
+          <Text fontSize="$2" color="$color9" lineHeight="$1" style={{ textAlign: 'left' }}>
             {item.description}
           </Text>
         </YStack>

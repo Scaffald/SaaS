@@ -1,8 +1,7 @@
 // src/components/onboarding/steps/broker/AgencyStep.tsx
 // REQ-126: Broker Onboarding - Agency Setup Step
 import { useState } from 'react';
-import { Input as TextInput, Button, Heading2, BodyText } from '@unicornlove/ui';
-import { YStack } from 'tamagui';
+import { YStack, Text, H2, Input, Button } from '@unicornlove/ui';
 
 interface AgencyStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -46,55 +45,56 @@ function AgencyStep({ onComplete, initialData = {}, isLoading = false }: AgencyS
 
   return (
     <YStack>
-      <Heading2 marginBottom="$2">Agency Information</Heading2>
-      <BodyText marginBottom="$6" color="$color10">
+      <H2 mb="$2">Agency Information</H2>
+      <Text mb="$6" color="$color10">
         Tell us about your insurance agency
-      </BodyText>
-      <YStack asChild gap="$4">
-        <form onSubmit={handleSubmit}>
-          <TextInput
-            label="Agency Name"
+      </Text>
+      <YStack tag="form" onSubmit={handleSubmit} gap="$4">
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Agency Name</Text>
+          <Input
             value={agencyName}
             onChangeText={setAgencyName}
-            error={errors.agencyName}
             placeholder="Enter your agency name"
-            required
           />
-          <TextInput
-            label="Address"
+          {errors.agencyName && <Text color="$red10" fontSize="$2">{errors.agencyName}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Address</Text>
+          <Input
             value={address}
             onChangeText={setAddress}
-            error={errors.address}
             placeholder="Enter your agency address"
-            required
           />
-          <TextInput
-            label="Phone"
+          {errors.address && <Text color="$red10" fontSize="$2">{errors.address}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Phone</Text>
+          <Input
             value={phone}
             onChangeText={setPhone}
-            error={errors.phone}
             placeholder="Enter your phone number"
-            keyboardType="phone-pad"
-            required
           />
-          <TextInput
-            label="Website (Optional)"
+          {errors.phone && <Text color="$red10" fontSize="$2">{errors.phone}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Website (Optional)</Text>
+          <Input
             value={website}
             onChangeText={setWebsite}
-            error={errors.website}
             placeholder="https://example.com"
-            keyboardType="url"
           />
-          <YStack marginTop="$6">
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Saving...' : 'Continue'}
-            </Button>
-          </YStack>
-        </form>
+          {errors.website && <Text color="$red10" fontSize="$2">{errors.website}</Text>}
+        </YStack>
+        <YStack mt="$6">
+          <Button
+            onPress={handleSubmit}
+            variant="primary"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Saving...' : 'Continue'}
+          </Button>
+        </YStack>
       </YStack>
     </YStack>
   );

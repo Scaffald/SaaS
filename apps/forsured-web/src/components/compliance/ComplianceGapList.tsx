@@ -24,13 +24,13 @@ export const ComplianceGapList: React.FC<ComplianceGapListProps> = ({ gaps }) =>
         padding="$6"
         alignItems="center"
       >
-        <Text fontSize="$10" marginBottom="$2">
+        <Text fontSize="$10" mb="$2">
           ✓
         </Text>
         <Text color="$green11" fontWeight="600">
           No Compliance Gaps Identified
         </Text>
-        <Text color="$green10" fontSize="$3" marginTop="$1">
+        <Text color="$green10" fontSize="$3" mt="$1">
           This policy meets all project requirements
         </Text>
       </YStack>
@@ -56,7 +56,7 @@ export const ComplianceGapList: React.FC<ComplianceGapListProps> = ({ gaps }) =>
       {/* Critical Gaps */}
       {criticalGaps.length > 0 && (
         <YStack>
-          <Text fontSize="$6" fontWeight="600" color="$red11" marginBottom="$3">
+          <Text fontSize="$6" fontWeight="600" color="$red11" mb="$3">
             Critical Issues ({criticalGaps.length})
           </Text>
           <YStack gap="$3">
@@ -70,7 +70,7 @@ export const ComplianceGapList: React.FC<ComplianceGapListProps> = ({ gaps }) =>
       {/* Warning Gaps */}
       {warningGaps.length > 0 && (
         <YStack>
-          <Text fontSize="$6" fontWeight="600" color="$yellow11" marginBottom="$3">
+          <Text fontSize="$6" fontWeight="600" color="$yellow11" mb="$3">
             Warnings ({warningGaps.length})
           </Text>
           <YStack gap="$3">
@@ -84,7 +84,7 @@ export const ComplianceGapList: React.FC<ComplianceGapListProps> = ({ gaps }) =>
       {/* Info Gaps */}
       {infoGaps.length > 0 && (
         <YStack>
-          <Text fontSize="$6" fontWeight="600" color="$blue11" marginBottom="$3">
+          <Text fontSize="$6" fontWeight="600" color="$blue11" mb="$3">
             Information ({infoGaps.length})
           </Text>
           <YStack gap="$3">
@@ -182,17 +182,17 @@ const GapCard: React.FC<{ gap: ComplianceGap }> = ({ gap }) => {
               {getGapTypeLabel(gap.type)}
             </Text>
             {gap.coverage_type && (
-              <Text fontSize="$3" color="$color10" marginTop="$1">
+              <Text fontSize="$3" color="$color10" mt="$1">
                 Coverage: {gap.coverage_type.replace(/_/g, ' ')}
               </Text>
             )}
             {gap.endorsement && (
-              <Text fontSize="$3" color="$color10" marginTop="$1">
+              <Text fontSize="$3" color="$color10" mt="$1">
                 Endorsement: {gap.endorsement.replace(/_/g, ' ')}
               </Text>
             )}
             {gap.current_value !== undefined && gap.current_value !== null && (
-              <Text fontSize="$3" color="$color10" marginTop="$1">
+              <Text fontSize="$3" color="$color10" mt="$1">
                 Current: {formatValue(gap.current_value)} → Required:{' '}
                 {formatValue(gap.required_value)}
               </Text>
@@ -205,8 +205,8 @@ const GapCard: React.FC<{ gap: ComplianceGap }> = ({ gap }) => {
       </XStack>
 
       {/* Remediation */}
-      <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
-        <Text fontSize="$1" fontWeight="600" color="$color11" marginBottom="$1">
+      <YStack mt="$3" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
+        <Text fontSize="$1" fontWeight="600" color="$color11" mb="$1">
           How to Fix:
         </Text>
         <Text fontSize="$3" color="$color12">

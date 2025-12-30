@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { Users, UserPlus, Shield, Mail } from 'lucide-react';
 import { YStack, XStack, Text, H1, H2, Card } from '@unicornlove/ui';
 import { useUsers } from '../../hooks/useUsers';
 import { useClients } from '../../hooks/useClients';
 import Button from '../Common/Button';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
+import InviteTeamMemberModal from './InviteTeamMemberModal';
 
 export default function BrokerTeamPage() {
-  const { users, loading: usersLoading } = useUsers();
+  const { users, loading: usersLoading, fetchUsers } = useUsers();
   const { clients, loading: clientsLoading } = useClients();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const brokerUsers = users.filter((u) => u.role === 'broker');
   const adminUsers = brokerUsers.filter((u) => u.broker_role === 'admin');
@@ -29,12 +32,10 @@ export default function BrokerTeamPage() {
           </Text>
         </YStack>
         <Button
-          onClick={() => {
-            /* TODO: Implement invite modal */
-          }}
+          onClick={() => setIsInviteModalOpen(true)}
         >
           <UserPlus size={18} />
-          <Text marginLeft="$2">Invite Team Member</Text>
+          <Text ml="$2">Invite Team Member</Text>
         </Button>
       </XStack>
 
@@ -57,7 +58,7 @@ export default function BrokerTeamPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$3">Total Team Members</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
                 {brokerUsers.length}
               </Text>
             </YStack>
@@ -80,7 +81,7 @@ export default function BrokerTeamPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$3">Administrators</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$purple10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$purple10" mt="$1">
                 {adminUsers.length}
               </Text>
             </YStack>
@@ -103,7 +104,7 @@ export default function BrokerTeamPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$3">Workers</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
                 {workerUsers.length}
               </Text>
             </YStack>
@@ -157,9 +158,9 @@ export default function BrokerTeamPage() {
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       {user.name}
                     </Text>
-                    <XStack alignItems="center" gap="$4" marginTop="$1">
+                    <XStack alignItems="center" gap="$4" mt="$1">
                       <XStack alignItems="center" color="$color11" fontSize="$3">
-                        <Mail size={14} marginRight="$1" color="$color11" />
+                        <Mail size={14} mr="$1" color="$color11" />
                         <Text fontSize="$3" color="$color11">{user.email}</Text>
                       </XStack>
                       <XStack
@@ -185,18 +186,18 @@ export default function BrokerTeamPage() {
                 </XStack>
 
                 <XStack alignItems="center" gap="$2">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="$2">
                     Edit Access
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="$2">
                     View Activity
                   </Button>
                 </XStack>
               </XStack>
 
-              <YStack marginTop="$4" paddingLeft={64}>
+              <YStack mt="$4" paddingLeft={64}>
                 <YStack backgroundColor="$gray2" borderRadius="$4" padding="$4">
-                  <Text fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                  <Text fontSize="$1" fontWeight="500" color="$color11" mb="$2">
                     CLIENT ASSIGNMENTS
                   </Text>
                   <XStack flexWrap="wrap" gap="$2">
@@ -253,20 +254,29 @@ export default function BrokerTeamPage() {
           padding="$12"
         >
           <YStack alignItems="center">
-            <Users color="$color10" size={48} marginBottom="$4" />
-            <Text color="$color12" fontWeight="500" marginBottom="$2">
+            <Users color="$color10" size={48} mb="$4" />
+            <Text color="$color12" fontWeight="500" mb="$2">
               No team members yet
             </Text>
-            <Text fontSize="$3" color="$color11" marginBottom="$4">
+            <Text fontSize="$3" color="$color11" mb="$4">
               Invite team members to collaborate
             </Text>
-            <Button>
-              <UserPlus size={18} marginRight="$2" />
+            <Button onClick={() => setIsInviteModalOpen(true)}>
+              <UserPlus size={18} mr="$2" />
               Invite Team Member
             </Button>
           </YStack>
         </Card>
       )}
+
+      {/* Invite Team Member Modal */}
+      <InviteTeamMemberModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        onSuccess={() => {
+          fetchUsers();
+        }}
+      />
     </YStack>
   );
 }

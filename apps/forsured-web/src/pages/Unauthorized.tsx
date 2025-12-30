@@ -33,7 +33,7 @@ function UnauthorizedPage() {
         width="100%"
         textAlign="center"
         backgroundColor="$background"
-        borderRadius="$xl"
+        borderRadius="$5"
         shadowColor="$shadowColor"
         shadowRadius={20}
         shadowOffset={{ width: 0, height: 8 }}

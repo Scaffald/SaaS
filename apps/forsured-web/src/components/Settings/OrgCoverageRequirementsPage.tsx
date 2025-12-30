@@ -221,9 +221,9 @@ export default function OrgCoverageRequirementsPage({
   // Non-admin warning
   if (!isAdmin) {
     return (
-      <YStack alignItems="center" justifyContent="center" padding="$8" textAlign="center">
-        <AlertCircle size={48} color="$yellow10" marginBottom="$4" />
-        <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">Admin Access Required</Text>
+      <YStack alignItems="center" justifyContent="center" padding="$8" style={{ textAlign: 'center' }}>
+        <AlertCircle size={48} color="$yellow10" mb="$4" />
+        <Text fontSize="$6" fontWeight="600" color="$color12" mb="$2">Admin Access Required</Text>
         <Text color="$color11">
           Only administrators can manage organization-level coverage requirements.
         </Text>
@@ -276,7 +276,7 @@ export default function OrgCoverageRequirementsPage({
               <Text>ORG LEVEL</Text>
             </XStack>
           </XStack>
-          <Text color="$color11" fontSize="$6" marginTop="$1">
+          <Text color="$color11" fontSize="$6" mt="$1">
             Set organization-wide minimum coverage requirements for all subcontractors
           </Text>
         </YStack>
@@ -288,10 +288,10 @@ export default function OrgCoverageRequirementsPage({
       {/* Info Banner */}
       <CardCommon padding="$4" backgroundColor="$blue2" borderColor="$blue6">
         <XStack alignItems="flex-start" gap="$3">
-          <Shield color="$blue10" marginTop="$0.5" size={20} />
+          <Shield color="$blue10" mt="$0.5" size={20} />
           <YStack>
             <Text color="$blue11" fontWeight="500">Organization-Level Requirements</Text>
-            <Text color="$blue10" fontSize="$3" marginTop="$1">
+            <Text color="$blue10" fontSize="$3" mt="$1">
               These requirements apply to all projects in your organization. Subcontractors must
               meet both org-level and any project-specific requirements for full compliance.
             </Text>
@@ -344,12 +344,12 @@ export default function OrgCoverageRequirementsPage({
         <YStack overflowX="auto">
           <YStack>
             <XStack padding="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
-              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
-              <Text flex={1} textAlign="right" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
+              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
+              <Text flex={1} style={{ textAlign: 'right' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
             </XStack>
             <YStack>
               {isLoading ? (

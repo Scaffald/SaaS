@@ -174,7 +174,7 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
           </ScrollView>
 
           {/* Results count */}
-          <Text fontSize="$2" opacity={0.6} textAlign="center">
+          <Text fontSize="$2" opacity={0.6} style={{ textAlign: 'center' }}>
             {filteredIcons.length} icon{filteredIcons.length !== 1 ? 's' : ''}
           </Text>
         </YStack>

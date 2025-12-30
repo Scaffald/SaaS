@@ -16,7 +16,7 @@ function HelpSearch() {
   };
 
   return (
-    <YStack marginBottom="$6">
+    <YStack mb="$6">
       <YStack as="form" onSubmit={handleSearch} position="relative">
         <XStack position="relative" alignItems="center">
           <Search

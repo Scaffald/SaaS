@@ -199,8 +199,8 @@ export default function GCProfilePage() {
           Back
         </Button>
         <YStack alignItems="center" paddingVertical="$12" backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
-          <Building color="$red9" size={64} marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <Building color="$red9" size={64} mb="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             GC Not Found
           </H3>
           <Text color="$color11">
@@ -293,8 +293,8 @@ export default function GCProfilePage() {
                   {stats.avgScore}% Compliant
                 </Text>
               </XStack>
-              <Text color="$color11" marginTop="$1">{gc.address}</Text>
-              <XStack alignItems="center" gap="$4" marginTop="$2" fontSize="$3" color="$color11">
+              <Text color="$color11" mt="$1">{gc.address}</Text>
+              <XStack alignItems="center" gap="$4" mt="$2" fontSize="$3" color="$color11">
                 {gc.phone && <Text fontSize="$3" color="$color11">{gc.phone}</Text>}
                 {gc.email && <Text fontSize="$3" color="$color11">{gc.email}</Text>}
               </XStack>
@@ -309,28 +309,28 @@ export default function GCProfilePage() {
               <Users size={18} color="$blue9" />
               <Text fontSize="$8" fontWeight="bold" color="$blue9">{stats.total}</Text>
             </XStack>
-            <Text fontSize="$3" color="$color11" marginTop="$1">Total Subcontractors</Text>
+            <Text fontSize="$3" color="$color11" mt="$1">Total Subcontractors</Text>
           </YStack>
           <YStack flex={1} padding="$4" alignItems="center" borderRightWidth={1} borderColor="$borderColor">
             <XStack alignItems="center" justifyContent="center" gap="$2">
               <Shield size={18} color="$green9" />
               <Text fontSize="$8" fontWeight="bold" color="$green9">{stats.compliant}</Text>
             </XStack>
-            <Text fontSize="$3" color="$color11" marginTop="$1">Compliant</Text>
+            <Text fontSize="$3" color="$color11" mt="$1">Compliant</Text>
           </YStack>
           <YStack flex={1} padding="$4" alignItems="center" borderRightWidth={1} borderColor="$borderColor">
             <XStack alignItems="center" justifyContent="center" gap="$2">
               <Shield size={18} color="$yellow9" />
               <Text fontSize="$8" fontWeight="bold" color="$yellow9">{stats.atRisk}</Text>
             </XStack>
-            <Text fontSize="$3" color="$color11" marginTop="$1">At Risk</Text>
+            <Text fontSize="$3" color="$color11" mt="$1">At Risk</Text>
           </YStack>
           <YStack flex={1} padding="$4" alignItems="center">
             <XStack alignItems="center" justifyContent="center" gap="$2">
               <FileText size={18} color="$color12" />
               <Text fontSize="$8" fontWeight="bold" color="$color12">{stats.active}</Text>
             </XStack>
-            <Text fontSize="$3" color="$color11" marginTop="$1">Active</Text>
+            <Text fontSize="$3" color="$color11" mt="$1">Active</Text>
           </YStack>
         </XStack>
       </Card>
@@ -417,8 +417,8 @@ export default function GCProfilePage() {
 
         {filteredSubcontractors.length === 0 ? (
           <YStack alignItems="center" paddingVertical="$12">
-            <Users color="$color10" size={48} marginBottom="$4" />
-            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+            <Users color="$color10" size={48} mb="$4" />
+            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
               No Subcontractors Found
             </H3>
             <Text color="$color11">
@@ -583,7 +583,7 @@ export default function GCProfilePage() {
                               <XStack gap="$6" flexWrap="wrap">
                                 {/* Compliance Score */}
                                 <YStack flex={1} minWidth={200}>
-                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" marginBottom="$2">
+                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" mb="$2">
                                     <Shield size={16} color="$color11" />
                                     <Text fontSize="$3" color="$color11">Compliance Score</Text>
                                   </XStack>
@@ -604,7 +604,7 @@ export default function GCProfilePage() {
 
                                 {/* Recent Documents */}
                                 <YStack flex={1} minWidth={200}>
-                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" marginBottom="$2">
+                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" mb="$2">
                                     <FileText size={16} color="$color11" />
                                     <Text fontSize="$3" color="$color11">Recent Documents</Text>
                                   </XStack>
@@ -623,7 +623,7 @@ export default function GCProfilePage() {
 
                                 {/* Active Status */}
                                 <YStack flex={1} minWidth={200}>
-                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" marginBottom="$2">
+                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" mb="$2">
                                     <Clock size={16} color="$color11" />
                                     <Text fontSize="$3" color="$color11">Active Status</Text>
                                   </XStack>
@@ -642,7 +642,7 @@ export default function GCProfilePage() {
 
                                 {/* Notes */}
                                 <YStack flex={1} minWidth={200}>
-                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" marginBottom="$2">
+                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" mb="$2">
                                     <StickyNote size={16} color="$color11" />
                                     <Text fontSize="$3" color="$color11">Notes</Text>
                                   </XStack>
@@ -653,10 +653,10 @@ export default function GCProfilePage() {
                               </XStack>
 
                               {/* Action Buttons */}
-                              <XStack alignItems="center" gap="$3" marginTop="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                              <XStack alignItems="center" gap="$3" mt="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                                 <Button
                                   variant="primary"
-                                  size="sm"
+                                  size="$2"
                                   leftIcon={Eye}
                                   onPress={(e) => handleViewFullProfile(e, sub.id)}
                                   data-testid="view-profile-btn"
@@ -665,7 +665,7 @@ export default function GCProfilePage() {
                                 </Button>
                                 <Button
                                   variant="outline"
-                                  size="sm"
+                                  size="$2"
                                   leftIcon={StickyNote}
                                   onPress={(e) => handleAddNote(e, sub.id)}
                                   data-testid="add-note-btn"
@@ -674,7 +674,7 @@ export default function GCProfilePage() {
                                 </Button>
                                 <Button
                                   variant="outline"
-                                  size="sm"
+                                  size="$2"
                                   leftIcon={MessageSquare}
                                   onPress={(e) => handleSendMessage(e, sub.id)}
                                   data-testid="send-message-btn"

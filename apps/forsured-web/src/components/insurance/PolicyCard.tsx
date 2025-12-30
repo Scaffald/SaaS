@@ -81,7 +81,7 @@ export default function PolicyCard({
         <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
           {/* Left: Policy Info */}
           <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" marginBottom="$2">
+            <XStack alignItems="center" gap="$3" mb="$2">
               <Shield color="$blue10" size={24} />
               <YStack>
                 <Text fontSize="$6" fontWeight="600" color="$color12">
@@ -99,7 +99,7 @@ export default function PolicyCard({
             <XStack
               flexWrap="wrap"
               gap="$4"
-              marginTop="$3"
+              mt="$3"
               $gtMd={{ flexDirection: 'row' }}
             >
               {/* Aggregate Limit */}
@@ -149,7 +149,7 @@ export default function PolicyCard({
             </XStack>
 
             {/* Dates and Carrier */}
-            <XStack flexWrap="wrap" alignItems="center" gap="$4" marginTop="$3">
+            <XStack flexWrap="wrap" alignItems="center" gap="$4" mt="$3">
               {policy.carrier_name && (
                 <Text fontSize="$3" color="$color11">
                   <Text fontWeight="500">Carrier:</Text> {policy.carrier_name}
@@ -171,7 +171,7 @@ export default function PolicyCard({
               policy.underlying_coverages &&
               policy.underlying_coverages.length > 0 && (
                 <XStack
-                  marginTop="$3"
+                  mt="$3"
                   alignItems="center"
                   gap="$2"
                   paddingHorizontal="$3"
@@ -246,8 +246,8 @@ export default function PolicyCard({
         >
           {/* Provisions */}
           {policy.provisions && policy.provisions.length > 0 && (
-            <YStack marginBottom="$4">
-              <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$2">
+            <YStack mb="$4">
+              <Text fontSize="$3" fontWeight="600" color="$color12" mb="$2">
                 Coverage Provisions
               </Text>
               <YStack gap="$2">
@@ -261,7 +261,7 @@ export default function PolicyCard({
           {/* Endorsements */}
           {policy.endorsements && policy.endorsements.length > 0 && (
             <YStack>
-              <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$2">
+              <Text fontSize="$3" fontWeight="600" color="$color12" mb="$2">
                 Policy Endorsements
               </Text>
               <YStack gap="$2">

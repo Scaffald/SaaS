@@ -162,7 +162,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
         <Card
           position="absolute"
           zIndex={10}
-          marginTop="$2"
+          mt="$2"
           width={320}
           backgroundColor="$background"
           borderWidth={1}

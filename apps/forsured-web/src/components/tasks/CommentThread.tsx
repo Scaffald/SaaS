@@ -142,7 +142,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
       <YStack gap="$4">
         {comments.length === 0 ? (
           <YStack alignItems="center" paddingVertical="$8">
-            <SizableText fontSize="$3" color="$color10" textAlign="center">
+            <SizableText fontSize="$3" color="$color10" style={{ textAlign: 'center' }}>
               No comments yet. Be the first to comment!
             </SizableText>
           </YStack>
@@ -173,11 +173,11 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
                       {formatTimestamp(comment.created_at)}
                     </SizableText>
                   </XStack>
-                  <SizableText fontSize="$3" color="$color11" marginTop="$1" whiteSpace="pre-wrap">
+                  <SizableText fontSize="$3" color="$color11" mt="$1" whiteSpace="pre-wrap">
                     {comment.content}
                   </SizableText>
                   {comment.mentions.length > 0 && (
-                    <XStack marginTop="$2" flexWrap="wrap" gap="$1">
+                    <XStack mt="$2" flexWrap="wrap" gap="$1">
                       {comment.mentions.map((mentionId) => {
                         const mentionedUser = getUserById(mentionId)
                         return (
@@ -236,7 +236,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
               position="absolute"
               zIndex={10}
               bottom="100%"
-              marginBottom="$2"
+              mb="$2"
               backgroundColor="$background"
               borderWidth={1}
               borderColor="$borderColor"
@@ -325,7 +325,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
           </XStack>
         </Card>
 
-        <SizableText fontSize="$1" color="$color10" marginTop="$2">
+        <SizableText fontSize="$1" color="$color10" mt="$2">
           Markdown formatting supported: **bold**, *italic*, - lists
         </SizableText>
       </YStack>

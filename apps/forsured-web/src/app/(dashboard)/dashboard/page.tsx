@@ -19,6 +19,8 @@ import type {
   DashboardFilters,
 } from '../../../lib/api/dashboard/types';
 import { MetricCard } from '../../../components/dashboard/MetricCard';
+import { RiskBadge } from '../../../components/compliance/RiskBadge';
+import type { RiskLevel } from '../../../lib/compliance/riskCalculationService';
 
 export default function DashboardPage() {
   // REQ-4: Use lexicon for dynamic labels
@@ -249,7 +251,7 @@ export default function DashboardPage() {
                       Score
                     </Text>
                     <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
-                      Status
+                      Risk Level
                     </Text>
                     <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
                       Open Tasks
@@ -264,40 +266,20 @@ export default function DashboardPage() {
                         borderBottomWidth={1}
                         borderColor="$gray6"
                         hoverStyle={{ backgroundColor: '$gray2' }}
+                        data-testid="subcontractor-row"
                       >
                         <Text flex={1} fontSize="$2" fontWeight="500" color="$gray12" whiteSpace="nowrap">
                           {score.company_name}
                         </Text>
-                        <Text flex={1} fontSize="$2" color="$gray12" whiteSpace="nowrap">
-                          {score.compliance_score}
+                        <Text flex={1} fontSize="$2" color="$gray12" whiteSpace="nowrap" data-testid="compliance-score">
+                          {score.compliance_score}%
                         </Text>
-                        <YStack flex={1} alignItems="flex-start">
-                          <XStack
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
-                            borderRadius={9999}
-                            backgroundColor={
-                              score.status === 'compliant'
-                                ? '$green2'
-                                : score.status === 'warning'
-                                  ? '$yellow2'
-                                  : '$red2'
-                            }
-                          >
-                            <Text
-                              fontSize="$1"
-                              fontWeight="600"
-                              color={
-                                score.status === 'compliant'
-                                  ? '$green11'
-                                  : score.status === 'warning'
-                                    ? '$yellow11'
-                                    : '$red11'
-                              }
-                            >
-                              {score.status}
-                            </Text>
-                          </XStack>
+                        <YStack flex={1} alignItems="flex-start" data-testid="risk-badge-container">
+                          <RiskBadge
+                            level={score.risk_level as RiskLevel}
+                            score={score.compliance_score}
+                            size="sm"
+                          />
                         </YStack>
                         <Text flex={1} fontSize="$2" color="$gray11" whiteSpace="nowrap">
                           {score.open_tasks_count}

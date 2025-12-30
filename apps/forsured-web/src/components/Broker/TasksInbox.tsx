@@ -174,7 +174,7 @@ export default function TasksInbox({
       borderColor="$borderColor"
     >
       <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <XStack alignItems="center" justifyContent="space-between" mb="$4">
           <YStack>
             <H2 fontSize="$6" fontWeight="600" color="$color12">
               {headerText.title}
@@ -187,12 +187,12 @@ export default function TasksInbox({
             onClick={onCreateTask}
           >
             <Plus size={18} />
-            <Text marginLeft="$2">New Task</Text>
+            <Text ml="$2">New Task</Text>
           </Button>
         </XStack>
 
         {/* REQ-268: View Toggle - My Inbox vs Assigned by Me */}
-        <YStack marginBottom="$4">
+        <YStack mb="$4">
           <TaskViewToggle
             currentView={currentView}
             onViewChange={setView}
@@ -254,7 +254,7 @@ export default function TasksInbox({
               >
                 <XStack alignItems="flex-start" justifyContent="space-between">
                   <YStack flex={1}>
-                    <XStack alignItems="center" gap="$2" marginBottom="$2">
+                    <XStack alignItems="center" gap="$2" mb="$2">
                       <XStack
                         alignItems="center"
                         paddingHorizontal="$2"
@@ -272,11 +272,11 @@ export default function TasksInbox({
                       {task.due_date && getDueDateBadge(task.due_date)}
                     </XStack>
 
-                    <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
+                    <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
                       {task.title}
                     </Text>
                     {task.description && (
-                      <Text fontSize="$3" color="$color11" marginBottom="$2">
+                      <Text fontSize="$3" color="$color11" mb="$2">
                         {task.description}
                       </Text>
                     )}
@@ -291,33 +291,33 @@ export default function TasksInbox({
                     >
                       {task.assigned_to && (
                         <XStack alignItems="center">
-                          <User size={12} marginRight="$1" color="$color11" />
+                          <User size={12} mr="$1" color="$color11" />
                           <Text fontSize="$1" color="$color11">{task.assigned_to.name}</Text>
                         </XStack>
                       )}
                       {task.client && (
                         <XStack alignItems="center">
-                          <FileText size={12} marginRight="$1" color="$color11" />
+                          <FileText size={12} mr="$1" color="$color11" />
                           <Text fontSize="$1" color="$color11">{task.client.company_name}</Text>
                         </XStack>
                       )}
                       {/* REQ-282 TASK-4: Display sub company context */}
                       {task.sub_company_name && (
                         <XStack alignItems="center">
-                          <Building2 size={12} marginRight="$1" color="$blue10" />
+                          <Building2 size={12} mr="$1" color="$blue10" />
                           <Text fontSize="$1" color="$blue10">{task.sub_company_name}</Text>
                         </XStack>
                       )}
                       {task.due_date && (
                         <XStack alignItems="center">
-                          <Calendar size={12} marginRight="$1" color="$color11" />
+                          <Calendar size={12} mr="$1" color="$color11" />
                           <Text fontSize="$1" color="$color11">Due: {formatDate(task.due_date)}</Text>
                         </XStack>
                       )}
                     </XStack>
 
                     {task.document_link && (
-                      <YStack marginTop="$2">
+                      <YStack mt="$2">
                         <XStack
                           as="a"
                           href={task.document_link}
@@ -329,14 +329,14 @@ export default function TasksInbox({
                           alignItems="center"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <FileText size={12} marginRight="$1" color="$blue10" />
+                          <FileText size={12} mr="$1" color="$blue10" />
                           <Text fontSize="$1" color="$blue10">View Document</Text>
                         </XStack>
                       </YStack>
                     )}
                   </YStack>
 
-                  <YStack alignItems="flex-end" gap="$2" marginLeft="$4">
+                  <YStack alignItems="flex-end" gap="$2" ml="$4">
                     {/* REQ-282: Use TaskStatusBadge with tooltip and rejection reason */}
                     <TaskStatusBadge
                       status={task.status}
@@ -381,7 +381,7 @@ export default function TasksInbox({
 
         {displayedTasks.length === 0 && (
           <YStack alignItems="center" paddingVertical="$12">
-            <Clock color="$color10" size={48} marginBottom="$3" />
+            <Clock color="$color10" size={48} mb="$3" />
             <Text color="$color11">No {activeTab} tasks</Text>
           </YStack>
         )}

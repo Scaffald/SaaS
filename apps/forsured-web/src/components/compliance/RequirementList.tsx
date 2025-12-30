@@ -125,7 +125,7 @@ export default function RequirementList({
     return (
       <YStack alignItems="center" justifyContent="center" height={256}>
         <Spinner size="large" />
-        <Text color="$color10" marginTop="$4">Loading requirements...</Text>
+        <Text color="$color10" mt="$4">Loading requirements...</Text>
       </YStack>
     );
   }
@@ -133,7 +133,7 @@ export default function RequirementList({
   if (error) {
     return (
       <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$4" padding="$4">
-        <Text color="$red11" marginBottom="$2">Error: {error}</Text>
+        <Text color="$red11" mb="$2">Error: {error}</Text>
         <Button
           onPress={() => loadRequirements()}
           fontSize="$3"
@@ -189,7 +189,7 @@ export default function RequirementList({
           <XStack flexWrap="wrap" gap="$4">
             {/* Type Filter */}
             <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                 Type
               </Text>
               <select
@@ -216,7 +216,7 @@ export default function RequirementList({
 
             {/* Status Filter */}
             <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                 Status
               </Text>
               <select
@@ -241,7 +241,7 @@ export default function RequirementList({
 
             {/* Template Filter */}
             <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
                 Type
               </Text>
               <select
@@ -291,7 +291,7 @@ export default function RequirementList({
       {requirements.length === 0 ? (
         <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowOpacity={0.1} shadowRadius={2} padding="$8">
           <YStack alignItems="center" gap="$4">
-            <Text color="$color10" marginBottom="$4">No requirements found. Create your first requirement or load from templates.</Text>
+            <Text color="$color10" mb="$4">No requirements found. Create your first requirement or load from templates.</Text>
           {onCreateNew && (
               <Button
                 onPress={onCreateNew}
@@ -352,7 +352,7 @@ export default function RequirementList({
                   <td style={{ padding: '16px 24px' }}>
                     <Text fontSize="$3" fontWeight="500" color="$color12">{requirement.name}</Text>
                     {requirement.description && (
-                      <Text fontSize="$3" color="$color10" marginTop="$1" style={{ maxWidth: '28rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <Text fontSize="$3" color="$color10" mt="$1" style={{ maxWidth: '28rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {requirement.description}
                       </Text>
                     )}

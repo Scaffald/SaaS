@@ -79,7 +79,7 @@ export const DroppableColumn = ({
         <YStack gap="$3" flex={1}>
           {items.length === 0 ? (
             <Card padding="$4" backgroundColor="$color3" borderRadius="$2">
-              <Text fontSize="$2" textAlign="center" color="$color10">
+              <Text fontSize="$2" style={{ textAlign: 'center' }} color="$color10">
                 {emptyMessage}
               </Text>
             </Card>

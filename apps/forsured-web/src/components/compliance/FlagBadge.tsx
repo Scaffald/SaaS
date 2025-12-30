@@ -82,7 +82,7 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
     return (
       <Badge
         variant={variant}
-        size="sm"
+        size="$2"
         aria-label={`${label}: ${config.label} severity`}
         title={title || `${label} - ${config.label}`}
       >
@@ -96,7 +96,7 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
 
   return (
     <YStack
-      borderRadius="$md"
+      borderRadius="$3"
       borderWidth={1}
       borderColor={severity === 'critical' ? '$red6' : severity === 'warning' ? '$yellow6' : '$blue6'}
       backgroundColor={severity === 'critical' ? '$red2' : severity === 'warning' ? '$yellow2' : '$blue2'}
@@ -110,14 +110,14 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
 
         <YStack flex={1} minWidth={0} gap="$1">
           <XStack alignItems="center" gap="$2" flexWrap="wrap">
-            <Badge variant="default" size="sm">
+            <Badge variant="default" size="$2">
               <XStack alignItems="center" gap="$1">
                 {getEntityTypeIcon(entityType)}
                 <Text>{label}</Text>
               </XStack>
             </Badge>
 
-            <Badge variant={variant} size="sm">
+            <Badge variant={variant} size="$2">
               {config.label}
             </Badge>
 
@@ -129,13 +129,13 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
           </XStack>
 
           {title && (
-            <Text fontSize="$2" fontWeight="500" color="$color11" marginTop="$1">
+            <Text fontSize="$2" fontWeight="500" color="$color11" mt="$1">
               {title}
             </Text>
           )}
 
           {showDescription && description && (
-            <Text fontSize="$2" color="$color10" marginTop="$1">
+            <Text fontSize="$2" color="$color10" mt="$1">
               {description}
             </Text>
           )}

@@ -81,7 +81,7 @@ export function BrokerCertification({
           }}
         >
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Agency Name <Text color="$red10">*</Text>
             </Text>
             <input
@@ -100,7 +100,7 @@ export function BrokerCertification({
           </YStack>
 
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Broker Full Name / Title <Text color="$red10">*</Text>
             </Text>
             <input
@@ -119,7 +119,7 @@ export function BrokerCertification({
           </YStack>
 
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Title <Text color="$red10">*</Text>
             </Text>
             <input
@@ -138,7 +138,7 @@ export function BrokerCertification({
           </YStack>
 
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Digital Signature <Text color="$red10">*</Text>
             </Text>
             <input
@@ -156,7 +156,7 @@ export function BrokerCertification({
                 fontSize: 'var(--font-size-6)',
               }}
             />
-            <Text fontSize="$1" color="$color11" marginTop="$1">
+            <Text fontSize="$1" color="$color11" mt="$1">
               By typing your name, you are providing a legal digital signature
             </Text>
           </YStack>
@@ -292,7 +292,7 @@ export function SubcontractorCertification({
           }}
         >
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Subcontractor Company Name <Text color="$red10">*</Text>
             </Text>
             <input
@@ -311,7 +311,7 @@ export function SubcontractorCertification({
           </YStack>
 
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Authorized Representative Name{' '}
               <Text color="$red10">*</Text>
             </Text>
@@ -331,7 +331,7 @@ export function SubcontractorCertification({
           </YStack>
 
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Title <Text color="$red10">*</Text>
             </Text>
             <input
@@ -350,7 +350,7 @@ export function SubcontractorCertification({
           </YStack>
 
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Contractor License Number <Text color="$red10">*</Text>
             </Text>
             <input
@@ -369,7 +369,7 @@ export function SubcontractorCertification({
           </YStack>
 
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Scope of Work / Trade <Text color="$red10">*</Text>
             </Text>
             <input
@@ -388,7 +388,7 @@ export function SubcontractorCertification({
           </YStack>
 
           <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
               Digital Signature <Text color="$red10">*</Text>
             </Text>
             <input
@@ -406,7 +406,7 @@ export function SubcontractorCertification({
                 fontSize: 'var(--font-size-6)',
               }}
             />
-            <Text fontSize="$1" color="$color11" marginTop="$1">
+            <Text fontSize="$1" color="$color11" mt="$1">
               By typing your name, you are providing a legal digital signature
             </Text>
           </YStack>

@@ -335,7 +335,7 @@ export default function UserManagementPage() {
                       <SizableText fontSize="$3" color="$color11">
                         {invitation.email}
                       </SizableText>
-                      <SizableText fontSize="$1" color="$color10" marginTop="$1">
+                      <SizableText fontSize="$1" color="$color10" mt="$1">
                         Invited {formatDate(invitation.invited_at)} • Role:{' '}
                         {invitation.role}
                       </SizableText>
@@ -420,7 +420,7 @@ export default function UserManagementPage() {
                           borderRadius={9999}
                           alignItems="center"
                           justifyContent="center"
-                          marginRight="$3"
+                          mr="$3"
                         >
                           <SizableText fontSize="$3" fontWeight="500" color="$blue10">
                             {user.name.charAt(0).toUpperCase()}
@@ -493,7 +493,7 @@ export default function UserManagementPage() {
         {filteredUsers.length === 0 && (
           <YStack alignItems="center" paddingVertical="$12">
             <Users size={48} color="var(--color10)" />
-            <Text fontSize="$4" fontWeight="500" color="$color12" marginTop="$4" marginBottom="$2">
+            <Text fontSize="$4" fontWeight="500" color="$color12" mt="$4" mb="$2">
               No users found
             </Text>
             <SizableText fontSize="$3" color="$color11">

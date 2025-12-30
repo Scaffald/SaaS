@@ -10,9 +10,21 @@ echo "🔧 Fixing GoTrue environment variables..."
 # Wait for Supabase to be ready
 MAX_ATTEMPTS=30
 ATTEMPT=0
+# Try both possible container names
+AUTH_CONTAINER=""
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-  if docker ps | grep -q "supabase_auth_supabase"; then
-    echo "✅ Supabase auth container is running"
+  # Try different container name patterns
+  if docker ps --format "{{.Names}}" | grep -q "supabase_auth_supabase"; then
+    AUTH_CONTAINER="supabase_auth_supabase"
+    echo "✅ Supabase auth container is running: $AUTH_CONTAINER"
+    break
+  elif docker ps --format "{{.Names}}" | grep -q "supabase_auth_packages"; then
+    AUTH_CONTAINER="supabase_auth_packages"
+    echo "✅ Supabase auth container is running: $AUTH_CONTAINER"
+    break
+  elif docker ps --format "{{.Names}}" | grep -q "supabase_auth_scf-supabase"; then
+    AUTH_CONTAINER="supabase_auth_scf-supabase"
+    echo "✅ Supabase auth container is running: $AUTH_CONTAINER"
     break
   fi
   ATTEMPT=$((ATTEMPT + 1))
@@ -20,8 +32,10 @@ while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
   sleep 2
 done
 
-if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+if [ -z "$AUTH_CONTAINER" ]; then
   echo "❌ Supabase auth container did not start in time"
+  echo "Available containers:"
+  docker ps --format "{{.Names}}" | grep -i auth || echo "No auth containers found"
   exit 1
 fi
 
@@ -29,7 +43,7 @@ fi
 echo "📝 Recreating auth container with correct environment variables..."
 
 # Get the existing container's configuration BEFORE stopping it
-CONTAINER_ID=$(docker ps --filter "name=supabase_auth_supabase" --format "{{.ID}}" | head -1)
+CONTAINER_ID=$(docker ps --filter "name=$AUTH_CONTAINER" --format "{{.ID}}" | head -1)
 
 if [ -z "$CONTAINER_ID" ]; then
   echo "❌ Auth container not found or not running"
@@ -47,9 +61,15 @@ echo "🛑 Stopping and removing auth container..."
 docker stop "$CONTAINER_ID" 2>/dev/null || true
 docker rm "$CONTAINER_ID" 2>/dev/null || true
 
-# Set environment variables
-GOTRUE_SITE_URL="http://localhost:5173"
-GOTRUE_URI_ALLOW_LIST="http://localhost:5173,http://localhost:5173/auth/callback,http://127.0.0.1:5173,http://127.0.0.1:5173/auth/callback,http://127.0.0.1:8081"
+# Set environment variables - read from environment or use defaults
+# Priority: GOTRUE_SITE_URL env var > APP_URL env var > default
+GOTRUE_SITE_URL="${GOTRUE_SITE_URL:-${APP_URL:-http://localhost:5173}}"
+# Build allow list from site URL if not explicitly set
+if [ -z "$GOTRUE_URI_ALLOW_LIST" ]; then
+  # Extract base URL (protocol + host) from GOTRUE_SITE_URL
+  BASE_URL=$(echo "$GOTRUE_SITE_URL" | sed 's|\(https\?://[^/]*\).*|\1|')
+  GOTRUE_URI_ALLOW_LIST="${BASE_URL},${BASE_URL}/auth/callback,http://127.0.0.1:5173,http://127.0.0.1:5173/auth/callback,http://127.0.0.1:8081"
+fi
 
 # Build environment variable arguments, filtering out the ones we're overriding
 ENV_ARGS=""
@@ -63,11 +83,13 @@ done <<< "$ALL_ENV"
 echo "🔄 Creating new auth container with correct environment..."
 echo "   Image: $IMAGE"
 echo "   Network: $NETWORK"
+echo "   Container name: $AUTH_CONTAINER"
 echo "   GOTRUE_SITE_URL: $GOTRUE_SITE_URL"
+echo "   GOTRUE_URI_ALLOW_LIST: $GOTRUE_URI_ALLOW_LIST"
 
 # Use eval to properly handle the environment variables
 eval docker run -d \
-  --name supabase_auth_supabase \
+  --name "$AUTH_CONTAINER" \
   --network "$NETWORK" \
   -e "GOTRUE_SITE_URL=$GOTRUE_SITE_URL" \
   -e "GOTRUE_URI_ALLOW_LIST=$GOTRUE_URI_ALLOW_LIST" \
@@ -92,13 +114,13 @@ echo "⏳ Waiting for auth service to be ready..."
 sleep 5
 
 # Verify the environment variables
-if docker exec supabase_auth_supabase env 2>/dev/null | grep -q "GOTRUE_SITE_URL=http://localhost:5173"; then
+if docker exec "$AUTH_CONTAINER" env 2>/dev/null | grep -q "GOTRUE_SITE_URL=http://localhost:5173"; then
   echo "✅ SUCCESS: GOTRUE_SITE_URL is set correctly!"
-  docker exec supabase_auth_supabase env 2>/dev/null | grep "GOTRUE_SITE_URL"
-  docker exec supabase_auth_supabase env 2>/dev/null | grep "GOTRUE_URI_ALLOW_LIST"
+  docker exec "$AUTH_CONTAINER" env 2>/dev/null | grep "GOTRUE_SITE_URL"
+  docker exec "$AUTH_CONTAINER" env 2>/dev/null | grep "GOTRUE_URI_ALLOW_LIST"
 else
   echo "❌ WARNING: Environment variables may not be set correctly"
   echo "Current GOTRUE_SITE_URL:"
-  docker exec supabase_auth_supabase env 2>/dev/null | grep "GOTRUE_SITE_URL" || echo "Not found"
+  docker exec "$AUTH_CONTAINER" env 2>/dev/null | grep "GOTRUE_SITE_URL" || echo "Not found"
 fi
 

@@ -27,7 +27,7 @@ export default function WarningsCard({ count, onClick }: WarningsCardProps) {
             <Text fontSize="$3" fontWeight="500" color="$color11">
               Warnings
             </Text>
-            <XStack alignItems="center" gap="$2" marginTop="$1">
+            <XStack alignItems="center" gap="$2" mt="$1">
               <Text fontSize="$9" fontWeight="bold" color="$yellow10">
                 {count}
               </Text>
@@ -36,7 +36,7 @@ export default function WarningsCard({ count, onClick }: WarningsCardProps) {
         </XStack>
         <ChevronRight color="$color10" size={20} />
       </XStack>
-      <YStack marginTop="$4">
+      <YStack mt="$4">
         <Text fontSize="$1" color="$color11">Suggestions and warnings</Text>
       </YStack>
     </Card>

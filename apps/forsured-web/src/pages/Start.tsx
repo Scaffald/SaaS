@@ -2,7 +2,7 @@
  * Start Page - Landing page with OAuth login
  */
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { YStack, XStack, Text, Spinner } from '@unicornlove/ui';
 import { Button as CoreButton } from '@unicornlove/ui';
 import { Input as TextInput } from '@unicornlove/ui';
@@ -11,12 +11,28 @@ import { supabase } from '../lib/supabase';
 
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
+/**
+ * Test user credentials (seeded in database via migration 248)
+ * Password for all test users: ForsuredTest123!
+ */
+const TEST_USERS: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
+  gc: { email: 'test-gc@forsured.test', password: 'ForsuredTest123!' },
+  contractor: { email: 'test-contractor@forsured.test', password: 'ForsuredTest123!' },
+  broker: { email: 'test-broker@forsured.test', password: 'ForsuredTest123!' },
+  admin: { email: 'test-admin@forsured.test', password: 'ForsuredTest123!' },
+};
+
+
 function StartPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [testLoginLoading, setTestLoginLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleEmailContinue = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     console.log('[StartPage] Form submitted with email:', email);
     setIsLoading(true);
     try {
@@ -45,17 +61,18 @@ function StartPage() {
 
         if (error) {
           console.error('[StartPage] Error sending magic link:', error);
+          setError(error.message || 'Failed to send magic link. Please try again.');
           setIsLoading(false);
-          // TODO: Show error to user
           return;
         }
 
         console.log('[StartPage] Magic link sent - user will receive email');
-        // User will be redirected to /auth/callback when they click the magic link
-        // The callback will create a Forsured profile and redirect to signup
+        // Navigate to verify page to show success message (like Scaffald does)
+        navigate(`/auth/verify?email=${encodeURIComponent(normalizedEmail)}`);
       }
     } catch (error) {
       console.error('[StartPage] Error initiating auth:', error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.');
       setIsLoading(false);
     }
   };
@@ -63,6 +80,65 @@ function StartPage() {
   const handleScaffaldContinue = () => {
     setIsLoading(true);
     initiateOAuth();
+  };
+
+  /**
+   * Test login using real Supabase authentication
+   * Uses seeded test users from migration 248_forsured_seed_test_users.sql
+   *
+   * IMPORTANT: You must run the seed migration to create these users:
+   * pnpm supabase db reset (or apply migration 248)
+   */
+  const handleTestLogin = async (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
+    const testUser = TEST_USERS[userType];
+    setTestLoginLoading(userType);
+    setError(null);
+
+    console.log('[StartPage] Attempting test login for:', testUser.email);
+
+    try {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: testUser.email,
+        password: testUser.password,
+      });
+
+      if (signInError) {
+        console.error('[StartPage] Test login error:', signInError);
+        if (signInError.message.includes('Invalid login credentials')) {
+          setError(
+            `Test user not found. Please run migrations to seed test users:\n` +
+            `pnpm supabase db reset`
+          );
+        } else {
+          setError(signInError.message);
+        }
+        setTestLoginLoading(null);
+        return;
+      }
+
+      if (!data.session || !data.user) {
+        setError('Login succeeded but no session was created');
+        setTestLoginLoading(null);
+        return;
+      }
+
+      console.log('[StartPage] Test login successful:', data.user.email);
+
+      // Navigate to the appropriate dashboard based on user type
+      const dashboardRoutes: Record<string, string> = {
+        gc: '/manager/dashboard',
+        contractor: '/subcontractor/dashboard',
+        broker: '/broker/dashboard',
+        admin: '/admin/dashboard',
+      };
+      const targetRoute = dashboardRoutes[userType] || '/manager/dashboard';
+      console.log('[StartPage] Navigating to:', targetRoute);
+      navigate(targetRoute);
+    } catch (err) {
+      console.error('[StartPage] Test login unexpected error:', err);
+      setError(err instanceof Error ? err.message : 'Test login failed');
+      setTestLoginLoading(null);
+    }
   };
 
   return (
@@ -79,7 +155,7 @@ function StartPage() {
         gap="$8"
         padding="$10"
         backgroundColor="$background"
-        borderRadius="$xl"
+        borderRadius="$5"
         shadowColor="$shadowColor"
         shadowRadius={20}
         shadowOffset={{ width: 0, height: 8 }}
@@ -90,7 +166,7 @@ function StartPage() {
             width={64}
             height={64}
             backgroundColor="$blue9"
-            borderRadius="$xl"
+            borderRadius="$5"
             alignItems="center"
             justifyContent="center"
             shadowColor="$shadowColor"
@@ -123,11 +199,19 @@ function StartPage() {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError(null); // Clear error when user types
+              }}
               placeholder="you@company.com"
               required
               disabled={isLoading}
             />
+            {error && (
+              <Text fontSize="$2" color="$red10" marginTop="$1">
+                {error}
+              </Text>
+            )}
           </YStack>
 
           <CoreButton
@@ -196,6 +280,90 @@ function StartPage() {
           <Text fontSize="$1" textAlign="center" color="$color10">
             Already have a Scaffald account? Sign in directly above.
           </Text>
+        </YStack>
+
+        {/* TEMPORARY: Test Login Buttons */}
+        <YStack
+          marginTop="$4"
+          padding="$4"
+          backgroundColor="$yellow2"
+          borderWidth={1}
+          borderColor="$yellow6"
+          borderRadius="$3"
+          gap="$3"
+        >
+          <Text fontSize="$3" fontWeight="600" color="$yellow11">
+            🧪 Temporary Test Login
+          </Text>
+          <Text fontSize="$2" color="$yellow10">
+            Real Supabase login with seeded test users. Run migrations first.
+          </Text>
+          <YStack gap="$2" marginTop="$2">
+            <CoreButton
+              onClick={() => handleTestLogin('gc')}
+              variant="secondary"
+              fullWidth
+              size="$3"
+              disabled={testLoginLoading !== null}
+            >
+              {testLoginLoading === 'gc' ? (
+                <XStack gap="$2" alignItems="center">
+                  <Spinner size="small" />
+                  <Text>Signing in...</Text>
+                </XStack>
+              ) : (
+                <Text>Test as GC / Manager</Text>
+              )}
+            </CoreButton>
+            <CoreButton
+              onClick={() => handleTestLogin('contractor')}
+              variant="secondary"
+              fullWidth
+              size="$3"
+              disabled={testLoginLoading !== null}
+            >
+              {testLoginLoading === 'contractor' ? (
+                <XStack gap="$2" alignItems="center">
+                  <Spinner size="small" />
+                  <Text>Signing in...</Text>
+                </XStack>
+              ) : (
+                <Text>Test as Contractor / Subcontractor</Text>
+              )}
+            </CoreButton>
+            <CoreButton
+              onClick={() => handleTestLogin('broker')}
+              variant="secondary"
+              fullWidth
+              size="$3"
+              disabled={testLoginLoading !== null}
+            >
+              {testLoginLoading === 'broker' ? (
+                <XStack gap="$2" alignItems="center">
+                  <Spinner size="small" />
+                  <Text>Signing in...</Text>
+                </XStack>
+              ) : (
+                <Text>Test as Broker</Text>
+              )}
+            </CoreButton>
+            <CoreButton
+              onClick={() => handleTestLogin('admin')}
+              variant="secondary"
+              fullWidth
+              size="$3"
+              disabled={testLoginLoading !== null}
+            >
+              {testLoginLoading === 'admin' ? (
+                <XStack gap="$2" alignItems="center">
+                  <Spinner size="small" />
+                  <Text>Signing in...</Text>
+                </XStack>
+              ) : (
+                <Text>Test as Admin</Text>
+              )}
+            </CoreButton>
+          </YStack>
         </YStack>
 
         {/* Security Notice */}

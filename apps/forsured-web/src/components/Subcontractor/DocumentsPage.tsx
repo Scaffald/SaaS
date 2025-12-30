@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense, startTransition } from 'react';
 import {
   FileText,
   Upload,
@@ -7,10 +7,21 @@ import {
   AlertTriangle,
   Calendar,
   Eye,
+  RefreshCw,
 } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button } from '@unicornlove/ui';
+import { YStack, XStack, Text, Card, Button, H1, Spinner } from '@unicornlove/ui';
 import CommonButton from '../Common/Button';
 import DocumentDetailModal from '../Document/DocumentDetailModal';
+// Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
+import { useUser } from '../../contexts/UserContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { DocumentService } from '../../lib/documents/documentService';
+import { scaffaldClient } from '../../lib/scaffald/client';
+import { getUserOrganizationId } from '../../lib/supabase';
+import type { Document } from '../../types/document';
+
+// Lazy load FileUploadZone to prevent blocking when modal opens
+const FileUploadZone = lazy(() => import('../documents/FileUploadZone').then(module => ({ default: module.FileUploadZone })));
 
 interface DocumentItem {
   id: string;
@@ -24,98 +35,90 @@ interface DocumentItem {
 }
 
 export default function DocumentsPage() {
+  const { currentUser } = useUser();
+  const { user, profile } = useAuth();
   const [filter, setFilter] = useState<
     'all' | 'verified' | 'pending' | 'expiring'
   >('all');
   const [selectedDocument, setSelectedDocument] = useState<DocumentItem | null>(
     null
   );
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  
+  // Use useRef to maintain a stable DocumentService instance
+  const documentServiceRef = useRef<DocumentService | null>(null);
+  if (!documentServiceRef.current) {
+    documentServiceRef.current = new DocumentService();
+  }
+  const documentService = documentServiceRef.current;
+  
+  // Use ref to track loading state to prevent infinite loops
+  const isLoadingRef = useRef(false);
 
-  const mockDocuments: DocumentItem[] = [
-    {
-      id: '1',
-      name: 'General Liability Certificate',
-      type: 'coi',
-      status: 'verified',
-      uploadDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      expiryDate: new Date(
-        Date.now() + 335 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      fileSize: '2.4 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '2',
-      name: 'Contractors License',
-      type: 'license',
-      status: 'verified',
-      uploadDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-      expiryDate: new Date(
-        Date.now() + 305 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      fileSize: '1.8 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '3',
-      name: 'Performance Bond',
-      type: 'bond',
-      status: 'verified',
-      uploadDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-      expiryDate: new Date(
-        Date.now() + 350 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      fileSize: '3.1 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '4',
-      name: 'Workers Compensation Certificate',
-      type: 'coi',
-      status: 'expiring',
-      uploadDate: new Date(
-        Date.now() - 330 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      expiryDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString(),
-      fileSize: '2.2 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '5',
-      name: 'OSHA 30 Certification',
-      type: 'certification',
-      status: 'verified',
-      uploadDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-      expiryDate: new Date(
-        Date.now() + 1005 * 24 * 60 * 60 * 1000
-      ).toISOString(),
-      fileSize: '1.5 MB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-    {
-      id: '6',
-      name: 'W-9 Tax Form',
-      type: 'w9',
-      status: 'pending',
-      uploadDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      fileSize: '890 KB',
-      uploadedBy: 'Mike Rodriguez',
-    },
-  ];
+  // Get user ID from auth context
+  const userId = useMemo(() =>
+    currentUser?.id ?? user?.id ?? null,
+    [currentUser?.id, user?.id]
+  );
 
-  const filteredDocuments = mockDocuments.filter((doc) => {
-    if (filter === 'all') return true;
-    return doc.status === filter;
-  });
+  // State for organization ID - fetched from role_assignments
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
+  const [orgLoading, setOrgLoading] = useState(true);
 
-  const stats = {
-    total: mockDocuments.length,
-    verified: mockDocuments.filter((d) => d.status === 'verified').length,
-    pending: mockDocuments.filter((d) => d.status === 'pending').length,
-    expiring: mockDocuments.filter(
+  // Fetch organization ID from role_assignments when user is available
+  useEffect(() => {
+    async function fetchOrganization() {
+      if (!userId) {
+        setOrgLoading(false);
+        return;
+      }
+
+      try {
+        const orgId = await getUserOrganizationId(userId);
+        console.log('[DocumentsPage] Fetched organization ID:', orgId, 'for user:', userId);
+        setOrganizationId(orgId);
+      } catch (error) {
+        console.error('[DocumentsPage] Error fetching organization:', error);
+      } finally {
+        setOrgLoading(false);
+      }
+    }
+
+    fetchOrganization();
+  }, [userId]);
+
+  // Convert real documents to display format - memoized to prevent recalculation
+  const displayDocuments: DocumentItem[] = useMemo(() => {
+    return documents.map((doc) => ({
+      id: doc.id,
+      name: doc.filename,
+      type: doc.docType as any,
+      status: doc.status as any,
+      uploadDate: doc.uploadedAt,
+      expiryDate: doc.expiresAt || undefined,
+      fileSize: `${(doc.fileSize / 1024).toFixed(1)} KB`,
+      uploadedBy: doc.uploadedBy || 'Unknown',
+    }));
+  }, [documents]);
+
+  const filteredDocuments = useMemo(() => {
+    if (filter === 'all') return displayDocuments;
+    return displayDocuments.filter((doc) => doc.status === filter);
+  }, [displayDocuments, filter]);
+
+  const stats = useMemo(() => ({
+    total: displayDocuments.length,
+    verified: displayDocuments.filter((d) => d.status === 'verified').length,
+    pending: displayDocuments.filter((d) => d.status === 'pending').length,
+    expiring: displayDocuments.filter(
       (d) => d.status === 'expiring' || d.status === 'expired'
     ).length,
-  };
+  }), [displayDocuments]);
 
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -151,31 +154,189 @@ export default function DocumentsPage() {
     return days;
   };
 
+  // Load documents from Scaffald API
+  const loadDocuments = useCallback(async () => {
+    if (!organizationId) {
+      console.log('[DocumentsPage] No organization ID, skipping document load');
+      return;
+    }
+
+    // Prevent multiple simultaneous loads
+    if (isLoadingRef.current) {
+      console.log('[DocumentsPage] Load already in progress, skipping');
+      return;
+    }
+
+    try {
+      isLoadingRef.current = true;
+      setLoading(true);
+      setLoadError(null);
+      console.log('[DocumentsPage] Loading documents for organization:', organizationId);
+
+      // Fetch documents from Scaffald API
+      const response = await scaffaldClient.documents.list({
+        organizationId,
+        category: 'compliance', // Focus on compliance documents (COIs, insurance)
+        limit: 100,
+      });
+
+      console.log('[DocumentsPage] Loaded documents:', response.documents?.length || 0);
+      
+      // Map Scaffald documents to our Document type
+      const mappedDocs: Document[] = (response.documents || []).map((doc) => ({
+        id: doc.id,
+        filename: doc.name,
+        docType: 'coi' as const, // Default to COI for insurance documents
+        status: 'pending', // Default status
+        clientId: organizationId || '',
+        clientName: '',
+        clientType: 'contractor',
+        projectId: null,
+        projectName: null,
+        contentPreview: null,
+        fileSize: doc.latestSizeBytes || 0,
+        mimeType: doc.latestMimeType || 'application/pdf',
+        uploadedBy: userId || '',
+        uploadedAt: doc.createdAt,
+        verifiedAt: null,
+        expiresAt: null,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+      }));
+
+      setDocuments(mappedDocs);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load documents';
+      console.error('[DocumentsPage] Error loading documents:', errorMessage);
+      setLoadError(errorMessage);
+    } finally {
+      isLoadingRef.current = false;
+      setLoading(false);
+    }
+  }, [organizationId, userId]);
+
+  // Load documents on mount and when organization changes
+  // Use primitive values in dependency array to prevent infinite loops
+  useEffect(() => {
+    if (organizationId) {
+      loadDocuments();
+    } else {
+      // If no organization ID, set loading to false so page can render
+      setLoading(false);
+      console.log('[DocumentsPage] No organization ID available');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [organizationId]);
+
+  const handleUploadDocument = useCallback(async (document: Document) => {
+    console.log('[DocumentsPage] Document uploaded successfully:', document.id);
+    setUploadSuccess('Document uploaded successfully!');
+    
+    // Clear success message after 3 seconds
+    setTimeout(() => {
+      setUploadSuccess(null);
+    }, 3000);
+
+    // Refresh document list to show the newly uploaded document
+    await loadDocuments();
+  }, [loadDocuments]);
+
+  const handleUploadError = useCallback((error: string) => {
+    setUploadError(error);
+    console.error('[DocumentsPage] Upload error:', error);
+    
+    // Clear error after 5 seconds
+    setTimeout(() => {
+      setUploadError(null);
+    }, 5000);
+  }, []);
+
+  // Memoize modal close handler to prevent re-renders
+  const handleModalClose = useCallback(() => {
+    setUploadModalOpen(false);
+    setUploadError(null);
+  }, []);
+
   return (
     <YStack gap="$6">
       <XStack alignItems="center" justifyContent="space-between">
         <YStack>
-          <Text fontSize="$8" fontWeight="bold" color="$color12">
+          <H1 fontSize="$8" fontWeight="bold" color="$color12">
             Documents
-          </Text>
+          </H1>
           <Text color="$color11">
             Manage your certificates, licenses, and compliance documents
           </Text>
         </YStack>
-        <CommonButton>
-          <XStack alignItems="center" gap="$2">
-            <Upload size={18} />
-            <Text>Upload Document</Text>
-          </XStack>
-        </CommonButton>
+        <XStack gap="$2">
+          <CommonButton 
+            onPress={() => {
+              console.log('[DocumentsPage] Upload button clicked');
+              // Use startTransition to prevent blocking the UI
+              startTransition(() => {
+                setUploadError(null);
+                setUploadSuccess(null);
+                setUploadModalOpen(true);
+              });
+            }}
+          >
+            <XStack alignItems="center" gap="$2">
+              <Upload size={18} />
+              <Text>Upload Document</Text>
+            </XStack>
+          </CommonButton>
+          <CommonButton 
+            variant="ghost" 
+            onPress={loadDocuments}
+            disabled={loading}
+          >
+            <XStack alignItems="center" gap="$2">
+              <RefreshCw size={18} />
+              {loading && <Spinner size="small" />}
+              {!loading && <Text>Refresh</Text>}
+            </XStack>
+          </CommonButton>
+        </XStack>
       </XStack>
+
+      {/* Success message */}
+      {uploadSuccess && (
+        <Card
+          backgroundColor="$green2"
+          borderColor="$green6"
+          borderWidth={1}
+          borderRadius="$4"
+          padding="$4"
+        >
+          <XStack alignItems="center" gap="$2">
+            <CheckCircle color="$green10" size={20} />
+            <Text color="$green11" fontSize="$3" fontWeight="500">
+              {uploadSuccess}
+            </Text>
+          </XStack>
+        </Card>
+      )}
+
+      {/* Load error message */}
+      {loadError && (
+        <Card
+          backgroundColor="$red2"
+          borderColor="$red6"
+          borderWidth={1}
+          borderRadius="$4"
+          padding="$4"
+        >
+          <Text color="$red11" fontSize="$3">
+            Error loading documents: {loadError}
+          </Text>
+        </Card>
+      )}
 
       <XStack
         flexWrap="wrap"
         gap="$6"
-        $gtMd={{
-          flexWrap: 'nowrap',
-        }}
+        // Use media query hook or conditional rendering instead of $gtMd prop
+        // $gtMd responsive props can leak to DOM in some Tamagui versions
       >
         <Card
           padding="$6"
@@ -188,7 +349,7 @@ export default function DocumentsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Total Documents</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
                 {stats.total}
               </Text>
             </YStack>
@@ -209,7 +370,7 @@ export default function DocumentsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Verified</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$green10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$green10" mt="$1">
                 {stats.verified}
               </Text>
             </YStack>
@@ -230,7 +391,7 @@ export default function DocumentsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Pending Review</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
                 {stats.pending}
               </Text>
             </YStack>
@@ -251,7 +412,7 @@ export default function DocumentsPage() {
           <XStack alignItems="center" justifyContent="space-between">
             <YStack>
               <Text color="$color11" fontSize="$2">Expiring Soon</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$orange10" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$orange10" mt="$1">
                 {stats.expiring}
               </Text>
             </YStack>
@@ -282,7 +443,7 @@ export default function DocumentsPage() {
               backgroundColor: filter === 'all' ? '$blue9' : '$gray4',
             }}
           >
-            All ({mockDocuments.length})
+            All ({displayDocuments.length})
           </Button>
           <Button
             onPress={() => setFilter('verified')}
@@ -333,55 +494,61 @@ export default function DocumentsPage() {
       </Card>
 
       <Card elevation={1} borderWidth={1} borderColor="$borderColor">
-        <YStack overflowX="auto">
+        {loading && (
+          <YStack alignItems="center" paddingVertical="$8">
+            <Spinner size="large" />
+            <Text color="$color11" mt="$4">Loading documents...</Text>
+          </YStack>
+        )}
+        {!loading && <YStack overflowX="auto">
           <table width="100%">
             <thead>
               <tr>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Document
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Type
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Status
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Upload Date
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Expiry
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Size
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingHorizontal="$6" paddingVertical="$3" justifyContent="flex-end">
-                    <Text textAlign="right" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                    <Text style={{ textAlign: 'right' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
                       Actions
                     </Text>
                   </XStack>
@@ -394,8 +561,8 @@ export default function DocumentsPage() {
                 return (
                   <tr key={doc.id}>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center">
-                        <FileText color="$blue10" size={20} marginRight="$3" />
+                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center" gap="$3">
+                        <FileText color="$blue10" size={20} />
                         <YStack>
                           <Text fontSize="$2" fontWeight="500" color="$color12">
                             {doc.name}
@@ -493,19 +660,21 @@ export default function DocumentsPage() {
               })}
             </tbody>
           </table>
-        </YStack>
 
-        {filteredDocuments.length === 0 && (
-          <YStack alignItems="center" paddingVertical="$12">
-            <FileText color="$color10" size={48} marginBottom="$4" />
-            <Text color="$color12" fontWeight="500" marginBottom="$2">
-              No documents found
-            </Text>
-            <Text color="$color11" fontSize="$2">
-              Upload documents to get started
-            </Text>
-          </YStack>
-        )}
+          {filteredDocuments.length === 0 && (
+            <YStack alignItems="center" paddingVertical="$12" gap="$4">
+              <FileText color="$color10" size={48} />
+              <YStack alignItems="center" gap="$2">
+                <Text color="$color12" fontWeight="500">
+                No documents found
+              </Text>
+                <Text color="$color11" fontSize="$2">
+                  Upload documents to get started
+                </Text>
+              </YStack>
+            </YStack>
+          )}
+        </YStack>}
       </Card>
 
       {/* Document Detail Modal */}
@@ -522,6 +691,100 @@ export default function DocumentsPage() {
           isOpen={!!selectedDocument}
           onClose={() => setSelectedDocument(null)}
         />
+      )}
+
+      {/* Simple overlay modal - avoiding ResponsiveModal freeze issue */}
+      {uploadModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={handleModalClose}
+        >
+          <Card
+            backgroundColor="$background"
+            padding="$6"
+            borderRadius="$4"
+            width={560}
+            maxHeight="90vh"
+            overflow="auto"
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            data-testid="upload-modal"
+          >
+            <YStack gap="$4">
+              <Text fontSize="$6" fontWeight="bold" color="$color12">
+                Upload Document
+              </Text>
+              <Text color="$color11">
+                Upload your compliance documents, certificates, licenses, or other required files.
+              </Text>
+
+              {uploadError && (
+                <Card
+                  backgroundColor="$red2"
+                  borderColor="$red6"
+                  borderWidth={1}
+                  borderRadius="$4"
+                  padding="$4"
+                >
+                  <Text color="$red11" fontSize="$3">
+                    {uploadError}
+                  </Text>
+                </Card>
+              )}
+
+              {organizationId && userId ? (
+                <Suspense fallback={<Spinner size="large" />}>
+                  <FileUploadZone
+                    projectId="general"
+                    uploaderId={userId}
+                    organizationId={organizationId}
+                    subcontractorId={userId}
+                    maxFiles={5}
+                    category="compliance"
+                    description="Insurance and compliance documents"
+                    tags={['coi', 'insurance', 'compliance']}
+                    onUpload={handleUploadDocument}
+                    onError={handleUploadError}
+                  />
+                </Suspense>
+              ) : (
+                <Card
+                  backgroundColor="$yellow2"
+                  borderColor="$yellow6"
+                  borderWidth={1}
+                  borderRadius="$4"
+                  padding="$4"
+                >
+                  <Text color="$yellow11" fontSize="$3">
+                    Unable to upload documents. Please ensure you are logged in and have a valid organization.
+                  </Text>
+                  <Text color="$yellow11" fontSize="$2" mt="$2">
+                    Organization ID: {organizationId || 'Not available'}
+                  </Text>
+                  <Text color="$yellow11" fontSize="$2">
+                    User ID: {userId || 'Not available'}
+                  </Text>
+                </Card>
+              )}
+
+              <XStack justifyContent="flex-end" paddingTop="$4">
+                <Button
+                  variant="ghost"
+                  onPress={handleModalClose}
+                >
+                  Close
+                </Button>
+              </XStack>
+            </YStack>
+          </Card>
+        </div>
       )}
     </YStack>
   );

@@ -247,7 +247,7 @@ export default function RequirementEditor({
             <H3 fontSize="$6" fontWeight="600" color="$gray12">Basic Information</H3>
 
             <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
                 Name <Text color="$red9">*</Text>
               </Text>
               <input
@@ -263,11 +263,11 @@ export default function RequirementEditor({
                   fontSize: '14px',
                 }}
               />
-              {errors.name && <Text color="$red9" fontSize="$3" marginTop="$1">{errors.name}</Text>}
+              {errors.name && <Text color="$red9" fontSize="$3" mt="$1">{errors.name}</Text>}
             </YStack>
 
             <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
                 Type <Text color="$red9">*</Text>
               </Text>
               <select
@@ -291,7 +291,7 @@ export default function RequirementEditor({
             </YStack>
 
             <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
                 Description
               </Text>
               <textarea
@@ -310,7 +310,7 @@ export default function RequirementEditor({
 
             <XStack gap="$4" flexWrap="wrap">
               <YStack flex={1} minWidth="200px">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
                   Status
                 </Text>
                 <select
@@ -358,7 +358,7 @@ export default function RequirementEditor({
 
             <XStack flexWrap="wrap" gap="$4">
               <YStack flex={1} minWidth="200px">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
                   Per Occurrence
                 </Text>
                 <input
@@ -375,12 +375,12 @@ export default function RequirementEditor({
                   }}
                 />
                 {errors['coverage_limits.per_occurrence'] && (
-                  <Text color="$red9" fontSize="$3" marginTop="$1">{errors['coverage_limits.per_occurrence']}</Text>
+                  <Text color="$red9" fontSize="$3" mt="$1">{errors['coverage_limits.per_occurrence']}</Text>
                 )}
               </YStack>
 
               <YStack flex={1} minWidth="200px">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
                   Aggregate
                 </Text>
                 <input
@@ -397,12 +397,12 @@ export default function RequirementEditor({
                   }}
                 />
                 {errors['coverage_limits.aggregate'] && (
-                  <Text color="$red9" fontSize="$3" marginTop="$1">{errors['coverage_limits.aggregate']}</Text>
+                  <Text color="$red9" fontSize="$3" mt="$1">{errors['coverage_limits.aggregate']}</Text>
                 )}
               </YStack>
 
               <YStack flex={1} minWidth="200px">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
                   Maximum Deductible
                 </Text>
                 <input
@@ -473,7 +473,7 @@ export default function RequirementEditor({
                     </YStack>
                     <Button
                       unstyled
-                      marginLeft="$2"
+                      ml="$2"
                       color="$red9"
                       hoverStyle={{ color: '$red10' }}
                       onPress={() => removeEndorsement(index)}
@@ -543,7 +543,7 @@ export default function RequirementEditor({
                       </YStack>
                       <Button
                         unstyled
-                        marginLeft="$2"
+                        ml="$2"
                         color="$red9"
                         hoverStyle={{ color: '$red10' }}
                         onPress={() => removeCondition(index)}
@@ -623,7 +623,7 @@ export default function RequirementEditor({
         {/* Change Summary (for updates only) */}
         {requirementId && (
           <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-            <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+            <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
               Change Summary <Text color="$red9">*</Text>
             </Text>
             <textarea

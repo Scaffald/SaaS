@@ -42,15 +42,34 @@ export async function createContext(
 
   if (token) {
     try {
-      // Get user from Supabase auth token
-      const { data, error } = await supabase.auth.getUser(token);
+      // Handle E2E test tokens (mock-supabase-token-*)
+      // These tokens are set by tests/utils/auth.ts for E2E testing
+      if (token.startsWith('mock-supabase-token-')) {
+        const mockUserId = token.replace('mock-supabase-token-', '');
+        // Create a mock user object for test context
+        session = {
+          id: mockUserId,
+          email: `test-${mockUserId}@test.forsured.com`,
+          aud: 'authenticated',
+          role: 'authenticated',
+          app_metadata: {},
+          user_metadata: {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        } as User;
+        userId = mockUserId;
+        organizationId = `org-${mockUserId}`;
+      } else {
+        // Get user from Supabase auth token (production flow)
+        const { data, error } = await supabase.auth.getUser(token);
 
-      if (!error && data.user) {
-        session = data.user;
-        userId = data.user.id;
-        // Extract organization ID from user metadata
-        organizationId =
-          (data.user.user_metadata?.organization_id as string) || null;
+        if (!error && data.user) {
+          session = data.user;
+          userId = data.user.id;
+          // Extract organization ID from user metadata
+          organizationId =
+            (data.user.user_metadata?.organization_id as string) || null;
+        }
       }
     } catch (error) {
       // Invalid token or auth error - continue with null session

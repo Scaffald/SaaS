@@ -157,9 +157,9 @@ function VersionListItem({
             )}
           </XStack>
           {version.change_summary && (
-            <Text fontSize="$3" color="$color11" marginTop="$1">{version.change_summary}</Text>
+            <Text fontSize="$3" color="$color11" mt="$1">{version.change_summary}</Text>
           )}
-          <XStack alignItems="center" gap="$4" marginTop="$2">
+          <XStack alignItems="center" gap="$4" mt="$2">
             <XStack alignItems="center" gap="$1">
               <Clock size={12} />
               <Text fontSize="$2" color="$color10">{formatDate(version.changed_at)}</Text>
@@ -350,7 +350,7 @@ function DiffView({ comparison }: DiffViewProps) {
                 <XStack borderTopWidth={1} borderColor="$borderColor">
                   {/* Old value */}
                   <YStack flex={1} padding="$3" backgroundColor="rgba(239, 68, 68, 0.1)" borderRightWidth={1} borderColor="$borderColor">
-                    <Text fontSize="$2" fontWeight="500" color="$red10" marginBottom="$2">
+                    <Text fontSize="$2" fontWeight="500" color="$red10" mb="$2">
                       Version {comparison.from_version.version}
                     </Text>
                     <pre style={{
@@ -368,7 +368,7 @@ function DiffView({ comparison }: DiffViewProps) {
 
                   {/* New value */}
                   <YStack flex={1} padding="$3" backgroundColor="rgba(16, 185, 129, 0.1)">
-                    <Text fontSize="$2" fontWeight="500" color="$green10" marginBottom="$2">
+                    <Text fontSize="$2" fontWeight="500" color="$green10" mb="$2">
                       Version {comparison.to_version.version}
                     </Text>
                     <pre style={{
@@ -513,9 +513,9 @@ export function VersionHistoryViewer({
         borderColor="$red5"
         borderWidth={1}
       >
-        <AlertCircle color="var(--red9)" marginBottom="$2" size={32} />
+        <AlertCircle color="var(--red9)" mb="$2" size={32} />
         <Text color="$red10" fontWeight="500">Failed to load version history</Text>
-        <Text color="$red9" fontSize="$3" marginTop="$1">{historyError.message}</Text>
+        <Text color="$red9" fontSize="$3" mt="$1">{historyError.message}</Text>
       </YStack>
     );
   }
@@ -559,7 +559,7 @@ export function VersionHistoryViewer({
 
       {/* Comparison view */}
       {isCompareMode && selectedFrom && selectedTo && (
-        <YStack marginBottom="$4">
+        <YStack mb="$4">
           {isLoadingComparison ? (
             <YStack alignItems="center" justifyContent="center" height={128} backgroundColor="$gray2" borderRadius="$4">
               <Spinner size="small" color="$blue9" />

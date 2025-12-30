@@ -40,7 +40,7 @@ function EnumEditor({ enumValue, onSubmit, onCancel, isLoading = false }: EnumEd
 
   return (
     <Card padding="$4" borderWidth={1} borderRadius="$4" elevation={1} backgroundColor="$background">
-      <H3 fontSize="$6" fontWeight="600" marginBottom="$4">{enumValue ? 'Edit Enum Value' : 'Add New Enum Value'}</H3>
+      <H3 fontSize="$6" fontWeight="600" mb="$4">{enumValue ? 'Edit Enum Value' : 'Add New Enum Value'}</H3>
       <form onSubmit={handleSubmit}>
         <YStack gap="$4">
           <YStack gap="$2">

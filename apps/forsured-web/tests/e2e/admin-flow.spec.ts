@@ -8,8 +8,8 @@
 // - Enum management
 // - Audit log viewing
 
-import { test, expect, Page } from '@playwright/test';
-import { loginAs, TEST_USERS } from '../utils/auth';
+import { test, expect, Page } from './fixtures/base';
+import { TEST_USERS } from '../utils/auth';
 
 // Mock data for admin pages
 const MOCK_ADMIN_USERS = [
@@ -134,68 +134,48 @@ const ADMIN_PROFILE = {
 };
 
 test.describe('Admin User Flow', () => {
-  test.beforeEach(async ({ page }) => {
-    // Set up all mocks BEFORE login
+  test.beforeEach(async ({ page, setupAuthAs }) => {
+    // Set up auth FIRST - this creates the necessary auth mocks
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
-    // Mock user_profiles - handles both auth (single) and admin list (multiple)
+    // Now set up additional mocks for admin-specific data
+    // Override user_profiles to handle admin list requests (return all users, not just current)
     await page.route('**/rest/v1/user_profiles*', async (route) => {
-      const method = route.request().method();
       const url = route.request().url();
       const headers = route.request().headers();
       const acceptHeader = headers['accept'] || '';
       const isSingleQuery = acceptHeader.includes('vnd.pgrst.object');
 
-      // Check if this is a query for the admin user (auth context)
-      const isAdminUserQuery = url.includes(TEST_USERS['admin@test.forsured.com'].id);
-
-      if (method === 'GET') {
-        if (isSingleQuery || isAdminUserQuery) {
-          // Return admin profile for auth
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(isSingleQuery ? ADMIN_PROFILE : [ADMIN_PROFILE]),
-          });
-        } else {
-          // Return all mock users for admin list
-          return route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(MOCK_ADMIN_USERS),
-          });
-        }
-      }
-
-      if (method === 'PATCH' || method === 'PUT') {
-        const body = route.request().postData();
-        let updates = {};
-        if (body) {
-          try {
-            updates = JSON.parse(body);
-          } catch {
-            // Ignore parse errors
-          }
-        }
-        const updatedUser = { ...MOCK_ADMIN_USERS[0], ...updates };
+      // If querying for a specific user (by scaffald_user_id), return that user
+      if (url.includes('scaffald_user_id=eq.')) {
         return route.fulfill({
           status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(isSingleQuery ? updatedUser : [updatedUser]),
-        });
-      }
-
-      if (method === 'POST') {
-        return route.fulfill({
-          status: 201,
           contentType: 'application/json',
           body: JSON.stringify(isSingleQuery ? ADMIN_PROFILE : [ADMIN_PROFILE]),
         });
       }
 
-      return route.continue();
+      // Otherwise return all users for admin list view
+      const allProfiles = MOCK_ADMIN_USERS.map(u => ({
+        id: `profile-${u.id}`,
+        scaffald_user_id: u.scaffald_user_id,
+        user_type: u.user_type,
+        onboarding_completed: u.onboarding_completed,
+        onboarding_step: u.onboarding_completed ? 4 : 1,
+        company_connected: u.onboarding_completed,
+        onboarding_data: {},
+        created_at: u.created_at,
+        updated_at: u.updated_at,
+      }));
+
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(isSingleQuery ? allProfiles[0] : allProfiles),
+      });
     });
 
-    // Mock scaffald users endpoint
+    // Mock scaffald users endpoint for admin user management pages
     await page.route('**/rest/v1/users*', async (route) => {
       return route.fulfill({
         status: 200,
@@ -273,11 +253,22 @@ test.describe('Admin User Flow', () => {
       });
     });
 
-    // Now login as admin - this will navigate to /admin/dashboard
-    await loginAs(page, 'admin@test.forsured.com');
+    // Mock RPC endpoint - admin dashboard makes RPC calls for user profiles
+    // RPC calls return the data directly (not wrapped in array)
+    await page.route('**/rest/v1/rpc/get_user_profile_by_scaffald_id*', async (route) => {
+      // Return the admin profile directly for RPC calls
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(ADMIN_PROFILE),
+      });
+    });
+
+    // Navigate to dashboard after auth setup
+    await page.goto('/admin/dashboard');
   });
 
-  test('Admin can view dashboard with stats and recent activity', async ({ page }) => {
+  test('Admin can view dashboard with stats and recent activity', async ({ page, assertNoErrors }) => {
     // Should already be on dashboard after login
     await expect(page).toHaveURL(/admin\/dashboard/);
     await expect(page.locator('h1')).toContainText('Admin Dashboard');
@@ -290,9 +281,11 @@ test.describe('Admin User Flow', () => {
 
     // Verify recent activity section
     await expect(page.locator('text=Recent Activity')).toBeVisible();
+
+    await assertNoErrors();
   });
 
-  test('Admin can navigate to Users page and view user list', async ({ page }) => {
+  test('Admin can navigate to Users page and view user list', async ({ page, assertNoErrors }) => {
     // Navigate to Users via sidebar
     await page.click('text=Users');
     await expect(page).toHaveURL(/admin\/users/);
@@ -308,6 +301,8 @@ test.describe('Admin User Flow', () => {
 
     // Verify at least one user row is displayed (data comes from mocks)
     await expect(page.locator('tbody tr').first()).toBeVisible({ timeout: 10000 });
+
+    await assertNoErrors();
   });
 
   test('Admin can filter users by role', async ({ page }) => {
@@ -370,7 +365,7 @@ test.describe('Admin User Flow', () => {
     await expect(page.locator('h3', { hasText: /Activity Log/ })).not.toBeVisible();
   });
 
-  test('Admin can navigate to Brokers page and view invitations', async ({ page }) => {
+  test('Admin can navigate to Brokers page and view invitations', async ({ page, assertNoErrors }) => {
     await page.click('text=Brokers');
     await expect(page).toHaveURL(/admin\/brokers/);
     await expect(page.locator('h1')).toContainText('Broker Invitations');
@@ -383,6 +378,8 @@ test.describe('Admin User Flow', () => {
 
     // Verify mock invitations are displayed
     await expect(page.locator('tr', { hasText: 'TESTCODE123' })).toBeVisible({ timeout: 10000 });
+
+    await assertNoErrors();
   });
 
   test('Admin can open broker invitation form and fill it', async ({ page }) => {
@@ -420,7 +417,7 @@ test.describe('Admin User Flow', () => {
     await page.click('button:has-text("Cancel")');
   });
 
-  test('Admin can navigate to Enums page and view enum types', async ({ page }) => {
+  test('Admin can navigate to Enums page and view enum types', async ({ page, assertNoErrors }) => {
     await page.click('text=Enums');
     await expect(page).toHaveURL(/admin\/enums/);
     await expect(page.locator('h1')).toContainText('Enum Management');
@@ -433,6 +430,8 @@ test.describe('Admin User Flow', () => {
     await expect(page.locator('table')).toBeVisible();
     await expect(page.locator('th', { hasText: 'Value' })).toBeVisible();
     await expect(page.locator('th', { hasText: 'Display Name' })).toBeVisible();
+
+    await assertNoErrors();
   });
 
   test('Admin can view enum values in table', async ({ page }) => {
@@ -446,7 +445,7 @@ test.describe('Admin User Flow', () => {
     await expect(page.locator('td').filter({ hasText: /^Pending$/ })).toBeVisible();
   });
 
-  test('Admin can navigate to Audit Log page and view logs', async ({ page }) => {
+  test('Admin can navigate to Audit Log page and view logs', async ({ page, assertNoErrors }) => {
     await page.click('text=Audit Log');
     await expect(page).toHaveURL(/admin\/audit-log/);
     await expect(page.locator('h1')).toContainText('Admin Audit Log');
@@ -460,6 +459,8 @@ test.describe('Admin User Flow', () => {
     // Verify mock audit logs are displayed
     await expect(page.locator('tr', { hasText: 'CREATE_INVITATION' })).toBeVisible({ timeout: 10000 });
     await expect(page.locator('tr', { hasText: 'UPDATE_USER_ROLE' })).toBeVisible();
+
+    await assertNoErrors();
   });
 
   test('Admin can filter audit logs by action', async ({ page }) => {

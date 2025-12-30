@@ -67,7 +67,7 @@ const SkeletonBox = styled(YStack, {
   name: 'SkeletonBox',
   height: 32,
   backgroundColor: '$color4',
-  borderRadius: '$md',
+  borderRadius: '$3',
   width: 96,
   animation: 'pulse',
   animationDuration: '2s',
@@ -128,14 +128,14 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     >
       <XStack alignItems="flex-start" justifyContent="space-between">
         <YStack flex={1} gap="$1">
-          <Text fontSize="$2" fontWeight="500" color="$color10" marginBottom="$1">
+          <Text fontSize="$2" fontWeight="500" color="$color10" mb="$1">
             {title}
           </Text>
           {loading ? (
             <SkeletonBox />
           ) : (
             <>
-              <Text fontSize="$9" fontWeight="700" color="$color12" marginBottom="$2">
+              <Text fontSize="$9" fontWeight="700" color="$color12" mb="$2">
                 {value}
               </Text>
               {subtitle && (
@@ -144,7 +144,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
                 </Text>
               )}
               {trend && (
-                <XStack alignItems="center" gap="$1" marginTop="$2" fontSize="$2" color={getTrendColor()}>
+                <XStack alignItems="center" gap="$1" mt="$2" fontSize="$2" color={getTrendColor()}>
                   {getTrendIcon()}
                   <Text>{Math.abs(trend.value)}%</Text>
                   <Text color="$color9">vs last week</Text>
@@ -154,7 +154,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
           )}
         </YStack>
         {icon && (
-          <YStack marginLeft="$4" color="$color8">
+          <YStack ml="$4" color="$color8">
             {icon}
           </YStack>
         )}

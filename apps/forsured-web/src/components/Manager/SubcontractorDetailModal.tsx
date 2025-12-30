@@ -1,30 +1,23 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
-  X,
-  Mail,
-  Phone,
   Building,
-  Calendar,
   Shield,
   FileText,
   AlertTriangle,
   CheckCircle,
   Upload,
-  MessageSquare,
-  UserX,
-  UserCheck,
   Download,
   Eye,
-  Clock,
-  Filter,
-  Loader2,
+  TrendingUp,
 } from 'lucide-react';
 import { YStack, XStack, Text, H2, H3, Spinner, Card } from '@unicornlove/ui';
-import Modal from '../Common/Modal';
+// Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import Button from '../Common/Button';
 import StatusBadge from '../Common/StatusBadge';
 import Select from '../Common/Select';
 import DocumentDetailModal from '../Document/DocumentDetailModal';
+import { RiskBadge } from '../compliance/RiskBadge';
+import type { RiskLevel } from '../../lib/compliance/riskCalculationService';
 import { useAttachments } from '../../hooks/useAttachments';
 import { useComplianceIssues } from '../../hooks/useComplianceIssues';
 import { EntityType, SeverityLevel } from '../../types';
@@ -33,25 +26,29 @@ import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 
 // Type definitions for database schema
+// Database schema: name (contact person), company (company name)
 interface Subcontractor {
   id: string;
   organization_id: string;
-  company_name: string;
-  contact_name: string;
+  name: string; // Contact person name (from DB)
+  company: string; // Company name (from DB)
+  // Legacy fields for compatibility - mapped from DB fields
+  company_name: string; // Mapped from 'company'
+  contact_name: string; // Mapped from 'name'
   contact_info: {
     email: string;
     phone: string;
     address?: { street: string; city: string; state: string; zip: string };
   };
-  trade_type: string;
-  license_number: string;
-  status: string;
-  compliance_score: number;
-  risk_level: string;
-  last_activity_at: string;
+  trade_type?: string;
+  license_number?: string;
+  status?: string;
+  compliance_score?: number;
+  risk_level?: string;
+  last_activity_at?: string;
   notes?: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 interface Policy {
@@ -90,12 +87,10 @@ export default function SubcontractorDetailModal({
   isOpen,
   onClose,
 }: SubcontractorDetailModalProps) {
-  const { db } = useDatabase();
+  const { forsured } = useDatabase();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'policies' | 'documents' | 'issues'
   >('overview');
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [message, setMessage] = useState('');
   const [documentFilter, setDocumentFilter] = useState<string>('all');
   const [documentStatusFilter, setDocumentStatusFilter] =
     useState<string>('all');
@@ -127,24 +122,53 @@ export default function SubcontractorDetailModal({
       setLoadingData(true);
 
       try {
-        const [subResult, policiesResult, projectsResult, usersResult] = await Promise.all([
-          db.from('subcontractors').select('*').eq('id', subcontractorId).single(),
-          db.from('policies').select('*').eq('subcontractor_id', subcontractorId),
-          db.from('projects').select('*'),
-          db.from('users').select('*'),
-        ]);
+        // Fetch subcontractor first - this is required
+        const subResult = await forsured('subcontractors')
+          .select('*')
+          .eq('id', subcontractorId)
+          .single();
 
-        if (subResult.error) throw subResult.error;
-        if (policiesResult.error) throw policiesResult.error;
-        if (projectsResult.error) throw projectsResult.error;
-        if (usersResult.error) throw usersResult.error;
+        if (subResult.error) {
+          console.error('[SubcontractorDetailModal] Error fetching subcontractor:', subResult.error);
+          throw subResult.error;
+        }
 
-        setSubcontractor(subResult.data);
-        setPolicies(policiesResult.data || []);
-        setProjects(projectsResult.data || []);
-        setUsers(usersResult.data || []);
+        // Map database fields to component interface
+        const mappedSubcontractor = subResult.data ? {
+          ...subResult.data,
+          company_name: subResult.data.company || '',
+          contact_name: subResult.data.name || '',
+        } : null;
+
+        setSubcontractor(mappedSubcontractor);
+
+        // Fetch related data - these are optional, don't fail if they error
+        try {
+          const policiesResult = await forsured('insurance_policies')
+            .select('*')
+            .eq('subcontractor_id', subcontractorId);
+          if (!policiesResult.error) {
+            setPolicies(policiesResult.data || []);
+          }
+        } catch (e) {
+          console.warn('[SubcontractorDetailModal] Could not fetch policies:', e);
+        }
+
+        try {
+          const projectsResult = await forsured('projects').select('*');
+          if (!projectsResult.error) {
+            setProjects(projectsResult.data || []);
+          }
+        } catch (e) {
+          console.warn('[SubcontractorDetailModal] Could not fetch projects:', e);
+        }
+
+        // Skip users query for now - it's not critical
+        setUsers([]);
+
       } catch (err) {
         const error = err as Error;
+        console.error('[SubcontractorDetailModal] Error:', error);
         toast.error(error.message || 'Failed to load subcontractor details');
       } finally {
         setLoadingData(false);
@@ -152,7 +176,7 @@ export default function SubcontractorDetailModal({
     }
 
     fetchSubcontractorData();
-  }, [db, subcontractorId, isOpen]);
+  }, [forsured, subcontractorId, isOpen]);
 
   // Use hooks for documents and issues
   const { attachments: documents, loading: documentsLoading } = useAttachments({
@@ -184,35 +208,67 @@ export default function SubcontractorDetailModal({
 
   if (!subcontractorId) return null;
 
+  // Simple overlay wrapper for modal content
+  const ModalOverlay = ({ children }: { children: React.ReactNode }) => (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <Card
+        backgroundColor="$background"
+        padding="$6"
+        borderRadius="$4"
+        width={900}
+        maxWidth="95vw"
+        maxHeight="90vh"
+        overflow="auto"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        data-testid="subcontractor-detail-modal"
+      >
+        {children}
+      </Card>
+    </div>
+  );
+
+  if (!isOpen) return null;
+
   // Show loading while fetching data
   if (loadingData) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
+      <ModalOverlay>
         <YStack alignItems="center" justifyContent="center" minHeight={400}>
           <YStack alignItems="center" gap="$4">
             <Spinner size="large" color="$blue10" />
             <Text color="$color11" fontSize="$4">Loading subcontractor details...</Text>
           </YStack>
         </YStack>
-      </Modal>
+      </ModalOverlay>
     );
   }
 
   if (!subcontractor) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
+      <ModalOverlay>
         <YStack alignItems="center" justifyContent="center" minHeight={400}>
           <YStack alignItems="center">
-            <YStack alignItems="center" marginBottom="$4">
+            <YStack alignItems="center" mb="$4">
               <AlertTriangle color="$red10" size={48} />
             </YStack>
-            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
               Subcontractor not found
             </H3>
             <Text color="$color11">The requested subcontractor could not be loaded.</Text>
           </YStack>
         </YStack>
-      </Modal>
+      </ModalOverlay>
     );
   }
 
@@ -261,21 +317,13 @@ export default function SubcontractorDetailModal({
     }
   };
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      console.log('Sending message:', message, 'to:', subcontractorId);
-      setMessage('');
-      setShowMessageModal(false);
-    }
-  };
-
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
+      <ModalOverlay>
         <YStack gap="$6">
           <XStack alignItems="flex-start" justifyContent="space-between">
             <YStack flex={1}>
-              <XStack alignItems="center" gap="$3" marginBottom="$2">
+              <XStack alignItems="center" gap="$3" mb="$2">
                 <H2 fontSize="$9" fontWeight="700" color="$color12">
                   {subcontractor.company_name}
                 </H2>
@@ -309,11 +357,17 @@ export default function SubcontractorDetailModal({
                 {subcontractor.trade_type} · {subcontractor.status}
               </Text>
             </YStack>
-            <YStack alignItems="flex-end">
+            <YStack alignItems="flex-end" gap="$2" data-testid="compliance-header">
               <Text fontSize="$10" fontWeight="700" color="$color12">
-                {complianceScore}%
+                {complianceScore != null && !isNaN(complianceScore) ? `${complianceScore}%` : 'No data yet'}
               </Text>
               <Text fontSize="$1" color="$color10">Compliance Score</Text>
+              {subcontractor.risk_level && (
+                <RiskBadge
+                  level={(subcontractor.risk_level as RiskLevel)}
+                  size="sm"
+                />
+              )}
             </YStack>
           </XStack>
 
@@ -388,7 +442,7 @@ export default function SubcontractorDetailModal({
               </Text>
               {allIssues.length > 0 && (
                 <Text
-                  marginLeft="$2"
+                  ml="$2"
                   paddingHorizontal="$1.5"
                   paddingVertical="$0.5"
                   backgroundColor="$red10"
@@ -406,7 +460,7 @@ export default function SubcontractorDetailModal({
             <YStack gap="$6">
               <XStack flexWrap="wrap" gap="$4">
                 <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <Building color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">
                       Trade Type
@@ -418,7 +472,7 @@ export default function SubcontractorDetailModal({
                 </Card>
 
                 <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <Shield color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">
                       Active Policies
@@ -430,7 +484,7 @@ export default function SubcontractorDetailModal({
                 </Card>
 
                 <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                  <XStack alignItems="center" gap="$3" mb="$2">
                     <AlertTriangle color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">
                       Open Issues
@@ -441,20 +495,25 @@ export default function SubcontractorDetailModal({
                   </Text>
                 </Card>
 
-                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" marginBottom="$2">
-                    <FileText color="$color10" size={20} />
+                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)" data-testid="risk-level-card">
+                  <XStack alignItems="center" gap="$3" mb="$2">
+                    <TrendingUp color="$color10" size={20} />
                     <Text fontSize="$3" color="$color10">Risk Level</Text>
                   </XStack>
-                  <Text fontSize="$5" fontWeight="500" color="$color12" textTransform="capitalize">
-                    {subcontractor.risk_level}
-                  </Text>
+                  <YStack alignItems="flex-start">
+                    <RiskBadge
+                      level={(subcontractor.risk_level as RiskLevel) || 'medium'}
+                      score={complianceScore}
+                      showScore
+                      size="md"
+                    />
+                  </YStack>
                 </Card>
               </XStack>
 
               {people.length > 0 && (
                 <YStack>
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$3">
                     Team Members
                   </H3>
                   <YStack gap="$2">
@@ -513,7 +572,7 @@ export default function SubcontractorDetailModal({
 
               {projects.length > 0 && (
                 <YStack>
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$3">
                     Projects
                   </H3>
                   <YStack gap="$2">
@@ -635,7 +694,7 @@ export default function SubcontractorDetailModal({
                       </XStack>
                       {policy.limits && Object.keys(policy.limits).length > 0 && (
                         <YStack>
-                          <Text fontSize="$3" color="$color10" marginBottom="$1">
+                          <Text fontSize="$3" color="$color10" mb="$1">
                             Coverage Limits
                           </Text>
                           <YStack gap="$1">
@@ -663,7 +722,7 @@ export default function SubcontractorDetailModal({
                 })
               ) : (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" marginBottom="$3">
+                  <YStack alignItems="center" mb="$3">
                     <Shield color="$color10" size={48} />
                   </YStack>
                   <Text color="$color11">
@@ -703,15 +762,15 @@ export default function SubcontractorDetailModal({
 
               {documentsLoading ? (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <Spinner size="large" color="$blue10" marginBottom="$2" />
+                  <Spinner size="large" color="$blue10" mb="$2" />
                   <Text color="$color11">Loading documents...</Text>
                 </YStack>
               ) : filteredDocuments.length === 0 ? (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" marginBottom="$3">
+                  <YStack alignItems="center" mb="$3">
                     <FileText color="$color10" size={48} />
                   </YStack>
-                  <Text color="$color11" marginBottom="$4">
+                  <Text color="$color11" mb="$4">
                     No documents uploaded yet
                   </Text>
                   <Button variant="primary" leftIcon={Upload}>
@@ -753,7 +812,7 @@ export default function SubcontractorDetailModal({
                       >
                         <XStack alignItems="flex-start" justifyContent="space-between">
                           <YStack flex={1}>
-                            <XStack alignItems="center" gap="$3" marginBottom="$2">
+                            <XStack alignItems="center" gap="$3" mb="$2">
                               <FileText
                                 color="$blue10"
                                 size={20}
@@ -790,7 +849,7 @@ export default function SubcontractorDetailModal({
                                   status.slice(1)}
                               </Text>
                             </XStack>
-                            <XStack flexWrap="wrap" gap="$4" marginLeft="$8">
+                            <XStack flexWrap="wrap" gap="$4" ml="$8">
                               <YStack flex={1} minWidth="calc(50% - 8px)">
                                 <Text fontSize="$3" color="$color10">
                                   Uploaded:
@@ -831,7 +890,7 @@ export default function SubcontractorDetailModal({
                           <XStack alignItems="center" gap="$2">
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="$2"
                               onClick={() =>
                                 setSelectedDocument({
                                   id: doc.id,
@@ -853,7 +912,7 @@ export default function SubcontractorDetailModal({
                             {doc.file_url && (
                               <Button
                                 variant="ghost"
-                                size="sm"
+                                size="$2"
                                 onClick={() =>
                                   window.open(doc.file_url, '_blank')
                                 }
@@ -901,12 +960,12 @@ export default function SubcontractorDetailModal({
 
               {issuesLoading ? (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <Spinner size="large" color="$blue10" marginBottom="$2" />
+                  <Spinner size="large" color="$blue10" mb="$2" />
                   <Text color="$color11">Loading issues...</Text>
                 </YStack>
               ) : filteredIssues.length === 0 ? (
                 <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" marginBottom="$3">
+                  <YStack alignItems="center" mb="$3">
                     <CheckCircle color="$green10" size={48} />
                   </YStack>
                   <Text color="$green10" fontWeight="500">
@@ -948,7 +1007,7 @@ export default function SubcontractorDetailModal({
                         borderRadius="$4"
                         backgroundColor={severityBgColors[issue.severity] || '$backgroundHover'}
                       >
-                        <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                        <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
                           <XStack alignItems="center" gap="$2">
                             <AlertTriangle
                               color={
@@ -1013,10 +1072,10 @@ export default function SubcontractorDetailModal({
                             </Text>
                           </XStack>
                         </XStack>
-                        <Text fontSize="$3" color="$color11" marginBottom="$3" marginLeft="$6">
+                        <Text fontSize="$3" color="$color11" mb="$3" ml="$6">
                           {issue.description}
                         </Text>
-                        <XStack alignItems="center" justifyContent="space-between" marginLeft="$6">
+                        <XStack alignItems="center" justifyContent="space-between" ml="$6">
                           <XStack gap="$3" fontSize="$1" color="$color10">
                             <Text fontSize="$1" color="$color10">
                               Type: {issue.issue_type.replace('_', ' ')}
@@ -1028,7 +1087,7 @@ export default function SubcontractorDetailModal({
                           {issue.status === 'open' && (
                             <Button
                               variant="outline"
-                              size="sm"
+                              size="$2"
                               onClick={() => handleMarkIssueResolved(issue.id)}
                             >
                               Mark Resolved
@@ -1043,30 +1102,8 @@ export default function SubcontractorDetailModal({
             </YStack>
           )}
 
-          <XStack gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-            <Button
-              variant="secondary"
-              onClick={() => setShowMessageModal(true)}
-              leftIcon={MessageSquare}
-              flex={1}
-            >
-              Send Message
-            </Button>
-            <Button variant="secondary" leftIcon={FileText} flex={1}>
-              View Full Profile
-            </Button>
-            {allIssues.length > 0 ? (
-              <Button variant="danger" leftIcon={UserX} flex={1}>
-                Restrict Access
-              </Button>
-            ) : (
-              <Button variant="success" leftIcon={UserCheck} flex={1}>
-                Approve
-              </Button>
-            )}
-          </XStack>
         </YStack>
-      </Modal>
+      </ModalOverlay>
 
       {/* Document Detail Modal */}
       {selectedDocument && (
@@ -1085,59 +1122,6 @@ export default function SubcontractorDetailModal({
         />
       )}
 
-      <Modal
-        isOpen={showMessageModal}
-        onClose={() => setShowMessageModal(false)}
-        title="Send Message"
-        size="sm"
-      >
-        <YStack gap="$4">
-          <YStack>
-            <Text
-              as="label"
-              display="block"
-              fontSize="$3"
-              fontWeight="500"
-              color="$color11"
-              marginBottom="$2"
-            >
-              Message to {subcontractor.company_name}
-            </Text>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={4}
-              placeholder="Type your message here..."
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: 'var(--color12)',
-                fontFamily: 'inherit',
-              }}
-            />
-          </YStack>
-          <XStack gap="$3">
-            <Button
-              variant="secondary"
-              onClick={() => setShowMessageModal(false)}
-              flex={1}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSendMessage}
-              flex={1}
-            >
-              Send Message
-            </Button>
-          </XStack>
-        </YStack>
-      </Modal>
     </>
   );
 }

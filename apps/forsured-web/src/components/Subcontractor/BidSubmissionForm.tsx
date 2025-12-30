@@ -156,7 +156,7 @@ export default function BidSubmissionForm({
       isOpen={isOpen}
       onClose={handleClose}
       title="Submit Bid Proposal"
-      size="lg"
+      size="large"
     >
       {submitted ? (
         <YStack alignItems="center" paddingVertical="$12">
@@ -167,11 +167,11 @@ export default function BidSubmissionForm({
             borderRadius={9999}
             alignItems="center"
             justifyContent="center"
-            marginBottom="$4"
+            mb="$4"
           >
             <CheckCircle color="$green10" size={32} />
           </Card>
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             Bid Submitted Successfully!
           </Text>
           <Text color="$color11">
@@ -183,7 +183,7 @@ export default function BidSubmissionForm({
         <YStack gap="$6">
           {project && (
             <Card backgroundColor="$blue3" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
-              <Text fontWeight="600" color="$blue11" marginBottom="$1">
+              <Text fontWeight="600" color="$blue11" mb="$1">
                 Project: {project.name}
               </Text>
               <Text fontSize="$2" color="$blue10">{project.description}</Text>
@@ -260,7 +260,7 @@ export default function BidSubmissionForm({
           />
 
           <YStack>
-            <Text fontSize="$2" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            <Text fontSize="$2" fontWeight="500" color="$color12" mb="$2" display="block">
               Upload Documents
             </Text>
             <Card
@@ -285,8 +285,8 @@ export default function BidSubmissionForm({
                 cursor="pointer"
                 alignItems="center"
               >
-                <Upload color="$blue10" size={32} marginBottom="$2" />
-                <Text fontSize="$2" fontWeight="500" color="$blue10" marginBottom="$1">
+                <Upload color="$blue10" size={32} mb="$2" />
+                <Text fontSize="$2" fontWeight="500" color="$blue10" mb="$1">
                   Click to upload or drag and drop
                 </Text>
                 <Text fontSize="$1" color="$color10">
@@ -296,7 +296,7 @@ export default function BidSubmissionForm({
             </Card>
 
             {uploadedFiles.length > 0 && (
-              <YStack marginTop="$4" gap="$2">
+              <YStack mt="$4" gap="$2">
                 {uploadedFiles.map((file, index) => (
                   <Card
                     key={index}
@@ -333,7 +333,7 @@ export default function BidSubmissionForm({
               </YStack>
             )}
 
-            <YStack marginTop="$3">
+            <YStack mt="$3">
               <Text fontSize="$1" color="$color10">
                 Required documents: Proposal, COI, Endorsements (if applicable)
               </Text>

@@ -116,7 +116,7 @@ export default function SubcontractorVetting() {
                 hoverStyle={{ backgroundColor: "$backgroundHover" }}
               >
                 <YStack width="100%">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$2">
                     <Text fontWeight="500" color="$color12">
                       {subcontractor.name}
                     </Text>
@@ -126,7 +126,7 @@ export default function SubcontractorVetting() {
                       showIcon={false}
                     />
                   </XStack>
-                  <Text fontSize="$3" color="$color11" marginBottom="$2">
+                  <Text fontSize="$3" color="$color11" mb="$2">
                     {subcontractor.company}
                   </Text>
                   <XStack alignItems="center" justifyContent="space-between">
@@ -151,7 +151,7 @@ export default function SubcontractorVetting() {
             <YStack gap="$6">
               {/* Subcontractor Info */}
               <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$1" borderWidth={1} borderColor="$borderColor" padding="$6">
-                <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                <XStack alignItems="center" justifyContent="space-between" mb="$4">
                   <YStack>
                     <H2 fontSize="$7" fontWeight="bold" color="$color12">
                       {selectedSubcontractorData.name}
@@ -181,7 +181,7 @@ export default function SubcontractorVetting() {
                   </YStack>
                   <YStack flex={1} minWidth={200}>
                     <Text color="$color11">Status:</Text>
-                    <YStack marginTop="$1">
+                    <YStack mt="$1">
                       <StatusBadge status={selectedSubcontractorData.status} />
                     </YStack>
                   </YStack>
@@ -268,7 +268,7 @@ export default function SubcontractorVetting() {
                     </YStack>
                   ) : (
                     <YStack alignItems="center" paddingVertical="$8">
-                      <Upload size={48} color="$gray8" marginBottom="$3" />
+                      <Upload size={48} color="$gray8" mb="$3" />
                       <Text color="$color11">No documents uploaded</Text>
                       <Text fontSize="$3" color="$color11">
                         Upload certificates and licenses to get started
@@ -297,7 +297,7 @@ export default function SubcontractorVetting() {
                             borderColor="$borderColor"
                             borderRadius="$4"
                           >
-                            <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                            <XStack alignItems="center" justifyContent="space-between" mb="$2">
                               <Text fontWeight="500" color="$color12">
                                 {policy.type}
                               </Text>
@@ -341,13 +341,13 @@ export default function SubcontractorVetting() {
             </YStack>
           ) : (
             <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$1" borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
-              <YStack alignItems="center" marginBottom="$4">
+              <YStack alignItems="center" mb="$4">
                 <Eye size={48} color="$color10" />
               </YStack>
-              <H3 fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
+              <H3 fontSize="$6" fontWeight="500" color="$color12" mb="$2">
                 Select a Subcontractor
               </H3>
-              <Text color="$color11" textAlign="center">
+              <Text color="$color11" style={{ textAlign: 'center' }}>
                 Choose a subcontractor from the list to view their details and
                 documents
               </Text>
@@ -370,12 +370,12 @@ export default function SubcontractorVetting() {
           zIndex={50}
         >
           <Card backgroundColor="$background" borderRadius="$4" padding="$6" width="100%" maxWidth={448}>
-            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Add New Subcontractor
             </H3>
             <YStack gap="$4">
               <YStack>
-                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
                   Full Name
                 </Text>
                 <Input
@@ -389,7 +389,7 @@ export default function SubcontractorVetting() {
                 />
               </YStack>
               <YStack>
-                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
                   Company
                 </Text>
                 <Input
@@ -403,7 +403,7 @@ export default function SubcontractorVetting() {
                 />
               </YStack>
               <YStack>
-                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
                   Email
                 </Text>
                 <Input
@@ -417,7 +417,7 @@ export default function SubcontractorVetting() {
                 />
               </YStack>
               <YStack>
-                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
                   Phone
                 </Text>
                 <Input
@@ -431,7 +431,7 @@ export default function SubcontractorVetting() {
                 />
               </YStack>
             </YStack>
-            <XStack justifyContent="flex-end" gap="$3" marginTop="$6">
+            <XStack justifyContent="flex-end" gap="$3" mt="$6">
               <Button onPress={() => setShowAddModal(false)} variant="ghost">
                 Cancel
               </Button>

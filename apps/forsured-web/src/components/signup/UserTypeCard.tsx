@@ -24,7 +24,7 @@ const CardButton = styled(Button, {
   backgroundColor: '$background',
   borderWidth: 2,
   borderColor: 'transparent',
-  borderRadius: '$md',
+  borderRadius: '$3',
   
   variants: {
     selected: {
@@ -74,10 +74,10 @@ function UserTypeCard({
         <Text fontSize="$5" fontWeight="600">
           {title}
         </Text>
-        <Text fontSize="$2" color="$color10" textAlign="center">
+        <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
           {description}
         </Text>
-        <YStack marginTop="$2">
+        <YStack mt="$2">
           {loading ? (
             <XStack alignItems="center" gap="$2">
               <View animation="quick" rotate={`${rotation}deg`}>

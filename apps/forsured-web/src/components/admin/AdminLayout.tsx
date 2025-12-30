@@ -21,7 +21,7 @@ const NavItem = styled(XStack, {
   display: 'block',
   paddingHorizontal: '$3',
   paddingVertical: '$2',
-  borderRadius: '$md',
+  borderRadius: '$3',
   
   variants: {
     active: {
@@ -52,7 +52,7 @@ function AdminLayout() {
         padding="$4"
         gap="$6"
       >
-        <Text fontSize="$6" fontWeight="600" marginBottom="$6">
+        <Text fontSize="$6" fontWeight="600" mb="$6">
           Admin Panel
         </Text>
         <YStack as="nav" gap="$2">

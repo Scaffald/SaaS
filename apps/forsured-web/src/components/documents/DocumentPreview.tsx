@@ -38,7 +38,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
         borderTopRightRadius="$4"
       >
         <XStack alignItems="center">
-          <FileText size={20} color="$color10" marginRight="$2" />
+          <FileText size={20} color="$color10" mr="$2" />
           <H3 fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
             {fileName}
           </H3>

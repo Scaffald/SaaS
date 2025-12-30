@@ -103,7 +103,7 @@ export default function ProjectParticipantsList({
                 </XStack>
 
                 <YStack flex={1} minWidth={0}>
-                  <XStack alignItems="center" gap="$2" marginBottom="$1">
+                  <XStack alignItems="center" gap="$2" mb="$1">
                     <Text
                       fontSize="$3"
                       fontWeight="600"
@@ -134,10 +134,10 @@ export default function ProjectParticipantsList({
                 </YStack>
               </XStack>
 
-              <XStack alignItems="center" gap="$6" marginLeft="$4">
+              <XStack alignItems="center" gap="$6" ml="$4">
                 {participant.complianceScore !== undefined && (
                   <YStack alignItems="center">
-                    <Text fontSize="$1" color="$color11" marginBottom="$1">
+                    <Text fontSize="$1" color="$color11" mb="$1">
                       Compliance
                     </Text>
                     <ComplianceScore
@@ -149,7 +149,7 @@ export default function ProjectParticipantsList({
                 )}
 
                 <YStack alignItems="center">
-                  <Text fontSize="$1" color="$color11" marginBottom="$1">
+                  <Text fontSize="$1" color="$color11" mb="$1">
                     Status
                   </Text>
                   <Text
@@ -163,7 +163,7 @@ export default function ProjectParticipantsList({
 
                 {participant.joinedDate && (
                   <YStack alignItems="center">
-                    <Text fontSize="$1" color="$color11" marginBottom="$1">
+                    <Text fontSize="$1" color="$color11" mb="$1">
                       Joined
                     </Text>
                     <Text fontSize="$3" color="$color12">
@@ -185,8 +185,8 @@ export default function ProjectParticipantsList({
 
       {participants.length === 0 && (
         <YStack padding="$12" alignItems="center">
-          <Users color="$color10" size={48} marginBottom="$4" />
-          <Text color="$color12" fontWeight="500" marginBottom="$2">
+          <Users color="$color10" size={48} mb="$4" />
+          <Text color="$color12" fontWeight="500" mb="$2">
             No participants yet
           </Text>
           <Text color="$color11" fontSize="$3">

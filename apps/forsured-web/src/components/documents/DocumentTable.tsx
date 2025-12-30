@@ -86,10 +86,10 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
       >
         <YStack alignItems="center" gap="$2">
           <FileText size={48} color="$color10" />
-          <Text marginTop="$2" fontSize="$3" fontWeight="500" color="$color12">
+          <Text mt="$2" fontSize="$3" fontWeight="500" color="$color12">
             No documents
           </Text>
-          <Text marginTop="$1" fontSize="$3" color="$color10">
+          <Text mt="$1" fontSize="$3" color="$color10">
             Upload your first document to get started.
           </Text>
         </YStack>
@@ -192,7 +192,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                       {document.file_name}
                     </Text>
                     {document.error_message && (
-                      <Text fontSize="$1" color="$red10" marginTop="$1">
+                      <Text fontSize="$1" color="$red10" mt="$1">
                         {document.error_message}
                       </Text>
                     )}

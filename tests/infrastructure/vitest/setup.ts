@@ -95,6 +95,7 @@ const TAMAGUI_PROPS = [
   "borderRadius",
   "zIndex",
   "icon",
+  "textAlign", // Tamagui accepts textAlign but React warns when it reaches DOM
 ];
 
 console.warn = (...args) => {

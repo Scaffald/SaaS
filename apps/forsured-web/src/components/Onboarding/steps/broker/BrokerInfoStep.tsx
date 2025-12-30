@@ -1,8 +1,7 @@
 // src/components/onboarding/steps/broker/BrokerInfoStep.tsx
 // REQ-126: Broker Onboarding - Broker Information Step
 import { useState } from 'react';
-import { Input as TextInput, Button, Heading2, BodyText } from '@unicornlove/ui';
-import { YStack } from 'tamagui';
+import { YStack, Text, H2, Input, Button } from '@unicornlove/ui';
 
 interface BrokerInfoStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -41,47 +40,48 @@ function BrokerInfoStep({ onComplete, initialData = {}, isLoading = false }: Bro
 
   return (
     <YStack>
-      <Heading2 marginBottom="$2">Your Information</Heading2>
-      <BodyText marginBottom="$6" color="$color10">
+      <H2 mb="$2">Your Information</H2>
+      <Text mb="$6" color="$color10">
         Tell us about your insurance broker credentials
-      </BodyText>
-      <YStack asChild gap="$4">
-        <form onSubmit={handleSubmit}>
-          <TextInput
-            label="Your Name"
+      </Text>
+      <YStack tag="form" onSubmit={handleSubmit} gap="$4">
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Your Name</Text>
+          <Input
             value={name}
             onChangeText={setName}
-            error={errors.name}
             placeholder="Enter your full name"
-            required
           />
-          <TextInput
-            label="License Number"
+          {errors.name && <Text color="$red10" fontSize="$2">{errors.name}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">License Number</Text>
+          <Input
             value={licenseNumber}
             onChangeText={setLicenseNumber}
-            error={errors.licenseNumber}
             placeholder="Enter your insurance license number"
-            required
           />
-          <TextInput
-            label="States Licensed"
+          {errors.licenseNumber && <Text color="$red10" fontSize="$2">{errors.licenseNumber}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">States Licensed</Text>
+          <Input
             value={statesLicensed}
             onChangeText={setStatesLicensed}
-            error={errors.statesLicensed}
             placeholder="e.g., TX, CA, NY (comma-separated)"
-            helperText="Enter states where you're licensed, separated by commas"
-            required
           />
-          <YStack marginTop="$6">
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Saving...' : 'Continue'}
-            </Button>
-          </YStack>
-        </form>
+          <Text fontSize="$2" color="$color10">Enter states where you're licensed, separated by commas</Text>
+          {errors.statesLicensed && <Text color="$red10" fontSize="$2">{errors.statesLicensed}</Text>}
+        </YStack>
+        <YStack mt="$6">
+          <Button
+            onPress={handleSubmit}
+            variant="primary"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Saving...' : 'Continue'}
+          </Button>
+        </YStack>
       </YStack>
     </YStack>
   );

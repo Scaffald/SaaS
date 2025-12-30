@@ -248,7 +248,7 @@ export function AddTeamMemberForm({
       </XStack>
 
       {/* Help Text */}
-      <SizableText fontSize="$1" color="$color10" textAlign="center">
+      <SizableText fontSize="$1" color="$color10" style={{ textAlign: 'center' }}>
         An invitation email will be sent to the provided email address.
       </SizableText>
       </YStack>

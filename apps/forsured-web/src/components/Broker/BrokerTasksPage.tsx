@@ -492,7 +492,7 @@ export default function BrokerTasksPage() {
           <H1 fontSize="$9" fontWeight="bold" color="$color12">
             Tasks
           </H1>
-          <Text color="$color11" fontSize="$6" marginTop="$1">
+          <Text color="$color11" fontSize="$6" mt="$1">
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
         </YStack>
@@ -523,7 +523,7 @@ export default function BrokerTasksPage() {
           <Inbox size={18} />
           <Text>Inbox</Text>
           <XStack
-            marginLeft="$1"
+            ml="$1"
             paddingHorizontal="$2"
             paddingVertical="$0.5"
             fontSize="$1"
@@ -556,7 +556,7 @@ export default function BrokerTasksPage() {
           <Send size={18} />
           <Text>Assigned by Me</Text>
           <XStack
-            marginLeft="$1"
+            ml="$1"
             paddingHorizontal="$2"
             paddingVertical="$0.5"
             fontSize="$1"
@@ -589,7 +589,7 @@ export default function BrokerTasksPage() {
           <List size={18} />
           <Text>All Tasks</Text>
           <XStack
-            marginLeft="$1"
+            ml="$1"
             paddingHorizontal="$2"
             paddingVertical="$0.5"
             fontSize="$1"
@@ -696,7 +696,7 @@ export default function BrokerTasksPage() {
               <Text>Filters</Text>
               {activeFilterCount > 0 && (
                 <XStack
-                  marginLeft="$1"
+                  ml="$1"
                   paddingHorizontal="$2"
                   paddingVertical="$0.5"
                   backgroundColor="$blue9"
@@ -722,7 +722,7 @@ export default function BrokerTasksPage() {
                 flexWrap="wrap"
               >
                 <YStack flex={1} minWidth="20%">
-                  <Label fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                  <Label fontSize="$1" fontWeight="500" color="$color11" mb="$2">
                     Priority
                   </Label>
                   <select
@@ -749,7 +749,7 @@ export default function BrokerTasksPage() {
                 </YStack>
 
                 <YStack flex={1} minWidth="20%">
-                  <Label fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                  <Label fontSize="$1" fontWeight="500" color="$color11" mb="$2">
                     Status
                   </Label>
                   <select
@@ -776,7 +776,7 @@ export default function BrokerTasksPage() {
                 </YStack>
 
                 <YStack flex={1} minWidth="20%">
-                  <Label fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                  <Label fontSize="$1" fontWeight="500" color="$color11" mb="$2">
                     Client
                   </Label>
                   <select
@@ -802,7 +802,7 @@ export default function BrokerTasksPage() {
                 </YStack>
 
                 <YStack flex={1} minWidth="20%">
-                  <Label fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                  <Label fontSize="$1" fontWeight="500" color="$color11" mb="$2">
                     Project
                   </Label>
                   <select
@@ -924,9 +924,9 @@ export default function BrokerTasksPage() {
               onClick={() => handleTaskClick(task)}
             >
               <YStack padding="$5">
-                <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+                <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
                   <YStack flex={1}>
-                    <XStack alignItems="center" gap="$3" marginBottom="$2">
+                    <XStack alignItems="center" gap="$3" mb="$2">
                       <Text
                         fontSize="$4"
                         fontWeight="600"
@@ -955,7 +955,7 @@ export default function BrokerTasksPage() {
                         size="xs"
                       />
                     </XStack>
-                    <Text fontSize="$3" color="$color11" marginBottom="$3">
+                    <Text fontSize="$3" color="$color11" mb="$3">
                       {task.description}
                     </Text>
                     <XStack
@@ -1018,8 +1018,8 @@ export default function BrokerTasksPage() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <CheckCircle color="$color10" size={64} marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <CheckCircle color="$color10" size={64} mb="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             No tasks found
           </H3>
           <Text color="$color11">

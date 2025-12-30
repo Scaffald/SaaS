@@ -23,17 +23,22 @@ interface DatabaseContextType {
 const DatabaseContext = createContext<DatabaseContextType | undefined>(undefined);
 
 export const DatabaseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isInitialized, setIsInitialized] = useState(false);
+  // Real Supabase - client is ready immediately, no async initialization needed
+  // Initialize to true immediately to avoid race condition warnings
+  const [isInitialized] = useState(true);
 
-  // Initialize database on mount
+  // Verify Supabase client is available (development/debugging only)
   useEffect(() => {
-    try {
-      // Real Supabase - no initialization needed, client is ready
-      console.log('[DatabaseContext] Supabase client ready');
-      setIsInitialized(true);
-    } catch (error) {
-      console.error('[DatabaseContext] Failed to initialize database:', error);
-      throw error;
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        if (!supabase) {
+          console.error('[DatabaseContext] Supabase client is not available');
+        } else {
+          console.log('[DatabaseContext] Supabase client ready');
+        }
+      } catch (error) {
+        console.error('[DatabaseContext] Failed to verify database:', error);
+      }
     }
   }, []);
 

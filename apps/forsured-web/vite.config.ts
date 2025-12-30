@@ -168,12 +168,30 @@ export default defineConfig({
       loader: {
         '.js': 'jsx', // Handle JSX in .js files (for expo packages)
       },
+      // Increase target to help prevent esbuild service crashes
+      target: 'esnext',
     },
+    // Force re-optimization on server restart to clear stale esbuild state
+    force: false,
   },
   server: {
     port: parseInt(process.env.VITE_PORT || '5173'),
     // Note: tRPC requests are handled by trpcMiddleware plugin above
     // No additional proxy needed for /api/trpc routes
+    // Increase WebSocket ping timeout to prevent connection drops during extended navigation
+    ws: {
+      pingInterval: 30000, // Send ping every 30 seconds
+      pingTimeout: 60000,  // Wait 60 seconds for pong before closing connection
+    },
+    // Increase watch options to prevent file watcher exhaustion
+    watch: {
+      // Ignore node_modules to reduce file watching overhead
+      ignored: ['**/node_modules/**', '**/.git/**'],
+    },
+    // Increase HMR timeout to prevent premature disconnections
+    hmr: {
+      timeout: 30000, // 30 second timeout for HMR updates
+    },
   },
   build: {
     outDir: 'dist',

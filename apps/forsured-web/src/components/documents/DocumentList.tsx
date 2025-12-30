@@ -231,7 +231,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
             cursor="pointer"
           >
             <RefreshCw size={16} />
-            <Text marginLeft="$1">Refresh</Text>
+            <Text ml="$1">Refresh</Text>
           </XStack>
         )}
       </XStack>
@@ -245,20 +245,20 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
           borderRadius="$4"
           padding="$4"
         >
-          <XStack alignItems="center" marginBottom="$3">
-            <AlertCircle size={20} color="$red10" marginRight="$2" />
+          <XStack alignItems="center" mb="$3">
+            <AlertCircle size={20} color="$red10" mr="$2" />
             <YStack>
               <Text fontSize="$3" fontWeight="500" color="$red12">
                 Failed to load documents
               </Text>
-              <Text fontSize="$3" color="$red11" marginTop="$1">
+              <Text fontSize="$3" color="$red11" mt="$1">
                 {documentsError.message || 'An unexpected error occurred'}
               </Text>
             </YStack>
           </XStack>
           <Button
             onClick={handleRetry}
-            marginTop="$3"
+            mt="$3"
             paddingHorizontal="$4"
             paddingVertical="$2"
             backgroundColor="$red3"
@@ -307,7 +307,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
             <Text color="$color12" fontWeight="500">
               No documents found
             </Text>
-            <Text fontSize="$3" color="$color10" marginTop="$1">
+            <Text fontSize="$3" color="$color10" mt="$1">
               {Object.keys(filters).length > 0 || searchTerm
                 ? 'Try adjusting your filters or search term'
                 : 'No documents have been uploaded yet'}
@@ -435,7 +435,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
                   >
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
                       <XStack alignItems="center">
-                        <FileText size={20} color="$color10" marginRight="$3" />
+                        <FileText size={20} color="$color10" mr="$3" />
                         <Text fontSize="$3" fontWeight="500" color="$color12">
                           {document.filename}
                         </Text>

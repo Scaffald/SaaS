@@ -214,7 +214,7 @@ export default function ClientsTable({
       borderColor="$borderColor"
     >
       <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <XStack alignItems="center" justifyContent="space-between" mb="$4">
           <XStack alignItems="center" gap="$3">
             <H2 fontSize="$6" fontWeight="600" color="$color12">
               {gcOnly ? 'Key Clients (General Contractors)' : 'Key Clients'}
@@ -432,11 +432,9 @@ export default function ClientsTable({
                             .substring(0, 2) || '??'}
                         </Text>
                       </YStack>
-                      <YStack marginLeft="$4">
+                      <YStack ml="$4">
                         <Link
-                          to={client.client_type === 'general_contractor'
-                            ? `/broker/gcs/${client.id}`
-                            : `/broker/clients/${client.id}`}
+                          to={`/broker/clients/${client.id}`}
                           style={{
                             fontSize: '14px',
                             fontWeight: 500,
@@ -456,7 +454,7 @@ export default function ClientsTable({
                         >
                           {client.company_name}
                         </Link>
-                        <YStack marginTop="$1">
+                        <YStack mt="$1">
                           <XStack
                             alignItems="center"
                             paddingHorizontal="$2"
@@ -523,7 +521,7 @@ export default function ClientsTable({
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
                     <XStack alignItems="center" fontSize="$3" color="$color11">
-                      <Calendar size={14} marginRight="$1" color="$color11" />
+                      <Calendar size={14} mr="$1" color="$color11" />
                       <Text fontSize="$3" color="$color11">{getNextRenewal(client.id)}</Text>
                     </XStack>
                   </td>
@@ -544,7 +542,7 @@ export default function ClientsTable({
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color11)' }}>
                     <XStack alignItems="center">
-                      <MessageSquare size={14} marginRight="$1" color="$color11" />
+                      <MessageSquare size={14} mr="$1" color="$color11" />
                       <Text fontSize="$3" color="$color11">
                         {client.last_activity_at ? formatDistanceToNow(client.last_activity_at) : 'No activity'}
                       </Text>
@@ -552,7 +550,7 @@ export default function ClientsTable({
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color11)' }}>
                     <XStack alignItems="center">
-                      <MessageSquare size={14} marginRight="$1" color="$color11" />
+                      <MessageSquare size={14} mr="$1" color="$color11" />
                       <Text fontSize="$3" color="$color11">
                         {client.notes ? '2 comments' : 'No notes'}
                       </Text>

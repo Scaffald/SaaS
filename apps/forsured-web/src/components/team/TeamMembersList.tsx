@@ -251,10 +251,10 @@ export function TeamMembersList({
           alignItems="center"
         >
           <UsersIcon size={48} color="var(--color10)" />
-          <Text fontSize="$6" fontWeight="500" color="$color12" marginTop="$4">
+          <Text fontSize="$6" fontWeight="500" color="$color12" mt="$4">
             No team members found
           </Text>
-          <SizableText fontSize="$3" color="$color10" marginTop="$2" textAlign="center">
+          <SizableText fontSize="$3" color="$color10" mt="$2" style={{ textAlign: 'center' }}>
             {searchQuery || activeRole !== 'all'
               ? 'Try adjusting your search or filters'
               : 'Get started by inviting team members'}

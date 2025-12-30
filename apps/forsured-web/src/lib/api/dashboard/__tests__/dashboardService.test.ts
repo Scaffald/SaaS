@@ -338,4 +338,135 @@ describe('DashboardService', () => {
       expect(needsRefresh).toBe(false);
     });
   });
+
+  // ==========================================================================
+  // REQ-266: Task Severity and Risk Distribution Tests
+  // ==========================================================================
+
+  describe('getTaskSeveritySummary', () => {
+    it('should return task summary with severity breakdown', async () => {
+      const summary = await dashboardService.getTaskSeveritySummary();
+
+      // Should have base TaskSummary fields
+      expect(summary.total_open_tasks).toBeGreaterThanOrEqual(0);
+      expect(summary.high_priority_count).toBeGreaterThanOrEqual(0);
+      expect(summary.medium_priority_count).toBeGreaterThanOrEqual(0);
+      expect(summary.low_priority_count).toBeGreaterThanOrEqual(0);
+      expect(summary.urgent_count).toBeGreaterThanOrEqual(0);
+      expect(summary.last_updated).toBeDefined();
+
+      // Should have REQ-266 severity fields
+      expect(summary.severity_counts).toBeDefined();
+      expect(summary.severity_counts.critical).toBeGreaterThanOrEqual(0);
+      expect(summary.severity_counts.high).toBeGreaterThanOrEqual(0);
+      expect(summary.severity_counts.medium).toBeGreaterThanOrEqual(0);
+      expect(summary.severity_counts.low).toBeGreaterThanOrEqual(0);
+      expect(summary.severity_summary).toBeDefined();
+      expect(typeof summary.severity_summary).toBe('string');
+      expect(summary.urgent_severity_count).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should have urgent_severity_count equal to critical + high', async () => {
+      const summary = await dashboardService.getTaskSeveritySummary();
+
+      const expectedUrgent = summary.severity_counts.critical + summary.severity_counts.high;
+      expect(summary.urgent_severity_count).toBe(expectedUrgent);
+    });
+  });
+
+  describe('getRiskDistribution', () => {
+    it('should return risk distribution based on task severity', async () => {
+      const distribution = await dashboardService.getRiskDistribution();
+
+      expect(distribution.total_tasks).toBeGreaterThanOrEqual(0);
+      expect(distribution.severity_breakdown).toBeDefined();
+      expect(distribution.severity_breakdown.critical).toBeGreaterThanOrEqual(0);
+      expect(distribution.severity_breakdown.high).toBeGreaterThanOrEqual(0);
+      expect(distribution.severity_breakdown.medium).toBeGreaterThanOrEqual(0);
+      expect(distribution.severity_breakdown.low).toBeGreaterThanOrEqual(0);
+      expect(['low', 'medium', 'high', 'critical']).toContain(distribution.risk_level);
+      expect(distribution.clients_with_gaps).toBeGreaterThanOrEqual(0);
+      expect(distribution.total_clients).toBeGreaterThanOrEqual(0);
+      expect(distribution.compliance_rate).toBeGreaterThanOrEqual(0);
+      expect(distribution.compliance_rate).toBeLessThanOrEqual(100);
+      expect(distribution.summary).toBeDefined();
+      expect(typeof distribution.summary).toBe('string');
+      expect(distribution.correlation_explanation).toBeDefined();
+      expect(typeof distribution.correlation_explanation).toBe('string');
+      expect(distribution.last_updated).toBeDefined();
+    });
+
+    it('should have clients_with_gaps <= total_clients', async () => {
+      const distribution = await dashboardService.getRiskDistribution();
+
+      expect(distribution.clients_with_gaps).toBeLessThanOrEqual(distribution.total_clients);
+    });
+
+    it('should calculate compliance_rate correctly', async () => {
+      const distribution = await dashboardService.getRiskDistribution();
+
+      if (distribution.total_clients > 0) {
+        const expectedRate = Math.round(
+          ((distribution.total_clients - distribution.clients_with_gaps) / distribution.total_clients) * 100
+        );
+        expect(distribution.compliance_rate).toBe(expectedRate);
+      } else {
+        expect(distribution.compliance_rate).toBe(100);
+      }
+    });
+  });
+
+  describe('getClientRiskProfiles', () => {
+    it('should return risk profiles for all subcontractors', async () => {
+      const profiles = await dashboardService.getClientRiskProfiles();
+
+      expect(Array.isArray(profiles)).toBe(true);
+
+      if (profiles.length > 0) {
+        const profile = profiles[0];
+        expect(profile.client_id).toBeDefined();
+        expect(profile.client_name).toBeDefined();
+        expect(profile.task_severity_counts).toBeDefined();
+        expect(profile.task_severity_counts.critical).toBeGreaterThanOrEqual(0);
+        expect(profile.task_severity_counts.high).toBeGreaterThanOrEqual(0);
+        expect(profile.task_severity_counts.medium).toBeGreaterThanOrEqual(0);
+        expect(profile.task_severity_counts.low).toBeGreaterThanOrEqual(0);
+        expect(['low', 'medium', 'high', 'critical']).toContain(profile.risk_level);
+        expect(typeof profile.has_compliance_gap).toBe('boolean');
+        expect(profile.urgent_task_count).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('should sort profiles by risk level (critical first)', async () => {
+      const profiles = await dashboardService.getClientRiskProfiles();
+
+      const riskOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      for (let i = 1; i < profiles.length; i++) {
+        expect(riskOrder[profiles[i].risk_level]).toBeGreaterThanOrEqual(
+          riskOrder[profiles[i - 1].risk_level]
+        );
+      }
+    });
+
+    it('should have has_compliance_gap true only when critical tasks exist', async () => {
+      const profiles = await dashboardService.getClientRiskProfiles();
+
+      profiles.forEach((profile) => {
+        if (profile.has_compliance_gap) {
+          expect(profile.task_severity_counts.critical).toBeGreaterThan(0);
+        } else {
+          expect(profile.task_severity_counts.critical).toBe(0);
+        }
+      });
+    });
+
+    it('should have urgent_task_count equal to critical + high', async () => {
+      const profiles = await dashboardService.getClientRiskProfiles();
+
+      profiles.forEach((profile) => {
+        const expectedUrgent = profile.task_severity_counts.critical + profile.task_severity_counts.high;
+        expect(profile.urgent_task_count).toBe(expectedUrgent);
+      });
+    });
+  });
 });

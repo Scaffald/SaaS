@@ -30,7 +30,7 @@ function SettingsLayout({ userType }: SettingsLayoutProps) {
         padding="$6"
         gap="$6"
       >
-        <XStack alignItems="center" gap="$2" marginBottom="$6">
+        <XStack alignItems="center" gap="$2" mb="$6">
           <Settings size={24} color="currentColor" />
           <YStack>
             <Text fontSize="$5" fontWeight="600" color="$color11">

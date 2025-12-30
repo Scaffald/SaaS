@@ -74,7 +74,7 @@ export function OrganizationExample({ organizationId }: OrganizationExampleProps
 
       {projects && (
         <YStack>
-          <Text fontSize="$5" fontWeight="600" marginBottom="$2">Projects ({projects.total})</Text>
+          <Text fontSize="$5" fontWeight="600" mb="$2">Projects ({projects.total})</Text>
           <YStack gap="$2">
             {projects.projects.map((project) => (
               <Card key={project.id} padding="$2" borderWidth={1} borderRadius="$4">

@@ -77,10 +77,9 @@ describe('ClientsTable', () => {
       );
 
       const links = screen.getAllByTestId('client-name-link');
-      // client-1 is a subcontractor -> /broker/clients/client-1
+      // All clients now use the unified /broker/clients/:id route
       expect(links[0]).toHaveAttribute('href', '/broker/clients/client-1');
-      // client-2 is a general_contractor -> /broker/gcs/client-2
-      expect(links[1]).toHaveAttribute('href', '/broker/gcs/client-2');
+      expect(links[1]).toHaveAttribute('href', '/broker/clients/client-2');
     });
 
     it('displays the correct client name in the link', () => {

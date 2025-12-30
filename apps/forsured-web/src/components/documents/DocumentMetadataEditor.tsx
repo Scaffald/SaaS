@@ -145,7 +145,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
               {field.reviewRequired && !field.reviewed && (
                 <Text
                   as="button"
-                  marginTop="$2"
+                  mt="$2"
                   fontSize="$3"
                   color="$teal9"
                   hoverStyle={{ color: '$teal11' }}
@@ -178,7 +178,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
             <H1 fontSize="$7" fontWeight="600" color="$color12">
               Document Metadata Editor
             </H1>
-            <Text fontSize="$3" color="$color10" marginTop="$1">
+            <Text fontSize="$3" color="$color10" mt="$1">
               Extracted:{' '}
               {new Date(document.extractionResult?.extractedAt || '').toLocaleString()}
             </Text>
@@ -194,7 +194,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
                 borderRadius={9999}
                 fontSize="$3"
               >
-                <AlertCircle size={16} marginRight="$1" />
+                <AlertCircle size={16} mr="$1" />
                 {unreviewedFieldsCount} field{unreviewedFieldsCount !== 1 ? 's' : ''} need review
               </XStack>
             )}
@@ -214,7 +214,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
                 borderRadius={9999}
                 fontSize="$3"
               >
-                <CheckCircle size={16} marginRight="$1" />
+                <CheckCircle size={16} mr="$1" />
                 {document.complianceStatus.status}
               </XStack>
             )}
@@ -288,7 +288,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
                   checked={showOnlyFlagged}
                   onCheckedChange={(checked) => setShowOnlyFlagged(checked === true)}
                 />
-                <Text marginLeft="$2" fontSize="$3" color="$color11">
+                <Text ml="$2" fontSize="$3" color="$color11">
                   Show only flagged fields ({flaggedFields.length})
                 </Text>
               </XStack>

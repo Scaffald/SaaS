@@ -37,6 +37,13 @@ export default defineConfig({
 
     // Strict mode: fail on console errors and network failures
     // This is overridden by base fixture for more granular control
+    
+    // Isolated mode: prevent browser instance conflicts
+    // Each test gets a fresh browser context
+    launchOptions: {
+      // Use isolated user data directory to prevent conflicts
+      args: process.env.CI ? [] : ['--user-data-dir=/tmp/playwright-isolated'],
+    },
   },
 
   projects: [
@@ -45,8 +52,15 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         // Enable console logging in tests
+        // Use isolated mode to prevent browser instance conflicts
         launchOptions: {
           args: ['--enable-logging'],
+        },
+        // Isolated mode: each test gets its own browser context
+        // This prevents conflicts when multiple tests run or when MCP browser is active
+        contextOptions: {
+          // Isolated storage and cookies per test
+          storageState: undefined, // Each test starts fresh
         },
       },
     },

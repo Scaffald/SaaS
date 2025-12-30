@@ -1,7 +1,8 @@
 // src/pages/admin/Users.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, RefreshCcw } from 'lucide-react';
+import { Search, RefreshCcw, Users as UsersIcon } from 'lucide-react';
 import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Spinner } from 'tamagui';
+import { EmptyState } from '@unicornlove/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getUsers,
@@ -195,13 +196,15 @@ function AdminUsers() {
         </XStack>
 
         {filteredUsers.length === 0 ? (
-          <YStack alignItems="center" paddingVertical="$8">
-            <Text color="$color11">
-              {searchQuery || roleFilter !== 'all' || statusFilter !== 'all'
-                ? 'No users match the current filters'
-                : 'No users found'}
-            </Text>
-          </YStack>
+          <EmptyState
+            icon={UsersIcon}
+            title={searchQuery || roleFilter !== 'all' || statusFilter !== 'all'
+              ? 'No users match your filters'
+              : 'No users found'}
+            description={searchQuery || roleFilter !== 'all' || statusFilter !== 'all'
+              ? 'Try adjusting your search query or filter criteria to find users.'
+              : 'Users will appear here once they sign up or are added to the system.'}
+          />
         ) : (
           <table style={{ width: '100%', minWidth: '100%' }}>
             <thead>

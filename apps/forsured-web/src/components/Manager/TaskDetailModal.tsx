@@ -104,7 +104,7 @@ export default function TaskDetailModal({
       <YStack gap="$6">
         <XStack alignItems="flex-start" justifyContent="space-between">
           <YStack flex={1}>
-            <H2 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$2">
+            <H2 fontSize="$8" fontWeight="600" color="$color12" mb="$2">
               {task.title}
             </H2>
             <XStack alignItems="center" gap="$2">
@@ -141,7 +141,7 @@ export default function TaskDetailModal({
 
         {task.description && (
           <YStack>
-            <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+            <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$2">
               Description
             </H3>
             <Text fontSize="$3" color="$color11">{task.description}</Text>
@@ -151,18 +151,18 @@ export default function TaskDetailModal({
         <XStack flexWrap="wrap" gap="$4">
           {task.due_date && (
             <YStack flex={1} minWidth="calc(50% - 8px)">
-              <H3 fontSize="$1" fontWeight="500" color="$color10" marginBottom="$1">
+              <H3 fontSize="$1" fontWeight="500" color="$color10" mb="$1">
                 Due Date
               </H3>
               <XStack alignItems="center" fontSize="$3" color="$color12">
-                <Calendar size={14} marginRight="$2" />
+                <Calendar size={14} mr="$2" />
                 <Text fontSize="$3" color="$color12">{formatDate(task.due_date)}</Text>
               </XStack>
             </YStack>
           )}
 
           <YStack flex={1} minWidth="calc(50% - 8px)">
-            <H3 fontSize="$1" fontWeight="500" color="$color10" marginBottom="$1">
+            <H3 fontSize="$1" fontWeight="500" color="$color10" mb="$1">
               Task Type
             </H3>
             <Text fontSize="$3" color="$color12" textTransform="capitalize">
@@ -174,7 +174,7 @@ export default function TaskDetailModal({
         {task.status !== 'completed' && (
           <>
             <YStack>
-              <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+              <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                 Reassign Task
               </H3>
               <XStack alignItems="center" gap="$2">
@@ -196,7 +196,7 @@ export default function TaskDetailModal({
                     !selectedAssignee ||
                     selectedAssignee === task.assigned_to_user_id
                   }
-                  size="sm"
+                  size="$2"
                 >
                   Reassign
                 </Button>
@@ -204,7 +204,7 @@ export default function TaskDetailModal({
             </YStack>
 
             <YStack>
-              <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+              <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                 Mark as Complete
               </H3>
               {!showCompletionForm ? (
@@ -250,14 +250,14 @@ export default function TaskDetailModal({
         )}
 
         <YStack>
-          <XStack alignItems="center" gap="$2" marginBottom="$2">
+          <XStack alignItems="center" gap="$2" mb="$2">
             <MessageSquare size={16} />
             <H3 fontSize="$3" fontWeight="500" color="$color12">
               Comments
             </H3>
           </XStack>
 
-          <YStack gap="$3" marginBottom="$3" maxHeight={160} overflowY="auto">
+          <YStack gap="$3" mb="$3" maxHeight={160} overflowY="auto">
             {task.metadata?.comments?.length > 0 ? (
               task.metadata.comments.map((comment: unknown) => (
                 <Card
@@ -266,7 +266,7 @@ export default function TaskDetailModal({
                   backgroundColor="$backgroundHover"
                   borderRadius="$4"
                 >
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$1">
                     <Text fontSize="$1" fontWeight="500" color="$color12">
                       {comment.author}
                     </Text>
@@ -295,7 +295,7 @@ export default function TaskDetailModal({
             <Button
               onClick={handleAddComment}
               disabled={!comment.trim()}
-              size="sm"
+              size="$2"
             >
               Add
             </Button>
@@ -304,7 +304,7 @@ export default function TaskDetailModal({
 
         {task.metadata?.completion_note && (
           <Card padding="$4" backgroundColor="$green2" borderWidth={1} borderColor="$green8" borderRadius="$4">
-            <H3 fontSize="$3" fontWeight="500" color="$green10" marginBottom="$2">
+            <H3 fontSize="$3" fontWeight="500" color="$green10" mb="$2">
               Completion Notes
             </H3>
             <Text fontSize="$3" color="$color11">
