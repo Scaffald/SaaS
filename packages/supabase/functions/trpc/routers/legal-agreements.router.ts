@@ -96,6 +96,13 @@ export const legalAgreementsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       await ensureOrganizationAccess(ctx, input.organizationId)
 
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       // Get default agreement text if not provided
       const { data: agreementTextData, error: textError } = await ctx.supabaseAdmin
         .schema('core')
@@ -169,6 +176,13 @@ export const legalAgreementsRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { supabaseAdmin } = ctx
+
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
 
       let query = supabaseAdmin
         .schema('core')
@@ -256,6 +270,13 @@ export const legalAgreementsRouter = t.router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       const { data: report, error } = await ctx.supabaseAdmin
         .schema('core')
         .from('circumvention_reports')
