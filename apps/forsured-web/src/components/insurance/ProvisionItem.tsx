@@ -41,7 +41,7 @@ export default function ProvisionItem({ provision }: ProvisionItemProps) {
   return (
     <Card
       padding="$3"
-      marginLeft="$8"
+      ml="$8"
       gap="$3"
     >
       <XStack alignItems="flex-start" gap="$3">
@@ -52,12 +52,12 @@ export default function ProvisionItem({ provision }: ProvisionItemProps) {
           </Text>
 
           {provision.description && (
-            <Text fontSize="$1" color="$color10" marginTop="$1">
+            <Text fontSize="$1" color="$color10" mt="$1">
               {provision.description}
             </Text>
           )}
 
-          <XStack flexWrap="wrap" alignItems="center" gap="$4" marginTop="$2">
+          <XStack flexWrap="wrap" alignItems="center" gap="$4" mt="$2">
             {provision.limit_amount && (
               <XStack alignItems="center" gap="$1.5" fontSize="$1">
                 <DollarSign size={12} color="currentColor" />

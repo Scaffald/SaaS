@@ -159,13 +159,13 @@ export default function ProjectManagement() {
 
         {/* Project Header */}
         <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-          <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+          <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
             <YStack>
-              <H1 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+              <H1 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
                 {selectedProject.name}
               </H1>
               {selectedProject.description && (
-                <Text color="$color11" marginBottom="$4">
+                <Text color="$color11" mb="$4">
                   {selectedProject.description}
                 </Text>
               )}
@@ -552,11 +552,11 @@ export default function ProjectManagement() {
       {/* Empty State */}
       {filteredProjects.length === 0 && (
         <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
-          <Building size={48} color="$color8" marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
+          <Building size={48} color="$color8" mb="$4" />
+          <H3 fontSize="$6" fontWeight="500" color="$color12" mb="$2">
             No projects found
           </H3>
-          <Text color="$color11" marginBottom="$4">
+          <Text color="$color11" mb="$4">
             {searchTerm || statusFilter !== 'all'
               ? 'Try adjusting your search terms or filters'
               : 'Get started by creating your first project'}
@@ -599,7 +599,7 @@ export default function ProjectManagement() {
             >
               {/* Project Name */}
           <YStack>
-            <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
               Project Name <Text color="$red10">*</Text>
             </Text>
             <Input
@@ -621,7 +621,7 @@ export default function ProjectManagement() {
 
               {/* Project Description */}
           <YStack>
-            <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                   Description
             </Text>
             <TextArea
@@ -646,7 +646,7 @@ export default function ProjectManagement() {
               {/* Location and Budget */}
           <XStack flexWrap="wrap" gap="$4">
             <YStack flex={1} minWidth={200}>
-              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+              <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                 Location <Text color="$red10">*</Text>
               </Text>
               <Input
@@ -669,7 +669,7 @@ export default function ProjectManagement() {
                   />
             </YStack>
             <YStack flex={1} minWidth={200}>
-              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+              <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                     Budget ($)
               </Text>
               <Input
@@ -695,7 +695,7 @@ export default function ProjectManagement() {
               {/* Start and End Dates */}
           <XStack flexWrap="wrap" gap="$4">
             <YStack flex={1} minWidth={200}>
-              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+              <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                 Start Date <Text color="$red10">*</Text>
               </Text>
               <Input
@@ -717,7 +717,7 @@ export default function ProjectManagement() {
                   />
             </YStack>
             <YStack flex={1} minWidth={200}>
-              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+              <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                     End Date
               </Text>
               <Input
@@ -741,7 +741,7 @@ export default function ProjectManagement() {
 
               {/* Project Manager */}
           <YStack>
-            <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                   Project Manager
             </Text>
             <Input
@@ -765,7 +765,7 @@ export default function ProjectManagement() {
 
               {/* Insurance Requirements */}
           <YStack>
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+            <XStack alignItems="center" justifyContent="space-between" mb="$4">
               <H3 fontSize="$6" fontWeight="600" color="$color12">
                     Insurance Requirements
               </H3>
@@ -808,16 +808,16 @@ export default function ProjectManagement() {
                 {newProject.useDefaultInsurance ? (
                   <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
                     <XStack alignItems="flex-start" gap="$2">
-                      <Info color="$blue10" size={20} marginTop={2} />
+                      <Info color="$blue10" size={20} mt={2} />
                       <YStack>
                         <Text fontSize="$3" color="$blue11" fontWeight="500">
                           Using Company Default Insurance Settings
                         </Text>
-                        <Text fontSize="$3" color="$blue10" marginTop="$1">
+                        <Text fontSize="$3" color="$blue10" mt="$1">
                           This project will use your company's default insurance
                           requirements. You can change this later if needed.
                         </Text>
-                        <YStack marginTop="$3" gap="$2">
+                        <YStack mt="$3" gap="$2">
                           <XStack alignItems="center" justifyContent="space-between">
                             <Text fontSize="$3" color="$blue11">• General Liability:</Text>
                             <Text fontSize="$3" color="$blue11" fontWeight="500">
@@ -850,7 +850,7 @@ export default function ProjectManagement() {
                   <YStack gap="$4">
                     {/* General Liability */}
                     <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                      <XStack alignItems="center" justifyContent="space-between" mb="$3">
                         <YStack>
                           <Text fontWeight="500" color="$color12">
                             General Liability
@@ -877,7 +877,7 @@ export default function ProjectManagement() {
                       </XStack>
                       {newProject.insuranceRequirements.generalLiability.required && (
                         <YStack>
-                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+                          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                             Minimum Coverage
                           </Text>
                           <Select
@@ -902,7 +902,7 @@ export default function ProjectManagement() {
 
                     {/* Workers Compensation */}
                     <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                      <XStack alignItems="center" justifyContent="space-between" mb="$3">
                         <YStack>
                           <Text fontWeight="500" color="$color12">
                             Workers Compensation
@@ -929,7 +929,7 @@ export default function ProjectManagement() {
                       </XStack>
                       {newProject.insuranceRequirements.workersCompensation.required && (
                         <YStack>
-                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+                          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                             Minimum Coverage
                           </Text>
                           <Select
@@ -954,7 +954,7 @@ export default function ProjectManagement() {
 
                     {/* Professional Liability */}
                     <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                      <XStack alignItems="center" justifyContent="space-between" mb="$3">
                         <YStack>
                           <Text fontWeight="500" color="$color12">
                             Professional Liability
@@ -981,7 +981,7 @@ export default function ProjectManagement() {
                       </XStack>
                       {newProject.insuranceRequirements.professionalLiability.required && (
                         <YStack>
-                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+                          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                             Minimum Coverage
                           </Text>
                           <Select
@@ -1006,7 +1006,7 @@ export default function ProjectManagement() {
 
                     {/* Commercial Auto */}
                     <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                      <XStack alignItems="center" justifyContent="space-between" mb="$3">
                         <YStack>
                           <Text fontWeight="500" color="$color12">
                             Commercial Auto
@@ -1033,7 +1033,7 @@ export default function ProjectManagement() {
                       </XStack>
                       {newProject.insuranceRequirements.commercialAuto.required && (
                         <YStack>
-                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+                          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                             Minimum Coverage
                           </Text>
                           <Select
@@ -1058,7 +1058,7 @@ export default function ProjectManagement() {
 
                     {/* Umbrella Policy */}
                     <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                      <XStack alignItems="center" justifyContent="space-between" mb="$3">
                         <YStack>
                           <Text fontWeight="500" color="$color12">
                             Umbrella Policy
@@ -1085,7 +1085,7 @@ export default function ProjectManagement() {
                       </XStack>
                       {newProject.insuranceRequirements.umbrella.required && (
                         <YStack>
-                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+                          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
                             Minimum Coverage
                           </Text>
                           <Select

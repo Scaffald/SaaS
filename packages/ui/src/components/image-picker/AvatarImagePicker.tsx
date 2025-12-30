@@ -155,7 +155,7 @@ export function AvatarImagePicker({
                     <Text
                       fontSize="$2"
                       color="$color9"
-                      textAlign="center"
+                      style={{ textAlign: 'center' }}
                       display={size < 80 ? 'none' : 'flex'}
                     >
                       {isDragActive ? 'Drop here' : placeholder}

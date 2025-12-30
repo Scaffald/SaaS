@@ -189,7 +189,7 @@ export function SLANotificationBanner({ onDismiss, compact = false }: SLANotific
       borderWidth={1}
       borderColor={colors.border}
       padding="$4"
-      marginBottom="$4"
+      mb="$4"
     >
       <XStack alignItems="center" justifyContent="space-between" gap="$4">
         <YStack flex={1} gap="$1">

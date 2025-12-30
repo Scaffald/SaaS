@@ -1,15 +1,24 @@
 // src/contexts/AuthContext.tsx
 // REQ-126: OAuth 2.0 + RBAC Authentication System
+// REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
 //
 // Authentication context provider for managing user sessions
+// Uses httpOnly cookies for secure token storage (XSS protection)
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { scaffaldClient } from '../lib/scaffald/client';
-import { getTokens, isTokenExpired, refreshAccessToken, clearTokens } from '../lib/scaffald/auth';
+import {
+  getSession,
+  refreshSessionTokens,
+  logout as authLogout,
+  clearMemoryTokens,
+  getMemoryTokens,
+  isTokenExpired,
+} from '../lib/scaffald/auth';
 import { User as ScaffaldUser } from '../lib/scaffald/types';
 import { UserProfile } from '../types';
 import { initiateOAuth } from '../lib/auth/oauth';
 import { getProfile, updateProfileByScaffaldId } from '../services/userProfileService';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextValue {
   user: ScaffaldUser | null;
@@ -30,48 +39,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   /**
-   * Load user and profile from stored tokens on mount/refresh
+   * Load user and profile from session on mount/refresh
    */
   const loadUserAndProfile = useCallback(async () => {
     setIsLoading(true);
     try {
-      let tokens = getTokens();
-      if (tokens) {
-        // Refresh token if expired
-        if (isTokenExpired(tokens)) {
-          console.log('[AuthContext] Token expired, refreshing...');
-          tokens = await refreshAccessToken();
-          if (!tokens) {
-            console.log('[AuthContext] Token refresh failed, clearing session');
-            clearTokens();
-            setUser(null);
-            setProfile(null);
-            return;
-          }
-        }
+      const session = await getSession();
 
-        // Get user info from Scaffald
-        const scaffaldUser = await scaffaldClient.auth.getUser();
-        if (scaffaldUser) {
-          setUser(scaffaldUser);
+      if (session.valid && session.user) {
+        const scaffaldUser: ScaffaldUser = {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.name,
+          avatar_url: session.user.avatar_url || null,
+        };
+        setUser(scaffaldUser);
 
-          // Load ForSured profile from Supabase
-          // Profile fetch errors are non-fatal - user may be new without a profile yet
-          try {
-            const userProfile = await getProfile(scaffaldUser.id);
-            setProfile(userProfile);
-            console.log('[AuthContext] Session restored:', scaffaldUser.email, userProfile?.user_type);
-          } catch (profileErr) {
-            console.warn('[AuthContext] Could not load profile (may be new user):', profileErr);
-            setProfile(null);
-          }
+        // Load ForSured profile
+        try {
+          const userProfile = await getProfile(scaffaldUser.id);
+          setProfile(userProfile);
+        } catch (profileErr) {
+          console.warn('[AuthContext] Could not load profile:', profileErr);
+          setProfile(null);
         }
       } else {
-        console.log('[AuthContext] No stored tokens');
+        setUser(null);
+        setProfile(null);
       }
     } catch (err) {
       console.error('[AuthContext] Failed to load user session:', err);
-      clearTokens();
+      clearMemoryTokens();
       setUser(null);
       setProfile(null);
     } finally {
@@ -84,16 +82,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadUserAndProfile();
   }, [loadUserAndProfile]);
 
+  // Listen for Supabase auth state changes (e.g., test login switching users)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        // User signed in (or switched) - update user immediately, profile will load via separate effect
+        const scaffaldUser: ScaffaldUser = {
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || session.user.email || '',
+          avatar_url: session.user.user_metadata?.avatar_url || null,
+        };
+        // CRITICAL: Set isLoading FIRST to prevent ProtectedRoute from redirecting
+        // while profile is being fetched. This prevents the race condition where
+        // profile=null and isLoading=false momentarily.
+        setIsLoading(true);
+        setUser(scaffaldUser);
+        // Set profile to null to trigger re-fetch - don't call getProfile here to avoid deadlock
+        setProfile(null);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setProfile(null);
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Fetch profile when user changes (deferred from auth state change)
+  useEffect(() => {
+    if (user && !profile) {
+      getProfile(user.id)
+        .then((userProfile) => {
+          setProfile(userProfile);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.warn('[AuthContext] Could not load profile:', err);
+          setProfile(null);
+          setIsLoading(false);
+        });
+    }
+  }, [user, profile]);
+
   // Set up proactive token refresh
   useEffect(() => {
     const interval = setInterval(async () => {
-      const tokens = getTokens();
-      if (tokens && isTokenExpired(tokens)) {
-        console.log('[AuthContext] Proactive token refresh');
-        const newTokens = await refreshAccessToken();
-        if (!newTokens) {
-          // Token refresh failed - log the user out
-          console.log('[AuthContext] Proactive refresh failed, logging out');
+      const memTokens = getMemoryTokens();
+      if (memTokens && isTokenExpired(memTokens)) {
+        const success = await refreshSessionTokens();
+        if (!success) {
           setUser(null);
           setProfile(null);
         }
@@ -110,11 +151,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback((data?: { user?: ScaffaldUser; profile?: UserProfile }) => {
     if (data?.user) {
       setUser(data.user);
-      console.log('[AuthContext] User set:', data.user.email);
     }
     if (data?.profile) {
       setProfile(data.profile);
-      console.log('[AuthContext] Profile set:', data.profile.user_type);
     }
     // If login is called without data, initiate OAuth redirect
     if (!data) {
@@ -126,9 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * Logout - clear all auth state
    */
   const logout = useCallback(async () => {
-    console.log('[AuthContext] Logging out');
-    await scaffaldClient.auth.signOut();
-    clearTokens();
+    await authLogout();
     setUser(null);
     setProfile(null);
   }, []);
@@ -141,7 +178,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Cannot update profile: no user logged in');
     }
 
-    console.log('[AuthContext] Updating profile:', Object.keys(data));
     const updatedProfile = await updateProfileByScaffaldId(user.id, data);
     setProfile(updatedProfile);
   }, [user]);
@@ -152,7 +188,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshProfile = useCallback(async () => {
     if (!user) return;
 
-    console.log('[AuthContext] Refreshing profile');
     const freshProfile = await getProfile(user.id);
     setProfile(freshProfile);
   }, [user]);

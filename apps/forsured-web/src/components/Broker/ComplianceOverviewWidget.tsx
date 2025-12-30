@@ -147,7 +147,7 @@ export default function ComplianceOverviewWidget({
             flex={1}
             minWidth="20%"
           >
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <XStack alignItems="center" justifyContent="space-between" mb="$3">
               <YStack width={40} height={40} backgroundColor="$blue9" borderRadius="$4" alignItems="center" justifyContent="center">
                 <CheckCircle color="white" size={20} />
               </YStack>
@@ -161,7 +161,7 @@ export default function ComplianceOverviewWidget({
               <Text fontSize="$3" fontWeight="500" color="$blue12">
                 Compliant Clients
               </Text>
-              <Text fontSize="$1" color="$blue11" marginTop="$1">
+              <Text fontSize="$1" color="$blue11" mt="$1">
                 {compliantClients} of {totalClients} clients at 90%+
               </Text>
             </YStack>
@@ -176,7 +176,7 @@ export default function ComplianceOverviewWidget({
             flex={1}
             minWidth="20%"
           >
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <XStack alignItems="center" justifyContent="space-between" mb="$3">
               <YStack width={40} height={40} backgroundColor="$yellow9" borderRadius="$4" alignItems="center" justifyContent="center">
                 <AlertTriangle color="white" size={20} />
               </YStack>
@@ -190,7 +190,7 @@ export default function ComplianceOverviewWidget({
               <Text fontSize="$3" fontWeight="500" color="$yellow12">
                 Expiring This Month
               </Text>
-              <Text fontSize="$1" color="$yellow11" marginTop="$1">
+              <Text fontSize="$1" color="$yellow11" mt="$1">
                 Policies requiring renewal
               </Text>
             </YStack>
@@ -205,7 +205,7 @@ export default function ComplianceOverviewWidget({
             flex={1}
             minWidth="20%"
           >
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <XStack alignItems="center" justifyContent="space-between" mb="$3">
               <YStack width={40} height={40} backgroundColor="$green9" borderRadius="$4" alignItems="center" justifyContent="center">
                 <Briefcase color="white" size={20} />
               </YStack>
@@ -219,7 +219,7 @@ export default function ComplianceOverviewWidget({
               <Text fontSize="$3" fontWeight="500" color="$green12">
                 Active Projects
               </Text>
-              <Text fontSize="$1" color="$green11" marginTop="$1">
+              <Text fontSize="$1" color="$green11" mt="$1">
                 Currently in progress
               </Text>
             </YStack>
@@ -234,7 +234,7 @@ export default function ComplianceOverviewWidget({
             flex={1}
             minWidth="20%"
           >
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <XStack alignItems="center" justifyContent="space-between" mb="$3">
               <YStack width={40} height={40} backgroundColor="$purple9" borderRadius="$4" alignItems="center" justifyContent="center">
                 <AlertCircle color="white" size={20} />
               </YStack>
@@ -248,15 +248,15 @@ export default function ComplianceOverviewWidget({
               <Text fontSize="$3" fontWeight="500" color="$purple12">
                 Overall Score
               </Text>
-              <Text fontSize="$1" color="$purple11" marginTop="$1">
+              <Text fontSize="$1" color="$purple11" mt="$1">
                 Portfolio average
               </Text>
             </YStack>
           </Card>
         </XStack>
 
-        <YStack marginTop="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
-          <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+        <YStack mt="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
+          <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
             Risk Distribution
           </H3>
           <XStack gap="$4" flexWrap="wrap">
@@ -277,10 +277,10 @@ export default function ComplianceOverviewWidget({
               <Text fontSize="$8" fontWeight="bold" color="$green11">
                 {compliantClients}
               </Text>
-              <Text fontSize="$1" color="$green10" marginTop="$1">Compliant</Text>
+              <Text fontSize="$1" color="$green10" mt="$1">Compliant</Text>
               <Text fontSize="$1" color="$color11">&ge; 90%</Text>
               {tasks.length > 0 && (
-                <XStack marginTop="$2" paddingTop="$2" borderTopWidth={1} borderColor="$green6" alignItems="center" justifyContent="center" gap="$1">
+                <XStack mt="$2" paddingTop="$2" borderTopWidth={1} borderColor="$green6" alignItems="center" justifyContent="center" gap="$1">
                   <ClipboardList size={12} color="$green10" />
                   <Text fontSize="$1" fontWeight="500" color="$green11">
                     {compliantTasks} tasks
@@ -305,10 +305,10 @@ export default function ComplianceOverviewWidget({
               <Text fontSize="$8" fontWeight="bold" color="$yellow11">
                 {warningClients}
               </Text>
-              <Text fontSize="$1" color="$yellow10" marginTop="$1">Warning</Text>
+              <Text fontSize="$1" color="$yellow10" mt="$1">Warning</Text>
               <Text fontSize="$1" color="$color11">70-89%</Text>
               {tasks.length > 0 && (
-                <XStack marginTop="$2" paddingTop="$2" borderTopWidth={1} borderColor="$yellow6" alignItems="center" justifyContent="center" gap="$1">
+                <XStack mt="$2" paddingTop="$2" borderTopWidth={1} borderColor="$yellow6" alignItems="center" justifyContent="center" gap="$1">
                   <ClipboardList size={12} color="$yellow10" />
                   <Text fontSize="$1" fontWeight="500" color="$yellow11">
                     {warningTasks} tasks
@@ -333,10 +333,10 @@ export default function ComplianceOverviewWidget({
               <Text fontSize="$8" fontWeight="bold" color="$red11">
                 {criticalClients}
               </Text>
-              <Text fontSize="$1" color="$red10" marginTop="$1">Critical</Text>
+              <Text fontSize="$1" color="$red10" mt="$1">Critical</Text>
               <Text fontSize="$1" color="$color11">&lt; 70%</Text>
               {tasks.length > 0 && (
-                <XStack marginTop="$2" paddingTop="$2" borderTopWidth={1} borderColor="$red6" alignItems="center" justifyContent="center" gap="$1">
+                <XStack mt="$2" paddingTop="$2" borderTopWidth={1} borderColor="$red6" alignItems="center" justifyContent="center" gap="$1">
                   <ClipboardList size={12} color="$red10" />
                   <Text fontSize="$1" fontWeight="500" color="$red11">
                     {criticalTasks} tasks

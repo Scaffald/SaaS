@@ -13,7 +13,7 @@ import type {
   CoverageLimitComplianceResult,
   CoverageLimitType,
 } from '../../types'
-import { forsured } from '@scf/supabase/forsured-client'
+import { supabase } from '../supabase'
 
 /**
  * Subcontractor coverage data for compliance checking
@@ -40,7 +40,7 @@ export interface ComplianceValidationInput {
  * Get org-level requirements for an organization
  */
 async function getOrgRequirements(organizationId: string): Promise<CoverageLimitRequirement[]> {
-  const { data } = await forsured('coverage_limit_requirements')
+  const { data } = await supabase.schema('forsured').from('coverage_limit_requirements')
     .select('*')
     .eq('organization_id', organizationId)
     .eq('level', 'org')
@@ -52,7 +52,7 @@ async function getOrgRequirements(organizationId: string): Promise<CoverageLimit
  * Get project-level requirements for a specific project
  */
 async function getProjectRequirements(projectId: string): Promise<CoverageLimitRequirement[]> {
-  const { data } = await forsured('coverage_limit_requirements')
+  const { data } = await supabase.schema('forsured').from('coverage_limit_requirements')
     .select('*')
     .eq('project_id', projectId)
     .eq('level', 'project')

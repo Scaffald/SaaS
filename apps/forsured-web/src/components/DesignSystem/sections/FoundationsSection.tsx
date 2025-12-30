@@ -33,8 +33,8 @@ export default function FoundationsSection() {
   ];
 
   return (
-    <YStack gap="$8" marginBottom="$12">
-      <XStack alignItems="center" gap="$3" marginBottom="$6">
+    <YStack gap="$8" mb="$12">
+      <XStack alignItems="center" gap="$3" mb="$6">
         <Palette color="var(--blue10)" size={32} />
         <H2 fontSize="$9" fontWeight="bold" color="$color12">
           Foundations
@@ -48,7 +48,7 @@ export default function FoundationsSection() {
         <XStack width="100%" flexWrap="wrap" gap="$6">
           {colorRamps.map((color) => (
             <YStack key={color.var} gap="$2" flex={1} minWidth={200}>
-              <XStack fontWeight="600" color="$color12" marginBottom="$3" alignItems="center" gap="$2">
+              <XStack fontWeight="600" color="$color12" mb="$3" alignItems="center" gap="$2">
                 <View
                   width={24}
                   height={24}
@@ -89,33 +89,33 @@ export default function FoundationsSection() {
       >
         <YStack width="100%" gap="$6">
           <View>
-            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$3">
+            <Text fontSize="$3" fontWeight="600" color="$color11" mb="$3">
               Display Font (Rokkitt)
             </Text>
             <H1 fontFamily="$display" fontSize="$10" fontWeight="bold" color="$color12">
               The quick brown fox
             </H1>
-            <H2 fontFamily="$display" fontSize="$9" fontWeight="bold" color="$color12" marginTop="$2">
+            <H2 fontFamily="$display" fontSize="$9" fontWeight="bold" color="$color12" mt="$2">
               The quick brown fox
             </H2>
-            <H3 fontFamily="$display" fontSize="$8" fontWeight="bold" color="$color12" marginTop="$2">
+            <H3 fontFamily="$display" fontSize="$8" fontWeight="bold" color="$color12" mt="$2">
               The quick brown fox
             </H3>
           </View>
           <View>
-            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$3">
+            <Text fontSize="$3" fontWeight="600" color="$color11" mb="$3">
               Body Font (Inter)
             </Text>
             <Text fontSize="$6" color="$color12">
               The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontSize="$4" color="$color12" marginTop="$2">
+            <Text fontSize="$4" color="$color12" mt="$2">
               The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontSize="$3" color="$color12" marginTop="$2">
+            <Text fontSize="$3" color="$color12" mt="$2">
               The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontSize="$2" color="$color12" marginTop="$2">
+            <Text fontSize="$2" color="$color12" mt="$2">
               The quick brown fox jumps over the lazy dog
             </Text>
           </View>
@@ -164,7 +164,7 @@ export default function FoundationsSection() {
                   {shadow.name}
                 </Text>
               </View>
-              <Text fontSize="$2" color="$color11" marginTop="$2" fontFamily="$mono">
+              <Text fontSize="$2" color="$color11" mt="$2" fontFamily="$mono">
                 {shadow.class}
               </Text>
             </YStack>
@@ -180,21 +180,21 @@ export default function FoundationsSection() {
           <XStack flexWrap="wrap" gap="$4">
             <View flex={1} minWidth={180} backgroundColor="white" borderWidth={1} borderColor="$gray6" borderRadius="$4" padding="$4" alignItems="center">
               <Sun color="#eab308" size={32} />
-              <Text fontWeight="600" color="$gray12" marginTop="$2">Light Theme</Text>
-              <Text fontSize="$2" color="$gray11" marginTop="$1">Clean and bright</Text>
+              <Text fontWeight="600" color="$gray12" mt="$2">Light Theme</Text>
+              <Text fontSize="$2" color="$gray11" mt="$1">Clean and bright</Text>
             </View>
             <View flex={1} minWidth={180} backgroundColor="$gray12" borderWidth={1} borderColor="$gray10" borderRadius="$4" padding="$4" alignItems="center">
               <Sun color="#60a5fa" size={32} />
-              <Text fontWeight="600" color="white" marginTop="$2">Dark Theme</Text>
-              <Text fontSize="$2" color="$gray8" marginTop="$1">Low-light optimized</Text>
+              <Text fontWeight="600" color="white" mt="$2">Dark Theme</Text>
+              <Text fontSize="$2" color="$gray8" mt="$1">Low-light optimized</Text>
             </View>
             <View flex={1} minWidth={180} backgroundColor="$orange2" borderWidth={1} borderColor="$orange6" borderRadius="$4" padding="$4" alignItems="center">
               <Sun color="#ea580c" size={32} />
-              <Text fontWeight="600" color="$orange12" marginTop="$2">Earth Theme</Text>
-              <Text fontSize="$2" color="$orange11" marginTop="$1">Warm and natural</Text>
+              <Text fontWeight="600" color="$orange12" mt="$2">Earth Theme</Text>
+              <Text fontSize="$2" color="$orange11" mt="$1">Warm and natural</Text>
             </View>
           </XStack>
-          <Text fontSize="$3" color="$color11" textAlign="center">
+          <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
             Use the theme switcher in the top right to preview all themes
           </Text>
         </YStack>

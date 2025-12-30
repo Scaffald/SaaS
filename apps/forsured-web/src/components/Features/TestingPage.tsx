@@ -117,18 +117,18 @@ export default function TestingPage() {
   const formatJTBDContent = (item: JTBDItem) => (
     <YStack gap="$4">
       <YStack>
-        <Text fontWeight="600" color="$color12" marginBottom="$2">Functional Job</Text>
+        <Text fontWeight="600" color="$color12" mb="$2">Functional Job</Text>
         <SizableText color="$color11">{item.functionalJob}</SizableText>
       </YStack>
 
       <YStack>
-        <Text fontWeight="600" color="$color12" marginBottom="$2">Emotional & Social Jobs</Text>
-        <SizableText color="$color11" marginBottom="$1"><Text fontWeight="600">Emotional:</Text> {item.emotionalJob}</SizableText>
+        <Text fontWeight="600" color="$color12" mb="$2">Emotional & Social Jobs</Text>
+        <SizableText color="$color11" mb="$1"><Text fontWeight="600">Emotional:</Text> {item.emotionalJob}</SizableText>
         <SizableText color="$color11"><Text fontWeight="600">Social:</Text> {item.socialJob}</SizableText>
       </YStack>
 
       <YStack>
-        <Text fontWeight="600" color="$color12" marginBottom="$2">Key Struggles</Text>
+        <Text fontWeight="600" color="$color12" mb="$2">Key Struggles</Text>
         <YStack gap="$1" paddingLeft="$4">
           {item.struggles.map((struggle, idx) => (
             <SizableText key={idx} color="$color11">• {struggle}</SizableText>
@@ -137,7 +137,7 @@ export default function TestingPage() {
       </YStack>
 
       <YStack>
-        <Text fontWeight="600" color="$color12" marginBottom="$2">Desired Outcomes</Text>
+        <Text fontWeight="600" color="$color12" mb="$2">Desired Outcomes</Text>
         <YStack gap="$1" paddingLeft="$4">
           {item.outcomes.map((outcome, idx) => (
             <SizableText key={idx} color="$color11">• {outcome}</SizableText>
@@ -146,7 +146,7 @@ export default function TestingPage() {
       </YStack>
 
       <Card backgroundColor="$blue2" borderLeftWidth={4} borderLeftColor="$blue9" padding="$4" borderRadius="$4">
-        <Text fontWeight="600" color="$blue11" marginBottom="$2">JTBD Statement</Text>
+        <Text fontWeight="600" color="$blue11" mb="$2">JTBD Statement</Text>
         <SizableText color="$blue12" fontStyle="italic">{item.statement}</SizableText>
       </Card>
     </YStack>
@@ -179,7 +179,7 @@ export default function TestingPage() {
                 </XStack>
                 <YStack>
                   <H1 color="white">Testing & Feedback</H1>
-                  <SizableText size="$6" color="rgba(255,255,255,0.9)" marginTop="$1">
+                  <SizableText size="$6" color="rgba(255,255,255,0.9)" mt="$1">
                     Help us build a better product for you. We've identified five key jobs that insurance professionals need to accomplish. Review these and share your feedback to help us prioritize what matters most.
                   </SizableText>
                 </YStack>
@@ -187,8 +187,8 @@ export default function TestingPage() {
             </Card>
 
             <Card backgroundColor="$background" borderRadius="$6" elevation={5} borderWidth={1} borderColor="$borderColor" padding="$6">
-              <H2 marginBottom="$4">Jobs-to-be-Done</H2>
-              <SizableText color="$color11" marginBottom="$6">
+              <H2 mb="$4">Jobs-to-be-Done</H2>
+              <SizableText color="$color11" mb="$6">
                 Below are five key jobs that insurance professionals need to accomplish. Click on each to learn more about the functional, emotional, and social aspects of these jobs, along with the struggles and desired outcomes.
               </SizableText>
               <YStack maxWidth={896} marginHorizontal="auto">

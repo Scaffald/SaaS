@@ -62,7 +62,7 @@ const SeverityBadge: React.FC<SeverityBadgeProps> = ({ severity, count }) => {
   };
 
   return (
-    <Badge variant={variantMap[severity]} size="sm">
+    <Badge variant={variantMap[severity]} size="$2">
       <XStack alignItems="center" gap="$1">
         {getSeverityIcon(severity)}
         <Text>{count}</Text>

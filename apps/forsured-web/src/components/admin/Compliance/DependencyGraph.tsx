@@ -98,7 +98,7 @@ function TreeNode({ node, level, onSelect }: TreeNodeProps) {
         backgroundColor={level === 0 ? '$blue2' : 'transparent'}
         borderWidth={level === 0 ? 1 : 0}
         borderColor={level === 0 ? '$blue6' : 'transparent'}
-        marginLeft={level * 24}
+        ml={level * 24}
         onPress={() => onSelect(node.requirement_id)}
         userSelect="none"
       >
@@ -147,7 +147,7 @@ function TreeNode({ node, level, onSelect }: TreeNodeProps) {
       </XStack>
 
       {isExpanded && hasChildren && (
-        <YStack marginLeft="$2" borderLeftWidth={1} borderColor="$gray6">
+        <YStack ml="$2" borderLeftWidth={1} borderColor="$gray6">
           {node.children.map((child) => (
             <TreeNode key={child.id} node={child} level={level + 1} onSelect={onSelect} />
           ))}
@@ -234,12 +234,12 @@ export function DependencyGraph({
       <XStack height={600}>
         {/* Requirement Selector */}
         <YStack padding="$4" overflow="scroll" flex={1} borderRightWidth={1} borderColor="$borderColor">
-          <H3 fontWeight="600" color="$color12" marginBottom="$3">
+          <H3 fontWeight="600" color="$color12" mb="$3">
             Select Requirement
           </H3>
 
           {/* Search */}
-          <XStack position="relative" marginBottom="$3">
+          <XStack position="relative" mb="$3">
             <YStack
               position="absolute"
               left="$3"
@@ -276,7 +276,7 @@ export function DependencyGraph({
                   key={req.id}
                   unstyled
                   width="100%"
-                  textAlign="left"
+                  style={{ textAlign: 'left' }}
                   paddingHorizontal="$3"
                   paddingVertical="$2"
                   borderRadius="$4"
@@ -297,7 +297,7 @@ export function DependencyGraph({
                 </Button>
               ))}
               {filteredRequirements.length === 0 && (
-                <Text fontSize="$3" color="$gray11" textAlign="center" paddingVertical="$4">
+                <Text fontSize="$3" color="$gray11" style={{ textAlign: 'center' }} paddingVertical="$4">
                   No requirements found
                 </Text>
               )}
@@ -307,7 +307,7 @@ export function DependencyGraph({
 
         {/* Dependency Tree */}
         <YStack flex={2} padding="$4" overflow="scroll">
-          <H3 fontWeight="600" color="$color12" marginBottom="$3">
+          <H3 fontWeight="600" color="$color12" mb="$3">
             Dependency Tree
           </H3>
 
@@ -318,7 +318,7 @@ export function DependencyGraph({
               justifyContent="center"
               color="$gray11"
             >
-              <YStack marginBottom="$4">
+              <YStack mb="$4">
                 <Info size={48} style={{ color: 'var(--color-gray-8)' }} />
               </YStack>
               <Text color="$gray11">Select a requirement to view its dependencies</Text>
@@ -326,7 +326,7 @@ export function DependencyGraph({
           ) : dependencyTreeQuery.isLoading ? (
             <YStack flex={1} alignItems="center" justifyContent="center">
               <LoadingSpinner />
-              <Text marginLeft="$2" color="$gray11">
+              <Text ml="$2" color="$gray11">
                 Loading dependencies...
               </Text>
             </YStack>
@@ -337,11 +337,11 @@ export function DependencyGraph({
               justifyContent="center"
               color="$red10"
             >
-              <YStack marginBottom="$4">
+              <YStack mb="$4">
                 <AlertTriangle size={48} style={{ color: 'var(--color-red-10)' }} />
               </YStack>
               <Text color="$red10">Failed to load dependencies</Text>
-              <Text fontSize="$3" color="$gray11" marginTop="$1">
+              <Text fontSize="$3" color="$gray11" mt="$1">
                 {dependencyTreeQuery.error?.message}
               </Text>
             </YStack>
@@ -349,7 +349,7 @@ export function DependencyGraph({
             <YStack gap="$1">
               <TreeNode node={dependencyTree} level={0} onSelect={handleTreeSelect} />
               {dependencyTree.children.length === 0 && (
-                <Text fontSize="$3" color="$gray11" marginLeft="$6" marginTop="$4">
+                <Text fontSize="$3" color="$gray11" ml="$6" mt="$4">
                   This requirement has no dependencies
                 </Text>
               )}
@@ -358,8 +358,8 @@ export function DependencyGraph({
 
           {/* Legend */}
           {selectedRequirement && dependencyTree && dependencyTree.children.length > 0 && (
-            <YStack marginTop="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$2">
+            <YStack mt="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$2">
                 Legend
               </Text>
               <XStack alignItems="center" gap="$4" flexWrap="wrap">

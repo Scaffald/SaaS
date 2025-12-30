@@ -110,23 +110,50 @@ export function extractMagicLinkFromEmail(emailHtml: string): string | null {
   // Supabase magic links redirect to emailRedirectTo with hash fragments
   // Format: https://.../auth/callback#access_token=...&type=magiclink
   // Or: https://...?token=...&type=magiclink (older format)
+  // Or: http://.../auth/v1/verify?token=...&type=magiclink&redirect_to=...
   
-  // Try hash fragment format first (newer Supabase format)
+  // Try Supabase verify endpoint format first (most common)
+  const verifyLinkMatch = emailHtml.match(/href="([^"]*(?:\/auth\/v1\/(?:verify|confirm)|token_hash)[^"]*)"/i);
+  if (verifyLinkMatch?.[1]) {
+    // Decode HTML entities (&amp; -> &)
+    return verifyLinkMatch[1]
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"');
+  }
+  
+  // Try hash fragment format (newer Supabase format)
   const hashLinkMatch = emailHtml.match(/href="([^"]*\/auth\/callback[^"]*#access_token[^"]*)"/i);
-  if (hashLinkMatch) {
-    return hashLinkMatch[1];
+  if (hashLinkMatch?.[1]) {
+    // Decode HTML entities
+    return hashLinkMatch[1]
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"');
   }
   
   // Try query param format (older format)
   const queryLinkMatch = emailHtml.match(/href="([^"]*(?:token|otp|magic)[^"]*)"/i);
-  if (queryLinkMatch) {
-    return queryLinkMatch[1];
+  if (queryLinkMatch?.[1]) {
+    // Decode HTML entities
+    return queryLinkMatch[1]
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"');
   }
 
   // Also check plain text
   const textMatch = emailHtml.match(/(https?:\/\/[^\s]*(?:token|otp|magic|access_token)[^\s]*)/i);
-  if (textMatch) {
-    return textMatch[1];
+  if (textMatch?.[1]) {
+    // Decode HTML entities
+    return textMatch[1]
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"');
   }
 
   return null;

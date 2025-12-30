@@ -27,7 +27,7 @@ interface AISummaryScreenProps {
 
 const ActionSection = styled(YStack, {
   name: 'ActionSection',
-  borderRadius: '$md',
+  borderRadius: '$3',
   padding: '$4',
   borderWidth: 1,
   
@@ -158,7 +158,7 @@ export default function AISummaryScreen({
       {/* Actions Taken Automatically */}
       {actionsTaken.length > 0 && (
         <ActionSection type="success">
-          <XStack alignItems="center" gap="$2" marginBottom="$2">
+          <XStack alignItems="center" gap="$2" mb="$2">
             <CheckCircle size={16} color="currentColor" />
             <Text fontSize="$2" fontWeight="600" color="$green11">
               Actions Taken Automatically
@@ -177,7 +177,7 @@ export default function AISummaryScreen({
       {/* Actions Requiring Review */}
       {actionsRequiringReview.length > 0 && (
         <ActionSection type="warning">
-          <XStack alignItems="center" gap="$2" marginBottom="$2">
+          <XStack alignItems="center" gap="$2" mb="$2">
             <AlertTriangle size={16} color="currentColor" />
             <Text fontSize="$2" fontWeight="600" color="$yellow11">
               Actions Requiring Review

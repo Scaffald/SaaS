@@ -102,7 +102,7 @@ export default function NotificationPanel({
           onPress={onClose}
           padding="$1"
           hoverStyle={{ backgroundColor: '$backgroundHover' }}
-          borderRadius="$md"
+          borderRadius="$3"
         >
           <X size={20} color="currentColor" />
         </Button>
@@ -125,10 +125,10 @@ export default function NotificationPanel({
                 <XStack alignItems="flex-start" gap="$3">
                   {getAlertIcon(alert.type, alert.severity)}
                   <YStack flex={1} minWidth={0} gap="$1">
-                    <Text fontSize="$2" fontWeight="500" color="$color11" marginBottom="$1">
+                    <Text fontSize="$2" fontWeight="500" color="$color11" mb="$1">
                       {alert.title}
                     </Text>
-                    <Text fontSize="$2" color="$color10" marginBottom="$2">
+                    <Text fontSize="$2" color="$color10" mb="$2">
                       {alert.message}
                     </Text>
                     {alert.dueDate && (

@@ -158,7 +158,7 @@ export default function EnhancedSubcontractorDashboard() {
       </YStack>
 
       <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6">
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <XStack alignItems="center" justifyContent="space-between" mb="$6">
           <YStack>
             <Text fontSize="$6" fontWeight="600" color="$color12">
               Compliance Status
@@ -208,7 +208,7 @@ export default function EnhancedSubcontractorDashboard() {
               <FileText color="var(--blue10)" size={24} />
             </XStack>
           </XStack>
-          <Text marginTop="$3" fontSize="$3" color="$green11">All verified</Text>
+          <Text mt="$3" fontSize="$3" color="$green11">All verified</Text>
         </Card>
 
         <Card flex={1} minWidth={200} backgroundColor="$background" borderRadius="$4" padding="$6" borderWidth={1} borderColor="$borderColor">
@@ -223,7 +223,7 @@ export default function EnhancedSubcontractorDashboard() {
               <Shield color="var(--green10)" size={24} />
             </XStack>
           </XStack>
-          <Text marginTop="$3" fontSize="$3" color="$color11">
+          <Text mt="$3" fontSize="$3" color="$color11">
             $5.2M total coverage
           </Text>
         </Card>
@@ -240,7 +240,7 @@ export default function EnhancedSubcontractorDashboard() {
               <AlertTriangle color="var(--orange10)" size={24} />
             </XStack>
           </XStack>
-          <Text marginTop="$3" fontSize="$3" color="$orange11">Action required</Text>
+          <Text mt="$3" fontSize="$3" color="$orange11">Action required</Text>
         </Card>
 
         <Card flex={1} minWidth={200} backgroundColor="$background" borderRadius="$4" padding="$6" borderWidth={1} borderColor="$borderColor">
@@ -253,7 +253,7 @@ export default function EnhancedSubcontractorDashboard() {
               <DollarSign color="var(--orange9)" size={24} />
             </XStack>
           </XStack>
-          <Text marginTop="$3" fontSize="$3" color="$green11">
+          <Text mt="$3" fontSize="$3" color="$green11">
             Save 15% with bundling
           </Text>
         </Card>
@@ -270,7 +270,7 @@ export default function EnhancedSubcontractorDashboard() {
 
       <XStack flexWrap="wrap" gap="$6">
         <Card flex={1} minWidth={300} backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
             Quick Actions
           </Text>
           <YStack gap="$3">
@@ -331,7 +331,7 @@ export default function EnhancedSubcontractorDashboard() {
         </Card>
 
         <Card flex={1} minWidth={300} backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
             Recent Activity
           </Text>
           <YStack gap="$4">
@@ -383,7 +383,7 @@ export default function EnhancedSubcontractorDashboard() {
           setSelectedTask(null);
         }}
         title="Contact Broker"
-        size="md"
+        size="medium"
       >
         {selectedTask &&
           (() => {
@@ -400,7 +400,7 @@ export default function EnhancedSubcontractorDashboard() {
             return (
               <YStack gap="$4">
                 <YStack backgroundColor="$blue2" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
-                  <Text fontWeight="600" color="$color12" marginBottom="$2">
+                  <Text fontWeight="600" color="$color12" mb="$2">
                     {broker.name}
                   </Text>
                   <YStack gap="$2">
@@ -431,7 +431,7 @@ export default function EnhancedSubcontractorDashboard() {
                   </YStack>
                 </YStack>
                 <YStack fontSize="$3" color="$color11">
-                  <Text marginBottom="$2">
+                  <Text mb="$2">
                     Task: <Text fontWeight="700">{selectedTask.title}</Text>
                   </Text>
                   {selectedTask.project_name && (
@@ -457,12 +457,12 @@ export default function EnhancedSubcontractorDashboard() {
           }
         }}
         title="Upload Document"
-        size="md"
+        size="medium"
       >
         {selectedTask && (
           <YStack gap="$4">
             <YStack backgroundColor="$blue2" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
-              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
                 {selectedTask.title}
               </Text>
               {selectedTask.description && (
@@ -473,7 +473,7 @@ export default function EnhancedSubcontractorDashboard() {
             </YStack>
 
             <YStack>
-              <Text tag="label" display="block" fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+              <Text tag="label" display="block" fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                 Select Document
               </Text>
               <YStack borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
@@ -561,7 +561,7 @@ export default function EnhancedSubcontractorDashboard() {
           setQuoteRequest({ message: '' });
         }}
         title="Request Quote"
-        size="md"
+        size="medium"
       >
         {selectedTask &&
           (() => {
@@ -569,7 +569,7 @@ export default function EnhancedSubcontractorDashboard() {
             return (
               <YStack gap="$4">
                 <YStack backgroundColor="$blue2" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
-                  <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                  <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                     {selectedTask.title}
                   </Text>
                   {quoteDetails && (
@@ -601,7 +601,7 @@ export default function EnhancedSubcontractorDashboard() {
                 </YStack>
 
                 <YStack>
-                  <Text tag="label" display="block" fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                  <Text tag="label" display="block" fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                     Additional Information (Optional)
                   </Text>
                   <Textarea

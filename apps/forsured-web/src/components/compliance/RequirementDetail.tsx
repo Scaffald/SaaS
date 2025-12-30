@@ -116,7 +116,7 @@ export default function RequirementDetail({
         {onClose && (
           <Button
             unstyled
-            marginTop="$2"
+            mt="$2"
             fontSize="$3"
             color="$red9"
             hoverStyle={{ color: '$red10' }}
@@ -137,7 +137,7 @@ export default function RequirementDetail({
       <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
         <XStack alignItems="flex-start" justifyContent="space-between">
           <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" marginBottom="$2">
+            <XStack alignItems="center" gap="$3" mb="$2">
               <H2 fontSize="$9" fontWeight="700" color="$gray12">{requirement.name}</H2>
               {getStatusBadge(requirement.status)}
               {requirement.is_template && (
@@ -167,7 +167,7 @@ export default function RequirementDetail({
               )}
             </YStack>
             {requirement.description && (
-              <Text marginTop="$4" color="$gray11">{requirement.description}</Text>
+              <Text mt="$4" color="$gray11">{requirement.description}</Text>
             )}
           </YStack>
           <XStack gap="$2">
@@ -187,7 +187,7 @@ export default function RequirementDetail({
 
       {/* Coverage Limits */}
       <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12" marginBottom="$4">Coverage Limits</H3>
+        <H3 fontSize="$6" fontWeight="600" color="$gray12" mb="$4">Coverage Limits</H3>
         {Object.keys(requirement_definition.coverage_limits).length === 0 ? (
           <Text color="$gray9">Statutory or per policy</Text>
         ) : (
@@ -209,7 +209,7 @@ export default function RequirementDetail({
 
       {/* Required Endorsements */}
       <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12" marginBottom="$4">Required Endorsements</H3>
+        <H3 fontSize="$6" fontWeight="600" color="$gray12" mb="$4">Required Endorsements</H3>
         {requirement_definition.required_endorsements.length === 0 ? (
           <Text color="$gray9">No endorsements required</Text>
         ) : (
@@ -217,7 +217,7 @@ export default function RequirementDetail({
             {requirement_definition.required_endorsements.map((endorsement, index) => (
               <YStack key={index} borderLeftWidth={4} borderColor="$blue9" paddingLeft="$4">
                 <Text fontWeight="500" color="$gray12">{endorsement.endorsement_type}</Text>
-                <Text fontSize="$3" color="$gray10" marginTop="$1">{endorsement.description}</Text>
+                <Text fontSize="$3" color="$gray10" mt="$1">{endorsement.description}</Text>
               </YStack>
             ))}
           </YStack>
@@ -226,7 +226,7 @@ export default function RequirementDetail({
 
       {/* Policy Conditions */}
       <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12" marginBottom="$4">Policy Conditions</H3>
+        <H3 fontSize="$6" fontWeight="600" color="$gray12" mb="$4">Policy Conditions</H3>
         {requirement_definition.policy_conditions.length === 0 ? (
           <Text color="$gray9">No special conditions</Text>
         ) : (
@@ -234,7 +234,7 @@ export default function RequirementDetail({
             {requirement_definition.policy_conditions.map((condition, index) => (
               <YStack key={index} borderLeftWidth={4} borderColor="$green9" paddingLeft="$4">
                 <Text fontWeight="500" color="$gray12">{condition.condition_type}</Text>
-                <Text fontSize="$3" color="$gray10" marginTop="$1">{condition.description}</Text>
+                <Text fontSize="$3" color="$gray10" mt="$1">{condition.description}</Text>
               </YStack>
             ))}
           </YStack>
@@ -243,7 +243,7 @@ export default function RequirementDetail({
 
       {/* Documentation Requirements */}
       <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12" marginBottom="$4">Documentation Requirements</H3>
+        <H3 fontSize="$6" fontWeight="600" color="$gray12" mb="$4">Documentation Requirements</H3>
         {requirement_definition.documentation_requirements.length === 0 ? (
           <Text color="$gray9">No documentation specified</Text>
         ) : (
@@ -263,7 +263,7 @@ export default function RequirementDetail({
       {/* Version History */}
       {versions.length > 1 && (
         <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-          <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+          <XStack alignItems="center" justifyContent="space-between" mb="$4">
             <H3 fontSize="$6" fontWeight="600" color="$gray12">Version History</H3>
             <Button
               unstyled
@@ -300,9 +300,9 @@ export default function RequirementDetail({
                         )}
                       </XStack>
                       {version.change_summary && (
-                        <Text fontSize="$3" color="$gray10" marginTop="$1">{version.change_summary}</Text>
+                        <Text fontSize="$3" color="$gray10" mt="$1">{version.change_summary}</Text>
                       )}
-                      <Text fontSize="$2" color="$gray9" marginTop="$1">
+                      <Text fontSize="$2" color="$gray9" mt="$1">
                         Effective: {new Date(version.effective_date).toLocaleDateString()}
                       </Text>
                     </YStack>

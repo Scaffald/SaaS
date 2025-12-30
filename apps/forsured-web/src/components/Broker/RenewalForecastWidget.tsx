@@ -94,7 +94,7 @@ export default function RenewalForecastWidget({
       borderColor="$borderColor"
       padding="$6"
     >
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+      <XStack alignItems="center" justifyContent="space-between" mb="$6">
         <YStack>
           <H2 fontSize="$6" fontWeight="600" color="$color12">
             Renewal Forecast
@@ -117,7 +117,7 @@ export default function RenewalForecastWidget({
         gap="$6"
       >
         <YStack flex={1}>
-          <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$4">
+          <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$4">
             Monthly Expirations
           </H3>
           <YStack gap="$3">
@@ -157,7 +157,7 @@ export default function RenewalForecastWidget({
                         )}
                       </YStack>
                     </YStack>
-                    <Text fontSize="$3" color="$color11" width={80} textAlign="right">
+                    <Text fontSize="$3" color="$color11" width={80} style={{ textAlign: 'right' }}>
                       ${(data.value / 1000).toFixed(0)}K
                     </Text>
                   </XStack>
@@ -168,14 +168,14 @@ export default function RenewalForecastWidget({
         </YStack>
 
         <YStack flex={1}>
-          <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$4">
+          <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$4">
             Next 30 Days by Type
           </H3>
           {policyTypeBreakdown.length > 0 ? (
             <YStack gap="$4">
               {policyTypeBreakdown.map((item, index) => (
                 <YStack key={item.type}>
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$1">
                     <Text fontSize="$3" textTransform="capitalize" color="$color12">
                       {item.type}
                     </Text>
@@ -201,7 +201,7 @@ export default function RenewalForecastWidget({
               paddingVertical="$8"
               alignItems="center"
             >
-              <Calendar color="$color10" size={48} marginBottom="$3" />
+              <Calendar color="$color10" size={48} mb="$3" />
               <Text fontSize="$3" color="$color11">
                 No policies expiring in next 30 days
               </Text>
@@ -210,7 +210,7 @@ export default function RenewalForecastWidget({
         </YStack>
       </XStack>
 
-      <YStack marginTop="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
+      <YStack mt="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
         <XStack gap="$4" flexWrap="wrap">
           <YStack flex={1} minWidth="30%" alignItems="center">
             <Text fontSize="$8" fontWeight="bold" color="$color12">

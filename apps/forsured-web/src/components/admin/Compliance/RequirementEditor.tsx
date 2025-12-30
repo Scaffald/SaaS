@@ -338,7 +338,7 @@ export function RequirementEditor({
               borderRadius="$4"
               color="$red10"
             >
-              <YStack flexShrink={0} marginTop="$0.5">
+              <YStack flexShrink={0} mt="$0.5">
                 <AlertCircle size={20} style={{ color: 'var(--color-red-10)' }} />
               </YStack>
               <YStack>
@@ -351,7 +351,7 @@ export function RequirementEditor({
           {/* Basic Info */}
           <XStack gap="$4" flexWrap="wrap">
             <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
                 Code <Text color="$red10">*</Text>
               </Text>
               <Input
@@ -367,12 +367,12 @@ export function RequirementEditor({
                 disabled={isEditing}
               />
               {errors.code && (
-                <Text marginTop="$1" fontSize="$3" color="$red10">{errors.code}</Text>
+                <Text mt="$1" fontSize="$3" color="$red10">{errors.code}</Text>
               )}
             </YStack>
 
             <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
                 Type <Text color="$red10">*</Text>
               </Text>
               <select
@@ -396,7 +396,7 @@ export function RequirementEditor({
           </XStack>
 
           <YStack>
-            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+            <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
               Name <Text color="$red10">*</Text>
             </Text>
             <Input
@@ -411,12 +411,12 @@ export function RequirementEditor({
               placeholder="General Liability - Standard Construction"
             />
             {errors.name && (
-              <Text marginTop="$1" fontSize="$3" color="$red10">{errors.name}</Text>
+              <Text mt="$1" fontSize="$3" color="$red10">{errors.name}</Text>
             )}
           </YStack>
 
           <YStack>
-            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">Description</Text>
+            <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">Description</Text>
             <TextArea
               width="100%"
               paddingHorizontal="$3"
@@ -433,10 +433,10 @@ export function RequirementEditor({
 
           {/* Coverage Limits */}
           <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-            <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">Coverage Limits</Text>
+            <Text fontSize="$3" fontWeight="600" color="$color12" mb="$3">Coverage Limits</Text>
             <XStack gap="$4" flexWrap="wrap">
               <YStack flex={1} minWidth="150px">
-                <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
                   Per Occurrence
                 </Text>
                 <Input
@@ -452,7 +452,7 @@ export function RequirementEditor({
                 />
               </YStack>
               <YStack flex={1} minWidth="150px">
-                <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">Aggregate</Text>
+                <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">Aggregate</Text>
                 <Input
                   width="100%"
                   paddingHorizontal="$3"
@@ -466,7 +466,7 @@ export function RequirementEditor({
                 />
               </YStack>
               <YStack flex={1} minWidth="150px">
-                <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
                   Max Deductible
                 </Text>
                 <Input
@@ -487,7 +487,7 @@ export function RequirementEditor({
           {/* Dates */}
           <XStack gap="$4" flexWrap="wrap">
             <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
                 Effective Date <Text color="$red10">*</Text>
               </Text>
               <Input
@@ -502,11 +502,11 @@ export function RequirementEditor({
                 onChange={(e) => handleChange('effective_date', e.target.value)}
               />
               {errors.effective_date && (
-                <Text marginTop="$1" fontSize="$3" color="$red10">{errors.effective_date}</Text>
+                <Text mt="$1" fontSize="$3" color="$red10">{errors.effective_date}</Text>
               )}
             </YStack>
             <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
                 Expiration Date
               </Text>
               <Input
@@ -526,7 +526,7 @@ export function RequirementEditor({
           {/* Status and Template */}
           <XStack gap="$4" flexWrap="wrap">
             <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">Status</Text>
+              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">Status</Text>
               <select
                 value={formData.status}
                 onChange={(e) => handleChange('status', e.target.value as RequirementStatus)}
@@ -566,7 +566,7 @@ export function RequirementEditor({
           {/* Change Summary (for updates) */}
           {isEditing && (
             <YStack>
-              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
                 Change Summary <Text color="$red10">*</Text>
               </Text>
               <Input
@@ -580,7 +580,7 @@ export function RequirementEditor({
                 onChange={(e) => setChangeSummary(e.target.value)}
                 placeholder="Brief description of changes..."
               />
-              <Text marginTop="$1" fontSize="$1" color="$gray11">
+              <Text mt="$1" fontSize="$1" color="$gray11">
                 This will be recorded in the version history
               </Text>
             </YStack>

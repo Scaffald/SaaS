@@ -45,10 +45,10 @@ export default function EndorsementItem({ endorsement }: EndorsementItemProps) {
       borderRadius="$2"
       borderWidth={1}
       borderColor="$borderColor"
-      marginLeft="$8"
+      ml="$8"
     >
       {/* Icon */}
-      <FileCheck size={16} color="$green10" marginTop="$0.5" flexShrink={0} />
+      <FileCheck size={16} color="$green10" mt="$0.5" flexShrink={0} />
 
       {/* Content */}
       <YStack flex={1} minWidth={0}>
@@ -72,13 +72,13 @@ export default function EndorsementItem({ endorsement }: EndorsementItemProps) {
         </XStack>
 
         {endorsement.description && (
-          <Text fontSize="$1" color="$color10" marginTop="$1">
+          <Text fontSize="$1" color="$color10" mt="$1">
             {endorsement.description}
           </Text>
         )}
 
         {/* Metadata */}
-        <XStack flexWrap="wrap" alignItems="center" gap="$4" marginTop="$2">
+        <XStack flexWrap="wrap" alignItems="center" gap="$4" mt="$2">
           {endorsement.limit_amount && (
             <XStack alignItems="center" gap="$1.5">
               <DollarSign size={12} color="$color10" />

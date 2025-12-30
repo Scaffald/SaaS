@@ -10,7 +10,10 @@ export abstract class BasePage {
 
   async goto() {
     await this.page.goto(this.url);
-    await this.page.waitForLoadState('networkidle');
+    // Use domcontentloaded instead of networkidle to avoid timeouts from ongoing requests
+    await this.page.waitForLoadState('domcontentloaded');
+    // Wait for the page to settle
+    await this.page.waitForTimeout(500);
   }
 
   async hasContent(...keywords: string[]): Promise<boolean> {

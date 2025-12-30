@@ -39,6 +39,14 @@ export function useComments(options: UseCommentsOptions = {}) {
     try {
       setLoading(true);
 
+      // Validate UUID format before querying
+      if (options.entityId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.entityId)) {
+        console.warn('[useComments] Invalid entityId format (expected UUID):', options.entityId);
+        setComments([]);
+        setLoading(false);
+        return;
+      }
+
       let query = supabase.schema('forsured').from('comments').select('*');
 
       if (options.entityType && options.entityId) {

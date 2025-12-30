@@ -287,13 +287,11 @@ function AdminLexiconEditor() {
       </XStack>
 
       {!selectedTypeId ? (
-        <Card padding="$8" borderRadius="$4" elevation={1} backgroundColor="$background" alignItems="center">
-          <Book size={48} color="$color10" style={{ marginBottom: 16 }} />
-          <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">Select an Industry</H2>
-          <Text color="$color11">
-            Choose an industry vertical above to view and edit its lexicon entries.
-          </Text>
-        </Card>
+        <EmptyState
+          icon={Book}
+          title="Select an Industry"
+          description="Choose an industry vertical above to view and edit its lexicon entries. Each industry can have customized labels and terminology."
+        />
       ) : (
         <>
           {/* Summary and Filters */}
@@ -375,10 +373,18 @@ function AdminLexiconEditor() {
               </XStack>
             </YStack>
           ) : filteredEntries.length === 0 ? (
-            <Card padding="$8" borderRadius="$4" elevation={1} backgroundColor="$background" alignItems="center">
-              <Search size={48} color="$color8" style={{ marginBottom: 16 }} />
-              <Text color="$color11">No entries match your search.</Text>
-            </Card>
+            <EmptyState
+              icon={Search}
+              title="No entries match your search"
+              description="Try adjusting your search term or disable the 'Customized only' filter to see all lexicon entries."
+              secondaryAction={{
+                label: "Clear Search",
+                onClick: () => {
+                  setSearchTerm('');
+                  setShowCustomOnly(false);
+                },
+              }}
+            />
           ) : (
             <YStack gap="$6">
               {Object.entries(groupedEntries).map(([category, entries]) => (

@@ -40,6 +40,21 @@ export function useComplianceIssues(options: UseComplianceIssuesOptions = {}) {
     try {
       setLoading(true)
 
+      // Validate UUID format before querying
+      if (options.projectId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.projectId)) {
+        console.warn('[useComplianceIssues] Invalid projectId format (expected UUID):', options.projectId)
+        setIssues([])
+        setLoading(false)
+        return
+      }
+
+      if (options.subcontractorId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.subcontractorId)) {
+        console.warn('[useComplianceIssues] Invalid subcontractorId format (expected UUID):', options.subcontractorId)
+        setIssues([])
+        setLoading(false)
+        return
+      }
+
       // Use real Supabase
       let query = supabase.schema('forsured').from('compliance_issues').select('*')
 

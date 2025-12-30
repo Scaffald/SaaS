@@ -1,6 +1,7 @@
 /**
  * Clients Dropdown Component - Using Tamagui
  * REQ-278: Clients Dropdown Rename & Quick Jump
+ * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
  */
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,7 @@ import { Chip as Badge } from '@unicornlove/ui';
 import { ChevronDown, Search, Building, Users, X } from 'lucide-react';
 import { useClients } from '../../hooks/useClients';
 import { BrokerClient } from '../../types';
+import { useLexicon } from '../../contexts/LexiconContext';
 
 interface ClientsDropdownProps {
   className?: string;
@@ -25,7 +27,7 @@ const DropdownMenu = styled(YStack, {
   backgroundColor: '$backgroundHover',
   borderWidth: 1,
   borderColor: '$borderColor',
-  borderRadius: '$md',
+  borderRadius: '$3',
   shadowColor: '$shadowColor',
   shadowRadius: 20,
   shadowOffset: { width: 0, height: 8 },
@@ -51,6 +53,7 @@ const ClientItem = styled(Button, {
 export default function ClientsDropdown({ className = '' }: ClientsDropdownProps) {
   const navigate = useNavigate();
   const { clients, loading } = useClients();
+  const { getManagerLabel, getContractorLabel } = useLexicon();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -100,11 +103,8 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
   const handleClientClick = (client: BrokerClient) => {
     setIsOpen(false);
     setSearchQuery('');
-    if (client.client_type === 'general_contractor') {
-      navigate(`/broker/gcs/${client.id}`);
-    } else {
-      navigate(`/broker/clients/${client.id}`);
-    }
+    // Navigate to unified client profile page
+    navigate(`/broker/clients/${client.id}`);
   };
 
   const getComplianceVariant = (score: number): 'success' | 'warning' | 'error' => {
@@ -126,7 +126,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
         backgroundColor="$backgroundHover"
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$md"
+        borderRadius="$3"
         hoverStyle={{ backgroundColor: '$backgroundPress' }}
         data-testid="clients-dropdown-trigger"
       >
@@ -197,7 +197,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                       backgroundColor="$backgroundHover"
                     >
                       <Text fontSize="$1" fontWeight="600" color="$color9" textTransform="uppercase">
-                        General Contractors ({gcs.length})
+                        {getManagerLabel(true)} ({gcs.length})
                       </Text>
                     </YStack>
                     {gcs.map((client) => (
@@ -230,7 +230,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                         </XStack>
                         <Badge
                           variant={getComplianceVariant(client.compliance_score)}
-                          size="sm"
+                          size="$2"
                           data-testid={`compliance-badge-${client.id}`}
                         >
                           {client.compliance_score}%
@@ -240,7 +240,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                   </YStack>
                 )}
 
-                {/* Subcontractors */}
+                {/* Contractors/Subcontractors */}
                 {subs.length > 0 && (
                   <YStack>
                     <YStack
@@ -249,7 +249,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                       backgroundColor="$backgroundHover"
                     >
                       <Text fontSize="$1" fontWeight="600" color="$color9" textTransform="uppercase">
-                        Subcontractors ({subs.length})
+                        {getContractorLabel(true)} ({subs.length})
                       </Text>
                     </YStack>
                     {subs.map((client) => (
@@ -282,7 +282,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                         </XStack>
                         <Badge
                           variant={getComplianceVariant(client.compliance_score)}
-                          size="sm"
+                          size="$2"
                           data-testid={`compliance-badge-${client.id}`}
                         >
                           {client.compliance_score}%
@@ -309,7 +309,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
               fontWeight="500"
               color="$blue9"
               hoverStyle={{ backgroundColor: '$blue3' }}
-              borderRadius="$md"
+              borderRadius="$3"
               backgroundColor="transparent"
             >
               View All Clients

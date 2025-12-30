@@ -199,8 +199,8 @@ export default function ConnectionWizard({
         return (
           <YStack gap="$6">
             <YStack>
-              <H3 marginBottom="$2">Authentication Method</H3>
-              <SizableText size="$3" color="$color11" marginBottom="$4">
+              <H3 mb="$2">Authentication Method</H3>
+              <SizableText size="$3" color="$color11" mb="$4">
                 Choose how you want to authenticate with {integrationName}
               </SizableText>
             </YStack>
@@ -212,7 +212,7 @@ export default function ConnectionWizard({
                 padding="$4"
                 borderWidth={2}
                 borderRadius="$4"
-                textAlign="left"
+                style={{ textAlign: 'left' }}
                 backgroundColor={
                   settings.authMethod === 'api_key' ? '$blue2' : 'transparent'
                 }
@@ -252,7 +252,7 @@ export default function ConnectionWizard({
                 padding="$4"
                 borderWidth={2}
                 borderRadius="$4"
-                textAlign="left"
+                style={{ textAlign: 'left' }}
                 backgroundColor={
                   settings.authMethod === 'oauth' ? '$blue2' : 'transparent'
                 }
@@ -290,7 +290,7 @@ export default function ConnectionWizard({
                 padding="$4"
                 borderWidth={2}
                 borderRadius="$4"
-                textAlign="left"
+                style={{ textAlign: 'left' }}
                 backgroundColor={
                   settings.authMethod === 'username_password'
                     ? '$blue2'
@@ -387,7 +387,7 @@ export default function ConnectionWizard({
                 >
                   {loading ? 'Connecting...' : 'Authorize with OAuth'}
                 </Button>
-                <SizableText size="$1" color="$color10" marginTop="$2" textAlign="center">
+                <SizableText size="$1" color="$color10" mt="$2" style={{ textAlign: 'center' }}>
                   You will be redirected to {integrationName} to authorize the
                   connection
                 </SizableText>
@@ -400,15 +400,15 @@ export default function ConnectionWizard({
         return (
           <YStack gap="$6">
             <YStack>
-              <H3 marginBottom="$2">Sync Settings</H3>
-              <SizableText size="$3" color="$color11" marginBottom="$4">
+              <H3 mb="$2">Sync Settings</H3>
+              <SizableText size="$3" color="$color11" mb="$4">
                 Configure what data to sync and how often
               </SizableText>
             </YStack>
 
             <YStack gap="$4">
               <YStack>
-                <SizableText size="$3" fontWeight="500" color="$color12" marginBottom="$3">
+                <SizableText size="$3" fontWeight="500" color="$color12" mb="$3">
                   Data Types to Sync
                 </SizableText>
                 <YStack gap="$2">
@@ -552,7 +552,7 @@ export default function ConnectionWizard({
               </XStack>
             </XStack>
             <YStack alignItems="center">
-              <H3 marginBottom="$2">Connection Successful!</H3>
+              <H3 mb="$2">Connection Successful!</H3>
               <SizableText size="$3" color="$color11">
                 {integrationName} has been successfully connected
               </SizableText>
@@ -603,7 +603,7 @@ export default function ConnectionWizard({
         return (
           <YStack gap="$6">
             <YStack alignItems="center">
-              <H3 marginBottom="$2">Initial Sync in Progress</H3>
+              <H3 mb="$2">Initial Sync in Progress</H3>
               <SizableText size="$3" color="$color11">
                 Importing data from {integrationName}...
               </SizableText>
@@ -645,7 +645,7 @@ export default function ConnectionWizard({
       isOpen={isOpen}
       onClose={handleClose}
       title={`Connect ${integrationName}`}
-      size="md"
+      size="medium"
     >
       <YStack gap="$6">
         {/* Progress Steps */}
@@ -679,7 +679,7 @@ export default function ConnectionWizard({
                   size="$1"
                   fontWeight="500"
                   color="$color11"
-                  marginLeft="$2"
+                  ml="$2"
                   $sm={{ display: 'none' }}
                 >
                   {step === 1 ? 'Auth' : step === 2 ? 'Sync' : 'Done'}

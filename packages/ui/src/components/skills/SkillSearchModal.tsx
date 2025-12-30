@@ -350,7 +350,7 @@ export function SkillSearchModal({
               {parentResults.length === 0 && searchQuery.trim().length >= 2 && !isLoading && (
                 <YStack padding="$4" alignItems="center" gap="$2">
                   <Text color="$color11">No skill categories found</Text>
-                  <Text fontSize="$2" color="$color11" textAlign="center">
+                  <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
                     Try a different search term
                   </Text>
                 </YStack>
@@ -360,7 +360,7 @@ export function SkillSearchModal({
                 <YStack padding="$4" alignItems="center" gap="$2">
                   <Search size={32} color="$color11" />
                   <Text color="$color11">Start typing to search skill categories</Text>
-                  <Text fontSize="$2" color="$color11" textAlign="center">
+                  <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
                     Search for top-level categories like "Concrete" or "Electrical"
                   </Text>
                 </YStack>

@@ -25,7 +25,7 @@ function InvitationForm({ onSubmit, onCancel, isLoading = false }: InvitationFor
 
   return (
     <Card padding="$4" gap="$4">
-      <Text fontSize="$5" fontWeight="600" marginBottom="$4">
+      <Text fontSize="$5" fontWeight="600" mb="$4">
         Create New Broker Invitation
       </Text>
       <YStack as="form" onSubmit={handleSubmit} gap="$4">

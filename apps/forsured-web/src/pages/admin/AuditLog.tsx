@@ -1,7 +1,7 @@
 // src/pages/admin/AuditLog.tsx
 import { useState } from 'react';
-import { Search, RefreshCcw } from 'lucide-react';
-import { YStack, XStack, Text, H1, Card, Button, Input, Select, styled } from '@unicornlove/ui';
+import { Search, RefreshCcw, FileText } from 'lucide-react';
+import { YStack, XStack, Text, H1, Card, Button, Input, Select, styled, EmptyState } from '@unicornlove/ui';
 
 interface AuditLogEntry {
   id: string;
@@ -12,49 +12,40 @@ interface AuditLogEntry {
   created_at: string;
 }
 
+// Generate dynamic timestamps for realistic mock data
+const now = new Date();
 const mockAuditLogs: AuditLogEntry[] = [
-  { id: '1', admin_user_id: 'user-4', action: 'CREATE_INVITATION', target_type: 'broker_invitation', target_id: 'inv-1', created_at: '2024-10-25T10:00:00Z' },
-  { id: '2', admin_user_id: 'user-4', action: 'UPDATE_USER_ROLE', target_type: 'user', target_id: 'user-1', created_at: '2024-10-25T10:30:00Z' },
-  { id: '3', admin_user_id: 'user-4', action: 'DELETE_ENUM_VALUE', target_type: 'enum_value', target_id: 'enum-1', created_at: '2024-10-25T11:00:00Z' },
+  {
+    id: '1',
+    admin_user_id: 'user-4',
+    action: 'CREATE_INVITATION',
+    target_type: 'broker_invitation',
+    target_id: 'inv-1',
+    created_at: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString() // 2 hours ago
+  },
+  {
+    id: '2',
+    admin_user_id: 'user-4',
+    action: 'UPDATE_USER_ROLE',
+    target_type: 'user',
+    target_id: 'user-1',
+    created_at: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString() // 1 day ago
+  },
+  {
+    id: '3',
+    admin_user_id: 'user-4',
+    action: 'DELETE_ENUM_VALUE',
+    target_type: 'enum_value',
+    target_id: 'enum-1',
+    created_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString() // 3 days ago
+  },
 ];
 
-const Table = styled('table', {
-  name: 'Table',
-  width: '100%',
-  backgroundColor: '$background',
-  borderCollapse: 'collapse',
-});
-
-const TableHead = styled('thead', {
-  name: 'TableHead',
-});
-
-const TableBody = styled('tbody', {
-  name: 'TableBody',
-});
-
-const TableRow = styled('tr', {
-  name: 'TableRow',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-});
-
-const TableHeaderCell = styled('th', {
-  name: 'TableHeaderCell',
-  paddingVertical: '$2',
-  paddingHorizontal: '$4',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  textAlign: 'left',
-});
-
-const TableCell = styled('td', {
-  name: 'TableCell',
-  paddingVertical: '$2',
-  paddingHorizontal: '$4',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-});
+// Use inline styles for native CSS table properties to avoid React prop warnings
+const tableStyle = { borderCollapse: 'collapse' as const, width: '100%' };
+const thStyle = { textAlign: 'left' as const, padding: '8px 16px', borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
+const tdStyle = { padding: '8px 16px', borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
+const trStyle = { borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
 
 
 function AdminAuditLog() {
@@ -123,48 +114,65 @@ function AdminAuditLog() {
           />
         </XStack>
 
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>
-                <Text fontWeight="600">Timestamp</Text>
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Text fontWeight="600">User ID</Text>
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Text fontWeight="600">Action</Text>
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Text fontWeight="600">Target Type</Text>
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Text fontWeight="600">Target ID</Text>
-              </TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredLogs.map(log => (
-              <TableRow key={log.id}>
-                <TableCell>
-                  <Text>{new Date(log.created_at).toLocaleString()}</Text>
-                </TableCell>
-                <TableCell>
-                  <Text>{log.admin_user_id}</Text>
-                </TableCell>
-                <TableCell>
-                  <Text>{log.action}</Text>
-                </TableCell>
-                <TableCell>
-                  <Text>{log.target_type}</Text>
-                </TableCell>
-                <TableCell>
-                  <Text>{log.target_id}</Text>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        {filteredLogs.length === 0 ? (
+          <EmptyState
+            icon={FileText}
+            title={searchQuery || actionFilter !== 'all' ? 'No audit logs match your filters' : 'No audit logs yet'}
+            description={searchQuery || actionFilter !== 'all'
+              ? 'Try adjusting your search query or filter criteria to find audit logs.'
+              : 'Admin actions will be logged here for auditing and compliance purposes.'}
+            secondaryAction={searchQuery || actionFilter !== 'all' ? {
+              label: "Clear Filters",
+              onClick: () => {
+                setSearchQuery('');
+                setActionFilter('all');
+              },
+            } : undefined}
+          />
+        ) : (
+          <table style={tableStyle}>
+            <thead>
+              <tr style={trStyle}>
+                <th style={thStyle}>
+                  <Text fontWeight="600">Timestamp</Text>
+                </th>
+                <th style={thStyle}>
+                  <Text fontWeight="600">User ID</Text>
+                </th>
+                <th style={thStyle}>
+                  <Text fontWeight="600">Action</Text>
+                </th>
+                <th style={thStyle}>
+                  <Text fontWeight="600">Target Type</Text>
+                </th>
+                <th style={thStyle}>
+                  <Text fontWeight="600">Target ID</Text>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLogs.map(log => (
+                <tr key={log.id} style={trStyle}>
+                  <td style={tdStyle}>
+                    <Text>{new Date(log.created_at).toLocaleString()}</Text>
+                  </td>
+                  <td style={tdStyle}>
+                    <Text>{log.admin_user_id}</Text>
+                  </td>
+                  <td style={tdStyle}>
+                    <Text>{log.action}</Text>
+                  </td>
+                  <td style={tdStyle}>
+                    <Text>{log.target_type}</Text>
+                  </td>
+                  <td style={tdStyle}>
+                    <Text>{log.target_id}</Text>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </Card>
     </YStack>
   );

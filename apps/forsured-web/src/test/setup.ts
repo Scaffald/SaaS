@@ -25,6 +25,43 @@ process.env.VITE_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc
 process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 
 /**
+ * Mock localStorage and sessionStorage for jsdom
+ * Required for Supabase auth client which uses browser storage
+ * Prevents "storage.getItem is not a function" errors during auth cleanup
+ */
+const storageDataLocal = new Map<string, string>();
+const storageDataSession = new Map<string, string>();
+
+const createStorageMock = (dataMap: Map<string, string>): Storage => ({
+  getItem: (key: string) => dataMap.get(key) ?? null,
+  setItem: (key: string, value: string) => {
+    dataMap.set(key, value);
+  },
+  removeItem: (key: string) => {
+    dataMap.delete(key);
+  },
+  clear: () => {
+    dataMap.clear();
+  },
+  key: (index: number) => [...dataMap.keys()][index] ?? null,
+  get length() {
+    return dataMap.size;
+  },
+});
+
+Object.defineProperty(window, 'localStorage', {
+  value: createStorageMock(storageDataLocal),
+  writable: true,
+  configurable: true,
+});
+
+Object.defineProperty(window, 'sessionStorage', {
+  value: createStorageMock(storageDataSession),
+  writable: true,
+  configurable: true,
+});
+
+/**
  * Mock window.matchMedia for jsdom
  * Required for Tamagui components that use media queries
  * Made robust to handle edge cases during test cleanup
@@ -82,6 +119,9 @@ afterEach(() => {
   cleanup();
   // Clear all mock call history but preserve implementations
   vi.clearAllMocks();
+  // Clear storage between tests to prevent test pollution
+  storageDataLocal.clear();
+  storageDataSession.clear();
 });
 
 /**

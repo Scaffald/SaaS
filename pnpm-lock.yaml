@@ -375,6 +375,9 @@ importers:
 
   apps/forsured-web:
     dependencies:
+      '@bernierllc/email-manager':
+        specifier: ^0.2.0
+        version: 0.2.0(@sendgrid/mail@8.1.6)(@types/node-fetch@3.0.2)(aws-sdk@2.1693.0)(fs-extra@11.3.2)(mime-types@2.1.35)(nodemailer@6.10.1)(p-retry@5.1.2)(pg@8.16.3)(typescript@5.9.3)
       '@scf/supabase':
         specifier: workspace:*
         version: link:../../packages/supabase
@@ -1931,6 +1934,163 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
+  '@bernierllc/config-manager@1.0.3':
+    resolution: {integrity: sha512-OrQ5KfNujpjSKqBed12bCSKisao5rbFYDiL4a6x3GNogw4SUQI0K1fWdT+cUw5GvHQlR9joQu9BwHVo+H+GL+w==}
+    engines: {node: '>=18.0.0'}
+
+  '@bernierllc/connection-parser@1.0.2':
+    resolution: {integrity: sha512-G/iWz1+aOo7AEX9s0zfB4VZNUK9jQv7YpOWaLUMZ4lj6zs+cNvHittjVLlyZ5TXPzqtGn3jTmQkxulGaolzJIA==}
+
+  '@bernierllc/crypto-utils@1.0.4':
+    resolution: {integrity: sha512-IJQUghgGnCSffieO4UqoOXIADhiifmQYxZpomLxBaUovxB/8WU7XgDJJg7QP8yMZ4iPCa458+1i2WTJpGBopTg==}
+    engines: {node: '>=18.0.0'}
+
+  '@bernierllc/database-adapter@1.0.3':
+    resolution: {integrity: sha512-s7RF/tb6hYPoyujOY3GuG+zEWHYBrbY7ArU8t/+MBr7iNUxS7apaOQcOSHe0q4mhRsFb0drHIaDPryEjYCJ0xA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      better-sqlite3: ^9.2.0
+      mongodb: ^6.3.0
+      mysql2: ^3.6.0
+      pg: ^8.11.0
+    peerDependenciesMeta:
+      better-sqlite3:
+        optional: true
+      mongodb:
+        optional: true
+      mysql2:
+        optional: true
+      pg:
+        optional: true
+
+  '@bernierllc/email-capture@1.0.2':
+    resolution: {integrity: sha512-TZPRl0xTT82+nKhDACUsmlnATGuMcR2agUfmhI9VhiB1X8n5VnbegJNYYL4Ie764YAE5NUM/d1uzy7/R1YpAUQ==}
+
+  '@bernierllc/email-manager@0.2.0':
+    resolution: {integrity: sha512-EZ7oTlS11AHPz40jkbC+y7aQVqUdZnkkfKRFj3eohhk9mAF6BWXE95fquNYIeOCvMA5tInMe2D7oQgeI11qCFg==}
+
+  '@bernierllc/email-mitm-masking@1.0.5':
+    resolution: {integrity: sha512-naNnpjxzWJSFYafFmIbDes7zhCUVmNnxPwpjP67Ms3sRCDX1IGFF2UsN5T0Q6hND53Knkw0NkzMHkfizvLPCpQ==}
+
+  '@bernierllc/email-parser@0.1.3':
+    resolution: {integrity: sha512-UMtm8u8drzBu9Ybm+aoSrS5A7rQqySGeb+l3uRu3YdLA7b2kpV+tDBYV3zvkpBcI8rsRHt4E22jKKPt/B7t1jQ==}
+
+  '@bernierllc/email-sender-manager@1.0.2':
+    resolution: {integrity: sha512-UxkHEkfS4auzJWaa1aGSTtgcCkHNDWdB8qKQs/1BWWGnM84H+U0OJJ08+qXKuqttZgHNCPY6KdpovLWJuqVVIg==}
+
+  '@bernierllc/email-sender@3.1.0':
+    resolution: {integrity: sha512-ikr0bmpyglwZgnRRT3gNxtFEJeHpaa80t+uQ2cArMcT0yMJ6hpHhIc1qonJKDnEHqlC2TQg1byk+UxwSiYpsrw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@sendgrid/mail': ^8.1.0
+      aws-sdk: ^2.1000.0
+      nodemailer: ^6.9.0
+
+  '@bernierllc/email-sendgrid-plugin@1.1.2':
+    resolution: {integrity: sha512-m6HnJWYpUdvQY3VqHoA4lcRk20aukFDbPe9ebIGTUNJpteExCu10MGvLIHshFSX69rPiy7S7W9Unt2+HRe8dkA==}
+    deprecated: This package is deprecated. SendGrid functionality has been merged into @bernierllc/email-sender@3.0.0+. See https://github.com/BernierLLC/tools/blob/main/packages/core/email-sender/MIGRATION.md for migration guide.
+
+  '@bernierllc/email-service@2.1.6':
+    resolution: {integrity: sha512-yRGXsXYoriEEA6Biu+FgkzU1dvInRegboY72j0IzQMHZHcFQ+aAVLX0dxESkGgAA2OEPeFpO3xOo0y5ZBAST3w==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@sendgrid/mail': ^8.0.0
+      nodemailer: ^6.9.0
+    peerDependenciesMeta:
+      '@sendgrid/mail':
+        optional: true
+      nodemailer:
+        optional: true
+
+  '@bernierllc/email-template-service@1.0.4':
+    resolution: {integrity: sha512-e9sUwNPA5pixi988ngXNvDCedg1jhKY0hzR0NEfva2DdQ8vc41G4oQV7d32NTgn2YOTvEa7j5KFaeq3UKQV1jg==}
+
+  '@bernierllc/email-validator@1.0.5':
+    resolution: {integrity: sha512-Hesa0P4PLqMuhw3Ll9kuqgZnFvuPSsktcgQDPVirVlHN9h5L62DVKRBDkcIG2dsvzsGfNXZXdsJq/wCS/V4ECA==}
+
+  '@bernierllc/file-handler@0.2.3':
+    resolution: {integrity: sha512-8qYYmSNhAFWdPIU0XXXbubD4ZKP2t6pJSmRLAUvjGfrQ8317Ek7AR9bLXBsflRnM1xyQPvTm2k/JVk8W2q6aNg==}
+    peerDependencies:
+      '@aws-sdk/client-s3': ^3.0.0
+      '@aws-sdk/lib-storage': ^3.0.0
+      '@azure/identity': ^4.0.0
+      '@azure/storage-blob': ^12.0.0
+      '@google-cloud/storage': ^7.0.0
+      fs-extra: ^11.0.0
+      mime-types: ^2.1.0
+    peerDependenciesMeta:
+      '@aws-sdk/client-s3':
+        optional: true
+      '@aws-sdk/lib-storage':
+        optional: true
+      '@azure/identity':
+        optional: true
+      '@azure/storage-blob':
+        optional: true
+      '@google-cloud/storage':
+        optional: true
+      fs-extra:
+        optional: true
+      mime-types:
+        optional: true
+
+  '@bernierllc/inbound-email-parse@1.0.5':
+    resolution: {integrity: sha512-7veisKrQHqCuNjOfVjh9W3RvwHde57p5D0jleyn9LI+YIlRyHU8zqvojk5q6oQtjWdnP53tPn4oSvVRUvVAHhg==}
+
+  '@bernierllc/logger@1.1.0':
+    resolution: {integrity: sha512-0w77vNeY8xc4JnHw+EYPbapHqbdyJizcBPAzFgHlf30PG2a/ZI0tIT4lp/Tn0YOiwjYpjV/6FYdD3sxryeeupA==}
+    engines: {node: '>=18.0.0'}
+
+  '@bernierllc/neverhub-adapter@0.1.2':
+    resolution: {integrity: sha512-uSiBKt0tbRPcH6HaRbtSE6aY9FH84T9O/iuhd0Ud/eceiMNTTq7+LXgDfT1lzumCeQnMnWm7y8mtKOSGPtkSpw==}
+    peerDependencies:
+      '@types/node-fetch': ^3.0.0
+
+  '@bernierllc/queue-manager@1.0.5':
+    resolution: {integrity: sha512-3AHTEDHffHUvuKOym9kPHMy9WG23FnT7OlNtz2l/mCSGxA0e+ColiHH0WNImaTUIgpOJ7H5MYiUM6JuSUhDazQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      ioredis: ^5.0.0
+    peerDependenciesMeta:
+      ioredis:
+        optional: true
+
+  '@bernierllc/rate-limiter@0.1.7':
+    resolution: {integrity: sha512-9Ys8qH7BdyzaX3pbGhEzIZ9+1n3AgOS9pi+e7S8SpJiQrHHz4OXC4NTefLe8e2clBejrvhLbMLMNQQans+UcZw==}
+    peerDependencies:
+      ioredis: ^5.0.0
+      redis: ^4.0.0
+    peerDependenciesMeta:
+      ioredis:
+        optional: true
+      redis:
+        optional: true
+
+  '@bernierllc/retry-metrics@0.1.3':
+    resolution: {integrity: sha512-2DgahI2IxzvEzCkSTw8L+QYR31CZPbnhu6Hn6iZBqHHOQgjcTz83If4uKt4RByDArtOet9ZKb8TG0yYPiErZJA==}
+
+  '@bernierllc/retry-policy@0.1.6':
+    resolution: {integrity: sha512-qZBKfsiGqs30AbLw594IsXoniTcqrkUvHhMGS4NrPy9krIIEt2YG5H/xKHEctCBHth5FPLYcvbWtoVczE4rB5w==}
+    peerDependencies:
+      p-retry: ^5.0.0
+
+  '@bernierllc/retry-state@0.1.3':
+    resolution: {integrity: sha512-zRKjcC5EkBwv+KErsKl1ld+h24L1NcJm5Fo3xc/VZRbXn6VxaY+zxVmBqE/u9Bf5Ww7sDQsHNVPS6/n2+IZM3A==}
+
+  '@bernierllc/template-engine@0.2.1':
+    resolution: {integrity: sha512-0BwE3NJZZ647pdcmhg9eKx+3JMmvFCAOPB+Tic+hRSHp0pQp9eGPJkCU6lOZcFrTYSrUd4CvdH5R4Gp3ZTGyMA==}
+    engines: {node: '>=18.0.0'}
+
+  '@bernierllc/template-variable-registry@1.0.1':
+    resolution: {integrity: sha512-kCicJuUDg2apgxrm+j5qLTgHdaro/AM2oVerq/EiQFj4/vw3w8BjN7Xz6sBe10faQ7rbKF1JIXv1QF6N/pFbKg==}
+    engines: {node: '>=18.0.0'}
+
+  '@bernierllc/webhook-receiver@1.0.1':
+    resolution: {integrity: sha512-v9+weELvm50JgVAHg3pxBDa7ZgkxzgT82ez2prV3zrfXn7KAVFYuTFiCips8vZFEIYgYqrFkmMVOhzwJRl4YmA==}
+
+  '@bernierllc/webhook-validator@1.0.1':
+    resolution: {integrity: sha512-IHMSVWgWbXdduCmZsVL5KyE5f71TzIjF74qI6Dkg0MAaSzi2PdqBBu+1W95zbE/uZ0Noh+4Y1C4du0pg3WBjmA==}
+
   '@biomejs/biome@2.3.8':
     resolution: {integrity: sha512-Qjsgoe6FEBxWAUzwFGFrB+1+M8y/y5kwmg5CHac+GSVOdmOIqsAiXM5QMVGZJ1eCUCLlPZtq4aFAQ0eawEUuUA==}
     engines: {node: '>=14.21.3'}
@@ -2682,6 +2842,111 @@ packages:
 
   '@ide/backoff@1.0.0':
     resolution: {integrity: sha512-F0YfUDjvT+Mtt/R4xdl2X0EYCHMMiJqNLdxHD++jDT5ydEFIyqbCHh51Qx2E211dgZprPKhV7sHmnXKpLuvc5g==}
+
+  '@img/sharp-darwin-arm64@0.33.5':
+    resolution: {integrity: sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@img/sharp-darwin-x64@0.33.5':
+    resolution: {integrity: sha512-fyHac4jIc1ANYGRDxtiqelIbdWkIuQaI84Mv45KvGRRxSAa7o7d1ZKAOBaYbnepLC1WqxfpimdeWfvqqSGwR2Q==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [x64]
+    os: [darwin]
+
+  '@img/sharp-libvips-darwin-arm64@1.0.4':
+    resolution: {integrity: sha512-XblONe153h0O2zuFfTAbQYAX2JhYmDHeWikp1LM9Hul9gVPjFY427k6dFEcOL72O01QxQsWi761svJ/ev9xEDg==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@img/sharp-libvips-darwin-x64@1.0.4':
+    resolution: {integrity: sha512-xnGR8YuZYfJGmWPvmlunFaWJsb9T/AO2ykoP3Fz/0X5XV2aoYBPkX6xqCQvUTKKiLddarLaxpzNe+b1hjeWHAQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@img/sharp-libvips-linux-arm64@1.0.4':
+    resolution: {integrity: sha512-9B+taZ8DlyyqzZQnoeIvDVR/2F4EbMepXMc/NdVbkzsJbzkUjhXv/70GQJ7tdLA4YJgNP25zukcxpX2/SueNrA==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@img/sharp-libvips-linux-arm@1.0.5':
+    resolution: {integrity: sha512-gvcC4ACAOPRNATg/ov8/MnbxFDJqf/pDePbBnuBDcjsI8PssmjoKMAz4LtLaVi+OnSb5FK/yIOamqDwGmXW32g==}
+    cpu: [arm]
+    os: [linux]
+
+  '@img/sharp-libvips-linux-s390x@1.0.4':
+    resolution: {integrity: sha512-u7Wz6ntiSSgGSGcjZ55im6uvTrOxSIS8/dgoVMoiGE9I6JAfU50yH5BoDlYA1tcuGS7g/QNtetJnxA6QEsCVTA==}
+    cpu: [s390x]
+    os: [linux]
+
+  '@img/sharp-libvips-linux-x64@1.0.4':
+    resolution: {integrity: sha512-MmWmQ3iPFZr0Iev+BAgVMb3ZyC4KeFc3jFxnNbEPas60e1cIfevbtuyf9nDGIzOaW9PdnDciJm+wFFaTlj5xYw==}
+    cpu: [x64]
+    os: [linux]
+
+  '@img/sharp-libvips-linuxmusl-arm64@1.0.4':
+    resolution: {integrity: sha512-9Ti+BbTYDcsbp4wfYib8Ctm1ilkugkA/uscUn6UXK1ldpC1JjiXbLfFZtRlBhjPZ5o1NCLiDbg8fhUPKStHoTA==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@img/sharp-libvips-linuxmusl-x64@1.0.4':
+    resolution: {integrity: sha512-viYN1KX9m+/hGkJtvYYp+CCLgnJXwiQB39damAO7WMdKWlIhmYTfHjwSbQeUK/20vY154mwezd9HflVFM1wVSw==}
+    cpu: [x64]
+    os: [linux]
+
+  '@img/sharp-linux-arm64@0.33.5':
+    resolution: {integrity: sha512-JMVv+AMRyGOHtO1RFBiJy/MBsgz0x4AWrT6QoEVVTyh1E39TrCUpTRI7mx9VksGX4awWASxqCYLCV4wBZHAYxA==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [arm64]
+    os: [linux]
+
+  '@img/sharp-linux-arm@0.33.5':
+    resolution: {integrity: sha512-JTS1eldqZbJxjvKaAkxhZmBqPRGmxgu+qFKSInv8moZ2AmT5Yib3EQ1c6gp493HvrvV8QgdOXdyaIBrhvFhBMQ==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [arm]
+    os: [linux]
+
+  '@img/sharp-linux-s390x@0.33.5':
+    resolution: {integrity: sha512-y/5PCd+mP4CA/sPDKl2961b+C9d+vPAveS33s6Z3zfASk2j5upL6fXVPZi7ztePZ5CuH+1kW8JtvxgbuXHRa4Q==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [s390x]
+    os: [linux]
+
+  '@img/sharp-linux-x64@0.33.5':
+    resolution: {integrity: sha512-opC+Ok5pRNAzuvq1AG0ar+1owsu842/Ab+4qvU879ippJBHvyY5n2mxF1izXqkPYlGuP/M556uh53jRLJmzTWA==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [x64]
+    os: [linux]
+
+  '@img/sharp-linuxmusl-arm64@0.33.5':
+    resolution: {integrity: sha512-XrHMZwGQGvJg2V/oRSUfSAfjfPxO+4DkiRh6p2AFjLQztWUuY/o8Mq0eMQVIY7HJ1CDQUJlxGGZRw1a5bqmd1g==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [arm64]
+    os: [linux]
+
+  '@img/sharp-linuxmusl-x64@0.33.5':
+    resolution: {integrity: sha512-WT+d/cgqKkkKySYmqoZ8y3pxx7lx9vVejxW/W4DOFMYVSkErR+w7mf2u8m/y4+xHe7yY9DAXQMWQhpnMuFfScw==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [x64]
+    os: [linux]
+
+  '@img/sharp-wasm32@0.33.5':
+    resolution: {integrity: sha512-ykUW4LVGaMcU9lu9thv85CbRMAwfeadCJHRsg2GmeRa/cJxsVY9Rbd57JcMxBkKHag5U/x7TSBpScF4U8ElVzg==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [wasm32]
+
+  '@img/sharp-win32-ia32@0.33.5':
+    resolution: {integrity: sha512-T36PblLaTwuVJ/zw/LaH0PdZkRz5rd3SmMHX8GSmR7vtNSP5Z6bQkExdSK7xGWyxLw4sUknBuugTelgw2faBbQ==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [ia32]
+    os: [win32]
+
+  '@img/sharp-win32-x64@0.33.5':
+    resolution: {integrity: sha512-MpY/o8/8kj+EcnxwvrP4aTJSWw/aZ7JIGR4aBeZkZw5B7/Jn+tY9/VNwtcoGmdT7GfggGIU4kygOMSbYnOrAbg==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
+    cpu: [x64]
+    os: [win32]
 
   '@inquirer/ansi@1.0.2':
     resolution: {integrity: sha512-S8qNSZiYzFd0wAcyG5AXCvUHC5Sr7xpZ9wZ2py9XR88jUz8wooStVx5M6dRzczbBWjic9NP7+rY0Xi7qqK/aMQ==}
@@ -3608,6 +3873,18 @@ packages:
     engines: {node: '>=20.8.1'}
     peerDependencies:
       semantic-release: '>=20.1.0'
+
+  '@sendgrid/client@8.1.6':
+    resolution: {integrity: sha512-/BHu0hqwXNHr2aLhcXU7RmmlVqrdfrbY9KpaNj00KZHlVOVoRxRVrpOCabIB+91ISXJ6+mLM9vpaVUhK6TwBWA==}
+    engines: {node: '>=12.*'}
+
+  '@sendgrid/helpers@8.0.0':
+    resolution: {integrity: sha512-Ze7WuW2Xzy5GT5WRx+yEv89fsg/pgy3T1E3FS0QEx0/VvRmigMZ5qyVGhJz4SxomegDkzXv/i0aFPpHKN8qdAA==}
+    engines: {node: '>= 12.0.0'}
+
+  '@sendgrid/mail@8.1.6':
+    resolution: {integrity: sha512-/ZqxUvKeEztU9drOoPC/8opEPOk+jLlB2q4+xpx6HVLq6aFu3pMpalkTpAQz8XfRfpLp8O25bh6pGPcHDCYpqg==}
+    engines: {node: '>=12.*'}
 
   '@sentry-internal/browser-utils@10.26.0':
     resolution: {integrity: sha512-rPg1+JZlfp912pZONQAWZzbSaZ9L6R2VrMcCEa+2e2Gqk9um4b+LqF5RQWZsbt5Z0n0azSy/KQ6zAe/zTPXSOg==}
@@ -4732,6 +5009,9 @@ packages:
   '@types/mdurl@2.0.0':
     resolution: {integrity: sha512-RGdgjQUZba5p6QEFAVx2OGb8rQDL/cPRG7GiedRzMcJ1tYnUANBncjbSB1NRGwbvjcPeikRABz2nshyPk1bhWg==}
 
+  '@types/node-fetch@3.0.2':
+    resolution: {integrity: sha512-3q5FyT6iuekUxXeL2qjcyIhtMJdfMF7RGhYXWKkYpdcW9k36A/+txXrjG0l+NMVkiC30jKNrcOqVlqBl7BcCHA==}
+
   '@types/node@20.0.0':
     resolution: {integrity: sha512-cD2uPTDnQQCVpmRefonO98/PPijuOnnEy5oytWJFPY1N9aJCz2wJ5kSGWO+zJoed2cY2JxQh6yBuUq4vIn61hw==}
 
@@ -4768,6 +5048,9 @@ packages:
 
   '@types/react@19.2.7':
     resolution: {integrity: sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==}
+
+  '@types/retry@0.12.1':
+    resolution: {integrity: sha512-xoDlM2S4ortawSWORYqsdU+2rxdh4LRW9ytc3zmT37RIKQh6IHyKwwtKhKis9ah8ol07DCkZxPt8BBvPjC6v4g==}
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
@@ -5119,6 +5402,10 @@ packages:
     resolution: {integrity: sha512-lThkL6OWN5d2P89Kgw4aR6/ShMATIOJcfeLurDW06vVAZ7V8icOpTSdtr3gfOj1Uk5pZKuBuSvVtJ70Y+8QT/Q==}
     engines: {node: '>=18'}
 
+  aws-sdk@2.1693.0:
+    resolution: {integrity: sha512-cJmb8xEnVLT+R6fBS5sn/EFJiX7tUnDaPtOPZ1vFbOJtd0fnZn/Ky2XGgsvvoeliWeH7mL3TWSX5zXXGSQV6gQ==}
+    engines: {node: '>= 10.0.0'}
+
   axios@1.13.2:
     resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
 
@@ -5298,6 +5585,9 @@ packages:
 
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
+
+  buffer@4.9.2:
+    resolution: {integrity: sha512-xq+q3SRMOxGivLhBNaUdC64hDTQwejJ+H0T/NB1XMtTVEwNTrfFF3gAxiyW0Bu/xWEGhjVKgUcMhCrUy2+uCWg==}
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
@@ -5562,6 +5852,10 @@ packages:
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
 
+  commander@10.0.1:
+    resolution: {integrity: sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==}
+    engines: {node: '>=14'}
+
   commander@11.1.0:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
     engines: {node: '>=16'}
@@ -5665,6 +5959,15 @@ packages:
   cosmiconfig@7.1.0:
     resolution: {integrity: sha512-AdmX6xUzdNASswsFtmwSt7Vj8po9IuqXm0UXz7QKPuEUmPB4XyjGfaAr2PSuELMwkRMVH1EpIkX5bTZGRB3eCA==}
     engines: {node: '>=10'}
+
+  cosmiconfig@8.3.6:
+    resolution: {integrity: sha512-kcZ6+W5QzcJ3P1Mt+83OUv/oHFqZHIx8DuxG6eZ5RGMERoLqp4BuGjhHLYGK+Kf5XVkQvqBSmAy/nGWN3qDgEA==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      typescript: '>=4.9.5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   cosmiconfig@9.0.0:
     resolution: {integrity: sha512-itvL5h8RETACmOTFc4UfIyB2RfEHi71Ax6E/PivVxq9NseKbOWpeyHEOIbmAw1rs8Ak0VursQNww7lf7YtUwzg==}
@@ -5921,6 +6224,10 @@ packages:
     resolution: {integrity: sha512-zIHwmZPRshsCdpMDyVsqGmgyP0yT8GAgXUnkdAoJisxvf33k7yO6OuoKmcTGuXPWSsm8Oh88nZicRLA9Y0rUeA==}
     engines: {node: '>=12'}
 
+  dotenv-flow@4.1.0:
+    resolution: {integrity: sha512-0cwP9jpQBQfyHwvE0cRhraZMkdV45TQedA8AAUZMsFzvmLcQyc1HPv+oX0OOYwLFjIlvgVepQ+WuQHbqDaHJZg==}
+    engines: {node: '>= 12.0.0'}
+
   dotenv@16.4.7:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
@@ -6105,6 +6412,10 @@ packages:
   event-target-shim@5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
     engines: {node: '>=6'}
+
+  events@1.1.1:
+    resolution: {integrity: sha512-kEcvvCBByWXGnZy6JUlgAp2gBIUjfCAV6P6TgT1/aaQKcmuAEC4OZTV1I4EWQLz2gxZw76atuVyvHhTxvi0Flw==}
+    engines: {node: '>=0.4.x'}
 
   exec-async@2.2.0:
     resolution: {integrity: sha512-87OpwcEiMia/DeiKFzaQNBNFeN3XkkpYIh9FyOqq5mS2oKv3CBE67PXoEKcr6nodWdXNogTiQ0jE2NGuoffXPw==}
@@ -6922,6 +7233,9 @@ packages:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
     engines: {node: '>=0.10.0'}
 
+  ieee754@1.1.13:
+    resolution: {integrity: sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==}
+
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
 
@@ -7277,6 +7591,10 @@ packages:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
 
+  jmespath@0.16.0:
+    resolution: {integrity: sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==}
+    engines: {node: '>= 0.6.0'}
+
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
@@ -7450,6 +7768,11 @@ packages:
 
   linkify-it@5.0.0:
     resolution: {integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==}
+
+  liquidjs@10.24.0:
+    resolution: {integrity: sha512-TAUNAdgwaAXjjcUFuYVJm9kOVH7zc0mTKxsG9t9Lu4qdWjB2BEblyVIYpjWcmJLMGgiYqnGNJjpNMHx0gp/46A==}
+    engines: {node: '>=16'}
+    hasBin: true
 
   load-json-file@4.0.0:
     resolution: {integrity: sha512-Kx8hMakjX03tiGTLAIdJ+lL0htKnXjEZN6hk/tozf/WOuYGdZBJrZ+rCJRbVCugsjB3jMLn9746NsQIf5VjBMw==}
@@ -7960,6 +8283,10 @@ packages:
   node-releases@2.0.27:
     resolution: {integrity: sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==}
 
+  nodemailer@6.10.1:
+    resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
+    engines: {node: '>=6.0.0'}
+
   normalize-package-data@6.0.2:
     resolution: {integrity: sha512-V6gygoYb/5EmNI+MEGrWkC+e6+Rr7mTmfHrxDbLzxQogBkgzo76rkok0Am6thgSF7Mv2nLOajAJj5vDJZEFn7g==}
     engines: {node: ^16.14.0 || >=18.0.0}
@@ -8231,6 +8558,10 @@ packages:
   p-reduce@3.0.0:
     resolution: {integrity: sha512-xsrIUgI0Kn6iyDYm9StOpOeK29XM1aboGji26+QEortiFST1hGZaUQOLhtEbqHErPpGW/aSz6allwK2qcptp0Q==}
     engines: {node: '>=12'}
+
+  p-retry@5.1.2:
+    resolution: {integrity: sha512-couX95waDu98NfNZV+i/iLt+fdVxmI7CbrrdC2uDWfPdUAApyxT4wmDlyOtR5KtTDmkDO0zDScDjDou9YHhd9g==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   p-timeout@6.1.4:
     resolution: {integrity: sha512-MyIV3ZA/PmyBN/ud8vV9XzwTrNtR4jFrObymZYnZqMmW0zA8Z17vnT0rBgFE/TlohB+YCHqXMgZzb3Csp49vqg==}
@@ -8741,6 +9072,9 @@ packages:
     resolution: {integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==}
     engines: {node: '>=6'}
 
+  punycode@1.3.2:
+    resolution: {integrity: sha512-RofWgt/7fL5wP1Y7fxE7/EmTLzQVnB0ycyibJ0OOHIlJqTNzglYFxVwETOcIoJqJmpDXJ9xImDv+Fq34F/d4Dw==}
+
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
@@ -8752,6 +9086,11 @@ packages:
   query-string@7.1.3:
     resolution: {integrity: sha512-hh2WYhq4fi8+b+/2Kg9CEge4fDPvHS534aOOvOZeQ3+Vf2mCFsaFBYj0i+iXcAq6I9Vzp5fjMFBlONvayDC1qg==}
     engines: {node: '>=6'}
+
+  querystring@0.2.0:
+    resolution: {integrity: sha512-X/xY82scca2tau62i9mDyU9K+I+djTMUsvwf7xnUX5GLvVzgJybOJf4Y6o9Zx3oJK/LSXg5tTZBjwzqVPaPO2g==}
+    engines: {node: '>=0.4.x'}
+    deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
 
   querystringify@2.2.0:
     resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
@@ -9210,6 +9549,10 @@ packages:
     resolution: {integrity: sha512-l+sSefzHpj5qimhFSE5a8nufZYAM3sBSVMAPtYkmC+4EH2anSGaEMXSD0izRQbu9nfyQ9y5JrVmp7E8oZrUjvA==}
     engines: {node: '>=8'}
 
+  retry@0.13.1:
+    resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
+    engines: {node: '>= 4'}
+
   rettime@0.7.0:
     resolution: {integrity: sha512-LPRKoHnLKd/r3dVxcwO7vhCW+orkOGj9ViueosEBK6ie89CijnfRlhaDhHq/3Hxu4CkWQtxwlBG0mzTQY6uQjw==}
 
@@ -9257,6 +9600,9 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  sax@1.2.1:
+    resolution: {integrity: sha512-8I2a3LovHTOpm7NV5yOyO8IHqgVsfK4+UuySrXU8YXkSRX7k6hCV9b3HrkKCr3nMpgj+0bmocaJJWpvp1oc7ZA==}
 
   sax@1.4.3:
     resolution: {integrity: sha512-yqYn1JhPczigF94DMS+shiDMjDowYO6y9+wB/4WgO0Y19jWYk0lQ4tuG5KI7kj4FTp1wxPj5IFfcrz/s1c3jjQ==}
@@ -9369,6 +9715,10 @@ packages:
 
   shallowequal@1.1.0:
     resolution: {integrity: sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==}
+
+  sharp@0.33.5:
+    resolution: {integrity: sha512-haPVm1EkS9pgvHrQ/F3Xy+hgcuMV0Wm9vfIBSiwZ05k+xgb0PkBQpGsAA/oWdDobNaZTH5ppvHtzCFbnSEwHVw==}
+    engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
 
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
@@ -10104,6 +10454,9 @@ packages:
   url-parse@1.5.10:
     resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
 
+  url@0.10.3:
+    resolution: {integrity: sha512-hzSUW2q06EqL1gKM/a+obYHLIO6ct2hwPuviqTTOcfFVc61UbfJ2Q32+uGL/HCPxKqrdGB5QUwIe7UqlDgwsOQ==}
+
   use-callback-ref@1.3.3:
     resolution: {integrity: sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==}
     engines: {node: '>=10'}
@@ -10144,12 +10497,20 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+
   uuid@13.0.0:
     resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
     hasBin: true
 
   uuid@7.0.3:
     resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
+    hasBin: true
+
+  uuid@8.0.0:
+    resolution: {integrity: sha512-jOXGuXZAWdsTH7eZLtyXMqUb9EcWMGZNbL9YcGBJl4MH4nrxHmZJhEHvyLFrkxo+28uLb/NYRcStH48fnD0Vzw==}
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -10532,6 +10893,10 @@ packages:
 
   xml2js@0.6.0:
     resolution: {integrity: sha512-eLTh0kA8uHceqesPqSE+VvO1CDDJWMwlQfB6LuN6T8w6MaDJ8Txm8P7s5cHD0miF0V+GGTZrDQfxPZQVsur33w==}
+    engines: {node: '>=4.0.0'}
+
+  xml2js@0.6.2:
+    resolution: {integrity: sha512-T4rieHaC1EXcES0Kxxj4JWgaUQHDk+qwHcYOCFHfiwKz7tOVPLq7Hjq9dM1WCMhylqMEfP7hMcOIChvotiZegA==}
     engines: {node: '>=4.0.0'}
 
   xmlbuilder@11.0.1:
@@ -11621,6 +11986,235 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
+  '@bernierllc/config-manager@1.0.3':
+    dependencies:
+      chokidar: 3.6.0
+      dotenv: 16.6.1
+      yaml: 2.8.2
+
+  '@bernierllc/connection-parser@1.0.2': {}
+
+  '@bernierllc/crypto-utils@1.0.4': {}
+
+  '@bernierllc/database-adapter@1.0.3(@types/node-fetch@3.0.2)(pg@8.16.3)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/logger': 1.1.0(@types/node-fetch@3.0.2)(typescript@5.9.3)
+    optionalDependencies:
+      pg: 8.16.3
+    transitivePeerDependencies:
+      - '@types/node-fetch'
+      - typescript
+
+  '@bernierllc/email-capture@1.0.2': {}
+
+  '@bernierllc/email-manager@0.2.0(@sendgrid/mail@8.1.6)(@types/node-fetch@3.0.2)(aws-sdk@2.1693.0)(fs-extra@11.3.2)(mime-types@2.1.35)(nodemailer@6.10.1)(p-retry@5.1.2)(pg@8.16.3)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/crypto-utils': 1.0.4
+      '@bernierllc/email-capture': 1.0.2
+      '@bernierllc/email-mitm-masking': 1.0.5(@sendgrid/mail@8.1.6)(@types/node-fetch@3.0.2)(aws-sdk@2.1693.0)(nodemailer@6.10.1)(typescript@5.9.3)
+      '@bernierllc/email-parser': 0.1.3
+      '@bernierllc/email-sender': 3.1.0(@sendgrid/mail@8.1.6)(aws-sdk@2.1693.0)(nodemailer@6.10.1)
+      '@bernierllc/email-sender-manager': 1.0.2
+      '@bernierllc/email-sendgrid-plugin': 1.1.2(@types/node-fetch@3.0.2)(p-retry@5.1.2)(typescript@5.9.3)
+      '@bernierllc/email-service': 2.1.6(@sendgrid/mail@8.1.6)(@types/node-fetch@3.0.2)(aws-sdk@2.1693.0)(nodemailer@6.10.1)(p-retry@5.1.2)(pg@8.16.3)(typescript@5.9.3)
+      '@bernierllc/email-template-service': 1.0.4(@sendgrid/mail@8.1.6)(@types/node-fetch@3.0.2)(aws-sdk@2.1693.0)(nodemailer@6.10.1)(typescript@5.9.3)
+      '@bernierllc/email-validator': 1.0.5
+      '@bernierllc/file-handler': 0.2.3(fs-extra@11.3.2)(mime-types@2.1.35)
+      '@bernierllc/inbound-email-parse': 1.0.5(@types/node-fetch@3.0.2)(typescript@5.9.3)
+      '@bernierllc/logger': 1.1.0(@types/node-fetch@3.0.2)(typescript@5.9.3)
+      '@bernierllc/neverhub-adapter': 0.1.2(@types/node-fetch@3.0.2)
+      '@bernierllc/retry-policy': 0.1.6(p-retry@5.1.2)(typescript@5.9.3)
+      '@bernierllc/template-engine': 0.2.1
+      '@bernierllc/template-variable-registry': 1.0.1
+      '@bernierllc/webhook-receiver': 1.0.1
+      cosmiconfig: 8.3.6(typescript@5.9.3)
+      uuid: 11.1.0
+      zod: 3.25.76
+    transitivePeerDependencies:
+      - '@aws-sdk/client-s3'
+      - '@aws-sdk/lib-storage'
+      - '@azure/identity'
+      - '@azure/storage-blob'
+      - '@google-cloud/storage'
+      - '@sendgrid/mail'
+      - '@types/node-fetch'
+      - aws-sdk
+      - better-sqlite3
+      - bufferutil
+      - debug
+      - fs-extra
+      - ioredis
+      - mime-types
+      - mongodb
+      - mysql2
+      - nodemailer
+      - p-retry
+      - pg
+      - pg-native
+      - redis
+      - typescript
+      - utf-8-validate
+
+  '@bernierllc/email-mitm-masking@1.0.5(@sendgrid/mail@8.1.6)(@types/node-fetch@3.0.2)(aws-sdk@2.1693.0)(nodemailer@6.10.1)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/crypto-utils': 1.0.4
+      '@bernierllc/email-parser': 0.1.3
+      '@bernierllc/email-sender': 3.1.0(@sendgrid/mail@8.1.6)(aws-sdk@2.1693.0)(nodemailer@6.10.1)
+      '@bernierllc/logger': 1.1.0(@types/node-fetch@3.0.2)(typescript@5.9.3)
+      '@bernierllc/neverhub-adapter': 0.1.2(@types/node-fetch@3.0.2)
+      pg: 8.16.3
+    transitivePeerDependencies:
+      - '@sendgrid/mail'
+      - '@types/node-fetch'
+      - aws-sdk
+      - nodemailer
+      - pg-native
+      - typescript
+
+  '@bernierllc/email-parser@0.1.3':
+    dependencies:
+      iconv-lite: 0.6.3
+      zod: 3.25.76
+
+  '@bernierllc/email-sender-manager@1.0.2': {}
+
+  '@bernierllc/email-sender@3.1.0(@sendgrid/mail@8.1.6)(aws-sdk@2.1693.0)(nodemailer@6.10.1)':
+    dependencies:
+      '@sendgrid/mail': 8.1.6
+      aws-sdk: 2.1693.0
+      nodemailer: 6.10.1
+
+  '@bernierllc/email-sendgrid-plugin@1.1.2(@types/node-fetch@3.0.2)(p-retry@5.1.2)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/logger': 1.1.0(@types/node-fetch@3.0.2)(typescript@5.9.3)
+      '@bernierllc/rate-limiter': 0.1.7
+      '@bernierllc/retry-policy': 0.1.6(p-retry@5.1.2)(typescript@5.9.3)
+      '@sendgrid/mail': 8.1.6
+    transitivePeerDependencies:
+      - '@types/node-fetch'
+      - debug
+      - ioredis
+      - p-retry
+      - redis
+      - typescript
+
+  '@bernierllc/email-service@2.1.6(@sendgrid/mail@8.1.6)(@types/node-fetch@3.0.2)(aws-sdk@2.1693.0)(nodemailer@6.10.1)(p-retry@5.1.2)(pg@8.16.3)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/config-manager': 1.0.3
+      '@bernierllc/crypto-utils': 1.0.4
+      '@bernierllc/database-adapter': 1.0.3(@types/node-fetch@3.0.2)(pg@8.16.3)(typescript@5.9.3)
+      '@bernierllc/email-parser': 0.1.3
+      '@bernierllc/email-sender': 3.1.0(@sendgrid/mail@8.1.6)(aws-sdk@2.1693.0)(nodemailer@6.10.1)
+      '@bernierllc/email-validator': 1.0.5
+      '@bernierllc/logger': 1.1.0(@types/node-fetch@3.0.2)(typescript@5.9.3)
+      '@bernierllc/queue-manager': 1.0.5(p-retry@5.1.2)(typescript@5.9.3)
+      '@bernierllc/retry-metrics': 0.1.3
+      '@bernierllc/retry-policy': 0.1.6(p-retry@5.1.2)(typescript@5.9.3)
+      '@bernierllc/retry-state': 0.1.3
+      '@bernierllc/template-engine': 0.2.1
+      '@bernierllc/webhook-validator': 1.0.1
+    optionalDependencies:
+      '@sendgrid/mail': 8.1.6
+      nodemailer: 6.10.1
+    transitivePeerDependencies:
+      - '@types/node-fetch'
+      - aws-sdk
+      - better-sqlite3
+      - ioredis
+      - mongodb
+      - mysql2
+      - p-retry
+      - pg
+      - typescript
+
+  '@bernierllc/email-template-service@1.0.4(@sendgrid/mail@8.1.6)(@types/node-fetch@3.0.2)(aws-sdk@2.1693.0)(nodemailer@6.10.1)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/email-sender': 3.1.0(@sendgrid/mail@8.1.6)(aws-sdk@2.1693.0)(nodemailer@6.10.1)
+      '@bernierllc/logger': 1.1.0(@types/node-fetch@3.0.2)(typescript@5.9.3)
+      '@bernierllc/template-engine': 0.2.1
+      '@bernierllc/template-variable-registry': 1.0.1
+    transitivePeerDependencies:
+      - '@sendgrid/mail'
+      - '@types/node-fetch'
+      - aws-sdk
+      - nodemailer
+      - typescript
+
+  '@bernierllc/email-validator@1.0.5':
+    dependencies:
+      '@bernierllc/email-parser': 0.1.3
+
+  '@bernierllc/file-handler@0.2.3(fs-extra@11.3.2)(mime-types@2.1.35)':
+    dependencies:
+      '@supabase/supabase-js': 2.86.0
+      sharp: 0.33.5
+      uuid: 11.1.0
+    optionalDependencies:
+      fs-extra: 11.3.2
+      mime-types: 2.1.35
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@bernierllc/inbound-email-parse@1.0.5(@types/node-fetch@3.0.2)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/email-capture': 1.0.2
+      '@bernierllc/email-parser': 0.1.3
+      '@bernierllc/logger': 1.1.0(@types/node-fetch@3.0.2)(typescript@5.9.3)
+      '@bernierllc/neverhub-adapter': 0.1.2(@types/node-fetch@3.0.2)
+      '@bernierllc/webhook-receiver': 1.0.1
+    transitivePeerDependencies:
+      - '@types/node-fetch'
+      - typescript
+
+  '@bernierllc/logger@1.1.0(@types/node-fetch@3.0.2)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/neverhub-adapter': 0.1.2(@types/node-fetch@3.0.2)
+      cosmiconfig: 8.3.6(typescript@5.9.3)
+      dotenv-flow: 4.1.0
+      zod: 3.25.76
+    transitivePeerDependencies:
+      - '@types/node-fetch'
+      - typescript
+
+  '@bernierllc/neverhub-adapter@0.1.2(@types/node-fetch@3.0.2)':
+    dependencies:
+      '@types/node-fetch': 3.0.2
+      node-fetch: 3.3.2
+
+  '@bernierllc/queue-manager@1.0.5(p-retry@5.1.2)(typescript@5.9.3)':
+    dependencies:
+      '@bernierllc/retry-policy': 0.1.6(p-retry@5.1.2)(typescript@5.9.3)
+    transitivePeerDependencies:
+      - p-retry
+      - typescript
+
+  '@bernierllc/rate-limiter@0.1.7':
+    dependencies:
+      '@bernierllc/connection-parser': 1.0.2
+
+  '@bernierllc/retry-metrics@0.1.3': {}
+
+  '@bernierllc/retry-policy@0.1.6(p-retry@5.1.2)(typescript@5.9.3)':
+    dependencies:
+      cosmiconfig: 9.0.0(typescript@5.9.3)
+      p-retry: 5.1.2
+    transitivePeerDependencies:
+      - typescript
+
+  '@bernierllc/retry-state@0.1.3': {}
+
+  '@bernierllc/template-engine@0.2.1':
+    dependencies:
+      handlebars: 4.7.8
+      liquidjs: 10.24.0
+
+  '@bernierllc/template-variable-registry@1.0.1': {}
+
+  '@bernierllc/webhook-receiver@1.0.1': {}
+
+  '@bernierllc/webhook-validator@1.0.1': {}
+
   '@biomejs/biome@2.3.8':
     optionalDependencies:
       '@biomejs/cli-darwin-arm64': 2.3.8
@@ -12516,6 +13110,81 @@ snapshots:
       react-hook-form: 7.67.0(react@19.2.0)
 
   '@ide/backoff@1.0.0': {}
+
+  '@img/sharp-darwin-arm64@0.33.5':
+    optionalDependencies:
+      '@img/sharp-libvips-darwin-arm64': 1.0.4
+    optional: true
+
+  '@img/sharp-darwin-x64@0.33.5':
+    optionalDependencies:
+      '@img/sharp-libvips-darwin-x64': 1.0.4
+    optional: true
+
+  '@img/sharp-libvips-darwin-arm64@1.0.4':
+    optional: true
+
+  '@img/sharp-libvips-darwin-x64@1.0.4':
+    optional: true
+
+  '@img/sharp-libvips-linux-arm64@1.0.4':
+    optional: true
+
+  '@img/sharp-libvips-linux-arm@1.0.5':
+    optional: true
+
+  '@img/sharp-libvips-linux-s390x@1.0.4':
+    optional: true
+
+  '@img/sharp-libvips-linux-x64@1.0.4':
+    optional: true
+
+  '@img/sharp-libvips-linuxmusl-arm64@1.0.4':
+    optional: true
+
+  '@img/sharp-libvips-linuxmusl-x64@1.0.4':
+    optional: true
+
+  '@img/sharp-linux-arm64@0.33.5':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-arm64': 1.0.4
+    optional: true
+
+  '@img/sharp-linux-arm@0.33.5':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-arm': 1.0.5
+    optional: true
+
+  '@img/sharp-linux-s390x@0.33.5':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-s390x': 1.0.4
+    optional: true
+
+  '@img/sharp-linux-x64@0.33.5':
+    optionalDependencies:
+      '@img/sharp-libvips-linux-x64': 1.0.4
+    optional: true
+
+  '@img/sharp-linuxmusl-arm64@0.33.5':
+    optionalDependencies:
+      '@img/sharp-libvips-linuxmusl-arm64': 1.0.4
+    optional: true
+
+  '@img/sharp-linuxmusl-x64@0.33.5':
+    optionalDependencies:
+      '@img/sharp-libvips-linuxmusl-x64': 1.0.4
+    optional: true
+
+  '@img/sharp-wasm32@0.33.5':
+    dependencies:
+      '@emnapi/runtime': 1.7.1
+    optional: true
+
+  '@img/sharp-win32-ia32@0.33.5':
+    optional: true
+
+  '@img/sharp-win32-x64@0.33.5':
+    optional: true
 
   '@inquirer/ansi@1.0.2': {}
 
@@ -13924,6 +14593,24 @@ snapshots:
       semantic-release: 25.0.2(typescript@5.9.3)
     transitivePeerDependencies:
       - supports-color
+
+  '@sendgrid/client@8.1.6':
+    dependencies:
+      '@sendgrid/helpers': 8.0.0
+      axios: 1.13.2
+    transitivePeerDependencies:
+      - debug
+
+  '@sendgrid/helpers@8.0.0':
+    dependencies:
+      deepmerge: 4.3.1
+
+  '@sendgrid/mail@8.1.6':
+    dependencies:
+      '@sendgrid/client': 8.1.6
+      '@sendgrid/helpers': 8.0.0
+    transitivePeerDependencies:
+      - debug
 
   '@sentry-internal/browser-utils@10.26.0':
     dependencies:
@@ -16829,6 +17516,10 @@ snapshots:
 
   '@types/mdurl@2.0.0': {}
 
+  '@types/node-fetch@3.0.2':
+    dependencies:
+      node-fetch: 3.3.2
+
   '@types/node@20.0.0': {}
 
   '@types/node@24.10.1':
@@ -16864,6 +17555,8 @@ snapshots:
   '@types/react@19.2.7':
     dependencies:
       csstype: 3.2.3
+
+  '@types/retry@0.12.1': {}
 
   '@types/stack-utils@2.0.3': {}
 
@@ -17025,14 +17718,14 @@ snapshots:
       msw: 2.12.3(@types/node@24.10.1)(typescript@5.9.3)
       vite: 5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(terser@5.44.1)
 
-  '@vitest/mocker@4.0.15(msw@2.12.3(@types/node@20.0.0)(typescript@5.9.3))(vite@7.1.7(@types/node@20.0.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
+  '@vitest/mocker@4.0.15(msw@2.12.3(@types/node@20.0.0)(typescript@5.9.3))(vite@7.1.7(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
     dependencies:
       '@vitest/spy': 4.0.15
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
       msw: 2.12.3(@types/node@20.0.0)(typescript@5.9.3)
-      vite: 7.1.7(@types/node@20.0.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+      vite: 7.1.7(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
 
   '@vitest/mocker@4.0.15(msw@2.12.3(@types/node@24.10.1)(typescript@5.9.3))(vite@7.1.7(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
     dependencies:
@@ -17088,7 +17781,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.15(@types/node@20.0.0)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(msw@2.12.3(@types/node@20.0.0)(typescript@5.9.3))(terser@5.44.1)(yaml@2.8.2)
+      vitest: 4.0.15(@types/node@24.10.1)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(msw@2.12.3(@types/node@24.10.1)(typescript@5.9.3))(terser@5.44.1)(yaml@2.8.2)
 
   '@vitest/utils@2.1.9':
     dependencies:
@@ -17286,6 +17979,19 @@ snapshots:
   awesome-phonenumber@7.5.0: {}
 
   awesome-phonenumber@7.6.0: {}
+
+  aws-sdk@2.1693.0:
+    dependencies:
+      buffer: 4.9.2
+      events: 1.1.1
+      ieee754: 1.1.13
+      jmespath: 0.16.0
+      querystring: 0.2.0
+      sax: 1.2.1
+      url: 0.10.3
+      util: 0.12.5
+      uuid: 8.0.0
+      xml2js: 0.6.2
 
   axios@1.13.2:
     dependencies:
@@ -17619,6 +18325,12 @@ snapshots:
 
   buffer-from@1.1.2: {}
 
+  buffer@4.9.2:
+    dependencies:
+      base64-js: 1.5.1
+      ieee754: 1.2.1
+      isarray: 1.0.0
+
   buffer@5.7.1:
     dependencies:
       base64-js: 1.5.1
@@ -17894,6 +18606,8 @@ snapshots:
 
   comma-separated-tokens@2.0.3: {}
 
+  commander@10.0.1: {}
+
   commander@11.1.0: {}
 
   commander@12.1.0: {}
@@ -17993,6 +18707,15 @@ snapshots:
       parse-json: 5.2.0
       path-type: 4.0.0
       yaml: 1.10.2
+
+  cosmiconfig@8.3.6(typescript@5.9.3):
+    dependencies:
+      import-fresh: 3.3.1
+      js-yaml: 4.1.1
+      parse-json: 5.2.0
+      path-type: 4.0.0
+    optionalDependencies:
+      typescript: 5.9.3
 
   cosmiconfig@9.0.0(typescript@5.9.3):
     dependencies:
@@ -18233,6 +18956,10 @@ snapshots:
     dependencies:
       dotenv: 16.6.1
 
+  dotenv-flow@4.1.0:
+    dependencies:
+      dotenv: 16.6.1
+
   dotenv@16.4.7: {}
 
   dotenv@16.6.1: {}
@@ -18459,6 +19186,8 @@ snapshots:
   etag@1.8.1: {}
 
   event-target-shim@5.0.1: {}
+
+  events@1.1.1: {}
 
   exec-async@2.2.0: {}
 
@@ -19575,6 +20304,8 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
+  ieee754@1.1.13: {}
+
   ieee754@1.2.1: {}
 
   ignore@5.3.2: {}
@@ -19944,6 +20675,8 @@ snapshots:
   jiti@2.6.1:
     optional: true
 
+  jmespath@0.16.0: {}
+
   joycon@3.1.1: {}
 
   js-tokens@4.0.0: {}
@@ -20115,6 +20848,10 @@ snapshots:
   linkify-it@5.0.0:
     dependencies:
       uc.micro: 2.1.0
+
+  liquidjs@10.24.0:
+    dependencies:
+      commander: 10.0.1
 
   load-json-file@4.0.0:
     dependencies:
@@ -20913,6 +21650,8 @@ snapshots:
 
   node-releases@2.0.27: {}
 
+  nodemailer@6.10.1: {}
+
   normalize-package-data@6.0.2:
     dependencies:
       hosted-git-info: 7.0.2
@@ -21152,6 +21891,11 @@ snapshots:
   p-reduce@2.1.0: {}
 
   p-reduce@3.0.0: {}
+
+  p-retry@5.1.2:
+    dependencies:
+      '@types/retry': 0.12.1
+      retry: 0.13.1
 
   p-timeout@6.1.4: {}
 
@@ -21639,6 +22383,8 @@ snapshots:
 
   punycode.js@2.3.1: {}
 
+  punycode@1.3.2: {}
+
   punycode@2.3.1: {}
 
   qrcode-terminal@0.11.0: {}
@@ -21649,6 +22395,8 @@ snapshots:
       filter-obj: 1.1.0
       split-on-first: 1.1.0
       strict-uri-encode: 2.0.0
+
+  querystring@0.2.0: {}
 
   querystringify@2.2.0: {}
 
@@ -22377,6 +23125,8 @@ snapshots:
       onetime: 5.1.2
       signal-exit: 3.0.7
 
+  retry@0.13.1: {}
+
   rettime@0.7.0: {}
 
   reusify@1.1.0: {}
@@ -22438,6 +23188,8 @@ snapshots:
       is-regex: 1.2.1
 
   safer-buffer@2.1.2: {}
+
+  sax@1.2.1: {}
 
   sax@1.4.3: {}
 
@@ -22612,6 +23364,32 @@ snapshots:
   sf-symbols-typescript@2.1.0: {}
 
   shallowequal@1.1.0: {}
+
+  sharp@0.33.5:
+    dependencies:
+      color: 4.2.3
+      detect-libc: 2.1.2
+      semver: 7.7.3
+    optionalDependencies:
+      '@img/sharp-darwin-arm64': 0.33.5
+      '@img/sharp-darwin-x64': 0.33.5
+      '@img/sharp-libvips-darwin-arm64': 1.0.4
+      '@img/sharp-libvips-darwin-x64': 1.0.4
+      '@img/sharp-libvips-linux-arm': 1.0.5
+      '@img/sharp-libvips-linux-arm64': 1.0.4
+      '@img/sharp-libvips-linux-s390x': 1.0.4
+      '@img/sharp-libvips-linux-x64': 1.0.4
+      '@img/sharp-libvips-linuxmusl-arm64': 1.0.4
+      '@img/sharp-libvips-linuxmusl-x64': 1.0.4
+      '@img/sharp-linux-arm': 0.33.5
+      '@img/sharp-linux-arm64': 0.33.5
+      '@img/sharp-linux-s390x': 0.33.5
+      '@img/sharp-linux-x64': 0.33.5
+      '@img/sharp-linuxmusl-arm64': 0.33.5
+      '@img/sharp-linuxmusl-x64': 0.33.5
+      '@img/sharp-wasm32': 0.33.5
+      '@img/sharp-win32-ia32': 0.33.5
+      '@img/sharp-win32-x64': 0.33.5
 
   shebang-command@2.0.0:
     dependencies:
@@ -23451,6 +24229,11 @@ snapshots:
       querystringify: 2.2.0
       requires-port: 1.0.0
 
+  url@0.10.3:
+    dependencies:
+      punycode: 1.3.2
+      querystring: 0.2.0
+
   use-callback-ref@1.3.3(@types/react@19.2.7)(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -23509,9 +24292,13 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
+  uuid@11.1.0: {}
+
   uuid@13.0.0: {}
 
   uuid@7.0.3: {}
+
+  uuid@8.0.0: {}
 
   v8-compile-cache-lib@3.0.1:
     optional: true
@@ -23676,7 +24463,7 @@ snapshots:
   vitest@4.0.15(@types/node@20.0.0)(@vitest/ui@4.0.15)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(msw@2.12.3(@types/node@20.0.0)(typescript@5.9.3))(terser@5.44.1)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.15
-      '@vitest/mocker': 4.0.15(msw@2.12.3(@types/node@20.0.0)(typescript@5.9.3))(vite@7.1.7(@types/node@20.0.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
+      '@vitest/mocker': 4.0.15(msw@2.12.3(@types/node@20.0.0)(typescript@5.9.3))(vite@7.1.7(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
       '@vitest/pretty-format': 4.0.15
       '@vitest/runner': 4.0.15
       '@vitest/snapshot': 4.0.15
@@ -23932,6 +24719,11 @@ snapshots:
   xml-name-validator@5.0.0: {}
 
   xml2js@0.6.0:
+    dependencies:
+      sax: 1.4.3
+      xmlbuilder: 11.0.1
+
+  xml2js@0.6.2:
     dependencies:
       sax: 1.4.3
       xmlbuilder: 11.0.1

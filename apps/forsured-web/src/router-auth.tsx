@@ -32,9 +32,11 @@ import ManagerTasksPage from './components/Manager/ManagerTasksPage';
 import ManagerProjectsPage from './components/Manager/ManagerProjectsPage';
 import SubcontractorsPage from './components/Manager/SubcontractorsPage';
 import ManagerAcknowledgementsList from './components/Manager/ManagerAcknowledgementsList';
+import ManagerMyBrokerPage from './pages/manager/MyBrokerPage';
 
 // Subcontractor Pages
 import MyManagersPage from './components/Subcontractor/MyManagersPage';
+import MyBrokerPage from './pages/subcontractor/MyBrokerPage';
 import SubcontractorProjectsPage from './components/Subcontractor/SubcontractorProjectsPage';
 import DocumentsPage from './components/Subcontractor/DocumentsPage';
 
@@ -52,7 +54,8 @@ import UserManagementPage from './components/User/UserManagementPage';
 
 // Features
 import InsuranceMarketplace from './components/Features/InsuranceMarketplace';
-import IntegrationsMarketplace from './components/Features/IntegrationsMarketplace';
+// TODO: Re-enable when integrations feature is ready
+// import IntegrationsMarketplace from './components/Features/IntegrationsMarketplace';
 
 // Hooks
 import { usePermissions } from './hooks/usePermissions';
@@ -77,6 +80,12 @@ import BrokerProfileSettings from './pages/broker/settings/ProfileSettings';
 import BrokerAgencySettings from './pages/broker/settings/AgencySettings';
 import BrokerClientSettings from './pages/broker/settings/ClientSettings';
 import BrokerNotificationSettings from './pages/broker/settings/NotificationSettings';
+
+// Shared Settings Pages
+import ReferralSettings from './pages/shared/settings/ReferralSettings';
+
+// Admin Pages
+import ReferralManagementPage from './pages/admin/ReferralManagementPage';
 
 /**
  * Authenticated App Routes
@@ -119,9 +128,11 @@ const AuthenticatedAppRoutes = () => {
                 <Route path="projects" element={<ManagerProjectsPage />} />
                 <Route path="projects/:projectId" element={<ProjectDetailPage />} />
                 <Route path="subcontractors" element={<SubcontractorsPage />} />
+                <Route path="broker" element={<ManagerMyBrokerPage />} />
                 <Route path="documents" element={<DocumentsPage />} />
                 <Route path="marketplace" element={<InsuranceMarketplace />} />
-                <Route path="integrations" element={<IntegrationsMarketplace />} />
+                {/* TODO: Re-enable when integrations feature is ready */}
+                {/* <Route path="integrations" element={<IntegrationsMarketplace />} /> */}
                 <Route path="acknowledgements" element={<ManagerAcknowledgementsList />} />
                 <Route path="notifications" element={<NotificationsAndApprovalsPage />} />
                 <Route
@@ -140,6 +151,7 @@ const AuthenticatedAppRoutes = () => {
                 <Route path="settings/notifications" element={<GCNotificationSettings />} />
                 <Route path="settings/team" element={<GCTeamSettings />} />
                 <Route path="settings/integrations" element={<GCIntegrationSettings />} />
+                <Route path="settings/referrals" element={<ReferralSettings />} />
               </Routes>
             </ProtectedRoute>
           }
@@ -155,6 +167,7 @@ const AuthenticatedAppRoutes = () => {
                 <Route path="dashboard" element={<EnhancedSubcontractorDashboard />} />
                 <Route path="onboarding" element={<SubcontractorOnboarding />} />
                 <Route path="relationships" element={<MyManagersPage />} />
+                <Route path="broker" element={<MyBrokerPage />} />
                 <Route path="projects" element={<SubcontractorProjectsPage />} />
                 <Route path="projects/:projectId" element={<ProjectDetailPage />} />
                 <Route path="documents" element={<DocumentsPage />} />
@@ -166,6 +179,7 @@ const AuthenticatedAppRoutes = () => {
                 <Route path="settings/insurance" element={<ContractorInsuranceSettings />} />
                 <Route path="settings/notifications" element={<ContractorNotificationSettings />} />
                 <Route path="settings/documents" element={<ContractorDocumentSettings />} />
+                <Route path="settings/referrals" element={<ReferralSettings />} />
               </Routes>
             </ProtectedRoute>
           }
@@ -195,6 +209,7 @@ const AuthenticatedAppRoutes = () => {
                 <Route path="settings/agency" element={<BrokerAgencySettings />} />
                 <Route path="settings/clients" element={<BrokerClientSettings />} />
                 <Route path="settings/notifications" element={<BrokerNotificationSettings />} />
+                <Route path="settings/referrals" element={<ReferralSettings />} />
               </Routes>
             </ProtectedRoute>
           }
@@ -209,6 +224,7 @@ const AuthenticatedAppRoutes = () => {
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="dashboard" element={<div>Admin Dashboard (Coming Soon)</div>} />
                 <Route path="users" element={<UserManagementPage />} />
+                <Route path="referrals" element={<ReferralManagementPage />} />
               </Routes>
             </ProtectedRoute>
           }

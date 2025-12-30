@@ -56,8 +56,8 @@ export default function BrokerPolicyDetailPage() {
           borderColor="$borderColor"
           alignItems="center"
         >
-          <AlertTriangle color="$red10" size={64} marginBottom="$4" />
-          <H3 color="$color12" marginBottom="$2" fontWeight="600">
+          <AlertTriangle color="$red10" size={64} mb="$4" />
+          <H3 color="$color12" mb="$2" fontWeight="600">
             Policy Not Found
           </H3>
           <Text color="$color11">
@@ -126,21 +126,21 @@ export default function BrokerPolicyDetailPage() {
                 {...statusColors}
               >
                 {getStatusIcon(policy.status)}
-                <Text marginLeft="$2" fontSize="$3" fontWeight="500">
+                <Text ml="$2" fontSize="$3" fontWeight="500">
                   {policy.status}
                 </Text>
               </XStack>
             </XStack>
-            <Text color="$color11" marginTop="$1">
+            <Text color="$color11" mt="$1">
               {policy.policy_number} - {policy.carrier}
             </Text>
           </YStack>
         </XStack>
         <XStack alignItems="center" gap="$3">
-          <Button variant="outline" size="sm" leftIcon={Paperclip}>
+          <Button variant="outline" size="$2" leftIcon={Paperclip}>
             Documents
           </Button>
-          <Button variant="primary" size="sm" leftIcon={Edit}>
+          <Button variant="primary" size="$2" leftIcon={Edit}>
             Edit Policy
           </Button>
         </XStack>
@@ -165,8 +165,8 @@ export default function BrokerPolicyDetailPage() {
               Consider initiating renewal process soon.
             </Text>
           </YStack>
-          <XStack marginLeft="auto">
-            <Button variant="primary" size="sm">
+          <XStack ml="auto">
+            <Button variant="primary" size="$2">
               Start Renewal
             </Button>
           </XStack>
@@ -186,33 +186,33 @@ export default function BrokerPolicyDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Policy Details
             </H2>
             <XStack flexWrap="wrap" gap="$6">
               <YStack flex={1} minWidth="40%">
-                <XStack alignItems="center" gap="$2" marginBottom="$1">
+                <XStack alignItems="center" gap="$2" mb="$1">
                   <FileText color="$color10" size={16} />
                   <Text fontSize="$3" color="$color11">Policy Number</Text>
                 </XStack>
                 <Text fontWeight="500" color="$color12">{policy.policy_number}</Text>
               </YStack>
               <YStack flex={1} minWidth="40%">
-                <XStack alignItems="center" gap="$2" marginBottom="$1">
+                <XStack alignItems="center" gap="$2" mb="$1">
                   <Building color="$color10" size={16} />
                   <Text fontSize="$3" color="$color11">Carrier</Text>
                 </XStack>
                 <Text fontWeight="500" color="$color12">{policy.carrier}</Text>
               </YStack>
               <YStack flex={1} minWidth="40%">
-                <XStack alignItems="center" gap="$2" marginBottom="$1">
+                <XStack alignItems="center" gap="$2" mb="$1">
                   <Shield color="$color10" size={16} />
                   <Text fontSize="$3" color="$color11">Policy Type</Text>
                 </XStack>
                 <Text fontWeight="500" color="$color12">{policy.policy_type}</Text>
               </YStack>
               <YStack flex={1} minWidth="40%">
-                <XStack alignItems="center" gap="$2" marginBottom="$1">
+                <XStack alignItems="center" gap="$2" mb="$1">
                   <DollarSign color="$color10" size={16} />
                   <Text fontSize="$3" color="$color11">Coverage Limit</Text>
                 </XStack>
@@ -221,7 +221,7 @@ export default function BrokerPolicyDetailPage() {
                 </Text>
               </YStack>
               <YStack flex={1} minWidth="40%">
-                <XStack alignItems="center" gap="$2" marginBottom="$1">
+                <XStack alignItems="center" gap="$2" mb="$1">
                   <Calendar color="$color10" size={16} />
                   <Text fontSize="$3" color="$color11">Effective Date</Text>
                 </XStack>
@@ -230,7 +230,7 @@ export default function BrokerPolicyDetailPage() {
                 </Text>
               </YStack>
               <YStack flex={1} minWidth="40%">
-                <XStack alignItems="center" gap="$2" marginBottom="$1">
+                <XStack alignItems="center" gap="$2" mb="$1">
                   <Calendar color="$color10" size={16} />
                   <Text fontSize="$3" color="$color11">Expiration Date</Text>
                 </XStack>
@@ -248,12 +248,12 @@ export default function BrokerPolicyDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Coverage & Provisions
             </H2>
             <YStack gap="$4">
               <YStack padding="$4" backgroundColor="$gray2" borderRadius="$4">
-                <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                <XStack alignItems="center" justifyContent="space-between" mb="$2">
                   <Text fontWeight="500" color="$color12">Per Occurrence Limit</Text>
                   <Text fontWeight="600" color="$color12">
                     ${(policy.coverage_limit / 1000000).toFixed(1)}M
@@ -264,7 +264,7 @@ export default function BrokerPolicyDetailPage() {
                 </YStack>
               </YStack>
               <YStack padding="$4" backgroundColor="$gray2" borderRadius="$4">
-                <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                <XStack alignItems="center" justifyContent="space-between" mb="$2">
                   <Text fontWeight="500" color="$color12">Aggregate Limit</Text>
                   <Text fontWeight="600" color="$color12">
                     ${((policy.coverage_limit * 2) / 1000000).toFixed(1)}M
@@ -294,7 +294,7 @@ export default function BrokerPolicyDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Endorsements & Conditions
             </H2>
             <YStack gap="$3">
@@ -346,7 +346,7 @@ export default function BrokerPolicyDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Policyholder
             </H2>
             {client ? (
@@ -358,7 +358,7 @@ export default function BrokerPolicyDetailPage() {
                 hoverStyle={{ backgroundColor: '$gray2' }}
                 onClick={() => navigate(`/broker/clients/${client.id}`)}
               >
-                <XStack alignItems="center" gap="$3" marginBottom="$3">
+                <XStack alignItems="center" gap="$3" mb="$3">
                   <YStack
                     width={48}
                     height={48}
@@ -397,7 +397,7 @@ export default function BrokerPolicyDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Policy Timeline
             </H2>
             <YStack gap="$4">
@@ -473,20 +473,20 @@ export default function BrokerPolicyDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Quick Actions
             </H2>
             <YStack gap="$2">
               <Button variant="outline" width="100%" justifyContent="flex-start">
-                <FileText size={16} marginRight="$2" />
+                <FileText size={16} mr="$2" />
                 View Certificate
               </Button>
               <Button variant="outline" width="100%" justifyContent="flex-start">
-                <Paperclip size={16} marginRight="$2" />
+                <Paperclip size={16} mr="$2" />
                 Download Policy
               </Button>
               <Button variant="outline" width="100%" justifyContent="flex-start">
-                <Clock size={16} marginRight="$2" />
+                <Clock size={16} mr="$2" />
                 Request Endorsement
               </Button>
             </YStack>

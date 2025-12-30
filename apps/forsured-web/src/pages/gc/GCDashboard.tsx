@@ -86,7 +86,7 @@ function GCDashboard() {
                     <YStack
                       padding="$2"
                       backgroundColor="$blue3"
-                      borderRadius="$md"
+                      borderRadius="$3"
                     >
                       <Building2 size={24} color="currentColor" />
                     </YStack>
@@ -99,7 +99,7 @@ function GCDashboard() {
                       </Text>
                     </YStack>
                   </XStack>
-                  <Badge variant="success" size="sm">
+                  <Badge variant="success" size="$2">
                     {project.status}
                   </Badge>
                 </XStack>

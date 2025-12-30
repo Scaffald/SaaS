@@ -376,13 +376,16 @@ export interface Project {
   id: string;
   name: string;
   description?: string;
-  client_id: string;
-  start_date: string;
-  end_date: string;
+  /** Organization that owns this project (maps to forsured.projects.organization_id) */
+  organization_id: string;
+  /** @deprecated Use organization_id instead - kept for backwards compatibility */
+  client_id?: string;
+  start_date?: string;
+  end_date?: string;
   location?: string;
   contract_value?: number;
   project_manager?: string;
-  compliance_status: ComplianceStatus;
+  compliance_status?: ComplianceStatus;
   general_liability_required?: number;
   workers_comp_required?: number;
   auto_liability_required?: number;

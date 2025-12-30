@@ -10,8 +10,8 @@
  * - Broker multi-industry support
  */
 
-import { test, expect, Page } from '@playwright/test';
-import { loginAs, setupAuthAs, TEST_USER_IDS } from '../utils/auth';
+import { test, expect } from './fixtures/base';
+import { Page } from '@playwright/test';
 
 const TOKEN_KEY = 'scaffald_tokens';
 
@@ -60,93 +60,40 @@ const MOCK_LEXICONS = {
 };
 
 /**
- * Helper to set up mock user set types API responses
+ * REMOVED: setupUserSetTypesMocks
+ * 
+ * This function was mocking internal tRPC endpoints (userSetTypes.listActive, getUserLexicon),
+ * which violates REQ-9: Testing Policy - we do NOT mock internal services we own.
+ * 
+ * Tests should now use real tRPC endpoints that query the real Supabase database.
+ * User set types should be seeded in the database for tests.
  */
-async function setupUserSetTypesMocks(page: Page, userSetTypeSlug: string = 'construction') {
-  // Mock listActive endpoint (public - for signup)
-  await page.route('**/api/trpc/userSetTypes.listActive*', async (route) => {
-    const activeTypes = Object.values(MOCK_USER_SET_TYPES).filter((t) => t.isActive);
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: activeTypes,
-        },
-      }),
-    });
-  });
-
-  // Mock getUserLexicon endpoint (protected - for authenticated users)
-  await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
-    const userSetType =
-      userSetTypeSlug === 'property-management'
-        ? MOCK_USER_SET_TYPES.propertyManagement
-        : MOCK_USER_SET_TYPES.construction;
-    const lexicon =
-      userSetTypeSlug === 'property-management'
-        ? MOCK_LEXICONS.propertyManagement
-        : MOCK_LEXICONS.construction;
-
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: {
-            lexicon,
-            userSetType,
-          },
-        },
-      }),
-    });
-  });
+async function setupUserSetTypesMocks_DEPRECATED(page: Page, userSetTypeSlug: string = 'construction') {
+  // This function is deprecated and should not be used
+  // Use real tRPC endpoints with seeded database data instead
+  throw new Error('setupUserSetTypesMocks is deprecated. Use real tRPC endpoints with seeded database data instead.');
 }
 
 /**
- * Helper to set up admin user set types list mock
+ * REMOVED: setupAdminMocks
+ * 
+ * This function was mocking internal tRPC endpoints (userSetTypes.list, get),
+ * which violates REQ-9: Testing Policy - we do NOT mock internal services we own.
+ * 
+ * Tests should now use real tRPC endpoints that query the real Supabase database.
+ * User set types should be seeded in the database for tests.
  */
-async function setupAdminMocks(page: Page) {
-  await page.route('**/api/trpc/userSetTypes.list*', async (route) => {
-    const allTypes = Object.values(MOCK_USER_SET_TYPES).map((t) => ({
-      ...t,
-      userCount: t.slug === 'construction' ? 5 : 3,
-    }));
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: allTypes,
-        },
-      }),
-    });
-  });
-
-  await page.route('**/api/trpc/userSetTypes.get*', async (route) => {
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        result: {
-          data: {
-            ...MOCK_USER_SET_TYPES.construction,
-            lexiconEntries: Object.entries(MOCK_LEXICONS.construction).map(([key, value]) => ({
-              key,
-              value,
-              category: key.split('.')[0],
-            })),
-          },
-        },
-      }),
-    });
-  });
+async function setupAdminMocks_DEPRECATED(page: Page) {
+  // This function is deprecated and should not be used
+  // Use real tRPC endpoints with seeded database data instead
+  throw new Error('setupAdminMocks is deprecated. Use real tRPC endpoints with seeded database data instead.');
 }
 
 test.describe('User Set Types - Lexicon Application', () => {
-  test('Construction users see Construction terminology in navigation', async ({ page }) => {
-    await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'active.gc@test.forsured.com');
+  test('Construction users see Construction terminology in navigation', async ({ page, setupAuthAs }) => {
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    await setupAuthAs(page, 'active.gc@test.forsured.com');
 
     // Wait for page to load
     await page.waitForTimeout(1000);
@@ -164,8 +111,9 @@ test.describe('User Set Types - Lexicon Application', () => {
     }
   });
 
-  test('Property Management users see Property Management terminology', async ({ page }) => {
-    await setupUserSetTypesMocks(page, 'property-management');
+  test('Property Management users see Property Management terminology', async ({ page, setupAuthAs }) => {
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
     await setupAuthAs(page, 'active.gc@test.forsured.com');
 
     // Navigate to manager dashboard
@@ -184,7 +132,7 @@ test.describe('User Set Types - Lexicon Application', () => {
     }
   });
 
-  test('Broker users see generic terminology in their own navigation', async ({ page }) => {
+  test('Broker users see generic terminology in their own navigation', async ({ page, setupAuthAs }) => {
     // Brokers don't have a user set type, so they see generic labels
     await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
       return route.fulfill({
@@ -201,7 +149,7 @@ test.describe('User Set Types - Lexicon Application', () => {
       });
     });
 
-    await loginAs(page, 'active.broker@test.forsured.com');
+    await setupAuthAs(page, 'active.broker@test.forsured.com');
     await page.waitForTimeout(1000);
 
     // Brokers should see "Clients" instead of role-specific terminology
@@ -242,11 +190,13 @@ test.describe('User Set Types - Public API', () => {
 });
 
 test.describe('User Set Types - Admin Management', () => {
-  test.skip('Admin can view all user set types', async ({ page }) => {
+  test.skip('Admin can view all user set types', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Navigate to admin user set types page
     await page.goto('/admin/user-set-types');
@@ -257,11 +207,13 @@ test.describe('User Set Types - Admin Management', () => {
     await expect(page.getByText('Property Management')).toBeVisible();
   });
 
-  test.skip('Admin can see user count for each type', async ({ page }) => {
+  test.skip('Admin can see user count for each type', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     await page.goto('/admin/user-set-types');
     await page.waitForTimeout(1000);
@@ -271,11 +223,13 @@ test.describe('User Set Types - Admin Management', () => {
     await expect(page.getByText('3')).toBeVisible(); // Property Management user count
   });
 
-  test.skip('Admin can create new user set type', async ({ page }) => {
+  test.skip('Admin can create new user set type', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-9 (Admin UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock create endpoint
     await page.route('**/api/trpc/userSetTypes.create*', async (route) => {
@@ -324,11 +278,13 @@ test.describe('User Set Types - Admin Management', () => {
 });
 
 test.describe('User Set Types - Lexicon Editor', () => {
-  test.skip('Admin can edit lexicon values', async ({ page }) => {
+  test.skip('Admin can edit lexicon values', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-10 (Lexicon Editor UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock updateLexicon endpoint
     await page.route('**/api/trpc/userSetTypes.updateLexicon*', async (route) => {
@@ -367,11 +323,13 @@ test.describe('User Set Types - Lexicon Editor', () => {
     await expect(page.getByText('Lexicon updated')).toBeVisible();
   });
 
-  test.skip('Admin can export lexicon as JSON', async ({ page }) => {
+  test.skip('Admin can export lexicon as JSON', async ({ page, setupAuthAs }) => {
     // TODO: Enable once TASK-10 (Lexicon Editor UI) is implemented
-    await setupAdminMocks(page);
-    await setupUserSetTypesMocks(page, 'construction');
-    await loginAs(page, 'admin@test.forsured.com');
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    // REQ-9: Use real tRPC endpoints - no mocking internal services
+    // User set types should be seeded in the database
+    await setupAuthAs(page, 'admin@test.forsured.com');
 
     // Mock exportLexicon endpoint
     await page.route('**/api/trpc/userSetTypes.exportLexicon*', async (route) => {
@@ -461,7 +419,7 @@ test.describe('User Set Types - Signup Flow', () => {
 });
 
 test.describe('User Set Types - Error Handling', () => {
-  test('Gracefully handles API errors for lexicon loading', async ({ page }) => {
+  test('Gracefully handles API errors for lexicon loading', async ({ page, setupAuthAs }) => {
     // Mock API error
     await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
       return route.fulfill({
@@ -475,7 +433,7 @@ test.describe('User Set Types - Error Handling', () => {
       });
     });
 
-    await loginAs(page, 'active.gc@test.forsured.com');
+    await setupAuthAs(page, 'active.gc@test.forsured.com');
     await page.waitForTimeout(1000);
 
     // Page should still load (using default lexicon)
@@ -487,7 +445,7 @@ test.describe('User Set Types - Error Handling', () => {
     }
   });
 
-  test('Falls back to default lexicon when user set type not found', async ({ page }) => {
+  test('Falls back to default lexicon when user set type not found', async ({ page, setupAuthAs }) => {
     // Mock empty lexicon response
     await page.route('**/api/trpc/userSetTypes.getUserLexicon*', async (route) => {
       return route.fulfill({
@@ -504,7 +462,7 @@ test.describe('User Set Types - Error Handling', () => {
       });
     });
 
-    await loginAs(page, 'active.gc@test.forsured.com');
+    await setupAuthAs(page, 'active.gc@test.forsured.com');
     await page.waitForTimeout(1000);
 
     // Should fall back to Construction defaults

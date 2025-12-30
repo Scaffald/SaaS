@@ -26,7 +26,7 @@ export default function ComponentShowcase({
       <View paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
         <H3 fontSize="$5" fontWeight="600" color="$color12">{title}</H3>
         {description && (
-          <Text fontSize="$3" color="$color11" marginTop="$1">{description}</Text>
+          <Text fontSize="$3" color="$color11" mt="$1">{description}</Text>
         )}
       </View>
       <View padding="$6">

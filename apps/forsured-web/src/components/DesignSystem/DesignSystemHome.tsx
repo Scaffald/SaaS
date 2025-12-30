@@ -26,7 +26,7 @@ export default function DesignSystemHome() {
           <View
             borderRadius="$6"
             padding="$8"
-            marginBottom="$8"
+            mb="$8"
             shadowRadius={12}
             shadowColor="$shadowColor"
             shadowOffset={{ width: 0, height: 4 }}
@@ -44,7 +44,7 @@ export default function DesignSystemHome() {
                   <Palette size={32} color="white" />
                 </View>
                 <YStack>
-                  <H1 fontFamily="$display" fontSize="$9" fontWeight="bold" marginBottom="$2" color="white">
+                  <H1 fontFamily="$display" fontSize="$9" fontWeight="bold" mb="$2" color="white">
                     Design System
                   </H1>
                   <Text fontSize="$5" style={{ color: 'var(--color-primary-100)' }}>
@@ -56,7 +56,7 @@ export default function DesignSystemHome() {
             </XStack>
           </View>
 
-          <View marginBottom="$8">
+          <View mb="$8">
             <View
               backgroundColor="$background"
               borderRadius="$6"
@@ -67,7 +67,7 @@ export default function DesignSystemHome() {
               shadowColor="$shadowColor"
               shadowOffset={{ width: 0, height: 1 }}
             >
-              <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+              <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
                 About This System
               </H2>
               <Text color="$color11">

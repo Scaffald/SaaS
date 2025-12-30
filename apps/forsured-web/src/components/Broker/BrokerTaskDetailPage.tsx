@@ -59,8 +59,8 @@ export default function BrokerTaskDetailPage() {
           borderColor="$borderColor"
           alignItems="center"
         >
-          <AlertCircle color="$red10" size={64} marginBottom="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+          <AlertCircle color="$red10" size={64} mb="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
             Task Not Found
           </H3>
           <Text color="$color11">
@@ -127,15 +127,15 @@ export default function BrokerTaskDetailPage() {
           <Text color="$color11">Back to Tasks</Text>
         </XStack>
         <XStack alignItems="center" gap="$3">
-          <Button variant="outline" size="sm">
-            <Paperclip size={16} marginRight="$2" />
+          <Button variant="outline" size="$2">
+            <Paperclip size={16} mr="$2" />
             Attachments
           </Button>
-          <Button variant="outline" size="sm">
-            <MessageSquare size={16} marginRight="$2" />
+          <Button variant="outline" size="$2">
+            <MessageSquare size={16} mr="$2" />
             Comments
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="$2">
             <MoreHorizontal size={16} />
           </Button>
         </XStack>
@@ -155,9 +155,9 @@ export default function BrokerTaskDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+            <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
               <YStack flex={1}>
-                <XStack alignItems="center" gap="$3" marginBottom="$3">
+                <XStack alignItems="center" gap="$3" mb="$3">
                   <XStack
                     paddingHorizontal="$3"
                     paddingVertical="$1"
@@ -184,7 +184,7 @@ export default function BrokerTaskDetailPage() {
                     </Text>
                   </XStack>
                 </XStack>
-                <H1 fontSize="$8" fontWeight="bold" color="$color12" marginBottom="$2">
+                <H1 fontSize="$8" fontWeight="bold" color="$color12" mb="$2">
                   {task.title}
                 </H1>
               </YStack>
@@ -203,11 +203,11 @@ export default function BrokerTaskDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Activity
             </H2>
             <YStack alignItems="center" paddingVertical="$8">
-              <Clock size={32} color="$color11" marginBottom="$2" opacity={0.5} />
+              <Clock size={32} color="$color11" mb="$2" opacity={0.5} />
               <Text color="$color11">No activity recorded yet</Text>
             </YStack>
           </Card>
@@ -222,12 +222,12 @@ export default function BrokerTaskDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Details
             </H2>
             <YStack gap="$4">
               <YStack>
-                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" marginBottom="$1">
+                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" mb="$1">
                   Project
                 </Text>
                 <XStack alignItems="center" gap="$2" color="$color12">
@@ -237,7 +237,7 @@ export default function BrokerTaskDetailPage() {
               </YStack>
 
               <YStack>
-                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" marginBottom="$1">
+                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" mb="$1">
                   Assigned To
                 </Text>
                 <XStack alignItems="center" gap="$2" color="$color12">
@@ -247,7 +247,7 @@ export default function BrokerTaskDetailPage() {
               </YStack>
 
               <YStack>
-                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" marginBottom="$1">
+                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" mb="$1">
                   Due Date
                 </Text>
                 <XStack alignItems="center" gap="$2" color="$color12">
@@ -261,7 +261,7 @@ export default function BrokerTaskDetailPage() {
               </YStack>
 
               <YStack>
-                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" marginBottom="$1">
+                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" mb="$1">
                   Created
                 </Text>
                 <Text color="$color12">
@@ -281,7 +281,7 @@ export default function BrokerTaskDetailPage() {
             borderColor="$borderColor"
             padding="$6"
           >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
               Actions
             </H2>
             <YStack gap="$2">
@@ -292,7 +292,7 @@ export default function BrokerTaskDetailPage() {
                   onClick={() => handleStatusChange('completed')}
                   disabled={isUpdating}
                 >
-                  <CheckCircle size={16} marginRight="$2" />
+                  <CheckCircle size={16} mr="$2" />
                   Mark Complete
                 </Button>
               )}
@@ -303,7 +303,7 @@ export default function BrokerTaskDetailPage() {
                   onClick={() => handleStatusChange('in_progress')}
                   disabled={isUpdating}
                 >
-                  <Clock size={16} marginRight="$2" />
+                  <Clock size={16} mr="$2" />
                   Start Task
                 </Button>
               )}

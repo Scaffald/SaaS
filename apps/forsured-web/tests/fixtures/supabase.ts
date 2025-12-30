@@ -73,18 +73,23 @@ export function core(table: string, client: SupabaseClient = testSupabaseAdmin) 
 /**
  * Test user IDs from seed data
  * These users are created by `pnpm supa:seed`
+ * Updated to match actual test users in the database
  */
 export const TEST_USER_IDS = {
-  admin: '00000000-0000-0000-0000-000000000001',
-  manager: '00000000-0000-0000-0000-000000000010',
-  contractor: '00000000-0000-0000-0000-000000000020',
+  admin: '10000000-0000-0000-0000-000000000004', // Test Admin User
+  manager: '10000000-0000-0000-0000-000000000001', // Test GC User
+  contractor: '10000000-0000-0000-0000-000000000002', // Test Contractor User
+  broker: '10000000-0000-0000-0000-000000000003', // Test Broker User
 } as const;
 
 /**
  * Test organization IDs from seed data
+ * Updated to match actual test organizations in the database
  */
 export const TEST_ORG_IDS = {
-  primary: '00000000-0000-0000-0000-000000000001',
+  primary: '20000000-0000-0000-0000-000000000001', // MRC Construction Co.
+  contractor: '20000000-0000-0000-0000-000000000002', // Test Contractor LLC
+  broker: '20000000-0000-0000-0000-000000000003', // Test Insurance Broker
 } as const;
 
 /**

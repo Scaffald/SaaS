@@ -35,7 +35,7 @@ const variantStyles = {
 
 const closeButtonStyle = {
   padding: '$1.5',
-  borderRadius: '$md',
+  borderRadius: '$3',
   backgroundColor: 'transparent',
   borderWidth: 0,
   hoverStyle: {
@@ -98,7 +98,7 @@ export default function Alert({
   const Icon = config.icon
 
   return (
-    <YStack borderRadius="$lg" borderWidth={1} padding="$4" {...variantStyles[variant]}>
+    <YStack borderRadius="$4" borderWidth={1} padding="$4" {...variantStyles[variant]}>
       <XStack>
         {icon && (
           <XStack flexShrink={0}>

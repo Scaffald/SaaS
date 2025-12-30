@@ -34,6 +34,13 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
   ) => {
     const shouldShowClear = showClear && Boolean(value) && !loading && !disabled
 
+    // Filter out textAlign from props to prevent React warnings
+    // If textAlign is needed, it should be passed via style prop
+    const {
+      textAlign: _textAlign,
+      ...cleanInputProps
+    } = inputProps as ComponentProps<typeof Input> & { textAlign?: string };
+
     return (
       <XStack position="relative" width="100%">
         <Input
@@ -58,7 +65,7 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
           focusStyle={{ borderColor: '$color8' }}
           opacity={disabled ? 0.75 : 1}
           paddingRight={shouldShowClear || loading ? '$10' : '$4'}
-          {...inputProps}
+          {...cleanInputProps}
         />
 
         {(loading || shouldShowClear) && (

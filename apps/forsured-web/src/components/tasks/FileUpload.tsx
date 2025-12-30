@@ -18,9 +18,8 @@ const UploadZone = styled(YStack, {
   name: 'UploadZone',
   borderWidth: 2,
   borderStyle: 'dashed',
-  borderRadius: '$md',
+  borderRadius: '$3',
   padding: '$8',
-  textAlign: 'center',
   cursor: 'pointer',
   borderColor: '$borderColor',
   hoverStyle: {
@@ -155,6 +154,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onPress={() => fileInputRef.current?.click()}
+        style={{ textAlign: 'center' }}
       >
         <input
           ref={fileInputRef}
@@ -174,7 +174,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               <ProgressBar>
                 <ProgressFill width={`${progress}%`} />
               </ProgressBar>
-              <Text fontSize="$1" color="$color9" marginTop="$1">
+              <Text fontSize="$1" color="$color9" mt="$1">
                 {progress}%
               </Text>
             </YStack>
@@ -182,10 +182,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         ) : (
           <YStack gap="$2" alignItems="center">
             <Upload size={48} color="currentColor" />
-            <Text fontSize="$2" fontWeight="500" color="$color11" marginTop="$2">
+            <Text fontSize="$2" fontWeight="500" color="$color11" mt="$2">
               Drag and drop your file here, or click to browse
             </Text>
-            <Text fontSize="$1" color="$color9" marginTop="$1">
+            <Text fontSize="$1" color="$color9" mt="$1">
               Max file size: {maxSizeMB}MB. Accepted types: {acceptedTypes.join(', ')}
             </Text>
           </YStack>
@@ -194,12 +194,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       {error && (
         <YStack
-          marginTop="$2"
+          mt="$2"
           padding="$3"
           backgroundColor="$red2"
           borderWidth={1}
           borderColor="$red6"
-          borderRadius="$md"
+          borderRadius="$3"
         >
           <Text fontSize="$2" color="$red11">
             {error}

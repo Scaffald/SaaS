@@ -34,7 +34,7 @@ function InvitationCodeInput({
         error={error}
       />
       {error && (
-        <Text fontSize="$2" color="$red9" marginTop="$1">
+        <Text fontSize="$2" color="$red9" mt="$1">
           {error}
         </Text>
       )}

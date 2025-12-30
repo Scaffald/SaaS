@@ -350,7 +350,22 @@ export async function deleteTaskType(
 export async function getActiveTaskTypes(
   category?: TaskTypeCategory
 ): Promise<ApiResponse<TaskType[]>> {
-  throw new Error('getActiveTaskTypes not implemented with Supabase');
+  try {
+    // TODO: Implement when task_types table is created
+    // For now, return empty array to prevent errors
+    // This allows the UI to render without breaking
+    return {
+      success: true,
+      data: [],
+      statusCode: 200,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to fetch task types',
+      statusCode: 500,
+    };
+  }
 }
 
 /**

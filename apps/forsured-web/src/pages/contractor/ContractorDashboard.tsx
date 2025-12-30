@@ -94,7 +94,7 @@ function ContractorDashboard() {
                       Due: {task.dueDate}
                     </Text>
                   </YStack>
-                  <Badge variant={getPriorityVariant(task.priority)} size="sm">
+                  <Badge variant={getPriorityVariant(task.priority)} size="$2">
                     {task.priority}
                   </Badge>
                 </XStack>

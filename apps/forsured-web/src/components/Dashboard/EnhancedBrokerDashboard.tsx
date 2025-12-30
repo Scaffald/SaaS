@@ -13,6 +13,7 @@ import ComplianceOverviewWidget from '../Broker/ComplianceOverviewWidget'
 import ClientsTable from '../Broker/ClientsTable'
 import TasksInbox from '../Broker/TasksInbox'
 import TaskModal from '../Broker/TaskModal'
+import ClientModal from '../Broker/ClientModal'
 import Button from '../Common/Button'
 import { DashboardSkeleton } from '../Common/SkeletonLoader'
 import type { Task, BrokerClient } from '../../types'
@@ -21,12 +22,13 @@ export default function EnhancedBrokerDashboard() {
   const navigate = useNavigate()
   // REQ-4: Use lexicon for dynamic labels
   const { t } = useLexicon()
-  const { clients, loading: clientsLoading, fetchClients } = useClients()
+  const { clients, loading: clientsLoading, fetchClients, addClient } = useClients()
   const { policies, loading: policiesLoading } = usePolicies()
   const { tasks, loading: tasksLoading, createTask, updateTask } = useTasks()
   const { projects, loading: projectsLoading } = useProjects()
   const { users, loading: usersLoading } = useUsers()
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined)
   const [projectFilter, setProjectFilter] = useState<string>('all')
 
@@ -54,6 +56,11 @@ export default function EnhancedBrokerDashboard() {
     setSelectedTask(undefined)
   }
 
+  const handleSaveClient = async (clientData: Partial<BrokerClient>) => {
+    await addClient(clientData as Omit<BrokerClient, 'id' | 'created_at' | 'updated_at'>);
+    setIsClientModalOpen(false);
+  };
+
   const filteredTasks =
     projectFilter === 'all' ? tasks : tasks.filter((t) => t.project_id === projectFilter)
 
@@ -72,23 +79,30 @@ export default function EnhancedBrokerDashboard() {
   // Show empty state when no clients exist
   if (clients.length === 0) {
     return (
-      <YStack gap="$6">
-        <YStack>
-          <Text fontSize="$8" fontWeight="700" color="$color12">
-            {t('nav.dashboard')}
-          </Text>
-          <Text color="$color11">Comprehensive compliance and task management</Text>
+      <>
+        <YStack gap="$6">
+          <YStack>
+            <Text fontSize="$8" fontWeight="700" color="$color12">
+              {t('nav.dashboard')}
+            </Text>
+            <Text color="$color11">Comprehensive compliance and task management</Text>
+          </YStack>
+          <EmptyState
+            icon={Users}
+            title="No Clients Yet"
+            description="Start by adding clients to manage their insurance needs and compliance requirements."
+            action={{
+              label: 'Add Client',
+              onClick: () => setIsClientModalOpen(true),
+            }}
+          />
         </YStack>
-        <EmptyState
-          icon={Users}
-          title="No Clients Yet"
-          description="Start by adding clients to manage their insurance needs and compliance requirements."
-          action={{
-            label: 'Add Client',
-            onClick: () => navigate('/broker/clients/new'),
-          }}
+        <ClientModal
+          isOpen={isClientModalOpen}
+          onClose={() => setIsClientModalOpen(false)}
+          onSave={handleSaveClient}
         />
-      </YStack>
+      </>
     )
   }
 
@@ -176,6 +190,12 @@ export default function EnhancedBrokerDashboard() {
         projects={projects}
         users={users}
         currentUserId={users[0]?.id}
+      />
+
+      <ClientModal
+        isOpen={isClientModalOpen}
+        onClose={() => setIsClientModalOpen(false)}
+        onSave={handleSaveClient}
       />
     </>
   )

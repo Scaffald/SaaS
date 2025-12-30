@@ -26,7 +26,7 @@ const PageButton = styled(Button, {
   name: 'PageButton',
   width: 40, // w-10
   height: 40, // h-10
-  borderRadius: '$lg',
+  borderRadius: '$4',
   alignItems: 'center',
   justifyContent: 'center',
   transition: 'all 0.2s ease-in-out',

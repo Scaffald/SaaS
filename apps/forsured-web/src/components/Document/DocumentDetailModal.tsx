@@ -190,7 +190,7 @@ export default function DocumentDetailModal({
         {/* Header */}
         <XStack alignItems="flex-start" justifyContent="space-between">
           <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" marginBottom="$2">
+            <XStack alignItems="center" gap="$3" mb="$2">
               <FileText color="$teal9" size={24} />
               <H2 fontSize="$8" fontWeight="bold" color="$color12">
                 {documentName}
@@ -274,7 +274,7 @@ export default function DocumentDetailModal({
           <XStack alignItems="center" gap="$2">
             <Button
               variant={viewMode === 'inline' ? 'primary' : 'ghost'}
-              size="sm"
+              size="$2"
               onClick={() => handleViewModeChange('inline')}
               leftIcon={Maximize2}
             >
@@ -282,7 +282,7 @@ export default function DocumentDetailModal({
             </Button>
             <Button
               variant={viewMode === 'modal' ? 'primary' : 'ghost'}
-              size="sm"
+              size="$2"
               onClick={() => handleViewModeChange('modal')}
               leftIcon={Minimize2}
             >
@@ -290,7 +290,7 @@ export default function DocumentDetailModal({
             </Button>
             <Button
               variant={viewMode === 'split-screen' ? 'primary' : 'ghost'}
-              size="sm"
+              size="$2"
               onClick={() => handleViewModeChange('split-screen')}
               leftIcon={Layout}
             >
@@ -399,7 +399,7 @@ export default function DocumentDetailModal({
                     padding="$4"
                     backgroundColor="$background"
                   >
-                    <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                    <XStack alignItems="center" justifyContent="space-between" mb="$4">
                       <XStack alignItems="center" gap="$2">
                         <FileCheck size={16} />
                         <H3 fontSize="$3" fontWeight="600" color="$color12">
@@ -445,7 +445,7 @@ export default function DocumentDetailModal({
                             <Text fontSize="$1" color="$color10">
                               Coverage Amounts
                             </Text>
-                            <YStack gap="$1" marginTop="$1">
+                            <YStack gap="$1" mt="$1">
                               {currentExtraction.coverage_amounts.map(
                                 (coverage, index) => (
                                   <XStack
@@ -489,7 +489,7 @@ export default function DocumentDetailModal({
                             <Text fontSize="$1" color="$color10">
                               Named Insureds
                             </Text>
-                            <YStack gap="$1" marginTop="$1">
+                            <YStack gap="$1" mt="$1">
                               {currentExtraction.named_insureds.map(
                                 (insured, index) => (
                                   <Text
@@ -506,10 +506,10 @@ export default function DocumentDetailModal({
                         )}
                     </YStack>
 
-                    <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+                    <YStack mt="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
                       <Button
                         variant="secondary"
-                        size="sm"
+                        size="$2"
                         onClick={handleExtractFields}
                         fullWidth
                       >
@@ -527,7 +527,7 @@ export default function DocumentDetailModal({
                   padding="$4"
                   backgroundColor="$background"
                 >
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                     Metadata
                   </H3>
                   <YStack gap="$3">
@@ -581,7 +581,7 @@ export default function DocumentDetailModal({
                         >
                           {formatDate(expiryDate)}
                           {daysUntilExpiry !== null && daysUntilExpiry <= 30 && (
-                            <Text marginLeft="$2" display="inline">
+                            <Text ml="$2" display="inline">
                               ⚠️ {daysUntilExpiry} days left
                             </Text>
                           )}
@@ -600,7 +600,7 @@ export default function DocumentDetailModal({
                     padding="$4"
                     backgroundColor="$background"
                   >
-                    <XStack alignItems="center" gap="$2" marginBottom="$4">
+                    <XStack alignItems="center" gap="$2" mb="$4">
                       <HistoryIcon size={16} />
                       <H3 fontSize="$3" fontWeight="600" color="$color12">
                         Version History
@@ -643,7 +643,7 @@ export default function DocumentDetailModal({
                     padding="$4"
                     backgroundColor="$background"
                   >
-                    <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+                    <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
                       Related Items
                     </H3>
                     <YStack gap="$2">
@@ -671,7 +671,7 @@ export default function DocumentDetailModal({
             )}
           </XStack>
         ) : (
-          <YStack marginBottom="$6">
+          <YStack mb="$6">
             <Card
               borderWidth={1}
               borderColor="$borderColor"
@@ -746,7 +746,7 @@ export default function DocumentDetailModal({
               padding="$4"
               backgroundColor="$background"
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <XStack alignItems="center" justifyContent="space-between" mb="$4">
                 <XStack alignItems="center" gap="$2">
                   <FileCheck size={16} />
                   <H3 fontSize="$3" fontWeight="600" color="$color12">
@@ -808,11 +808,11 @@ export default function DocumentDetailModal({
 
               {currentExtraction.coverage_amounts &&
                 currentExtraction.coverage_amounts.length > 0 && (
-                  <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+                  <YStack mt="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
                     <Text fontSize="$1" color="$color10">
                       Coverage Amounts
                     </Text>
-                    <XStack flexWrap="wrap" gap="$2" marginTop="$2">
+                    <XStack flexWrap="wrap" gap="$2" mt="$2">
                       {currentExtraction.coverage_amounts.map(
                         (coverage, index) => (
                           <YStack
@@ -845,7 +845,7 @@ export default function DocumentDetailModal({
           isOpen={showAISummary}
           onClose={() => setShowAISummary(false)}
           title="AI Analysis Summary"
-          size="md"
+          size="medium"
         >
           <AISummaryScreen
             title="Document Analysis Complete"

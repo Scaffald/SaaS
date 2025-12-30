@@ -23,10 +23,10 @@ export function MapFallback({ pinsCount, message, style }: MapFallbackProps) {
         <Text fontSize="$4" fontWeight="600" color="$color12">
           Mapbox Maps
         </Text>
-        <Text fontSize="$3" color="$color11" textAlign="center">
+        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
           {message}
         </Text>
-        <Text fontSize="$2" color="$color10" textAlign="center">
+        <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
           {pinsCount} pins ready to display
         </Text>
       </YStack>

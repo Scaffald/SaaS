@@ -3,3 +3,4 @@ plans/
 # Test artifacts
 playwright-report/
 test-results/
+auth.json

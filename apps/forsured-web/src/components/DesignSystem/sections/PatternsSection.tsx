@@ -42,8 +42,8 @@ export default function PatternsSection() {
   };
 
   return (
-    <YStack gap="$8" marginBottom="$12">
-      <XStack alignItems="center" gap="$3" marginBottom="$6">
+    <YStack gap="$8" mb="$12">
+      <XStack alignItems="center" gap="$3" mb="$6">
         <LayoutGrid color="var(--blue10)" size={32} />
         <H2 fontSize="$9" fontWeight="bold" color="$color12">
           Patterns
@@ -149,32 +149,32 @@ export default function PatternsSection() {
           description="Typical dashboard layout with stats, charts, and lists"
         >
           <View width="100%">
-            <XStack flexWrap="wrap" gap="$4" marginBottom="$6">
+            <XStack flexWrap="wrap" gap="$4" mb="$6">
               <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" color="$color11" mb="$1">
                   Total Projects
                 </Text>
                 <Text fontSize="$9" fontWeight="bold" color="$color12">24</Text>
-                <Text fontSize="$2" color="$green11" marginTop="$1">
+                <Text fontSize="$2" color="$green11" mt="$1">
                   +12% from last month
                 </Text>
               </View>
               <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" marginBottom="$1">Active Tasks</Text>
+                <Text fontSize="$3" color="$color11" mb="$1">Active Tasks</Text>
                 <Text fontSize="$9" fontWeight="bold" color="$color12">156</Text>
-                <Text fontSize="$2" color="$yellow11" marginTop="$1">8 overdue</Text>
+                <Text fontSize="$2" color="$yellow11" mt="$1">8 overdue</Text>
               </View>
               <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" marginBottom="$1">
+                <Text fontSize="$3" color="$color11" mb="$1">
                   Compliance Score
                 </Text>
                 <Text fontSize="$9" fontWeight="bold" color="$color12">94%</Text>
-                <Text fontSize="$2" color="$green11" marginTop="$1">+2% improvement</Text>
+                <Text fontSize="$2" color="$green11" mt="$1">+2% improvement</Text>
               </View>
             </XStack>
 
             <View backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
-              <Text fontWeight="600" color="$color12" marginBottom="$4">
+              <Text fontWeight="600" color="$color12" mb="$4">
                 Recent Activity
               </Text>
               <YStack gap="$3">

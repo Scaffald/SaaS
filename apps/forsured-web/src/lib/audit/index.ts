@@ -29,6 +29,42 @@ export {
 export { useAuditLog } from './useAuditLog';
 export type { UseAuditLogReturn } from './useAuditLog';
 
+// tRPC Middleware
+export {
+  createAuditMiddleware,
+  auditMiddleware,
+  sensitiveAuditMiddleware,
+  createTRPCAuditMiddleware,
+} from './auditMiddleware';
+export type { AuditContext, AuditMiddlewareOptions } from './auditMiddleware';
+
+// Compliance Queries
+export {
+  auditQueries,
+  initializeAuditQueries,
+  getUserActivity,
+  getUserActivitySummary,
+  getEmailHistory,
+  getAuthenticationHistory,
+  getResourceAccessHistory,
+  getProjectCommunications,
+  getSubcontractorCommunications,
+  generateComplianceReport,
+  getSecurityEvents,
+  findRelatedAuditRecords,
+} from './auditQueries';
+export type {
+  DateRange,
+  PaginationOptions,
+  UserActivityOptions,
+  EmailAuditRecord,
+  AuthenticationHistoryRecord,
+  DataAccessRecord,
+  CommunicationRecord,
+  ComplianceReportOptions,
+  ActivitySummary,
+} from './auditQueries';
+
 // Types
 export type {
   // Core Types

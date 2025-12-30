@@ -44,6 +44,7 @@ export function useApprovals(options: UseApprovalsOptions = {}) {
   const fetchApprovals = async () => {
     try {
       setLoading(true);
+      setError(null); // Clear previous errors
 
       let query = supabase.schema('forsured').from('approvals').select('*');
 
@@ -69,13 +70,40 @@ export function useApprovals(options: UseApprovalsOptions = {}) {
       const { data, error: supabaseError } = await query;
 
       if (supabaseError) {
-        throw formatSupabaseError(supabaseError, 'fetching approvals');
+        // Handle missing table errors (should be caught by global test setup, but handle just in case)
+        if (supabaseError.code === '42P01' || supabaseError.code === 'PGRST116') {
+          console.error('[useApprovals] Approvals table does not exist - this should be caught by test setup');
+          setError(formatSupabaseError(supabaseError, 'fetching approvals'));
+          return;
+        }
+
+        // Handle RLS/permission errors gracefully (user may not have role assignments yet)
+        // These are expected in some scenarios (e.g., user not fully onboarded)
+        if (
+          supabaseError.code === '42501' || // Insufficient privilege
+          supabaseError.message?.includes('permission denied') ||
+          supabaseError.message?.includes('row-level security') ||
+          supabaseError.message?.includes('policy violation')
+        ) {
+          console.warn('[useApprovals] Permission denied - user may not have role assignments:', supabaseError.message);
+          setApprovals([]); // Return empty array for permission errors
+          setError(null); // Don't set error state for permission issues
+          return;
+        }
+
+        // For other errors, set error state but don't crash the UI
+        console.error('[useApprovals] Error fetching approvals:', supabaseError);
+        setError(formatSupabaseError(supabaseError, 'fetching approvals'));
+        setApprovals([]); // Return empty array to prevent UI breakage
+        return;
       }
 
       setApprovals(data || []);
+      setError(null);
     } catch (err) {
-      console.error('[useApprovals] Error fetching approvals:', err);
+      console.error('[useApprovals] Unexpected error fetching approvals:', err);
       setError(err as Error);
+      setApprovals([]); // Return empty array to prevent UI breakage
     } finally {
       setLoading(false);
     }

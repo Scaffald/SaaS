@@ -3,7 +3,7 @@
  * Drag-and-drop file upload zone with validation and progress tracking
  */
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { Upload, X, CheckCircle, XCircle } from 'lucide-react';
 import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import { DocumentService } from '../../lib/documents/documentService';
@@ -15,6 +15,9 @@ interface FileUploadZoneProps {
   organizationId: string;
   subcontractorId?: string;
   maxFiles?: number;
+  category?: 'compliance' | 'insurance' | 'contract' | 'general';
+  description?: string;
+  tags?: string[];
   onUpload?: (document: Document) => void;
   onError?: (error: string) => void;
 }
@@ -33,13 +36,22 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   organizationId,
   subcontractorId,
   maxFiles = 10,
+  category = 'compliance',
+  description,
+  tags = [],
   onUpload,
   onError
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [fileQueue, setFileQueue] = useState<FileQueueItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const documentService = new DocumentService();
+  
+  // Use useRef to maintain a stable DocumentService instance
+  const documentServiceRef = useRef<DocumentService | null>(null);
+  if (!documentServiceRef.current) {
+    documentServiceRef.current = new DocumentService();
+  }
+  const documentService = documentServiceRef.current;
 
   const generateFileId = () => `file-${Date.now()}-${Math.random()}`;
 
@@ -88,8 +100,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
     newQueueItems.forEach(item => {
       uploadFile(item);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [maxFiles, onError]);
+  }, [maxFiles, onError, documentService]);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -136,12 +147,16 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
         );
       }, 200);
 
-      // Upload the document
+      // Upload the document with proper categorization
+      console.log('[FileUploadZone] Uploading document with category:', category);
       const document = await documentService.uploadDocument({
         projectId,
         uploadedBy: uploaderId,
         organizationId,
-        file: queueItem.file
+        file: queueItem.file,
+        category,
+        description,
+        tags: [...tags, 'forsured', category],
       });
 
       clearInterval(progressInterval);
@@ -230,7 +245,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
       </Card>
 
       {fileQueue.length > 0 && (
-        <YStack marginTop="$4" gap="$2">
+        <YStack mt="$4" gap="$2">
           {fileQueue.map((item) => (
             <Card
               key={item.id}
@@ -241,7 +256,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
               padding="$4"
               elevation={1}
             >
-              <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+              <XStack alignItems="center" justifyContent="space-between" mb="$2">
                 <YStack flex={1} minWidth={0}>
                   <Text fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
                     {item.file.name}
@@ -254,7 +269,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
                 {item.status === 'queued' && (
                   <XStack
                     as="button"
-                    marginLeft="$4"
+                    ml="$4"
                     color="$color9"
                     hoverStyle={{ color: '$color10' }}
                     onClick={(e) => {
@@ -295,7 +310,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
               )}
 
               {item.status === 'error' && item.error && (
-                <Text fontSize="$1" color="$red10" marginTop="$1">
+                <Text fontSize="$1" color="$red10" mt="$1">
                   {item.error}
                 </Text>
               )}

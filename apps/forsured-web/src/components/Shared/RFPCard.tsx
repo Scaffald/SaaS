@@ -72,7 +72,7 @@ export default function RFPCard({
       }}
     >
       <YStack padding="$6">
-        <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+        <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
           <XStack alignItems="flex-start" gap="$3" flex={1} minWidth={0}>
             <XStack
               width={48}
@@ -98,7 +98,7 @@ export default function RFPCard({
                   backgroundColor="$color3"
                   borderWidth={1}
                   borderColor="$color5"
-                  marginTop="$1"
+                  mt="$1"
                 >
                   <SizableText size="$1" fontWeight="500" color="$color11">
                     {rfp.trade_required}
@@ -151,12 +151,12 @@ export default function RFPCard({
         </XStack>
 
         {rfp.description && (
-          <SizableText size="$3" color="$color11" numberOfLines={3} marginBottom="$4">
+          <SizableText size="$3" color="$color11" numberOfLines={3} mb="$4">
             {rfp.description}
           </SizableText>
         )}
 
-        <XStack flexWrap="wrap" gap="$4" marginBottom="$4">
+        <XStack flexWrap="wrap" gap="$4" mb="$4">
           <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
             <DollarSign size={14} color="$color11" />
             <YStack>
@@ -212,8 +212,8 @@ export default function RFPCard({
         </XStack>
 
         {rfp.requirements && Object.keys(rfp.requirements).length > 0 && (
-          <YStack marginBottom="$4" padding="$3" backgroundColor="$color4" borderRadius="$4">
-            <SizableText size="$1" fontWeight="500" color="$color12" marginBottom="$2">
+          <YStack mb="$4" padding="$3" backgroundColor="$color4" borderRadius="$4">
+            <SizableText size="$1" fontWeight="500" color="$color12" mb="$2">
               Requirements
             </SizableText>
             <YStack gap="$1">

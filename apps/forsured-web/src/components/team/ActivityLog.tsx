@@ -119,7 +119,7 @@ export function ActivityLog({
           Recent Activity
         </SizableText>
         <YStack alignItems="center" paddingVertical="$6">
-          <SizableText fontSize="$3" color="$color10" textAlign="center">
+          <SizableText fontSize="$3" color="$color10" style={{ textAlign: 'center' }}>
             {emptyMessage}
           </SizableText>
         </YStack>

@@ -107,12 +107,12 @@ export default function CoverageVerificationSection({
             {title}
           </Text>
           {description && (
-            <Text fontSize="$2" color="$color11" marginTop="$1">
+            <Text fontSize="$2" color="$color11" mt="$1">
               {description}
             </Text>
           )}
           {minLimits && (
-            <Text fontSize="$2" fontWeight="500" color="$blue10" marginTop="$2">
+            <Text fontSize="$2" fontWeight="500" color="$blue10" mt="$2">
               Minimum Limits: {minLimits}
             </Text>
           )}
@@ -127,7 +127,7 @@ export default function CoverageVerificationSection({
             padding="$3"
           >
             <XStack alignItems="flex-start" gap="$2">
-              <Info size={16} color="$blue10" marginTop="$0.5" flexShrink={0} />
+              <Info size={16} color="$blue10" mt="$0.5" flexShrink={0} />
               <Text fontSize="$2" color="$blue11">
                 {infoNote}
               </Text>
@@ -141,35 +141,35 @@ export default function CoverageVerificationSection({
               <tr>
                 <th>
                   <XStack paddingVertical="$3" paddingHorizontal="$2">
-                    <Text textAlign="left" fontSize="$2" fontWeight="500" color="$color11">
+                    <Text style={{ textAlign: 'left' }} fontSize="$2" fontWeight="500" color="$color11">
                       Specification
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingVertical="$3" paddingHorizontal="$2" width={96} justifyContent="center">
-                    <Text textAlign="center" fontSize="$2" fontWeight="500" color="$color11">
+                    <Text style={{ textAlign: 'center' }} fontSize="$2" fontWeight="500" color="$color11">
                       Included
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingVertical="$3" paddingHorizontal="$2" width={96} justifyContent="center">
-                    <Text textAlign="center" fontSize="$2" fontWeight="500" color="$color11">
+                    <Text style={{ textAlign: 'center' }} fontSize="$2" fontWeight="500" color="$color11">
                       Excluded
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingVertical="$3" paddingHorizontal="$2" width={128} justifyContent="center">
-                    <Text textAlign="center" fontSize="$2" fontWeight="500" color="$color11">
+                    <Text style={{ textAlign: 'center' }} fontSize="$2" fontWeight="500" color="$color11">
                       Quote to Add
                     </Text>
                   </XStack>
                 </th>
                 <th>
                   <XStack paddingVertical="$3" paddingHorizontal="$2">
-                    <Text textAlign="left" fontSize="$2" fontWeight="500" color="$color11">
+                    <Text style={{ textAlign: 'left' }} fontSize="$2" fontWeight="500" color="$color11">
                       Notes
                     </Text>
                   </XStack>
@@ -189,7 +189,7 @@ export default function CoverageVerificationSection({
                           {req.name}
                         </Text>
                         {req.description && (
-                          <Text fontSize="$1" color="$color11" marginTop="$1">
+                          <Text fontSize="$1" color="$color11" mt="$1">
                             {req.description}
                           </Text>
                         )}

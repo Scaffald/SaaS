@@ -25,6 +25,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { YStack, XStack, Text, Button, Card, H1, H2, H3, Spinner, Input, TextArea } from 'tamagui';
+import { EmptyState } from '@unicornlove/ui';
 import { trpc } from '../../lib/trpc';
 
 interface UserSetTypeFormData {
@@ -286,18 +287,17 @@ function AdminUserSetTypes() {
       {/* User Set Types Table */}
       <Card padding="$6" elevation={1}>
         {displayedTypes.length === 0 ? (
-          <YStack alignItems="center" paddingVertical="$8">
-            <Building2 size={48} color="$gray8" marginBottom="$4" />
-            <Text color="$gray11">No user set types found.</Text>
-            <Button
-              onPress={openAddModal}
-              variant="outlined"
-              marginTop="$4"
-              color="$blue9"
-            >
-              Create your first industry vertical
-            </Button>
-          </YStack>
+          <EmptyState
+            icon={Building2}
+            title={showInactive ? "No inactive industries found" : "No industry verticals yet"}
+            description={showInactive
+              ? "All industry verticals are currently active. Deactivate one to see it here."
+              : "Create your first industry vertical to customize terminology and user roles for different business types."}
+            action={!showInactive ? {
+              label: "Create Industry",
+              onClick: openAddModal,
+            } : undefined}
+          />
         ) : (
           <YStack>
             <XStack borderBottomWidth={1} borderColor="$borderColor" paddingVertical="$2" paddingHorizontal="$4">

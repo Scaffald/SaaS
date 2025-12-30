@@ -329,14 +329,14 @@ export function BulkOperationsModal({
                     borderRadius={9999}
                     alignItems="center"
                     justifyContent="center"
-                    marginBottom="$4"
+                    mb="$4"
                   >
                     <Check size={32} style={{ color: 'var(--color-green-10)' }} />
                   </YStack>
-                  <Text fontSize="$5" fontWeight="600" color="$green10" marginBottom="$2">
+                  <Text fontSize="$5" fontWeight="600" color="$green10" mb="$2">
                     Import Successful!
                   </Text>
-                  <Text color="$gray11" marginBottom="$4">
+                  <Text color="$gray11" mb="$4">
                     {importPreview?.validRows} requirements have been imported.
                   </Text>
                   <Button onPress={handleClose}>Done</Button>
@@ -345,7 +345,7 @@ export function BulkOperationsModal({
                 <>
                   {/* Format Selection */}
                   <YStack>
-                    <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$2">
+                    <Text fontSize="$3" fontWeight="600" color="$color11" mb="$2">
                       File Format
                     </Text>
                     <XStack gap="$4">
@@ -399,7 +399,7 @@ export function BulkOperationsModal({
 
                   {/* File Upload */}
                   <YStack>
-                    <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$2">
+                    <Text fontSize="$3" fontWeight="600" color="$color11" mb="$2">
                       Upload File
                     </Text>
                     <YStack
@@ -430,11 +430,11 @@ export function BulkOperationsModal({
                         </XStack>
                       ) : (
                         <YStack alignItems="center">
-                          <YStack marginBottom="$2">
+                          <YStack mb="$2">
                             <Upload size={32} style={{ color: 'var(--color-gray-10)' }} />
                           </YStack>
                           <Text color="$gray11">Click to select a file or drag and drop</Text>
-                          <Text fontSize="$2" color="$gray10" marginTop="$1">
+                          <Text fontSize="$2" color="$gray10" mt="$1">
                             {importFormat.toUpperCase()} files only
                           </Text>
                         </YStack>
@@ -462,7 +462,7 @@ export function BulkOperationsModal({
                       borderRadius="$4"
                       color="$red10"
                     >
-                      <YStack flexShrink={0} marginTop="$0.5">
+                      <YStack flexShrink={0} mt="$0.5">
                         <AlertCircle size={20} style={{ color: 'var(--color-red-10)' }} />
                       </YStack>
                       <YStack>
@@ -520,13 +520,13 @@ export function BulkOperationsModal({
                               >
                                 <Text fontWeight="600" fontSize="$3">Row {row.row}</Text>
                                 {row.errors.map((err, i) => (
-                                  <XStack key={i} alignItems="center" gap="$1" marginTop="$1">
+                                  <XStack key={i} alignItems="center" gap="$1" mt="$1">
                                     <AlertCircle size={14} style={{ color: 'var(--color-red-10)' }} />
                                     <Text fontSize="$3" color="$red10">{err}</Text>
                                   </XStack>
                                 ))}
                                 {row.warnings.map((warn, i) => (
-                                  <XStack key={i} alignItems="center" gap="$1" marginTop="$1">
+                                  <XStack key={i} alignItems="center" gap="$1" mt="$1">
                                     <AlertTriangle size={14} style={{ color: 'var(--color-yellow-10)' }} />
                                     <Text fontSize="$3" color="$yellow10">{warn}</Text>
                                   </XStack>
@@ -545,7 +545,7 @@ export function BulkOperationsModal({
             <YStack gap="$6">
               {/* Format Selection */}
               <YStack>
-                <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$2">
+                <Text fontSize="$3" fontWeight="600" color="$color11" mb="$2">
                   Export Format
                 </Text>
                 <XStack gap="$4">
@@ -625,7 +625,7 @@ export function BulkOperationsModal({
                   borderRadius="$4"
                   color="$red10"
                 >
-                  <YStack flexShrink={0} marginTop="$0.5">
+                  <YStack flexShrink={0} mt="$0.5">
                     <AlertCircle size={20} style={{ color: 'var(--color-red-10)' }} />
                   </YStack>
                   <YStack>

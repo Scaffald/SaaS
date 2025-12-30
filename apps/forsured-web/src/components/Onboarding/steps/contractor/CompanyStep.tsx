@@ -1,10 +1,7 @@
 // src/components/onboarding/steps/contractor/CompanyStep.tsx
 // REQ-126: Contractor Onboarding - Company Information Step
 import { useState } from 'react';
-import { YStack } from 'tamagui';
-import { Input as TextInput } from '@unicornlove/ui';
-import { Button } from '@unicornlove/ui';
-import { Heading2 } from '@unicornlove/ui';
+import { YStack, Text, H2, Input, Button } from '@unicornlove/ui';
 
 interface CompanyStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -46,44 +43,47 @@ function CompanyStep({ onComplete, initialData = {}, isLoading = false }: Compan
 
   return (
     <YStack>
-      <Heading2 marginBottom="$6">Company Information</Heading2>
+      <H2 mb="$6">Company Information</H2>
       <YStack tag="form" onSubmit={handleSubmit} gap="$4">
-        <TextInput
-          label="Company Name"
-          value={companyName}
-          onChangeText={setCompanyName}
-          error={errors.companyName}
-          placeholder="Enter your company name"
-          required
-        />
-        <TextInput
-          label="Trade/Specialty"
-          value={trade}
-          onChangeText={setTrade}
-          error={errors.trade}
-          placeholder="e.g., Electrical, Plumbing, HVAC"
-          required
-        />
-        <TextInput
-          label="Address"
-          value={address}
-          onChangeText={setAddress}
-          error={errors.address}
-          placeholder="Enter your company address"
-          required
-        />
-        <TextInput
-          label="Phone"
-          value={phone}
-          onChangeText={setPhone}
-          error={errors.phone}
-          placeholder="Enter your phone number"
-          keyboardType="phone-pad"
-          required
-        />
-        <YStack marginTop="$6">
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Company Name</Text>
+          <Input
+            value={companyName}
+            onChangeText={setCompanyName}
+            placeholder="Enter your company name"
+          />
+          {errors.companyName && <Text color="$red10" fontSize="$2">{errors.companyName}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Trade/Specialty</Text>
+          <Input
+            value={trade}
+            onChangeText={setTrade}
+            placeholder="e.g., Electrical, Plumbing, HVAC"
+          />
+          {errors.trade && <Text color="$red10" fontSize="$2">{errors.trade}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Address</Text>
+          <Input
+            value={address}
+            onChangeText={setAddress}
+            placeholder="Enter your company address"
+          />
+          {errors.address && <Text color="$red10" fontSize="$2">{errors.address}</Text>}
+        </YStack>
+        <YStack gap="$2">
+          <Text fontWeight="600" color="$color12">Phone</Text>
+          <Input
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="Enter your phone number"
+          />
+          {errors.phone && <Text color="$red10" fontSize="$2">{errors.phone}</Text>}
+        </YStack>
+        <YStack mt="$6">
           <Button
-            type="submit"
+            onPress={handleSubmit}
             variant="primary"
             disabled={isLoading}
           >

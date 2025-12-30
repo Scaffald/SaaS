@@ -234,8 +234,8 @@ export default function GCOnboarding() {
     <YStack minHeight="100vh" backgroundColor="$backgroundHover" paddingVertical="$8">
       <YStack maxWidth={896} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
         {/* Header */}
-        <YStack alignItems="center" marginBottom="$8">
-          <H1 fontSize="$9" fontWeight="700" color="$color12" marginBottom="$2">
+        <YStack alignItems="center" mb="$8">
+          <H1 fontSize="$9" fontWeight="700" color="$color12" mb="$2">
             Welcome to Simple Insurance
           </H1>
           <Text fontSize="$6" color="$color11">
@@ -244,7 +244,7 @@ export default function GCOnboarding() {
         </YStack>
 
         {/* Progress Indicator */}
-        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" marginBottom="$8">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" mb="$8">
           <XStack alignItems="center" justifyContent="space-between">
             {steps.map((step, index) => {
               const Icon = step.icon;
@@ -280,7 +280,7 @@ export default function GCOnboarding() {
                         <Icon size={20} color={isActive ? 'white' : '$color11'} />
                       )}
                     </XStack>
-                    <YStack marginLeft="$4">
+                    <YStack ml="$4">
                       <Text
                         fontWeight="500"
                         color={isActive ? '$color12' : '$color11'}
@@ -306,8 +306,8 @@ export default function GCOnboarding() {
           {/* Step 1: Company Information */}
           {currentStep === 1 && (
             <YStack padding="$8">
-              <YStack marginBottom="$6">
-                <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+              <YStack mb="$6">
+                <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
                   Company Information
                 </H2>
                 <Text color="$color11">
@@ -318,7 +318,7 @@ export default function GCOnboarding() {
               <YStack gap="$6">
                 {/* Company Name */}
                 <YStack>
-                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                  <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                     Company Name <Text color="$red10">*</Text>
                   </Label>
                   <Input
@@ -343,7 +343,7 @@ export default function GCOnboarding() {
 
                 {/* Company Size */}
                 <YStack>
-                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                  <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                     Company Size <Text color="$red10">*</Text>
                   </Label>
                   <select
@@ -374,7 +374,7 @@ export default function GCOnboarding() {
 
                 {/* Industry */}
                 <YStack>
-                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                  <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                     Primary Industry <Text color="$red10">*</Text>
                   </Label>
                   <select
@@ -404,7 +404,7 @@ export default function GCOnboarding() {
 
                 {/* Annual Revenue */}
                 <YStack>
-                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                  <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                     Annual Revenue (USD) <Text color="$red10">*</Text>
                   </Label>
                   <XStack position="relative" width="100%">
@@ -437,14 +437,14 @@ export default function GCOnboarding() {
                       }
                     />
                   </XStack>
-                  <Text fontSize="$3" color="$color11" marginTop="$1">
+                  <Text fontSize="$3" color="$color11" mt="$1">
                     This helps us recommend appropriate coverage levels
                   </Text>
                 </YStack>
 
                 {/* Location */}
                 <YStack>
-                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                  <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                     Primary Location <Text color="$red10">*</Text>
                   </Label>
                   <Input
@@ -473,10 +473,10 @@ export default function GCOnboarding() {
           {/* Step 2: Compliance Settings */}
           {currentStep === 2 && (
             <YStack padding="$8">
-              <YStack marginBottom="$6">
+              <YStack mb="$6">
                 <XStack alignItems="center" justifyContent="space-between">
                   <YStack>
-                    <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+                    <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
                       Default Compliance Settings
                     </H2>
                     <Text color="$color11">
@@ -506,7 +506,7 @@ export default function GCOnboarding() {
               <YStack gap="$6">
                 {/* General Liability */}
                 <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$4">
                     <XStack alignItems="center" gap="$3">
                       <Shield size={24} color="$blue11" />
                       <YStack>
@@ -531,7 +531,7 @@ export default function GCOnboarding() {
                         }
                         style={{ borderRadius: '4px' }}
                       />
-                      <Text fontSize="$3" color="$color12" marginLeft="$2">
+                      <Text fontSize="$3" color="$color12" ml="$2">
                         Required
                       </Text>
                     </XStack>
@@ -539,7 +539,7 @@ export default function GCOnboarding() {
                   {complianceSettings.generalLiability.required && (
                     <XStack flexWrap="wrap" gap="$4">
                       <YStack flex={1} minWidth="45%">
-                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                           Minimum Coverage
                         </Label>
                         <select
@@ -573,7 +573,7 @@ export default function GCOnboarding() {
 
                 {/* Workers Compensation */}
                 <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$4">
                     <XStack alignItems="center" gap="$3">
                       <Users size={24} color="$green11" />
                       <YStack>
@@ -600,7 +600,7 @@ export default function GCOnboarding() {
                         }
                         style={{ borderRadius: '4px' }}
                       />
-                      <Text fontSize="$3" color="$color12" marginLeft="$2">
+                      <Text fontSize="$3" color="$color12" ml="$2">
                         Required
                       </Text>
                     </XStack>
@@ -608,7 +608,7 @@ export default function GCOnboarding() {
                   {complianceSettings.workersCompensation.required && (
                     <XStack flexWrap="wrap" gap="$4">
                       <YStack flex={1} minWidth="45%">
-                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                           Minimum Coverage
                         </Label>
                         <select
@@ -654,7 +654,7 @@ export default function GCOnboarding() {
                             }
                             style={{ borderRadius: '4px' }}
                           />
-                          <Text fontSize="$3" color="$color12" marginLeft="$2">
+                          <Text fontSize="$3" color="$color12" ml="$2">
                             Require Experience Mod
                           </Text>
                         </XStack>
@@ -665,7 +665,7 @@ export default function GCOnboarding() {
 
                 {/* Professional Liability */}
                 <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$4">
                     <XStack alignItems="center" gap="$3">
                       <FileText size={24} color="$gray10" />
                       <YStack>
@@ -692,7 +692,7 @@ export default function GCOnboarding() {
                         }
                         style={{ borderRadius: '4px' }}
                       />
-                      <Text fontSize="$3" color="$color12" marginLeft="$2">
+                      <Text fontSize="$3" color="$color12" ml="$2">
                         Required
                       </Text>
                     </XStack>
@@ -700,7 +700,7 @@ export default function GCOnboarding() {
                   {complianceSettings.professionalLiability.required && (
                     <XStack flexWrap="wrap" gap="$4">
                       <YStack flex={1} minWidth="45%">
-                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                           Minimum Coverage
                         </Label>
                         <select
@@ -735,7 +735,7 @@ export default function GCOnboarding() {
 
                 {/* Commercial Auto */}
                 <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$4">
                     <XStack alignItems="center" gap="$3">
                       <DollarSign size={24} color="$gray11" />
                       <YStack>
@@ -760,7 +760,7 @@ export default function GCOnboarding() {
                         }
                         style={{ borderRadius: '4px' }}
                       />
-                      <Text fontSize="$3" color="$color12" marginLeft="$2">
+                      <Text fontSize="$3" color="$color12" ml="$2">
                         Required
                       </Text>
                     </XStack>
@@ -768,7 +768,7 @@ export default function GCOnboarding() {
                   {complianceSettings.commercialAuto.required && (
                     <XStack flexWrap="wrap" gap="$4">
                       <YStack flex={1} minWidth="45%">
-                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                           Minimum Coverage
                         </Label>
                         <select
@@ -802,7 +802,7 @@ export default function GCOnboarding() {
 
                 {/* Umbrella Policy */}
                 <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="center" justifyContent="space-between" mb="$4">
                     <XStack alignItems="center" gap="$3">
                       <AlertTriangle size={24} color="$red11" />
                       <YStack>
@@ -827,7 +827,7 @@ export default function GCOnboarding() {
                         }
                         style={{ borderRadius: '4px' }}
                       />
-                      <Text fontSize="$3" color="$color12" marginLeft="$2">
+                      <Text fontSize="$3" color="$color12" ml="$2">
                         Required
                       </Text>
                     </XStack>
@@ -835,7 +835,7 @@ export default function GCOnboarding() {
                   {complianceSettings.umbrella.required && (
                     <XStack flexWrap="wrap" gap="$4">
                       <YStack flex={1} minWidth="45%">
-                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
                           Minimum Coverage
                         </Label>
                         <select
@@ -866,9 +866,9 @@ export default function GCOnboarding() {
                 </Card>
               </YStack>
 
-              <Card marginTop="$6" padding="$4" backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4">
+              <Card mt="$6" padding="$4" backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4">
                 <XStack alignItems="flex-start" gap="$2">
-                  <Info size={16} color="$blue11" marginTop="$0.5" />
+                  <Info size={16} color="$blue11" mt="$0.5" />
                   <YStack>
                     <Text fontSize="$3" color="$blue12" fontWeight="500">
                       Default Settings
@@ -887,8 +887,8 @@ export default function GCOnboarding() {
           {/* Step 3: Confirmation */}
           {currentStep === 3 && (
             <YStack padding="$8">
-              <YStack marginBottom="$6">
-                <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
+              <YStack mb="$6">
+                <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
                   Confirmation & Setup Complete
                 </H2>
                 <Text color="$color11">
@@ -899,7 +899,7 @@ export default function GCOnboarding() {
               <YStack gap="$6">
                 {/* Company Summary */}
                 <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$6">
-                  <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+                  <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
                     Company Information
                   </H3>
                   <XStack flexWrap="wrap" gap="$4">
@@ -940,7 +940,7 @@ export default function GCOnboarding() {
 
                 {/* Compliance Summary */}
                 <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$6">
-                  <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+                  <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
                     Default Compliance Requirements
                   </H3>
                   <YStack gap="$3">
@@ -981,7 +981,7 @@ export default function GCOnboarding() {
                 <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$6">
                   <XStack alignItems="center" justifyContent="space-between">
                     <YStack>
-                      <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+                      <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
                         Project-Specific Overrides
                       </H3>
                       <Text fontSize="$3" color="$color11">
@@ -998,7 +998,7 @@ export default function GCOnboarding() {
                         }
                         style={{ borderRadius: '4px' }}
                       />
-                      <Text fontSize="$3" fontWeight="500" color="$color12" marginLeft="$2">
+                      <Text fontSize="$3" fontWeight="500" color="$color12" ml="$2">
                         Enable
                       </Text>
                     </XStack>
@@ -1113,11 +1113,11 @@ export default function GCOnboarding() {
           >
             <Card backgroundColor="$background" borderRadius="$4" padding="$6" width="100%" maxWidth={448}>
               <YStack alignItems="center">
-                <CheckCircle size={48} color="$green11" marginBottom="$4" />
-                <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
+                <CheckCircle size={48} color="$green11" mb="$4" />
+                <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
                   Confirm Setup
                 </H3>
-                <Text color="$color11" marginBottom="$6">
+                <Text color="$color11" mb="$6">
                   I confirm these settings will apply by default to all
                   contractors and projects. I can modify them later as needed.
                 </Text>

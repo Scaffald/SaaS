@@ -61,7 +61,7 @@ export default function ComplianceHealthCard({
       hoverStyle={{ elevation: 2 }}
       onClick={onClick}
     >
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+      <XStack alignItems="center" justifyContent="space-between" mb="$4">
         <XStack alignItems="center" gap="$3">
           <YStack padding="$3" borderRadius="$4" backgroundColor={colors.iconBg}>
             <Shield color={colors.iconColor} size={24} />
@@ -70,7 +70,7 @@ export default function ComplianceHealthCard({
             <Text fontSize="$3" fontWeight="500" color="$color11">
               Overall Compliance
             </Text>
-            <XStack alignItems="center" gap="$2" marginTop="$1">
+            <XStack alignItems="center" gap="$2" mt="$1">
               <Text fontSize="$9" fontWeight="bold" color={colors.textColor}>
                 {score}%
               </Text>

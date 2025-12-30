@@ -1,7 +1,8 @@
 // src/pages/admin/Brokers.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Trash2, Mail, RefreshCcw } from 'lucide-react';
+import { Trash2, Mail, RefreshCcw, Send } from 'lucide-react';
 import { YStack, XStack, Text, Button, H1, H3, Card, Spinner } from 'tamagui';
+import { EmptyState } from '@unicornlove/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { logAdminAction, AUDIT_ACTIONS } from '../../services/auditLogService';
 import InvitationForm from '../../components/admin/InvitationForm';
@@ -219,11 +220,15 @@ function AdminBrokers() {
 
       <Card padding="$6" borderRadius="$4" elevation={1} backgroundColor="$background" marginBottom="$6">
         {invitations.length === 0 ? (
-          <YStack alignItems="center" paddingVertical="$8">
-            <Text color="$color11">
-              No invitations yet. Create one to invite brokers to the platform.
-            </Text>
-          </YStack>
+          <EmptyState
+            icon={Send}
+            title="No broker invitations yet"
+            description="Create your first invitation to start onboarding insurance brokers to the platform."
+            action={{
+              label: "Create Invitation",
+              onClick: () => setShowInvitationForm(true),
+            }}
+          />
         ) : (
           <table style={{ width: '100%', minWidth: '100%' }}>
             <thead>

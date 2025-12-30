@@ -15,13 +15,10 @@ function ContractorTasks() {
       <H1>My Tasks</H1>
       {!hasPendingTasks ? (
         <EmptyState
-          icon={<CheckCircle size={48} />}
+          icon={CheckCircle}
           title="No Pending Tasks"
           description="You're all caught up! Check back later for new assignments."
-          primaryAction={{ label: 'Refresh Tasks', onClick: handleRefreshTasks }}
-          helpLinks={[
-            { label: 'How Tasks Work', href: '#' },
-          ]}
+          action={{ label: 'Refresh Tasks', onClick: handleRefreshTasks }}
         />
       ) : (
         // Render tasks list here

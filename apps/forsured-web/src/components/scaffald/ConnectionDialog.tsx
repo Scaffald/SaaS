@@ -36,19 +36,19 @@ function ConnectionDialog({
       open={isOpen}
       onClose={onClose}
       title="Connect Your Scaffald Company"
-      size="md"
+      size="medium"
     >
       <YStack gap="$4">
         {scaffaldCompany && (
           <YStack
             backgroundColor="$blue2"
             padding="$4"
-            borderRadius="$md"
+            borderRadius="$3"
             borderWidth={1}
             borderColor="$blue6"
             gap="$2"
           >
-            <Text fontSize="$2" color="$blue11" marginBottom="$2">
+            <Text fontSize="$2" color="$blue11" mb="$2">
               We found a company associated with your Scaffald account:
             </Text>
             <XStack alignItems="center" gap="$2">
@@ -66,8 +66,8 @@ function ConnectionDialog({
           </YStack>
         )}
 
-        <Text marginBottom="$4">Connecting this company will:</Text>
-        <YStack gap="$2" marginBottom="$6" paddingLeft="$4">
+        <Text mb="$4">Connecting this company will:</Text>
+        <YStack gap="$2" mb="$6" paddingLeft="$4">
           <Text fontSize="$2" color="$color11">• Import your existing projects</Text>
           <Text fontSize="$2" color="$color11">• Sync contractor relationships</Text>
           <Text fontSize="$2" color="$color11">• Share compliance data</Text>
