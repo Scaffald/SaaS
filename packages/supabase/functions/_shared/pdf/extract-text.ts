@@ -1,10 +1,13 @@
 type ExtractSource = 'unpdf' | 'fallback';
 
 // Lazy loading for large packages to reduce bundle size
-let unpdfModule: typeof import("unpdf") | null = null;
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
+let unpdfModule: any | null = null;
 
-async function getUnpdf(): Promise<typeof import("unpdf")> {
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
+async function getUnpdf(): Promise<any> {
   if (!unpdfModule) {
+    // @ts-ignore: Dynamic import for optional dependency
     unpdfModule = await import("unpdf");
   }
   return unpdfModule;

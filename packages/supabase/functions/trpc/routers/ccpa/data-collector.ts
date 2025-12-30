@@ -252,7 +252,7 @@ async function collectProfessionalInformation(
           skillName: null, // Would need join to get name
           taxonomyType: skill.skill_taxonomy ?? null,
           yearsExperience: skill.years_experience ?? null,
-          proficiencyLevel: skill.proficiency_level ?? null,
+          proficiencyLevel: skill.proficiency_level !== null ? String(skill.proficiency_level) : null,
           isVerified: skill.verified ?? false,
         })
       }
@@ -472,7 +472,8 @@ async function collectUsageInformation(
   // Get profile views
   const profileViews: ProfileViewEntry[] = []
   try {
-    const { data: viewsData, error } = await supabase
+    // biome-ignore lint/suspicious/noExplicitAny: social schema not in database types
+    const { data: viewsData, error } = await (supabase as any)
       .schema('social')
       .from('profile_views')
       .select('id, viewer_user_id, viewed_at')
@@ -485,9 +486,9 @@ async function collectUsageInformation(
     } else if (viewsData) {
       for (const view of viewsData) {
         profileViews.push({
-          id: view.id,
-          viewerId: view.viewer_user_id ?? null,
-          viewedAt: view.viewed_at ?? now,
+          id: (view as any).id,
+          viewerId: (view as any).viewer_user_id ?? null,
+          viewedAt: (view as any).viewed_at ?? now,
           viewerType: null, // Would need additional lookup
         })
       }

@@ -240,8 +240,8 @@ export async function sendDeadlineAlert(
         user_id: adminUserId,
         title,
         message,
-        type: 'ccpa_deadline_alert',
-        severity,
+        type: 'ccpa_deadline_alert' as any,
+        severity: severity as any,
         metadata: {
           request_id: request.requestId,
           request_type: request.requestType,
