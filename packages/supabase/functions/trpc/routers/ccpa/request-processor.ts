@@ -118,7 +118,7 @@ async function logProcessingEvent(
       status,
       notes,
       metadata,
-    })
+    } as never)
 }
 
 /**
@@ -138,7 +138,7 @@ async function getRegisteredOAuthApps(
     return []
   }
 
-  return data ?? []
+  return (data ?? []) as any
 }
 
 /**
@@ -314,7 +314,7 @@ async function aggregateAllData(
     (c) => c.status === 'received'
   )
 
-  const enhancedData: UserDataExport = {
+  const enhancedData: any = {
     ...coreData,
     metadata: {
       ...coreData.metadata,
@@ -377,8 +377,8 @@ async function finalizeRequest(
         user_id: adminUserId,
         title: 'CCPA Request Processing Error',
         message: `Request ${requestId.slice(0, 8)} encountered errors during processing. Manual review may be required.`,
-        type: 'ccpa_processing_error',
-        severity: 'warning',
+        type: 'ccpa_processing_error' as any,
+        severity: 'warning' as any,
         metadata: {
           request_id: requestId,
           stage: result.stage,
@@ -601,7 +601,7 @@ export async function processRequest(
             },
             // Store the actual data (will be consumed by export generator)
             export_data: aggregatedData,
-          },
+          } as any,
         })
         .eq('id', requestId)
     }
