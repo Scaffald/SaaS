@@ -4965,6 +4965,8 @@ export type Database = {
       oauth_apps: {
         Row: {
           allowed_scopes: string[]
+          approved_at: string | null
+          approved_by: string | null
           client_id: string
           client_secret_hash: string
           created_at: string
@@ -4976,12 +4978,17 @@ export type Database = {
           logo_url: string | null
           name: string
           owner_email: string | null
+          privacy_policy_url: string | null
           redirect_uris: string[]
+          requires_approval: boolean
           status: string
+          terms_of_service_url: string | null
           updated_at: string
         }
         Insert: {
           allowed_scopes?: string[]
+          approved_at?: string | null
+          approved_by?: string | null
           client_id: string
           client_secret_hash: string
           created_at?: string
@@ -4993,12 +5000,17 @@ export type Database = {
           logo_url?: string | null
           name: string
           owner_email?: string | null
+          privacy_policy_url?: string | null
           redirect_uris?: string[]
+          requires_approval?: boolean
           status?: string
+          terms_of_service_url?: string | null
           updated_at?: string
         }
         Update: {
           allowed_scopes?: string[]
+          approved_at?: string | null
+          approved_by?: string | null
           client_id?: string
           client_secret_hash?: string
           created_at?: string
@@ -5010,11 +5022,28 @@ export type Database = {
           logo_url?: string | null
           name?: string
           owner_email?: string | null
+          privacy_policy_url?: string | null
           redirect_uris?: string[]
+          requires_approval?: boolean
           status?: string
+          terms_of_service_url?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "oauth_apps_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_apps_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "oauth_apps_created_by_fkey"
             columns: ["created_by"]
@@ -5103,6 +5132,8 @@ export type Database = {
           display_name: string
           id: string
           is_sensitive: boolean
+          rbac_permissions: string[]
+          requires_admin_approval: boolean
           requires_consent: boolean
           scope: string
         }
@@ -5113,6 +5144,8 @@ export type Database = {
           display_name: string
           id?: string
           is_sensitive?: boolean
+          rbac_permissions?: string[]
+          requires_admin_approval?: boolean
           requires_consent?: boolean
           scope: string
         }
@@ -5123,6 +5156,8 @@ export type Database = {
           display_name?: string
           id?: string
           is_sensitive?: boolean
+          rbac_permissions?: string[]
+          requires_admin_approval?: boolean
           requires_consent?: boolean
           scope?: string
         }
@@ -5188,6 +5223,64 @@ export type Database = {
           },
           {
             foreignKeyName: "oauth_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      oauth_user_consents: {
+        Row: {
+          consented_at: string
+          created_at: string
+          expires_at: string
+          granted_scopes: string[]
+          id: string
+          oauth_app_id: string
+          revoked_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consented_at?: string
+          created_at?: string
+          expires_at?: string
+          granted_scopes?: string[]
+          id?: string
+          oauth_app_id: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consented_at?: string
+          created_at?: string
+          expires_at?: string
+          granted_scopes?: string[]
+          id?: string
+          oauth_app_id?: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oauth_user_consents_oauth_app_id_fkey"
+            columns: ["oauth_app_id"]
+            isOneToOne: false
+            referencedRelation: "oauth_apps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_user_consents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oauth_user_consents_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
@@ -9954,6 +10047,10 @@ export type Database = {
         }
         Returns: string
       }
+      generate_oauth_token: {
+        Args: { p_oauth_app_id: string; p_scopes: string[]; p_user_id: string }
+        Returns: Json
+      }
       get_current_verification: {
         Args: { p_worker_user_id: string }
         Returns: {
@@ -10103,6 +10200,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      revoke_oauth_app_tokens: {
+        Args: { p_oauth_app_id: string }
+        Returns: number
+      }
       rotate_stripe_secret: {
         Args: { p_secret: string; p_secret_type?: string }
         Returns: string
@@ -10128,6 +10229,10 @@ export type Database = {
       validate_address_in_site: {
         Args: { p_address_id: string; p_site_id: string }
         Returns: boolean
+      }
+      validate_oauth_scope: {
+        Args: { p_requested_scopes: string[]; p_user_id: string }
+        Returns: string[]
       }
     }
     Enums: {
@@ -17168,26 +17273,44 @@ export type Database = {
         Returns: undefined
       }
       operation: { Args: never; Returns: string }
-      search: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
+      search:
+        | {
+            Args: {
+              bucketname: string
+              levels?: number
+              limits?: number
+              offsets?: number
+              prefix: string
+            }
+            Returns: {
+              created_at: string
+              id: string
+              last_accessed_at: string
+              metadata: Json
+              name: string
+              updated_at: string
+            }[]
+          }
+        | {
+            Args: {
+              bucketname: string
+              levels?: number
+              limits?: number
+              offsets?: number
+              prefix: string
+              search?: string
+              sortcolumn?: string
+              sortorder?: string
+            }
+            Returns: {
+              created_at: string
+              id: string
+              last_accessed_at: string
+              metadata: Json
+              name: string
+              updated_at: string
+            }[]
+          }
       search_legacy_v1: {
         Args: {
           bucketname: string
@@ -17228,27 +17351,45 @@ export type Database = {
           updated_at: string
         }[]
       }
-      search_v2: {
-        Args: {
-          bucket_name: string
-          levels?: number
-          limits?: number
-          prefix: string
-          sort_column?: string
-          sort_column_after?: string
-          sort_order?: string
-          start_after?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          key: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
+      search_v2:
+        | {
+            Args: {
+              bucket_name: string
+              levels?: number
+              limits?: number
+              prefix: string
+              start_after?: string
+            }
+            Returns: {
+              created_at: string
+              id: string
+              key: string
+              metadata: Json
+              name: string
+              updated_at: string
+            }[]
+          }
+        | {
+            Args: {
+              bucket_name: string
+              levels?: number
+              limits?: number
+              prefix: string
+              sort_column?: string
+              sort_column_after?: string
+              sort_order?: string
+              start_after?: string
+            }
+            Returns: {
+              created_at: string
+              id: string
+              key: string
+              last_accessed_at: string
+              metadata: Json
+              name: string
+              updated_at: string
+            }[]
+          }
     }
     Enums: {
       buckettype: "STANDARD" | "ANALYTICS" | "VECTOR"

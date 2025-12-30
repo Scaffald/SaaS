@@ -36,10 +36,11 @@ COMMENT ON COLUMN core.oauth_user_consents.granted_scopes IS 'Array of OAuth sco
 COMMENT ON COLUMN core.oauth_user_consents.expires_at IS 'Consent expires after 90 days, requiring re-authorization (does not revoke existing tokens)';
 COMMENT ON COLUMN core.oauth_user_consents.revoked_at IS 'Timestamp when user revoked consent - NULL if consent is active';
 
--- Unique constraint: One active consent per user-app pair
--- Allows new consent after revocation/expiration
-CREATE UNIQUE INDEX IF NOT EXISTS idx_oauth_user_consents_user_app ON core.oauth_user_consents(user_id, oauth_app_id) 
-  WHERE revoked_at IS NULL AND expires_at > NOW();
+-- Unique constraint: One active (non-revoked) consent per user-app pair
+-- Allows new consent after revocation
+-- Note: Expired consents are handled in application logic, not database constraint
+CREATE UNIQUE INDEX IF NOT EXISTS idx_oauth_user_consents_user_app ON core.oauth_user_consents(user_id, oauth_app_id)
+  WHERE revoked_at IS NULL;
 
 -- Indexes for queries
 CREATE INDEX IF NOT EXISTS idx_oauth_user_consents_expires ON core.oauth_user_consents(expires_at) 
