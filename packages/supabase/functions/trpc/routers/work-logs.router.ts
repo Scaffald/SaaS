@@ -115,7 +115,7 @@ const sortDirectionSchema = z.enum(["asc", "desc"]);
 const listWorkLogsInputSchema = z.object({
   page: z.number().int().min(0).default(0),
   pageSize: z.number().int().min(1).max(100).default(20),
-  statuses: z.array(workLogStatusSchema).min(1).optional(),
+  statuses: z.array(workLogStatusSchema as any).min(1).optional(),
   projectId: z.string().uuid().optional(),
   dateFrom: z
     .string()
@@ -892,8 +892,8 @@ const buildWorkLogExportSnapshot = async (
   return {
     workLog,
     ownerName,
-    ownerEmail: typeof ownerRecord?.email === "string"
-      ? ownerRecord.email
+    ownerEmail: typeof (ownerRecord as any)?.email === "string"
+      ? (ownerRecord as any).email
       : null,
     projectName: resolveStringField(projectRecord, [
       "name",
@@ -1461,7 +1461,7 @@ const recordAuditLog = async (
       old_value: oldValue ?? null,
       new_value: newValue ?? null,
       reason: reason ?? null,
-    });
+    } as never);
 };
 
 const getProjectVerificationRequirement = async (
@@ -1844,7 +1844,7 @@ export const workLogsRouter = t.router({
             },
           ) => {
             const logId = typeof log.id === "string" ? log.id : String(log.id);
-            const activityTimestamp = resolveActivityTimestamp(log);
+            const activityTimestamp = resolveActivityTimestamp(log as any);
             return {
               id: logId,
               status: typeof log.status === "string" ? log.status : "draft",
@@ -1903,6 +1903,13 @@ export const workLogsRouter = t.router({
     .input(publicWorkLogsInputSchema)
     .query(async ({ ctx, input }) => {
       const { supabaseAdmin } = ctx;
+
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        });
+      }
 
       const { userId, limit } = input;
 
@@ -2423,7 +2430,7 @@ export const workLogsRouter = t.router({
             const worker = workerId
               ? (workerMetadata.get(workerId) ?? null)
               : null;
-            const activityTimestamp = resolveActivityTimestamp(log);
+            const activityTimestamp = resolveActivityTimestamp(log as any);
             return {
               id: logId,
               workerId,
@@ -2520,7 +2527,7 @@ export const workLogsRouter = t.router({
         .order(input.sortField, {
           ascending: input.sortDirection === "asc",
           nullsLast: true,
-        })
+        } as any)
         .range(offset, offset + pageSize - 1);
 
       const { data: rows, count, error } = await query;
@@ -2837,7 +2844,7 @@ export const workLogsRouter = t.router({
             const projectId = typeof log.project_id === "string"
               ? log.project_id
               : null;
-            const activityTimestamp = resolveActivityTimestamp(log);
+            const activityTimestamp = resolveActivityTimestamp(log as any);
             return {
               id,
               projectId,
@@ -3369,6 +3376,13 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        });
+      }
+
       const { workLog, role } = await getWorkLogAccess(
         supabase,
         input.workLogId,
@@ -3898,9 +3912,7 @@ export const workLogsRouter = t.router({
       const { data: signedUpload, error: signedUrlError } = await supabase
         .storage
         .from(WORK_LOG_PHOTO_BUCKET)
-        .createSignedUploadUrl(filePath, SIGNED_UPLOAD_URL_TTL_SECONDS, {
-          contentType: input.contentType,
-        });
+        .createSignedUploadUrl(filePath);
 
       if (signedUrlError || !signedUpload) {
         console.error(
@@ -3999,6 +4011,7 @@ export const workLogsRouter = t.router({
         token: signedUpload.token,
         filePath: filePath,
         photo: photoRecord,
+        workLogId: input.workLogId,
         expiresIn: SIGNED_UPLOAD_URL_TTL_SECONDS,
       };
     }),
@@ -4107,9 +4120,25 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
+      // First, fetch the photo to get the work_log_id
+      const { data: photo, error: photoError } = await supabase
+        .schema("core")
+        .from("work_log_photos")
+        .select("id, work_log_id, show_on_profile")
+        .eq("id", input.photoId)
+        .single();
+
+      if (photoError || !photo) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Work log photo not found",
+        });
+      }
+
+      // Now check access using the work_log_id from the photo
       const { workLog, role } = await getWorkLogAccess(
         supabase,
-        input.workLogId,
+        photo.work_log_id,
         user.id,
       );
 
@@ -4120,14 +4149,7 @@ export const workLogsRouter = t.router({
         });
       }
 
-      const { data: photo, error: photoError } = await supabase
-        .schema("core")
-        .from("work_log_photos")
-        .select("id, work_log_id, show_on_profile")
-        .eq("id", input.photoId)
-        .single();
-
-      if (photoError || !photo || photo.work_log_id !== workLog.id) {
+      if (photo.work_log_id !== workLog.id) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Work log photo not found",
@@ -4957,7 +4979,7 @@ export const workLogsRouter = t.router({
         });
       }
 
-      const expiresAtIso = signedUrlData.expiresAt ??
+      const expiresAtIso = (signedUrlData as { signedUrl: string; expiresAt?: string }).expiresAt ??
         new Date(Date.now() + SIGNED_EXPORT_URL_TTL_SECONDS * 1000)
           .toISOString();
 
