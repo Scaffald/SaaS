@@ -42,16 +42,16 @@ export const stripeSettingsRouter = t.router({
     }
 
     return {
-      publishableKey: data?.publishable_key ?? '',
-      hasApiKey: Boolean(data?.api_key_secret_id),
-      hasWebhookSecret: Boolean(data?.webhook_secret_id),
-      testMode: data?.test_mode ?? true,
-      webhookEndpointUrl: data?.webhook_endpoint_url ?? buildWebhookUrl(),
-      lastTestedAt: data?.last_tested_at ?? null,
-      lastTestedStatus: data?.last_tested_status ?? null,
-      lastTestedError: data?.last_tested_error ?? null,
-      updatedAt: data?.updated_at ?? null,
-      updatedBy: data?.updated_by ?? null,
+      publishableKey: (data as any)?.publishable_key ?? '',
+      hasApiKey: Boolean((data as any)?.api_key_secret_id),
+      hasWebhookSecret: Boolean((data as any)?.webhook_secret_id),
+      testMode: (data as any)?.test_mode ?? true,
+      webhookEndpointUrl: (data as any)?.webhook_endpoint_url ?? buildWebhookUrl(),
+      lastTestedAt: (data as any)?.last_tested_at ?? null,
+      lastTestedStatus: (data as any)?.last_tested_status ?? null,
+      lastTestedError: (data as any)?.last_tested_error ?? null,
+      updatedAt: (data as any)?.updated_at ?? null,
+      updatedBy: (data as any)?.updated_by ?? null,
     }
   }),
 

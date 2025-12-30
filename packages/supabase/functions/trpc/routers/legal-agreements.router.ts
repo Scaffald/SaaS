@@ -9,6 +9,13 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
 
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   // Office users have access to all organizations
   const { data: roleCheck } = await ctx.supabaseAdmin
     .schema('core')
