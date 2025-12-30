@@ -377,7 +377,7 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     })
   }
 
-  if (!settings?.api_key_secret_id) {
+  if (!(settings as any)?.api_key_secret_id) {
     throw new TRPCError({
       code: 'BAD_REQUEST',
       message: 'Stripe API key is not configured.',
@@ -387,7 +387,7 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
   const { data: secretValue, error: secretError } = await ctx.supabaseAdmin
     .schema('core')
     .rpc('get_secret_value', {
-      p_secret_id: settings.api_key_secret_id,
+      p_secret_id: (settings as any).api_key_secret_id,
     })
 
   if (secretError || !secretValue) {
@@ -415,10 +415,11 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
     return false
   }
 
-  const { data, error } = await ctx.dbAdmin
-    .core('role_assignments')
+  const { data, error } = await (ctx.supabaseAdmin
+    .schema('core')
+    .from('role_assignments')
     .select('role:roles(name, scope)')
-    .eq('user_id', ctx.user.id)
+    .eq('user_id', ctx.user.id) as any)
 
   if (error) {
     throw new TRPCError({
@@ -428,7 +429,7 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
   }
 
   return Boolean(
-    data?.some(
+    (data as any)?.some(
       (assignment: { role?: { scope?: string; name?: string } | null }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
@@ -469,7 +470,7 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
     })
   }
 
-  if (organization.owner_user_id === ctx.user.id) {
+  if ((organization as any).owner_user_id === ctx.user.id) {
     return
   }
 
@@ -1171,7 +1172,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      const checkTypeIds = Array.isArray(pkg.check_type_ids) ? pkg.check_type_ids : []
+      const checkTypeIds = Array.isArray((pkg as any).check_type_ids) ? (pkg as any).check_type_ids : []
 
       if (checkTypeIds.length === 0) {
         throw new TRPCError({
@@ -1220,12 +1221,12 @@ export const backgroundChecksRouter = t.router({
         }
 
         for (const addOn of addOns ?? []) {
-          activeAddOnIds.push(addOn.id)
-          addOnsTotal += addOn.price_cents ?? 0
+          activeAddOnIds.push((addOn as any).id)
+          addOnsTotal += (addOn as any).price_cents ?? 0
         }
       }
 
-      const totalPriceCents = tierRow.price_cents + addOnsTotal
+      const totalPriceCents = (tierRow as any).price_cents + addOnsTotal
       const now = new Date().toISOString()
       const statusHistory = [
         {
@@ -1241,7 +1242,7 @@ export const backgroundChecksRouter = t.router({
           user_id: workerUserId,
           requested_by_user_id: user?.id ?? null,
           organization_id: input.organization_id ?? null,
-          package_id: pkg.id,
+          package_id: (pkg as any).id,
           check_type_ids: checkTypeIds,
           custom_configuration: (input.custom_configuration ?? {}) as Json,
           status: 'pending',
@@ -1249,12 +1250,12 @@ export const backgroundChecksRouter = t.router({
           paid_by: input.paid_by,
           tier: input.tier,
           add_on_ids: activeAddOnIds,
-          base_price_cents: tierRow.price_cents,
+          base_price_cents: (tierRow as any).price_cents,
           add_ons_price_cents: addOnsTotal,
           total_price_cents: totalPriceCents,
           metadata: (input.metadata ?? {}) as Json,
           invited_at: now,
-        })
+        } as any)
         .select('id, total_price_cents')
         .maybeSingle()
 
@@ -1269,7 +1270,7 @@ export const backgroundChecksRouter = t.router({
 
       if (input.consent) {
         await recordBackgroundCheckConsent(ctx, {
-          backgroundCheckId: insertedRecord.id,
+          backgroundCheckId: (insertedRecord as any).id,
           workerUserId,
           consent: input.consent,
           source: input.paid_by === 'worker' ? 'worker_self_service' : 'organization_portal',
@@ -1281,7 +1282,7 @@ export const backgroundChecksRouter = t.router({
         amount: totalPriceCents,
         currency: 'usd',
         metadata: {
-          background_check_id: insertedRecord.id,
+          background_check_id: (insertedRecord as any).id,
           tier: input.tier,
           package_id: input.package_id,
           stage: 'background_check',
@@ -1301,7 +1302,7 @@ export const backgroundChecksRouter = t.router({
         .update({
           payment_intent_id: intent.id,
         })
-        .eq('id', insertedRecord.id)
+        .eq('id', (insertedRecord as any).id)
 
       if (updateError) {
         throw new TRPCError({
@@ -1313,7 +1314,7 @@ export const backgroundChecksRouter = t.router({
       await recordBackgroundCheckTransaction(ctx, {
         organizationId: input.paid_by === 'organization' ? (input.organization_id ?? null) : null,
         userId: user?.id ?? null,
-        backgroundCheckId: insertedRecord.id,
+        backgroundCheckId: (insertedRecord as any).id,
         amountCents: totalPriceCents,
         transactionType: 'background_check',
         paymentIntentId: intent.id,
@@ -1324,7 +1325,7 @@ export const backgroundChecksRouter = t.router({
       })
 
       return {
-        backgroundCheckId: insertedRecord.id,
+        backgroundCheckId: (insertedRecord as any).id,
         paymentIntentId: intent.id,
         clientSecret: intent.client_secret,
         amountCents: totalPriceCents,
@@ -1707,7 +1708,7 @@ export const backgroundChecksRouter = t.router({
         is_active: input.is_active ?? true,
       }
 
-      const query = ctx.dbAdmin.core('background_check_types')
+      const query = ctx.dbAdmin.core('background_check_types') as any
 
       const { data, error } = input.id
         ? await query
@@ -1718,7 +1719,7 @@ export const backgroundChecksRouter = t.router({
             )
             .maybeSingle()
         : await query
-            .insert(payload)
+            .insert(payload as any)
             .select(
               'id, slug, display_name, description, category, provider_check_code, validity_days, platform_cost_cents, retail_cost_cents, estimated_completion_days, required_documents, provider_configuration, metadata, is_active, created_at, updated_at'
             )
@@ -1787,7 +1788,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      const packages = await fetchAdminPackages(ctx, [data.id as string])
+      const packages = await fetchAdminPackages(ctx, [(data as any).id as string])
       const [record] = packages
 
       if (!record) {
@@ -2084,7 +2085,7 @@ export const backgroundChecksRouter = t.router({
     }
 
     return listChecksOutputSchema.array().parse(
-      (data ?? []).map((row: { id: string; status: string; package?: { id?: string | null; display_name?: string | null; slug?: string | null } | null; completed_at?: string | null; created_at?: string | null; expires_at?: string | null; invited_at?: string | null; provider_check_id?: string | null; findings?: unknown; metadata?: unknown }) => ({
+      (data ?? []).map((row: any) => ({
         id: row.id,
         status: row.status,
         package: {
@@ -2409,7 +2410,7 @@ export const backgroundChecksRouter = t.router({
 
       const { data, error } = await supabase.storage
         .from(BACKGROUND_CHECK_BUCKET_ID)
-        .createSignedUploadUrl(storagePath, SIGNED_UPLOAD_URL_TTL_SECONDS)
+        .createSignedUploadUrl(storagePath)
 
       if (error || !data) {
         console.error('[backgroundChecks.createUploadUrl] failed to create signed URL', {
@@ -2817,12 +2818,12 @@ export const backgroundChecksRouter = t.router({
 
       try {
         await notifyBackgroundCheckStatusChange({
-          supabase: ctx.supabaseAdmin,
+          supabase: ctx.supabaseAdmin as any,
           status: 'disputed',
           workerId: user.id,
           requesterId: existing.requested_by_user_id ?? null,
           checkId: input.background_check_id,
-          packageName: existing.package?.display_name ?? existing.package?.slug ?? null,
+          packageName: (existing as any).package?.display_name ?? (existing as any).package?.slug ?? null,
           summary: input.dispute_reason ?? input.dispute_details ?? null,
           actorId: user.id,
         })
@@ -2879,7 +2880,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row: { id: string; status: string; worker?: { id?: string | null; display_name?: string | null; username?: string | null; email?: string | null; avatar_path?: string | null } | null; job?: { id?: string | null; title?: string | null } | null; package?: { id?: string | null; display_name?: string | null; slug?: string | null } | null; [key: string]: unknown }) => {
+      return (data ?? []).map((row: any) => {
         const workerRecord = (row.worker ?? null) as {
           id?: string | null
           display_name?: string | null
@@ -3122,13 +3123,13 @@ export const backgroundChecksRouter = t.router({
 
       try {
         await notifyBackgroundCheckInvitation({
-          supabase: ctx.supabaseAdmin,
+          supabase: ctx.supabaseAdmin as any,
           workerId: input.worker_user_id,
           invitedById: user.id,
           checkId: record.id,
-          packageName: pkg.display_name ?? pkg.slug ?? null,
+          packageName: (pkg as any).display_name ?? (pkg as any).slug ?? null,
           actorId: user.id,
-        })
+        } as any)
       } catch (error) {
         console.error(
           '[backgroundChecks.organizationInitiate] failed to send invitation notification',
@@ -3383,12 +3384,12 @@ export const backgroundChecksRouter = t.router({
 
       try {
         await notifyBackgroundCheckStatusChange({
-          supabase: ctx.supabaseAdmin,
+          supabase: ctx.supabaseAdmin as any,
           status: updated.status,
           workerId: updated.user_id,
           requesterId: updated.requested_by_user_id ?? null,
           checkId: updated.id,
-          packageName: updated.package?.display_name ?? updated.package?.slug ?? null,
+          packageName: (updated as any).package?.display_name ?? (updated as any).package?.slug ?? null,
           summary: input.summary ?? updated.summary ?? null,
           actorId: user.id,
         })
@@ -3561,8 +3562,8 @@ export const backgroundChecksRouter = t.router({
   adminGetMetrics: officeProcedure.query(async ({ ctx }) => {
     const [{ data: checks, error: checksError }, { data: disputes, error: disputesError }] =
       await Promise.all([
-        ctx.dbAdmin
-          .core('background_checks')
+        (ctx.dbAdmin
+          .core('background_checks') as any)
           .select(
             'status, created_at, completed_at, package:background_check_packages(id, display_name, slug)'
           ),
@@ -3581,7 +3582,7 @@ export const backgroundChecksRouter = t.router({
     const packageTotals: Record<string, number> = {}
     let completedCount = 0
     let durationSumDays = 0
-    ;(checks ?? []).forEach((record: { status?: string | null; created_at?: string | null; completed_at?: string | null; package?: { display_name?: string | null; slug?: string | null } | null; [key: string]: unknown }) => {
+    ;(checks ?? []).forEach((record: any) => {
       const status = record.status ?? 'unknown'
       statusTotals[status] = (statusTotals[status] ?? 0) + 1
 
@@ -3601,7 +3602,7 @@ export const backgroundChecksRouter = t.router({
     })
 
     const disputeTotals: Record<string, number> = {}
-    ;(disputes ?? []).forEach((record: { status?: string | null; [key: string]: unknown }) => {
+    ;(disputes ?? []).forEach((record: any) => {
       const status = record.status ?? 'unknown'
       disputeTotals[status] = (disputeTotals[status] ?? 0) + 1
     })
