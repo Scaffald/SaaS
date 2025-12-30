@@ -85,6 +85,12 @@ async function ensureOrganizationAccess(
   }
 
   const isOwner = organization.owner_user_id === ctx.user.id;
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    });
+  }
   const assignments = await loadUserRoleAssignments(
     ctx.supabaseAdmin,
     ctx.user.id,
@@ -131,6 +137,12 @@ async function recordOrganizationAuditLog(
   organizationId: string,
   payload: AuditLogPayload,
 ) {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    });
+  }
   await ctx.supabaseAdmin
     .schema("core")
     .from("organization_audit_log")
@@ -145,7 +157,7 @@ async function recordOrganizationAuditLog(
       before_data: payload.before ?? null,
       after_data: payload.after ?? null,
       metadata: payload.metadata ?? {},
-    });
+    } as never);
 }
 
 async function getStoragePolicy(ctx: Context, organizationId: string) {
@@ -203,6 +215,12 @@ async function incrementStorageUsage(
   deltaBytes: number,
   options: { incrementDocumentCount?: boolean } = {},
 ) {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    });
+  }
   const existing = await getStorageUsage(ctx, organizationId);
   const nextDocCount = existing.document_count +
     (options.incrementDocumentCount ? 1 : 0);
@@ -658,10 +676,7 @@ export const organizationsRouter = t.router({
         .eq("user_id", ctx.user.id);
 
       const isAdmin = roleAssignments?.some(
-        (assignment: {
-          role: { name: string; scope: string } | null
-          scope_org_id: string | null
-        }) =>
+        (assignment: any) =>
           assignment.role &&
           (assignment.scope_org_id === input.organization_id ||
             (assignment.role.name === "admin" &&
@@ -736,10 +751,7 @@ export const organizationsRouter = t.router({
         .eq("user_id", ctx.user.id);
 
       const isAdmin = roleAssignments?.some(
-        (assignment: {
-          role: { name: string; scope: string } | null
-          scope_org_id: string | null
-        }) =>
+        (assignment: any) =>
           assignment.role &&
           (assignment.scope_org_id === input.organization_id ||
             (assignment.role.name === "admin" &&
@@ -1238,13 +1250,7 @@ export const organizationsRouter = t.router({
       const members = new Map<string, Record<string, unknown>>();
       (data ?? []).forEach(
         (
-          assignment: {
-            user_id?: string | null;
-            user?: unknown;
-            created_at: string;
-            role?: { name?: string | null } | null;
-            [key: string]: unknown;
-          },
+          assignment: any,
         ) => {
           const userId = assignment.user_id;
           if (!userId) return;
@@ -1257,7 +1263,7 @@ export const organizationsRouter = t.router({
             });
           }
 
-          const entry = members.get(userId);
+          const entry = members.get(userId) as any;
           if (
             assignment.role?.name && !entry.roles.includes(assignment.role.name)
           ) {
@@ -1272,16 +1278,17 @@ export const organizationsRouter = t.router({
         const roleSet = new Set(input.roleNames.map((role) =>
           role.toLowerCase()
         ));
-        results = results.filter((member) =>
+        results = results.filter((member: any) =>
           member.roles.some((role: string) => roleSet.has(role.toLowerCase()))
         );
       }
 
       if (input.search?.trim()) {
         const term = input.search.trim().toLowerCase();
-        results = results.filter((member) => {
-          const display = member.profile?.display_name?.toLowerCase() ?? '';
-          const username = member.profile?.username?.toLowerCase() ?? '';
+        results = results.filter((member: any) => {
+          const user = member.profile as { display_name?: string; username?: string } | null;
+          const display = user?.display_name?.toLowerCase() ?? '';
+          const username = user?.username?.toLowerCase() ?? '';
           return display.includes(term) || username.includes(term);
         });
       }
@@ -1319,11 +1326,7 @@ export const organizationsRouter = t.router({
       >();
       (data ?? []).forEach(
         (
-          entry: {
-            actor_user_id?: string | null;
-            created_at: string;
-            [key: string]: unknown;
-          },
+          entry: any,
         ) => {
           if (!entry.actor_user_id) return;
           if (!activityMap.has(entry.actor_user_id)) {
@@ -1521,7 +1524,7 @@ export const organizationsRouter = t.router({
 
       const { data: signedUrl, error: signedError } = await ctx.supabase.storage
         .from(ORG_DOCUMENT_BUCKET)
-        .createSignedUploadUrl(storagePath, DOCUMENT_UPLOAD_URL_TTL_SECONDS);
+        .createSignedUploadUrl(storagePath);
 
       if (signedError || !signedUrl) {
         throw new TRPCError({
@@ -2071,14 +2074,14 @@ export const organizationsRouter = t.router({
         requireAdmin: true,
       });
 
-      const { data: docCount } = await ctx.supabase
+      const { count: docCount } = await ctx.supabase
         .schema("core")
         .from("organization_documents")
         .select("id", { count: "exact", head: true })
         .eq("organization_id", input.organizationId)
         .eq("folder_id", input.folderId);
 
-      if ((docCount ?? 0) > 0) {
+      if (typeof docCount === 'number' && docCount > 0) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Move or delete documents before removing the folder.",
@@ -2335,31 +2338,47 @@ export const organizationsRouter = t.router({
       const { data: existing } = await ctx.supabase
         .schema("core")
         .from("organization_settings")
-        .select("organization_id, created_by")
+        .select("*")
         .eq("organization_id", input.organizationId)
         .maybeSingle();
 
+      const existingSettings = existing as {
+        organization_id: string;
+        created_by: string;
+        timezone?: string;
+        locale?: string;
+        default_currency?: string;
+        business_hours?: unknown;
+        holiday_calendar?: unknown;
+        notification_preferences?: unknown;
+        security_preferences?: unknown;
+        privacy_preferences?: unknown;
+        enforce_mfa?: boolean;
+        session_timeout_minutes?: number;
+        ip_allow_list?: unknown;
+      } | null;
+
       const payload = {
         organization_id: input.organizationId,
-        timezone: input.timezone ?? existing?.timezone ?? "UTC",
-        locale: input.locale ?? existing?.locale ?? "en-US",
-        default_currency: input.defaultCurrency ?? existing?.default_currency ??
+        timezone: input.timezone ?? existingSettings?.timezone ?? "UTC",
+        locale: input.locale ?? existingSettings?.locale ?? "en-US",
+        default_currency: input.defaultCurrency ?? existingSettings?.default_currency ??
           "USD",
-        business_hours: input.businessHours ?? existing?.business_hours ?? [],
-        holiday_calendar: input.holidayCalendar ?? existing?.holiday_calendar ??
+        business_hours: input.businessHours ?? existingSettings?.business_hours ?? [],
+        holiday_calendar: input.holidayCalendar ?? existingSettings?.holiday_calendar ??
           [],
         notification_preferences: input.notificationPreferences ??
-          existing?.notification_preferences ?? {},
+          existingSettings?.notification_preferences ?? {},
         security_preferences: input.securityPreferences ??
-          existing?.security_preferences ?? {},
+          existingSettings?.security_preferences ?? {},
         privacy_preferences: input.privacyPreferences ??
-          existing?.privacy_preferences ?? {},
-        enforce_mfa: input.enforceMfa ?? existing?.enforce_mfa ?? false,
+          existingSettings?.privacy_preferences ?? {},
+        enforce_mfa: input.enforceMfa ?? existingSettings?.enforce_mfa ?? false,
         session_timeout_minutes: input.sessionTimeoutMinutes ??
-          existing?.session_timeout_minutes ?? 60,
-        ip_allow_list: input.ipAllowList ?? existing?.ip_allow_list ?? [],
+          existingSettings?.session_timeout_minutes ?? 60,
+        ip_allow_list: input.ipAllowList ?? existingSettings?.ip_allow_list ?? [],
         storage_warning_thresholds: STORAGE_WARNING_LEVELS,
-        created_by: existing?.created_by ?? ctx.user.id,
+        created_by: existingSettings?.created_by ?? ctx.user.id,
         updated_by: ctx.user.id,
       };
 
