@@ -177,8 +177,8 @@ CREATE POLICY "invitation_rules_admin_all" ON core.invitation_rules
   FOR ALL TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM core.user_profiles up
-      WHERE up.user_id = auth.uid() AND up.is_admin = true
+      SELECT 1 FROM forsured.user_profiles up
+      WHERE up.scaffald_user_id = auth.uid() AND up.user_type = 'admin'
     )
   );
 
