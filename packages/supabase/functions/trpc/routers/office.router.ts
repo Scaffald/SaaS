@@ -163,7 +163,7 @@ export const officeRouter = t.router({
     const profilesMap = new Map(profilesData?.map((p: { user_id: string; first_name?: string | null; last_name?: string | null }) => [p.user_id, p]) || [])
 
     // Combine the data
-    const users = (usersData ?? []).map((user: { id: string; username?: string | null; display_name?: string | null; avatar_path?: string | null }) => {
+    const users = (usersData ?? []).map((user: { id: string; username?: string | null; display_name?: string | null; avatar_path?: string | null; created_at?: string; updated_at?: string }) => {
       const profile = profilesMap.get(user.id)
       return {
         id: user.id,
@@ -361,7 +361,7 @@ export const officeRouter = t.router({
 
         // Add organizations from team memberships
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -483,7 +483,7 @@ export const officeRouter = t.router({
         })
       }
 
-      const jobs = (data ?? []).map((job: Record<string, unknown>) => {
+      const jobs = (data ?? []).map((job: any) => {
         const { team_assignments: jobTeamsRaw, ...rest } = job as Record<string, unknown>
         const teamAssignments =
           (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map((assignment: Record<string, unknown>) => ({
@@ -604,7 +604,7 @@ export const officeRouter = t.router({
             .neq('status', 'removed')
 
           for (const membership of teamMemberships ?? []) {
-            const orgId = membership.teams?.organization_id
+            const orgId = (membership as any).teams?.organization_id
             if (orgId && typeof orgId === 'string') {
               organizationIds.add(orgId)
             }
@@ -648,7 +648,7 @@ export const officeRouter = t.router({
         job: {
           ...rest,
           job_skills: jobSkills,
-          skills: transformJobSkills(jobSkills || []),
+          skills: transformJobSkills((jobSkills as any) || []),
           teamAssignments: teamAssignments,
           team_ids: teamAssignments.map((assignment) => assignment.teamId),
           primary_team_id: primaryAssignment?.teamId ?? null,
@@ -703,7 +703,7 @@ export const officeRouter = t.router({
         .neq('status', 'removed')
 
       for (const membership of teamMemberships ?? []) {
-        const orgId = membership.teams?.organization_id
+        const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)
         }
@@ -736,8 +736,8 @@ export const officeRouter = t.router({
       Object.hasOwn(jobData, 'assigned_team_id') &&
       (!jobData.assigned_team_id || jobData.assigned_team_id === '')
     ) {
-      // Normalize falsy values to null for Supabase
-      jobData.assigned_team_id = null
+      // Normalize falsy values to undefined for Supabase
+      jobData.assigned_team_id = undefined
     }
 
     if (requestedTeamIds.length > 0) {
@@ -803,7 +803,7 @@ export const officeRouter = t.router({
 
       jobData.assigned_team_id = primaryTeamId
     } else {
-      jobData.assigned_team_id = null
+      jobData.assigned_team_id = undefined
     }
 
     // Insert job using admin client to bypass RLS
@@ -945,7 +945,7 @@ export const officeRouter = t.router({
         .neq('status', 'removed')
 
       for (const membership of teamMemberships ?? []) {
-        const orgId = membership.teams?.organization_id
+        const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)
         }
@@ -979,7 +979,7 @@ export const officeRouter = t.router({
       Object.hasOwn(jobData, 'assigned_team_id') &&
       (!jobData.assigned_team_id || jobData.assigned_team_id === '')
     ) {
-      jobData.assigned_team_id = null
+      jobData.assigned_team_id = undefined
     }
 
     if (requestedTeamIds) {
@@ -1305,7 +1305,7 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -1406,7 +1406,7 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -1505,7 +1505,7 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -1609,7 +1609,7 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -1794,7 +1794,7 @@ export const officeRouter = t.router({
       }
 
       // Transform data to include industry_name
-      const organizations = (data ?? []).map((org: { industry?: { name?: string | null } | null; [key: string]: unknown }) => ({
+      const organizations = (data ?? []).map((org: any) => ({
         ...org,
         industry_name: org.industry?.name || null,
       }))
@@ -2846,7 +2846,7 @@ export const officeRouter = t.router({
 
       // Add organizations from team memberships
       for (const membership of teamMemberships ?? []) {
-        const orgId = membership.teams?.organization_id
+        const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)
         }
