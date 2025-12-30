@@ -1,6 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
+import type { Database } from '../../../_shared/database.types.ts'
 import { softSkillsUpdateSchema } from '../../../_shared/profile-schemas.ts';
 import {
   addUserSkillInputSchema,
@@ -89,7 +90,7 @@ const resolveRelation = <T>(relation: MaybeArray<T>): T | undefined => {
   return relation ?? undefined
 }
 
-const fetchSoftSkillsCatalog = async (supabase: ReturnType<typeof createClient>): Promise<SoftSkillCatalogEntry[]> => {
+const fetchSoftSkillsCatalog = async (supabase: SupabaseClient<Database>): Promise<SoftSkillCatalogEntry[]> => {
   const { data, error } = await supabase
     .schema('core')
     .from('soft_skills')
@@ -129,7 +130,7 @@ const fetchSoftSkillsCatalog = async (supabase: ReturnType<typeof createClient>)
 }
 
 const loadLatestSoftSkillRatings = async (
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<{ version: number | null; ratings: Map<string, number>; selfAssessedAt: string | null }> => {
   const { data: latestVersionRow, error: latestVersionError } = await supabase
@@ -210,7 +211,7 @@ const createUserScopedClient = (userToken?: string) => {
 }
 
 const canViewSoftSkills = async (
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient<Database>,
   targetUserId: string,
   viewerUserId: string | null,
 ): Promise<boolean> => {
