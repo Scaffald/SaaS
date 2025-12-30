@@ -212,13 +212,13 @@ function mapApplicationRecord(application: Record<string, unknown> | null): {
 
   return {
     application: {
-      id: application.id,
-      status: application.status ?? null,
-      applicationScore: application.application_score ?? null,
-      appliedAt: application.applied_at ?? null,
-      stageChangedAt: application.stage_changed_at ?? null,
-      createdAt: application.created_at,
-      updatedAt: application.updated_at,
+      id: (application.id as any),
+      status: (application.status as any) ?? null,
+      applicationScore: (application.application_score as any) ?? null,
+      appliedAt: (application.applied_at as any) ?? null,
+      stageChangedAt: (application.stage_changed_at as any) ?? null,
+      createdAt: (application.created_at as any),
+      updatedAt: (application.updated_at as any),
       jobTitle: job?.title ?? null,
       job: job
         ? {
@@ -287,8 +287,8 @@ async function getOrganizationInfo(
     .eq('id', jobId)
     .single()
 
-  const organizationId = (job as { organization_id?: string } | null)?.organization_id ?? null
-  const organizationName = (job?.organizations as { name: string | null } | null)?.name ?? null
+  const organizationId = ((job as any)?.[0] as { organization_id?: string } | null)?.organization_id ?? null
+  const organizationName = ((job as any)?.[0]?.organizations as any)?.[0]?.name ?? null
 
   return {
     id: organizationId,
@@ -340,8 +340,8 @@ async function verifyApplicationAccess(
   }
 
   // Check if user has organization access
-  const orgId = application.job?.organization_id
-  const ownerId = application.job?.organization?.owner_user_id
+  const orgId = (application.job as any)?.[0]?.organization_id
+  const ownerId = (application.job as any)?.[0]?.organization?.[0]?.owner_user_id
 
   if (ownerId === userId) {
     return application
@@ -465,7 +465,7 @@ async function getApplicationOrganizationId(
 ) {
   const organizationId =
     (application?.job as { organization_id?: string } | null)?.organization_id ??
-    application?.job?.organization_id ??
+    (application?.job as any)?.organization_id ??
     null
 
   if (organizationId) {
@@ -565,7 +565,7 @@ function addDefaultField(
   if (Array.isArray(value) && value.length === 0) {
     return
   }
-  defaults[key] = value
+  ;(defaults as any)[key] = value
   if (!fields.includes(key)) {
     fields.push(key)
   }
@@ -924,7 +924,7 @@ export const inquiriesRouter = router({
 
       addDefaultField(defaults, fields, 'workdays', DEFAULT_WORKDAYS)
 
-      const startDate = formatDateOnly(job.target_start_date) ?? getDefaultStartDate()
+      const startDate = formatDateOnly((job as any).target_start_date) ?? getDefaultStartDate()
       addDefaultField(defaults, fields, 'employmentStartDate', startDate)
 
       const rateTypeDefault = mapRateTypeDefault(job.pay_range_type)
@@ -1109,9 +1109,11 @@ export const inquiriesRouter = router({
 
       // Get service role client for status updates
       const { createClient } = await import('@supabase/supabase-js')
+      const globalThis_ = globalThis as any
+      const env = typeof globalThis_.Deno !== 'undefined' ? globalThis_.Deno.env : process.env
       const supabaseServiceRole = createClient(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+        env.get?.('SUPABASE_URL') ?? env.SUPABASE_URL ?? '',
+        env.get?.('SUPABASE_SERVICE_ROLE_KEY') ?? env.SUPABASE_SERVICE_ROLE_KEY ?? '',
         { auth: { persistSession: false } }
       )
 
@@ -1710,7 +1712,7 @@ export const inquiriesRouter = router({
         .eq('id', input.inquiryId)
 
       // Sync application status
-      await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus)
+      await syncApplicationStatus(ctx.supabaseAdmin as any, inquiry.application_id, newStatus)
 
       // Get application and job info for notification
       const { data: application } = await supabase
@@ -1721,9 +1723,9 @@ export const inquiriesRouter = router({
         .single()
 
       if (application?.user_id) {
-        const job = application.jobs as Record<string, unknown> | null
-        const orgName = (job?.organizations as { name?: string } | null)?.name || 'Organization'
-        const jobTitle = job?.title || 'Job'
+        const job = (application.jobs as unknown as Record<string, unknown>) ?? null
+        const orgName = ((job?.organizations as any)?.[0] as { name?: string } | null)?.name || 'Organization'
+        const jobTitle = (job?.title as any) || 'Job'
 
         // Notify candidate that inquiry has been sent
         await insertNotification(supabase, {
@@ -1738,7 +1740,7 @@ export const inquiriesRouter = router({
             application_id: inquiry.application_id,
             job_id: application.job_id,
             organization_id: job?.organization_id,
-          },
+          } as never,
         })
       }
 
@@ -1824,7 +1826,7 @@ export const inquiriesRouter = router({
       )
 
       // Sync application status
-      await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus)
+      await syncApplicationStatus(ctx.supabaseAdmin as any, inquiry.application_id, newStatus)
     }
 
     if (application) {
@@ -1840,7 +1842,7 @@ export const inquiriesRouter = router({
       // Notify the other party
       if (isApplicant) {
         // Candidate commented, notify organization members
-        const job = application.jobs as Record<string, unknown> | null
+        const job = (application.jobs as unknown as Record<string, unknown>) ?? null
         if (job?.organization_id) {
           // Get organization owner
           const { data: org } = await supabase
@@ -2016,7 +2018,7 @@ export const inquiriesRouter = router({
         )
 
         // Sync application status
-        await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus)
+        await syncApplicationStatus(ctx.supabaseAdmin as any, inquiry.application_id, newStatus)
       }
 
       // Get application and job info for notification
@@ -2036,7 +2038,7 @@ export const inquiriesRouter = router({
           other: 'Other',
         }
         const sectionLabel = sectionLabels[input.sectionName] || input.sectionName
-        const job = application.jobs as Record<string, unknown> | null
+        const job = (application.jobs as unknown as Record<string, unknown>) ?? null
 
         if (allAccepted) {
           // All sections accepted - notify organization
@@ -2161,7 +2163,7 @@ export const inquiriesRouter = router({
 
       if (application) {
         const candidateName = await getUserDisplayName(supabase, user.id)
-        const job = application.jobs as Record<string, unknown> | null
+        const job = (application.jobs as unknown as Record<string, unknown>) ?? null
 
         // Notify organization of capability response
         if (job?.organization_id) {
@@ -2374,8 +2376,8 @@ export const inquiriesRouter = router({
 
     // Notify candidate if inquiry was sent
     if (application && inquiry.status !== 'draft' && hasTermsChanged) {
-      const job = application.jobs as Record<string, unknown> | null
-      const orgName = job?.organizations?.name || 'Organization'
+      const job = (application.jobs as unknown as Record<string, unknown>) ?? null
+      const orgName = (job?.organizations as any)?.name || 'Organization'
 
       await insertNotification(supabase, {
         user_id: application.user_id,
@@ -2389,7 +2391,7 @@ export const inquiriesRouter = router({
           application_id: inquiry.application_id,
           job_id: application.job_id,
           organization_id: job?.organization_id,
-        },
+        } as never,
       })
     }
 
@@ -2447,7 +2449,7 @@ export const inquiriesRouter = router({
       )
 
       // Sync application status
-      await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus)
+      await syncApplicationStatus(ctx.supabaseAdmin as any, inquiry.application_id, newStatus)
 
       return { success: true, newStatus }
     }),
