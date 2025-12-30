@@ -50,7 +50,7 @@ import {
 } from '../middleware.ts';
 
 const teamApplicationAssignmentSchema = z.object({
-  teamId: teamIdSchema,
+  teamId: z.string().uuid(),
   applicationId: z.string().uuid(),
   assigneeUserId: z.string().uuid(),
 });
@@ -264,7 +264,7 @@ async function notifyTeamMemberAdded(options: {
       teamId: team.id,
       organizationId: team.organization_id,
       roleId: member.roleId,
-      roleKey: member.role?.key ?? null,
+      roleKey: member.role?.key ?? undefined,
       roleName,
     },
     metadata: {
@@ -657,7 +657,7 @@ async function ensureOrganizationRoles(
     }
 
     const permissionMap = new Map<string, Set<string>>();
-    for (const record of existingPerms ?? []) {
+    for (const record of (existingPerms ?? []) as unknown as Array<{ role_id: string; permission_key: string }>) {
       const roleId = record.role_id as string;
       const permission = record.permission_key as string;
       const set = permissionMap.get(roleId) ?? new Set<string>();
@@ -689,7 +689,7 @@ async function ensureOrganizationRoles(
       const { error: permissionInsertError } = await supabaseAdmin
         .schema("core")
         .from("team_role_permissions")
-        .insert(permissionInserts);
+        .insert(permissionInserts as never[]);
 
       if (permissionInsertError) {
         throw new TRPCError({
@@ -756,6 +756,13 @@ async function ensureOrganizationTeamPermission({
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
+  if (!supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    });
+  }
+
   await ensureOrganizationRoles(supabaseAdmin, organizationId);
 
   const result = await checkTeamPermission({
@@ -789,6 +796,13 @@ async function ensureTeamActionPermission({
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
+  if (!supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    });
+  }
+
   await ensureOrganizationRoles(supabaseAdmin, team.organization_id);
 
   const result = await checkTeamPermission({
@@ -813,7 +827,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         z
           .object({
             organizationId: z.string().uuid().optional(),
-            teamId: teamIdSchema.optional(),
+            teamId: z.string().uuid().optional(),
           })
           .refine(
             (input) => Boolean(input.organizationId ?? input.teamId),
@@ -867,15 +881,15 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         }
 
         return {
-          roles: (data ?? []).map((
-            role: {
+          roles: ((data ?? []) as unknown as Array<{
               id: string;
               key: string;
               name: string;
               description?: string | null;
               is_default?: boolean;
               is_system?: boolean;
-            },
+            }>).map((
+            role,
           ) => ({
             id: role.id as string,
             key: role.key as string,
@@ -887,7 +901,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         };
       }),
 
-    list: procedure.input(z.object({ teamId: teamIdSchema })).query(
+    list: procedure.input(z.object({ teamId: z.string().uuid() })).query(
       async ({ ctx, input }) => {
         const { supabaseAdmin, dbAdmin } = ctx;
 
@@ -969,8 +983,8 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
           organizationId: team.organization_id,
-          roleId: input.roleId ?? null,
-          roleKey: input.roleKey ?? null,
+          roleId: input.roleId,
+          roleKey: input.roleKey as TeamRoleKey | null | undefined,
           teamId: input.teamId,
         });
 
@@ -996,7 +1010,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         const { data, error } = await supabaseAdmin
           .schema("core")
           .from("team_members")
-          .insert(insertPayload)
+          .insert(insertPayload as never)
           .select(
             `
             *,
@@ -1106,7 +1120,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
             supabaseAdmin,
             organizationId: team.organization_id,
             roleId: input.roleId,
-            roleKey: input.roleKey,
+            roleKey: input.roleKey as TeamRoleKey | null | undefined,
             teamId,
           });
 
@@ -1284,7 +1298,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         });
 
         const metadata =
-          (existingMember.metadata as Record<string, unknown> | null) ?? {};
+          ((existingMember as unknown as { metadata: Record<string, unknown> | null }).metadata) ?? {};
         if (input.reason) {
           metadata.removalReason = input.reason;
         }
@@ -1383,7 +1397,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
 
         const team = await fetchTeamOrThrow(
           supabaseAdmin,
-          existingMember.team_id as string,
+          (existingMember as unknown as { team_id: string; user_id: string; status: string }).team_id,
         );
         await ensureTeamActionPermission({
           ctx,
@@ -1441,11 +1455,11 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
             actorUserId: user?.id ?? null,
             memberUserId: member.userId ?? null,
             metadata: {
-              previousStatus: existingMember.status,
+              previousStatus: (existingMember as unknown as { team_id: string; user_id: string; status: string }).status,
             },
           });
         } else if (
-          input.status === "active" && existingMember.status === "removed"
+          input.status === "active" && (existingMember as unknown as { team_id: string; user_id: string; status: string }).status === "removed"
         ) {
           await recordTeamAuditLog({
             supabaseAdmin,
@@ -1454,7 +1468,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
             actorUserId: user?.id ?? null,
             memberUserId: member.userId ?? null,
             metadata: {
-              previousStatus: existingMember.status,
+              previousStatus: (existingMember as unknown as { team_id: string; user_id: string; status: string }).status,
             },
           });
         }
@@ -1513,7 +1527,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           supabaseAdmin,
           organizationId: team.organization_id,
           roleId: undefined,
-          roleKey: input.roleKey ?? "admin",
+          roleKey: input.roleKey as TeamRoleKey | null | undefined,
           teamId: input.teamId,
         });
 
@@ -1547,7 +1561,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         await supabaseAdmin
           .schema("core")
           .from("team_members")
-          .update({ metadata })
+          .update({ metadata: metadata as never })
           .eq("id", input.memberId);
 
         await supabaseAdmin
@@ -1658,7 +1672,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           .update({
             status: "removed",
             removed_at: nowIso(),
-            metadata,
+            metadata: metadata as never,
           })
           .eq("id", existingMember.id)
           .select(
@@ -1733,8 +1747,8 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
     list: procedure
       .input(
         z.object({
-          teamId: teamIdSchema,
-          status: teamInvitationStatusFilterSchema,
+          teamId: z.string().uuid(),
+          status: z.enum(['pending', 'accepted', 'declined', 'cancelled', 'expired']).optional(),
         }),
       )
       .query(async ({ ctx, input }) => {
@@ -1794,8 +1808,8 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         }
 
         return {
-          invitations: (data ?? []).map((record: Record<string, unknown>) =>
-            transformInvitation(record as Record<string, unknown>)
+          invitations: ((data ?? []) as unknown as Array<Record<string, unknown>>).map((record) =>
+            transformInvitation(record)
           ),
         };
       }),
@@ -1804,7 +1818,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
       .input(
         z
           .object({
-            status: teamInvitationStatusFilterSchema,
+            status: z.enum(['pending', 'accepted', 'declined', 'cancelled', 'expired']).optional(),
           })
           .optional(),
       )
@@ -1901,8 +1915,8 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
           organizationId: team.organization_id,
-          roleId: input.roleId ?? null,
-          roleKey: input.roleKey ?? null,
+          roleId: input.roleId,
+          roleKey: input.roleKey as TeamRoleKey | null | undefined,
           teamId: input.teamId,
         });
 
@@ -1941,7 +1955,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           : addDays(new Date(), TEAM_INVITATION_TTL_DEFAULT);
 
         const metadata = {
-          ...(input.metadata ?? {}),
+          ...((input.metadata ?? {}) as Record<string, unknown>),
           message: input.message ?? undefined,
         };
 
@@ -1962,7 +1976,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         const { data, error } = await supabaseAdmin
           .schema("core")
           .from("team_invitations")
-          .insert(insertPayload)
+          .insert(insertPayload as never)
           .select(
             `
             *,
@@ -2092,7 +2106,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
             token: tokenHash,
             expires_at: nextExpiry.toISOString(),
             status: "pending",
-            metadata,
+            metadata: metadata as never,
             sent_at: null,
             notification_id: null,
             last_delivery_status: null,
@@ -2174,7 +2188,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           .update({
             status: "revoked",
             revoked_at: nowIso(),
-            metadata,
+            metadata: metadata as never,
           })
           .eq("id", input.invitationId);
 
@@ -2369,7 +2383,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
               status: "accepted",
               accepted_at: nowIso(),
               invited_user_id: user.id,
-              metadata,
+              metadata: metadata as never,
             })
             .eq("id", invitation.id);
 
@@ -2400,7 +2414,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           .update({
             status: "declined",
             declined_at: nowIso(),
-            metadata,
+            metadata: metadata as never,
           })
           .eq("id", invitation.id);
 
@@ -2421,6 +2435,13 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
     overview: procedure.input(teamAnalyticsOverviewInputSchema).query(
       async ({ ctx, input }) => {
         const { supabaseAdmin } = ctx;
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
@@ -2537,12 +2558,27 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
     refresh: procedure
       .input(
         z.object({
-          teamId: teamIdSchema,
-          metricDate: metricDateSchema.optional(),
+          teamId: z.string().uuid(),
+          metricDate: z
+            .string()
+            .trim()
+            .transform((value) => new Date(value))
+            .pipe(
+              z.date({ invalid_type_error: "Metric date must be a valid date string" }),
+            )
+            .transform((date) => date.toISOString().slice(0, 10))
+            .optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
         const { supabaseAdmin } = ctx;
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
@@ -2577,6 +2613,13 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
         const start = coerceDateInput(input.startDate);
         const end = coerceDateInput(input.endDate);
         const cursor = coerceDateInput(input.cursor);
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
 
         let query = supabaseAdmin
           .schema("core")
@@ -2658,7 +2701,7 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
     comments: procedure
       .input(
         z.object({
-          teamId: teamIdSchema,
+          teamId: z.string().uuid(),
           applicationId: z.string().uuid().optional(),
           limit: z.number().int().min(1).max(100).default(50),
           cursor: z.string().datetime().optional(),
@@ -2666,6 +2709,13 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
       )
       .query(async ({ ctx, input }) => {
         const { supabaseAdmin } = ctx;
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
@@ -2692,7 +2742,7 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
           `,
           )
           .eq("team_id", input.teamId)
-          .eq("event_type", "discussion.comment")
+          .eq("event_type", "discussion.comment" as never)
           .order("occurred_at", { ascending: false })
           .limit(input.limit);
 
@@ -2732,8 +2782,8 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
               eventType: record.event_type as string,
               actorUserId: record.actor_user_id as string | null,
               actorDisplayName: record.actor
-                ? ((record.actor.display_name as string | null) ??
-                  (record.actor.username as string | null) ??
+                ? (((record.actor as { display_name?: string | null; username?: string | null }).display_name) ??
+                  ((record.actor as { display_name?: string | null; username?: string | null }).username) ??
                   null)
                 : null,
               relatedApplicationId: record.related_application_id as
@@ -2762,6 +2812,13 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
     workload: procedure.input(teamWorkloadSnapshotInputSchema).query(
       async ({ ctx, input }) => {
         const { supabaseAdmin } = ctx;
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
@@ -2814,15 +2871,15 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const snapshots = (data ?? []).map((
-          record: {
+        const snapshots = ((data ?? []) as Array<{
             id: string;
             team_id: string;
             organization_id: string;
             team_member_id: string;
             user_id: string;
             [key: string]: unknown;
-          },
+          }>).map((
+          record,
         ) => ({
           id: record.id as string,
           teamId: record.team_id as string,
@@ -2851,6 +2908,13 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
+
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
           ctx,
@@ -2869,10 +2933,10 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
           .insert({
             organization_id: team.organization_id,
             team_id: input.teamId,
-            event_type: "discussion.comment",
+            event_type: "discussion.comment" as never,
             actor_user_id: user.id,
             related_application_id: input.applicationId ?? null,
-            payload,
+            payload: payload as never,
           })
           .select(
             `
@@ -2949,6 +3013,13 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
       async ({ ctx, input }) => {
         const { supabaseAdmin } = ctx;
 
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
+
         const job = await fetchJobOrThrow(supabaseAdmin, input.jobId);
         await ensureOrganizationTeamPermission({
           ctx,
@@ -3004,16 +3075,16 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
           jobId: record.job_id as string,
           teamId: record.team_id as string,
           organizationId: record.organization_id as string,
-          roleKey: (record.role_key as string | null) ?? null,
+          roleKey: (record.role_key as string | null) ?? undefined,
           isPrimary: Boolean(record.is_primary),
           assignedBy: record.assigned_by as string | null,
           assignedAt: record.assigned_at as string,
           metadata: (record.metadata as Record<string, unknown> | null) ?? {},
           team: record.team
             ? {
-              id: record.team.id as string,
-              name: (record.team.name as string | null) ?? null,
-              slug: (record.team.slug as string | null) ?? null,
+              id: (record.team as { id?: string }).id as string,
+              name: ((record.team as { name?: string | null }).name) ?? null,
+              slug: ((record.team as { slug?: string | null }).slug) ?? null,
             }
             : null,
         }));
@@ -3121,7 +3192,7 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
             jobId: data.job_id as string,
             teamId: data.team_id as string,
             organizationId: data.organization_id as string,
-            roleKey: (data.role_key as string | null) ?? null,
+            roleKey: (data.role_key as string | null) ?? undefined,
             isPrimary: Boolean(data.is_primary),
             assignedBy: data.assigned_by as string | null,
             assignedAt: data.assigned_at as string,
@@ -3213,8 +3284,8 @@ function buildJobAssignmentsRouter(procedure: AuthenticatedProcedure) {
           actorUserId: user.id,
           relatedJobId: existingAssignment.job_id as string,
           payload: {
-            roleKey: input.roleKey ?? null,
-            isPrimary: input.isPrimary ?? null,
+            roleKey: input.roleKey ?? undefined,
+            isPrimary: input.isPrimary ?? undefined,
           },
         });
 
@@ -3398,8 +3469,9 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           const teamId = typeof membership.team_id === "string"
             ? membership.team_id
             : null;
-          const organizationId = membership.team?.organization_id
-            ? String(membership.team.organization_id)
+          const team = membership.team as { id?: string; organization_id?: string } | null;
+          const organizationId = team?.organization_id
+            ? String(team.organization_id)
             : null;
 
           if (teamId) {
@@ -3563,9 +3635,16 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         return { teams };
       }),
 
-    byId: procedure.input(z.object({ teamId: teamIdSchema })).query(
+    byId: procedure.input(z.object({ teamId: z.string().uuid() })).query(
       async ({ ctx, input }) => {
         const { supabaseAdmin } = ctx;
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
 
         const teamRecord = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
@@ -3609,6 +3688,13 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
+
         await ensureOrganizationTeamPermission({
           ctx,
           organizationId: input.organizationId,
@@ -3619,8 +3705,8 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
           organizationId: input.organizationId,
-          roleId: input.defaultRoleId,
-          roleKey: input.defaultRoleKey,
+          roleId: input.defaultRoleId as unknown as string | null | undefined,
+          roleKey: input.defaultRoleKey as unknown as TeamRoleKey | null | undefined,
         });
 
         if (!resolvedRoleId) {
@@ -3688,6 +3774,13 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
+
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
         await ensureTeamActionPermission({
           ctx,
@@ -3743,7 +3836,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
             supabaseAdmin,
             organizationId: team.organization_id,
             roleId: input.defaultRoleId,
-            roleKey: input.defaultRoleKey,
+            roleKey: input.defaultRoleKey as TeamRoleKey | null | undefined,
             teamId: team.id,
           });
 
@@ -3805,6 +3898,13 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
         }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
@@ -3887,6 +3987,14 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
       .input(teamInvitationRespondSchema)
       .mutation(async ({ ctx, input }) => {
         const { supabaseAdmin } = ctx;
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
+        }
+
         const tokenHash = await hashInvitationToken(input.token);
 
         const { data: invitation, error } = await supabaseAdmin
@@ -4015,7 +4123,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
             .update({
               status: "accepted",
               accepted_at: nowIso(),
-              metadata,
+              metadata: metadata as never,
             })
             .eq("id", invitation.id);
 
@@ -4044,7 +4152,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
                 {}),
               lastAction: "declined",
               responderId,
-            },
+            } as never,
           })
           .eq("id", invitation.id);
 
@@ -4061,6 +4169,13 @@ function buildApplicationAssignmentsRouter(procedure: AuthenticatedProcedure) {
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        if (!supabaseAdmin) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Admin client not available',
+          });
         }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
@@ -4111,7 +4226,7 @@ function buildApplicationAssignmentsRouter(procedure: AuthenticatedProcedure) {
 
         const { data: jobTeams, error: jobTeamsError } = await supabaseAdmin
           .schema("core")
-          .from("job_teams")
+          .from("job_teams" as never)
           .select("team_id")
           .eq("job_id", jobId);
 
@@ -4124,7 +4239,7 @@ function buildApplicationAssignmentsRouter(procedure: AuthenticatedProcedure) {
         }
 
         const teamIds = new Set(
-          (jobTeams ?? []).map((record: { team_id: string }) =>
+          ((jobTeams ?? []) as unknown as Array<{ team_id: string }>).map((record) =>
             record.team_id as string
           ),
         );
@@ -4157,4 +4272,4 @@ function buildApplicationAssignmentsRouter(procedure: AuthenticatedProcedure) {
 }
 
 export const teamsRouter = buildTeamsRouter(protectedProcedure);
-export const officeTeamsRouter = buildTeamsRouter(officeProcedure);
+export const officeTeamsRouter = buildTeamsRouter(officeProcedure as typeof protectedProcedure);
