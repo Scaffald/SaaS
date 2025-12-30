@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
+// @ts-ignore: PDF extraction module
 import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/pdf';
 import {
   clearImportDataInputSchema,
@@ -19,18 +20,24 @@ const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const IMPORT_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 // Lazy loading for large packages to reduce bundle size
-let JSZipClass: typeof import("jszip") | null = null;
-let OpenAIClass: typeof import("openai") | null = null;
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
+let JSZipClass: any | null = null;
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
+let OpenAIClass: any | null = null;
 
-async function getJSZip(): Promise<typeof import("jszip")> {
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
+async function getJSZip(): Promise<any> {
   if (!JSZipClass) {
+    // @ts-ignore: Dynamic import for optional dependency
     JSZipClass = await import("jszip");
   }
   return JSZipClass;
 }
 
-async function getOpenAI(): Promise<typeof import("openai")> {
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
+async function getOpenAI(): Promise<any> {
   if (!OpenAIClass) {
+    // @ts-ignore: Dynamic import for optional dependency
     OpenAIClass = await import("openai");
   }
   return OpenAIClass;
@@ -112,7 +119,7 @@ async function extractTextFromDocx(fileBytes: Uint8Array): Promise<string> {
 }
 
 // Type alias to avoid TS2344 constraint error
-type ResumeFileType = typeof resumeFileTypeEnum extends z.ZodType<infer T> ? T : never;
+type ResumeFileType = "application/pdf" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
 async function extractResumeText(
   fileBytes: Uint8Array,

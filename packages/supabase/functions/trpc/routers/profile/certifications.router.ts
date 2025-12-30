@@ -97,7 +97,7 @@ export const profileCertificationsRouter = t.router({
 
         // Transform results to include parent information
         const certificationsWithParent = certifications.map((cert: Record<string, unknown>) => {
-          const parent = cert.parent_id ? parentMap.get(cert.parent_id) : null
+          const parent = cert.parent_id ? parentMap.get(cert.parent_id as string) : null
           return {
             ...cert,
             parent_title: parent?.title || null,
@@ -209,13 +209,13 @@ export const profileCertificationsRouter = t.router({
         if (catalogCert.depth === 0) {
           depth0.push(combined)
         } else if (catalogCert.depth === 1) {
-          const parentId = catalogCert.parent_id
+          const parentId = catalogCert.parent_id as string
           if (!depth1ByParent[parentId]) {
             depth1ByParent[parentId] = []
           }
           depth1ByParent[parentId].push(combined)
         } else if (catalogCert.depth === 2) {
-          const parentId = catalogCert.parent_id
+          const parentId = catalogCert.parent_id as string
           if (!depth2ByParent[parentId]) {
             depth2ByParent[parentId] = []
           }
