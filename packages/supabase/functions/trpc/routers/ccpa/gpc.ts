@@ -31,7 +31,7 @@ export const GPC_CONFIG = {
   ENABLED_VALUE: '1',
 
   /** Source identifier for GPC-based opt-outs */
-  SOURCE: 'gpc',
+  SOURCE: 'gpc_signal' as const,
 
   /** Categories that GPC applies to under CCPA */
   APPLICABLE_CATEGORIES: ['sale', 'sharing'] as const,
@@ -200,10 +200,14 @@ export async function processGPCSignal(
     const { error: insertError } = await supabase
       .schema('core')
       .from('ccpa_opt_outs')
-      .upsert(optOutRecords, {
-        onConflict: 'user_id,category',
-        ignoreDuplicates: false,
-      })
+      .upsert(
+        // biome-ignore lint/suspicious/noExplicitAny: Type mismatch with generated schema
+        optOutRecords as any,
+        {
+          onConflict: 'user_id,category',
+          ignoreDuplicates: false,
+        }
+      )
 
     if (insertError) {
       console.error('[gpc] Failed to create opt-out records:', insertError)
@@ -372,7 +376,8 @@ async function logGPCEvent(
   details: Record<string, unknown>
 ): Promise<void> {
   try {
-    await supabase
+    // biome-ignore lint/suspicious/noExplicitAny: Table not in generated schema
+    await (supabase as any)
       .schema('core')
       .from('ccpa_audit_log')
       .insert({

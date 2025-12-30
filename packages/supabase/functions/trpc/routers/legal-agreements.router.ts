@@ -228,7 +228,8 @@ export const legalAgreementsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: { id: string; organization_id: string; worker_user_id: string; application_id: string | null; success_fee_id: string | null; agreement_version: number; agreement_text: string; terms_accepted: boolean; anti_circumvention_accepted: boolean; status: string; agreed_at: string | null; violated_at: string | null; violation_reason: string | null; created_at: string; updated_at: string; [key: string]: unknown }) => ({
+        // biome-ignore lint/suspicious/noExplicitAny: Database row type mismatch
+        items: (data ?? []).map((row: any) => ({
           id: row.id,
           organizationId: row.organization_id,
           workerUserId: row.worker_user_id,

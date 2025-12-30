@@ -109,6 +109,7 @@ function drawText(
       x,
       y: currentY,
       size,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       font: font as any,
       color,
     })

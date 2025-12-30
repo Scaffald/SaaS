@@ -361,6 +361,7 @@ export const officeRouter = t.router({
 
         // Add organizations from team memberships
         for (const membership of teamMemberships ?? []) {
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
@@ -483,6 +484,7 @@ export const officeRouter = t.router({
         })
       }
 
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       const jobs = (data ?? []).map((job: any) => {
         const { team_assignments: jobTeamsRaw, ...rest } = job as Record<string, unknown>
         const teamAssignments =
@@ -604,6 +606,7 @@ export const officeRouter = t.router({
             .neq('status', 'removed')
 
           for (const membership of teamMemberships ?? []) {
+            // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
             const orgId = (membership as any).teams?.organization_id
             if (orgId && typeof orgId === 'string') {
               organizationIds.add(orgId)
@@ -648,6 +651,7 @@ export const officeRouter = t.router({
         job: {
           ...rest,
           job_skills: jobSkills,
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           skills: transformJobSkills((jobSkills as any) || []),
           teamAssignments: teamAssignments,
           team_ids: teamAssignments.map((assignment) => assignment.teamId),
@@ -703,6 +707,7 @@ export const officeRouter = t.router({
         .neq('status', 'removed')
 
       for (const membership of teamMemberships ?? []) {
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)
@@ -945,6 +950,7 @@ export const officeRouter = t.router({
         .neq('status', 'removed')
 
       for (const membership of teamMemberships ?? []) {
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)
@@ -1305,6 +1311,7 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
@@ -1406,6 +1413,7 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
@@ -1505,6 +1513,7 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
@@ -1609,6 +1618,7 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
@@ -1794,6 +1804,7 @@ export const officeRouter = t.router({
       }
 
       // Transform data to include industry_name
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       const organizations = (data ?? []).map((org: any) => ({
         ...org,
         industry_name: org.industry?.name || null,
@@ -2846,6 +2857,7 @@ export const officeRouter = t.router({
 
       // Add organizations from team memberships
       for (const membership of teamMemberships ?? []) {
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)

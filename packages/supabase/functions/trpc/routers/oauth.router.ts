@@ -105,7 +105,8 @@ async function _verifyClientSecret(
  * Log OAuth event to audit log
  */
 async function logOAuthEvent(
-  supabase: unknown,
+  // biome-ignore lint/suspicious/noExplicitAny: Supabase client type
+  supabase: any,
   eventType: string,
   details: Record<string, unknown>,
   oauthAppId?: string,
@@ -234,7 +235,7 @@ export const oauthRouter = t.router({
       const needsConsent =
         app.status !== 'trusted' ||
         !existingConsent ||
-        authorizedScopes.some(_scope => {
+        authorizedScopes.some((_scope: string) => {
           // Check if scope requires consent
           return true // Simplified - would check scope metadata in production
         })
@@ -600,7 +601,7 @@ export const oauthRouter = t.router({
         const requestedScopes = input.scope ? input.scope.split(' ').filter(s => s.length > 0) : app.allowed_scopes
 
         // Validate scopes against app's allowed_scopes
-        const invalidScopes = requestedScopes.filter(scope => !app.allowed_scopes.includes(scope))
+        const invalidScopes = requestedScopes.filter((scope: string) => !app.allowed_scopes.includes(scope))
         if (invalidScopes.length > 0) {
           throw new TRPCError({
             code: 'BAD_REQUEST',

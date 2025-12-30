@@ -71,7 +71,7 @@ function calculateCompletionPercentage(completedSteps: ProfileWizardStepId[]): n
   return Math.min(100, Math.round(percentage))
 }
 
-const storedProgressSchema = profileWizardProgressSchema.deepPartial()
+const storedProgressSchema = profileWizardProgressSchema.partial()
 
 function normalizeProgress(
   progress: Partial<ProfileWizardProgress> | null | undefined

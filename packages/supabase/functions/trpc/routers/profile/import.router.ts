@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-// @ts-ignore: PDF extraction module
+// @ts-expect-error: PDF extraction module
 import { extractTextFromPdf as sharedExtractTextFromPdf } from '@scf/trpc/pdf';
 import {
   clearImportDataInputSchema,
@@ -28,7 +28,7 @@ let OpenAIClass: any | null = null;
 // biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
 async function getJSZip(): Promise<any> {
   if (!JSZipClass) {
-    // @ts-ignore: Dynamic import for optional dependency
+    // @ts-expect-error: Dynamic import for optional dependency
     JSZipClass = await import("jszip");
   }
   return JSZipClass;
@@ -37,7 +37,7 @@ async function getJSZip(): Promise<any> {
 // biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
 async function getOpenAI(): Promise<any> {
   if (!OpenAIClass) {
-    // @ts-ignore: Dynamic import for optional dependency
+    // @ts-expect-error: Dynamic import for optional dependency
     OpenAIClass = await import("openai");
   }
   return OpenAIClass;

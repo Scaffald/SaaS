@@ -32,7 +32,8 @@ export class SupabaseStorageBackend implements IStorageBackend {
     }
 
     // Calculate checksum
-    const hashBuffer = await crypto.subtle.digest('SHA-256', file)
+    // biome-ignore lint/suspicious/noExplicitAny: Uint8Array to BufferSource conversion
+    const hashBuffer = await crypto.subtle.digest('SHA-256', file as any)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const checksum = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 

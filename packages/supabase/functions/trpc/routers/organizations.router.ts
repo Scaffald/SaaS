@@ -676,6 +676,7 @@ export const organizationsRouter = t.router({
         .eq("user_id", ctx.user.id);
 
       const isAdmin = roleAssignments?.some(
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         (assignment: any) =>
           assignment.role &&
           (assignment.scope_org_id === input.organization_id ||
@@ -751,6 +752,7 @@ export const organizationsRouter = t.router({
         .eq("user_id", ctx.user.id);
 
       const isAdmin = roleAssignments?.some(
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         (assignment: any) =>
           assignment.role &&
           (assignment.scope_org_id === input.organization_id ||
@@ -1250,6 +1252,7 @@ export const organizationsRouter = t.router({
       const members = new Map<string, Record<string, unknown>>();
       (data ?? []).forEach(
         (
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           assignment: any,
         ) => {
           const userId = assignment.user_id;
@@ -1263,6 +1266,7 @@ export const organizationsRouter = t.router({
             });
           }
 
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           const entry = members.get(userId) as any;
           if (
             assignment.role?.name && !entry.roles.includes(assignment.role.name)
@@ -1278,6 +1282,7 @@ export const organizationsRouter = t.router({
         const roleSet = new Set(input.roleNames.map((role) =>
           role.toLowerCase()
         ));
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         results = results.filter((member: any) =>
           member.roles.some((role: string) => roleSet.has(role.toLowerCase()))
         );
@@ -1285,6 +1290,7 @@ export const organizationsRouter = t.router({
 
       if (input.search?.trim()) {
         const term = input.search.trim().toLowerCase();
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         results = results.filter((member: any) => {
           const user = member.profile as { display_name?: string; username?: string } | null;
           const display = user?.display_name?.toLowerCase() ?? '';
@@ -1326,6 +1332,7 @@ export const organizationsRouter = t.router({
       >();
       (data ?? []).forEach(
         (
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           entry: any,
         ) => {
           if (!entry.actor_user_id) return;

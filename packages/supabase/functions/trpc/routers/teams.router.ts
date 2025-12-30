@@ -147,15 +147,6 @@ const addDays = (date: Date, days: number): Date => {
   return result;
 };
 
-const metricDateSchema = z
-  .string()
-  .trim()
-  .transform((value) => new Date(value))
-  .pipe(
-    z.date({ invalid_type_error: "Metric date must be a valid date string" }),
-  )
-  .transform((date) => date.toISOString().slice(0, 10));
-
 function generateInvitationToken(bytes = 32): string {
   const buffer = new Uint8Array(bytes);
   crypto.getRandomValues(buffer);

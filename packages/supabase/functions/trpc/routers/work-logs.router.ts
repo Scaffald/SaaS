@@ -115,6 +115,7 @@ const sortDirectionSchema = z.enum(["asc", "desc"]);
 const listWorkLogsInputSchema = z.object({
   page: z.number().int().min(0).default(0),
   pageSize: z.number().int().min(1).max(100).default(20),
+  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   statuses: z.array(workLogStatusSchema as any).min(1).optional(),
   projectId: z.string().uuid().optional(),
   dateFrom: z
@@ -892,7 +893,9 @@ const buildWorkLogExportSnapshot = async (
   return {
     workLog,
     ownerName,
+    // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
     ownerEmail: typeof (ownerRecord as any)?.email === "string"
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       ? (ownerRecord as any).email
       : null,
     projectName: resolveStringField(projectRecord, [
@@ -1844,6 +1847,7 @@ export const workLogsRouter = t.router({
             },
           ) => {
             const logId = typeof log.id === "string" ? log.id : String(log.id);
+            // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
             const activityTimestamp = resolveActivityTimestamp(log as any);
             return {
               id: logId,
@@ -2430,6 +2434,7 @@ export const workLogsRouter = t.router({
             const worker = workerId
               ? (workerMetadata.get(workerId) ?? null)
               : null;
+            // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
             const activityTimestamp = resolveActivityTimestamp(log as any);
             return {
               id: logId,
@@ -2527,6 +2532,7 @@ export const workLogsRouter = t.router({
         .order(input.sortField, {
           ascending: input.sortDirection === "asc",
           nullsLast: true,
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         } as any)
         .range(offset, offset + pageSize - 1);
 
@@ -2844,6 +2850,7 @@ export const workLogsRouter = t.router({
             const projectId = typeof log.project_id === "string"
               ? log.project_id
               : null;
+            // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
             const activityTimestamp = resolveActivityTimestamp(log as any);
             return {
               id,

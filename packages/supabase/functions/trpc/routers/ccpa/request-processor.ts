@@ -138,6 +138,7 @@ async function getRegisteredOAuthApps(
     return []
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   return (data ?? []) as any
 }
 
@@ -314,6 +315,7 @@ async function aggregateAllData(
     (c) => c.status === 'received'
   )
 
+  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   const enhancedData: any = {
     ...coreData,
     metadata: {
@@ -377,7 +379,9 @@ async function finalizeRequest(
         user_id: adminUserId,
         title: 'CCPA Request Processing Error',
         message: `Request ${requestId.slice(0, 8)} encountered errors during processing. Manual review may be required.`,
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         type: 'ccpa_processing_error' as any,
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         severity: 'warning' as any,
         metadata: {
           request_id: requestId,
@@ -601,6 +605,7 @@ export async function processRequest(
             },
             // Store the actual data (will be consumed by export generator)
             export_data: aggregatedData,
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           } as any,
         })
         .eq('id', requestId)

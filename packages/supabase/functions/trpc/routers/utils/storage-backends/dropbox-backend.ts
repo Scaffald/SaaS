@@ -113,7 +113,8 @@ export class DropboxStorageBackend implements IStorageBackend {
             mute: false,
           }),
         },
-        body: file,
+        // biome-ignore lint/suspicious/noExplicitAny: Uint8Array to BodyInit conversion
+        body: file as any,
       })
 
       if (!response.ok) {

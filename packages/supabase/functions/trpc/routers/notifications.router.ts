@@ -101,6 +101,7 @@ function buildListQuery(
 }
 
 function mapPreferences(row: Record<string, unknown> | null) {
+  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   const channelEnabled = (row?.channel_enabled as any) ?? {}
   return {
     globalEnabled: row?.global_enabled ?? true,

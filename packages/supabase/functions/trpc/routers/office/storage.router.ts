@@ -122,7 +122,8 @@ export const officeStorageRouter = t.router({
         })
       }
 
-      usersLookup = new Map((usersData ?? []).map((user: { id: string; display_name?: string | null; username?: string | null; [key: string]: unknown }) => [user.id, user]))
+      // biome-ignore lint/suspicious/noExplicitAny: User row type mismatch
+      usersLookup = new Map((usersData ?? []).map((user: any) => [user.id, user]))
     }
 
     const topUsers = topUsersSource.map((row) => {

@@ -42,15 +42,25 @@ export const stripeSettingsRouter = t.router({
     }
 
     return {
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       publishableKey: (data as any)?.publishable_key ?? '',
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       hasApiKey: Boolean((data as any)?.api_key_secret_id),
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       hasWebhookSecret: Boolean((data as any)?.webhook_secret_id),
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       testMode: (data as any)?.test_mode ?? true,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       webhookEndpointUrl: (data as any)?.webhook_endpoint_url ?? buildWebhookUrl(),
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       lastTestedAt: (data as any)?.last_tested_at ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       lastTestedStatus: (data as any)?.last_tested_status ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       lastTestedError: (data as any)?.last_tested_error ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       updatedAt: (data as any)?.updated_at ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       updatedBy: (data as any)?.updated_by ?? null,
     }
   }),

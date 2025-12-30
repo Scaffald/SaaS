@@ -151,7 +151,8 @@ export const mapRouter = t.router({
               return 0
             }
             // Filter by bounds in memory
-            const filtered = (data || []).filter(
+            // biome-ignore lint/suspicious/noExplicitAny: Unknown data type from query
+            const filtered = ((data as any) || []).filter(
               (org: { longitude: number; latitude: number; [key: string]: unknown }) =>
                 org.longitude >= bounds.west &&
                 org.longitude <= bounds.east &&

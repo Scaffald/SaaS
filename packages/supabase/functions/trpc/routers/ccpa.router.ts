@@ -1265,7 +1265,8 @@ export const ccpaRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: Record<string, unknown>) => {
+        // biome-ignore lint/suspicious/noExplicitAny: Row type from database query
+        items: (data ?? []).map((row: any) => {
           const deadline = (row.extended_deadline_at ?? row.deadline_at) as string
           const daysRemaining = Math.ceil(
             (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -1980,7 +1981,9 @@ export const ccpaRouter = t.router({
       // Collect data to generate summary
       const result = await collectCoreUserData(
         ctx.supabase,
-        ctx.user.id
+        ctx.user.id,
+        // biome-ignore lint/suspicious/noExplicitAny: Supabase client type compatibility
+        ctx.supabaseAdmin as any
       )
 
       if (!result.data) {
@@ -2161,7 +2164,7 @@ export const ccpaRouter = t.router({
 
       // Generate PDF
       const pdfResult = await generateCCPAPDF(
-        exportData as Parameters<typeof generateCCPAPDF>[0],
+        exportData as unknown as Parameters<typeof generateCCPAPDF>[0],
         {
           requestId: input.requestId,
           requestType: request.request_type as 'access' | 'deletion' | 'correction' | 'portability',

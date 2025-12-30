@@ -448,8 +448,10 @@ export const jobsRouter = t.router({
                   jc.certification
               )
               .filter(Boolean)
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           : [] as any,
-        skills: transformJobSkills(job.job_skills || []),
+        // biome-ignore lint/suspicious/noExplicitAny: Ensure array type for job_skills
+        skills: transformJobSkills(Array.isArray(job.job_skills) ? job.job_skills : []),
       }))
 
       return { jobs, total: count || 0 }

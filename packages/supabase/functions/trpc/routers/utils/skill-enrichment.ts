@@ -86,7 +86,10 @@ export async function enrichUserSkills(
   }
 
   const csiMap = new Map<string, MasterformatRow>(
-    (csiResult.data ?? []).map((row: MasterformatRow) => [row.id, row])
+    (csiResult.data ?? []).map(
+      // biome-ignore lint/suspicious/noExplicitAny: Database row type mismatch
+      (row: any) => [row.id, row]
+    )
   )
 
   const onetMap = new Map<string, OnetOccupationRow>(
@@ -107,7 +110,8 @@ export async function enrichUserSkills(
 
     for (const trade of tradeRows ?? []) {
       if (trade?.id) {
-        tradeMap.set(trade.id, trade)
+        // biome-ignore lint/suspicious/noExplicitAny: Trade row type mismatch
+        tradeMap.set(trade.id, trade as any)
       }
     }
   }
@@ -140,7 +144,7 @@ export async function enrichUserSkills(
         yearsExperience: skill.years_experience ?? null,
         verified: Boolean(skill.verified),
         verifiedAt: skill.verified_at ?? null,
-        createdAt: skill.created_at,
+        createdAt: skill.created_at ?? '',
         metadata: (skill.metadata ?? {}) as Record<string, unknown>,
       }
     }
@@ -168,7 +172,7 @@ export async function enrichUserSkills(
       yearsExperience: skill.years_experience ?? null,
       verified: Boolean(skill.verified),
       verifiedAt: skill.verified_at ?? null,
-      createdAt: skill.created_at,
+      createdAt: skill.created_at ?? '',
       metadata: (skill.metadata ?? {}) as Record<string, unknown>,
     }
   })

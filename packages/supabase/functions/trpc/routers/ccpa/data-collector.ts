@@ -404,8 +404,8 @@ async function collectFinancialInformation(
   const sources: DataSource[] = []
   const now = new Date().toISOString()
 
-  let stripeCustomerId: string | null = null
-  let stripeConnected = false
+  const stripeCustomerId: string | null = null
+  const stripeConnected = false
   const payments: PaymentEntry[] = []
 
   // Note: stripe_settings table exists but is for global platform settings, not per-user
@@ -486,8 +486,11 @@ async function collectUsageInformation(
     } else if (viewsData) {
       for (const view of viewsData) {
         profileViews.push({
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           id: (view as any).id,
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           viewerId: (view as any).viewer_user_id ?? null,
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           viewedAt: (view as any).viewed_at ?? now,
           viewerType: null, // Would need additional lookup
         })

@@ -14,7 +14,7 @@ function formatErrorPayload(error: unknown): string {
       name: error.name,
       message: error.message,
     }
-    const errorRecord = error as Record<string, unknown>
+    const errorRecord = error as unknown as Record<string, unknown>
 
     if (typeof errorRecord.code === 'string') {
       serialized.code = errorRecord.code

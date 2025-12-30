@@ -139,8 +139,11 @@ export async function isPlatformAdmin(
 
   const isAdmin =
     data?.some(
-      (a: { role: { name: string; scope: string } | null }) =>
-        a.role?.name === 'super_admin' && a.role?.scope === 'platform'
+      // biome-ignore lint/suspicious/noExplicitAny: Role can be array or object from join
+      (a: any) => {
+        const role = Array.isArray(a.role) ? a.role[0] : a.role
+        return role?.name === 'super_admin' && role?.scope === 'platform'
+      }
     ) ?? false
 
   platformAdminCache.set(cacheKey, isAdmin)

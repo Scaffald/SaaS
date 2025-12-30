@@ -240,7 +240,9 @@ export async function sendDeadlineAlert(
         user_id: adminUserId,
         title,
         message,
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         type: 'ccpa_deadline_alert' as any,
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         severity: severity as any,
         metadata: {
           request_id: request.requestId,
@@ -263,7 +265,8 @@ export async function sendDeadlineAlert(
         request_id: request.requestId,
         status: request.status,
         notes: `Deadline alert sent: ${alertKey} (${request.daysRemaining} days remaining)`,
-      })
+        // biome-ignore lint/suspicious/noExplicitAny: Table schema mismatch
+      } as any)
 
     // Update request metadata with alert history
     const updatedAlerts = [...request.alertHistory, alertKey]

@@ -169,7 +169,8 @@ async function handleProcessWorkerDeletion(
 
   // 1. Anonymize payment data
   try {
-    await ctx.supabaseAdmin.rpc('anonymize_worker_payment_data', {
+    // biome-ignore lint/suspicious/noExplicitAny: RPC function not in generated schema
+    await ctx.supabaseAdmin.rpc('anonymize_worker_payment_data' as any, {
       p_worker_user_id: deletion.deleted_user_id,
     })
 
@@ -299,7 +300,8 @@ async function handleProcessOrganizationDeletion(
 
   // 1. Anonymize payment data
   try {
-    await ctx.supabaseAdmin.rpc('anonymize_organization_payment_data', {
+    // biome-ignore lint/suspicious/noExplicitAny: RPC function not in generated schema
+    await ctx.supabaseAdmin.rpc('anonymize_organization_payment_data' as any, {
       p_organization_id: deletion.deleted_organization_id,
     })
 

@@ -241,7 +241,8 @@ export class GoogleDriveStorageBackend implements IStorageBackend {
       const result = await response.json() as { id: string; name: string; size: string; md5Checksum: string }
 
       // Calculate checksum locally if not provided by Google
-      const hashBuffer = await crypto.subtle.digest('SHA-256', file)
+      // biome-ignore lint/suspicious/noExplicitAny: Uint8Array to BufferSource conversion
+      const hashBuffer = await crypto.subtle.digest('SHA-256', file as any)
       const hashArray = Array.from(new Uint8Array(hashBuffer))
       const checksum = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 

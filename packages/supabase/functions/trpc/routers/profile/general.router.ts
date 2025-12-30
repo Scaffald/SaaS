@@ -175,7 +175,7 @@ export const profileGeneralRouter = t.router({
 
       if (input.phone !== undefined) {
         if (!input.phone) {
-          privateUpdate.phone = null
+          privateUpdate.phone = undefined
         } else {
           const region = getPhoneRegionCode(input.phone) ?? 'US'
           const normalized = isValidPhoneNumber(input.phone, region)

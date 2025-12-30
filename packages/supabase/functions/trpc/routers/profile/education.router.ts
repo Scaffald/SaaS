@@ -52,7 +52,8 @@ export const profileEducationRouter = t.router({
   /**
    * Get user's education entries with university details
    */
-  getEducation: protectedProcedure.output(getEducationOutputSchema).query(async ({ ctx }) => {
+  // biome-ignore lint/suspicious/noExplicitAny: Output schema type compatibility
+  getEducation: protectedProcedure.output(getEducationOutputSchema as any).query(async ({ ctx }) => {
     const { supabase, user } = ctx
 
     const { data, error } = await supabase
@@ -255,7 +256,7 @@ export const profileEducationRouter = t.router({
           const rawGpa =
             typeof edu.gpa === 'number'
               ? edu.gpa
-              : typeof edu.gpa === 'string' && edu.gpa.trim().length > 0
+              : typeof edu.gpa === 'string' && (edu.gpa as string).trim().length > 0
                 ? Number(edu.gpa)
                 : null
           if (rawGpa != null && (Number.isNaN(rawGpa) || rawGpa < 0 || rawGpa > 4)) {

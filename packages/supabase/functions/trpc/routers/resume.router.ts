@@ -39,7 +39,7 @@ let mammothModule: any | null = null;
 // biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
 async function getMammoth(): Promise<any> {
   if (!mammothModule) {
-    // @ts-ignore: Dynamic import for optional dependency
+    // @ts-expect-error: Dynamic import for optional dependency
     mammothModule = await import("mammoth");
   }
   return mammothModule;
@@ -636,7 +636,9 @@ async function matchSkillTaxonomies(
     return { name: skillName };
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   let csiResult: any = null;
+  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   let onetResult: any = null;
 
   try {
@@ -1514,6 +1516,7 @@ export const resumeRouter = t.router({
           const generalPayload = profileGeneralInputSchema.partial().parse(
             input.data,
           );
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           await upsertProfileGeneral(supabase, user.id, generalPayload as any);
           break;
         }

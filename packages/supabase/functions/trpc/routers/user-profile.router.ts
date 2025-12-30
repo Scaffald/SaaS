@@ -21,9 +21,11 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment: { role?: { scope?: string; name?: string | null } | null; [key: string]: unknown }) =>
-        assignment.role?.scope === 'platform' &&
-        ['office', 'super_admin'].includes(assignment.role?.name ?? '')
+      // biome-ignore lint/suspicious/noExplicitAny: Role can be array or object from join
+      (assignment: any) => {
+        const role = Array.isArray(assignment.role) ? assignment.role[0] : assignment.role
+        return role?.scope === 'platform' && ['office', 'super_admin'].includes(role?.name ?? '')
+      }
     )
   )
 }

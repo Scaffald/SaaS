@@ -144,7 +144,9 @@ export async function initiateEmailVerification(
       user_id: request.user_id,
       title: 'CCPA Verification Code',
       message: `Your verification code is: ${otp}. This code expires in ${EMAIL_OTP_EXPIRY_MINUTES} minutes.`,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       type: 'ccpa_verification' as any,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       severity: 'info' as any,
       metadata: {
         request_id: requestId,
@@ -462,7 +464,9 @@ export async function requestManualVerification(
         user_id: adminUserId,
         title: 'Manual CCPA Verification Required',
         message: `A CCPA request requires manual verification. Reason: ${reason}`,
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         type: 'ccpa_manual_verification' as any,
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         severity: 'warning' as any,
         metadata: {
           request_id: requestId,

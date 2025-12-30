@@ -308,7 +308,7 @@ export const feedbackRouter = t.router({
 
       const { data, error } = await supabase.storage
         .from(FEEDBACK_BUCKET_ID)
-        .createSignedUploadUrl(filePath, 60 * 5)
+        .createSignedUploadUrl(filePath)
 
       if (error || !data) {
         console.error('[feedback.getUploadUrl] Failed to create signed URL', {

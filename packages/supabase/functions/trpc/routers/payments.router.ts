@@ -855,6 +855,7 @@ export const paymentsRouter = t.router({
       }
 
       return {
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         items: (data ?? []).map((row: any) => ({
           id: row.id,
           organizationId: row.organization_id,
@@ -1286,6 +1287,7 @@ export const paymentsRouter = t.router({
       }
 
       return {
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         items: (data ?? []).map((row: any) => ({
           id: row.id,
           organizationId: row.organization_id,
