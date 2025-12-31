@@ -573,7 +573,28 @@ pnpm test
 
 # Run tests in watch mode
 pnpm test:watch
+
+# Generate types from OpenAPI spec (optional)
+pnpm generate:types
 ```
+
+### Type Generation
+
+The SDK uses hand-crafted TypeScript types that are kept in sync with the API. Optionally, you can generate types from the live OpenAPI specification:
+
+```bash
+# Generate from local Supabase instance
+pnpm supa start  # Start Supabase first
+pnpm generate:types
+
+# Generate from production
+SUPABASE_URL=https://your-project.supabase.co pnpm generate:types
+
+# Generate from custom URL
+OPENAPI_URL=https://api.scaffald.com/openapi.json pnpm generate:types
+```
+
+See [Type Generation Guide](./docs/type-generation.md) for detailed information.
 
 ## License
 
