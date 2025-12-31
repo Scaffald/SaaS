@@ -3,7 +3,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { createAdminClient } from './setup';
+import { createAdminClient } from './setup'
 
 export type SeedClient = SupabaseClient
 

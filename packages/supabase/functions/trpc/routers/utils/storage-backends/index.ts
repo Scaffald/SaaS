@@ -26,7 +26,13 @@ export interface SignedUrlResult {
 }
 
 export interface StorageError {
-  code: 'UPLOAD_FAILED' | 'DELETE_FAILED' | 'URL_GENERATION_FAILED' | 'QUOTA_EXCEEDED' | 'UNAUTHORIZED' | 'NOT_FOUND'
+  code:
+    | 'UPLOAD_FAILED'
+    | 'DELETE_FAILED'
+    | 'URL_GENERATION_FAILED'
+    | 'QUOTA_EXCEEDED'
+    | 'UNAUTHORIZED'
+    | 'NOT_FOUND'
   message: string
   originalError?: unknown
 }
@@ -81,6 +87,6 @@ export interface StorageRouterResult {
   actualBackend: StorageBackendType
 }
 
-export { SupabaseStorageBackend } from './supabase-backend.ts';
-export { DropboxStorageBackend } from './dropbox-backend.ts';
-export { GoogleDriveStorageBackend } from './google-drive-backend.ts';
+export { SupabaseStorageBackend } from './supabase-backend.ts'
+export { DropboxStorageBackend } from './dropbox-backend.ts'
+export { GoogleDriveStorageBackend } from './google-drive-backend.ts'

@@ -14,11 +14,11 @@
  * schedule = "0 9 * * *"
  * ```
  */
-import { serve } from 'https://deno.land/std@0.223.0/http/server';
+import { serve } from 'https://deno.land/std@0.223.0/http/server'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
-import type { Database } from '../_shared/database.types.ts';
-import { corsHeaders, createCorsResponse } from '../_shared/cors';
-import { insertNotification } from '../_shared/notifications/utils';
+import type { Database } from '../_shared/database.types.ts'
+import { corsHeaders, createCorsResponse } from '../_shared/cors'
+import { insertNotification } from '../_shared/notifications/utils'
 
 // Constants
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -119,13 +119,10 @@ serve(async (req) => {
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
   if (!supabaseUrl || !serviceKey) {
-    return new Response(
-      JSON.stringify({ error: 'Missing Supabase configuration' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      }
-    )
+    return new Response(JSON.stringify({ error: 'Missing Supabase configuration' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    })
   }
 
   const supabase = createClient<Database>(supabaseUrl, serviceKey, {
@@ -137,7 +134,9 @@ serve(async (req) => {
   const complianceAdminId = Deno.env.get('CCPA_COMPLIANCE_ADMIN_ID')
 
   if (!complianceAdminId) {
-    console.warn('[ccpa-deadline-check] No CCPA_COMPLIANCE_ADMIN_ID configured, alerts will not be sent')
+    console.warn(
+      '[ccpa-deadline-check] No CCPA_COMPLIANCE_ADMIN_ID configured, alerts will not be sent'
+    )
     return new Response(
       JSON.stringify({
         success: false,
@@ -155,7 +154,9 @@ serve(async (req) => {
   const { data: requests, error: fetchError } = await supabase
     .schema('core')
     .from('ccpa_requests')
-    .select('id, user_id, request_type, status, submitted_at, deadline_at, extended_deadline_at, metadata')
+    .select(
+      'id, user_id, request_type, status, submitted_at, deadline_at, extended_deadline_at, metadata'
+    )
     .in('status', ['pending', 'in_progress'])
     .order('deadline_at', { ascending: true })
 

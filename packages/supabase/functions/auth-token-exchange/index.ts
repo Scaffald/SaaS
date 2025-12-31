@@ -13,11 +13,7 @@ import {
   createSession,
   extractRequestMetadata,
 } from '../_shared/auth/session.ts'
-import {
-  createSessionCookie,
-  isSecureContext,
-  SESSION_MAX_AGE,
-} from '../_shared/auth/cookies.ts'
+import { createSessionCookie, isSecureContext, SESSION_MAX_AGE } from '../_shared/auth/cookies.ts'
 import type {
   TokenExchangeRequest,
   TokenExchangeResponse,

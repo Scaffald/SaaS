@@ -12,7 +12,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types.ts';
+import type { Database } from '../../../_shared/database.types.ts'
 
 type DbClient = SupabaseClient<Database>
 
@@ -172,8 +172,8 @@ export async function processGPCSignal(
     )
 
     // Check if all GPC categories are already opted out
-    const allAlreadyOptedOut = GPC_CONFIG.APPLICABLE_CATEGORIES.every(
-      (cat) => existingCategories.has(cat)
+    const allAlreadyOptedOut = GPC_CONFIG.APPLICABLE_CATEGORIES.every((cat) =>
+      existingCategories.has(cat)
     )
 
     if (allAlreadyOptedOut) {
@@ -273,10 +273,7 @@ export async function checkAndProcessGPC(
  * Returns whether the user has GPC-based opt-outs and details
  * about each category.
  */
-export async function getGPCStatus(
-  supabase: DbClient,
-  userId: string
-): Promise<GPCStatus> {
+export async function getGPCStatus(supabase: DbClient, userId: string): Promise<GPCStatus> {
   try {
     const { data: optOuts, error } = await supabase
       .schema('core')
@@ -310,13 +307,14 @@ export async function getGPCStatus(
       (o: { source: string }) => o.source === GPC_CONFIG.SOURCE
     )
     const hasGPCOptOut = gpcOptOuts.length > 0
-    const gpcOptedOutAt = gpcOptOuts.length > 0
-      ? gpcOptOuts.reduce(
-          (earliest: string | null, o: { opted_out_at: string }) =>
-            !earliest || o.opted_out_at < earliest ? o.opted_out_at : earliest,
-          null as string | null
-        )
-      : null
+    const gpcOptedOutAt =
+      gpcOptOuts.length > 0
+        ? gpcOptOuts.reduce(
+            (earliest: string | null, o: { opted_out_at: string }) =>
+              !earliest || o.opted_out_at < earliest ? o.opted_out_at : earliest,
+            null as string | null
+          )
+        : null
 
     return {
       hasGPCOptOut,
@@ -352,10 +350,7 @@ export async function getGPCStatus(
  * Returns true if the user has GPC-based opt-outs for
  * the required categories (sale and sharing).
  */
-export async function hasHonoredGPC(
-  supabase: DbClient,
-  userId: string
-): Promise<boolean> {
+export async function hasHonoredGPC(supabase: DbClient, userId: string): Promise<boolean> {
   const status = await getGPCStatus(supabase, userId)
   return status.hasGPCOptOut
 }

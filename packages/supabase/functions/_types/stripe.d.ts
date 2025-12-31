@@ -119,7 +119,11 @@ declare module 'stripe' {
     // Bank Accounts
     customers: {
       createSource(customerId: string, params?: unknown): Promise<BankAccount>
-      deleteSource(customerId: string, sourceId: string, params?: unknown): Promise<DeletedBankAccount>
+      deleteSource(
+        customerId: string,
+        sourceId: string,
+        params?: unknown
+      ): Promise<DeletedBankAccount>
     }
   }
 
@@ -137,7 +141,11 @@ declare module 'stripe' {
     discount: Discount | null
     email: string | null
     invoice_prefix: string
-    invoice_settings: { custom_fields: unknown[] | null; default_payment_method: string | null; footer: string | null }
+    invoice_settings: {
+      custom_fields: unknown[] | null
+      default_payment_method: string | null
+      footer: string | null
+    }
     livemode: boolean
     metadata: Record<string, unknown>
     name: string | null
@@ -255,7 +263,14 @@ declare module 'stripe' {
     shipping: Shipping | null
     statement_descriptor: string | null
     statement_descriptor_suffix: string | null
-    status: 'requires_payment_method' | 'requires_confirmation' | 'requires_action' | 'processing' | 'requires_capture' | 'canceled' | 'succeeded'
+    status:
+      | 'requires_payment_method'
+      | 'requires_confirmation'
+      | 'requires_action'
+      | 'processing'
+      | 'requires_capture'
+      | 'canceled'
+      | 'succeeded'
     transfer_data: TransferData | null
     transfer_group: string | null
   }
@@ -283,7 +298,13 @@ declare module 'stripe' {
     payment_method_options: Record<string, unknown>
     payment_method_types: string[]
     single_use_mandate: string | null
-    status: 'requires_payment_method' | 'requires_confirmation' | 'requires_action' | 'processing' | 'canceled' | 'succeeded'
+    status:
+      | 'requires_payment_method'
+      | 'requires_confirmation'
+      | 'requires_action'
+      | 'processing'
+      | 'canceled'
+      | 'succeeded'
     usage: string
   }
 
@@ -325,7 +346,15 @@ declare module 'stripe' {
     pending_update: SubscriptionPendingUpdate | null
     schedule: string | null
     start_date: number
-    status: 'trialing' | 'active' | 'no_payment_required' | 'past_due' | 'canceled' | 'unpaid' | 'incomplete' | 'incomplete_expired'
+    status:
+      | 'trialing'
+      | 'active'
+      | 'no_payment_required'
+      | 'past_due'
+      | 'canceled'
+      | 'unpaid'
+      | 'incomplete'
+      | 'incomplete_expired'
     test_clock: string | null
     transfer_data: TransferData | null
     trial_end: number | null
@@ -472,7 +501,16 @@ declare module 'stripe' {
     payment_intent: string | null
     payment_method_details: Record<string, unknown>
     reason: string
-    status: 'warning_needs_response' | 'warning_under_review' | 'warning_closed' | 'needs_response' | 'under_review' | 'charge_refunded' | 'won' | 'lost' | 'warning_evidence_submitted'
+    status:
+      | 'warning_needs_response'
+      | 'warning_under_review'
+      | 'warning_closed'
+      | 'needs_response'
+      | 'under_review'
+      | 'charge_refunded'
+      | 'won'
+      | 'lost'
+      | 'warning_evidence_submitted'
     status_transitions: {
       evidence_submission_closed_at: number | null
       evidence_submitted_at: number | null
@@ -1126,7 +1164,10 @@ declare module 'stripe' {
     expand?: string[]
     mandate?: string
     mandate_data?: {
-      customer_acceptance: { accepted_at?: number; online?: { ip_address: string; user_agent: string } | { accepted_at?: number } }
+      customer_acceptance: {
+        accepted_at?: number
+        online?: { ip_address: string; user_agent: string } | { accepted_at?: number }
+      }
       period_of_use?: { end_date?: number; start_date?: number }
       type: 'india'
     }
@@ -1166,7 +1207,10 @@ declare module 'stripe' {
     expand?: string[]
     flow_directions?: string[]
     mandate_data?: {
-      customer_acceptance: { accepted_at?: number; online?: { ip_address: string; user_agent: string } | { accepted_at?: number } }
+      customer_acceptance: {
+        accepted_at?: number
+        online?: { ip_address: string; user_agent: string } | { accepted_at?: number }
+      }
     }
     metadata?: Record<string, unknown>
     on_behalf_of?: string
@@ -1199,7 +1243,11 @@ declare module 'stripe' {
     metadata?: Record<string, unknown>
     off_session?: boolean
     on_behalf_of?: string
-    payment_behavior?: 'allow_incomplete' | 'default' | 'error_if_incomplete' | 'pending_if_incomplete'
+    payment_behavior?:
+      | 'allow_incomplete'
+      | 'default'
+      | 'error_if_incomplete'
+      | 'pending_if_incomplete'
     payment_settings?: PaymentSettings
     pause_collection?: PauseCollection
     pending_invoice_item_interval?: PendingInvoiceItemInterval

@@ -2,9 +2,9 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
-import { mergeMetadata } from '../../_shared/id-verification-utils.ts';
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import { mergeMetadata } from '../../_shared/id-verification-utils.ts'
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 const STRIPE_API_VERSION = '2025-11-17.clover'
 
@@ -201,7 +201,10 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment: { role?: { scope?: string; name?: string | null } | null; [key: string]: unknown }) =>
+      (assignment: {
+        role?: { scope?: string; name?: string | null } | null
+        [key: string]: unknown
+      }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
     )
@@ -340,13 +343,22 @@ export const idVerificationRouter = t.router({
       })
     }
 
-    return (data ?? []).map((row: { id: string; name: string; description: string | null; price_cents: number; metadata?: Record<string, unknown> | null; [key: string]: unknown }) => ({
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      priceCents: row.price_cents,
-      metadata: row.metadata ?? {},
-    }))
+    return (data ?? []).map(
+      (row: {
+        id: string
+        name: string
+        description: string | null
+        price_cents: number
+        metadata?: Record<string, unknown> | null
+        [key: string]: unknown
+      }) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        priceCents: row.price_cents,
+        metadata: row.metadata ?? {},
+      })
+    )
   }),
 
   requestVerification: protectedProcedure

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { uploadAvatarInputSchema } from '@scf/trpc/schemas'
-import { protectedProcedure, t } from '../../middleware.ts';
+import { protectedProcedure, t } from '../../middleware.ts'
 
 /**
  * Profile Avatar router - handles avatar upload operations

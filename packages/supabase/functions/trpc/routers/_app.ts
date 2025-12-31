@@ -17,7 +17,7 @@
  * 3. The app-router-type-only.ts wrapper uses type-only import to isolate the type
  */
 
-import type { appRouter } from './_app-impl.ts';
+import type { appRouter } from './_app-impl.ts'
 
 // Re-export the router type for client-side usage
 // @ts-nocheck suppresses TS4023 "inaccessible names" error

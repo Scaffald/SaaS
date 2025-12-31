@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { officeProcedure, t } from '../../middleware.ts';
+import { officeProcedure, t } from '../../middleware.ts'
 
 const getGhostProfilesInputSchema = z.object({
   limit: z.number().min(1).max(100).default(25),
@@ -105,7 +105,9 @@ export const officeProfilesRouter = t.router({
       const total = filteredRows.length
       const paginatedRows = filteredRows.slice(input.offset, input.offset + input.limit)
 
-      const userIds = paginatedRows.map((row: { user_id: string; [key: string]: unknown }) => row.user_id)
+      const userIds = paginatedRows.map(
+        (row: { user_id: string; [key: string]: unknown }) => row.user_id
+      )
       const completionScores =
         userIds.length > 0
           ? await ctx.supabaseAdmin
@@ -123,7 +125,12 @@ export const officeProfilesRouter = t.router({
       }
 
       const scoreMap = new Map(
-        (completionScores.data ?? []).map((entry: { user_id: string; completion_score: number }) => [entry.user_id, entry.completion_score])
+        (completionScores.data ?? []).map(
+          (entry: { user_id: string; completion_score: number }) => [
+            entry.user_id,
+            entry.completion_score,
+          ]
+        )
       )
 
       // biome-ignore lint/suspicious/noExplicitAny: Row type from database query

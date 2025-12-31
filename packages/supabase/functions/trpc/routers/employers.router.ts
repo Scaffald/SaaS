@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts';
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Employers Router

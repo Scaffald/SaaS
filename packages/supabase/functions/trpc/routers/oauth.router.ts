@@ -1,7 +1,7 @@
 /**
  * OAuth Router
  * REQ-10: Scaffald OAuth Provider Integration
- * 
+ *
  * Implements OAuth 2.0 authorization server endpoints:
  * - Authorization endpoint with PKCE (Task 5)
  * - Token endpoint with multiple grant types (Task 6)
@@ -64,7 +64,7 @@ async function sha256Hash(input: string): Promise<string> {
   const data = encoder.encode(input)
   const hashBuffer = await crypto.subtle.digest('SHA-256', data)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
 /**
@@ -142,63 +142,469 @@ export const oauthRouter = t.router({
    * Task 5: Implement authorization endpoint with PKCE support
    * Task 12: Support storing pending authorization for passthrough
    */
-  authorize: publicProcedure
-    .input(authorizeInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { user, supabase } = ctx
+  authorize: publicProcedure.input(authorizeInputSchema).mutation(async ({ ctx, input }) => {
+    const { user, supabase } = ctx
 
-      // If user not authenticated, return pending auth info for session storage
-      if (!user) {
-        return {
-          authentication_required: true,
-          pending_auth: {
-            client_id: input.client_id,
-            redirect_uri: input.redirect_uri,
-            state: input.state,
-            scope: input.scope,
-            code_challenge: input.code_challenge,
-            code_challenge_method: input.code_challenge_method,
-            expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-          },
-        }
+    // If user not authenticated, return pending auth info for session storage
+    if (!user) {
+      return {
+        authentication_required: true,
+        pending_auth: {
+          client_id: input.client_id,
+          redirect_uri: input.redirect_uri,
+          state: input.state,
+          scope: input.scope,
+          code_challenge: input.code_challenge,
+          code_challenge_method: input.code_challenge_method,
+          expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        },
+      }
+    }
+
+    // Parse requested scopes
+    const requestedScopes = input.scope.split(' ').filter((s) => s.length > 0)
+
+    // Validate client app
+    const { data: app, error: appError } = await supabase
+      .schema('core')
+      .from('oauth_apps')
+      .select('*')
+      .eq('client_id', input.client_id)
+      .single()
+
+    if (appError || !app) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'unauthorized_client: Invalid client_id',
+      })
+    }
+
+    // Check app status
+    if (app.status !== 'active' && app.status !== 'trusted') {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'unauthorized_client: App is suspended or revoked',
+      })
+    }
+
+    // Verify redirect_uri matches registered URIs
+    if (!app.redirect_uris.includes(input.redirect_uri)) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'invalid_request: redirect_uri mismatch',
+      })
+    }
+
+    // Validate requested scopes against app's allowed_scopes
+    const invalidScopes = requestedScopes.filter((scope) => !app.allowed_scopes.includes(scope))
+    if (invalidScopes.length > 0) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: `invalid_scope: Scopes not allowed: ${invalidScopes.join(', ')}`,
+      })
+    }
+
+    // Validate user permissions using database function
+    const { data: authorizedScopes, error: scopeError } = await supabase.rpc(
+      'validate_oauth_scope',
+      {
+        p_user_id: user.id,
+        p_requested_scopes: requestedScopes,
+      }
+    )
+
+    if (scopeError || !authorizedScopes || authorizedScopes.length === 0) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'invalid_scope: User lacks required permissions',
+      })
+    }
+
+    // Check if consent is needed
+    // Skip consent if: app is trusted AND all scopes are non-sensitive AND previous consent exists
+    const { data: existingConsent } = await supabase
+      .schema('core')
+      .from('oauth_user_consents')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('oauth_app_id', app.id)
+      .is('revoked_at', null)
+      .gt('expires_at', new Date().toISOString())
+      .single()
+
+    const needsConsent =
+      app.status !== 'trusted' ||
+      !existingConsent ||
+      authorizedScopes.some((_scope: string) => {
+        // Check if scope requires consent
+        return true // Simplified - would check scope metadata in production
+      })
+
+    if (needsConsent) {
+      // Return consent_required flag for UI to show consent screen
+      return {
+        consent_required: true,
+        oauth_app_id: app.id,
+        app: {
+          id: app.id,
+          name: app.display_name,
+          logo_url: app.logo_url,
+          homepage_url: app.homepage_url,
+          description: app.description,
+          privacy_policy_url: app.privacy_policy_url,
+          terms_of_service_url: app.terms_of_service_url,
+        },
+        requested_scopes: authorizedScopes,
+        state: input.state,
+        redirect_uri: input.redirect_uri,
+        code_challenge: input.code_challenge,
+        code_challenge_method: input.code_challenge_method,
+      }
+    }
+
+    // Generate authorization code
+    const authCode = generateAuthorizationCode()
+    const codeHash = await sha256Hash(authCode)
+
+    // Store authorization code
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+
+    const { error: codeError } = await supabase
+      .schema('core')
+      .from('oauth_authorization_codes')
+      .insert({
+        code_hash: codeHash,
+        oauth_app_id: app.id,
+        user_id: user.id,
+        redirect_uri: input.redirect_uri,
+        scopes: authorizedScopes,
+        code_challenge: input.code_challenge,
+        code_challenge_method: input.code_challenge_method,
+        expires_at: expiresAt.toISOString(),
+      })
+
+    if (codeError) {
+      console.error('[oauth] Failed to store authorization code', codeError)
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'server_error: Failed to generate authorization code',
+      })
+    }
+
+    // Log authorization event
+    await logOAuthEvent(
+      supabase,
+      'authorization_granted',
+      {
+        scopes: authorizedScopes,
+        redirect_uri: input.redirect_uri,
+      },
+      app.id,
+      user.id
+    )
+
+    // Return redirect URL with authorization code
+    const redirectUrl = new URL(input.redirect_uri)
+    redirectUrl.searchParams.set('code', authCode)
+    redirectUrl.searchParams.set('state', input.state)
+
+    // Store pending authorization in session if user not authenticated
+    // This will be checked after external auth completes
+    const pendingAuth = {
+      client_id: input.client_id,
+      redirect_uri: input.redirect_uri,
+      state: input.state,
+      scope: input.scope,
+      code_challenge: input.code_challenge,
+      code_challenge_method: input.code_challenge_method,
+      expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    }
+
+    return {
+      redirect_url: redirectUrl.toString(),
+      consent_required: false,
+      pending_auth: pendingAuth, // Return to frontend for session storage
+    }
+  }),
+
+  /**
+   * OAuth 2.0 Token Endpoint
+   * Task 6: Implement token endpoint with multiple grant types
+   */
+  token: publicProcedure.input(tokenInputSchema).mutation(async ({ ctx, input }) => {
+    const { supabase } = ctx
+
+    // Authenticate client
+    const { data: app, error: appError } = await supabase
+      .schema('core')
+      .from('oauth_apps')
+      .select('*')
+      .eq('client_id', input.client_id)
+      .single()
+
+    if (appError || !app) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'invalid_client: Invalid client credentials',
+      })
+    }
+
+    // Verify client secret (simplified - should use bcrypt in production)
+    // TODO: Implement proper bcrypt verification
+    if (!app.client_secret_hash) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'invalid_client: Invalid client credentials',
+      })
+    }
+
+    // Handle different grant types
+    if (input.grant_type === 'authorization_code') {
+      if (!input.code || !input.redirect_uri || !input.code_verifier) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'invalid_request: Missing required parameters',
+        })
       }
 
-      // Parse requested scopes
-      const requestedScopes = input.scope.split(' ').filter(s => s.length > 0)
+      // Hash the authorization code
+      const codeHash = await sha256Hash(input.code)
 
-      // Validate client app
-      const { data: app, error: appError } = await supabase
+      // Find authorization code
+      const { data: authCode, error: codeError } = await supabase
         .schema('core')
-        .from('oauth_apps')
+        .from('oauth_authorization_codes')
         .select('*')
-        .eq('client_id', input.client_id)
+        .eq('code_hash', codeHash)
+        .eq('oauth_app_id', app.id)
+        .is('used_at', null)
         .single()
 
-      if (appError || !app) {
+      if (codeError || !authCode) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'unauthorized_client: Invalid client_id',
+          message: 'invalid_grant: Invalid or expired authorization code',
         })
       }
 
-      // Check app status
-      if (app.status !== 'active' && app.status !== 'trusted') {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'unauthorized_client: App is suspended or revoked',
-        })
-      }
-
-      // Verify redirect_uri matches registered URIs
-      if (!app.redirect_uris.includes(input.redirect_uri)) {
+      // Check expiration
+      if (new Date(authCode.expires_at) < new Date()) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'invalid_request: redirect_uri mismatch',
+          message: 'invalid_grant: Authorization code expired',
         })
       }
 
-      // Validate requested scopes against app's allowed_scopes
-      const invalidScopes = requestedScopes.filter(scope => !app.allowed_scopes.includes(scope))
+      // Verify redirect_uri
+      if (authCode.redirect_uri !== input.redirect_uri) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'invalid_grant: redirect_uri mismatch',
+        })
+      }
+
+      // Verify PKCE code_verifier
+      // Hash the code_verifier with SHA-256
+      const verifierHashBuffer = await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(input.code_verifier)
+      )
+      const verifierHashArray = Array.from(new Uint8Array(verifierHashBuffer))
+      // Convert to base64url
+      const base64VerifierHash = btoa(String.fromCharCode(...verifierHashArray))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '')
+
+      if (base64VerifierHash !== authCode.code_challenge) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'invalid_grant: PKCE verification failed',
+        })
+      }
+
+      // Mark code as used
+      await supabase
+        .schema('core')
+        .from('oauth_authorization_codes')
+        .update({ used_at: new Date().toISOString() })
+        .eq('id', authCode.id)
+
+      // Generate tokens using database function
+      const { data: tokenMetadata, error: tokenError } = await supabase.rpc(
+        'generate_oauth_token',
+        {
+          p_oauth_app_id: app.id,
+          p_user_id: authCode.user_id,
+          p_scopes: authCode.scopes,
+        }
+      )
+
+      if (tokenError || !tokenMetadata) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'server_error: Failed to generate token',
+        })
+      }
+
+      // Generate access token (JWT - would sign with RS256 in production)
+      // For now, generate opaque token
+      const accessToken = generateAuthorizationCode() // Reuse code generator
+      const refreshToken = generateAuthorizationCode()
+
+      // Hash tokens for storage
+      const accessTokenHash = await sha256Hash(accessToken)
+      const refreshTokenHash = await sha256Hash(refreshToken)
+
+      // Store tokens
+      const expiresAt = new Date(Date.now() + 3600 * 1000) // 1 hour
+      const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000) // 30 days
+
+      await supabase
+        .schema('core')
+        .from('oauth_tokens')
+        .insert([
+          {
+            token_hash: accessTokenHash,
+            token_type: 'access_token',
+            oauth_app_id: app.id,
+            user_id: authCode.user_id,
+            scopes: authCode.scopes,
+            expires_at: expiresAt.toISOString(),
+          },
+          {
+            token_hash: refreshTokenHash,
+            token_type: 'refresh_token',
+            oauth_app_id: app.id,
+            user_id: authCode.user_id,
+            scopes: authCode.scopes,
+            expires_at: refreshExpiresAt.toISOString(),
+          },
+        ])
+
+      // Log token issuance
+      await logOAuthEvent(
+        supabase,
+        'token_issued',
+        { grant_type: 'authorization_code', scopes: authCode.scopes },
+        app.id,
+        authCode.user_id
+      )
+
+      return {
+        access_token: accessToken,
+        token_type: 'Bearer',
+        expires_in: 3600,
+        refresh_token: refreshToken,
+        scope: authCode.scopes.join(' '),
+      }
+    } else if (input.grant_type === 'refresh_token') {
+      if (!input.refresh_token) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'invalid_request: Missing refresh_token',
+        })
+      }
+
+      // Hash refresh token
+      const refreshTokenHash = await sha256Hash(input.refresh_token)
+
+      // Find refresh token
+      const { data: refreshToken, error: tokenError } = await supabase
+        .schema('core')
+        .from('oauth_tokens')
+        .select('*')
+        .eq('token_hash', refreshTokenHash)
+        .eq('token_type', 'refresh_token')
+        .eq('oauth_app_id', app.id)
+        .is('revoked_at', null)
+        .single()
+
+      if (tokenError || !refreshToken) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'invalid_grant: Invalid or revoked refresh token',
+        })
+      }
+
+      // Check expiration
+      if (new Date(refreshToken.expires_at) < new Date()) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'invalid_grant: Refresh token expired',
+        })
+      }
+
+      // Revoke old refresh token (rotation)
+      await supabase
+        .schema('core')
+        .from('oauth_tokens')
+        .update({ revoked_at: new Date().toISOString(), revoked_reason: 'rotated' })
+        .eq('id', refreshToken.id)
+
+      // Generate new tokens
+      await supabase.rpc('generate_oauth_token', {
+        p_oauth_app_id: app.id,
+        p_user_id: refreshToken.user_id,
+        p_scopes: refreshToken.scopes,
+      })
+
+      const newAccessToken = generateAuthorizationCode()
+      const newRefreshToken = generateAuthorizationCode()
+
+      const accessTokenHash = await sha256Hash(newAccessToken)
+      const refreshTokenHashNew = await sha256Hash(newRefreshToken)
+
+      const expiresAt = new Date(Date.now() + 3600 * 1000)
+      const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000)
+
+      await supabase
+        .schema('core')
+        .from('oauth_tokens')
+        .insert([
+          {
+            token_hash: accessTokenHash,
+            token_type: 'access_token',
+            oauth_app_id: app.id,
+            user_id: refreshToken.user_id,
+            scopes: refreshToken.scopes,
+            expires_at: expiresAt.toISOString(),
+          },
+          {
+            token_hash: refreshTokenHashNew,
+            token_type: 'refresh_token',
+            oauth_app_id: app.id,
+            user_id: refreshToken.user_id,
+            scopes: refreshToken.scopes,
+            expires_at: refreshExpiresAt.toISOString(),
+          },
+        ])
+
+      await logOAuthEvent(
+        supabase,
+        'token_refreshed',
+        { scopes: refreshToken.scopes },
+        app.id,
+        refreshToken.user_id
+      )
+
+      return {
+        access_token: newAccessToken,
+        token_type: 'Bearer',
+        expires_in: 3600,
+        refresh_token: newRefreshToken,
+        scope: refreshToken.scopes.join(' '),
+      }
+    } else if (input.grant_type === 'client_credentials') {
+      // Client credentials grant - no user context
+      const requestedScopes = input.scope
+        ? input.scope.split(' ').filter((s) => s.length > 0)
+        : app.allowed_scopes
+
+      // Validate scopes against app's allowed_scopes
+      const invalidScopes = requestedScopes.filter(
+        (scope: string) => !app.allowed_scopes.includes(scope)
+      )
       if (invalidScopes.length > 0) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
@@ -206,587 +612,176 @@ export const oauthRouter = t.router({
         })
       }
 
-      // Validate user permissions using database function
-      const { data: authorizedScopes, error: scopeError } = await supabase
-        .rpc('validate_oauth_scope', {
-          p_user_id: user.id,
-          p_requested_scopes: requestedScopes,
-        })
+      // Generate access token (no refresh token for client_credentials)
+      const accessToken = generateAuthorizationCode()
+      const accessTokenHash = await sha256Hash(accessToken)
 
-      if (scopeError || !authorizedScopes || authorizedScopes.length === 0) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'invalid_scope: User lacks required permissions',
-        })
-      }
+      const expiresAt = new Date(Date.now() + 3600 * 1000)
 
-      // Check if consent is needed
-      // Skip consent if: app is trusted AND all scopes are non-sensitive AND previous consent exists
-      const { data: existingConsent } = await supabase
-        .schema('core')
-        .from('oauth_user_consents')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('oauth_app_id', app.id)
-        .is('revoked_at', null)
-        .gt('expires_at', new Date().toISOString())
-        .single()
+      await supabase.schema('core').from('oauth_tokens').insert({
+        token_hash: accessTokenHash,
+        token_type: 'access_token',
+        oauth_app_id: app.id,
+        user_id: null, // No user context for client_credentials
+        scopes: requestedScopes,
+        expires_at: expiresAt.toISOString(),
+      })
 
-      const needsConsent =
-        app.status !== 'trusted' ||
-        !existingConsent ||
-        authorizedScopes.some((_scope: string) => {
-          // Check if scope requires consent
-          return true // Simplified - would check scope metadata in production
-        })
-
-      if (needsConsent) {
-        // Return consent_required flag for UI to show consent screen
-        return {
-          consent_required: true,
-          oauth_app_id: app.id,
-          app: {
-            id: app.id,
-            name: app.display_name,
-            logo_url: app.logo_url,
-            homepage_url: app.homepage_url,
-            description: app.description,
-            privacy_policy_url: app.privacy_policy_url,
-            terms_of_service_url: app.terms_of_service_url,
-          },
-          requested_scopes: authorizedScopes,
-          state: input.state,
-          redirect_uri: input.redirect_uri,
-          code_challenge: input.code_challenge,
-          code_challenge_method: input.code_challenge_method,
-        }
-      }
-
-      // Generate authorization code
-      const authCode = generateAuthorizationCode()
-      const codeHash = await sha256Hash(authCode)
-
-      // Store authorization code
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
-
-      const { error: codeError } = await supabase
-        .schema('core')
-        .from('oauth_authorization_codes')
-        .insert({
-          code_hash: codeHash,
-          oauth_app_id: app.id,
-          user_id: user.id,
-          redirect_uri: input.redirect_uri,
-          scopes: authorizedScopes,
-          code_challenge: input.code_challenge,
-          code_challenge_method: input.code_challenge_method,
-          expires_at: expiresAt.toISOString(),
-        })
-
-      if (codeError) {
-        console.error('[oauth] Failed to store authorization code', codeError)
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'server_error: Failed to generate authorization code',
-        })
-      }
-
-      // Log authorization event
       await logOAuthEvent(
         supabase,
-        'authorization_granted',
-        {
-          scopes: authorizedScopes,
-          redirect_uri: input.redirect_uri,
-        },
-        app.id,
-        user.id
+        'token_issued',
+        { grant_type: 'client_credentials', scopes: requestedScopes },
+        app.id
       )
 
-      // Return redirect URL with authorization code
-      const redirectUrl = new URL(input.redirect_uri)
-      redirectUrl.searchParams.set('code', authCode)
-      redirectUrl.searchParams.set('state', input.state)
-
-      // Store pending authorization in session if user not authenticated
-      // This will be checked after external auth completes
-      const pendingAuth = {
-        client_id: input.client_id,
-        redirect_uri: input.redirect_uri,
-        state: input.state,
-        scope: input.scope,
-        code_challenge: input.code_challenge,
-        code_challenge_method: input.code_challenge_method,
-        expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-      }
-
       return {
-        redirect_url: redirectUrl.toString(),
-        consent_required: false,
-        pending_auth: pendingAuth, // Return to frontend for session storage
+        access_token: accessToken,
+        token_type: 'Bearer',
+        expires_in: 3600,
+        scope: requestedScopes.join(' '),
       }
-    }),
+    }
 
-  /**
-   * OAuth 2.0 Token Endpoint
-   * Task 6: Implement token endpoint with multiple grant types
-   */
-  token: publicProcedure
-    .input(tokenInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx
-
-      // Authenticate client
-      const { data: app, error: appError } = await supabase
-        .schema('core')
-        .from('oauth_apps')
-        .select('*')
-        .eq('client_id', input.client_id)
-        .single()
-
-      if (appError || !app) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'invalid_client: Invalid client credentials',
-        })
-      }
-
-      // Verify client secret (simplified - should use bcrypt in production)
-      // TODO: Implement proper bcrypt verification
-      if (!app.client_secret_hash) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'invalid_client: Invalid client credentials',
-        })
-      }
-
-      // Handle different grant types
-      if (input.grant_type === 'authorization_code') {
-        if (!input.code || !input.redirect_uri || !input.code_verifier) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'invalid_request: Missing required parameters',
-          })
-        }
-
-        // Hash the authorization code
-        const codeHash = await sha256Hash(input.code)
-
-        // Find authorization code
-        const { data: authCode, error: codeError } = await supabase
-          .schema('core')
-          .from('oauth_authorization_codes')
-          .select('*')
-          .eq('code_hash', codeHash)
-          .eq('oauth_app_id', app.id)
-          .is('used_at', null)
-          .single()
-
-        if (codeError || !authCode) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'invalid_grant: Invalid or expired authorization code',
-          })
-        }
-
-        // Check expiration
-        if (new Date(authCode.expires_at) < new Date()) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'invalid_grant: Authorization code expired',
-          })
-        }
-
-        // Verify redirect_uri
-        if (authCode.redirect_uri !== input.redirect_uri) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'invalid_grant: redirect_uri mismatch',
-          })
-        }
-
-        // Verify PKCE code_verifier
-        // Hash the code_verifier with SHA-256
-        const verifierHashBuffer = await crypto.subtle.digest(
-          'SHA-256',
-          new TextEncoder().encode(input.code_verifier)
-        )
-        const verifierHashArray = Array.from(new Uint8Array(verifierHashBuffer))
-        // Convert to base64url
-        const base64VerifierHash = btoa(String.fromCharCode(...verifierHashArray))
-          .replace(/\+/g, '-')
-          .replace(/\//g, '_')
-          .replace(/=/g, '')
-
-        if (base64VerifierHash !== authCode.code_challenge) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'invalid_grant: PKCE verification failed',
-          })
-        }
-
-        // Mark code as used
-        await supabase
-          .schema('core')
-          .from('oauth_authorization_codes')
-          .update({ used_at: new Date().toISOString() })
-          .eq('id', authCode.id)
-
-        // Generate tokens using database function
-        const { data: tokenMetadata, error: tokenError } = await supabase
-          .rpc('generate_oauth_token', {
-            p_oauth_app_id: app.id,
-            p_user_id: authCode.user_id,
-            p_scopes: authCode.scopes,
-          })
-
-        if (tokenError || !tokenMetadata) {
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'server_error: Failed to generate token',
-          })
-        }
-
-        // Generate access token (JWT - would sign with RS256 in production)
-        // For now, generate opaque token
-        const accessToken = generateAuthorizationCode() // Reuse code generator
-        const refreshToken = generateAuthorizationCode()
-
-        // Hash tokens for storage
-        const accessTokenHash = await sha256Hash(accessToken)
-        const refreshTokenHash = await sha256Hash(refreshToken)
-
-        // Store tokens
-        const expiresAt = new Date(Date.now() + 3600 * 1000) // 1 hour
-        const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000) // 30 days
-
-        await supabase
-          .schema('core')
-          .from('oauth_tokens')
-          .insert([
-            {
-              token_hash: accessTokenHash,
-              token_type: 'access_token',
-              oauth_app_id: app.id,
-              user_id: authCode.user_id,
-              scopes: authCode.scopes,
-              expires_at: expiresAt.toISOString(),
-            },
-            {
-              token_hash: refreshTokenHash,
-              token_type: 'refresh_token',
-              oauth_app_id: app.id,
-              user_id: authCode.user_id,
-              scopes: authCode.scopes,
-              expires_at: refreshExpiresAt.toISOString(),
-            },
-          ])
-
-        // Log token issuance
-        await logOAuthEvent(
-          supabase,
-          'token_issued',
-          { grant_type: 'authorization_code', scopes: authCode.scopes },
-          app.id,
-          authCode.user_id
-        )
-
-        return {
-          access_token: accessToken,
-          token_type: 'Bearer',
-          expires_in: 3600,
-          refresh_token: refreshToken,
-          scope: authCode.scopes.join(' '),
-        }
-      } else if (input.grant_type === 'refresh_token') {
-        if (!input.refresh_token) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'invalid_request: Missing refresh_token',
-          })
-        }
-
-        // Hash refresh token
-        const refreshTokenHash = await sha256Hash(input.refresh_token)
-
-        // Find refresh token
-        const { data: refreshToken, error: tokenError } = await supabase
-          .schema('core')
-          .from('oauth_tokens')
-          .select('*')
-          .eq('token_hash', refreshTokenHash)
-          .eq('token_type', 'refresh_token')
-          .eq('oauth_app_id', app.id)
-          .is('revoked_at', null)
-          .single()
-
-        if (tokenError || !refreshToken) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'invalid_grant: Invalid or revoked refresh token',
-          })
-        }
-
-        // Check expiration
-        if (new Date(refreshToken.expires_at) < new Date()) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'invalid_grant: Refresh token expired',
-          })
-        }
-
-        // Revoke old refresh token (rotation)
-        await supabase
-          .schema('core')
-          .from('oauth_tokens')
-          .update({ revoked_at: new Date().toISOString(), revoked_reason: 'rotated' })
-          .eq('id', refreshToken.id)
-
-        // Generate new tokens
-        await supabase
-          .rpc('generate_oauth_token', {
-            p_oauth_app_id: app.id,
-            p_user_id: refreshToken.user_id,
-            p_scopes: refreshToken.scopes,
-          })
-
-        const newAccessToken = generateAuthorizationCode()
-        const newRefreshToken = generateAuthorizationCode()
-
-        const accessTokenHash = await sha256Hash(newAccessToken)
-        const refreshTokenHashNew = await sha256Hash(newRefreshToken)
-
-        const expiresAt = new Date(Date.now() + 3600 * 1000)
-        const refreshExpiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000)
-
-        await supabase
-          .schema('core')
-          .from('oauth_tokens')
-          .insert([
-            {
-              token_hash: accessTokenHash,
-              token_type: 'access_token',
-              oauth_app_id: app.id,
-              user_id: refreshToken.user_id,
-              scopes: refreshToken.scopes,
-              expires_at: expiresAt.toISOString(),
-            },
-            {
-              token_hash: refreshTokenHashNew,
-              token_type: 'refresh_token',
-              oauth_app_id: app.id,
-              user_id: refreshToken.user_id,
-              scopes: refreshToken.scopes,
-              expires_at: refreshExpiresAt.toISOString(),
-            },
-          ])
-
-        await logOAuthEvent(
-          supabase,
-          'token_refreshed',
-          { scopes: refreshToken.scopes },
-          app.id,
-          refreshToken.user_id
-        )
-
-        return {
-          access_token: newAccessToken,
-          token_type: 'Bearer',
-          expires_in: 3600,
-          refresh_token: newRefreshToken,
-          scope: refreshToken.scopes.join(' '),
-        }
-      } else if (input.grant_type === 'client_credentials') {
-        // Client credentials grant - no user context
-        const requestedScopes = input.scope ? input.scope.split(' ').filter(s => s.length > 0) : app.allowed_scopes
-
-        // Validate scopes against app's allowed_scopes
-        const invalidScopes = requestedScopes.filter((scope: string) => !app.allowed_scopes.includes(scope))
-        if (invalidScopes.length > 0) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: `invalid_scope: Scopes not allowed: ${invalidScopes.join(', ')}`,
-          })
-        }
-
-        // Generate access token (no refresh token for client_credentials)
-        const accessToken = generateAuthorizationCode()
-        const accessTokenHash = await sha256Hash(accessToken)
-
-        const expiresAt = new Date(Date.now() + 3600 * 1000)
-
-        await supabase
-          .schema('core')
-          .from('oauth_tokens')
-          .insert({
-            token_hash: accessTokenHash,
-            token_type: 'access_token',
-            oauth_app_id: app.id,
-            user_id: null, // No user context for client_credentials
-            scopes: requestedScopes,
-            expires_at: expiresAt.toISOString(),
-          })
-
-        await logOAuthEvent(
-          supabase,
-          'token_issued',
-          { grant_type: 'client_credentials', scopes: requestedScopes },
-          app.id
-        )
-
-        return {
-          access_token: accessToken,
-          token_type: 'Bearer',
-          expires_in: 3600,
-          scope: requestedScopes.join(' '),
-        }
-      }
-
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'unsupported_grant_type',
-      })
-    }),
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'unsupported_grant_type',
+    })
+  }),
 
   /**
    * OAuth 2.0 Token Revocation Endpoint
    * Task 7: Implement token revocation (RFC 7009)
    */
-  revoke: publicProcedure
-    .input(revokeInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx
+  revoke: publicProcedure.input(revokeInputSchema).mutation(async ({ ctx, input }) => {
+    const { supabase } = ctx
 
-      // Authenticate client
-      const { data: app } = await supabase
-        .schema('core')
-        .from('oauth_apps')
-        .select('*')
-        .eq('client_id', input.client_id)
-        .single()
+    // Authenticate client
+    const { data: app } = await supabase
+      .schema('core')
+      .from('oauth_apps')
+      .select('*')
+      .eq('client_id', input.client_id)
+      .single()
 
-      if (!app) {
-        // Per RFC 7009, return 200 OK even if client invalid
-        return { success: true }
-      }
-
-      // Verify client secret (simplified)
-      if (!app.client_secret_hash) {
-        return { success: true }
-      }
-
-      // Hash token
-      const tokenHash = await sha256Hash(input.token)
-
-      // Revoke token
-      await supabase
-        .schema('core')
-        .from('oauth_tokens')
-        .update({
-          revoked_at: new Date().toISOString(),
-          revoked_reason: 'client_revoked',
-        })
-        .eq('token_hash', tokenHash)
-        .eq('oauth_app_id', app.id)
-        .is('revoked_at', null)
-
-      // Log revocation
-      await logOAuthEvent(
-        supabase,
-        'token_revoked',
-        { token_type_hint: input.token_type_hint },
-        app.id
-      )
-
-      // Always return 200 OK per RFC 7009
+    if (!app) {
+      // Per RFC 7009, return 200 OK even if client invalid
       return { success: true }
-    }),
+    }
+
+    // Verify client secret (simplified)
+    if (!app.client_secret_hash) {
+      return { success: true }
+    }
+
+    // Hash token
+    const tokenHash = await sha256Hash(input.token)
+
+    // Revoke token
+    await supabase
+      .schema('core')
+      .from('oauth_tokens')
+      .update({
+        revoked_at: new Date().toISOString(),
+        revoked_reason: 'client_revoked',
+      })
+      .eq('token_hash', tokenHash)
+      .eq('oauth_app_id', app.id)
+      .is('revoked_at', null)
+
+    // Log revocation
+    await logOAuthEvent(
+      supabase,
+      'token_revoked',
+      { token_type_hint: input.token_type_hint },
+      app.id
+    )
+
+    // Always return 200 OK per RFC 7009
+    return { success: true }
+  }),
 
   /**
    * OAuth 2.0 Token Introspection Endpoint
    * Task 7: Implement token introspection (RFC 7662)
    */
-  introspect: publicProcedure
-    .input(introspectInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx
+  introspect: publicProcedure.input(introspectInputSchema).mutation(async ({ ctx, input }) => {
+    const { supabase } = ctx
 
-      // Authenticate client
-      const { data: app } = await supabase
-        .schema('core')
-        .from('oauth_apps')
-        .select('*')
-        .eq('client_id', input.client_id)
-        .single()
+    // Authenticate client
+    const { data: app } = await supabase
+      .schema('core')
+      .from('oauth_apps')
+      .select('*')
+      .eq('client_id', input.client_id)
+      .single()
 
-      if (!app || !app.client_secret_hash) {
-        return { active: false }
-      }
+    if (!app || !app.client_secret_hash) {
+      return { active: false }
+    }
 
-      // Hash token
-      const tokenHash = await sha256Hash(input.token)
+    // Hash token
+    const tokenHash = await sha256Hash(input.token)
 
-      // Find token
-      const { data: token } = await supabase
-        .schema('core')
-        .from('oauth_tokens')
-        .select('*')
-        .eq('token_hash', tokenHash)
-        .eq('oauth_app_id', app.id)
-        .single()
+    // Find token
+    const { data: token } = await supabase
+      .schema('core')
+      .from('oauth_tokens')
+      .select('*')
+      .eq('token_hash', tokenHash)
+      .eq('oauth_app_id', app.id)
+      .single()
 
-      if (!token || token.revoked_at || new Date(token.expires_at) < new Date()) {
-        return { active: false }
-      }
+    if (!token || token.revoked_at || new Date(token.expires_at) < new Date()) {
+      return { active: false }
+    }
 
-      return {
-        active: true,
-        scope: token.scopes.join(' '),
-        client_id: app.client_id,
-        user_id: token.user_id,
-        exp: Math.floor(new Date(token.expires_at).getTime() / 1000),
-        iat: Math.floor(new Date(token.created_at).getTime() / 1000),
-        token_type: 'Bearer',
-      }
-    }),
+    return {
+      active: true,
+      scope: token.scopes.join(' '),
+      client_id: app.client_id,
+      user_id: token.user_id,
+      exp: Math.floor(new Date(token.expires_at).getTime() / 1000),
+      iat: Math.floor(new Date(token.created_at).getTime() / 1000),
+      token_type: 'Bearer',
+    }
+  }),
 
   /**
    * OpenID Connect UserInfo Endpoint
    * Task 8: Implement UserInfo endpoint with scope-based claims
    */
-  userinfo: protectedProcedure
-    .query(async ({ ctx }) => {
-      const { user, supabase } = ctx
+  userinfo: protectedProcedure.query(async ({ ctx }) => {
+    const { user, supabase } = ctx
 
-      if (!user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+    if (!user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      // Extract token from Authorization header (would be done in middleware)
-      // For now, use user context
-      // TODO: Extract Bearer token and validate it properly
+    // Extract token from Authorization header (would be done in middleware)
+    // For now, use user context
+    // TODO: Extract Bearer token and validate it properly
 
-      // Get user profile
-      const { data: userProfile } = await supabase
-        .schema('core')
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+    // Get user profile
+    const { data: userProfile } = await supabase
+      .schema('core')
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .single()
 
-      if (!userProfile) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
-      }
+    if (!userProfile) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
+    }
 
-      // Return basic claims (simplified - would filter by granted scopes)
-      return {
-        sub: user.id,
-        name: userProfile.full_name || user.email,
-        email: user.email,
-        picture: userProfile.avatar_url || null,
-        email_verified: userProfile.email_confirmed_at !== null,
-      }
-    }),
+    // Return basic claims (simplified - would filter by granted scopes)
+    return {
+      sub: user.id,
+      name: userProfile.full_name || user.email,
+      email: user.email,
+      picture: userProfile.avatar_url || null,
+      email_verified: userProfile.email_confirmed_at !== null,
+    }
+  }),
 
   /**
    * Grant OAuth Consent
@@ -816,15 +811,12 @@ export const oauthRouter = t.router({
         ? new Date(Date.now() + 90 * 24 * 3600 * 1000)
         : new Date(Date.now() + 90 * 24 * 3600 * 1000)
 
-      await supabase
-        .schema('core')
-        .from('oauth_user_consents')
-        .upsert({
-          user_id: user.id,
-          oauth_app_id: input.oauth_app_id,
-          granted_scopes: input.scopes,
-          expires_at: expiresAt.toISOString(),
-        })
+      await supabase.schema('core').from('oauth_user_consents').upsert({
+        user_id: user.id,
+        oauth_app_id: input.oauth_app_id,
+        granted_scopes: input.scopes,
+        expires_at: expiresAt.toISOString(),
+      })
 
       // Get app to generate authorization code
       const { data: app } = await supabase
@@ -1187,4 +1179,3 @@ export const oauthRouter = t.router({
       }),
   }),
 })
-

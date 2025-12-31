@@ -1,18 +1,18 @@
 import { z } from 'zod'
-import { backgroundCheckStatusEnum } from './background-check-schemas.ts';
-import type { Json } from './database.types.ts';
+import { backgroundCheckStatusEnum } from './background-check-schemas.ts'
+import type { Json } from './database.types.ts'
 import type {
   NotificationChannel,
   NotificationSeverity,
   NotificationSupabaseClient,
   NotificationType,
-} from './notifications/types.ts';
+} from './notifications/types.ts'
 import {
   enqueueDelivery,
   ensureChannelArray,
   getUserContacts,
   insertNotification,
-} from './notifications/utils.ts';
+} from './notifications/utils.ts'
 
 type BackgroundCheckStatus = z.infer<typeof backgroundCheckStatusEnum>
 type JsonRecord = Record<string, Json | undefined>
@@ -71,7 +71,7 @@ function buildReminderLines(
     )
   } else {
     lines.push(
-      'Request a new background check now if continued access to the worker\'s results is required.'
+      "Request a new background check now if continued access to the worker's results is required."
     )
   }
 
@@ -450,7 +450,7 @@ function composeEmailContent(
       )
     } else {
       lines.push(
-        'Request a new background check if continued access to the worker\'s results is required.'
+        "Request a new background check if continued access to the worker's results is required."
       )
     }
   } else if (status === 'failed' && audience === 'worker') {

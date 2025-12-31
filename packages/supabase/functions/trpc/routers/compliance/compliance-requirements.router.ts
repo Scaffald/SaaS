@@ -8,12 +8,12 @@
 
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../../middleware.ts';
+import { protectedProcedure, t } from '../../middleware.ts'
 import {
   enforceCompliancePermission,
   getOrgIdFromInput,
   getUserPermissions,
-} from './compliance-auth.ts';
+} from './compliance-auth.ts'
 
 // =============================================================================
 // Zod Schemas
@@ -214,7 +214,9 @@ export const complianceRequirementsRouter = t.router({
       }
 
       if (search) {
-        query = query.or(`name.ilike.%${search}%,code.ilike.%${search}%,description.ilike.%${search}%`)
+        query = query.or(
+          `name.ilike.%${search}%,code.ilike.%${search}%,description.ilike.%${search}%`
+        )
       }
 
       const { data, error, count } = await query
@@ -348,21 +350,24 @@ export const complianceRequirementsRouter = t.router({
       }
 
       // Create initial version record
-      await ctx.supabase.schema('forsured').from('compliance_requirement_versions').insert({
-        requirement_id: data.id,
-        version_number: 1,
-        code: data.code,
-        name: data.name,
-        type: data.type,
-        description: data.description,
-        status: data.status,
-        is_template: data.is_template,
-        effective_date: data.effective_date,
-        expiration_date: data.expiration_date,
-        requirement_definition: data.requirement_definition,
-        change_summary: 'Initial version',
-        changed_by: ctx.user?.id ?? null,
-      })
+      await ctx.supabase
+        .schema('forsured')
+        .from('compliance_requirement_versions')
+        .insert({
+          requirement_id: data.id,
+          version_number: 1,
+          code: data.code,
+          name: data.name,
+          type: data.type,
+          description: data.description,
+          status: data.status,
+          is_template: data.is_template,
+          effective_date: data.effective_date,
+          expiration_date: data.expiration_date,
+          requirement_definition: data.requirement_definition,
+          change_summary: 'Initial version',
+          changed_by: ctx.user?.id ?? null,
+        })
 
       return data
     }),
@@ -401,7 +406,8 @@ export const complianceRequirementsRouter = t.router({
       if (updates.description !== undefined) updateData.description = updates.description
       if (updates.status !== undefined) updateData.status = updates.status
       if (updates.effective_date !== undefined) updateData.effective_date = updates.effective_date
-      if (updates.expiration_date !== undefined) updateData.expiration_date = updates.expiration_date
+      if (updates.expiration_date !== undefined)
+        updateData.expiration_date = updates.expiration_date
       if (updates.requirement_definition !== undefined)
         updateData.requirement_definition = updates.requirement_definition
 
@@ -426,21 +432,24 @@ export const complianceRequirementsRouter = t.router({
       }
 
       // Create version record
-      await ctx.supabase.schema('forsured').from('compliance_requirement_versions').insert({
-        requirement_id: requirementId,
-        version_number: data.current_version,
-        code: data.code,
-        name: data.name,
-        type: data.type,
-        description: data.description,
-        status: data.status,
-        is_template: data.is_template,
-        effective_date: data.effective_date,
-        expiration_date: data.expiration_date,
-        requirement_definition: data.requirement_definition,
-        change_summary,
-        changed_by: ctx.user?.id ?? null,
-      })
+      await ctx.supabase
+        .schema('forsured')
+        .from('compliance_requirement_versions')
+        .insert({
+          requirement_id: requirementId,
+          version_number: data.current_version,
+          code: data.code,
+          name: data.name,
+          type: data.type,
+          description: data.description,
+          status: data.status,
+          is_template: data.is_template,
+          effective_date: data.effective_date,
+          expiration_date: data.expiration_date,
+          requirement_definition: data.requirement_definition,
+          change_summary,
+          changed_by: ctx.user?.id ?? null,
+        })
 
       return data
     }),
@@ -587,7 +596,8 @@ export const complianceRequirementsRouter = t.router({
       }
 
       // Generate new code if not provided
-      const newCode = overrides?.code ?? `${source.code}-COPY-${Date.now().toString(36).toUpperCase()}`
+      const newCode =
+        overrides?.code ?? `${source.code}-COPY-${Date.now().toString(36).toUpperCase()}`
 
       // Create cloned requirement
       const { data, error } = await ctx.supabase
@@ -620,21 +630,24 @@ export const complianceRequirementsRouter = t.router({
       }
 
       // Create initial version record
-      await ctx.supabase.schema('forsured').from('compliance_requirement_versions').insert({
-        requirement_id: data.id,
-        version_number: 1,
-        code: data.code,
-        name: data.name,
-        type: data.type,
-        description: data.description,
-        status: data.status,
-        is_template: data.is_template,
-        effective_date: data.effective_date,
-        expiration_date: data.expiration_date,
-        requirement_definition: data.requirement_definition,
-        change_summary: `Cloned from ${source.code}`,
-        changed_by: ctx.user?.id ?? null,
-      })
+      await ctx.supabase
+        .schema('forsured')
+        .from('compliance_requirement_versions')
+        .insert({
+          requirement_id: data.id,
+          version_number: 1,
+          code: data.code,
+          name: data.name,
+          type: data.type,
+          description: data.description,
+          status: data.status,
+          is_template: data.is_template,
+          effective_date: data.effective_date,
+          expiration_date: data.expiration_date,
+          requirement_definition: data.requirement_definition,
+          change_summary: `Cloned from ${source.code}`,
+          changed_by: ctx.user?.id ?? null,
+        })
 
       return data
     }),
@@ -713,21 +726,24 @@ export const complianceRequirementsRouter = t.router({
       }
 
       // Create version record
-      await ctx.supabase.schema('forsured').from('compliance_requirement_versions').insert({
-        requirement_id: requirementId,
-        version_number: newVersion,
-        code: data.code,
-        name: data.name,
-        type: data.type,
-        description: data.description,
-        status: data.status,
-        is_template: data.is_template,
-        effective_date: data.effective_date,
-        expiration_date: data.expiration_date,
-        requirement_definition: data.requirement_definition,
-        change_summary: `${change_summary} (restored from v${versionNumber})`,
-        changed_by: ctx.user?.id ?? null,
-      })
+      await ctx.supabase
+        .schema('forsured')
+        .from('compliance_requirement_versions')
+        .insert({
+          requirement_id: requirementId,
+          version_number: newVersion,
+          code: data.code,
+          name: data.name,
+          type: data.type,
+          description: data.description,
+          status: data.status,
+          is_template: data.is_template,
+          effective_date: data.effective_date,
+          expiration_date: data.expiration_date,
+          requirement_definition: data.requirement_definition,
+          change_summary: `${change_summary} (restored from v${versionNumber})`,
+          changed_by: ctx.user?.id ?? null,
+        })
 
       return data
     }),

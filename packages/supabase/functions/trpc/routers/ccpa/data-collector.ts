@@ -6,7 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types.ts';
+import type { Database } from '../../../_shared/database.types.ts'
 import type {
   BackgroundCheckEntry,
   CertificationEntry,
@@ -30,7 +30,7 @@ import type {
   UsageInformation,
   UserDataExport,
   WorkLogEntry,
-} from './types.ts';
+} from './types.ts'
 
 type DbClient = SupabaseClient<Database>
 
@@ -61,7 +61,8 @@ async function collectPersonalInformation(
 
   // Get auth user data using service role client
   try {
-    const { data: authUser, error: authError } = await serviceRoleClient.auth.admin.getUserById(userId)
+    const { data: authUser, error: authError } =
+      await serviceRoleClient.auth.admin.getUserById(userId)
     if (authError) {
       errors.push(`auth.users: ${authError.message}`)
     } else if (authUser?.user) {
@@ -252,7 +253,8 @@ async function collectProfessionalInformation(
           skillName: null, // Would need join to get name
           taxonomyType: skill.skill_taxonomy ?? null,
           yearsExperience: skill.years_experience ?? null,
-          proficiencyLevel: skill.proficiency_level !== null ? String(skill.proficiency_level) : null,
+          proficiencyLevel:
+            skill.proficiency_level !== null ? String(skill.proficiency_level) : null,
           isVerified: skill.verified ?? false,
         })
       }
@@ -343,7 +345,9 @@ async function collectProfessionalInformation(
     const { data: logsData, error } = await supabase
       .schema('core')
       .from('work_logs')
-      .select('id, project_id, log_date, total_hours, work_description, status, tasks_completed, skills_used, visibility, submitted_at, verified_at')
+      .select(
+        'id, project_id, log_date, total_hours, work_description, status, tasks_completed, skills_used, visibility, submitted_at, verified_at'
+      )
       .eq('user_id', userId)
       .order('log_date', { ascending: false })
       .limit(100) // Limit for performance

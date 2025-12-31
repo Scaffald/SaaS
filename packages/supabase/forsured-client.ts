@@ -16,27 +16,26 @@
  * ```
  */
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 // Re-export for convenience
-export type { SupabaseClient };
+export type { SupabaseClient }
 
 /**
  * Create a Supabase client for Forsured
  * Uses environment variables for configuration
  */
 export function createForsuredClient(): SupabaseClient {
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey =
-    process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
       'Missing Supabase environment variables: SUPABASE_URL and SUPABASE_ANON_KEY (or VITE_ prefixed) are required'
-    );
+    )
   }
 
-  return createClient(supabaseUrl, supabaseAnonKey);
+  return createClient(supabaseUrl, supabaseAnonKey)
 }
 
 /**
@@ -54,8 +53,8 @@ export function createForsuredClient(): SupabaseClient {
  * ```
  */
 export function forsured(tableName: string, client?: SupabaseClient) {
-  const supabase = client || createForsuredClient();
-  return supabase.schema('forsured').from(tableName);
+  const supabase = client || createForsuredClient()
+  return supabase.schema('forsured').from(tableName)
 }
 
 /**
@@ -73,8 +72,8 @@ export function forsured(tableName: string, client?: SupabaseClient) {
  * ```
  */
 export function core(tableName: string, client?: SupabaseClient) {
-  const supabase = client || createForsuredClient();
-  return supabase.schema('core').from(tableName);
+  const supabase = client || createForsuredClient()
+  return supabase.schema('core').from(tableName)
 }
 
 /**
@@ -110,7 +109,7 @@ export const forsuredTables = {
 
   // Help
   help_articles: 'help_articles',
-} as const;
+} as const
 
 /**
  * Core (Scaffald) table name constants for type safety
@@ -120,4 +119,4 @@ export const coreTables = {
   organizations: 'organizations',
   projects: 'projects',
   role_assignments: 'role_assignments',
-} as const;
+} as const

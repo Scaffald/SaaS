@@ -10,7 +10,7 @@
  */
 
 import { PDFDocument, rgb, StandardFonts, PDFPage } from 'pdf-lib'
-import type { UserDataExport } from './types.ts';
+import type { UserDataExport } from './types.ts'
 
 // Page configuration
 const PAGE_WIDTH = 612 // Letter size in points
@@ -88,8 +88,9 @@ function drawText(
 
   for (const word of words) {
     const testLine = currentLine ? `${currentLine} ${word}` : word
-    const testWidth = (font as unknown as { widthOfTextAtSize: (text: string, size: number) => number })
-      .widthOfTextAtSize(testLine, size)
+    const testWidth = (
+      font as unknown as { widthOfTextAtSize: (text: string, size: number) => number }
+    ).widthOfTextAtSize(testLine, size)
 
     if (testWidth > maxWidth && currentLine) {
       lines.push(currentLine)
@@ -190,11 +191,17 @@ export async function generateDataAccessPDF(
     yPosition -= 20
 
     // Subtitle
-    yPosition = drawText(page, 'California Consumer Privacy Act - Right to Know', MARGIN_LEFT, yPosition, {
-      font: helvetica,
-      size: SUBHEADING_SIZE,
-      color: SECONDARY_COLOR,
-    })
+    yPosition = drawText(
+      page,
+      'California Consumer Privacy Act - Right to Know',
+      MARGIN_LEFT,
+      yPosition,
+      {
+        font: helvetica,
+        size: SUBHEADING_SIZE,
+        color: SECONDARY_COLOR,
+      }
+    )
 
     yPosition -= 30
     drawLine(page, yPosition)
@@ -265,7 +272,6 @@ export async function generateDataAccessPDF(
         size: BODY_SIZE,
       })
     }
-
     // Section 1: Personal Information
     ;({ page, yPosition } = addNewPage(pdfDoc))
 
@@ -280,7 +286,8 @@ export async function generateDataAccessPDF(
 
     const personalInfo = data.personalInformation
     const personalLines = [
-      `Name: ${personalInfo.firstName || ''} ${personalInfo.lastName || ''}`.trim() || 'Not provided',
+      `Name: ${personalInfo.firstName || ''} ${personalInfo.lastName || ''}`.trim() ||
+        'Not provided',
       `Email: ${personalInfo.email || 'Not provided'}`,
       `Phone: ${personalInfo.phone || 'Not provided'}`,
       `Account Created: ${formatDate(personalInfo.accountCreatedAt ?? undefined)}`,
@@ -425,7 +432,6 @@ export async function generateDataAccessPDF(
         })
       }
     }
-
     // Section 3: Financial Information
     ;({ page, yPosition } = addNewPage(pdfDoc))
 
@@ -515,7 +521,6 @@ export async function generateDataAccessPDF(
         size: BODY_SIZE,
       })
     }
-
     // Section 6: Communications
     ;({ page, yPosition } = addNewPage(pdfDoc))
 
@@ -633,11 +638,17 @@ export async function generateDeletionConfirmationPDF(
     yPosition -= 20
 
     // Subtitle
-    yPosition = drawText(page, 'California Consumer Privacy Act - Right to Delete', MARGIN_LEFT, yPosition, {
-      font: helvetica,
-      size: SUBHEADING_SIZE,
-      color: SECONDARY_COLOR,
-    })
+    yPosition = drawText(
+      page,
+      'California Consumer Privacy Act - Right to Delete',
+      MARGIN_LEFT,
+      yPosition,
+      {
+        font: helvetica,
+        size: SUBHEADING_SIZE,
+        color: SECONDARY_COLOR,
+      }
+    )
 
     yPosition -= 30
     drawLine(page, yPosition)
@@ -685,11 +696,17 @@ export async function generateDeletionConfirmationPDF(
         })
       }
     } else {
-      yPosition = drawText(page, 'No data was eligible for deletion.', MARGIN_LEFT + 20, yPosition, {
-        font: helvetica,
-        size: BODY_SIZE,
-        color: LIGHT_COLOR,
-      })
+      yPosition = drawText(
+        page,
+        'No data was eligible for deletion.',
+        MARGIN_LEFT + 20,
+        yPosition,
+        {
+          font: helvetica,
+          size: BODY_SIZE,
+          color: LIGHT_COLOR,
+        }
+      )
     }
 
     yPosition -= 30

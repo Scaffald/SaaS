@@ -50,9 +50,7 @@ async function getScaffaldUser(accessToken: string): Promise<ScaffaldUser> {
 /**
  * Refresh tokens with Scaffald
  */
-async function refreshTokensWithScaffald(
-  refreshToken: string
-): Promise<ScaffaldTokenResponse> {
+async function refreshTokensWithScaffald(refreshToken: string): Promise<ScaffaldTokenResponse> {
   if (!SCAFFALD_TOKEN_ENDPOINT || !SCAFFALD_CLIENT_ID) {
     throw new Error('Scaffald OAuth not configured')
   }

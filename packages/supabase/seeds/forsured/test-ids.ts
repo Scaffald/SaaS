@@ -37,7 +37,7 @@ export const FORSURED_USER_IDS = {
   // Admin
   ADMIN: '50000000-0000-0000-0000-000000000031',
   SUPER_ADMIN: '50000000-0000-0000-0000-000000000032',
-} as const;
+} as const
 
 // =============================================================================
 // TEST ORGANIZATION IDs
@@ -55,7 +55,7 @@ export const FORSURED_ORG_IDS = {
 
   // Broker Organizations
   BROKER_ORG_PRIMARY: '60000000-0000-0000-0000-000000000021',
-} as const;
+} as const
 
 // =============================================================================
 // TEST PROJECT IDs
@@ -72,7 +72,7 @@ export const FORSURED_PROJECT_IDS = {
 
   // Completed projects
   PROJECT_COMPLETED: '70000000-0000-0000-0000-000000000021',
-} as const;
+} as const
 
 // =============================================================================
 // TEST SUBCONTRACTOR IDs
@@ -91,7 +91,7 @@ export const FORSURED_SUBCONTRACTOR_IDS = {
   // Non-compliant subcontractors
   SUB_NONCOMPLIANT_EXPIRED: '71000000-0000-0000-0000-000000000021',
   SUB_NONCOMPLIANT_MISSING: '71000000-0000-0000-0000-000000000022',
-} as const;
+} as const
 
 // =============================================================================
 // TEST DOCUMENT IDs
@@ -110,7 +110,7 @@ export const FORSURED_DOCUMENT_IDS = {
 
   // Processing documents
   DOC_COI_PROCESSING: '72000000-0000-0000-0000-000000000031',
-} as const;
+} as const
 
 // =============================================================================
 // TEST POLICY IDs
@@ -131,7 +131,7 @@ export const FORSURED_POLICY_IDS = {
 
   // Auto policies
   POLICY_AUTO_ACTIVE: '73000000-0000-0000-0000-000000000031',
-} as const;
+} as const
 
 // =============================================================================
 // TEST REQUIREMENT IDs
@@ -142,7 +142,7 @@ export const FORSURED_REQUIREMENT_IDS = {
   REQ_WC_STANDARD: '74000000-0000-0000-0000-000000000011',
   REQ_UMBRELLA_STANDARD: '74000000-0000-0000-0000-000000000021',
   REQ_AUTO_STANDARD: '74000000-0000-0000-0000-000000000031',
-} as const;
+} as const
 
 // =============================================================================
 // TEST TASK IDs
@@ -159,7 +159,7 @@ export const FORSURED_TASK_IDS = {
   // Completed tasks
   TASK_COMPLETED_1: '75000000-0000-0000-0000-000000000021',
   TASK_COMPLETED_2: '75000000-0000-0000-0000-000000000022',
-} as const;
+} as const
 
 // =============================================================================
 // TEST COMPLIANCE SCORE IDs
@@ -171,20 +171,20 @@ export const FORSURED_COMPLIANCE_IDS = {
   SCORE_WARNING_60: '76000000-0000-0000-0000-000000000012',
   SCORE_CRITICAL_40: '76000000-0000-0000-0000-000000000021',
   SCORE_CRITICAL_20: '76000000-0000-0000-0000-000000000022',
-} as const;
+} as const
 
 // =============================================================================
 // TYPE EXPORTS
 // =============================================================================
-export type ForsuredUserId = (typeof FORSURED_USER_IDS)[keyof typeof FORSURED_USER_IDS];
-export type ForsuredOrgId = (typeof FORSURED_ORG_IDS)[keyof typeof FORSURED_ORG_IDS];
-export type ForsuredProjectId = (typeof FORSURED_PROJECT_IDS)[keyof typeof FORSURED_PROJECT_IDS];
+export type ForsuredUserId = (typeof FORSURED_USER_IDS)[keyof typeof FORSURED_USER_IDS]
+export type ForsuredOrgId = (typeof FORSURED_ORG_IDS)[keyof typeof FORSURED_ORG_IDS]
+export type ForsuredProjectId = (typeof FORSURED_PROJECT_IDS)[keyof typeof FORSURED_PROJECT_IDS]
 export type ForsuredSubcontractorId =
-  (typeof FORSURED_SUBCONTRACTOR_IDS)[keyof typeof FORSURED_SUBCONTRACTOR_IDS];
-export type ForsuredDocumentId = (typeof FORSURED_DOCUMENT_IDS)[keyof typeof FORSURED_DOCUMENT_IDS];
-export type ForsuredPolicyId = (typeof FORSURED_POLICY_IDS)[keyof typeof FORSURED_POLICY_IDS];
+  (typeof FORSURED_SUBCONTRACTOR_IDS)[keyof typeof FORSURED_SUBCONTRACTOR_IDS]
+export type ForsuredDocumentId = (typeof FORSURED_DOCUMENT_IDS)[keyof typeof FORSURED_DOCUMENT_IDS]
+export type ForsuredPolicyId = (typeof FORSURED_POLICY_IDS)[keyof typeof FORSURED_POLICY_IDS]
 export type ForsuredRequirementId =
-  (typeof FORSURED_REQUIREMENT_IDS)[keyof typeof FORSURED_REQUIREMENT_IDS];
-export type ForsuredTaskId = (typeof FORSURED_TASK_IDS)[keyof typeof FORSURED_TASK_IDS];
+  (typeof FORSURED_REQUIREMENT_IDS)[keyof typeof FORSURED_REQUIREMENT_IDS]
+export type ForsuredTaskId = (typeof FORSURED_TASK_IDS)[keyof typeof FORSURED_TASK_IDS]
 export type ForsuredComplianceId =
-  (typeof FORSURED_COMPLIANCE_IDS)[keyof typeof FORSURED_COMPLIANCE_IDS];
+  (typeof FORSURED_COMPLIANCE_IDS)[keyof typeof FORSURED_COMPLIANCE_IDS]

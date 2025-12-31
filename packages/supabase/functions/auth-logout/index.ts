@@ -7,14 +7,8 @@
 
 import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { corsHeaders } from '../_shared/cors.ts'
-import {
-  createServiceClient,
-  deleteSession,
-} from '../_shared/auth/session.ts'
-import {
-  getSessionIdFromRequest,
-  createClearSessionCookie,
-} from '../_shared/auth/cookies.ts'
+import { createServiceClient, deleteSession } from '../_shared/auth/session.ts'
+import { getSessionIdFromRequest, createClearSessionCookie } from '../_shared/auth/cookies.ts'
 import type { LogoutResponse } from '../_shared/auth/types.ts'
 
 // CORS headers that allow credentials

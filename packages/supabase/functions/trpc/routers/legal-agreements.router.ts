@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
   if (!ctx.user?.id) {
@@ -388,35 +388,53 @@ export const legalAgreementsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: { id: string; reported_by_user_id: string; reported_by?: { display_name?: string; email?: string } | null; organization_id: string; organization?: { name?: string } | null; worker_user_id: string; worker?: { display_name?: string; email?: string } | null; hire_agreement_id: string | null; hire_agreement?: { status?: string } | null; violation_type: string; description: string; status: string; created_at: string; updated_at: string; [key: string]: unknown }) => ({
-          id: row.id,
-          reportedByUserId: row.reported_by_user_id,
-          reportedByName:
-            (row.reported_by as { display_name?: string; email?: string } | null)?.display_name ??
-            (row.reported_by as { display_name?: string; email?: string } | null)?.email ??
-            null,
-          organizationId: row.organization_id,
-          organizationName: (row.organization as { name?: string } | null)?.name ?? null,
-          workerUserId: row.worker_user_id,
-          workerName:
-            (row.worker as { display_name?: string; email?: string } | null)?.display_name ??
-            (row.worker as { display_name?: string; email?: string } | null)?.email ??
-            null,
-          hireAgreementId: row.hire_agreement_id,
-          hireAgreementStatus: (row.hire_agreement as { status?: string } | null)?.status ?? null,
-          violationType: row.violation_type,
-          description: row.description,
-          evidenceUrls: row.evidence_urls ?? [],
-          evidenceNotes: row.evidence_notes,
-          status: row.status,
-          reviewedByUserId: row.reviewed_by_user_id,
-          reviewedAt: row.reviewed_at,
-          reviewNotes: row.review_notes,
-          resolutionAction: row.resolution_action,
-          resolvedAt: row.resolved_at,
-          createdAt: row.created_at,
-          updatedAt: row.updated_at,
-        })),
+        items: (data ?? []).map(
+          (row: {
+            id: string
+            reported_by_user_id: string
+            reported_by?: { display_name?: string; email?: string } | null
+            organization_id: string
+            organization?: { name?: string } | null
+            worker_user_id: string
+            worker?: { display_name?: string; email?: string } | null
+            hire_agreement_id: string | null
+            hire_agreement?: { status?: string } | null
+            violation_type: string
+            description: string
+            status: string
+            created_at: string
+            updated_at: string
+            [key: string]: unknown
+          }) => ({
+            id: row.id,
+            reportedByUserId: row.reported_by_user_id,
+            reportedByName:
+              (row.reported_by as { display_name?: string; email?: string } | null)?.display_name ??
+              (row.reported_by as { display_name?: string; email?: string } | null)?.email ??
+              null,
+            organizationId: row.organization_id,
+            organizationName: (row.organization as { name?: string } | null)?.name ?? null,
+            workerUserId: row.worker_user_id,
+            workerName:
+              (row.worker as { display_name?: string; email?: string } | null)?.display_name ??
+              (row.worker as { display_name?: string; email?: string } | null)?.email ??
+              null,
+            hireAgreementId: row.hire_agreement_id,
+            hireAgreementStatus: (row.hire_agreement as { status?: string } | null)?.status ?? null,
+            violationType: row.violation_type,
+            description: row.description,
+            evidenceUrls: row.evidence_urls ?? [],
+            evidenceNotes: row.evidence_notes,
+            status: row.status,
+            reviewedByUserId: row.reviewed_by_user_id,
+            reviewedAt: row.reviewed_at,
+            reviewNotes: row.review_notes,
+            resolutionAction: row.resolution_action,
+            resolvedAt: row.resolved_at,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+          })
+        ),
         totalCount: count ?? 0,
       }
     }),

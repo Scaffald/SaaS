@@ -3,8 +3,8 @@ import { TRPCError } from '@trpc/server'
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
-import { protectedProcedure, publicProcedure, t } from '../middleware.ts';
-import { supabaseServiceKey, supabaseUrl } from '../context.ts';
+import { protectedProcedure, publicProcedure, t } from '../middleware.ts'
+import { supabaseServiceKey, supabaseUrl } from '../context.ts'
 
 const MAGIC_LINK_REDIRECT_FALLBACK =
   Deno.env.get('MAGIC_LINK_REDIRECT_URL') ??
@@ -56,11 +56,10 @@ export const authRouter = t.router({
 
       // List all users and filter by email client-side
       // Note: Supabase admin API doesn't support email filter directly
-      const { data: existingUsers, error: lookupError } =
-        await supabaseAdmin.auth.admin.listUsers({
-          page: 1,
-          perPage: 1000, // Get enough to filter
-        })
+      const { data: existingUsers, error: lookupError } = await supabaseAdmin.auth.admin.listUsers({
+        page: 1,
+        perPage: 1000, // Get enough to filter
+      })
 
       if (lookupError) {
         console.error('[auth.requestMagicLink] Failed to lookup user', {
@@ -75,8 +74,8 @@ export const authRouter = t.router({
       }
 
       const isExistingUser = Boolean(
-        existingUsers?.users?.some((user: { email?: string | null }) => 
-          user.email?.toLowerCase() === email.toLowerCase()
+        existingUsers?.users?.some(
+          (user: { email?: string | null }) => user.email?.toLowerCase() === email.toLowerCase()
         )
       )
 

@@ -1,14 +1,18 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 /**
  * Helper function to check if user can edit a project
  */
-async function canEditProject(supabase: Context['supabase'], userId: string, projectId: string): Promise<boolean> {
+async function canEditProject(
+  supabase: Context['supabase'],
+  userId: string,
+  projectId: string
+): Promise<boolean> {
   // Get project
   const { data: project, error } = await supabase
     .schema('core')
@@ -392,11 +396,13 @@ export const projectsRouter = t.router({
 
       // Check for overlaps (validation will be done by trigger, but we can warn here)
       // Note: Overlap notifications are created automatically by the database trigger
-      const { data: overlaps, error: overlapError } = await ctx.supabase
-        .rpc('check_site_overlaps', {
+      const { data: overlaps, error: overlapError } = await ctx.supabase.rpc(
+        'check_site_overlaps',
+        {
           p_site_id: input.site_id,
           p_boundary: site.boundary,
-        })
+        }
+      )
 
       if (overlapError) {
         console.warn('Failed to check site overlaps:', overlapError)

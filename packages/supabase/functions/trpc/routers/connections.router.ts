@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context.ts';
-import { insertNotification } from '../../_shared/notifications/utils.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { insertNotification } from '../../_shared/notifications/utils.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 // =========================================================
 // Zod Schemas
@@ -52,9 +52,18 @@ async function updateConnectionAnalytics(
 
   const updated = {
     user_id: userId,
-    connections_count: Math.max(0, (currentCounts.connections_count || 0) + (updates.connections_count || 0)),
-    pending_sent_count: Math.max(0, (currentCounts.pending_sent_count || 0) + (updates.pending_sent_count || 0)),
-    pending_received_count: Math.max(0, (currentCounts.pending_received_count || 0) + (updates.pending_received_count || 0)),
+    connections_count: Math.max(
+      0,
+      (currentCounts.connections_count || 0) + (updates.connections_count || 0)
+    ),
+    pending_sent_count: Math.max(
+      0,
+      (currentCounts.pending_sent_count || 0) + (updates.pending_sent_count || 0)
+    ),
+    pending_received_count: Math.max(
+      0,
+      (currentCounts.pending_received_count || 0) + (updates.pending_received_count || 0)
+    ),
     followers_count: currentCounts.followers_count || 0,
     following_count: currentCounts.following_count || 0,
     profile_views_30d: currentCounts.profile_views_30d || 0,
@@ -96,293 +105,319 @@ export const connectionsRouter = t.router({
   /**
    * Send a connection request to another user
    */
-  sendRequest: protectedProcedure
-    .input(sendRequestSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  sendRequest: protectedProcedure.input(sendRequestSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      const requesterId = ctx.user.id
-      const addresseeId = input.targetUserId
+    const requesterId = ctx.user.id
+    const addresseeId = input.targetUserId
 
-      // Prevent connecting to self
-      if (requesterId === addresseeId) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Cannot send connection request to yourself',
-        })
-      }
+    // Prevent connecting to self
+    if (requesterId === addresseeId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Cannot send connection request to yourself',
+      })
+    }
 
-      // Check for existing connection (any status) - check both directions
-      const { data: existing1 } = await ctx.supabase
-        .schema('core')
-        .from('connections')
-        .select('id, status')
-        .eq('requester_user_id', requesterId)
-        .eq('addressee_user_id', addresseeId)
-        .maybeSingle()
+    // Check for existing connection (any status) - check both directions
+    const { data: existing1 } = await ctx.supabase
+      .schema('core')
+      .from('connections')
+      .select('id, status')
+      .eq('requester_user_id', requesterId)
+      .eq('addressee_user_id', addresseeId)
+      .maybeSingle()
 
-      const { data: existing2 } = await ctx.supabase
-        .schema('core')
-        .from('connections')
-        .select('id, status')
-        .eq('requester_user_id', addresseeId)
-        .eq('addressee_user_id', requesterId)
-        .maybeSingle()
+    const { data: existing2 } = await ctx.supabase
+      .schema('core')
+      .from('connections')
+      .select('id, status')
+      .eq('requester_user_id', addresseeId)
+      .eq('addressee_user_id', requesterId)
+      .maybeSingle()
 
-      if (existing1 || existing2) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Connection already exists or is pending',
-        })
-      }
+    if (existing1 || existing2) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Connection already exists or is pending',
+      })
+    }
 
-      // Create connection request
-      const { data: connection, error: connError } = await ctx.supabase
-        .schema('core')
-        .from('connections')
-        .insert({
-          requester_user_id: requesterId,
-          addressee_user_id: addresseeId,
-          status: 'pending',
-        })
-        .select()
-        .single()
+    // Create connection request
+    const { data: connection, error: connError } = await ctx.supabase
+      .schema('core')
+      .from('connections')
+      .insert({
+        requester_user_id: requesterId,
+        addressee_user_id: addresseeId,
+        status: 'pending',
+      })
+      .select()
+      .single()
 
-      if (connError || !connection) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: connError ? `Failed to create connection request: ${connError.message}` : 'Failed to create connection request',
-        })
-      }
+    if (connError || !connection) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: connError
+          ? `Failed to create connection request: ${connError.message}`
+          : 'Failed to create connection request',
+      })
+    }
 
-      // Get requester display name for notification
-      const { data: requester } = await ctx.supabase
-        .schema('core')
-        .from('users')
-        .select('display_name, username')
-        .eq('id', requesterId)
-        .single()
+    // Get requester display name for notification
+    const { data: requester } = await ctx.supabase
+      .schema('core')
+      .from('users')
+      .select('display_name, username')
+      .eq('id', requesterId)
+      .single()
 
-      const requesterName = requester?.display_name || requester?.username || 'Someone'
+    const requesterName = requester?.display_name || requester?.username || 'Someone'
 
-      // Create activity event
-      await createActivityEvent(ctx.supabase, requesterId, 'connection.requested', 'user', addresseeId, {
+    // Create activity event
+    await createActivityEvent(
+      ctx.supabase,
+      requesterId,
+      'connection.requested',
+      'user',
+      addresseeId,
+      {
         connection_id: connection.id,
         target_user_id: addresseeId,
-      })
+      }
+    )
 
-      // Update analytics
-      await updateConnectionAnalytics(ctx.supabase, requesterId, {
-        pending_sent_count: 1,
-      })
-      await updateConnectionAnalytics(ctx.supabase, addresseeId, {
-        pending_received_count: 1,
-      })
+    // Update analytics
+    await updateConnectionAnalytics(ctx.supabase, requesterId, {
+      pending_sent_count: 1,
+    })
+    await updateConnectionAnalytics(ctx.supabase, addresseeId, {
+      pending_received_count: 1,
+    })
 
-      // Create notification for addressee
-      await insertNotification(ctx.supabase, {
-        user_id: addresseeId,
-        type: 'connection.request',
-        severity: 'info',
-        title: 'New Connection Request',
-        message: `${requesterName} wants to connect with you`,
-        preview: `Connection request from ${requesterName}`,
-        cta_label: 'View Request',
-        cta_url: '/connections',
-        metadata: {
-          connection_id: connection.id,
-          requester_user_id: requesterId,
-        },
-      })
+    // Create notification for addressee
+    await insertNotification(ctx.supabase, {
+      user_id: addresseeId,
+      type: 'connection.request',
+      severity: 'info',
+      title: 'New Connection Request',
+      message: `${requesterName} wants to connect with you`,
+      preview: `Connection request from ${requesterName}`,
+      cta_label: 'View Request',
+      cta_url: '/connections',
+      metadata: {
+        connection_id: connection.id,
+        requester_user_id: requesterId,
+      },
+    })
 
-      return connection
-    }),
+    return connection
+  }),
 
   /**
    * Accept a pending connection request
    */
-  acceptRequest: protectedProcedure
-    .input(connectionIdSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  acceptRequest: protectedProcedure.input(connectionIdSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      // Get connection and verify
-      const { data: connection, error: connError } = await ctx.supabase
-        .schema('core')
-        .from('connections')
-        .select('*')
-        .eq('id', input.connectionId)
-        .single()
+    // Get connection and verify
+    const { data: connection, error: connError } = await ctx.supabase
+      .schema('core')
+      .from('connections')
+      .select('*')
+      .eq('id', input.connectionId)
+      .single()
 
-      if (connError || !connection) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Connection not found',
-        })
-      }
+    if (connError || !connection) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Connection not found',
+      })
+    }
 
-      // Verify user is the addressee
-      if (connection.addressee_user_id !== ctx.user.id) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'You can only accept connection requests addressed to you',
-        })
-      }
+    // Verify user is the addressee
+    if (connection.addressee_user_id !== ctx.user.id) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You can only accept connection requests addressed to you',
+      })
+    }
 
-      // Verify status is pending
-      if (connection.status !== 'pending') {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: `Connection is already ${connection.status}`,
-        })
-      }
+    // Verify status is pending
+    if (connection.status !== 'pending') {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: `Connection is already ${connection.status}`,
+      })
+    }
 
-      // Update connection status
-      const { data: updated, error: updateError } = await ctx.supabase
-        .schema('core')
-        .from('connections')
-        .update({
-          status: 'accepted',
-          decided_at: new Date().toISOString(),
-        })
-        .eq('id', input.connectionId)
-        .select()
-        .single()
+    // Update connection status
+    const { data: updated, error: updateError } = await ctx.supabase
+      .schema('core')
+      .from('connections')
+      .update({
+        status: 'accepted',
+        decided_at: new Date().toISOString(),
+      })
+      .eq('id', input.connectionId)
+      .select()
+      .single()
 
-      if (updateError || !updated) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: updateError ? `Failed to accept connection: ${updateError.message}` : 'Failed to accept connection',
-        })
-      }
+    if (updateError || !updated) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: updateError
+          ? `Failed to accept connection: ${updateError.message}`
+          : 'Failed to accept connection',
+      })
+    }
 
-      // Create activity event for both users
-      await createActivityEvent(ctx.supabase, ctx.user.id, 'connection.accepted', 'user', connection.requester_user_id, {
+    // Create activity event for both users
+    await createActivityEvent(
+      ctx.supabase,
+      ctx.user.id,
+      'connection.accepted',
+      'user',
+      connection.requester_user_id,
+      {
         connection_id: updated.id,
         target_user_id: connection.requester_user_id,
-      })
-      await createActivityEvent(ctx.supabase, connection.requester_user_id, 'connection.accepted', 'user', ctx.user.id, {
+      }
+    )
+    await createActivityEvent(
+      ctx.supabase,
+      connection.requester_user_id,
+      'connection.accepted',
+      'user',
+      ctx.user.id,
+      {
         connection_id: updated.id,
         target_user_id: ctx.user.id,
-      })
+      }
+    )
 
-      // Update analytics for both users
-      await updateConnectionAnalytics(ctx.supabase, ctx.user.id, {
-        pending_received_count: -1,
-        connections_count: 1,
-      })
-      await updateConnectionAnalytics(ctx.supabase, connection.requester_user_id, {
-        pending_sent_count: -1,
-        connections_count: 1,
-      })
+    // Update analytics for both users
+    await updateConnectionAnalytics(ctx.supabase, ctx.user.id, {
+      pending_received_count: -1,
+      connections_count: 1,
+    })
+    await updateConnectionAnalytics(ctx.supabase, connection.requester_user_id, {
+      pending_sent_count: -1,
+      connections_count: 1,
+    })
 
-      // Get addressee display name for notification
-      const { data: addressee } = await ctx.supabase
-        .schema('core')
-        .from('users')
-        .select('display_name, username')
-        .eq('id', ctx.user.id)
-        .single()
+    // Get addressee display name for notification
+    const { data: addressee } = await ctx.supabase
+      .schema('core')
+      .from('users')
+      .select('display_name, username')
+      .eq('id', ctx.user.id)
+      .single()
 
-      const addresseeName = addressee?.display_name || addressee?.username || 'Someone'
+    const addresseeName = addressee?.display_name || addressee?.username || 'Someone'
 
-      // Create notification for requester
-      await insertNotification(ctx.supabase, {
-        user_id: connection.requester_user_id,
-        type: 'connection.accepted',
-        severity: 'info',
-        title: 'Connection Accepted',
-        message: `${addresseeName} accepted your connection request`,
-        preview: `Connection accepted by ${addresseeName}`,
-        cta_label: 'View Connection',
-        cta_url: '/connections',
-        metadata: {
-          connection_id: updated.id,
-          addressee_user_id: ctx.user.id,
-        },
-      })
+    // Create notification for requester
+    await insertNotification(ctx.supabase, {
+      user_id: connection.requester_user_id,
+      type: 'connection.accepted',
+      severity: 'info',
+      title: 'Connection Accepted',
+      message: `${addresseeName} accepted your connection request`,
+      preview: `Connection accepted by ${addresseeName}`,
+      cta_label: 'View Connection',
+      cta_url: '/connections',
+      metadata: {
+        connection_id: updated.id,
+        addressee_user_id: ctx.user.id,
+      },
+    })
 
-      return updated
-    }),
+    return updated
+  }),
 
   /**
    * Decline a pending connection request
    */
-  declineRequest: protectedProcedure
-    .input(connectionIdSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  declineRequest: protectedProcedure.input(connectionIdSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      // Get connection and verify
-      const { data: connection, error: connError } = await ctx.supabase
-        .schema('core')
-        .from('connections')
-        .select('*')
-        .eq('id', input.connectionId)
-        .single()
+    // Get connection and verify
+    const { data: connection, error: connError } = await ctx.supabase
+      .schema('core')
+      .from('connections')
+      .select('*')
+      .eq('id', input.connectionId)
+      .single()
 
-      if (connError || !connection) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Connection not found',
-        })
-      }
+    if (connError || !connection) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Connection not found',
+      })
+    }
 
-      // Verify user is the addressee
-      if (connection.addressee_user_id !== ctx.user.id) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'You can only decline connection requests addressed to you',
-        })
-      }
+    // Verify user is the addressee
+    if (connection.addressee_user_id !== ctx.user.id) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You can only decline connection requests addressed to you',
+      })
+    }
 
-      // Verify status is pending
-      if (connection.status !== 'pending') {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: `Connection is already ${connection.status}`,
-        })
-      }
+    // Verify status is pending
+    if (connection.status !== 'pending') {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: `Connection is already ${connection.status}`,
+      })
+    }
 
-      // Update connection status
-      const { error: updateError } = await ctx.supabase
-        .schema('core')
-        .from('connections')
-        .update({
-          status: 'declined',
-          decided_at: new Date().toISOString(),
-        })
-        .eq('id', input.connectionId)
+    // Update connection status
+    const { error: updateError } = await ctx.supabase
+      .schema('core')
+      .from('connections')
+      .update({
+        status: 'declined',
+        decided_at: new Date().toISOString(),
+      })
+      .eq('id', input.connectionId)
 
-      if (updateError) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to decline connection: ${updateError.message}`,
-        })
-      }
+    if (updateError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to decline connection: ${updateError.message}`,
+      })
+    }
 
-      // Create activity event
-      await createActivityEvent(ctx.supabase, ctx.user.id, 'connection.declined', 'user', connection.requester_user_id, {
+    // Create activity event
+    await createActivityEvent(
+      ctx.supabase,
+      ctx.user.id,
+      'connection.declined',
+      'user',
+      connection.requester_user_id,
+      {
         connection_id: input.connectionId,
         target_user_id: connection.requester_user_id,
-      })
+      }
+    )
 
-      // Update analytics for both users
-      await updateConnectionAnalytics(ctx.supabase, ctx.user.id, {
-        pending_received_count: -1,
-      })
-      await updateConnectionAnalytics(ctx.supabase, connection.requester_user_id, {
-        pending_sent_count: -1,
-      })
+    // Update analytics for both users
+    await updateConnectionAnalytics(ctx.supabase, ctx.user.id, {
+      pending_received_count: -1,
+    })
+    await updateConnectionAnalytics(ctx.supabase, connection.requester_user_id, {
+      pending_sent_count: -1,
+    })
 
-      return { success: true }
-    }),
+    return { success: true }
+  }),
 
   /**
    * Remove an accepted connection
@@ -410,7 +445,10 @@ export const connectionsRouter = t.router({
       }
 
       // Verify user is either party
-      if (connection.requester_user_id !== ctx.user.id && connection.addressee_user_id !== ctx.user.id) {
+      if (
+        connection.requester_user_id !== ctx.user.id &&
+        connection.addressee_user_id !== ctx.user.id
+      ) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'You can only remove connections you are part of',
@@ -426,7 +464,11 @@ export const connectionsRouter = t.router({
       }
 
       // Delete connection
-      const { error: deleteError } = await ctx.supabase.schema('core').from('connections').delete().eq('id', input.connectionId)
+      const { error: deleteError } = await ctx.supabase
+        .schema('core')
+        .from('connections')
+        .delete()
+        .eq('id', input.connectionId)
 
       if (deleteError) {
         throw new TRPCError({
@@ -493,16 +535,27 @@ export const connectionsRouter = t.router({
     }
 
     // Transform to include the other user's info
-    return (data || []).map((conn: { requester_user_id: string; addressee?: unknown; requester?: unknown; id: string; status: string; created_at: string; decided_at?: string | null; [key: string]: unknown }) => {
-      const otherUser = conn.requester_user_id === ctx.user.id ? conn.addressee : conn.requester
-      return {
-        id: conn.id,
-        status: conn.status,
-        created_at: conn.created_at,
-        decided_at: conn.decided_at,
-        user: otherUser,
+    return (data || []).map(
+      (conn: {
+        requester_user_id: string
+        addressee?: unknown
+        requester?: unknown
+        id: string
+        status: string
+        created_at: string
+        decided_at?: string | null
+        [key: string]: unknown
+      }) => {
+        const otherUser = conn.requester_user_id === ctx.user.id ? conn.addressee : conn.requester
+        return {
+          id: conn.id,
+          status: conn.status,
+          created_at: conn.created_at,
+          decided_at: conn.decided_at,
+          user: otherUser,
+        }
       }
-    })
+    )
   }),
 
   /**
@@ -574,19 +627,34 @@ export const connectionsRouter = t.router({
     }
 
     return {
-      sent: (sentData || []).map((conn: { id: string; status: string; created_at: string; addressee?: unknown; [key: string]: unknown }) => ({
-        id: conn.id,
-        status: conn.status,
-        created_at: conn.created_at,
-        user: conn.addressee,
-      })),
-      received: (receivedData || []).map((conn: { id: string; status: string; created_at: string; requester?: unknown; [key: string]: unknown }) => ({
-        id: conn.id,
-        status: conn.status,
-        created_at: conn.created_at,
-        user: conn.requester,
-      })),
+      sent: (sentData || []).map(
+        (conn: {
+          id: string
+          status: string
+          created_at: string
+          addressee?: unknown
+          [key: string]: unknown
+        }) => ({
+          id: conn.id,
+          status: conn.status,
+          created_at: conn.created_at,
+          user: conn.addressee,
+        })
+      ),
+      received: (receivedData || []).map(
+        (conn: {
+          id: string
+          status: string
+          created_at: string
+          requester?: unknown
+          [key: string]: unknown
+        }) => ({
+          id: conn.id,
+          status: conn.status,
+          created_at: conn.created_at,
+          user: conn.requester,
+        })
+      ),
     }
   }),
 })
-

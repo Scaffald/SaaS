@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts';
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Helper function to geocode address using Mapbox API
@@ -269,11 +269,10 @@ export const addressesRouter = t.router({
       if (updateData.site_id && address.id) {
         let isContained = false
         try {
-          const result = await ctx.supabase
-            .rpc('validate_address_in_site', {
-              p_address_id: address.id,
-              p_site_id: updateData.site_id,
-            })
+          const result = await ctx.supabase.rpc('validate_address_in_site', {
+            p_address_id: address.id,
+            p_site_id: updateData.site_id,
+          })
           isContained = result.data ?? false
         } catch {
           isContained = false

@@ -48,10 +48,7 @@ export function getSessionIdFromRequest(request: Request): string | null {
 /**
  * Create Set-Cookie header value for session
  */
-export function createSessionCookie(
-  sessionId: string,
-  options: CookieOptions = {}
-): string {
+export function createSessionCookie(sessionId: string, options: CookieOptions = {}): string {
   const {
     httpOnly = true,
     secure = true,
@@ -76,7 +73,9 @@ export function createSessionCookie(
 /**
  * Create Set-Cookie header to clear the session cookie
  */
-export function createClearSessionCookie(options: Pick<CookieOptions, 'path' | 'domain'> = {}): string {
+export function createClearSessionCookie(
+  options: Pick<CookieOptions, 'path' | 'domain'> = {}
+): string {
   const { path = '/', domain } = options
 
   let cookie = `${SESSION_COOKIE_NAME}=; Path=${path}; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`

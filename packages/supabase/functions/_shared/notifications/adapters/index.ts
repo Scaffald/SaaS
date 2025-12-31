@@ -1,8 +1,8 @@
-import type { ChannelAdapter, NotificationChannel } from '../types.ts';
+import type { ChannelAdapter, NotificationChannel } from '../types.ts'
 
-import { emailAdapter } from './email.ts';
-import { pushAdapter } from './push.ts';
-import { smsAdapter } from './sms.ts';
+import { emailAdapter } from './email.ts'
+import { pushAdapter } from './push.ts'
+import { smsAdapter } from './sms.ts'
 
 const adapterMap: Partial<Record<NotificationChannel, ChannelAdapter>> = {
   email: emailAdapter,

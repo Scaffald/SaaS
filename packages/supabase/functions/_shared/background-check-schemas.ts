@@ -79,7 +79,13 @@ export type BackgroundCheckPackage = z.infer<typeof backgroundCheckPackageSchema
 
 export const consentMetadataSchema = z.object({
   consent_given_at: z.string().datetime(),
-  consent_ip_address: z.string().regex(/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/, 'Invalid IP address').optional(),
+  consent_ip_address: z
+    .string()
+    .regex(
+      /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/,
+      'Invalid IP address'
+    )
+    .optional(),
   consent_user_agent: z.string().optional(),
   consent_signature: z.string().optional(),
   disclosure_provided_at: z.string().datetime().optional(),

@@ -12,7 +12,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts';
+import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts'
 
 // Dropbox API endpoints
 const DROPBOX_API_BASE = 'https://api.dropboxapi.com/2'
@@ -125,7 +125,11 @@ export class DropboxStorageBackend implements IStorageBackend {
         }
       }
 
-      const result = await response.json() as { path_display: string; size: number; content_hash: string }
+      const result = (await response.json()) as {
+        path_display: string
+        size: number
+        content_hash: string
+      }
 
       return {
         path: result.path_display,
@@ -202,7 +206,7 @@ export class DropboxStorageBackend implements IStorageBackend {
         }
       }
 
-      const result = await response.json() as { link: string }
+      const result = (await response.json()) as { link: string }
 
       // Dropbox temporary links expire after 4 hours
       const expiresAt = new Date(Date.now() + Math.min(expirySeconds, 4 * 60 * 60) * 1000)

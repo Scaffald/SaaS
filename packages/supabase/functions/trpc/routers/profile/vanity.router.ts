@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, publicProcedure, t } from '../../middleware.ts';
+import { protectedProcedure, publicProcedure, t } from '../../middleware.ts'
 
 /**
  * Profile Vanity URL router - handles slug-based profile access and management
@@ -98,7 +98,9 @@ export const profileVanityRouter = t.router({
         .like('slug', `${slug}%`)
         .limit(10)
 
-      const existingSlugs = (similarUsers || []).map((u: { slug?: string | null; [key: string]: unknown }) => u.slug || '').filter(Boolean)
+      const existingSlugs = (similarUsers || [])
+        .map((u: { slug?: string | null; [key: string]: unknown }) => u.slug || '')
+        .filter(Boolean)
       suggestions = generateSlugSuggestions(slug, existingSlugs)
     }
 
@@ -174,7 +176,9 @@ export const profileVanityRouter = t.router({
         .like('slug', `${newSlug}%`)
         .limit(10)
 
-      const existingSlugs = (similarUsers || []).map((u: { slug?: string | null; [key: string]: unknown }) => u.slug || '').filter(Boolean)
+      const existingSlugs = (similarUsers || [])
+        .map((u: { slug?: string | null; [key: string]: unknown }) => u.slug || '')
+        .filter(Boolean)
       const suggestions = generateSlugSuggestions(newSlug, existingSlugs)
 
       throw new TRPCError({

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../../middleware.ts';
+import { protectedProcedure, t } from '../../middleware.ts'
 
 /**
  * Education Input/Output Schemas
@@ -53,45 +53,47 @@ export const profileEducationRouter = t.router({
    * Get user's education entries with university details
    */
   // biome-ignore lint/suspicious/noExplicitAny: Output schema type compatibility
-  getEducation: protectedProcedure.output(getEducationOutputSchema as any).query(async ({ ctx }) => {
-    const { supabase, user } = ctx
+  getEducation: protectedProcedure
+    .output(getEducationOutputSchema as any)
+    .query(async ({ ctx }) => {
+      const { supabase, user } = ctx
 
-    const { data, error } = await supabase
-      .schema('core')
-      .from('user_education')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('start_date', { ascending: false })
+      const { data, error } = await supabase
+        .schema('core')
+        .from('user_education')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('start_date', { ascending: false })
 
-    if (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to fetch education: ${error.message}`,
-      })
-    }
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch education: ${error.message}`,
+        })
+      }
 
-    // Fetch university names for records that have university_id
-    const educationData = await Promise.all(
-      (data || []).map(async (edu: { university_id?: string | null; [key: string]: unknown }) => {
-        if (edu.university_id) {
-          const { data: university } = await supabase
-            .schema('data')
-            .from('universities')
-            .select('name')
-            .eq('id', edu.university_id)
-            .single()
+      // Fetch university names for records that have university_id
+      const educationData = await Promise.all(
+        (data || []).map(async (edu: { university_id?: string | null; [key: string]: unknown }) => {
+          if (edu.university_id) {
+            const { data: university } = await supabase
+              .schema('data')
+              .from('universities')
+              .select('name')
+              .eq('id', edu.university_id)
+              .single()
 
-          return {
-            ...edu,
-            institution_name: university?.name || edu.institution_name,
+            return {
+              ...edu,
+              institution_name: university?.name || edu.institution_name,
+            }
           }
-        }
-        return edu
-      })
-    )
+          return edu
+        })
+      )
 
-    return educationData
-  }),
+      return educationData
+    }),
 
   /**
    * Get education level from private.profile
@@ -161,7 +163,9 @@ export const profileEducationRouter = t.router({
           })
         }
 
-        const existingIds = new Set((existingEducation || []).map((e: { id: string; [key: string]: unknown }) => e.id))
+        const existingIds = new Set(
+          (existingEducation || []).map((e: { id: string; [key: string]: unknown }) => e.id)
+        )
         const inputIds = new Set(
           input.education_entries.filter((e) => e.id).map((e) => e.id as string)
         )

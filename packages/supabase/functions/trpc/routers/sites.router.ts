@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts';
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Sites Router
@@ -41,11 +41,13 @@ export const sitesRouter = t.router({
       const boundaryWKT = `POLYGON((${closedCoords}))`
 
       // Check for overlaps before creating
-      const { data: overlaps, error: overlapError } = await ctx.supabase
-        .rpc('check_site_overlaps', {
+      const { data: overlaps, error: overlapError } = await ctx.supabase.rpc(
+        'check_site_overlaps',
+        {
           p_site_id: null,
           p_boundary: boundaryWKT,
-        })
+        }
+      )
 
       if (overlapError) {
         console.warn('Failed to check site overlaps:', overlapError)
@@ -130,11 +132,13 @@ export const sitesRouter = t.router({
         updateData.boundary = `POLYGON((${closedCoords}))`
 
         // Check for overlaps
-        const { data: overlaps, error: overlapError } = await ctx.supabase
-          .rpc('check_site_overlaps', {
+        const { data: overlaps, error: overlapError } = await ctx.supabase.rpc(
+          'check_site_overlaps',
+          {
             p_site_id: id,
             p_boundary: updateData.boundary,
-          })
+          }
+        )
 
         if (overlapError) {
           console.warn('Failed to check site overlaps:', overlapError)

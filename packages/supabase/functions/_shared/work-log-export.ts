@@ -2,17 +2,18 @@
 import type { PDFFont, PDFPage } from 'pdf-lib'
 import { PDFDocument, StandardFonts } from 'pdf-lib'
 
-import type { Database } from './database.types.ts';
+import type { Database } from './database.types.ts'
 
 type CoreSchemaTables = Database extends { core: { Tables: infer Tables } } ? Tables : never
 
-type CoreWorkLogRow = CoreSchemaTables extends Record<string, unknown>
-  ? 'work_logs' extends keyof CoreSchemaTables
-    ? CoreSchemaTables['work_logs'] extends { Row: infer RowType }
-      ? RowType
+type CoreWorkLogRow =
+  CoreSchemaTables extends Record<string, unknown>
+    ? 'work_logs' extends keyof CoreSchemaTables
+      ? CoreSchemaTables['work_logs'] extends { Row: infer RowType }
+        ? RowType
+        : null
       : null
     : null
-  : null
 
 type WorkLogRowFallback = {
   id: string

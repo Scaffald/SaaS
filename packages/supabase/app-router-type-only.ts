@@ -17,8 +17,8 @@
  * Type checking of the type itself still occurs in importing files.
  */
 
-import type { AppRouter as _AppRouter } from './functions/trpc/routers/_app';
-import type { AnyRouter } from '@trpc/server';
+import type { AppRouter as _AppRouter } from './functions/trpc/routers/_app'
+import type { AnyRouter } from '@trpc/server'
 
 /**
  * The tRPC AppRouter type for client-side usage
@@ -34,4 +34,4 @@ import type { AnyRouter } from '@trpc/server';
  * Type helper to satisfy AnyRouter constraint for inferRouterOutputs and similar utilities.
  * The conditional type ensures compatibility while avoiding TS2344 constraint errors.
  */
-export type AppRouter = _AppRouter extends AnyRouter ? _AppRouter : AnyRouter;
+export type AppRouter = _AppRouter extends AnyRouter ? _AppRouter : AnyRouter

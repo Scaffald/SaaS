@@ -220,9 +220,7 @@ export class PerformanceMonitor {
     const windowStart = now - this.options.windowMs
 
     return this.metrics
-      .filter(
-        (m) => m.timestamp >= windowStart && m.durationMs > this.options.slowQueryThresholdMs
-      )
+      .filter((m) => m.timestamp >= windowStart && m.durationMs > this.options.slowQueryThresholdMs)
       .sort((a, b) => b.durationMs - a.durationMs)
   }
 

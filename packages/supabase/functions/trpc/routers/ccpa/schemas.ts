@@ -134,9 +134,7 @@ export const optOutInputSchema = z.object({
   /**
    * Categories to opt out of. Use 'all' for all categories.
    */
-  categories: z
-    .union([z.literal('all'), z.array(CCPAOptOutCategorySchema).min(1)])
-    .default('all'),
+  categories: z.union([z.literal('all'), z.array(CCPAOptOutCategorySchema).min(1)]).default('all'),
 })
 
 /**
@@ -406,7 +404,9 @@ export type GetMetricsInput = z.infer<typeof getMetricsInputSchema>
 export type DownloadExportInput = z.infer<typeof downloadExportInputSchema>
 export type InitiateVerificationInput = z.infer<typeof initiateVerificationInputSchema>
 export type VerifyEmailOTPInput = z.infer<typeof verifyEmailOTPInputSchema>
-export type CompleteEnhancedVerificationInput = z.infer<typeof completeEnhancedVerificationInputSchema>
+export type CompleteEnhancedVerificationInput = z.infer<
+  typeof completeEnhancedVerificationInputSchema
+>
 export type ResendVerificationInput = z.infer<typeof resendVerificationInputSchema>
 export type RequestManualVerificationInput = z.infer<typeof requestManualVerificationInputSchema>
 export type CompleteManualVerificationInput = z.infer<typeof completeManualVerificationInputSchema>

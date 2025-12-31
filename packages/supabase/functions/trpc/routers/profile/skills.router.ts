@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import type { Database } from '../../../_shared/database.types.ts'
-import { softSkillsUpdateSchema } from '../../../_shared/profile-schemas.ts';
+import { softSkillsUpdateSchema } from '../../../_shared/profile-schemas.ts'
 import {
   addUserSkillInputSchema,
   getSkillChildrenInputSchema,
@@ -11,12 +11,17 @@ import {
   searchParentSkillsInputSchema,
   updateUserSkillInputSchema,
 } from '@scf/trpc/schemas'
-import { supabaseAnonKey, supabaseUrl } from '../../context.ts';
-import { protectedProcedure, t } from '../../middleware.ts';
+import { supabaseAnonKey, supabaseUrl } from '../../context.ts'
+import { protectedProcedure, t } from '../../middleware.ts'
 
 const publicProcedure = t.procedure
 
-const SOFT_SKILL_CATEGORIES = ['reliability', 'collaboration', 'professionalism', 'technical'] as const
+const SOFT_SKILL_CATEGORIES = [
+  'reliability',
+  'collaboration',
+  'professionalism',
+  'technical',
+] as const
 
 const softSkillRecordSchema = z.object({
   id: z.string().uuid(),
@@ -50,7 +55,9 @@ const defaultCategoryAverages = (): CategoryAverages => ({
   technical: 0,
 })
 
-const calculateCategoryAverages = (entries: Array<{ category: SoftSkillCategory; rating: number | null }>): CategoryAverages => {
+const calculateCategoryAverages = (
+  entries: Array<{ category: SoftSkillCategory; rating: number | null }>
+): CategoryAverages => {
   const totals: Record<SoftSkillCategory, { total: number; count: number }> = {
     reliability: { total: 0, count: 0 },
     collaboration: { total: 0, count: 0 },
@@ -65,19 +72,33 @@ const calculateCategoryAverages = (entries: Array<{ category: SoftSkillCategory;
   }
 
   return {
-    reliability: totals.reliability.count ? Number((totals.reliability.total / totals.reliability.count).toFixed(2)) : 0,
-    collaboration: totals.collaboration.count ? Number((totals.collaboration.total / totals.collaboration.count).toFixed(2)) : 0,
-    professionalism: totals.professionalism.count ? Number((totals.professionalism.total / totals.professionalism.count).toFixed(2)) : 0,
-    technical: totals.technical.count ? Number((totals.technical.total / totals.technical.count).toFixed(2)) : 0,
+    reliability: totals.reliability.count
+      ? Number((totals.reliability.total / totals.reliability.count).toFixed(2))
+      : 0,
+    collaboration: totals.collaboration.count
+      ? Number((totals.collaboration.total / totals.collaboration.count).toFixed(2))
+      : 0,
+    professionalism: totals.professionalism.count
+      ? Number((totals.professionalism.total / totals.professionalism.count).toFixed(2))
+      : 0,
+    technical: totals.technical.count
+      ? Number((totals.technical.total / totals.technical.count).toFixed(2))
+      : 0,
   }
 }
 
-const calculateAlignmentScore = (self?: CategoryAverages | null, peer?: CategoryAverages | null): number | null => {
+const calculateAlignmentScore = (
+  self?: CategoryAverages | null,
+  peer?: CategoryAverages | null
+): number | null => {
   if (!self || !peer) {
     return null
   }
 
-  const totalDiff = SOFT_SKILL_CATEGORIES.reduce((sum, category) => sum + Math.abs(self[category] - peer[category]), 0)
+  const totalDiff = SOFT_SKILL_CATEGORIES.reduce(
+    (sum, category) => sum + Math.abs(self[category] - peer[category]),
+    0
+  )
   const avgDiff = totalDiff / SOFT_SKILL_CATEGORIES.length
   const alignment = Math.max(0, 1 - avgDiff / 4)
   return Math.round(alignment * 100)
@@ -90,7 +111,9 @@ const resolveRelation = <T>(relation: MaybeArray<T>): T | undefined => {
   return relation ?? undefined
 }
 
-const fetchSoftSkillsCatalog = async (supabase: SupabaseClient<Database>): Promise<SoftSkillCatalogEntry[]> => {
+const fetchSoftSkillsCatalog = async (
+  supabase: SupabaseClient<Database>
+): Promise<SoftSkillCatalogEntry[]> => {
   const { data, error } = await supabase
     .schema('core')
     .from('soft_skills')
@@ -113,7 +136,10 @@ const fetchSoftSkillsCatalog = async (supabase: SupabaseClient<Database>): Promi
   const parsed = z.array(softSkillRecordSchema).safeParse(data)
 
   if (!parsed.success) {
-    console.error('[profileSkillsRouter] Invalid soft skills catalog payload', parsed.error.flatten())
+    console.error(
+      '[profileSkillsRouter] Invalid soft skills catalog payload',
+      parsed.error.flatten()
+    )
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Soft skills catalog is misconfigured',
@@ -131,8 +157,12 @@ const fetchSoftSkillsCatalog = async (supabase: SupabaseClient<Database>): Promi
 
 const loadLatestSoftSkillRatings = async (
   supabase: SupabaseClient<Database>,
-  userId: string,
-): Promise<{ version: number | null; ratings: Map<string, number>; selfAssessedAt: string | null }> => {
+  userId: string
+): Promise<{
+  version: number | null
+  ratings: Map<string, number>
+  selfAssessedAt: string | null
+}> => {
   const { data: latestVersionRow, error: latestVersionError } = await supabase
     .schema('core')
     .from('user_skills')
@@ -213,7 +243,7 @@ const createUserScopedClient = (userToken?: string) => {
 const canViewSoftSkills = async (
   supabase: SupabaseClient<Database>,
   targetUserId: string,
-  viewerUserId: string | null,
+  viewerUserId: string | null
 ): Promise<boolean> => {
   if (viewerUserId && viewerUserId === targetUserId) {
     return true
@@ -234,7 +264,8 @@ const canViewSoftSkills = async (
     })
   }
 
-  const visibility = (data?.profile_visibility as Record<string, unknown> | null | undefined)?.skills
+  const visibility = (data?.profile_visibility as Record<string, unknown> | null | undefined)
+    ?.skills
 
   if (visibility === undefined || visibility === null) {
     return true
@@ -299,7 +330,11 @@ export const profileSkillsRouter = t.router({
       let lastUpdated: string | null = null
 
       if (!version) {
-        const { version: latestVersion, ratings, selfAssessedAt } = await loadLatestSoftSkillRatings(supabase, targetUserId)
+        const {
+          version: latestVersion,
+          ratings,
+          selfAssessedAt,
+        } = await loadLatestSoftSkillRatings(supabase, targetUserId)
         version = latestVersion
         if (selfAssessedAt) {
           lastUpdated = selfAssessedAt
@@ -326,7 +361,8 @@ export const profileSkillsRouter = t.router({
 
         for (const row of data ?? []) {
           if (!row.soft_skill_id) continue
-          const ratingValue = typeof row.proficiency_level === 'number' ? row.proficiency_level : null
+          const ratingValue =
+            typeof row.proficiency_level === 'number' ? row.proficiency_level : null
           const updatedAt = row.self_assessed_at ?? null
           ratingMap.set(row.soft_skill_id, { rating: ratingValue, updatedAt })
           if (updatedAt && (!lastUpdated || updatedAt > lastUpdated)) {
@@ -361,7 +397,7 @@ export const profileSkillsRouter = t.router({
         skills.map((skill) => ({
           category: skill.category,
           rating: skill.rating,
-        })),
+        }))
       )
 
       return {
@@ -395,7 +431,10 @@ export const profileSkillsRouter = t.router({
         })
       }
 
-      if (providedIds.size !== catalogIds.size || Array.from(providedIds).some((skillId) => !catalogIds.has(skillId))) {
+      if (
+        providedIds.size !== catalogIds.size ||
+        Array.from(providedIds).some((skillId) => !catalogIds.has(skillId))
+      ) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'All catalog soft skills must be rated',
@@ -404,7 +443,10 @@ export const profileSkillsRouter = t.router({
 
       const ratingMap = new Map(input.skills.map((skill) => [skill.skill_id, skill.rating]))
 
-      const { version: latestVersion, ratings: latestRatings } = await loadLatestSoftSkillRatings(supabase, user.id)
+      const { version: latestVersion, ratings: latestRatings } = await loadLatestSoftSkillRatings(
+        supabase,
+        user.id
+      )
 
       const shouldCreateNewVersion =
         !latestVersion ||
@@ -443,12 +485,10 @@ export const profileSkillsRouter = t.router({
 
       const mutation = shouldCreateNewVersion
         ? userScopedClient.schema('core').from('user_skills').insert(payload)
-        : userScopedClient
-            .schema('core')
-            .from('user_skills')
-            .upsert(payload, {
-              onConflict: 'user_id,skill_taxonomy,csi_skill_id,onet_occupation_id,soft_skill_id,version',
-            })
+        : userScopedClient.schema('core').from('user_skills').upsert(payload, {
+            onConflict:
+              'user_id,skill_taxonomy,csi_skill_id,onet_occupation_id,soft_skill_id,version',
+          })
 
       const { error } = await mutation
 
@@ -464,7 +504,7 @@ export const profileSkillsRouter = t.router({
         catalog.map((skill) => ({
           category: skill.category,
           rating: ratingMap.get(skill.id) ?? null,
-        })),
+        }))
       )
 
       return {
@@ -480,7 +520,13 @@ export const profileSkillsRouter = t.router({
     const catalog = await fetchSoftSkillsCatalog(supabase)
 
     if (catalog.length === 0) {
-      return { versions: [] as Array<{ version: number; selfAssessedAt: string | null; categoryAverages: CategoryAverages }> }
+      return {
+        versions: [] as Array<{
+          version: number
+          selfAssessedAt: string | null
+          categoryAverages: CategoryAverages
+        }>,
+      }
     }
 
     const categoryBySkillId = new Map(catalog.map((skill) => [skill.id, skill.category]))
@@ -502,7 +548,13 @@ export const profileSkillsRouter = t.router({
     }
 
     if (!data || data.length === 0) {
-      return { versions: [] as Array<{ version: number; selfAssessedAt: string | null; categoryAverages: CategoryAverages }> }
+      return {
+        versions: [] as Array<{
+          version: number
+          selfAssessedAt: string | null
+          categoryAverages: CategoryAverages
+        }>,
+      }
     }
 
     const historyMap = new Map<
@@ -572,7 +624,7 @@ export const profileSkillsRouter = t.router({
             catalog.map((skill) => ({
               category: skill.category,
               rating: ratings.get(skill.id) ?? null,
-            })),
+            }))
           )
 
     const { data: peerRows, error: peerError } = await supabase
@@ -590,7 +642,7 @@ export const profileSkillsRouter = t.router({
             subject_id,
             subject_type
           )
-        `,
+        `
       )
       .eq('reviews.subject_id', user.id)
       .eq('reviews.subject_type', 'user')
@@ -635,7 +687,9 @@ export const profileSkillsRouter = t.router({
               ? Number((peerTotals.collaboration.total / peerTotals.collaboration.count).toFixed(2))
               : 0,
             professionalism: peerTotals.professionalism.count
-              ? Number((peerTotals.professionalism.total / peerTotals.professionalism.count).toFixed(2))
+              ? Number(
+                  (peerTotals.professionalism.total / peerTotals.professionalism.count).toFixed(2)
+                )
               : 0,
             technical: peerTotals.technical.count
               ? Number((peerTotals.technical.total / peerTotals.technical.count).toFixed(2))

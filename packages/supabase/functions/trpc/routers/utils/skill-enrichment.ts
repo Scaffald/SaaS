@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { Database } from '../../_shared/database.types.ts';
+import type { Database } from '../../_shared/database.types.ts'
 
 type DbClient = SupabaseClient<Database>
 type UserSkillRow = Database['core']['Tables']['user_skills']['Row']
@@ -93,7 +93,10 @@ export async function enrichUserSkills(
   )
 
   const onetMap = new Map<string, OnetOccupationRow>(
-    (onetResult.data ?? []).map((row: OnetOccupationRow) => [normaliseOnetCode(row.onetsoc_code), row])
+    (onetResult.data ?? []).map((row: OnetOccupationRow) => [
+      normaliseOnetCode(row.onetsoc_code),
+      row,
+    ])
   )
 
   const tradeMap = new Map<string, TradeRow>()

@@ -102,7 +102,7 @@ interface CallTRPCEndpointOptions {
 export async function fetchWithTimeout(
   url: string,
   options: RequestInit = {},
-  timeoutMs = 5000,
+  timeoutMs = 5000
 ): Promise<Response> {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
@@ -148,7 +148,7 @@ export async function callTRPCEndpoint(
           0: input ?? null,
         }),
       },
-      5000,
+      5000
     )
 
     const data = await response.json()
@@ -166,7 +166,7 @@ export async function callTRPCEndpoint(
       method: 'GET',
       headers,
     },
-    5000,
+    5000
   )
 
   const data = await response.json()
@@ -265,7 +265,7 @@ export interface InbucketEmail {
  */
 export async function getLatestEmail(
   recipient: string,
-  timeoutMs = 5000,
+  timeoutMs = 5000
 ): Promise<InbucketEmail | null> {
   const startTime = Date.now()
   const pollInterval = 500
@@ -282,7 +282,7 @@ export async function getLatestEmail(
       const response = await fetchWithTimeout(
         `${TEST_MAILPIT_URL}/api/v1/messages`,
         {},
-        Math.min(2000, remainingTime),
+        Math.min(2000, remainingTime)
       )
 
       if (!response.ok) {
@@ -314,7 +314,7 @@ export async function getLatestEmail(
       const emailResponse = await fetchWithTimeout(
         `${TEST_MAILPIT_URL}/api/v1/message/${latestEmail.ID}`,
         {},
-        Math.min(2000, timeoutMs - (Date.now() - startTime)),
+        Math.min(2000, timeoutMs - (Date.now() - startTime))
       )
 
       if (!emailResponse.ok) {

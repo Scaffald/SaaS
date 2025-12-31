@@ -15,10 +15,10 @@ import { TRPCError } from '@trpc/server'
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
-import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts';
-import { supabaseServiceKey, supabaseUrl } from '../context.ts';
-import { collectCoreUserData } from './ccpa/data-collector.ts';
-import { getDeadlineMetrics as getDeadlineMetricsUtil } from './ccpa/deadline-tracker.ts';
+import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
+import { supabaseServiceKey, supabaseUrl } from '../context.ts'
+import { collectCoreUserData } from './ccpa/data-collector.ts'
+import { getDeadlineMetrics as getDeadlineMetricsUtil } from './ccpa/deadline-tracker.ts'
 import {
   approveRequestInputSchema,
   cancelRequestInputSchema,
@@ -45,7 +45,7 @@ import {
   requestPortabilityInputSchema,
   resendVerificationInputSchema,
   verifyEmailOTPInputSchema,
-} from './ccpa/schemas.ts';
+} from './ccpa/schemas.ts'
 import {
   completeEnhancedVerification,
   completeManualVerification,
@@ -55,23 +55,16 @@ import {
   requestManualVerification,
   resendVerificationCode,
   verifyEmailOTP,
-} from './ccpa/identity-verification.ts';
-import {
-  getProcessingStatus,
-  processRequest,
-  retryProcessing,
-} from './ccpa/request-processor.ts';
-import {
-  estimatePDFSize,
-  generateCCPAPDF,
-} from './ccpa/pdf-generator.ts';
+} from './ccpa/identity-verification.ts'
+import { getProcessingStatus, processRequest, retryProcessing } from './ccpa/request-processor.ts'
+import { estimatePDFSize, generateCCPAPDF } from './ccpa/pdf-generator.ts'
 import {
   cleanupExpiredExports,
   createExportDownload,
   getDownloadRecord,
   trackDownload,
   EXPORT_CONFIG,
-} from './ccpa/export-storage.ts';
+} from './ccpa/export-storage.ts'
 import {
   notifyRequestSubmitted,
   notifyVerificationRequired,
@@ -82,14 +75,14 @@ import {
   type CCPARequestInfo,
   type NotificationResult,
   CCPA_NOTIFICATION_TYPES,
-} from './ccpa/notifications.ts';
+} from './ccpa/notifications.ts'
 import {
   GPC_CONFIG,
   processGPCSignal,
   getGPCStatus,
   getGPCDisclosureText,
   getDoNotSellPageStatus,
-} from './ccpa/gpc.ts';
+} from './ccpa/gpc.ts'
 
 // All CCPA opt-out categories
 const ALL_OPT_OUT_CATEGORIES = ['sale', 'sharing', 'targeted_advertising', 'profiling'] as const
@@ -114,19 +107,33 @@ async function checkForActiveRequest(
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-  const { data } = (await (supabaseAdmin.schema('core').from('ccpa_requests') as unknown as {
-    select: (s: string) => {
-      eq: (c: string, v: string) => {
-        eq: (c: string, v: string) => {
-          in: (c: string, v: string[]) => {
-            gte: (c: string, v: string) => {
-              maybeSingle: () => Promise<{ data: unknown }>
+  const { data } = (await (
+    supabaseAdmin.schema('core').from('ccpa_requests') as unknown as {
+      select: (s: string) => {
+        eq: (
+          c: string,
+          v: string
+        ) => {
+          eq: (
+            c: string,
+            v: string
+          ) => {
+            in: (
+              c: string,
+              v: string[]
+            ) => {
+              gte: (
+                c: string,
+                v: string
+              ) => {
+                maybeSingle: () => Promise<{ data: unknown }>
+              }
             }
           }
         }
       }
     }
-  })
+  )
     .select('id')
     .eq('user_id', userId)
     .eq('request_type', requestType)
@@ -154,16 +161,13 @@ export const ccpaRouter = t.router({
       }
 
       // Check for duplicate active requests
-      const hasActiveRequest = await checkForActiveRequest(
-        ctx.supabase,
-        ctx.user.id,
-        'access'
-      )
+      const hasActiveRequest = await checkForActiveRequest(ctx.supabase, ctx.user.id, 'access')
 
       if (hasActiveRequest) {
         throw new TRPCError({
           code: 'CONFLICT',
-          message: 'You already have an active data access request. Please wait for it to complete or cancel it before submitting a new one.',
+          message:
+            'You already have an active data access request. Please wait for it to complete or cancel it before submitting a new one.',
         })
       }
 
@@ -193,7 +197,8 @@ export const ccpaRouter = t.router({
         status: request.status,
         deadlineAt: request.deadline_at,
         submittedAt: request.submitted_at,
-        message: 'Your data access request has been submitted. You will receive a verification email shortly.',
+        message:
+          'Your data access request has been submitted. You will receive a verification email shortly.',
       }
     }),
 
@@ -208,16 +213,13 @@ export const ccpaRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const hasActiveRequest = await checkForActiveRequest(
-        ctx.supabase,
-        ctx.user.id,
-        'deletion'
-      )
+      const hasActiveRequest = await checkForActiveRequest(ctx.supabase, ctx.user.id, 'deletion')
 
       if (hasActiveRequest) {
         throw new TRPCError({
           code: 'CONFLICT',
-          message: 'You already have an active deletion request. Please wait for it to complete or cancel it before submitting a new one.',
+          message:
+            'You already have an active deletion request. Please wait for it to complete or cancel it before submitting a new one.',
         })
       }
 
@@ -249,7 +251,8 @@ export const ccpaRouter = t.router({
         status: request.status,
         deadlineAt: request.deadline_at,
         submittedAt: request.submitted_at,
-        message: 'Your deletion request has been submitted. You will need to complete enhanced verification to proceed.',
+        message:
+          'Your deletion request has been submitted. You will need to complete enhanced verification to proceed.',
       }
     }),
 
@@ -263,11 +266,7 @@ export const ccpaRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const hasActiveRequest = await checkForActiveRequest(
-        ctx.supabase,
-        ctx.user.id,
-        'correction'
-      )
+      const hasActiveRequest = await checkForActiveRequest(ctx.supabase, ctx.user.id, 'correction')
 
       if (hasActiveRequest) {
         throw new TRPCError({
@@ -318,11 +317,7 @@ export const ccpaRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const hasActiveRequest = await checkForActiveRequest(
-        ctx.supabase,
-        ctx.user.id,
-        'portability'
-      )
+      const hasActiveRequest = await checkForActiveRequest(ctx.supabase, ctx.user.id, 'portability')
 
       if (hasActiveRequest) {
         throw new TRPCError({
@@ -549,82 +544,73 @@ export const ccpaRouter = t.router({
   /**
    * Opt out of data processing categories
    */
-  optOut: protectedProcedure
-    .input(optOutInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user?.id) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  optOut: protectedProcedure.input(optOutInputSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      const categories = input.categories === 'all'
-        ? ALL_OPT_OUT_CATEGORIES
-        : input.categories
+    const categories = input.categories === 'all' ? ALL_OPT_OUT_CATEGORIES : input.categories
 
-      if (!ctx.user?.id) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        })
-      }
+    if (!ctx.user?.id) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'User not authenticated',
+      })
+    }
 
-      const insertData = categories.map((category) => ({
-        user_id: ctx.user.id,
-        category,
-        source: 'user_request' as const,
-        metadata: {},
-      }))
+    const insertData = categories.map((category) => ({
+      user_id: ctx.user.id,
+      category,
+      source: 'user_request' as const,
+      metadata: {},
+    }))
 
-      // Use upsert to handle existing opt-outs
-      const { error } = await ctx.supabase
-        .schema('core')
-        .from('ccpa_opt_outs')
-        .upsert(insertData, {
-          onConflict: 'user_id,category',
-          ignoreDuplicates: true,
-        })
+    // Use upsert to handle existing opt-outs
+    const { error } = await ctx.supabase.schema('core').from('ccpa_opt_outs').upsert(insertData, {
+      onConflict: 'user_id,category',
+      ignoreDuplicates: true,
+    })
 
-      if (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to process opt-out request',
-        })
-      }
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to process opt-out request',
+      })
+    }
 
-      return {
-        categories: [...categories],
-        message: `You have opted out of ${categories.length === 4 ? 'all' : categories.join(', ')} data processing.`,
-      }
-    }),
+    return {
+      categories: [...categories],
+      message: `You have opted out of ${categories.length === 4 ? 'all' : categories.join(', ')} data processing.`,
+    }
+  }),
 
   /**
    * Opt back into data processing categories
    */
-  optIn: protectedProcedure
-    .input(optInInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user?.id) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  optIn: protectedProcedure.input(optInInputSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      const { error } = await ctx.supabase
-        .schema('core')
-        .from('ccpa_opt_outs')
-        .delete()
-        .eq('user_id', ctx.user.id)
-        .in('category', input.categories)
+    const { error } = await ctx.supabase
+      .schema('core')
+      .from('ccpa_opt_outs')
+      .delete()
+      .eq('user_id', ctx.user.id)
+      .in('category', input.categories)
 
-      if (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to process opt-in request',
-        })
-      }
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to process opt-in request',
+      })
+    }
 
-      return {
-        categories: input.categories,
-        message: `You have opted back into ${input.categories.join(', ')} data processing.`,
-      }
-    }),
+    return {
+      categories: input.categories,
+      message: `You have opted back into ${input.categories.join(', ')} data processing.`,
+    }
+  }),
 
   /**
    * Get current opt-out status
@@ -752,11 +738,7 @@ export const ccpaRouter = t.router({
       }
 
       // Default to email verification
-      const result = await initiateEmailVerification(
-        ctx.supabase,
-        input.requestId,
-        userEmail
-      )
+      const result = await initiateEmailVerification(ctx.supabase, input.requestId, userEmail)
 
       if (!result.success) {
         throw new TRPCError({
@@ -837,11 +819,7 @@ export const ccpaRouter = t.router({
         })
       }
 
-      const result = await completeEnhancedVerification(
-        ctx.supabase,
-        input.requestId,
-        input.token
-      )
+      const result = await completeEnhancedVerification(ctx.supabase, input.requestId, input.token)
 
       if (!result.success) {
         throw new TRPCError({
@@ -891,11 +869,7 @@ export const ccpaRouter = t.router({
         })
       }
 
-      const result = await resendVerificationCode(
-        ctx.supabase,
-        input.requestId,
-        userEmail
-      )
+      const result = await resendVerificationCode(ctx.supabase, input.requestId, userEmail)
 
       if (!result.success) {
         throw new TRPCError({
@@ -1062,10 +1036,8 @@ export const ccpaRouter = t.router({
     .input(registerDataCategoryInputSchema)
     .mutation(async ({ input }) => {
       const serviceClient = createServiceClient()
-      const { error } = await serviceClient
-        .schema('core')
-        .from('ccpa_oauth_app_registry')
-        .upsert({
+      const { error } = await serviceClient.schema('core').from('ccpa_oauth_app_registry').upsert(
+        {
           app_id: input.appId,
           app_name: input.appName,
           data_categories: input.dataCategories,
@@ -1074,9 +1046,11 @@ export const ccpaRouter = t.router({
           registered_at: new Date().toISOString(),
           last_verified_at: new Date().toISOString(),
           is_active: true,
-        }, {
+        },
+        {
           onConflict: 'app_id',
-        })
+        }
+      )
 
       if (error) {
         throw new TRPCError({
@@ -1156,67 +1130,66 @@ export const ccpaRouter = t.router({
   /**
    * Confirm deletion completion from an OAuth app
    */
-  confirmDeletion: publicProcedure
-    .input(confirmDeletionInputSchema)
-    .mutation(async ({ input }) => {
-      const serviceClient = createServiceClient()
-      const { data: request, error: fetchError } = await serviceClient
-        .schema('core')
-        .from('ccpa_requests')
-        .select('id, status, request_type, metadata')
-        .eq('id', input.requestId)
-        .single()
+  confirmDeletion: publicProcedure.input(confirmDeletionInputSchema).mutation(async ({ input }) => {
+    const serviceClient = createServiceClient()
+    const { data: request, error: fetchError } = await serviceClient
+      .schema('core')
+      .from('ccpa_requests')
+      .select('id, status, request_type, metadata')
+      .eq('id', input.requestId)
+      .single()
 
-      if (fetchError || !request) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'CCPA request not found',
-        })
-      }
+    if (fetchError || !request) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'CCPA request not found',
+      })
+    }
 
-      if (request.request_type !== 'deletion') {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'This is not a deletion request',
-        })
-      }
+    if (request.request_type !== 'deletion') {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'This is not a deletion request',
+      })
+    }
 
-      // Record the deletion confirmation
-      const existingMetadata = (request.metadata as Record<string, unknown>) ?? {}
-      const oauthConfirmations = (existingMetadata.oauth_deletion_confirmations as Record<string, unknown>) ?? {}
+    // Record the deletion confirmation
+    const existingMetadata = (request.metadata as Record<string, unknown>) ?? {}
+    const oauthConfirmations =
+      (existingMetadata.oauth_deletion_confirmations as Record<string, unknown>) ?? {}
 
-      const { error: updateError } = await serviceClient
-        .schema('core')
-        .from('ccpa_requests')
-        .update({
-          metadata: {
-            ...existingMetadata,
-            oauth_deletion_confirmations: {
-              ...oauthConfirmations,
-              [input.appId]: {
-                confirmed_at: new Date().toISOString(),
-                deleted_categories: input.deletedCategories,
-                anonymized_categories: input.anonymizedCategories ?? [],
-                retention_reason: input.retentionReason,
-              },
+    const { error: updateError } = await serviceClient
+      .schema('core')
+      .from('ccpa_requests')
+      .update({
+        metadata: {
+          ...existingMetadata,
+          oauth_deletion_confirmations: {
+            ...oauthConfirmations,
+            [input.appId]: {
+              confirmed_at: new Date().toISOString(),
+              deleted_categories: input.deletedCategories,
+              anonymized_categories: input.anonymizedCategories ?? [],
+              retention_reason: input.retentionReason,
             },
           },
-        })
-        .eq('id', input.requestId)
+        },
+      })
+      .eq('id', input.requestId)
 
-      if (updateError) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to record deletion confirmation',
-        })
-      }
+    if (updateError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to record deletion confirmation',
+      })
+    }
 
-      return {
-        requestId: input.requestId,
-        appId: input.appId,
-        confirmed: true,
-      }
-    }),
+    return {
+      requestId: input.requestId,
+      appId: input.appId,
+      confirmed: true,
+    }
+  }),
 
   // ========================================================
   // ADMIN ENDPOINTS
@@ -1225,71 +1198,73 @@ export const ccpaRouter = t.router({
   /**
    * List all CCPA requests (admin only)
    */
-  listRequests: officeProcedure
-    .input(listRequestsInputSchema)
-    .query(async ({ ctx, input }) => {
-      let query = ctx.supabaseAdmin
-        .schema('core')
-        .from('ccpa_requests')
-        .select(`
+  listRequests: officeProcedure.input(listRequestsInputSchema).query(async ({ ctx, input }) => {
+    let query = ctx.supabaseAdmin
+      .schema('core')
+      .from('ccpa_requests')
+      .select(
+        `
           *,
           user:auth.users!ccpa_requests_user_id_fkey(email)
-        `, { count: 'exact' })
-        .order(input?.sortBy ?? 'deadline_at', { ascending: input?.sortOrder === 'asc' })
-        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1)
+        `,
+        { count: 'exact' }
+      )
+      .order(input?.sortBy ?? 'deadline_at', { ascending: input?.sortOrder === 'asc' })
+      .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1)
 
-      if (input?.status) {
-        query = query.eq('status', input.status)
-      }
+    if (input?.status) {
+      query = query.eq('status', input.status)
+    }
 
-      if (input?.requestType) {
-        query = query.eq('request_type', input.requestType)
-      }
+    if (input?.requestType) {
+      query = query.eq('request_type', input.requestType)
+    }
 
-      if (input?.userId) {
-        query = query.eq('user_id', input.userId)
-      }
+    if (input?.userId) {
+      query = query.eq('user_id', input.userId)
+    }
 
-      if (input?.overdueOnly) {
-        query = query.lt('deadline_at', new Date().toISOString())
-          .in('status', ['pending', 'in_progress'])
-      }
+    if (input?.overdueOnly) {
+      query = query
+        .lt('deadline_at', new Date().toISOString())
+        .in('status', ['pending', 'in_progress'])
+    }
 
-      const { data, error, count } = await query
+    const { data, error, count } = await query
 
-      if (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load requests',
-        })
-      }
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to load requests',
+      })
+    }
 
-      return {
-        // biome-ignore lint/suspicious/noExplicitAny: Row type from database query
-        items: (data ?? []).map((row: any) => {
-          const deadline = (row.extended_deadline_at ?? row.deadline_at) as string
-          const daysRemaining = Math.ceil(
-            (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-          )
+    return {
+      // biome-ignore lint/suspicious/noExplicitAny: Row type from database query
+      items: (data ?? []).map((row: any) => {
+        const deadline = (row.extended_deadline_at ?? row.deadline_at) as string
+        const daysRemaining = Math.ceil(
+          (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+        )
 
-          return {
-            id: row.id,
-            userId: row.user_id,
-            userEmail: (row.user as Record<string, unknown>)?.email,
-            requestType: row.request_type,
-            status: row.status,
-            submittedAt: row.submitted_at,
-            deadlineAt: row.deadline_at,
-            extendedDeadlineAt: row.extended_deadline_at,
-            completedAt: row.completed_at,
-            denialReason: row.denial_reason,
-            daysRemaining: Math.max(0, daysRemaining),
-            isOverdue: daysRemaining < 0,
-          }
-        }),
-        totalCount: count ?? 0,
-      }
-    }),
+        return {
+          id: row.id,
+          userId: row.user_id,
+          userEmail: (row.user as Record<string, unknown>)?.email,
+          requestType: row.request_type,
+          status: row.status,
+          submittedAt: row.submitted_at,
+          deadlineAt: row.deadline_at,
+          extendedDeadlineAt: row.extended_deadline_at,
+          completedAt: row.completed_at,
+          denialReason: row.denial_reason,
+          daysRemaining: Math.max(0, daysRemaining),
+          isOverdue: daysRemaining < 0,
+        }
+      }),
+      totalCount: count ?? 0,
+    }
+  }),
 
   /**
    * Approve a pending request (move to in_progress)
@@ -1352,64 +1327,59 @@ export const ccpaRouter = t.router({
   /**
    * Deny a request
    */
-  denyRequest: officeProcedure
-    .input(denyRequestInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { data: request, error: fetchError } = await ctx.supabaseAdmin
-        .schema('core')
-        .from('ccpa_requests')
-        .select('id, status')
-        .eq('id', input.requestId)
-        .single()
+  denyRequest: officeProcedure.input(denyRequestInputSchema).mutation(async ({ ctx, input }) => {
+    const { data: request, error: fetchError } = await ctx.supabaseAdmin
+      .schema('core')
+      .from('ccpa_requests')
+      .select('id, status')
+      .eq('id', input.requestId)
+      .single()
 
-      if (fetchError || !request) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Request not found',
-        })
-      }
+    if (fetchError || !request) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Request not found',
+      })
+    }
 
-      if (!['pending', 'in_progress'].includes(request.status)) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: `Cannot deny a request with status '${request.status}'`,
-        })
-      }
+    if (!['pending', 'in_progress'].includes(request.status)) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: `Cannot deny a request with status '${request.status}'`,
+      })
+    }
 
-      const { error: updateError } = await ctx.supabaseAdmin
-        .schema('core')
-        .from('ccpa_requests')
-        .update({
-          status: 'denied',
-          denial_reason: input.reason,
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', input.requestId)
-
-      if (updateError) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to deny request',
-        })
-      }
-
-      // Record in history
-      await ctx.supabaseAdmin
-        .schema('core')
-        .from('ccpa_request_history')
-        .insert({
-          request_id: input.requestId,
-          status: 'denied',
-          changed_by: ctx.user?.id,
-          notes: input.reason,
-        })
-
-      return {
-        id: input.requestId,
+    const { error: updateError } = await ctx.supabaseAdmin
+      .schema('core')
+      .from('ccpa_requests')
+      .update({
         status: 'denied',
-        message: 'Request has been denied.',
-      }
-    }),
+        denial_reason: input.reason,
+        completed_at: new Date().toISOString(),
+      })
+      .eq('id', input.requestId)
+
+    if (updateError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to deny request',
+      })
+    }
+
+    // Record in history
+    await ctx.supabaseAdmin.schema('core').from('ccpa_request_history').insert({
+      request_id: input.requestId,
+      status: 'denied',
+      changed_by: ctx.user?.id,
+      notes: input.reason,
+    })
+
+    return {
+      id: input.requestId,
+      status: 'denied',
+      message: 'Request has been denied.',
+    }
+  }),
 
   /**
    * Extend a request deadline by 45 days
@@ -1490,88 +1460,100 @@ export const ccpaRouter = t.router({
   /**
    * Get CCPA compliance metrics
    */
-  getMetrics: officeProcedure
-    .input(getMetricsInputSchema)
-    .query(async ({ ctx, input }) => {
-      const days = input?.days ?? 30
-      const startDate = new Date()
-      startDate.setDate(startDate.getDate() - days)
+  getMetrics: officeProcedure.input(getMetricsInputSchema).query(async ({ ctx, input }) => {
+    const days = input?.days ?? 30
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - days)
 
-      // Get all requests in the period
-      const { data: requests, error } = await ctx.supabaseAdmin
-        .schema('core')
-        .from('ccpa_requests')
-        .select('*')
-        .gte('submitted_at', startDate.toISOString())
+    // Get all requests in the period
+    const { data: requests, error } = await ctx.supabaseAdmin
+      .schema('core')
+      .from('ccpa_requests')
+      .select('*')
+      .gte('submitted_at', startDate.toISOString())
 
-      if (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load metrics',
-        })
-      }
-
-      const allRequests = requests ?? []
-
-      // Calculate metrics
-      const totalRequests = allRequests.length
-      const completedRequests = allRequests.filter((r: Record<string, unknown>) => r.status === 'completed')
-      const deniedRequests = allRequests.filter((r: Record<string, unknown>) => r.status === 'denied')
-      const overdueRequests = allRequests.filter((r: Record<string, unknown>) => {
-        if (!['pending', 'in_progress'].includes(r.status as string)) return false
-        const deadline = (r.extended_deadline_at ?? r.deadline_at) as string
-        return new Date(deadline) < new Date()
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to load metrics',
       })
+    }
 
-      // Calculate average response time (for completed requests)
-      let avgResponseDays = 0
-      if (completedRequests.length > 0) {
-        const totalDays = completedRequests.reduce((sum: number, r: Record<string, unknown>) => {
-          const submitted = new Date(r.submitted_at as string)
-          const completed = new Date(r.completed_at as string)
-          return sum + (completed.getTime() - submitted.getTime()) / (1000 * 60 * 60 * 24)
-        }, 0)
-        avgResponseDays = Math.round(totalDays / completedRequests.length)
-      }
+    const allRequests = requests ?? []
 
-      // Breakdown by request type
-      const byType = {
-        access: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'access').length,
-        deletion: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'deletion').length,
-        correction: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'correction').length,
-        portability: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'portability').length,
-        opt_out: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'opt_out').length,
-        opt_in: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'opt_in').length,
-      }
+    // Calculate metrics
+    const totalRequests = allRequests.length
+    const completedRequests = allRequests.filter(
+      (r: Record<string, unknown>) => r.status === 'completed'
+    )
+    const deniedRequests = allRequests.filter((r: Record<string, unknown>) => r.status === 'denied')
+    const overdueRequests = allRequests.filter((r: Record<string, unknown>) => {
+      if (!['pending', 'in_progress'].includes(r.status as string)) return false
+      const deadline = (r.extended_deadline_at ?? r.deadline_at) as string
+      return new Date(deadline) < new Date()
+    })
 
-      return {
-        period: {
-          days,
-          startDate: startDate.toISOString(),
-          endDate: new Date().toISOString(),
-        },
-        totalRequests,
-        completedRequests: completedRequests.length,
-        pendingRequests: allRequests.filter((r: Record<string, unknown>) => r.status === 'pending').length,
-        inProgressRequests: allRequests.filter((r: Record<string, unknown>) => r.status === 'in_progress').length,
-        deniedRequests: deniedRequests.length,
-        cancelledRequests: allRequests.filter((r: Record<string, unknown>) => r.status === 'cancelled').length,
-        overdueRequests: overdueRequests.length,
-        avgResponseDays,
-        denialRate: totalRequests > 0 ? Math.round((deniedRequests.length / totalRequests) * 100) : 0,
-        byType,
-      }
-    }),
+    // Calculate average response time (for completed requests)
+    let avgResponseDays = 0
+    if (completedRequests.length > 0) {
+      const totalDays = completedRequests.reduce((sum: number, r: Record<string, unknown>) => {
+        const submitted = new Date(r.submitted_at as string)
+        const completed = new Date(r.completed_at as string)
+        return sum + (completed.getTime() - submitted.getTime()) / (1000 * 60 * 60 * 24)
+      }, 0)
+      avgResponseDays = Math.round(totalDays / completedRequests.length)
+    }
+
+    // Breakdown by request type
+    const byType = {
+      access: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'access')
+        .length,
+      deletion: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'deletion')
+        .length,
+      correction: allRequests.filter(
+        (r: Record<string, unknown>) => r.request_type === 'correction'
+      ).length,
+      portability: allRequests.filter(
+        (r: Record<string, unknown>) => r.request_type === 'portability'
+      ).length,
+      opt_out: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'opt_out')
+        .length,
+      opt_in: allRequests.filter((r: Record<string, unknown>) => r.request_type === 'opt_in')
+        .length,
+    }
+
+    return {
+      period: {
+        days,
+        startDate: startDate.toISOString(),
+        endDate: new Date().toISOString(),
+      },
+      totalRequests,
+      completedRequests: completedRequests.length,
+      pendingRequests: allRequests.filter((r: Record<string, unknown>) => r.status === 'pending')
+        .length,
+      inProgressRequests: allRequests.filter(
+        (r: Record<string, unknown>) => r.status === 'in_progress'
+      ).length,
+      deniedRequests: deniedRequests.length,
+      cancelledRequests: allRequests.filter(
+        (r: Record<string, unknown>) => r.status === 'cancelled'
+      ).length,
+      overdueRequests: overdueRequests.length,
+      avgResponseDays,
+      denialRate: totalRequests > 0 ? Math.round((deniedRequests.length / totalRequests) * 100) : 0,
+      byType,
+    }
+  }),
 
   /**
    * Get deadline-specific metrics for compliance dashboard
    * Shows requests by deadline status (on-time, at-risk, overdue)
    */
-  getDeadlineMetrics: officeProcedure
-    .query(async ({ ctx }) => {
-      const metrics = await getDeadlineMetricsUtil(ctx.supabaseAdmin)
-      return metrics
-    }),
+  getDeadlineMetrics: officeProcedure.query(async ({ ctx }) => {
+    const metrics = await getDeadlineMetricsUtil(ctx.supabaseAdmin)
+    return metrics
+  }),
 
   // ========================================================
   // REQUEST PROCESSING ENDPOINTS
@@ -1583,9 +1565,11 @@ export const ccpaRouter = t.router({
    * aggregation, and export generation.
    */
   processRequest: officeProcedure
-    .input(z.object({
-      requestId: z.string().uuid(),
-    }))
+    .input(
+      z.object({
+        requestId: z.string().uuid(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // Verify request exists
       const { data: request, error: requestError } = await ctx.supabaseAdmin
@@ -1634,9 +1618,11 @@ export const ccpaRouter = t.router({
    * Returns detailed status of the processing pipeline.
    */
   getProcessingStatus: officeProcedure
-    .input(z.object({
-      requestId: z.string().uuid(),
-    }))
+    .input(
+      z.object({
+        requestId: z.string().uuid(),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const status = await getProcessingStatus(ctx.supabaseAdmin, input.requestId)
       return status
@@ -1647,9 +1633,11 @@ export const ccpaRouter = t.router({
    * Allows admin to retry processing after fixing issues.
    */
   retryProcessing: officeProcedure
-    .input(z.object({
-      requestId: z.string().uuid(),
-    }))
+    .input(
+      z.object({
+        requestId: z.string().uuid(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // Verify request exists and is in failed state
       const { data: request, error: requestError } = await ctx.supabaseAdmin
@@ -1694,10 +1682,12 @@ export const ccpaRouter = t.router({
    * Returns the PDF as base64 encoded data
    */
   generatePDF: officeProcedure
-    .input(z.object({
-      requestId: z.string().uuid(),
-      includeQRCode: z.boolean().default(true),
-    }))
+    .input(
+      z.object({
+        requestId: z.string().uuid(),
+        includeQRCode: z.boolean().default(true),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // Get the request and verify it's ready for PDF generation
       const { data: request, error: requestError } = await ctx.supabaseAdmin
@@ -1762,9 +1752,11 @@ export const ccpaRouter = t.router({
    * Useful for showing users expected download size
    */
   estimatePDFSize: officeProcedure
-    .input(z.object({
-      requestId: z.string().uuid(),
-    }))
+    .input(
+      z.object({
+        requestId: z.string().uuid(),
+      })
+    )
     .query(async ({ ctx, input }) => {
       // Get the request and its export data
       const { data: request, error: requestError } = await ctx.supabaseAdmin
@@ -1914,10 +1906,12 @@ export const ccpaRouter = t.router({
    * all user data from the Scaffald platform.
    */
   collectUserData: officeProcedure
-    .input(z.object({
-      userId: z.string().uuid(),
-      requestId: z.string().uuid(),
-    }))
+    .input(
+      z.object({
+        userId: z.string().uuid(),
+        requestId: z.string().uuid(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // Verify the request exists and is for this user
       const { data: request, error: requestError } = await ctx.supabaseAdmin
@@ -1949,11 +1943,7 @@ export const ccpaRouter = t.router({
       }
 
       // Collect all user data using the data collector
-      const result = await collectCoreUserData(
-        ctx.supabase,
-        input.userId,
-        ctx.supabaseAdmin
-      )
+      const result = await collectCoreUserData(ctx.supabase, input.userId, ctx.supabaseAdmin)
 
       if (!result.success) {
         console.warn('CCPA data collection had errors:', result.errors)
@@ -1972,78 +1962,80 @@ export const ccpaRouter = t.router({
    * Get data summary for a user (for privacy dashboard display)
    * Returns high-level summary of what data we have about the user
    */
-  getDataSummary: protectedProcedure
-    .query(async ({ ctx }) => {
-      if (!ctx.user?.id) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  getDataSummary: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      // Collect data to generate summary
-      const result = await collectCoreUserData(
-        ctx.supabase,
-        ctx.user.id,
-        // biome-ignore lint/suspicious/noExplicitAny: Supabase client type compatibility
-        ctx.supabaseAdmin as any
-      )
+    // Collect data to generate summary
+    const result = await collectCoreUserData(
+      ctx.supabase,
+      ctx.user.id,
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase client type compatibility
+      ctx.supabaseAdmin as any
+    )
 
-      if (!result.data) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to collect data summary',
-        })
-      }
+    if (!result.data) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to collect data summary',
+      })
+    }
 
-      const data = result.data
+    const data = result.data
 
-      // Return summary counts by category
-      return {
-        categories: {
-          personalInformation: {
-            hasData: !!(data.personalInformation.email || data.personalInformation.firstName),
-            description: 'Name, email, phone, address, account info',
-          },
-          professionalInformation: {
-            hasData: data.professionalInformation.education.length > 0 ||
-              data.professionalInformation.skills.length > 0 ||
-              data.professionalInformation.experience.length > 0,
-            itemCount: data.professionalInformation.education.length +
-              data.professionalInformation.skills.length +
-              data.professionalInformation.experience.length +
-              data.professionalInformation.certifications.length +
-              data.professionalInformation.workLogs.length,
-            description: 'Education, skills, work experience, certifications, work logs',
-          },
-          financialInformation: {
-            hasData: data.financialInformation.stripeConnected ||
-              data.financialInformation.payments.length > 0,
-            description: 'Payment information and transaction history',
-          },
-          usageInformation: {
-            hasData: data.usageInformation.applicationCount > 0 ||
-              data.usageInformation.profileViews.length > 0,
-            itemCount: data.usageInformation.applicationCount +
-              data.usageInformation.connectionCount,
-            description: 'Profile views, applications, connections',
-          },
-          sensitiveInformation: {
-            hasData: data.sensitiveInformation.backgroundChecks.length > 0 ||
-              data.sensitiveInformation.idVerifications.length > 0 ||
-              data.sensitiveInformation.personalityAssessments.length > 0,
-            description: 'Background checks, ID verification, assessments',
-          },
-          communications: {
-            hasData: data.communications.reviews.length > 0 ||
-              data.communications.feedback.length > 0,
-            itemCount: data.communications.reviews.length +
-              data.communications.feedback.length,
-            description: 'Reviews and platform feedback',
-          },
+    // Return summary counts by category
+    return {
+      categories: {
+        personalInformation: {
+          hasData: !!(data.personalInformation.email || data.personalInformation.firstName),
+          description: 'Name, email, phone, address, account info',
         },
-        totalRecords: data.metadata.totalRecords,
-        approximateSizeKb: Math.round(data.metadata.approximateSizeBytes / 1024),
-        dataSources: data.metadata.dataSources.length,
-      }
-    }),
+        professionalInformation: {
+          hasData:
+            data.professionalInformation.education.length > 0 ||
+            data.professionalInformation.skills.length > 0 ||
+            data.professionalInformation.experience.length > 0,
+          itemCount:
+            data.professionalInformation.education.length +
+            data.professionalInformation.skills.length +
+            data.professionalInformation.experience.length +
+            data.professionalInformation.certifications.length +
+            data.professionalInformation.workLogs.length,
+          description: 'Education, skills, work experience, certifications, work logs',
+        },
+        financialInformation: {
+          hasData:
+            data.financialInformation.stripeConnected ||
+            data.financialInformation.payments.length > 0,
+          description: 'Payment information and transaction history',
+        },
+        usageInformation: {
+          hasData:
+            data.usageInformation.applicationCount > 0 ||
+            data.usageInformation.profileViews.length > 0,
+          itemCount: data.usageInformation.applicationCount + data.usageInformation.connectionCount,
+          description: 'Profile views, applications, connections',
+        },
+        sensitiveInformation: {
+          hasData:
+            data.sensitiveInformation.backgroundChecks.length > 0 ||
+            data.sensitiveInformation.idVerifications.length > 0 ||
+            data.sensitiveInformation.personalityAssessments.length > 0,
+          description: 'Background checks, ID verification, assessments',
+        },
+        communications: {
+          hasData:
+            data.communications.reviews.length > 0 || data.communications.feedback.length > 0,
+          itemCount: data.communications.reviews.length + data.communications.feedback.length,
+          description: 'Reviews and platform feedback',
+        },
+      },
+      totalRecords: data.metadata.totalRecords,
+      approximateSizeKb: Math.round(data.metadata.approximateSizeBytes / 1024),
+      dataSources: data.metadata.dataSources.length,
+    }
+  }),
 
   // ========================================================
   // EXPORT STORAGE MANAGEMENT ENDPOINTS
@@ -2088,16 +2080,20 @@ export const ccpaRouter = t.router({
       if (!downloadRecord) {
         return {
           available: false,
-          reason: request.status === 'completed'
-            ? 'Export file not found. It may have been cleaned up.'
-            : `Request status is '${request.status}'. Export will be available when complete.`,
+          reason:
+            request.status === 'completed'
+              ? 'Export file not found. It may have been cleaned up.'
+              : `Request status is '${request.status}'. Export will be available when complete.`,
         }
       }
 
       const now = new Date()
       const expiresAt = new Date(downloadRecord.expiresAt)
       const isExpired = expiresAt < now
-      const downloadsRemaining = Math.max(0, downloadRecord.maxDownloads - downloadRecord.downloadCount)
+      const downloadsRemaining = Math.max(
+        0,
+        downloadRecord.maxDownloads - downloadRecord.downloadCount
+      )
 
       return {
         available: !isExpired && downloadsRemaining > 0,
@@ -2123,11 +2119,13 @@ export const ccpaRouter = t.router({
    * 3. Create a download record for tracking
    */
   createAndUploadExport: officeProcedure
-    .input(z.object({
-      requestId: z.string().uuid(),
-      userId: z.string().uuid(),
-      format: z.enum(['pdf', 'json', 'csv']).default('pdf'),
-    }))
+    .input(
+      z.object({
+        requestId: z.string().uuid(),
+        userId: z.string().uuid(),
+        format: z.enum(['pdf', 'json', 'csv']).default('pdf'),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // Verify the request exists and is ready for export
       const { data: request, error: requestError } = await ctx.supabaseAdmin
@@ -2266,27 +2264,26 @@ export const ccpaRouter = t.router({
    * This should be called periodically (e.g., daily cron job)
    * to clean up expired export files and records.
    */
-  runExportCleanup: officeProcedure
-    .mutation(async ({ ctx }) => {
-      console.log('[ccpa] Running export cleanup job...')
+  runExportCleanup: officeProcedure.mutation(async ({ ctx }) => {
+    console.log('[ccpa] Running export cleanup job...')
 
-      const result = await cleanupExpiredExports(ctx.supabaseAdmin)
+    const result = await cleanupExpiredExports(ctx.supabaseAdmin)
 
-      if (!result.success) {
-        console.warn('[ccpa] Cleanup completed with errors:', result.errors)
-      } else {
-        console.log(
-          `[ccpa] Cleanup complete: ${result.filesDeleted} files, ${result.recordsDeleted} records deleted`
-        )
-      }
+    if (!result.success) {
+      console.warn('[ccpa] Cleanup completed with errors:', result.errors)
+    } else {
+      console.log(
+        `[ccpa] Cleanup complete: ${result.filesDeleted} files, ${result.recordsDeleted} records deleted`
+      )
+    }
 
-      return {
-        success: result.success,
-        filesDeleted: result.filesDeleted,
-        recordsDeleted: result.recordsDeleted,
-        errors: result.errors,
-      }
-    }),
+    return {
+      success: result.success,
+      filesDeleted: result.filesDeleted,
+      recordsDeleted: result.recordsDeleted,
+      errors: result.errors,
+    }
+  }),
 
   // ========================================================
   // NOTIFICATION ENDPOINTS
@@ -2300,16 +2297,18 @@ export const ccpaRouter = t.router({
    * and admin actions.
    */
   sendNotification: officeProcedure
-    .input(z.object({
-      requestId: z.string().uuid(),
-      notificationType: z.enum([
-        'request_submitted',
-        'verification_required',
-        'request_completed',
-        'export_ready',
-      ]),
-      additionalData: z.record(z.string(), z.unknown()).optional(),
-    }))
+    .input(
+      z.object({
+        requestId: z.string().uuid(),
+        notificationType: z.enum([
+          'request_submitted',
+          'verification_required',
+          'request_completed',
+          'export_ready',
+        ]),
+        additionalData: z.record(z.string(), z.unknown()).optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // Get the request and user info
       const { data: request, error: requestError } = await ctx.supabaseAdmin
@@ -2404,53 +2403,52 @@ export const ccpaRouter = t.router({
    * This endpoint should be called periodically (e.g., daily)
    * to send reminder notifications for requests approaching deadline.
    */
-  sendDeadlineReminders: officeProcedure
-    .mutation(async ({ ctx }) => {
-      console.log('[ccpa] Running deadline reminder job...')
+  sendDeadlineReminders: officeProcedure.mutation(async ({ ctx }) => {
+    console.log('[ccpa] Running deadline reminder job...')
 
-      const result = await sendDeadlineReminders(ctx.supabaseAdmin)
+    const result = await sendDeadlineReminders(ctx.supabaseAdmin)
 
-      if (!result.success) {
-        console.warn('[ccpa] Deadline reminders completed with errors:', result.errors)
-      } else {
-        console.log(`[ccpa] Sent ${result.sent} deadline reminder notifications`)
-      }
+    if (!result.success) {
+      console.warn('[ccpa] Deadline reminders completed with errors:', result.errors)
+    } else {
+      console.log(`[ccpa] Sent ${result.sent} deadline reminder notifications`)
+    }
 
-      return {
-        success: result.success,
-        sent: result.sent,
-        errors: result.errors,
-      }
-    }),
+    return {
+      success: result.success,
+      sent: result.sent,
+      errors: result.errors,
+    }
+  }),
 
   /**
    * Get notification types for CCPA
    *
    * Returns all available CCPA notification types for reference.
    */
-  getNotificationTypes: publicProcedure
-    .query(() => {
-      return {
-        types: CCPA_NOTIFICATION_TYPES,
-        description: {
-          [CCPA_NOTIFICATION_TYPES.REQUEST_SUBMITTED]: 'Sent when a new request is submitted',
-          [CCPA_NOTIFICATION_TYPES.VERIFICATION_REQUIRED]: 'Sent when identity verification is needed',
-          [CCPA_NOTIFICATION_TYPES.REQUEST_ACKNOWLEDGED]: 'Sent when processing begins',
-          [CCPA_NOTIFICATION_TYPES.REQUEST_IN_PROGRESS]: 'Sent for progress updates',
-          [CCPA_NOTIFICATION_TYPES.REQUEST_COMPLETED]: 'Sent when request is complete',
-          [CCPA_NOTIFICATION_TYPES.DELETION_SCHEDULED]: 'Sent when deletion is scheduled',
-          [CCPA_NOTIFICATION_TYPES.DELETION_COMPLETED]: 'Sent when deletion is complete',
-          [CCPA_NOTIFICATION_TYPES.OPT_OUT_CONFIRMED]: 'Sent when opt-out is confirmed',
-          [CCPA_NOTIFICATION_TYPES.OPT_IN_CONFIRMED]: 'Sent when opt-in is confirmed',
-          [CCPA_NOTIFICATION_TYPES.DEADLINE_REMINDER]: 'Sent as deadline approaches',
-          [CCPA_NOTIFICATION_TYPES.DEADLINE_EXTENDED]: 'Sent when deadline is extended',
-          [CCPA_NOTIFICATION_TYPES.REQUEST_DENIED]: 'Sent when request is denied',
-          [CCPA_NOTIFICATION_TYPES.APPEAL_RECEIVED]: 'Sent when appeal is received',
-          [CCPA_NOTIFICATION_TYPES.EXPORT_READY]: 'Sent when export is ready to download',
-          [CCPA_NOTIFICATION_TYPES.EXPORT_EXPIRING]: 'Sent when export is about to expire',
-        },
-      }
-    }),
+  getNotificationTypes: publicProcedure.query(() => {
+    return {
+      types: CCPA_NOTIFICATION_TYPES,
+      description: {
+        [CCPA_NOTIFICATION_TYPES.REQUEST_SUBMITTED]: 'Sent when a new request is submitted',
+        [CCPA_NOTIFICATION_TYPES.VERIFICATION_REQUIRED]:
+          'Sent when identity verification is needed',
+        [CCPA_NOTIFICATION_TYPES.REQUEST_ACKNOWLEDGED]: 'Sent when processing begins',
+        [CCPA_NOTIFICATION_TYPES.REQUEST_IN_PROGRESS]: 'Sent for progress updates',
+        [CCPA_NOTIFICATION_TYPES.REQUEST_COMPLETED]: 'Sent when request is complete',
+        [CCPA_NOTIFICATION_TYPES.DELETION_SCHEDULED]: 'Sent when deletion is scheduled',
+        [CCPA_NOTIFICATION_TYPES.DELETION_COMPLETED]: 'Sent when deletion is complete',
+        [CCPA_NOTIFICATION_TYPES.OPT_OUT_CONFIRMED]: 'Sent when opt-out is confirmed',
+        [CCPA_NOTIFICATION_TYPES.OPT_IN_CONFIRMED]: 'Sent when opt-in is confirmed',
+        [CCPA_NOTIFICATION_TYPES.DEADLINE_REMINDER]: 'Sent as deadline approaches',
+        [CCPA_NOTIFICATION_TYPES.DEADLINE_EXTENDED]: 'Sent when deadline is extended',
+        [CCPA_NOTIFICATION_TYPES.REQUEST_DENIED]: 'Sent when request is denied',
+        [CCPA_NOTIFICATION_TYPES.APPEAL_RECEIVED]: 'Sent when appeal is received',
+        [CCPA_NOTIFICATION_TYPES.EXPORT_READY]: 'Sent when export is ready to download',
+        [CCPA_NOTIFICATION_TYPES.EXPORT_EXPIRING]: 'Sent when export is about to expire',
+      },
+    }
+  }),
 
   // ========================================================
   // GPC (GLOBAL PRIVACY CONTROL) ENDPOINTS
@@ -2466,9 +2464,11 @@ export const ccpaRouter = t.router({
    * @see https://globalprivacycontrol.org/
    */
   processGPCSignal: protectedProcedure
-    .input(z.object({
-      gpcHeaderValue: z.string().nullable(),
-    }))
+    .input(
+      z.object({
+        gpcHeaderValue: z.string().nullable(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user?.id) {
         throw new TRPCError({ code: 'UNAUTHORIZED' })
@@ -2595,9 +2595,13 @@ export const ccpaRouter = t.router({
    * Includes GPC detection, user opt-out status, and category details.
    */
   getDoNotSellStatus: publicProcedure
-    .input(z.object({
-      gpcHeaderValue: z.string().nullable().optional(),
-    }).optional())
+    .input(
+      z
+        .object({
+          gpcHeaderValue: z.string().nullable().optional(),
+        })
+        .optional()
+    )
     .query(async ({ ctx, input }) => {
       // Create mock headers from input
       const headers = new Headers()
@@ -2607,11 +2611,7 @@ export const ccpaRouter = t.router({
 
       const userId = ctx.user?.id ?? null
 
-      const status = await getDoNotSellPageStatus(
-        ctx.supabase,
-        userId,
-        headers
-      )
+      const status = await getDoNotSellPageStatus(ctx.supabase, userId, headers)
 
       return {
         ...status,

@@ -154,8 +154,7 @@ export class DocumentCache<T = unknown> {
     const keysToDelete: string[] = []
 
     for (const key of this.cache.keys()) {
-      const matches =
-        typeof pattern === 'string' ? key.startsWith(pattern) : pattern.test(key)
+      const matches = typeof pattern === 'string' ? key.startsWith(pattern) : pattern.test(key)
 
       if (matches) {
         keysToDelete.push(key)

@@ -1,11 +1,11 @@
-import type { Json } from './database.types.ts';
-import type { NotificationSupabaseClient } from './notifications/types.ts';
+import type { Json } from './database.types.ts'
+import type { NotificationSupabaseClient } from './notifications/types.ts'
 import {
   enqueueDelivery,
   ensureChannelArray,
   getUserContacts,
   insertNotification,
-} from './notifications/utils.ts';
+} from './notifications/utils.ts'
 
 const DASHBOARD_PATH = '/dashboard/profile/id-verification'
 

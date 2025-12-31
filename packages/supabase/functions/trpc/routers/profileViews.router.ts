@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 // =========================================================
 // Zod Schemas
@@ -18,7 +18,10 @@ const viewedUserIdSchema = z.object({
 /**
  * Get user's primary role type (worker/employer/customer)
  */
-async function getUserRoleType(supabase: Context['supabase'], userId: string): Promise<string | null> {
+async function getUserRoleType(
+  supabase: Context['supabase'],
+  userId: string
+): Promise<string | null> {
   const { data: preferences } = await supabase
     .schema('core')
     .from('preferences')
@@ -26,7 +29,11 @@ async function getUserRoleType(supabase: Context['supabase'], userId: string): P
     .eq('user_id', userId)
     .maybeSingle()
 
-  if (!preferences?.user_types || !Array.isArray(preferences.user_types) || preferences.user_types.length === 0) {
+  if (
+    !preferences?.user_types ||
+    !Array.isArray(preferences.user_types) ||
+    preferences.user_types.length === 0
+  ) {
     return null
   }
 
@@ -37,7 +44,10 @@ async function getUserRoleType(supabase: Context['supabase'], userId: string): P
 /**
  * Get user's industry ID
  */
-async function getUserIndustryId(supabase: Context['supabase'], userId: string): Promise<string | null> {
+async function getUserIndustryId(
+  supabase: Context['supabase'],
+  userId: string
+): Promise<string | null> {
   const { data: user } = await supabase
     .schema('core')
     .from('users')
@@ -80,7 +90,9 @@ async function updateProfileViewAnalytics(
     pending_received_count: currentCounts.pending_received_count || 0,
     followers_count: currentCounts.followers_count || 0,
     following_count: currentCounts.following_count || 0,
-    profile_views_30d: isRecentView ? (currentCounts.profile_views_30d || 0) + 1 : (currentCounts.profile_views_30d || 0),
+    profile_views_30d: isRecentView
+      ? (currentCounts.profile_views_30d || 0) + 1
+      : currentCounts.profile_views_30d || 0,
     profile_views_total: (currentCounts.profile_views_total || 0) + 1,
     last_profile_view_at: new Date().toISOString(),
   }
@@ -119,64 +131,65 @@ export const profileViewsRouter = t.router({
   /**
    * Record a profile view (with deduplication)
    */
-  recordView: protectedProcedure
-    .input(viewedUserIdSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  recordView: protectedProcedure.input(viewedUserIdSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      const viewerId = ctx.user.id
-      const viewedId = input.viewedUserId
+    const viewerId = ctx.user.id
+    const viewedId = input.viewedUserId
 
-      // Prevent viewing own profile as a view
-      if (viewerId === viewedId) {
-        return { success: true, skipped: true, reason: 'own_profile' }
-      }
+    // Prevent viewing own profile as a view
+    if (viewerId === viewedId) {
+      return { success: true, skipped: true, reason: 'own_profile' }
+    }
 
-      // Generate session ID (for deduplication - use a simple approach)
-      // In production, this would come from session storage or request headers
-      const sessionId = `session_${viewerId}_${Date.now()}`
+    // Generate session ID (for deduplication - use a simple approach)
+    // In production, this would come from session storage or request headers
+    const sessionId = `session_${viewerId}_${Date.now()}`
 
-      // Get viewer's role type and industry
-      const viewerRoleType = await getUserRoleType(ctx.supabase, viewerId)
-      const viewerIndustryId = await getUserIndustryId(ctx.supabase, viewerId)
+    // Get viewer's role type and industry
+    const viewerRoleType = await getUserRoleType(ctx.supabase, viewerId)
+    const viewerIndustryId = await getUserIndustryId(ctx.supabase, viewerId)
 
-      // Check if view already exists today (deduplication)
-      const today = new Date().toISOString().split('T')[0]
-      const { data: existingView } = await ctx.supabase
-        .schema('engagement')
-        .from('profile_views')
-        .select('id')
-        .eq('viewer_user_id', viewerId)
-        .eq('viewed_user_id', viewedId)
-        .gte('viewed_at', `${today}T00:00:00Z`)
-        .lt('viewed_at', `${today}T23:59:59Z`)
-        .maybeSingle()
+    // Check if view already exists today (deduplication)
+    const today = new Date().toISOString().split('T')[0]
+    const { data: existingView } = await ctx.supabase
+      .schema('engagement')
+      .from('profile_views')
+      .select('id')
+      .eq('viewer_user_id', viewerId)
+      .eq('viewed_user_id', viewedId)
+      .gte('viewed_at', `${today}T00:00:00Z`)
+      .lt('viewed_at', `${today}T23:59:59Z`)
+      .maybeSingle()
 
-      // If view exists today, skip (deduplication)
-      if (existingView) {
-        return { success: true, skipped: true, reason: 'already_viewed_today' }
-      }
+    // If view exists today, skip (deduplication)
+    if (existingView) {
+      return { success: true, skipped: true, reason: 'already_viewed_today' }
+    }
 
-      // Check if view exists in last 24 hours with same session (additional deduplication)
-      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-      const { data: recentView } = await ctx.supabase
-        .schema('engagement')
-        .from('profile_views')
-        .select('id')
-        .eq('viewer_user_id', viewerId)
-        .eq('viewed_user_id', viewedId)
-        .eq('session_id', sessionId)
-        .gte('viewed_at', yesterday)
-        .maybeSingle()
+    // Check if view exists in last 24 hours with same session (additional deduplication)
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    const { data: recentView } = await ctx.supabase
+      .schema('engagement')
+      .from('profile_views')
+      .select('id')
+      .eq('viewer_user_id', viewerId)
+      .eq('viewed_user_id', viewedId)
+      .eq('session_id', sessionId)
+      .gte('viewed_at', yesterday)
+      .maybeSingle()
 
-      if (recentView) {
-        return { success: true, skipped: true, reason: 'already_viewed_session' }
-      }
+    if (recentView) {
+      return { success: true, skipped: true, reason: 'already_viewed_session' }
+    }
 
-      // Record profile view
-      const { error: viewError } = await ctx.supabase.schema('engagement').from('profile_views').insert({
+    // Record profile view
+    const { error: viewError } = await ctx.supabase
+      .schema('engagement')
+      .from('profile_views')
+      .insert({
         viewer_user_id: viewerId,
         viewed_user_id: viewedId,
         viewer_industry_id: viewerIndustryId,
@@ -186,29 +199,29 @@ export const profileViewsRouter = t.router({
         metadata: {},
       })
 
-      if (viewError) {
-        // If unique constraint violation, it's already recorded (deduplication working)
-        if (viewError.code === '23505') {
-          return { success: true, skipped: true, reason: 'duplicate_prevented' }
-        }
-
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to record profile view: ${viewError.message}`,
-        })
+    if (viewError) {
+      // If unique constraint violation, it's already recorded (deduplication working)
+      if (viewError.code === '23505') {
+        return { success: true, skipped: true, reason: 'duplicate_prevented' }
       }
 
-      // Create activity event
-      await createActivityEvent(ctx.supabase, viewerId, 'profile.viewed', 'user', viewedId, {
-        target_user_id: viewedId,
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to record profile view: ${viewError.message}`,
       })
+    }
 
-      // Update analytics (check if view is within 30 days)
-      const isRecentView = true // Always true for new views
-      await updateProfileViewAnalytics(ctx.supabase, viewedId, isRecentView)
+    // Create activity event
+    await createActivityEvent(ctx.supabase, viewerId, 'profile.viewed', 'user', viewedId, {
+      target_user_id: viewedId,
+    })
 
-      return { success: true, skipped: false }
-    }),
+    // Update analytics (check if view is within 30 days)
+    const isRecentView = true // Always true for new views
+    await updateProfileViewAnalytics(ctx.supabase, viewedId, isRecentView)
+
+    return { success: true, skipped: false }
+  }),
 
   /**
    * Get who viewed current user's profile
@@ -259,8 +272,18 @@ export const profileViewsRouter = t.router({
       }
 
       // Extract unique viewer user IDs and industry IDs
-      const viewerUserIds = [...new Set(views.map((v: { viewer_user_id: string | null }) => v.viewer_user_id).filter(Boolean))]
-      const industryIds = [...new Set(views.map((v: { viewer_industry_id: string | null }) => v.viewer_industry_id).filter(Boolean))]
+      const viewerUserIds = [
+        ...new Set(
+          views.map((v: { viewer_user_id: string | null }) => v.viewer_user_id).filter(Boolean)
+        ),
+      ]
+      const industryIds = [
+        ...new Set(
+          views
+            .map((v: { viewer_industry_id: string | null }) => v.viewer_industry_id)
+            .filter(Boolean)
+        ),
+      ]
 
       // Fetch viewer user data
       const usersMap = new Map()
@@ -321,13 +344,24 @@ export const profileViewsRouter = t.router({
 
       // Join the data
       return {
-        views: views.map((view: { id: string; viewed_at: string; viewer_user_id: string | null; viewer_role_type: string; viewer_industry_id: string | null; [key: string]: unknown }) => ({
-          id: view.id,
-          viewed_at: view.viewed_at,
-          viewer: view.viewer_user_id ? usersMap.get(view.viewer_user_id) || null : null,
-          viewer_role_type: view.viewer_role_type,
-          viewer_industry: view.viewer_industry_id ? industriesMap.get(view.viewer_industry_id) || null : null,
-        })),
+        views: views.map(
+          (view: {
+            id: string
+            viewed_at: string
+            viewer_user_id: string | null
+            viewer_role_type: string
+            viewer_industry_id: string | null
+            [key: string]: unknown
+          }) => ({
+            id: view.id,
+            viewed_at: view.viewed_at,
+            viewer: view.viewer_user_id ? usersMap.get(view.viewer_user_id) || null : null,
+            viewer_role_type: view.viewer_role_type,
+            viewer_industry: view.viewer_industry_id
+              ? industriesMap.get(view.viewer_industry_id) || null
+              : null,
+          })
+        ),
         total: count || 0,
       }
     }),
@@ -379,4 +413,3 @@ export const profileViewsRouter = t.router({
     }
   }),
 })
-

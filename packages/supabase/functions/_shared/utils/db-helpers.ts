@@ -116,7 +116,7 @@ export function rpc<T extends RpcFunction>(
   client: SupabaseClient<Database>,
   functionName: T,
   args: Database['core']['Functions'][T]['Args']
-// biome-ignore lint/suspicious/noExplicitAny: Complex type instantiation depth issue
+  // biome-ignore lint/suspicious/noExplicitAny: Complex type instantiation depth issue
 ): any {
   // biome-ignore lint/suspicious/noExplicitAny: Type compatibility with RPC function names
   return client.rpc(functionName as any, args as never)

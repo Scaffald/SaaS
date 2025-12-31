@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server'
-import type { Context } from '../context.ts';
+import type { Context } from '../context.ts'
 
 import {
   FEEDBACK_ALLOWED_MIME_TYPES,
@@ -7,8 +7,8 @@ import {
   feedbackHistoryQuerySchema,
   feedbackSubmitSchema,
   feedbackUploadRequestSchema,
-} from '../../_shared/feedback-schemas.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+} from '../../_shared/feedback-schemas.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 const FEEDBACK_BUCKET_ID = 'feedback-screenshots'
 const DEFAULT_HISTORY_LIMIT = 20
@@ -18,7 +18,10 @@ function sanitizeFileName(fileName: string): string {
   return name.length > 255 ? name.slice(-255) : name
 }
 
-async function resolveUserDisplayName(supabase: Context['supabase'], userId: string): Promise<string | null> {
+async function resolveUserDisplayName(
+  supabase: Context['supabase'],
+  userId: string
+): Promise<string | null> {
   // Fetch display name / username
   const { data: userRow, error: userError } = await supabase
     .schema('core')

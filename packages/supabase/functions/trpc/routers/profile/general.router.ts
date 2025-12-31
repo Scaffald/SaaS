@@ -1,15 +1,11 @@
 import { TRPCError } from '@trpc/server'
-import {
-  formatPhoneNumber,
-  getPhoneRegionCode,
-  isValidPhoneNumber,
-} from '@scf/trpc/utils'
+import { formatPhoneNumber, getPhoneRegionCode, isValidPhoneNumber } from '@scf/trpc/utils'
 import {
   type ProfileUpdate,
   profileGeneralInputSchema,
   type UserPrivateUpdate,
 } from '@scf/trpc/schemas'
-import { protectedProcedure, t } from '../../middleware.ts';
+import { protectedProcedure, t } from '../../middleware.ts'
 
 /**
  * Profile General router - handles basic profile information

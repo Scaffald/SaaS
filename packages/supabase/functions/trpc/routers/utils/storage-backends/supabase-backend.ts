@@ -6,7 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts';
+import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts'
 
 export class SupabaseStorageBackend implements IStorageBackend {
   readonly type = 'supabase' as const
@@ -58,7 +58,9 @@ export class SupabaseStorageBackend implements IStorageBackend {
   }
 
   async getSignedUrl(path: string, expirySeconds: number): Promise<SignedUrlResult> {
-    const { data, error } = await this.supabase.storage.from(this.bucket).createSignedUrl(path, expirySeconds)
+    const { data, error } = await this.supabase.storage
+      .from(this.bucket)
+      .createSignedUrl(path, expirySeconds)
 
     if (error || !data?.signedUrl) {
       throw {

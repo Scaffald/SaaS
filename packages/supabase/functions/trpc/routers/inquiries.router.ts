@@ -12,10 +12,10 @@ import {
   inquiryTemplateUpdateSchema,
   inquiryUpdateSchema,
   sectionAcceptanceSchema,
-} from '../../_shared/inquiry-schemas.ts';
-import { insertNotification } from '../../_shared/notifications/utils.ts';
-import type { Context } from '../context.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+} from '../../_shared/inquiry-schemas.ts'
+import { insertNotification } from '../../_shared/notifications/utils.ts'
+import type { Context } from '../context.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 // Import state machine utilities (inline since we can't import from core)
 type InquiryStatus =
@@ -213,7 +213,7 @@ function mapApplicationRecord(application: Record<string, unknown> | null): {
   return {
     application: {
       // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
-      id: (application.id as any),
+      id: application.id as any,
       // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       status: (application.status as any) ?? null,
       // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
@@ -223,9 +223,9 @@ function mapApplicationRecord(application: Record<string, unknown> | null): {
       // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       stageChangedAt: (application.stage_changed_at as any) ?? null,
       // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
-      createdAt: (application.created_at as any),
+      createdAt: application.created_at as any,
       // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
-      updatedAt: (application.updated_at as any),
+      updatedAt: application.updated_at as any,
       jobTitle: job?.title ?? null,
       job: job
         ? {
@@ -295,7 +295,8 @@ async function getOrganizationInfo(
     .single()
 
   // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
-  const organizationId = ((job as any)?.[0] as { organization_id?: string } | null)?.organization_id ?? null
+  const organizationId =
+    ((job as any)?.[0] as { organization_id?: string } | null)?.organization_id ?? null
   // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   const organizationName = ((job as any)?.[0]?.organizations as any)?.[0]?.name ?? null
 
@@ -389,7 +390,11 @@ async function verifyApplicationAccess(
 /**
  * Helper function to check if user is the applicant
  */
-async function verifyIsApplicant(supabase: Context['supabase'], userId: string, applicationId: string) {
+async function verifyIsApplicant(
+  supabase: Context['supabase'],
+  userId: string,
+  applicationId: string
+) {
   const { data: application } = await supabase
     .schema('core')
     .from('applications')
@@ -408,7 +413,11 @@ async function verifyIsApplicant(supabase: Context['supabase'], userId: string, 
 /**
  * Ensure the current user is a member/owner of the target organization
  */
-async function ensureOrganizationMembership(supabase: Context['supabase'], userId: string, organizationId: string) {
+async function ensureOrganizationMembership(
+  supabase: Context['supabase'],
+  userId: string,
+  organizationId: string
+) {
   const { data: organization } = await supabase
     .schema('core')
     .from('organizations')
@@ -448,7 +457,11 @@ async function ensureOrganizationMembership(supabase: Context['supabase'], userI
 /**
  * Verify the user has access to the requested template
  */
-async function verifyTemplateAccess(supabase: Context['supabase'], userId: string, templateId: string) {
+async function verifyTemplateAccess(
+  supabase: Context['supabase'],
+  userId: string,
+  templateId: string
+) {
   const { data: template, error } = await supabase
     .schema('core')
     .from('inquiry_templates')
@@ -1556,7 +1569,9 @@ export const inquiriesRouter = router({
       }
 
       // Get applications with candidate info
-      const applicationIds = inquiries.map((i: { application_id: string; [key: string]: unknown }) => i.application_id)
+      const applicationIds = inquiries.map(
+        (i: { application_id: string; [key: string]: unknown }) => i.application_id
+      )
       const { data: applications, error: applicationsError } = await supabase
         .schema('core')
         .from('applications')
@@ -1603,23 +1618,36 @@ export const inquiriesRouter = router({
       }
 
       // Combine data for each inquiry
-      return inquiries.map((inquiry: { id: string; application_id: string; [key: string]: unknown }) => {
-        const applicationRecord = applications?.find((a: { id: string; [key: string]: unknown }) => a.id === inquiry.application_id) ?? null
-        const { application: applicationDetails, capabilityQuestions } =
-          mapApplicationRecord(applicationRecord)
+      return inquiries.map(
+        (inquiry: { id: string; application_id: string; [key: string]: unknown }) => {
+          const applicationRecord =
+            applications?.find(
+              (a: { id: string; [key: string]: unknown }) => a.id === inquiry.application_id
+            ) ?? null
+          const { application: applicationDetails, capabilityQuestions } =
+            mapApplicationRecord(applicationRecord)
 
-        return {
-          inquiry,
-          sections: sections?.filter((s: { inquiry_id: string; [key: string]: unknown }) => s.inquiry_id === inquiry.id) || [],
-          comments: comments?.filter((c: { inquiry_id: string; [key: string]: unknown }) => c.inquiry_id === inquiry.id) || [],
-          capabilityResponses:
-            capabilityResponses?.filter((r: { inquiry_id: string; [key: string]: unknown }) => r.inquiry_id === inquiry.id) || [],
-          application: applicationDetails,
-          candidate: applicationDetails?.candidate ?? null,
-          job: applicationDetails?.job ?? null,
-          capabilityQuestions,
+          return {
+            inquiry,
+            sections:
+              sections?.filter(
+                (s: { inquiry_id: string; [key: string]: unknown }) => s.inquiry_id === inquiry.id
+              ) || [],
+            comments:
+              comments?.filter(
+                (c: { inquiry_id: string; [key: string]: unknown }) => c.inquiry_id === inquiry.id
+              ) || [],
+            capabilityResponses:
+              capabilityResponses?.filter(
+                (r: { inquiry_id: string; [key: string]: unknown }) => r.inquiry_id === inquiry.id
+              ) || [],
+            application: applicationDetails,
+            candidate: applicationDetails?.candidate ?? null,
+            job: applicationDetails?.job ?? null,
+            capabilityQuestions,
+          }
         }
-      })
+      )
     }),
 
   /**
@@ -1741,7 +1769,8 @@ export const inquiriesRouter = router({
       if (application?.user_id) {
         const job = (application.jobs as unknown as Record<string, unknown>) ?? null
         // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
-        const orgName = ((job?.organizations as any)?.[0] as { name?: string } | null)?.name || 'Organization'
+        const orgName =
+          ((job?.organizations as any)?.[0] as { name?: string } | null)?.name || 'Organization'
         // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         const jobTitle = (job?.title as any) || 'Job'
 
@@ -2024,7 +2053,9 @@ export const inquiriesRouter = router({
         .select('accepted_by')
         .eq('inquiry_id', input.inquiryId)
 
-      const allAccepted = sections?.every((s: { accepted_by?: string | null; [key: string]: unknown }) => s.accepted_by !== null)
+      const allAccepted = sections?.every(
+        (s: { accepted_by?: string | null; [key: string]: unknown }) => s.accepted_by !== null
+      )
 
       // Update inquiry status if all sections accepted (using state machine validation)
       if (allAccepted && inquiry.status !== 'accepted') {
@@ -2371,7 +2402,9 @@ export const inquiriesRouter = router({
         .select('id, accepted_by')
         .eq('inquiry_id', id)
 
-      const hasAcceptedSections = existingSections?.some((s: { accepted_by?: string | null; [key: string]: unknown }) => s.accepted_by !== null)
+      const hasAcceptedSections = existingSections?.some(
+        (s: { accepted_by?: string | null; [key: string]: unknown }) => s.accepted_by !== null
+      )
 
       if (hasAcceptedSections) {
         // Reset acceptances - clear accepted_by and accepted_at

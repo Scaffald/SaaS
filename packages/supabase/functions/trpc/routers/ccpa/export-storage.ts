@@ -9,7 +9,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types.ts';
+import type { Database } from '../../../_shared/database.types.ts'
 
 type DbClient = SupabaseClient<Database>
 
@@ -456,9 +456,7 @@ export async function getDownloadRecord(
  * Deletes files from storage and removes tracking records.
  * Should be run periodically (e.g., daily cron job).
  */
-export async function cleanupExpiredExports(
-  supabase: DbClient
-): Promise<CleanupResult> {
+export async function cleanupExpiredExports(supabase: DbClient): Promise<CleanupResult> {
   const errors: Array<{ key: string; error: string }> = []
   let filesDeleted = 0
   let recordsDeleted = 0
@@ -552,9 +550,7 @@ export async function deleteExportFile(
   storageKey: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase.storage
-      .from(EXPORT_CONFIG.BUCKET_NAME)
-      .remove([storageKey])
+    const { error } = await supabase.storage.from(EXPORT_CONFIG.BUCKET_NAME).remove([storageKey])
 
     if (error) {
       console.error('[export-storage] Delete file failed:', error)

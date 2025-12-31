@@ -4,8 +4,8 @@ import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 const STRIPE_API_VERSION = '2025-11-17.clover'
 
@@ -211,9 +211,7 @@ async function handleProcessWorkerDeletion(
         stripe_customer_deleted: !stripeCleanupNeeded, // Mark as done if no cleanup needed
         stripe_customer_deleted_at: stripeCleanupNeeded ? null : new Date().toISOString(),
         stripe_payment_methods_deleted: !stripeCleanupNeeded,
-        stripe_payment_methods_deleted_at: stripeCleanupNeeded
-          ? null
-          : new Date().toISOString(),
+        stripe_payment_methods_deleted_at: stripeCleanupNeeded ? null : new Date().toISOString(),
         stripe_cleanup_errors: stripeCleanupNeeded
           ? ['Stripe customer cleanup requires manual intervention']
           : [],
@@ -422,7 +420,10 @@ export const accountDeletionRouter = t.router({
       }
 
       if (!ctx.supabaseAdmin) {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
       }
 
       // Create deletion record
@@ -486,7 +487,10 @@ export const accountDeletionRouter = t.router({
       await ensureOrganizationAccess(ctx, input.organizationId)
 
       if (!ctx.supabaseAdmin) {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
       }
 
       // Create deletion record
@@ -571,7 +575,10 @@ export const accountDeletionRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       if (!ctx.supabaseAdmin) {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Admin client not available' })
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
       }
 
       const { data: deletion, error } = await ctx.supabaseAdmin
@@ -669,20 +676,36 @@ export const accountDeletionRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: { id: string; deleted_user_id: string; deleted_organization_id: string | null; deletion_type: string; status: string; payment_data_anonymized: boolean; stripe_customer_deleted: boolean; stripe_payment_methods_deleted: boolean; stripe_cleanup_errors?: string[] | null; completed_at: string | null; error_message: string | null; created_at: string; [key: string]: unknown }) => ({
-          id: row.id,
-          deletedUserId: row.deleted_user_id,
-          deletedOrganizationId: row.deleted_organization_id,
-          deletionType: row.deletion_type,
-          status: row.status,
-          paymentDataAnonymized: row.payment_data_anonymized,
-          stripeCustomerDeleted: row.stripe_customer_deleted,
-          stripePaymentMethodsDeleted: row.stripe_payment_methods_deleted,
-          stripeCleanupErrors: row.stripe_cleanup_errors ?? [],
-          completedAt: row.completed_at,
-          errorMessage: row.error_message,
-          createdAt: row.created_at,
-        })),
+        items: (data ?? []).map(
+          (row: {
+            id: string
+            deleted_user_id: string
+            deleted_organization_id: string | null
+            deletion_type: string
+            status: string
+            payment_data_anonymized: boolean
+            stripe_customer_deleted: boolean
+            stripe_payment_methods_deleted: boolean
+            stripe_cleanup_errors?: string[] | null
+            completed_at: string | null
+            error_message: string | null
+            created_at: string
+            [key: string]: unknown
+          }) => ({
+            id: row.id,
+            deletedUserId: row.deleted_user_id,
+            deletedOrganizationId: row.deleted_organization_id,
+            deletionType: row.deletion_type,
+            status: row.status,
+            paymentDataAnonymized: row.payment_data_anonymized,
+            stripeCustomerDeleted: row.stripe_customer_deleted,
+            stripePaymentMethodsDeleted: row.stripe_payment_methods_deleted,
+            stripeCleanupErrors: row.stripe_cleanup_errors ?? [],
+            completedAt: row.completed_at,
+            errorMessage: row.error_message,
+            createdAt: row.created_at,
+          })
+        ),
         totalCount: count ?? 0,
       }
     }),

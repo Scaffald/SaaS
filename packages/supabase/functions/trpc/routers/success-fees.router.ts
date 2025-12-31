@@ -3,8 +3,8 @@ import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 const STRIPE_API_VERSION = '2025-11-17.clover'
 
@@ -302,7 +302,10 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment: { role?: { scope?: string; name?: string | null } | null; [key: string]: unknown }) =>
+      (assignment: {
+        role?: { scope?: string; name?: string | null } | null
+        [key: string]: unknown
+      }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
     )
@@ -400,7 +403,7 @@ async function recordTransaction(
       transaction_type: params.transactionType,
       success_fee_id: params.successFeeId,
       stripe_payment_intent_id: params.paymentIntentId,
-      metadata: params.metadata ?? {} as never,
+      metadata: params.metadata ?? ({} as never),
     } as never)
 
   if (error) {
