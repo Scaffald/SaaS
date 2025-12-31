@@ -11,6 +11,8 @@ packages:
   - packages/insurance
   - packages/compliance
   - packages/tasks
+  # Examples
+  - examples/*
 
 catalog:
   '@babel/core': ~7.28.5
