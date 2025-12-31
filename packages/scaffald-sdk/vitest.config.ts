@@ -9,6 +9,6 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       exclude: ['node_modules/', 'dist/', '**/*.test.ts', '**/*.test.tsx', 'scripts/', 'examples/'],
     },
-    setupFiles: ['./src/__tests__/setup.ts'],
+    setupFiles: ['./vitest.setup.ts'],
   },
 })
