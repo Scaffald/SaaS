@@ -62,15 +62,16 @@ app.post('/', requireAuth, async (c) => {
       )
     }
 
-    // Get user's organization
-    const { data: profile, error: profileError } = await supabase
+    // Get user's organization through team membership
+    const { data: membership, error: membershipError } = await supabase
       .schema('core')
-      .from('user_profiles')
-      .select('organization_id, user_type')
+      .from('team_members')
+      .select('team:teams(organization_id)')
       .eq('user_id', user.id)
+      .limit(1)
       .single()
 
-    if (profileError || !profile || !profile.organization_id) {
+    if (membershipError || !membership || !membership.team) {
       return c.json(
         {
           error: 'Forbidden',
@@ -80,12 +81,14 @@ app.post('/', requireAuth, async (c) => {
       )
     }
 
-    // Only employers and org admins can create API keys
-    if (!['employer', 'organization_admin'].includes(profile.user_type)) {
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase query type inference limitation
+    const organizationId = (membership.team as any).organization_id
+
+    if (!organizationId) {
       return c.json(
         {
           error: 'Forbidden',
-          message: 'Only organization admins can create API keys',
+          message: 'Invalid organization membership',
         },
         403
       )
@@ -101,7 +104,7 @@ app.post('/', requireAuth, async (c) => {
       .schema('core')
       .from('api_keys')
       .insert({
-        organization_id: profile.organization_id,
+        organization_id: organizationId,
         created_by: user.id,
         name: input.name,
         key_hash: keyHash,
@@ -170,14 +173,15 @@ app.get('/', requireAuth, async (c) => {
       organizationId = apiKey.organizationId
     } else if (user) {
       // User authentication - get user's organization
-      const { data: profile } = await supabase
+      const { data: membership } = await supabase
         .schema('core')
-        .from('user_profiles')
-        .select('organization_id')
+        .from('team_members')
+        .select('team:teams(organization_id)')
         .eq('user_id', user.id)
+        .limit(1)
         .single()
 
-      if (!profile || !profile.organization_id) {
+      if (!membership || !membership.team) {
         return c.json(
           {
             error: 'Forbidden',
@@ -187,7 +191,8 @@ app.get('/', requireAuth, async (c) => {
         )
       }
 
-      organizationId = profile.organization_id
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase query type inference limitation
+      organizationId = (membership.team as any).organization_id
     } else {
       return c.json({ error: 'Unauthorized' }, 401)
     }
@@ -261,7 +266,7 @@ app.get('/:id', requireAuth, async (c) => {
     } else if (user) {
       const { data: profile } = await supabase
         .schema('core')
-        .from('user_profiles')
+        .from('team_members')
         .select('organization_id')
         .eq('user_id', user.id)
         .single()
@@ -322,7 +327,7 @@ app.patch('/:id', requireAuth, async (c) => {
     // Get user's organization
     const { data: profile } = await supabase
       .schema('core')
-      .from('user_profiles')
+      .from('team_members')
       .select('organization_id, user_type')
       .eq('user_id', user.id)
       .single()
@@ -416,7 +421,7 @@ app.delete('/:id', requireAuth, async (c) => {
     // Get user's organization
     const { data: profile } = await supabase
       .schema('core')
-      .from('user_profiles')
+      .from('team_members')
       .select('organization_id, user_type')
       .eq('user_id', user.id)
       .single()
@@ -505,7 +510,7 @@ app.get('/:id/usage', requireAuth, async (c) => {
     } else if (user) {
       const { data: profile } = await supabase
         .schema('core')
-        .from('user_profiles')
+        .from('team_members')
         .select('organization_id')
         .eq('user_id', user.id)
         .single()

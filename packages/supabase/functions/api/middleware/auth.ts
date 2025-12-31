@@ -188,7 +188,6 @@ export async function authMiddleware(c: Context, next: Next) {
  * Require authentication - throws 401 if no authenticated user OR API key
  */
 export async function requireAuth(c: Context, next: Next) {
-  const authType = c.get('authType')
   const user = c.get('user')
   const apiKey = c.get('apiKey')
 

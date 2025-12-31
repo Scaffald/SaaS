@@ -143,59 +143,60 @@ CREATE POLICY api_keys_select_own_org
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.user_profiles
-      WHERE user_id = auth.uid()
+      SELECT t.organization_id
+      FROM core.team_members tm
+      JOIN core.teams t ON tm.team_id = t.id
+      WHERE tm.user_id = auth.uid()
     )
   );
 
--- Policy: Only org admins can insert keys
-CREATE POLICY api_keys_insert_org_admin
+-- Policy: Org members can insert keys (role check done at API layer)
+CREATE POLICY api_keys_insert_org_member
   ON core.api_keys
   FOR INSERT
   TO authenticated
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
-      FROM core.user_profiles
-      WHERE user_id = auth.uid()
-        AND user_type IN ('employer', 'organization_admin')
+      SELECT t.organization_id
+      FROM core.team_members tm
+      JOIN core.teams t ON tm.team_id = t.id
+      WHERE tm.user_id = auth.uid()
     )
   );
 
--- Policy: Only org admins can update keys (revoke, rename)
-CREATE POLICY api_keys_update_org_admin
+-- Policy: Org members can update keys (role check done at API layer)
+CREATE POLICY api_keys_update_org_member
   ON core.api_keys
   FOR UPDATE
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.user_profiles
-      WHERE user_id = auth.uid()
-        AND user_type IN ('employer', 'organization_admin')
+      SELECT t.organization_id
+      FROM core.team_members tm
+      JOIN core.teams t ON tm.team_id = t.id
+      WHERE tm.user_id = auth.uid()
     )
   )
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id
-      FROM core.user_profiles
-      WHERE user_id = auth.uid()
-        AND user_type IN ('employer', 'organization_admin')
+      SELECT t.organization_id
+      FROM core.team_members tm
+      JOIN core.teams t ON tm.team_id = t.id
+      WHERE tm.user_id = auth.uid()
     )
   );
 
--- Policy: Only org admins can delete keys
-CREATE POLICY api_keys_delete_org_admin
+-- Policy: Org members can delete keys (role check done at API layer)
+CREATE POLICY api_keys_delete_org_member
   ON core.api_keys
   FOR DELETE
   TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id
-      FROM core.user_profiles
-      WHERE user_id = auth.uid()
-        AND user_type IN ('employer', 'organization_admin')
+      SELECT t.organization_id
+      FROM core.team_members tm
+      JOIN core.teams t ON tm.team_id = t.id
+      WHERE tm.user_id = auth.uid()
     )
   );
 
@@ -209,9 +210,10 @@ CREATE POLICY api_key_usage_select_own_org
       SELECT id
       FROM core.api_keys
       WHERE organization_id IN (
-        SELECT organization_id
-        FROM core.user_profiles
-        WHERE user_id = auth.uid()
+        SELECT t.organization_id
+        FROM core.team_members tm
+        JOIN core.teams t ON tm.team_id = t.id
+        WHERE tm.user_id = auth.uid()
       )
     )
   );
