@@ -16,6 +16,10 @@ npm-debug.log*
 .pnpm-debug.log*
 .pnpm-store/
 
+# test logs
+*.log
+!.nx/**/*.log
+
 # local env files
 .env
 .env.dev
