@@ -11,6 +11,7 @@
 
 import { t } from '../middleware.ts'
 import { accountDeletionRouter } from './account-deletion.router.ts'
+import { apiKeysRouter } from './api-keys.router.ts'
 import { ccpaRouter } from './ccpa.router.ts'
 import { addressesRouter } from './addresses.router.ts'
 import { documentsRouter } from './documents.router.ts'
@@ -95,6 +96,7 @@ export const appRouter = t.router({
   payments: paymentsRouter,
   legalAgreements: legalAgreementsRouter,
   accountDeletion: accountDeletionRouter,
+  apiKeys: apiKeysRouter,
   connections: connectionsRouter,
   profileViews: profileViewsRouter,
   // Compliance routers (REQ-2)

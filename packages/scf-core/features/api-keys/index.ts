@@ -3,6 +3,7 @@
  * Developer Portal components for managing API keys
  */
 
+export { DeveloperPortal } from './DeveloperPortal'
 export { APIKeysList } from './APIKeysList'
 export { APIKeyCreateModal } from './APIKeyCreateModal'
 export { APIKeyUsageChart } from './APIKeyUsageChart'
@@ -27,3 +28,12 @@ export type {
 export type {
   APIKeyScopesManagerProps,
 } from './APIKeyScopesManager'
+
+// API Keys Hooks
+export {
+  useAPIKeys,
+  useCreateAPIKey,
+  useUpdateAPIKey,
+  useRevokeAPIKey,
+  useAPIKeyUsage,
+} from './hooks'

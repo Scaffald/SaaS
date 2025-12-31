@@ -37,6 +37,11 @@ const CreateApiKeySchema = z.object({
 const UpdateApiKeySchema = z.object({
   name: z.string().min(1).max(100).optional().describe('Update the key name'),
   is_active: z.boolean().optional().describe('Activate or deactivate the key'),
+  scopes: z
+    .array(z.enum(['read:jobs', 'write:jobs', 'read:applications', 'write:applications', 'read:profiles', 'write:profiles', 'read:organizations', 'write:organizations']))
+    .min(1)
+    .optional()
+    .describe('Update permission scopes'),
 })
 
 // ============================================================================
@@ -354,6 +359,7 @@ app.patch('/:id', requireAuth, async (c) => {
       .update({
         name: input.name,
         is_active: input.is_active,
+        scopes: input.scopes,
       })
       .eq('id', keyId)
       .eq('organization_id', profile.organization_id)

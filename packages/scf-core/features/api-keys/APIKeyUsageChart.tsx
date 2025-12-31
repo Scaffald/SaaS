@@ -28,6 +28,7 @@ import {
   XCircle,
 } from '@tamagui/lucide-icons'
 import { format, subDays } from 'date-fns'
+import { useAPIKeyUsage } from './hooks'
 
 interface APIKeyUsageData {
   apiKeyId: string
@@ -77,89 +78,36 @@ const TIME_RANGES = [
 
 export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
   const [timeRange, setTimeRange] = useState(7)
-  const [isLoading, setIsLoading] = useState(true)
-  const [data, setData] = useState<APIKeyUsageData | null>(null)
 
-  // In a real implementation, this would fetch from the API
-  // For now, using mock data
-  const mockData: APIKeyUsageData = {
+  // Fetch usage data from API
+  const { data: usageData, isLoading } = useAPIKeyUsage(apiKeyId, timeRange)
+
+  // Transform API data to component format
+  // Note: Some analytics features (endpoint breakdown, time series, rate limits)
+  // are not yet available from the API and use mock data
+  const data: APIKeyUsageData | null = usageData ? {
     apiKeyId,
-    apiKeyName: 'Production API Key',
+    apiKeyName: 'API Key', // TODO: Get from API keys list
     metrics: {
-      totalRequests: 12453,
-      successfulRequests: 12398,
-      failedRequests: 55,
-      averageResponseTime: 245,
-      requestsToday: 342,
-      requestsThisWeek: 2841,
-      requestsThisMonth: 12453,
+      totalRequests: usageData.total_requests,
+      successfulRequests: usageData.success_requests,
+      failedRequests: usageData.error_requests,
+      averageResponseTime: usageData.avg_response_time_ms,
+      requestsToday: 0, // TODO: Calculate from usage array
+      requestsThisWeek: 0, // TODO: Calculate from usage array
+      requestsThisMonth: usageData.total_requests,
     },
     rateLimitInfo: {
+      // TODO: Get rate limit info from API
       limit: 1000,
       remaining: 847,
       resetAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       tier: 'pro',
     },
-    timeSeriesData: Array.from({ length: timeRange }, (_, i) => ({
-      date: format(subDays(new Date(), timeRange - i - 1), 'MMM d'),
-      requests: Math.floor(Math.random() * 500 + 200),
-      errors: Math.floor(Math.random() * 10),
-      avgResponseTime: Math.floor(Math.random() * 100 + 200),
-    })),
-    endpointBreakdown: [
-      {
-        endpoint: '/v1/jobs',
-        method: 'GET',
-        count: 5234,
-        avgResponseTime: 182,
-        errorRate: 0.2,
-      },
-      {
-        endpoint: '/v1/applications',
-        method: 'POST',
-        count: 3891,
-        avgResponseTime: 324,
-        errorRate: 0.5,
-      },
-      {
-        endpoint: '/v1/jobs/:id',
-        method: 'GET',
-        count: 2145,
-        avgResponseTime: 145,
-        errorRate: 0.1,
-      },
-      {
-        endpoint: '/v1/profiles/:username',
-        method: 'GET',
-        count: 983,
-        avgResponseTime: 198,
-        errorRate: 0.3,
-      },
-      {
-        endpoint: '/v1/applications/:id',
-        method: 'PATCH',
-        count: 200,
-        avgResponseTime: 267,
-        errorRate: 1.5,
-      },
-    ],
-    statusCodeBreakdown: {
-      '200': 11234,
-      '201': 1164,
-      '400': 32,
-      '401': 8,
-      '404': 12,
-      '429': 3,
-    },
-  }
-
-  // Simulate loading
-  useState(() => {
-    setTimeout(() => {
-      setData(mockData)
-      setIsLoading(false)
-    }, 500)
-  })
+    timeSeriesData: [], // TODO: Calculate from usage array
+    endpointBreakdown: [], // TODO: Calculate from usage array
+    statusCodeBreakdown: {}, // TODO: Calculate from usage array
+  } : null
 
   const successRate =
     data ? ((data.metrics.successfulRequests / data.metrics.totalRequests) * 100).toFixed(2) : '0'

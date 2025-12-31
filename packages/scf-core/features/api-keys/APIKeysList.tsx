@@ -26,6 +26,7 @@ interface APIKeysListProps {
   onCreateKey: () => void
   onRevokeKey: (keyId: string) => void
   onViewUsage: (keyId: string) => void
+  onManageScopes?: (keyId: string) => void
 }
 
 export function APIKeysList({
@@ -34,6 +35,7 @@ export function APIKeysList({
   onCreateKey,
   onRevokeKey,
   onViewUsage,
+  onManageScopes,
 }: APIKeysListProps) {
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null)
 
@@ -260,6 +262,15 @@ export function APIKeysList({
                   >
                     View Usage
                   </Button>
+                  {onManageScopes && key.is_active && (
+                    <Button
+                      size="$3"
+                      variant="outlined"
+                      onPress={() => onManageScopes(key.id)}
+                    >
+                      Manage Scopes
+                    </Button>
+                  )}
                   {key.is_active && (
                     <Button
                       size="$3"
