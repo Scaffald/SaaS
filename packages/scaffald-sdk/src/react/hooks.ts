@@ -159,6 +159,41 @@ export function useJobFilterOptions(): UseQueryResult<FilterOptionsResponse> {
  */
 
 /**
+ * Hook to list applications (requires authentication)
+ *
+ * @example
+ * ```tsx
+ * function MyApplications() {
+ *   const { data, isLoading } = useApplications()
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   return (
+ *     <div>
+ *       {data?.data.map(app => (
+ *         <ApplicationCard key={app.id} application={app} />
+ *       ))}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useApplications(): UseQueryResult<{ data: ApplicationResponse['data'][] }> {
+  // const client = useScaffald() // TODO: Implement when list applications endpoint is available
+
+  return useQuery({
+    queryKey: ['applications'],
+    queryFn: async () => {
+      // This would call a list applications endpoint when available
+      // For now, return empty array as placeholder
+      return { data: [] }
+    },
+    staleTime: 1 * 60 * 1000, // 1 minute
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  })
+}
+
+/**
  * Hook to create a quick application
  *
  * @example

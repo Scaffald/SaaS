@@ -107,6 +107,22 @@ export interface ApplicationResponse {
  */
 export class ApplicationsResource extends BaseResource {
   /**
+   * Submit a job application (defaults to quick application)
+   * Alias for createQuick()
+   *
+   * @example
+   * ```typescript
+   * const application = await client.applications.create({
+   *   jobId: 'job_123',
+   *   currentLocation: 'San Francisco, CA',
+   * })
+   * ```
+   */
+  async create(input: CreateQuickApplicationInput): Promise<ApplicationResponse> {
+    return this.createQuick(input)
+  }
+
+  /**
    * Submit a quick job application
    *
    * @example

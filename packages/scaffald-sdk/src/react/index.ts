@@ -18,6 +18,7 @@ export {
   useSimilarJobs,
   useJobFilterOptions,
   // Applications
+  useApplications,
   useCreateQuickApplication,
   useCreateFullApplication,
   useApplication,

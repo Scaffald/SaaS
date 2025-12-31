@@ -91,6 +91,20 @@ export interface EmployerResponse {
 export class ProfilesResource extends BaseResource {
   /**
    * Get public user profile by username
+   * Alias for getUser()
+   *
+   * @example
+   * ```typescript
+   * const profile = await client.profiles.user('johndoe')
+   * console.log(profile.data.skills)
+   * ```
+   */
+  async user(username: string): Promise<ProfileResponse> {
+    return this.getUser(username)
+  }
+
+  /**
+   * Get public user profile by username
    *
    * @example
    * ```typescript
@@ -104,6 +118,20 @@ export class ProfilesResource extends BaseResource {
 
   /**
    * Get organization profile by slug
+   * Alias for getOrganization()
+   *
+   * @example
+   * ```typescript
+   * const org = await client.profiles.organization('acme-corp')
+   * console.log(`${org.data.name} has ${org.data.job_count} jobs`)
+   * ```
+   */
+  async organization(slug: string): Promise<OrganizationResponse> {
+    return this.getOrganization(slug)
+  }
+
+  /**
+   * Get organization profile by slug
    *
    * @example
    * ```typescript
@@ -113,6 +141,20 @@ export class ProfilesResource extends BaseResource {
    */
   async getOrganization(slug: string): Promise<OrganizationResponse> {
     return this.client.get<OrganizationResponse>(`/v1/profiles/organizations/${slug}`)
+  }
+
+  /**
+   * Get employer profile by slug
+   * Alias for getEmployer()
+   *
+   * @example
+   * ```typescript
+   * const employer = await client.profiles.employer('tech-startup')
+   * console.log(`${employer.data.active_jobs_count} active jobs`)
+   * ```
+   */
+  async employer(slug: string): Promise<EmployerResponse> {
+    return this.getEmployer(slug)
   }
 
   /**
