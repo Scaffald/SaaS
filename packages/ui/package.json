@@ -64,6 +64,7 @@
     "release:dry-run": "semantic-release --dry-run",
     "storybook": "storybook dev -p 6006",
     "sync:to-standalone": "./scripts/sync-to-standalone.sh",
+    "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run",
     "test:watch": "vitest",

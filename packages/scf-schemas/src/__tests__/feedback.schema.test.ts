@@ -74,7 +74,7 @@ describe("feedbackUploadRequestSchema", () => {
         fileType: "image/bmp",
         fileSize: 1024,
       }),
-    ).toThrowError(/Invalid enum value/);
+    ).toThrowError(/invalid_value/);
   });
 
   it("rejects files that exceed size limit", () => {
@@ -99,7 +99,7 @@ describe("feedbackPendingSubmissionSchema", () => {
         base64: "ZmFrZS1iYXNlNjQ=",
         size: 2048,
       },
-      id: "11111111-2222-3333-4444-555555555555",
+      id: "11111111-2222-4333-8444-555555555555",
       createdAt: new Date().toISOString(),
       attempts: 1,
     });
@@ -114,7 +114,7 @@ describe("feedbackPendingSubmissionSchema", () => {
       feedbackPendingSubmissionSchema.parse({
         ...baseFeedback(),
         viewportSize: "invalid",
-        id: "11111111-2222-3333-4444-555555555555",
+        id: "11111111-2222-4333-8444-555555555555",
       }),
     ).toThrowError(/Viewport size must be in the format/);
   });

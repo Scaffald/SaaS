@@ -7,8 +7,8 @@ import {
   applicationWithdrawSchema,
 } from '../application.schema';
 
-const validJobId = '00000000-0000-0000-0000-000000000000'
-const validApplicationId = '11111111-1111-1111-1111-111111111111'
+const validJobId = '00000000-0000-4000-8000-000000000000'
+const validApplicationId = '11111111-1111-4111-8111-111111111111'
 
 describe('applicationCreateSchema', () => {
   it('accepts minimal valid payloads', () => {
@@ -45,7 +45,7 @@ describe('applicationUpdateStatusSchema', () => {
         id: validApplicationId,
         status: 'unknown' as never,
       }),
-    ).toThrowError(/Invalid enum value/)
+    ).toThrowError(/invalid_value/)
   })
 })
 
@@ -71,18 +71,18 @@ describe('applicationQuerySchema', () => {
       applicationQuerySchema.parse({
         limit: 0,
       }),
-    ).toThrowError(/Number must be greater than or equal to 1/)
+    ).toThrowError(/Too small|>=1/)
 
     expect(() =>
       applicationQuerySchema.parse({
         limit: 200,
       }),
-    ).toThrowError(/Number must be less than or equal to 100/)
+    ).toThrowError(/Too large|<=100/)
 
     expect(() =>
       applicationQuerySchema.parse({
         offset: -1,
       }),
-    ).toThrowError(/Number must be greater than or equal to 0/)
+    ).toThrowError(/Too small|>=0/)
   })
 })
