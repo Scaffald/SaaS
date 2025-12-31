@@ -52,6 +52,24 @@ export type {
   EmployerResponse,
 } from './resources/profiles.js'
 
+// API Keys resources
+export type {
+  APIKey,
+  CreatedAPIKey,
+  APIKeyEnvironment,
+  RateLimitTier,
+  APIKeyScope,
+  APIKeyCreateParams,
+  APIKeyUpdateParams,
+  APIKeyUsage,
+  APIKeyListParams,
+  APIKeyListResponse,
+  APIKeyResponse,
+  CreatedAPIKeyResponse,
+  APIKeyUsageResponse,
+  APIKeyRevokeResponse,
+} from './resources/api-keys.js'
+
 // Webhooks
 export { verifyWebhookSignature, parseWebhook } from './webhooks/verify.js'
 export type { WebhookEvent, WebhookPayload } from './webhooks/verify.js'

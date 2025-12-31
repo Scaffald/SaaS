@@ -2,6 +2,8 @@ import { HttpClient } from './http/client.js'
 import { JobsResource } from './resources/jobs.js'
 import { ApplicationsResource } from './resources/applications.js'
 import { ProfilesResource } from './resources/profiles.js'
+import { AuthResource } from './resources/auth.js'
+import { APIKeysResource } from './resources/api-keys.js'
 import { type ScaffaldConfig, validateConfig, getDefaultConfig } from './config.js'
 import type { RateLimitInfo } from './http/rate-limit.js'
 
@@ -32,6 +34,11 @@ export class Scaffald {
   private http: HttpClient
 
   /**
+   * Authentication API resource
+   */
+  public readonly auth: AuthResource
+
+  /**
    * Jobs API resource
    */
   public readonly jobs: JobsResource
@@ -45,6 +52,11 @@ export class Scaffald {
    * Profiles API resource (rate-limited)
    */
   public readonly profiles: ProfilesResource
+
+  /**
+   * API Keys API resource
+   */
+  public readonly apiKeys: APIKeysResource
 
   constructor(config: ScaffaldConfig) {
     // Validate configuration
@@ -67,9 +79,11 @@ export class Scaffald {
     })
 
     // Initialize resources
+    this.auth = new AuthResource(this.http)
     this.jobs = new JobsResource(this.http)
     this.applications = new ApplicationsResource(this.http)
     this.profiles = new ProfilesResource(this.http)
+    this.apiKeys = new APIKeysResource(this.http)
   }
 
   /**
