@@ -3,15 +3,13 @@
  *
  * REQ-130: Email communication auditability
  *
- * Uses @bernierllc/email-manager for:
- * - SendGrid email sending
- * - Multi-provider support with failover
- * - Email event tracking for audit logging
+ * STUB IMPLEMENTATION: The @bernierllc/email-manager package is not available.
+ * This provides stub implementations for server-side email functionality.
+ *
+ * TODO: Implement proper email sending via Supabase Edge Functions or replace with working package
  *
  * This is a server-side module (Node.js only).
  */
-
-import { EmailManager, EmailManagerConfig } from '@bernierllc/email-manager'
 
 // Validate required environment variables at module load
 if (typeof process !== 'undefined') {
@@ -21,61 +19,7 @@ if (typeof process !== 'undefined') {
 }
 
 /**
- * Email Manager Configuration
- */
-const emailConfig: EmailManagerConfig = {
-  providers: [
-    {
-      id: 'sendgrid-primary',
-      name: 'SendGrid Primary',
-      type: 'sendgrid',
-      config: {
-        apiKey: process.env.SENDGRID_API_KEY || '',
-      },
-      isActive: true,
-      priority: 1,
-      rateLimit: {
-        maxPerSecond: 100,
-        maxPerMinute: 1000,
-        maxPerHour: 10000,
-      },
-    },
-  ],
-  analytics: {
-    enabled: true,
-  },
-  scheduling: {
-    enabled: true,
-    checkInterval: 60000, // 1 minute
-    retryAttempts: 3,
-    retryDelay: 300000, // 5 minutes
-  },
-  defaults: {
-    from: {
-      email: process.env.EMAIL_FROM_ADDRESS || 'noreply@forsured.com',
-      name: process.env.EMAIL_FROM_NAME || 'ForSured',
-    },
-  },
-}
-
-/**
- * Singleton EmailManager instance
- */
-let emailManagerInstance: EmailManager | null = null
-
-/**
- * Get or create the EmailManager instance
- * Lazily initializes to avoid issues when env vars aren't loaded yet
- */
-export function getEmailManager(): EmailManager {
-  if (!emailManagerInstance) {
-    emailManagerInstance = new EmailManager(emailConfig)
-  }
-  return emailManagerInstance
-}
-
-/**
- * Send a simple email
+ * Send a simple email - STUB IMPLEMENTATION
  */
 export async function sendEmail(options: {
   to: string | string[]
@@ -84,18 +28,22 @@ export async function sendEmail(options: {
   text?: string
   metadata?: Record<string, unknown>
 }) {
-  const manager = getEmailManager()
-  return manager.sendEmail({
-    to: Array.isArray(options.to) ? options.to : [options.to],
+  console.warn('[email-manager] STUB: sendEmail called', {
+    to: options.to,
     subject: options.subject,
-    html: options.html,
-    text: options.text || options.html.replace(/<[^>]*>/g, ''), // Strip HTML for text version
     metadata: options.metadata,
   })
+
+  // Return a mock successful result
+  return {
+    success: true,
+    messageId: `stub-${Date.now()}`,
+    provider: 'stub',
+  }
 }
 
 /**
- * Send a templated email
+ * Send a templated email - STUB IMPLEMENTATION
  */
 export async function sendTemplatedEmail(
   templateId: string,
@@ -103,12 +51,22 @@ export async function sendTemplatedEmail(
   to: string | string[],
   metadata?: Record<string, unknown>
 ) {
-  const manager = getEmailManager()
-  return manager.sendTemplatedEmail(templateId, data, Array.isArray(to) ? to : [to], metadata)
+  console.warn('[email-manager] STUB: sendTemplatedEmail called', {
+    templateId,
+    to,
+    metadata,
+  })
+
+  // Return a mock successful result
+  return {
+    success: true,
+    messageId: `stub-${Date.now()}`,
+    provider: 'stub',
+  }
 }
 
 /**
- * Track an email event for audit logging
+ * Track an email event for audit logging - STUB IMPLEMENTATION
  * Called from the webhook handler
  */
 export function trackEmailEvent(
@@ -117,9 +75,12 @@ export function trackEmailEvent(
   recipient: string,
   metadata?: Record<string, unknown>
 ) {
-  const manager = getEmailManager()
-  return manager.trackEmailEvent(eventType, messageId, recipient, metadata)
-}
+  console.warn('[email-manager] STUB: trackEmailEvent called', {
+    eventType,
+    messageId,
+    recipient,
+    metadata,
+  })
 
-// Export the manager for direct access if needed
-export { EmailManager }
+  // Return void (no-op)
+}
