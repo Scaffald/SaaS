@@ -1181,7 +1181,8 @@ export const backgroundChecksRouter = t.router({
 
       // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       const checkTypeIds = Array.isArray((pkg as any).check_type_ids)
-        ? (pkg as any).check_type_ids
+        ? // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          (pkg as any).check_type_ids
         : []
 
       if (checkTypeIds.length === 0) {

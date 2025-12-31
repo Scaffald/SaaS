@@ -83,6 +83,9 @@
     }
   },
   "home": "Home",
+  "onboarding": {
+    "title": "Empezar"
+  },
   "office": {
     "applications": {
       "inquiry": "Inquiry Detail",

@@ -4,6 +4,7 @@ import { mergeConfig } from 'vitest/config'
 import baseConfig from '../../vitest.config'
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
+const scaffaldRoot = fileURLToPath(new URL('.', import.meta.url))
 
 const expoConfig = {
   resolve: {
@@ -24,8 +25,19 @@ const expoConfig = {
   },
   root: workspaceRoot,
   test: {
+    // Override setupFiles to use Scaffald-specific setup (REQ-9 compliant with real Supabase)
+    setupFiles: [resolve(scaffaldRoot, 'tests/setup.ts')],
     include: ['apps/scaffald/**/*.{test,spec}.{ts,tsx}'],
     watchExclude: ['**/dist/**', '**/.turbo/**', 'apps/scaffald/.expo/**'],
+    // Override coverage thresholds for Scaffald (80% as per REQ-7)
+    coverage: {
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
+    },
   },
 }
 
