@@ -8,8 +8,11 @@ const ENV_FILE_MAP = {
 }
 const envFile = ENV_FILE_MAP[APP_ENV] || '.env'
 const envPath = path.resolve(__dirname, '..', '..', envFile)
-// eslint-disable-next-line no-console
-console.log(`[babel] APP_ENV=${APP_ENV} envPath=${envPath}`)
+// Only log babel config in verbose mode to reduce noise
+if (process.env.BABEL_VERBOSE === 'true') {
+  // eslint-disable-next-line no-console
+  console.log(`[babel] APP_ENV=${APP_ENV} envPath=${envPath}`)
+}
 
 // Resolve Tamagui config - try package first, fallback to source
 let tamaguiConfigPath
@@ -69,12 +72,21 @@ module.exports = (api) => {
         {
           components: ['@unicornlove/ui', 'tamagui'],
           config: tamaguiConfigPath,
-          logTimings: true,
+          logTimings: process.env.DEBUG === 'tamagui',
           // Extraction enabled for proper native component behavior
           // disableExtraction: process.env.NODE_ENV === 'development',
         },
       ],
     ],
-    presets: [['babel-preset-expo', { jsxRuntime: 'automatic' }]],
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          jsxRuntime: 'automatic',
+          // Ensure EXPO_OS is properly inlined for web builds
+          web: { useTransformReactJSXExperimental: true },
+        },
+      ],
+    ],
   }
 }
