@@ -1,7 +1,7 @@
 import * as LucideIcons from '@tamagui/lucide-icons'
 import { ChevronDown, Search, X } from '@tamagui/lucide-icons'
 import { type ComponentType, useMemo, useState } from 'react'
-import { Input, ScrollView, Text, XStack, YStack } from 'tamagui'
+import { Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 
 // Icon names that can be used (subset of Lucide icons)

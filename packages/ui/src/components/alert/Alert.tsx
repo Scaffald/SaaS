@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { CheckCircle, AlertTriangle, XCircle, Info, X } from 'lucide-react'
-import { Text, useTheme, Button } from 'tamagui'
+import { Text, useTheme, Button } from '@unicornlove/ui'
 import { YStack, XStack } from '@tamagui/stacks'
 
 export type AlertVariant = 'info' | 'success' | 'warning' | 'error'

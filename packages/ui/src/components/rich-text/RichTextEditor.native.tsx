@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { Text, TextArea, XStack, YStack } from 'tamagui'
+import { Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 import type { RichTextEditorProps } from './types'
 import { extractPlainText, plainTextToTipTap } from './utils/sanitize'
 

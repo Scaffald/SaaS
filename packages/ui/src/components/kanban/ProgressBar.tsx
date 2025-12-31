@@ -1,6 +1,6 @@
 import { memo } from 'react'
-import type { GetThemeValueForKey } from 'tamagui'
-import { Progress } from 'tamagui'
+import type { GetThemeValueForKey } from '@unicornlove/ui'
+import { Progress } from '@unicornlove/ui'
 
 export interface ProgressBarProps {
   /** Progress value (0-100) */

@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import type { ComponentType } from 'react'
-import { Dialog as TamaguiDialog, withStaticProperties } from 'tamagui'
-import type { DialogProps, DialogOverlayProps, DialogContentProps } from 'tamagui'
+import { Dialog as TamaguiDialog, withStaticProperties } from '@unicornlove/ui'
+import type { DialogProps, DialogOverlayProps, DialogContentProps } from '@unicornlove/ui'
 
 /**
  * Custom Dialog.Overlay with default styling

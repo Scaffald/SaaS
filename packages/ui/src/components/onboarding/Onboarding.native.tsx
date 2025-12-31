@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 import type { OnboardingProps } from './Onboarding'
 import { OnboardingControls } from '../onboarding-controls/OnboardingControls'

@@ -1,5 +1,5 @@
 import { ChevronRight } from '@tamagui/lucide-icons'
-import { Theme, XStack } from 'tamagui'
+import { Theme, XStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 
 import type { OnboardingControlsProps } from './OnboardingControls'

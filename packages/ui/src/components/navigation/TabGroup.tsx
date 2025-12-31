@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
-import { ScrollView, styled, Tabs } from 'tamagui'
+import { ScrollView, styled, Tabs } from '@unicornlove/ui'
 
 export type TabGroupVariant = 'default' | 'underlined'
 

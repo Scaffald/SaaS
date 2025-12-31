@@ -1,6 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker'
 import * as ImagePicker from 'expo-image-picker'
-import { useEvent } from 'tamagui'
+import { useEvent } from '@unicornlove/ui'
 
 import type { MediaTypeOptionsString, UseFilePickerControl, UseFilePickerProps } from '../types'
 import { useDropZone } from './useDropZone'

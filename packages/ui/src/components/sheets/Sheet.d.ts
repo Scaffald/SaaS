@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from 'react'
-import type { SheetProps, ViewProps } from 'tamagui'
+import type { SheetProps, ViewProps } from '@unicornlove/ui'
 
 type ViewPropsWithChildren = Omit<ViewProps, 'children'> & { children?: ReactNode }
 

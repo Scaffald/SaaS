@@ -1,5 +1,5 @@
-import { styled, Popover as TamaguiPopover, withStaticProperties } from 'tamagui'
-import type { PopoverProps } from 'tamagui'
+import { styled, Popover as TamaguiPopover, withStaticProperties } from '@unicornlove/ui'
+import type { PopoverProps } from '@unicornlove/ui'
 
 /**
  * Custom Popover.Content with default background color

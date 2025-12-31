@@ -1,4 +1,4 @@
-import { XStack } from 'tamagui'
+import { XStack } from '@unicornlove/ui'
 import { Button, type ButtonProps } from '../buttons/Button'
 import { Dialog } from './Dialog'
 

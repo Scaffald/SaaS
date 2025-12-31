@@ -1,6 +1,6 @@
 import type * as DocumentPicker from 'expo-document-picker'
 import type * as ImagePicker from 'expo-image-picker/src/ImagePicker'
-import { useEvent } from 'tamagui'
+import { useEvent } from '@unicornlove/ui'
 
 import type { MediaTypeOptionsString, UseFilePickerControl, UseFilePickerProps } from '../types'
 import type { MediaTypeOptions } from '../types'

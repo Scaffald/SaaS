@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import { ResponsiveModal } from '../modal'
 

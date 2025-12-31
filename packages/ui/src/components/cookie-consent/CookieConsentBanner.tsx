@@ -10,7 +10,7 @@ import {
   type StackProps,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 import { useCookieConsent } from './CookieConsentProvider'
 

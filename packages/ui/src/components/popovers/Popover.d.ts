@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from 'react'
-import type { PopoverProps, ViewProps } from 'tamagui'
+import type { PopoverProps, ViewProps } from '@unicornlove/ui'
 
 declare const PopoverContent: ComponentType<ViewProps>
 declare const TamaguiPopover: ComponentType<PopoverProps> & {

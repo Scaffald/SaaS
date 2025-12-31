@@ -11,7 +11,7 @@ import {
   Unspaced,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 import { useCookieConsent } from './CookieConsentProvider'
 import type { CookieConsentCategory, CookieConsentSelections } from './types'

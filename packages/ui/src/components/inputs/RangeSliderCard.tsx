@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Slider, Text, type ThemeName, View, XStack, YStack } from 'tamagui'
+import { Slider, Text, type ThemeName, View, XStack, YStack } from '@unicornlove/ui'
 
 export interface RangeSliderCardProps {
   /** Icon to display on the left side */

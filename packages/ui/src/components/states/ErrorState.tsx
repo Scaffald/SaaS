@@ -1,6 +1,6 @@
 import { AlertCircle } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { borderRadius } from '../../config/radii'
 import { spacing } from '../../config/spacing'
 import { typography } from '../../config/typography'

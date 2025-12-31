@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
-import type { ColorTokens, FontSizeTokens, SpaceTokens, ThemeName, XStackProps } from 'tamagui'
-import { Text, Theme, XStack } from 'tamagui'
+import type { ColorTokens, FontSizeTokens, SpaceTokens, ThemeName, XStackProps } from '@unicornlove/ui'
+import { Text, Theme, XStack } from '@unicornlove/ui'
 
 const badgeSizing: Record<
   'sm' | 'md',

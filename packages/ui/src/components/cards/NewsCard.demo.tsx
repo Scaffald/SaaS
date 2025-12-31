@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import { NewsCard } from './NewsCard'
 

@@ -8,7 +8,7 @@ import {
   useWindowDimensions,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 export type OfficeTabsItem = {
   key: string

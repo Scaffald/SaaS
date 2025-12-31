@@ -1,7 +1,7 @@
 import type { TextStyle } from 'react-native'
 import { Platform } from 'react-native'
 import { LineChart as GiftedLineChart } from 'react-native-gifted-charts'
-import { View } from 'tamagui'
+import { View } from '@unicornlove/ui'
 
 export interface LineChartData {
   value: number

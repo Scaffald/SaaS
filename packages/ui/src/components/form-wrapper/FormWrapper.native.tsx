@@ -8,7 +8,7 @@ import {
   withStaticProperties,
   YStack,
   type YStackProps,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 // React Navigation's useHeaderHeight hook works when ThemeProvider is available
 // UniversalThemeProvider now wraps all platforms (web + native) with ThemeProvider

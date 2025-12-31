@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { View, type ViewProps } from 'tamagui'
+import { View, type ViewProps } from '@unicornlove/ui'
 
 interface LayoutEvent {
   nativeEvent: {

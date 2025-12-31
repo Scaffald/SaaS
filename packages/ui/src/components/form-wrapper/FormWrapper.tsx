@@ -5,7 +5,7 @@ import {
   withStaticProperties,
   YStack,
   type YStackProps,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 /**
  * this is pretty straightforward on web - check FormWrapper.native

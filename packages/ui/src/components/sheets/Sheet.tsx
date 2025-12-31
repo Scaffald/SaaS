@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import type { ComponentType } from 'react'
-import { Sheet as TamaguiSheet, withStaticProperties } from 'tamagui'
-import type { SheetProps } from 'tamagui'
+import { Sheet as TamaguiSheet, withStaticProperties } from '@unicornlove/ui'
+import type { SheetProps } from '@unicornlove/ui'
 
 /**
  * Custom Sheet.Frame with default background color

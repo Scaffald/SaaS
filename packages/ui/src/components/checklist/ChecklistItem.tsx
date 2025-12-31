@@ -1,4 +1,4 @@
-import { Text, View, XStack, YStack } from 'tamagui'
+import { Text, View, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import type { ChecklistItemProps } from './types'
 

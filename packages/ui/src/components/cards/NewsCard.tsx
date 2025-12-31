@@ -11,7 +11,7 @@ import {
   View,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { borderRadius } from '../../config/radii'
 import { cardShadows } from '../../config/shadows'
 

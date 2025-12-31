@@ -1,4 +1,4 @@
-import { Spinner, type SpinnerProps, YStack } from 'tamagui'
+import { Spinner, type SpinnerProps, YStack } from '@unicornlove/ui'
 
 export const FullscreenSpinner = (props: SpinnerProps) => {
   return (

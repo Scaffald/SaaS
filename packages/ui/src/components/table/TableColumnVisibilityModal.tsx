@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Paragraph, Separator, Text, XStack, YStack } from 'tamagui'
+import { Paragraph, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { Checkbox } from '../inputs/Checkbox'
 import { ResponsiveModal } from '../modal'
 

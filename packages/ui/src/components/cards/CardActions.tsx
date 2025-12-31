@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { XStack } from 'tamagui'
+import { XStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import type { CardActionsProps } from './types'
 

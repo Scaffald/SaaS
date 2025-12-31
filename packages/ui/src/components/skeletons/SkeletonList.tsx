@@ -1,4 +1,4 @@
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 import { SkeletonCard } from './SkeletonCard'
 
 export interface SkeletonListProps {

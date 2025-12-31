@@ -5,7 +5,7 @@ import {
   isValidPhoneNumber,
 } from '../../types/phone'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Input, Select, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { Input, Select, Text, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
 import {
   COUNTRIES,
   type Country,

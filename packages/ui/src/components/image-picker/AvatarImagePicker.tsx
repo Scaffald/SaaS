@@ -1,7 +1,7 @@
 import { Camera, Delete, Edit3, User } from '@tamagui/lucide-icons'
 import { useEffect, useId, useState } from 'react'
 import { Platform } from 'react-native'
-import { Circle, Image, Label, Spinner, Text, View, XStack, YStack } from 'tamagui'
+import { Circle, Image, Label, Spinner, Text, View, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import type { UploadSelection } from '../upload/UploadSurface'
 import { UploadSurface } from '../upload/UploadSurface'

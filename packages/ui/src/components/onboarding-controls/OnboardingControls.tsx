@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
-import { XStack } from 'tamagui'
+import { XStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 
 export type OnboardingControlsProps = {

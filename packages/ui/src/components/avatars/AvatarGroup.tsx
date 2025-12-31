@@ -1,6 +1,6 @@
 import { memo } from 'react'
-import type { SizeTokens } from 'tamagui'
-import { Avatar, Text, XStack } from 'tamagui'
+import type { SizeTokens } from '@unicornlove/ui'
+import { Avatar, Text, XStack } from '@unicornlove/ui'
 
 export interface AvatarGroupAvatar {
   /** Optional image source URL */

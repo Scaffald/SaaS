@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from 'react';
-import { YStack, XStack, Text } from 'tamagui';
+import { YStack, XStack, Text } from '@unicornlove/ui';
 import { Button } from '../buttons';
 import type { ButtonProps } from '../buttons';
 

@@ -1,5 +1,5 @@
 import React, { type ForwardRefExoticComponent, forwardRef, type RefAttributes } from 'react'
-import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 'tamagui'
+import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from '@unicornlove/ui'
 
 /**
  * Button - Professional button component with Scaffald design system

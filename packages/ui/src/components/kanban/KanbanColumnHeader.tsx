@@ -1,7 +1,7 @@
 import { MoreVertical, Plus } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import type { GetThemeValueForKey } from 'tamagui'
-import { Text, XStack, YStack } from 'tamagui'
+import type { GetThemeValueForKey } from '@unicornlove/ui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 
 export interface KanbanColumnHeaderProps {

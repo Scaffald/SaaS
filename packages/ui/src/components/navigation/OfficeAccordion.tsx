@@ -1,7 +1,7 @@
 import { ChevronDown } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
-import { Accordion, Paragraph, XStack, YStack } from 'tamagui'
+import { Accordion, Paragraph, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 
 type AccordionItemLink = {

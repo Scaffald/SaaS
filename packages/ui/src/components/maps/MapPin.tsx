@@ -1,6 +1,6 @@
 import { Building, User } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import { Circle, type GetThemeValueForKey, useTheme, View, YStack } from 'tamagui'
+import { Circle, type GetThemeValueForKey, useTheme, View, YStack } from '@unicornlove/ui'
 import type { MapPin as MapPinType } from './types'
 
 interface MapPinProps {

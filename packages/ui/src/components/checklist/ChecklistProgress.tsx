@@ -1,4 +1,4 @@
-import { Progress, Text, XStack, YStack } from 'tamagui'
+import { Progress, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ChecklistProgressProps } from './types'
 
 /**

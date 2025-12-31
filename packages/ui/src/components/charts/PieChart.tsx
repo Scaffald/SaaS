@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { PieChart as GiftedPieChart } from 'react-native-gifted-charts'
-import { View } from 'tamagui'
+import { View } from '@unicornlove/ui'
 
 export interface PieChartData {
   value: number

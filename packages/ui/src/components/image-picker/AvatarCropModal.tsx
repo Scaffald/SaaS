@@ -19,7 +19,7 @@ import {
   View,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { Dialog } from '../dialog/Dialog'
 import { Sheet } from '../sheets/Sheet'
 import { detectMimeTypeFromSrc, getNativeTransform, getWebTransform } from './utils/helpers'

@@ -1,6 +1,6 @@
 import { Plus, X } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import { AddressAutocomplete } from './AddressAutocomplete'
 import type { AddressResult } from './types'

@@ -1,6 +1,6 @@
 import { X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { ScrollView, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { ScrollView, Text, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import { Dialog } from '../dialog/Dialog'
 import { Sheet } from '../sheets/Sheet'
