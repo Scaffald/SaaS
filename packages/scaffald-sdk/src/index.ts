@@ -93,6 +93,16 @@ export type {
   RetryConfig,
 } from './types/index.js'
 
+// Interceptors
+export type {
+  RequestInterceptor,
+  ResponseInterceptor,
+  ErrorInterceptor,
+} from './http/interceptors.js'
+
+// Cache
+export type { CacheConfig } from './http/cache.js'
+
 // Errors
 export {
   ScaffaldError,

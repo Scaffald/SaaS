@@ -84,7 +84,7 @@ async function generateTypes() {
     // Write types file
     await fs.writeFile(OUTPUT_PATH, generatedTypes)
 
-    console.log(`\n✅ Types generated successfully!`)
+    console.log('\n✅ Types generated successfully!')
     console.log(`   Source: ${successfulSource}`)
     console.log(`   Output: ${OUTPUT_PATH}`)
 

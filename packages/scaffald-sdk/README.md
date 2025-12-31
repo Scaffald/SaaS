@@ -12,6 +12,9 @@ A complete, type-safe JavaScript/TypeScript SDK for integrating with the Scaffal
 - ✅ **Full TypeScript Support** - Auto-generated types from OpenAPI spec
 - ✅ **Automatic Retries** - Exponential backoff for failed requests (1s, 2s, 4s, 8s)
 - ✅ **Rate Limit Handling** - Tracks and respects API rate limits with callbacks
+- ✅ **Request/Response Interceptors** - Customize requests, responses, and error handling
+- ✅ **Response Caching** - Intelligent caching with TTL and cache invalidation
+- ✅ **Request Deduplication** - Prevent duplicate concurrent requests
 - ✅ **API Key Management** - Programmatically create, update, revoke, and monitor API keys
 - ✅ **Zero Dependencies** - Core SDK uses native Fetch API and Web Crypto
 - ✅ **Universal** - Works in Node.js 18+, modern browsers, and React Native 0.74+
@@ -19,6 +22,7 @@ A complete, type-safe JavaScript/TypeScript SDK for integrating with the Scaffal
 - ✅ **OAuth 2.0 + PKCE** - Secure authentication flow for user-facing apps
 - ✅ **Webhook Verification** - HMAC SHA-256 signature verification utilities
 - ✅ **Tree-shakeable** - Only import what you need
+- ✅ **Bundle Optimized** - Aggressive tree-shaking and code splitting
 
 ## Installation
 
@@ -554,7 +558,94 @@ See the [`examples/`](./examples) directory for complete working examples:
 
 - **Core SDK**: ~11 KB (minified + gzipped)
 - **React package**: ~12 KB (minified + gzipped)
+- **OAuth standalone**: ~1.8 KB (minified + gzipped)
+- **Webhooks standalone**: ~0.7 KB (minified + gzipped)
 - **Zero runtime dependencies** (except React Query for React package)
+
+Analyze bundle sizes after building:
+
+```bash
+pnpm build:analyze
+```
+
+## Advanced Features
+
+The SDK includes powerful features for optimizing API usage and customizing behavior:
+
+### Request/Response Interceptors
+
+Add custom headers, log requests, or transform responses:
+
+```typescript
+const client = new Scaffald({ apiKey: 'sk_live_...' })
+
+// Add request interceptor
+client.getInterceptors().addRequestInterceptor(async (url, init) => {
+  console.log('Request:', url)
+  return { url, init }
+})
+
+// Add response interceptor
+client.getInterceptors().addResponseInterceptor(async (response) => {
+  console.log('Response:', response.status)
+  return response
+})
+```
+
+### Response Caching
+
+Enable intelligent caching for GET requests:
+
+```typescript
+const client = new Scaffald({
+  apiKey: 'sk_live_...',
+  cache: {
+    enabled: true,
+    defaultTtl: 5 * 60 * 1000, // 5 minutes
+    maxSize: 100,
+  },
+})
+
+// First call hits the API
+const jobs = await client.jobs.list()
+
+// Second call uses cache (within TTL)
+const cachedJobs = await client.jobs.list() // Instant!
+
+// Clear cache after mutations
+await client.jobs.create(/* ... */)
+client.getCache().invalidate(/jobs/)
+```
+
+### Request Deduplication
+
+Automatically prevent duplicate concurrent requests:
+
+```typescript
+// These three simultaneous calls result in only ONE HTTP request
+const [job1, job2, job3] = await Promise.all([
+  client.jobs.retrieve('job_123'),
+  client.jobs.retrieve('job_123'),
+  client.jobs.retrieve('job_123'),
+])
+```
+
+### Code Splitting
+
+Import only what you need for optimal bundle size:
+
+```typescript
+// Full SDK
+import Scaffald from '@scaffald/sdk'
+
+// OAuth only (smaller bundle)
+import { OAuthClient } from '@scaffald/sdk/oauth'
+
+// Webhooks only (smaller bundle)
+import { verifyWebhookSignature } from '@scaffald/sdk/webhooks'
+```
+
+**📖 [Complete Advanced Features Guide](./docs/advanced-features.md)**
 
 ## Development
 

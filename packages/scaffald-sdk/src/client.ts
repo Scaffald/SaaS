@@ -6,6 +6,8 @@ import { AuthResource } from './resources/auth.js'
 import { APIKeysResource } from './resources/api-keys.js'
 import { type ScaffaldConfig, validateConfig, getDefaultConfig } from './config.js'
 import type { RateLimitInfo } from './http/rate-limit.js'
+import type { InterceptorManager } from './http/interceptors.js'
+import type { ResponseCache } from './http/cache.js'
 
 /**
  * Main Scaffald SDK client
@@ -76,6 +78,8 @@ export class Scaffald {
       maxRetries: finalConfig.maxRetries,
       timeout: finalConfig.timeout,
       headers: finalConfig.headers,
+      cache: finalConfig.cache,
+      enableDeduplication: finalConfig.enableDeduplication,
     })
 
     // Initialize resources
@@ -128,5 +132,59 @@ export class Scaffald {
    */
   getSecondsUntilRateLimitReset(): number {
     return this.http.rateLimitTracker.getSecondsUntilReset()
+  }
+
+  /**
+   * Get the interceptor manager for adding custom request/response/error interceptors
+   *
+   * @example
+   * ```typescript
+   * // Add a request interceptor to log all requests
+   * client.getInterceptors().addRequestInterceptor(async (url, init) => {
+   *   console.log('Request:', url, init.method)
+   *   return { url, init }
+   * })
+   *
+   * // Add a response interceptor to log all responses
+   * client.getInterceptors().addResponseInterceptor(async (response) => {
+   *   console.log('Response:', response.status)
+   *   return response
+   * })
+   *
+   * // Add an error interceptor to handle errors
+   * client.getInterceptors().addErrorInterceptor(async (error) => {
+   *   console.error('Error:', error.message)
+   *   return error
+   * })
+   * ```
+   */
+  getInterceptors(): InterceptorManager {
+    return this.http.interceptors
+  }
+
+  /**
+   * Get the response cache manager
+   *
+   * @example
+   * ```typescript
+   * // Enable caching
+   * client.getCache().enable()
+   *
+   * // Disable caching
+   * client.getCache().disable()
+   *
+   * // Clear cache
+   * client.getCache().clear()
+   *
+   * // Invalidate specific cache entries
+   * client.getCache().invalidate(/jobs/)
+   *
+   * // Get cache stats
+   * const stats = client.getCache().getStats()
+   * console.log(`Cache: ${stats.size}/${stats.maxSize}`)
+   * ```
+   */
+  getCache(): ResponseCache {
+    return this.http.cache
   }
 }

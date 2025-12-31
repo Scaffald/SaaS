@@ -80,7 +80,7 @@ export const handlers = [
     })
   }),
 
-  http.get(`${BASE_URL}/v1/jobs/:id/similar`, async ({ params }) => {
+  http.get(`${BASE_URL}/v1/jobs/:id/similar`, async () => {
     await delay(10)
 
     return HttpResponse.json({
@@ -161,7 +161,13 @@ export const handlers = [
   http.post(`${BASE_URL}/v1/api-keys`, async ({ request }) => {
     await delay(10)
 
-    const body = await request.json() as any
+    const body = (await request.json()) as {
+      name?: string
+      scopes?: string[]
+      environment?: string
+      rate_limit_tier?: string
+      expires_at?: string
+    }
 
     // Validation
     if (!body.name || !body.scopes || body.scopes.length === 0) {
@@ -226,7 +232,11 @@ export const handlers = [
   http.patch(`${BASE_URL}/v1/api-keys/:id`, async ({ request, params }) => {
     await delay(10)
 
-    const body = await request.json() as any
+    const body = (await request.json()) as {
+      name?: string
+      scopes?: string[]
+      is_active?: boolean
+    }
 
     return HttpResponse.json({
       data: {
@@ -256,7 +266,7 @@ export const handlers = [
     })
   }),
 
-  http.get(`${BASE_URL}/v1/api-keys/:id/usage`, async ({ params, request }) => {
+  http.get(`${BASE_URL}/v1/api-keys/:id/usage`, async ({ request }) => {
     await delay(10)
 
     const url = new URL(request.url)
