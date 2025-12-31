@@ -3,7 +3,7 @@
  * Uses CSS animations instead of moti/reanimated to avoid web compatibility issues
  */
 import { defaultConfig } from '@tamagui/config/v4';
-import { createTamagui, setupDev } from 'tamagui';
+import { createTamagui, setupDev } from '@unicornlove/ui';
 import { animations } from './animations-css';
 // Import themes from the UI package
 import { themes } from '@unicornlove/ui';
