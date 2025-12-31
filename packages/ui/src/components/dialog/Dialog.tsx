@@ -1,7 +1,9 @@
 import { forwardRef } from 'react'
 import type { ComponentType } from 'react'
-import { Dialog as TamaguiDialog, withStaticProperties } from '@unicornlove/ui'
-import type { DialogProps, DialogOverlayProps, DialogContentProps } from '@unicornlove/ui'
+// Import Dialog directly from tamagui to preserve static properties (Overlay, Content, etc.)
+// The re-export through @unicornlove/ui doesn't preserve static properties
+import { Dialog as TamaguiDialog, withStaticProperties } from 'tamagui'
+import type { DialogProps, DialogOverlayProps, DialogContentProps } from 'tamagui'
 
 /**
  * Custom Dialog.Overlay with default styling

@@ -1,7 +1,9 @@
 import { forwardRef } from 'react'
 import type { ComponentType } from 'react'
-import { Sheet as TamaguiSheet, withStaticProperties } from '@unicornlove/ui'
-import type { SheetProps } from '@unicornlove/ui'
+// Import Sheet directly from tamagui to preserve static properties (Frame, Overlay, etc.)
+// The re-export through @unicornlove/ui doesn't preserve static properties
+import { Sheet as TamaguiSheet, withStaticProperties } from 'tamagui'
+import type { SheetProps } from 'tamagui'
 
 /**
  * Custom Sheet.Frame with default background color

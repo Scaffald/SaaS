@@ -1,5 +1,7 @@
 import React, { type ForwardRefExoticComponent, forwardRef, type RefAttributes } from 'react'
-import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from '@unicornlove/ui'
+// Import Button directly from tamagui to preserve static properties (Text, Icon)
+// The re-export through @unicornlove/ui doesn't preserve static properties
+import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 'tamagui'
 
 /**
  * Button - Professional button component with Scaffald design system
