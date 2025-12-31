@@ -294,11 +294,12 @@ async function getOrganizationInfo(
     .eq('id', jobId)
     .single()
 
-  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   const organizationId =
+    // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
     ((job as any)?.[0] as { organization_id?: string } | null)?.organization_id ?? null
-  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
-  const organizationName = ((job as any)?.[0]?.organizations as any)?.[0]?.name ?? null
+  const organizationName =
+    // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+    ((job as any)?.[0]?.organizations as any)?.[0]?.name ?? null
 
   return {
     id: organizationId,
@@ -1768,8 +1769,8 @@ export const inquiriesRouter = router({
 
       if (application?.user_id) {
         const job = (application.jobs as unknown as Record<string, unknown>) ?? null
-        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         const orgName =
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           ((job?.organizations as any)?.[0] as { name?: string } | null)?.name || 'Organization'
         // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
         const jobTitle = (job?.title as any) || 'Job'

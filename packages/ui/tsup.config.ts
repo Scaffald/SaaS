@@ -3,6 +3,7 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: {
     index: "src/index.tsx",
+    "tamagui.config": "src/tamagui.config.ts",
     "types/geographic": "src/types/geographic.ts",
     "types/phone": "src/types/phone.ts",
   },

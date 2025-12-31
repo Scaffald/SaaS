@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scaffald SDK - Browser Example</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 2rem;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .filter-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #555;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .job-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .job-card {
+      background: #f9f9f9;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border-left: 4px solid #007bff;
+    }
+
+    .job-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+
+    .job-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .job-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+
+    .rate-limit {
+      background: #fff3cd;
+      color: #856404;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Scaffald Job Search</h1>
+
+    <div id="rateLimitBanner"></div>
+    <div id="error"></div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" placeholder="e.g., San Francisco">
+      </div>
+
+      <div class="filter-group">
+        <label for="remoteOption">Remote Option</label>
+        <select id="remoteOption">
+          <option value="">All</option>
+          <option value="on_site">On-site</option>
+          <option value="hybrid">Hybrid</option>
+          <option value="remote" selected>Remote</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="employmentType">Employment Type</label>
+        <select id="employmentType">
+          <option value="">All</option>
+          <option value="full_time">Full-time</option>
+          <option value="part_time">Part-time</option>
+          <option value="contract">Contract</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>&nbsp;</label>
+        <button id="searchBtn">Search Jobs</button>
+      </div>
+    </div>
+
+    <div id="jobList"></div>
+  </div>
+
+  <script type="module">
+    import Scaffald from '@scaffald/sdk'
+
+    // Initialize client with access token
+    // In a real app, you'd get this from your OAuth flow
+    const client = new Scaffald({
+      accessToken: localStorage.getItem('scaffald_access_token') || 'demo_token',
+    })
+
+    // Monitor rate limits
+    client.onRateLimitUpdate((info) => {
+      const banner = document.getElementById('rateLimitBanner')
+      if (client.isRateLimitApproaching()) {
+        banner.innerHTML = `⚠️ Rate limit approaching: ${info.remaining}/${info.limit} requests remaining`
+        banner.className = 'rate-limit'
+      } else {
+        banner.innerHTML = ''
+      }
+    })
+
+    async function searchJobs() {
+      const jobList = document.getElementById('jobList')
+      const errorDiv = document.getElementById('error')
+      const searchBtn = document.getElementById('searchBtn')
+
+      // Clear previous results
+      errorDiv.innerHTML = ''
+      jobList.innerHTML = '<div class="loading">Loading jobs...</div>'
+      searchBtn.disabled = true
+
+      try {
+        const location = document.getElementById('location').value
+        const remoteOption = document.getElementById('remoteOption').value
+        const employmentType = document.getElementById('employmentType').value
+
+        const result = await client.jobs.list({
+          status: 'published',
+          limit: 20,
+          location: location || undefined,
+          remoteOption: remoteOption || undefined,
+          employmentType: employmentType || undefined,
+        })
+
+        if (result.data.length === 0) {
+          jobList.innerHTML = '<div class="loading">No jobs found matching your criteria.</div>'
+          return
+        }
+
+        jobList.innerHTML = result.data.map(job => `
+          <div class="job-card">
+            <div class="job-title">${job.title}</div>
+            <div class="job-meta">
+              <span>📍 ${job.location || 'Remote'}</span>
+              <span>💼 ${job.employment_type || 'N/A'}</span>
+              <span>🏢 ${job.remote_option || 'N/A'}</span>
+            </div>
+          </div>
+        `).join('')
+
+      } catch (error) {
+        console.error('Error:', error)
+        errorDiv.innerHTML = `<div class="error">❌ ${error.message}</div>`
+        jobList.innerHTML = ''
+      } finally {
+        searchBtn.disabled = false
+      }
+    }
+
+    // Search on page load
+    searchJobs()
+
+    // Search on button click
+    document.getElementById('searchBtn').addEventListener('click', searchJobs)
+
+    // Search on Enter key
+    document.getElementById('location').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchJobs()
+    })
+  </script>
+</body>
+</html>

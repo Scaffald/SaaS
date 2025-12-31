@@ -1,6 +1,6 @@
 // Note: unpdf is only available in Deno edge functions
 // This file should only be used in edge function context
-// @ts-ignore: unpdf is a Deno-only dependency
+// @ts-expect-error: unpdf is a Deno-only dependency
 import { extractText as extractTextWithUnpdf } from 'unpdf'
 
 type ExtractSource = 'unpdf' | 'fallback'

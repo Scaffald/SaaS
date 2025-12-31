@@ -122,8 +122,8 @@ export const profileExperienceRouter = t.router({
   /**
    * Get user's experience entries
    */
-  // biome-ignore lint/suspicious/noExplicitAny: Output schema type compatibility
   getExperience: protectedProcedure
+    // biome-ignore lint/suspicious/noExplicitAny: Output schema type compatibility
     .output(getExperienceOutputSchema as any)
     .query(async ({ ctx }) => {
       const { supabase, user } = ctx

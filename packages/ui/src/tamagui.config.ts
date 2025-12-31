@@ -33,3 +33,9 @@ export const tamaguiConfig = createTamagui({
   // Explicitly include tokens to ensure available during static extraction
   tokens: defaultConfig.tokens,
 })
+
+// Export as 'config' for Tamagui babel/metro plugins
+export const config = tamaguiConfig
+
+// Export as default for Tamagui babel/metro plugins
+export default tamaguiConfig

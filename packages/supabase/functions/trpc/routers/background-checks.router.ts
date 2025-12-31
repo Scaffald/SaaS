@@ -2884,8 +2884,8 @@ export const backgroundChecksRouter = t.router({
           workerId: user.id,
           requesterId: existing.requested_by_user_id ?? null,
           checkId: input.background_check_id,
-          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           packageName:
+            // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
             (existing as any).package?.display_name ?? (existing as any).package?.slug ?? null,
           summary: input.dispute_reason ?? input.dispute_details ?? null,
           actorId: user.id,
@@ -3477,8 +3477,8 @@ export const backgroundChecksRouter = t.router({
           workerId: updated.user_id,
           requesterId: updated.requested_by_user_id ?? null,
           checkId: updated.id,
-          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           packageName:
+            // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
             (updated as any).package?.display_name ?? (updated as any).package?.slug ?? null,
           summary: input.summary ?? updated.summary ?? null,
           actorId: user.id,

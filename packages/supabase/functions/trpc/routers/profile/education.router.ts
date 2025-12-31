@@ -52,8 +52,8 @@ export const profileEducationRouter = t.router({
   /**
    * Get user's education entries with university details
    */
-  // biome-ignore lint/suspicious/noExplicitAny: Output schema type compatibility
   getEducation: protectedProcedure
+    // biome-ignore lint/suspicious/noExplicitAny: Output schema type compatibility
     .output(getEducationOutputSchema as any)
     .query(async ({ ctx }) => {
       const { supabase, user } = ctx

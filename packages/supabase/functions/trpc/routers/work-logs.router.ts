@@ -100,8 +100,8 @@ const sortDirectionSchema = z.enum(['asc', 'desc'])
 const listWorkLogsInputSchema = z.object({
   page: z.number().int().min(0).default(0),
   pageSize: z.number().int().min(1).max(100).default(20),
-  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
   statuses: z
+    // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
     .array(workLogStatusSchema as any)
     .min(1)
     .optional(),
@@ -829,8 +829,8 @@ const buildWorkLogExportSnapshot = async (
   return {
     workLog,
     ownerName,
-    // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
     ownerEmail:
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
       typeof (ownerRecord as any)?.email === 'string'
         ? // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
           (ownerRecord as any).email

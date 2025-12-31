@@ -29,6 +29,11 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./tamagui.config": {
+      "types": "./dist/tamagui.config.d.ts",
+      "import": "./dist/tamagui.config.mjs",
+      "require": "./dist/tamagui.config.js"
+    },
     "./types/geographic": {
       "types": "./dist/types/geographic.d.ts",
       "import": "./dist/types/geographic.mjs",
