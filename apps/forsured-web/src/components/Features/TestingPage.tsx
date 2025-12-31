@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TestTube, MessageSquare } from 'lucide-react';
-import { XStack, YStack, Text, H1, H2, SizableText, Card, Button as TamaguiButton } from 'tamagui';
+import { XStack, YStack, Text, H1, H2, SizableText, Card, Button as TamaguiButton } from '@unicornlove/ui';
 import Accordion, { AccordionItem } from '../../ui/Accordion';
 import NavigationDrawer, { DrawerToggle } from '../DesignSystem/NavigationDrawer';
 import Modal from '../Common/Modal';

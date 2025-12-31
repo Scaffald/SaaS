@@ -3,7 +3,7 @@
  * REQ-2, TASK-13: Visual status indicator for compliance requirements
  */
 
-import { XStack, Text } from 'tamagui';
+import { XStack, Text } from '@unicornlove/ui';
 import type { RequirementStatus } from '../../server/schemas/forsured/compliance-requirements.schema';
 
 interface RequirementStatusBadgeProps {

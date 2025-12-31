@@ -13,7 +13,7 @@ import {
   ArrowLeft,
   Loader,
 } from 'lucide-react';
-import { XStack, YStack, Text, Button as TamaguiButton, Spinner, H3, SizableText } from 'tamagui';
+import { XStack, YStack, Text, Button as TamaguiButton, Spinner, H3, SizableText } from '@unicornlove/ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import Input from '../Common/Input';

@@ -8,7 +8,7 @@ import {
   Eye,
   Plus,
 } from 'lucide-react';
-import { XStack, YStack, Text, H1, SizableText, Card } from 'tamagui';
+import { XStack, YStack, Text, H1, SizableText, Card } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import IconButton from '../Common/IconButton';
 

@@ -3,7 +3,7 @@
  * REQ-2, TASK-13: Visual type indicator for coverage requirements
  */
 
-import { XStack, Text } from 'tamagui';
+import { XStack, Text } from '@unicornlove/ui';
 import {
   Shield,
   Umbrella,

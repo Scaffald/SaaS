@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   XCircle,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Card, Input } from 'tamagui';
+import { YStack, XStack, Text, H1, H2, H3, Card, Input } from '@unicornlove/ui';
 import ComplianceScore from '../Common/ComplianceScore';
 import StatusBadge from '../Common/StatusBadge';
 import Button from '../Common/Button';

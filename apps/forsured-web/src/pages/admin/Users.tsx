@@ -1,7 +1,7 @@
 // src/pages/admin/Users.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, RefreshCcw, Users as UsersIcon } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Spinner } from 'tamagui';
+import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Spinner } from '@unicornlove/ui';
 import { EmptyState } from '@unicornlove/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import {

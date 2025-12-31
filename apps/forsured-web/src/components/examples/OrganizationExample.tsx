@@ -7,7 +7,7 @@
  */
 
 import { trpc } from '../../lib/trpc';
-import { YStack, XStack, Text, Card } from 'tamagui';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 
 interface OrganizationExampleProps {
   organizationId: string;

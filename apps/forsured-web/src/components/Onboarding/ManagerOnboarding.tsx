@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building, ArrowRight, X } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, Circle, Input, H1 } from 'tamagui';
+import { YStack, XStack, Text, Button, Card, Circle, Input, H1 } from '@unicornlove/ui';
 import { ResponsiveSelect } from '@unicornlove/ui';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import { useAuth } from '../../contexts/AuthContext';
