@@ -74,7 +74,7 @@ export function PrerequisiteWidget() {
   } = useForm<PrerequisitesFormData>({
     resolver: zodResolver(prerequisitesSchema),
     defaultValues: prerequisitesDefaults,
-    mode: 'onChange',
+    mode: 'onSubmit', // Validate on submit instead of onChange to prevent premature validation errors
   })
 
   const previousPrefillHashRef = useRef<string | null>(null)
@@ -295,20 +295,22 @@ export function PrerequisiteWidget() {
                         <Spinner size="small" />
                         <Text color="$color11">Loading industries...</Text>
                       </XStack>
-                    ) : (
+                    ) : industriesData?.industries && industriesData.industries.length > 0 ? (
                       <ResponsiveSelect
                         value={field.value || ''}
                         onValueChange={field.onChange}
                         placeholder="Select your industry"
-                        options={
-                          industriesData?.industries.map(
-                            (industry: { id: string; name: string }) => ({
-                              value: industry.id,
-                              label: industry.name,
-                            })
-                          ) || []
-                        }
+                        options={industriesData.industries.map(
+                          (industry: { id: string; name: string }) => ({
+                            value: industry.id,
+                            label: industry.name,
+                          })
+                        )}
                       />
+                    ) : (
+                      <Text color="$color11" fontSize="$2">
+                        No industries available
+                      </Text>
                     )}
                   </YStack>
                 )}

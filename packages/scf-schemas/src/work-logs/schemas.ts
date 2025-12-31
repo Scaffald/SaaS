@@ -87,7 +87,11 @@ export const timeEntriesSchema = z
   .array(timeEntrySchema)
   .min(1, "At least one time entry is required.")
   .superRefine((entries, ctx) => {
-    if (hasTimeEntriesOverlap(entries)) {
+    const validEntries = entries.filter(
+      (entry): entry is { start: string; end: string } =>
+        entry.start !== undefined && entry.end !== undefined
+    );
+    if (hasTimeEntriesOverlap(validEntries)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Time overlap detected between entries.",

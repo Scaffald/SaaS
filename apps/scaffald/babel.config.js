@@ -83,8 +83,6 @@ module.exports = (api) => {
         'babel-preset-expo',
         {
           jsxRuntime: 'automatic',
-          // Ensure EXPO_OS is properly inlined for web builds
-          web: { useTransformReactJSXExperimental: true },
         },
       ],
     ],

@@ -74,7 +74,7 @@ export default function OnboardingPage() {
   } = useForm<PrerequisitesFormData>({
     resolver: zodResolver(prerequisitesSchema),
     defaultValues: prerequisitesDefaults,
-    mode: 'onChange',
+    mode: 'onSubmit', // Validate on submit instead of onChange to prevent premature validation errors
   })
 
   const previousPrefillHashRef = useRef<string | null>(null)
@@ -254,11 +254,11 @@ export default function OnboardingPage() {
                             checked={field.value?.includes(option.value as UserType)}
                             onCheckedChange={(checked: boolean) => {
                               const currentTypes = field.value || []
-                              if (checked) {
-                                field.onChange([...currentTypes, option.value])
-                              } else {
-                                field.onChange(currentTypes.filter((t) => t !== option.value))
-                              }
+                              const newValue = checked
+                                ? [...currentTypes, option.value]
+                                : currentTypes.filter((t) => t !== option.value)
+                              // Use setValue with shouldValidate: false to prevent form-wide validation
+                              setValue('user_types', newValue, { shouldValidate: false })
                             }}
                             size="medium"
                             testID={`checkbox-user-type-${option.value}`}
@@ -268,11 +268,11 @@ export default function OnboardingPage() {
                             onPress={() => {
                               const currentTypes = field.value || []
                               const isChecked = currentTypes.includes(option.value as UserType)
-                              if (isChecked) {
-                                field.onChange(currentTypes.filter((t) => t !== option.value))
-                              } else {
-                                field.onChange([...currentTypes, option.value])
-                              }
+                              const newValue = isChecked
+                                ? currentTypes.filter((t) => t !== option.value)
+                                : [...currentTypes, option.value]
+                              // Use setValue with shouldValidate: false to prevent form-wide validation
+                              setValue('user_types', newValue, { shouldValidate: false })
                             }}
                             accessibilityRole="button"
                             style={({ pressed }) => ({
@@ -312,20 +312,22 @@ export default function OnboardingPage() {
                           <Spinner size="small" />
                           <Text color="$color11">Loading industries...</Text>
                         </XStack>
-                      ) : (
+                      ) : industriesData?.industries && industriesData.industries.length > 0 ? (
                         <ResponsiveSelect
                           value={field.value || ''}
                           onValueChange={field.onChange}
                           placeholder="Select your industry"
-                          options={
-                            industriesData?.industries.map(
-                              (industry: { id: string; name: string }) => ({
-                                value: industry.id,
-                                label: industry.name,
-                              })
-                            ) || []
-                          }
+                          options={industriesData.industries.map(
+                            (industry: { id: string; name: string }) => ({
+                              value: industry.id,
+                              label: industry.name,
+                            })
+                          )}
                         />
+                      ) : (
+                        <Text color="$color11" fontSize="$2">
+                          No industries available
+                        </Text>
                       )}
                     </YStack>
                   )}
@@ -352,13 +354,19 @@ export default function OnboardingPage() {
                       <XStack gap="$3" alignItems="center">
                         <CustomCheckbox
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            // Use setValue with shouldValidate: false to prevent form-wide validation
+                            setValue('accepts_privacy_policy', checked, { shouldValidate: false })
+                          }}
                           size="medium"
                           testID="checkbox-legal-privacy-policy"
                           ariaLabelledBy="checkbox-legal-privacy-policy-label"
                         />
                         <Pressable
-                          onPress={() => field.onChange(!field.value)}
+                          onPress={() => {
+                            // Use setValue with shouldValidate: false to prevent form-wide validation
+                            setValue('accepts_privacy_policy', !field.value, { shouldValidate: false })
+                          }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
                             alignSelf: 'flex-start',
@@ -400,13 +408,19 @@ export default function OnboardingPage() {
                       <XStack gap="$3" alignItems="center">
                         <CustomCheckbox
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            // Use setValue with shouldValidate: false to prevent form-wide validation
+                            setValue('accepts_terms_of_service', checked, { shouldValidate: false })
+                          }}
                           size="medium"
                           testID="checkbox-legal-terms-of-service"
                           ariaLabelledBy="checkbox-legal-terms-of-service-label"
                         />
                         <Pressable
-                          onPress={() => field.onChange(!field.value)}
+                          onPress={() => {
+                            // Use setValue with shouldValidate: false to prevent form-wide validation
+                            setValue('accepts_terms_of_service', !field.value, { shouldValidate: false })
+                          }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
                             alignSelf: 'flex-start',
