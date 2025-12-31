@@ -12,6 +12,7 @@ A complete, type-safe JavaScript/TypeScript SDK for integrating with the Scaffal
 - ✅ **Full TypeScript Support** - Auto-generated types from OpenAPI spec
 - ✅ **Automatic Retries** - Exponential backoff for failed requests (1s, 2s, 4s, 8s)
 - ✅ **Rate Limit Handling** - Tracks and respects API rate limits with callbacks
+- ✅ **API Key Management** - Programmatically create, update, revoke, and monitor API keys
 - ✅ **Zero Dependencies** - Core SDK uses native Fetch API and Web Crypto
 - ✅ **Universal** - Works in Node.js 18+, modern browsers, and React Native 0.74+
 - ✅ **React Integration** - Hooks powered by React Query for optimal caching
@@ -226,6 +227,90 @@ const employer = await client.profiles.getEmployer('tech-startup')
 console.log(`${employer.data.active_jobs_count} active positions`)
 ```
 
+### API Keys
+
+Programmatically manage your organization's API keys for third-party integrations and SDK access.
+
+> ⚠️ **Security Note**: API keys are sensitive credentials. Always store them securely and never commit them to version control.
+
+```typescript
+// List all API keys
+const keys = await client.apiKeys.list({ limit: 50, offset: 0 })
+
+keys.data.forEach(key => {
+  console.log(`${key.name}: ${key.key_prefix}... (${key.scopes.join(', ')})`)
+  console.log(`  Status: ${key.is_active ? 'Active' : 'Inactive'}`)
+  console.log(`  Last used: ${key.last_used_at || 'Never'}`)
+})
+
+// Create a new API key
+const newKey = await client.apiKeys.create({
+  name: 'Production Integration',
+  scopes: ['read:jobs', 'read:applications'],
+  environment: 'live',           // 'test' or 'live'
+  rate_limit_tier: 'pro',        // 'free', 'pro', or 'enterprise'
+  expires_at: '2025-12-31T23:59:59Z' // Optional expiration
+})
+
+// ⚠️ IMPORTANT: Save the full key immediately!
+// This is the ONLY time you'll see the complete key
+console.log('Save this key securely:', newKey.data.key)
+console.log(newKey.warning) // "This key will only be shown once"
+
+// Store in environment variable or secrets manager
+// process.env.SCAFFALD_API_KEY = newKey.data.key
+
+// Retrieve a specific API key (metadata only)
+const key = await client.apiKeys.retrieve('key_abc123')
+console.log(`${key.data.name} has scopes: ${key.data.scopes.join(', ')}`)
+
+// Update API key
+await client.apiKeys.update('key_abc123', {
+  name: 'Production - Updated',
+  scopes: ['read:jobs', 'write:jobs', 'read:applications'],
+  is_active: true
+})
+
+// Get usage statistics
+const usage = await client.apiKeys.getUsage('key_abc123', 30) // Last 30 days
+
+console.log(`Total requests: ${usage.data.total_requests}`)
+console.log(`Success rate: ${100 - parseFloat(usage.data.error_rate)}%`)
+console.log(`Avg response time: ${usage.data.avg_response_time_ms}ms`)
+
+// Breakdown by endpoint
+usage.data.usage.forEach(req => {
+  console.log(`${req.method} ${req.endpoint}: ${req.status_code} (${req.response_time_ms}ms)`)
+})
+
+// Revoke an API key (permanent soft delete)
+await client.apiKeys.revoke('key_abc123')
+console.log('API key has been permanently revoked')
+```
+
+**Available Scopes:**
+- `read:jobs` - View published job listings
+- `write:jobs` - Create and manage job postings
+- `read:applications` - View job applications
+- `write:applications` - Submit and manage applications
+- `read:profiles` - Access user profiles
+- `write:profiles` - Update user profiles
+- `read:organizations` - View organization data
+- `write:organizations` - Manage organization settings
+
+**Rate Limit Tiers:**
+- `free` - 100 requests per 15 minutes
+- `pro` - 1,000 requests per 15 minutes
+- `enterprise` - 10,000 requests per 15 minutes
+
+**Security Best Practices:**
+1. **Never expose API keys in client-side code** - Only use from server-side
+2. **Use test keys for development** - `sk_test_...` keys for testing, `sk_live_...` for production
+3. **Rotate keys regularly** - Create new keys and revoke old ones periodically
+4. **Use minimal scopes** - Only grant permissions your integration needs
+5. **Monitor usage** - Check usage statistics to detect anomalies
+6. **Set expiration dates** - Use short-lived keys when possible
+
 ## Rate Limiting
 
 The SDK automatically tracks rate limits and provides helpers:
@@ -415,6 +500,14 @@ Complete list of available hooks:
 - `useUserProfile(username)` - Get user profile
 - `useOrganization(slug)` - Get organization profile
 - `useEmployer(slug)` - Get employer profile
+
+### API Keys Hooks
+- `useAPIKeys(params?)` - List all API keys
+- `useAPIKey(id)` - Get single API key by ID
+- `useCreateAPIKey()` - Create new API key mutation
+- `useUpdateAPIKey()` - Update API key mutation
+- `useRevokeAPIKey()` - Revoke API key mutation
+- `useAPIKeyUsage(id, days?)` - Get usage statistics
 
 All hooks automatically handle:
 - Loading states

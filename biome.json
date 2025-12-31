@@ -24,7 +24,8 @@
       "!!**/packages/fonts/types/index.d.ts",
       "!!**/tests/reports/coverage",
       "!!**/.turbo",
-      "!!**/.nx"
+      "!!**/.nx",
+      "!!**/.storybook"
     ]
   },
   "formatter": {
@@ -103,6 +104,35 @@
           "style": {
             "useImportType": "off",
             "useNodejsImportProtocol": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/.storybook/**/*.ts",
+        "**/.storybook/**/*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedFunctionParameters": "off"
+          },
+          "style": {
+            "useImportType": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/packages/beyond-ui/src/components/**/*.ts",
+        "**/packages/beyond-ui/src/components/**/*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "warn"
           }
         }
       }
