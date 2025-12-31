@@ -100,6 +100,13 @@ const ROUTES_CONFIG = {
     },
   },
 
+  ONBOARDING: {
+    path: "/onboarding",
+    titleKey: "routes.onboarding.title",
+    protected: true,
+    exact: true,
+  },
+
   DASHBOARD: {
     path: "/dashboard",
     titleKey: "routes.dashboard.title",
