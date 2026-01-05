@@ -1,3 +1,5 @@
+// Import Popover directly from tamagui to preserve static properties (Content, Trigger, etc.)
+// The re-export through @unicornlove/ui doesn't preserve static properties
 import { styled, Popover as TamaguiPopover, withStaticProperties } from 'tamagui'
 import type { PopoverProps } from 'tamagui'
 

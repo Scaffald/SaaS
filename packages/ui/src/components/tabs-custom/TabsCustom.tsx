@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import { YStack, XStack, Text } from 'tamagui'
-import { useTheme } from 'tamagui'
-import type { XStackProps } from 'tamagui'
+import { YStack, XStack, Text } from '@unicornlove/ui'
+import { useTheme } from '@unicornlove/ui'
+import type { XStackProps } from '@unicornlove/ui'
 import { Chip } from '../chips'
 
 /**

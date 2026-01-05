@@ -6,10 +6,14 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, StorageBackendType, StorageRouterResult } from './storage-backends/index.ts';
-import { SupabaseStorageBackend } from './storage-backends/supabase-backend.ts';
-import { DropboxStorageBackend } from './storage-backends/dropbox-backend.ts';
-import { GoogleDriveStorageBackend } from './storage-backends/google-drive-backend.ts';
+import type {
+  IStorageBackend,
+  StorageBackendType,
+  StorageRouterResult,
+} from './storage-backends/index.ts'
+import { SupabaseStorageBackend } from './storage-backends/supabase-backend.ts'
+import { DropboxStorageBackend } from './storage-backends/dropbox-backend.ts'
+import { GoogleDriveStorageBackend } from './storage-backends/google-drive-backend.ts'
 
 // Backend cache to avoid creating new instances for each request
 const backendCache = new Map<string, IStorageBackend>()
@@ -47,7 +51,10 @@ export class StorageRouter {
       .single()
 
     if (error || !data) {
-      console.warn('[StorageRouter] Failed to get user storage preference, defaulting to supabase:', error?.message)
+      console.warn(
+        '[StorageRouter] Failed to get user storage preference, defaulting to supabase:',
+        error?.message
+      )
       return 'supabase'
     }
 

@@ -1,12 +1,19 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
   if (!ctx.user?.id) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
+  }
+
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
   }
 
   // Office users have access to all organizations
@@ -89,6 +96,13 @@ export const legalAgreementsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       await ensureOrganizationAccess(ctx, input.organizationId)
 
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       // Get default agreement text if not provided
       const { data: agreementTextData, error: textError } = await ctx.supabaseAdmin
         .schema('core')
@@ -163,6 +177,13 @@ export const legalAgreementsRouter = t.router({
     .query(async ({ ctx, input }) => {
       const { supabaseAdmin } = ctx
 
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       let query = supabaseAdmin
         .schema('core')
         .from('hire_agreements')
@@ -207,7 +228,8 @@ export const legalAgreementsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: { id: string; organization_id: string; worker_user_id: string; application_id: string | null; success_fee_id: string | null; agreement_version: number; agreement_text: string; terms_accepted: boolean; anti_circumvention_accepted: boolean; status: string; agreed_at: string | null; violated_at: string | null; violation_reason: string | null; created_at: string; updated_at: string; [key: string]: unknown }) => ({
+        // biome-ignore lint/suspicious/noExplicitAny: Database row type mismatch
+        items: (data ?? []).map((row: any) => ({
           id: row.id,
           organizationId: row.organization_id,
           workerUserId: row.worker_user_id,
@@ -249,6 +271,13 @@ export const legalAgreementsRouter = t.router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       const { data: report, error } = await ctx.supabaseAdmin
         .schema('core')
         .from('circumvention_reports')
@@ -359,35 +388,53 @@ export const legalAgreementsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: { id: string; reported_by_user_id: string; reported_by?: { display_name?: string; email?: string } | null; organization_id: string; organization?: { name?: string } | null; worker_user_id: string; worker?: { display_name?: string; email?: string } | null; hire_agreement_id: string | null; hire_agreement?: { status?: string } | null; violation_type: string; description: string; status: string; created_at: string; updated_at: string; [key: string]: unknown }) => ({
-          id: row.id,
-          reportedByUserId: row.reported_by_user_id,
-          reportedByName:
-            (row.reported_by as { display_name?: string; email?: string } | null)?.display_name ??
-            (row.reported_by as { display_name?: string; email?: string } | null)?.email ??
-            null,
-          organizationId: row.organization_id,
-          organizationName: (row.organization as { name?: string } | null)?.name ?? null,
-          workerUserId: row.worker_user_id,
-          workerName:
-            (row.worker as { display_name?: string; email?: string } | null)?.display_name ??
-            (row.worker as { display_name?: string; email?: string } | null)?.email ??
-            null,
-          hireAgreementId: row.hire_agreement_id,
-          hireAgreementStatus: (row.hire_agreement as { status?: string } | null)?.status ?? null,
-          violationType: row.violation_type,
-          description: row.description,
-          evidenceUrls: row.evidence_urls ?? [],
-          evidenceNotes: row.evidence_notes,
-          status: row.status,
-          reviewedByUserId: row.reviewed_by_user_id,
-          reviewedAt: row.reviewed_at,
-          reviewNotes: row.review_notes,
-          resolutionAction: row.resolution_action,
-          resolvedAt: row.resolved_at,
-          createdAt: row.created_at,
-          updatedAt: row.updated_at,
-        })),
+        items: (data ?? []).map(
+          (row: {
+            id: string
+            reported_by_user_id: string
+            reported_by?: { display_name?: string; email?: string } | null
+            organization_id: string
+            organization?: { name?: string } | null
+            worker_user_id: string
+            worker?: { display_name?: string; email?: string } | null
+            hire_agreement_id: string | null
+            hire_agreement?: { status?: string } | null
+            violation_type: string
+            description: string
+            status: string
+            created_at: string
+            updated_at: string
+            [key: string]: unknown
+          }) => ({
+            id: row.id,
+            reportedByUserId: row.reported_by_user_id,
+            reportedByName:
+              (row.reported_by as { display_name?: string; email?: string } | null)?.display_name ??
+              (row.reported_by as { display_name?: string; email?: string } | null)?.email ??
+              null,
+            organizationId: row.organization_id,
+            organizationName: (row.organization as { name?: string } | null)?.name ?? null,
+            workerUserId: row.worker_user_id,
+            workerName:
+              (row.worker as { display_name?: string; email?: string } | null)?.display_name ??
+              (row.worker as { display_name?: string; email?: string } | null)?.email ??
+              null,
+            hireAgreementId: row.hire_agreement_id,
+            hireAgreementStatus: (row.hire_agreement as { status?: string } | null)?.status ?? null,
+            violationType: row.violation_type,
+            description: row.description,
+            evidenceUrls: row.evidence_urls ?? [],
+            evidenceNotes: row.evidence_notes,
+            status: row.status,
+            reviewedByUserId: row.reviewed_by_user_id,
+            reviewedAt: row.reviewed_at,
+            reviewNotes: row.review_notes,
+            resolutionAction: row.resolution_action,
+            resolvedAt: row.resolved_at,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+          })
+        ),
         totalCount: count ?? 0,
       }
     }),

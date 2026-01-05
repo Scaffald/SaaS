@@ -11,7 +11,7 @@ import {
   uploadCertificationFileInputSchema,
   uploadCertificationFileOutputSchema,
 } from '@scf/trpc/schemas'
-import { protectedProcedure, t } from '../../middleware.ts';
+import { protectedProcedure, t } from '../../middleware.ts'
 
 /**
  * Profile Certifications router - handles certification CRUD and file upload operations
@@ -42,7 +42,11 @@ export const profileCertificationsRouter = t.router({
           .eq('user_id', user.id)
           .eq('is_active', true)
 
-        const existingCertIds = new Set(userCerts?.map((uc: { certification_id: string; [key: string]: unknown }) => uc.certification_id) || [])
+        const existingCertIds = new Set(
+          userCerts?.map(
+            (uc: { certification_id: string; [key: string]: unknown }) => uc.certification_id
+          ) || []
+        )
 
         // Build base query for all depth levels
         let query = supabase
@@ -97,7 +101,7 @@ export const profileCertificationsRouter = t.router({
 
         // Transform results to include parent information
         const certificationsWithParent = certifications.map((cert: Record<string, unknown>) => {
-          const parent = cert.parent_id ? parentMap.get(cert.parent_id) : null
+          const parent = cert.parent_id ? parentMap.get(cert.parent_id as string) : null
           return {
             ...cert,
             parent_title: parent?.title || null,
@@ -178,7 +182,9 @@ export const profileCertificationsRouter = t.router({
       }
 
       // Get catalog details for all certifications
-      const certIds = userCerts.map((uc: { certification_id: string; [key: string]: unknown }) => uc.certification_id)
+      const certIds = userCerts.map(
+        (uc: { certification_id: string; [key: string]: unknown }) => uc.certification_id
+      )
       const { data: catalogCerts, error: catalogError } = await supabase
         .schema('data')
         .from('certifications')
@@ -193,7 +199,9 @@ export const profileCertificationsRouter = t.router({
       }
 
       // Create lookup map
-      const catalogMap = new Map(catalogCerts?.map((c: { id: string; [key: string]: unknown }) => [c.id, c]) || [])
+      const catalogMap = new Map(
+        catalogCerts?.map((c: { id: string; [key: string]: unknown }) => [c.id, c]) || []
+      )
 
       // Organize by depth
       const depth0: unknown[] = []
@@ -209,13 +217,13 @@ export const profileCertificationsRouter = t.router({
         if (catalogCert.depth === 0) {
           depth0.push(combined)
         } else if (catalogCert.depth === 1) {
-          const parentId = catalogCert.parent_id
+          const parentId = catalogCert.parent_id as string
           if (!depth1ByParent[parentId]) {
             depth1ByParent[parentId] = []
           }
           depth1ByParent[parentId].push(combined)
         } else if (catalogCert.depth === 2) {
-          const parentId = catalogCert.parent_id
+          const parentId = catalogCert.parent_id as string
           if (!depth2ByParent[parentId]) {
             depth2ByParent[parentId] = []
           }
@@ -685,7 +693,8 @@ export const profileCertificationsRouter = t.router({
           .ilike('hierarchy_path', `${topLevelCatalog.hierarchy_path}%`)
           .neq('id', input.top_level_id)
 
-        const descendantIds = descendants?.map((d: { id: string; [key: string]: unknown }) => d.id) || []
+        const descendantIds =
+          descendants?.map((d: { id: string; [key: string]: unknown }) => d.id) || []
         const allIdsToRemove = [input.top_level_id, ...descendantIds]
 
         const { data: affectedCerts, error: countError } = await supabase

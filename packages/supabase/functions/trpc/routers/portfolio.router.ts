@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts';
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Portfolio router - handles user portfolio items
@@ -213,7 +213,8 @@ export const portfolioRouter = t.router({
       const results = await Promise.all(updatePromises)
 
       // Check for errors
-      const errors = results.filter((result: { error?: unknown; [key: string]: unknown }) => result.error)
+      // biome-ignore lint/suspicious/noExplicitAny: Result type from Promise.all
+      const errors = results.filter((result: any) => result.error)
       if (errors.length > 0) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

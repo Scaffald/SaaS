@@ -11,7 +11,7 @@ import {
   Text as SvgText,
   type TextAnchor,
 } from 'react-native-svg'
-import { type GetThemeValueForKey, useTheme, View, Text } from 'tamagui'
+import { type GetThemeValueForKey, useTheme, View, Text } from '@unicornlove/ui'
 
 // Data interfaces
 export interface SkillsChartDataItem {

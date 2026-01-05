@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts';
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Employers Router
@@ -418,7 +418,7 @@ export const employersRouter = t.router({
       const organizationAccumulator = new Map<string, EmployerRecord>()
 
       for (const org of publicOrganizations ?? []) {
-        organizationAccumulator.set(org.id, org as EmployerRecord)
+        organizationAccumulator.set(org.id, org as unknown as EmployerRecord)
       }
 
       if (ctx.user) {
@@ -448,7 +448,13 @@ export const employersRouter = t.router({
 
         const memberOrgIds =
           teamMemberships
-            ?.map((entry: { teams?: { organization_id?: string | null } | null; [key: string]: unknown }) => entry.teams?.organization_id)
+            ?.map(
+              // biome-ignore lint/suspicious/noExplicitAny: Teams can be array or object from join
+              (entry: any) => {
+                const teams = Array.isArray(entry.teams) ? entry.teams[0] : entry.teams
+                return teams?.organization_id
+              }
+            )
             .filter((id: string | null | undefined): id is string => Boolean(id)) ?? []
 
         if (memberOrgIds.length > 0) {

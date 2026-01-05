@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Text, XStack } from 'tamagui'
+import { Text, XStack } from '@unicornlove/ui'
 import type { CardMetadataProps } from './types'
 
 /**

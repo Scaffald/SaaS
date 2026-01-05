@@ -160,44 +160,45 @@ export function ControlledAddressForm<TFieldValues extends FieldValues = FieldVa
 
   // Handle manual address changes (when user edits individual fields)
   const handleAddressChange = (address: Partial<AddressResult>) => {
+    // Set values without triggering validation - validation will happen on form submit
     if (address.streetAddress !== undefined && fieldPaths.street) {
       setValue(
         fieldPaths.street as FieldPath<TFieldValues>,
-        address.streetAddress as PathValue<TFieldValues, FieldPath<TFieldValues>>
+        address.streetAddress as PathValue<TFieldValues, FieldPath<TFieldValues>>,
+        { shouldValidate: false }
       )
-      trigger?.(fieldPaths.street as FieldPath<TFieldValues>)
     }
 
     if (address.locality !== undefined && fieldPaths.city) {
       setValue(
         fieldPaths.city as FieldPath<TFieldValues>,
-        address.locality as PathValue<TFieldValues, FieldPath<TFieldValues>>
+        address.locality as PathValue<TFieldValues, FieldPath<TFieldValues>>,
+        { shouldValidate: false }
       )
-      trigger?.(fieldPaths.city as FieldPath<TFieldValues>)
     }
 
     if (address.stateAbbreviation !== undefined && fieldPaths.state) {
       setValue(
         fieldPaths.state as FieldPath<TFieldValues>,
-        address.stateAbbreviation as PathValue<TFieldValues, FieldPath<TFieldValues>>
+        address.stateAbbreviation as PathValue<TFieldValues, FieldPath<TFieldValues>>,
+        { shouldValidate: false }
       )
-      trigger?.(fieldPaths.state as FieldPath<TFieldValues>)
     }
 
     if (address.postalCode !== undefined && fieldPaths.zip) {
       setValue(
         fieldPaths.zip as FieldPath<TFieldValues>,
-        address.postalCode as PathValue<TFieldValues, FieldPath<TFieldValues>>
+        address.postalCode as PathValue<TFieldValues, FieldPath<TFieldValues>>,
+        { shouldValidate: false }
       )
-      trigger?.(fieldPaths.zip as FieldPath<TFieldValues>)
     }
 
     if (address.country !== undefined && fieldPaths.country) {
       setValue(
         fieldPaths.country as FieldPath<TFieldValues>,
-        address.country as PathValue<TFieldValues, FieldPath<TFieldValues>>
+        address.country as PathValue<TFieldValues, FieldPath<TFieldValues>>,
+        { shouldValidate: false }
       )
-      trigger?.(fieldPaths.country as FieldPath<TFieldValues>)
     }
   }
 

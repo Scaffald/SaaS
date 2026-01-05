@@ -1,7 +1,7 @@
 import type { MapView } from '@rnmapbox/maps'
 import MapboxGL from '@rnmapbox/maps'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { Text, useThemeName, View } from 'tamagui'
+import { Text, useThemeName, View } from '@unicornlove/ui'
 import { MapFallback } from './MapFallback'
 import { getMapStyleUrl } from './mapboxStyleConfig'
 import type { MapContainerProps, MapContainerRef } from './types'

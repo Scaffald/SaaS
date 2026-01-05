@@ -3,10 +3,10 @@ import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
-const STRIPE_API_VERSION = '2024-06-20'
+const STRIPE_API_VERSION = '2025-11-17.clover'
 
 // Lazy initialization of Stripe to avoid module loading issues
 let StripeClass: typeof import('stripe').default | null = null
@@ -185,9 +185,9 @@ async function findLatestSuccessFee(
 }
 
 async function _ensureUpfrontPaymentIntent(
-  _ctx: Context,
-  _successFee: SuccessFeeRecord,
-  _schedule: SuccessFeeSchedule
+  ctx: Context,
+  successFee: SuccessFeeRecord,
+  schedule: SuccessFeeSchedule
 ): Promise<Stripe.PaymentIntent> {
   const stripe = await loadStripeClient(ctx)
 
@@ -228,6 +228,13 @@ async function _ensureUpfrontPaymentIntent(
 }
 
 async function loadStripeClient(ctx: Context): Promise<Stripe> {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   const { data: settings, error } = await ctx.supabaseAdmin
     .schema('core')
     .from('stripe_settings')
@@ -273,6 +280,13 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
 
 async function userHasPlatformRole(ctx: Context): Promise<boolean> {
   if (!ctx.user?.id) return false
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   const { data, error } = await ctx.supabaseAdmin
     .schema('core')
     .from('role_assignments')
@@ -288,7 +302,10 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment: { role?: { scope?: string; name?: string | null } | null; [key: string]: unknown }) =>
+      (assignment: {
+        role?: { scope?: string; name?: string | null } | null
+        [key: string]: unknown
+      }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
     )
@@ -302,6 +319,13 @@ async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
 
   const hasPlatformRole = await userHasPlatformRole(ctx)
   if (hasPlatformRole) return
+
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
 
   const { data: organization, error: orgError } = await ctx.supabaseAdmin
     .schema('core')
@@ -361,6 +385,13 @@ async function recordTransaction(
     metadata?: Record<string, unknown>
   }
 ) {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   const { error } = await ctx.supabaseAdmin
     .schema('core')
     .from('payment_transactions')
@@ -372,8 +403,8 @@ async function recordTransaction(
       transaction_type: params.transactionType,
       success_fee_id: params.successFeeId,
       stripe_payment_intent_id: params.paymentIntentId,
-      metadata: params.metadata ?? {},
-    })
+      metadata: params.metadata ?? ({} as never),
+    } as never)
 
   if (error) {
     throw new TRPCError({
@@ -384,6 +415,13 @@ async function recordTransaction(
 }
 
 async function getSuccessFee(ctx: Context, id: string): Promise<SuccessFeeRecord> {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   const { data, error } = await ctx.supabaseAdmin
     .schema('core')
     .from('success_fees')
@@ -481,7 +519,7 @@ export const successFeesRouter = t.router({
             hire_start_date: input.hireStartDate,
             hire_confirmed_at: now,
             status: 'pending',
-          })
+          } as never)
           .select('*')
           .maybeSingle()
 
@@ -604,6 +642,13 @@ export const successFeesRouter = t.router({
         })
       }
 
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       const { error: updateError } = await ctx.supabaseAdmin
         .schema('core')
         .from('success_fees')
@@ -629,20 +674,34 @@ export const successFeesRouter = t.router({
           metadata: {
             last_stripe_event_id: intent.latest_charge ?? null,
             last_stripe_event_type: 'manual_confirmation',
-          },
+          } as never,
         })
         .eq('stripe_payment_intent_id', input.paymentIntentId)
 
       // Create hire agreement when upfront payment is confirmed
       try {
-        await ctx.caller.legalAgreements.createHireAgreement({
-          organizationId: successFee.organization_id,
-          workerUserId: successFee.worker_user_id,
-          applicationId: successFee.application_id ?? undefined,
-          successFeeId: successFee.id,
-          termsAccepted: true,
-          antiCircumventionAccepted: true,
-        })
+        // Get default agreement text
+        const { data: agreementTextData } = await ctx.supabaseAdmin
+          .schema('core')
+          .rpc('get_default_hire_agreement_text')
+
+        const agreementText = agreementTextData ?? 'PLACEHOLDER: Legal Agreement Text'
+
+        // Insert hire agreement directly
+        await ctx.supabaseAdmin
+          .schema('core')
+          .from('hire_agreements')
+          .insert({
+            organization_id: successFee.organization_id,
+            worker_user_id: successFee.worker_user_id ?? null,
+            application_id: successFee.application_id ?? null,
+            success_fee_id: successFee.id,
+            agreement_text: agreementText,
+            agreement_version: '1.0',
+            agreed_by_user_id: ctx.user?.id ?? null,
+            terms_accepted: true,
+            anti_circumvention_accepted: true,
+          } as never)
       } catch (agreementError) {
         // Log but don't fail the payment confirmation if agreement creation fails
         console.error('Failed to create hire agreement:', agreementError)
@@ -689,6 +748,13 @@ export const successFeesRouter = t.router({
         hireStartDate: successFee.hire_start_date,
       })
 
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       const { error: updateError } = await ctx.supabaseAdmin
         .schema('core')
         .from('success_fees')
@@ -699,11 +765,11 @@ export const successFeesRouter = t.router({
           final_percentage: schedule.finalPercentage,
           upfront_amount_cents: schedule.upfrontAmountCents,
           final_amount_cents: schedule.finalAmountCents,
-          final_payment_due_date: schedule.finalPaymentDueDate,
+          final_payment_due_date: schedule.finalPaymentDueDate ?? undefined,
           duration_adjusted: true,
           original_schedule: successFee.payment_schedule,
           adjustment_notes: input.note ?? 'Schedule adjusted via API',
-        })
+        } as never)
         .eq('id', successFee.id)
 
       if (updateError) {

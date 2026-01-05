@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts';
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Sites Router
@@ -41,12 +41,17 @@ export const sitesRouter = t.router({
       const boundaryWKT = `POLYGON((${closedCoords}))`
 
       // Check for overlaps before creating
-      const { data: overlaps } = await ctx.supabase
-        .rpc('check_site_overlaps', {
+      const { data: overlaps, error: overlapError } = await ctx.supabase.rpc(
+        'check_site_overlaps',
+        {
           p_site_id: null,
           p_boundary: boundaryWKT,
-        })
-        .catch(() => ({ data: [] }))
+        }
+      )
+
+      if (overlapError) {
+        console.warn('Failed to check site overlaps:', overlapError)
+      }
 
       const { data: site, error } = await ctx.supabase
         .schema('core')
@@ -106,7 +111,7 @@ export const sitesRouter = t.router({
         [key: string]: unknown
       } = {}
       if (updates.site_identifier !== undefined)
-        updateData.site_identifier = updates.site_identifier
+        updateData.site_identifier = updates.site_identifier ?? undefined
       if (updates.area_sqft !== undefined) updateData.area_sqft = updates.area_sqft
       if (updates.zoning_classification !== undefined)
         updateData.zoning_classification = updates.zoning_classification
@@ -127,12 +132,17 @@ export const sitesRouter = t.router({
         updateData.boundary = `POLYGON((${closedCoords}))`
 
         // Check for overlaps
-        const { data: overlaps } = await ctx.supabase
-          .rpc('check_site_overlaps', {
+        const { data: overlaps, error: overlapError } = await ctx.supabase.rpc(
+          'check_site_overlaps',
+          {
             p_site_id: id,
             p_boundary: updateData.boundary,
-          })
-          .catch(() => ({ data: [] }))
+          }
+        )
+
+        if (overlapError) {
+          console.warn('Failed to check site overlaps:', overlapError)
+        }
 
         // Store overlaps in response (notifications created by trigger)
         updateData._overlaps = overlaps || []

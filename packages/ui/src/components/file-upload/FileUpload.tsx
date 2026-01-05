@@ -1,6 +1,6 @@
 import { AlertCircle, Upload, X } from '@tamagui/lucide-icons'
 import { type MouseEvent, type ReactNode, useId, useMemo, useState } from 'react'
-import { Spinner, Text, XStack, YStack } from 'tamagui'
+import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import type { UploadSelection } from '../upload/UploadSurface'
 import { UploadSurface } from '../upload/UploadSurface'

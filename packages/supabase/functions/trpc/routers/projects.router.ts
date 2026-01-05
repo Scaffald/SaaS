@@ -1,14 +1,18 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 /**
  * Helper function to check if user can edit a project
  */
-async function canEditProject(supabase: Context['supabase'], userId: string, projectId: string): Promise<boolean> {
+async function canEditProject(
+  supabase: Context['supabase'],
+  userId: string,
+  projectId: string
+): Promise<boolean> {
   // Get project
   const { data: project, error } = await supabase
     .schema('core')
@@ -37,16 +41,16 @@ async function canEditProject(supabase: Context['supabase'], userId: string, pro
     return false
   }
 
-  return roleAssignments.some(
-    (assignment: {
-      role: { name: string; scope: string } | null
-      scope_org_id: string | null
-    }) =>
-      assignment.role &&
+  // biome-ignore lint/suspicious/noExplicitAny: Role can be array or object from join
+  return roleAssignments.some((assignment: any) => {
+    const role = Array.isArray(assignment.role) ? assignment.role[0] : assignment.role
+    return (
+      role &&
       (assignment.scope_org_id === project.organization_id ||
-        (assignment.role.name === 'admin' && assignment.role.scope === 'platform') ||
-        (assignment.role.name === 'super_admin' && assignment.role.scope === 'platform'))
-  )
+        (role.name === 'admin' && role.scope === 'platform') ||
+        (role.name === 'super_admin' && role.scope === 'platform'))
+    )
+  })
 }
 
 /**
@@ -67,16 +71,16 @@ async function isOrganizationMember(
     return false
   }
 
-  return roleAssignments.some(
-    (assignment: {
-      role: { name: string; scope: string } | null
-      scope_org_id: string | null
-    }) =>
-      assignment.role &&
+  // biome-ignore lint/suspicious/noExplicitAny: Role can be array or object from join
+  return roleAssignments.some((assignment: any) => {
+    const role = Array.isArray(assignment.role) ? assignment.role[0] : assignment.role
+    return (
+      role &&
       (assignment.scope_org_id === organizationId ||
-        (assignment.role.name === 'admin' && assignment.role.scope === 'platform') ||
-        (assignment.role.name === 'super_admin' && assignment.role.scope === 'platform'))
-  )
+        (role.name === 'admin' && role.scope === 'platform') ||
+        (role.name === 'super_admin' && role.scope === 'platform'))
+    )
+  })
 }
 
 /**
@@ -392,12 +396,17 @@ export const projectsRouter = t.router({
 
       // Check for overlaps (validation will be done by trigger, but we can warn here)
       // Note: Overlap notifications are created automatically by the database trigger
-      const { data: overlaps } = await ctx.supabase
-        .rpc('check_site_overlaps', {
+      const { data: overlaps, error: overlapError } = await ctx.supabase.rpc(
+        'check_site_overlaps',
+        {
           p_site_id: input.site_id,
           p_boundary: site.boundary,
-        })
-        .catch(() => ({ data: null })) // Ignore errors, trigger will handle it
+        }
+      )
+
+      if (overlapError) {
+        console.warn('Failed to check site overlaps:', overlapError)
+      }
 
       const { data: projectSite, error } = await ctx.supabase
         .schema('core')

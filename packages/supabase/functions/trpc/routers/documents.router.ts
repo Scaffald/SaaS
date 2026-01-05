@@ -1,11 +1,11 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts';
-import { createStorageRouter } from './utils/storage-router.ts';
-import type { StorageBackendType } from './utils/storage-backends/index.ts';
-import { createUploadQueue, type UploadTask } from './utils/upload-queue.ts';
-import { getDocumentCache } from './utils/document-cache.ts';
-import { getPerformanceMonitor } from './utils/performance-monitoring.ts';
+import { protectedProcedure, t } from '../middleware.ts'
+import { createStorageRouter } from './utils/storage-router.ts'
+import type { StorageBackendType } from './utils/storage-backends/index.ts'
+import { createUploadQueue, type UploadTask } from './utils/upload-queue.ts'
+import { getDocumentCache } from './utils/document-cache.ts'
+import { getPerformanceMonitor } from './utils/performance-monitoring.ts'
 
 /**
  * Document category enum matching database type
@@ -53,7 +53,10 @@ const DocumentListInputSchema = z.object({
   search: z.string().optional(),
   page: z.number().int().positive().optional().default(1),
   limit: z.number().int().positive().max(100).optional().default(20),
-  sortBy: z.enum(['createdAt', 'name', 'updatedAt', 'latestSizeBytes']).optional().default('createdAt'),
+  sortBy: z
+    .enum(['createdAt', 'name', 'updatedAt', 'latestSizeBytes'])
+    .optional()
+    .default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 })
 
@@ -81,155 +84,161 @@ export const documentsRouter = t.router({
    * Creates document record and uploads file to Supabase Storage
    * Stamps oauth_app_id from request header if present
    */
-  upload: protectedProcedure
-    .input(DocumentUploadInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+  upload: protectedProcedure.input(DocumentUploadInputSchema).mutation(async ({ ctx, input }) => {
+    const { supabase, user } = ctx
 
-      // Extract oauth_app_id from context if available (set by OAuth middleware)
-      const oauthAppId = (ctx as { oauthAppId?: string }).oauthAppId || null
+    // Extract oauth_app_id from context if available (set by OAuth middleware)
+    const oauthAppId = (ctx as { oauthAppId?: string }).oauthAppId || null
 
+    try {
+      // Convert base64 to Uint8Array for storage
+      const base64Data = input.file.includes(',') ? input.file.split(',')[1] : input.file
+      const binaryString = atob(base64Data)
+      const bytes = new Uint8Array(binaryString.length)
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i)
+      }
+
+      // Generate storage path
+      const timestamp = Date.now()
+      const storagePath = `org/${input.organizationId}/docs/${timestamp}-${input.fileName}`
+
+      // Get storage backend based on user preference
+      const storageRouter = createStorageRouter(supabase, user.id)
+      const { backend, usedFallback, actualBackend } = await storageRouter.getBackend()
+
+      // Log if fallback was used
+      if (usedFallback) {
+        console.warn(
+          `[documents.upload] Used fallback storage for user ${user.id}, actual backend: ${actualBackend}`
+        )
+      }
+
+      // Upload using the selected storage backend
+      let checksum: string
       try {
-        // Convert base64 to Uint8Array for storage
-        const base64Data = input.file.includes(',') ? input.file.split(',')[1] : input.file
-        const binaryString = atob(base64Data)
-        const bytes = new Uint8Array(binaryString.length)
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i)
-        }
+        const uploadResult = await backend.upload(bytes, storagePath, {
+          contentType: input.contentType,
+          upsert: false,
+        })
+        checksum = uploadResult.checksum || ''
+      } catch (uploadError) {
+        const error = uploadError as { message?: string }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to upload file: ${error.message || 'Unknown error'}`,
+        })
+      }
 
-        // Generate storage path
-        const timestamp = Date.now()
-        const storagePath = `org/${input.organizationId}/docs/${timestamp}-${input.fileName}`
+      // Create document record with oauth_app_id
+      const { data: document, error: documentError } = await supabase
+        .schema('core')
+        .from('organization_documents')
+        .insert({
+          organization_id: input.organizationId,
+          folder_id: input.folderId || null,
+          name: input.name,
+          description: input.description || null,
+          category: input.category,
+          tags: input.tags,
+          is_template: input.isTemplate,
+          template_variables: input.templateVariables,
+          storage_bucket: 'organization-documents',
+          storage_prefix: `org/${input.organizationId}/docs`,
+          created_by: user.id,
+          oauth_app_id: oauthAppId, // Track which OAuth app created this document
+          metadata: {
+            original_filename: input.fileName,
+          },
+        })
+        .select()
+        .single()
 
-        // Get storage backend based on user preference
-        const storageRouter = createStorageRouter(supabase, user.id)
-        const { backend, usedFallback, actualBackend } = await storageRouter.getBackend()
-
-        // Log if fallback was used
-        if (usedFallback) {
-          console.warn(`[documents.upload] Used fallback storage for user ${user.id}, actual backend: ${actualBackend}`)
-        }
-
-        // Upload using the selected storage backend
-        let checksum: string
+      if (documentError) {
+        // Clean up uploaded file if document creation fails
         try {
-          const uploadResult = await backend.upload(bytes, storagePath, {
-            contentType: input.contentType,
-            upsert: false,
-          })
-          checksum = uploadResult.checksum || ''
-        } catch (uploadError) {
-          const error = uploadError as { message?: string }
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to upload file: ${error.message || 'Unknown error'}`,
-          })
-        }
-
-        // Create document record with oauth_app_id
-        const { data: document, error: documentError } = await supabase
-          .schema('core')
-          .from('organization_documents')
-          .insert({
-            organization_id: input.organizationId,
-            folder_id: input.folderId || null,
-            name: input.name,
-            description: input.description || null,
-            category: input.category,
-            tags: input.tags,
-            is_template: input.isTemplate,
-            template_variables: input.templateVariables,
-            storage_bucket: 'organization-documents',
-            storage_prefix: `org/${input.organizationId}/docs`,
-            created_by: user.id,
-            oauth_app_id: oauthAppId, // Track which OAuth app created this document
-            metadata: {
-              original_filename: input.fileName,
-            },
-          })
-          .select()
-          .single()
-
-        if (documentError) {
-          // Clean up uploaded file if document creation fails
-          try {
-            await backend.delete(storagePath)
-          } catch (cleanupError) {
-            console.error('[documents.upload] Failed to cleanup file after document creation error:', cleanupError)
-          }
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to create document record: ${documentError.message}`,
-          })
-        }
-
-        // Create initial version
-        const { data: version, error: versionError } = await supabase
-          .schema('core')
-          .from('organization_document_versions')
-          .insert({
-            document_id: document.id,
-            organization_id: input.organizationId,
-            storage_object_path: storagePath,
-            size_bytes: input.fileSize,
-            mime_type: input.contentType,
-            checksum: checksum,
-            uploaded_by: user.id,
-            oauth_app_id: oauthAppId, // Track which OAuth app uploaded this version
-            notes: oauthAppId ? `Uploaded via ${oauthAppId}` : 'Initial upload',
-          })
-          .select()
-          .single()
-
-        if (versionError) {
-          // Clean up if version creation fails
-          await supabase.schema('core').from('organization_documents').delete().eq('id', document.id)
-          try {
-            await backend.delete(storagePath)
-          } catch (cleanupError) {
-            console.error('[documents.upload] Failed to cleanup file after version creation error:', cleanupError)
-          }
-          throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to create document version: ${versionError.message}`,
-          })
-        }
-
-        // Get signed URL for download (1 hour expiry)
-        let downloadUrl: string | null = null
-        try {
-          const signedUrlResult = await backend.getSignedUrl(storagePath, 3600)
-          downloadUrl = signedUrlResult.url
-        } catch (urlError) {
-          console.warn('[documents.upload] Failed to generate signed URL:', urlError)
-        }
-
-        return {
-          id: document.id,
-          name: document.name,
-          category: document.category,
-          storageBackend: actualBackend as StorageBackendType,
-          storagePath: storagePath,
-          downloadUrl,
-          oauthAppId: oauthAppId,
-          version: version.version_number,
-          fileSize: input.fileSize,
-          mimeType: input.contentType,
-          checksum: checksum,
-          createdAt: document.created_at,
-          uploadedBy: user.id,
-        }
-      } catch (error) {
-        if (error instanceof TRPCError) {
-          throw error
+          await backend.delete(storagePath)
+        } catch (cleanupError) {
+          console.error(
+            '[documents.upload] Failed to cleanup file after document creation error:',
+            cleanupError
+          )
         }
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to upload document: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          message: `Failed to create document record: ${documentError.message}`,
         })
       }
-    }),
+
+      // Create initial version
+      const { data: version, error: versionError } = await supabase
+        .schema('core')
+        .from('organization_document_versions')
+        .insert({
+          document_id: document.id,
+          organization_id: input.organizationId,
+          storage_object_path: storagePath,
+          size_bytes: input.fileSize,
+          mime_type: input.contentType,
+          checksum: checksum,
+          uploaded_by: user.id,
+          oauth_app_id: oauthAppId, // Track which OAuth app uploaded this version
+          notes: oauthAppId ? `Uploaded via ${oauthAppId}` : 'Initial upload',
+        })
+        .select()
+        .single()
+
+      if (versionError) {
+        // Clean up if version creation fails
+        await supabase.schema('core').from('organization_documents').delete().eq('id', document.id)
+        try {
+          await backend.delete(storagePath)
+        } catch (cleanupError) {
+          console.error(
+            '[documents.upload] Failed to cleanup file after version creation error:',
+            cleanupError
+          )
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to create document version: ${versionError.message}`,
+        })
+      }
+
+      // Get signed URL for download (1 hour expiry)
+      let downloadUrl: string | null = null
+      try {
+        const signedUrlResult = await backend.getSignedUrl(storagePath, 3600)
+        downloadUrl = signedUrlResult.url
+      } catch (urlError) {
+        console.warn('[documents.upload] Failed to generate signed URL:', urlError)
+      }
+
+      return {
+        id: document.id,
+        name: document.name,
+        category: document.category,
+        storageBackend: actualBackend as StorageBackendType,
+        storagePath: storagePath,
+        downloadUrl,
+        oauthAppId: oauthAppId,
+        version: version.version_number,
+        fileSize: input.fileSize,
+        mimeType: input.contentType,
+        checksum: checksum,
+        createdAt: document.created_at,
+        uploadedBy: user.id,
+      }
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to upload document: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      })
+    }
+  }),
 
   /**
    * Get a single document by ID
@@ -340,7 +349,10 @@ export const documentsRouter = t.router({
     }
 
     if (input.folderId !== undefined) {
-      query = input.folderId === null ? query.is('folder_id', null) : query.eq('folder_id', input.folderId)
+      query =
+        input.folderId === null
+          ? query.is('folder_id', null)
+          : query.eq('folder_id', input.folderId)
     }
 
     if (input.category) {
@@ -469,48 +481,52 @@ export const documentsRouter = t.router({
   /**
    * Delete a document (soft delete)
    */
-  delete: protectedProcedure.input(z.object({ id: z.string().uuid() })).mutation(async ({ ctx, input }) => {
-    const { supabase, user } = ctx
+  delete: protectedProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
 
-    const { data, error } = await supabase
-      .schema('core')
-      .from('organization_documents')
-      .update({
-        is_deleted: true,
-        deleted_at: new Date().toISOString(),
-        updated_by: user.id,
-      })
-      .eq('id', input.id)
-      .select()
-      .single()
+      const { data, error } = await supabase
+        .schema('core')
+        .from('organization_documents')
+        .update({
+          is_deleted: true,
+          deleted_at: new Date().toISOString(),
+          updated_by: user.id,
+        })
+        .eq('id', input.id)
+        .select()
+        .single()
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+      if (error) {
+        if (error.code === 'PGRST116') {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Document not found',
+          })
+        }
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Document not found',
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to delete document: ${error.message}`,
         })
       }
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to delete document: ${error.message}`,
-      })
-    }
 
-    return { success: true, deletedDocument: data }
-  }),
+      return { success: true, deletedDocument: data }
+    }),
 
   /**
    * Get document versions
    */
-  getVersions: protectedProcedure.input(z.object({ documentId: z.string().uuid() })).query(async ({ ctx, input }) => {
-    const { supabase } = ctx
+  getVersions: protectedProcedure
+    .input(z.object({ documentId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase } = ctx
 
-    const { data, error } = await supabase
-      .schema('core')
-      .from('organization_document_versions')
-      .select(
-        `
+      const { data, error } = await supabase
+        .schema('core')
+        .from('organization_document_versions')
+        .select(
+          `
         id,
         version_number,
         storage_object_path,
@@ -521,19 +537,19 @@ export const documentsRouter = t.router({
         created_at,
         uploaded_by_user:users!uploaded_by(id, first_name, last_name, email)
       `
-      )
-      .eq('document_id', input.documentId)
-      .order('version_number', { ascending: false })
+        )
+        .eq('document_id', input.documentId)
+        .order('version_number', { ascending: false })
 
-    if (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to fetch document versions: ${error.message}`,
-      })
-    }
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to fetch document versions: ${error.message}`,
+        })
+      }
 
-    return { versions: data || [] }
-  }),
+      return { versions: data || [] }
+    }),
 
   /**
    * Upload a new version of an existing document
@@ -582,10 +598,12 @@ export const documentsRouter = t.router({
         const storagePath = `${document.storage_prefix}/${input.documentId}/v-${timestamp}-${input.fileName}`
 
         // Upload to Supabase Storage
-        const { error: uploadError } = await supabase.storage.from('organization-documents').upload(storagePath, bytes, {
-          contentType: input.contentType,
-          upsert: false,
-        })
+        const { error: uploadError } = await supabase.storage
+          .from('organization-documents')
+          .upload(storagePath, bytes, {
+            contentType: input.contentType,
+            upsert: false,
+          })
 
         if (uploadError) {
           throw new TRPCError({
@@ -833,7 +851,9 @@ export const documentsRouter = t.router({
       const { backend, actualBackend } = await storageRouter.getBackend()
 
       // Create upload handler
-      const uploadHandler = async (task: UploadTask): Promise<{ path: string; checksum?: string }> => {
+      const uploadHandler = async (
+        task: UploadTask
+      ): Promise<{ path: string; checksum?: string }> => {
         const uploadResult = await backend.upload(task.file, task.path, {
           contentType: task.contentType,
         })

@@ -1,5 +1,5 @@
 import type { ViewStyle } from 'react-native'
-import { Text, View, YStack } from 'tamagui'
+import { Text, View, YStack } from '@unicornlove/ui'
 
 interface MapFallbackProps {
   pinsCount: number

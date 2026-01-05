@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { ArrowDown, ArrowUp, Minus } from '@tamagui/lucide-icons'
 import { Circle, Svg } from 'react-native-svg'
-import { Card, Text, View, XStack, YStack } from 'tamagui'
+import { Card, Text, View, XStack, YStack } from '@unicornlove/ui'
 
 export interface VersionHistoryItem {
   version: number

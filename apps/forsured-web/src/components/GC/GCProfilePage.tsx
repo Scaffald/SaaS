@@ -22,7 +22,7 @@ import {
   StickyNote,
   Clock
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Card, Input } from 'tamagui';
+import { YStack, XStack, Text, H1, H2, H3, Card, Input } from '@unicornlove/ui';
 import { useClients } from '../../hooks/useClients';
 import { useCompliance } from '../../hooks/useCompliance';
 import { useProjects } from '../../hooks/useProjects';

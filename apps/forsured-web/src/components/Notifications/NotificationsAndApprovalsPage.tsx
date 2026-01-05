@@ -17,7 +17,7 @@ import {
   CheckSquare,
   Square,
 } from 'lucide-react';
-import { XStack, YStack, Text, H1, SizableText, Card, Spinner } from 'tamagui';
+import { XStack, YStack, Text, H1, SizableText, Card, Spinner } from '@unicornlove/ui';
 import { TabsCustom } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import Input from '../Common/Input';

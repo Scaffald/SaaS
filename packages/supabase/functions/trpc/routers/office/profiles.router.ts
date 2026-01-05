@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { officeProcedure, t } from '../../middleware.ts';
+import { officeProcedure, t } from '../../middleware.ts'
 
 const getGhostProfilesInputSchema = z.object({
   limit: z.number().min(1).max(100).default(25),
@@ -90,19 +90,24 @@ export const officeProfilesRouter = t.router({
 
       const rows = data ?? []
       const filteredRows = input.query
-        ? rows.filter((row: { users?: { display_name?: string | null; email?: string | null } | null; profile?: { first_name?: string | null; last_name?: string | null } | null; [key: string]: unknown }) => {
-            const displayName = row.users?.display_name ?? ''
-            const email = row.users?.email ?? ''
-            const firstName = row.profile?.first_name ?? ''
-            const lastName = row.profile?.last_name ?? ''
-            const target = `${displayName} ${email} ${firstName} ${lastName}`.toLowerCase()
-            return target.includes(input.query?.toLowerCase() ?? '')
-          })
+        ? rows.filter(
+            // biome-ignore lint/suspicious/noExplicitAny: Row type from database query
+            (row: any) => {
+              const displayName = row.users?.display_name ?? ''
+              const email = row.users?.email ?? ''
+              const firstName = row.profile?.first_name ?? ''
+              const lastName = row.profile?.last_name ?? ''
+              const target = `${displayName} ${email} ${firstName} ${lastName}`.toLowerCase()
+              return target.includes(input.query?.toLowerCase() ?? '')
+            }
+          )
         : rows
       const total = filteredRows.length
       const paginatedRows = filteredRows.slice(input.offset, input.offset + input.limit)
 
-      const userIds = paginatedRows.map((row: { user_id: string; [key: string]: unknown }) => row.user_id)
+      const userIds = paginatedRows.map(
+        (row: { user_id: string; [key: string]: unknown }) => row.user_id
+      )
       const completionScores =
         userIds.length > 0
           ? await ctx.supabaseAdmin
@@ -112,7 +117,7 @@ export const officeProfilesRouter = t.router({
               .in('user_id', userIds)
           : { data: [] as Array<{ user_id: string; completion_score: number }> }
 
-      if (completionScores.error) {
+      if ('error' in completionScores && completionScores.error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to load completion scores: ${completionScores.error.message}`,
@@ -120,10 +125,16 @@ export const officeProfilesRouter = t.router({
       }
 
       const scoreMap = new Map(
-        (completionScores.data ?? []).map((entry: { user_id: string; completion_score: number }) => [entry.user_id, entry.completion_score])
+        (completionScores.data ?? []).map(
+          (entry: { user_id: string; completion_score: number }) => [
+            entry.user_id,
+            entry.completion_score,
+          ]
+        )
       )
 
-      const items = paginatedRows.map((row: { user_id: string; ui_preferences?: unknown; nudge_history?: unknown; users?: { display_name?: string | null; email?: string | null; headline?: string | null; created_at?: string | null } | null; profile?: { first_name?: string | null; last_name?: string | null; location?: string | null } | null; prerequisites_completed_at?: string | null; [key: string]: unknown }) => {
+      // biome-ignore lint/suspicious/noExplicitAny: Row type from database query
+      const items = paginatedRows.map((row: any) => {
         const uiPreferences = parseUIPreferences(row.ui_preferences)
         const nudgeHistory = parseNudgeHistory(row.nudge_history)
         const markedAt = uiPreferences.ghost_profile_marked_at ?? null

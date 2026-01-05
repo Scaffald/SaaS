@@ -1,4 +1,4 @@
-import { Spinner, YStack, type YStackProps } from 'tamagui'
+import { Spinner, YStack, type YStackProps } from '@unicornlove/ui'
 
 export const LoadingOverlay = (props: YStackProps) => {
   return (

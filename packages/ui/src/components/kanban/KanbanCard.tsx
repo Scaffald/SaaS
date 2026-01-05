@@ -1,6 +1,6 @@
 import { Clock, Eye, MessageSquare, MoreVertical, Paperclip } from '@tamagui/lucide-icons'
 import { memo, useState } from 'react'
-import { Avatar, Card, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Card, Text, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import { Chip } from '../chips/Chip'
 import { ProgressBar } from './ProgressBar'

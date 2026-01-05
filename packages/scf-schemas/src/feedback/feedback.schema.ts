@@ -10,7 +10,7 @@ export const FEEDBACK_ALLOWED_MIME_TYPES = [
   'image/jpg',
   'image/gif',
   'image/webp',
-] as const
+] as [string, ...string[]]
 
 export const feedbackScreenshotSchema = z.object({
   name: z
@@ -111,7 +111,7 @@ export const feedbackUploadRequestSchema = z.object({
     .min(3, { message: 'File name must be at least 3 characters' })
     .max(255, { message: 'File name is too long' }),
   fileType: z.enum(FEEDBACK_ALLOWED_MIME_TYPES, {
-    message: 'Unsupported file type',
+    invalid_type_error: 'Unsupported file type',
   }),
   fileSize: z
     .number()

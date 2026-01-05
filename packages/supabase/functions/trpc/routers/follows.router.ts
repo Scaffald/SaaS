@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 // =========================================================
 // Zod Schemas
@@ -49,8 +49,14 @@ async function updateConnectionAnalytics(
     connections_count: currentCounts.connections_count || 0,
     pending_sent_count: currentCounts.pending_sent_count || 0,
     pending_received_count: currentCounts.pending_received_count || 0,
-    followers_count: Math.max(0, (currentCounts.followers_count || 0) + (updates.followers_count || 0)),
-    following_count: Math.max(0, (currentCounts.following_count || 0) + (updates.following_count || 0)),
+    followers_count: Math.max(
+      0,
+      (currentCounts.followers_count || 0) + (updates.followers_count || 0)
+    ),
+    following_count: Math.max(
+      0,
+      (currentCounts.following_count || 0) + (updates.following_count || 0)
+    ),
     profile_views_30d: currentCounts.profile_views_30d || 0,
     profile_views_total: currentCounts.profile_views_total || 0,
     last_profile_view_at: currentCounts.last_profile_view_at || null,
@@ -90,144 +96,142 @@ export const followsRouter = t.router({
   /**
    * Follow a user (one-way, no approval needed)
    */
-  followUser: protectedProcedure
-    .input(targetUserIdSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  followUser: protectedProcedure.input(targetUserIdSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      const followerId = ctx.user.id
-      const followeeId = input.targetUserId
+    const followerId = ctx.user.id
+    const followeeId = input.targetUserId
 
-      // Prevent following self
-      if (followerId === followeeId) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Cannot follow yourself',
-        })
-      }
-
-      // Check if already following
-      const { data: existing } = await ctx.supabase
-        .schema('core')
-        .from('follows')
-        .select('id')
-        .eq('follower_type', 'user')
-        .eq('follower_id', followerId)
-        .eq('followee_type', 'user')
-        .eq('followee_id', followeeId)
-        .maybeSingle()
-
-      if (existing) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Already following this user',
-        })
-      }
-
-      // Create follow relationship
-      const { data: follow, error: followError } = await ctx.supabase
-        .schema('core')
-        .from('follows')
-        .insert({
-          follower_type: 'user',
-          follower_id: followerId,
-          followee_type: 'user',
-          followee_id: followeeId,
-        })
-        .select('id, created_at')
-        .single()
-
-      if (followError || !follow) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: followError ? `Failed to follow user: ${followError.message}` : 'Failed to follow user',
-        })
-      }
-
-      // Create activity event
-      await createActivityEvent(ctx.supabase, followerId, 'user.followed', 'user', followeeId, {
-        follow_id: follow.id,
-        target_user_id: followeeId,
+    // Prevent following self
+    if (followerId === followeeId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Cannot follow yourself',
       })
+    }
 
-      // Update analytics for both users
-      await updateConnectionAnalytics(ctx.supabase, followerId, {
-        following_count: 1,
+    // Check if already following
+    const { data: existing } = await ctx.supabase
+      .schema('core')
+      .from('follows')
+      .select('id')
+      .eq('follower_type', 'user')
+      .eq('follower_id', followerId)
+      .eq('followee_type', 'user')
+      .eq('followee_id', followeeId)
+      .maybeSingle()
+
+    if (existing) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Already following this user',
       })
-      await updateConnectionAnalytics(ctx.supabase, followeeId, {
-        followers_count: 1,
+    }
+
+    // Create follow relationship
+    const { data: follow, error: followError } = await ctx.supabase
+      .schema('core')
+      .from('follows')
+      .insert({
+        follower_type: 'user',
+        follower_id: followerId,
+        followee_type: 'user',
+        followee_id: followeeId,
       })
+      .select('id, created_at')
+      .single()
 
-      // No notification sent (as per requirements)
+    if (followError || !follow) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: followError
+          ? `Failed to follow user: ${followError.message}`
+          : 'Failed to follow user',
+      })
+    }
 
-      return { success: true, follow }
-    }),
+    // Create activity event
+    await createActivityEvent(ctx.supabase, followerId, 'user.followed', 'user', followeeId, {
+      follow_id: follow.id,
+      target_user_id: followeeId,
+    })
+
+    // Update analytics for both users
+    await updateConnectionAnalytics(ctx.supabase, followerId, {
+      following_count: 1,
+    })
+    await updateConnectionAnalytics(ctx.supabase, followeeId, {
+      followers_count: 1,
+    })
+
+    // No notification sent (as per requirements)
+
+    return { success: true, follow }
+  }),
 
   /**
    * Unfollow a user
    */
-  unfollowUser: protectedProcedure
-    .input(targetUserIdSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  unfollowUser: protectedProcedure.input(targetUserIdSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      const followerId = ctx.user.id
-      const followeeId = input.targetUserId
+    const followerId = ctx.user.id
+    const followeeId = input.targetUserId
 
-      // Verify follow relationship exists
-      const { data: existing } = await ctx.supabase
-        .schema('core')
-        .from('follows')
-        .select('id')
-        .eq('follower_type', 'user')
-        .eq('follower_id', followerId)
-        .eq('followee_type', 'user')
-        .eq('followee_id', followeeId)
-        .maybeSingle()
+    // Verify follow relationship exists
+    const { data: existing } = await ctx.supabase
+      .schema('core')
+      .from('follows')
+      .select('id')
+      .eq('follower_type', 'user')
+      .eq('follower_id', followerId)
+      .eq('followee_type', 'user')
+      .eq('followee_id', followeeId)
+      .maybeSingle()
 
-      if (!existing) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Not following this user',
-        })
-      }
-
-      // Delete follow relationship
-      const { error: deleteError } = await ctx.supabase
-        .schema('core')
-        .from('follows')
-        .delete()
-        .eq('follower_type', 'user')
-        .eq('follower_id', followerId)
-        .eq('followee_type', 'user')
-        .eq('followee_id', followeeId)
-
-      if (deleteError) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to unfollow user: ${deleteError.message}`,
-        })
-      }
-
-      // Create activity event
-      await createActivityEvent(ctx.supabase, followerId, 'user.unfollowed', 'user', followeeId, {
-        target_user_id: followeeId,
+    if (!existing) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Not following this user',
       })
+    }
 
-      // Update analytics for both users
-      await updateConnectionAnalytics(ctx.supabase, followerId, {
-        following_count: -1,
-      })
-      await updateConnectionAnalytics(ctx.supabase, followeeId, {
-        followers_count: -1,
-      })
+    // Delete follow relationship
+    const { error: deleteError } = await ctx.supabase
+      .schema('core')
+      .from('follows')
+      .delete()
+      .eq('follower_type', 'user')
+      .eq('follower_id', followerId)
+      .eq('followee_type', 'user')
+      .eq('followee_id', followeeId)
 
-      return { success: true }
-    }),
+    if (deleteError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to unfollow user: ${deleteError.message}`,
+      })
+    }
+
+    // Create activity event
+    await createActivityEvent(ctx.supabase, followerId, 'user.unfollowed', 'user', followeeId, {
+      target_user_id: followeeId,
+    })
+
+    // Update analytics for both users
+    await updateConnectionAnalytics(ctx.supabase, followerId, {
+      following_count: -1,
+    })
+    await updateConnectionAnalytics(ctx.supabase, followeeId, {
+      followers_count: -1,
+    })
+
+    return { success: true }
+  }),
 
   /**
    * Get current user's followers (users following this user)
@@ -289,7 +293,9 @@ export const followsRouter = t.router({
     }
 
     // Create a map of user ID to user data
-    const usersMap = new Map((users || []).map((user: { id: string; [key: string]: unknown }) => [user.id, user]))
+    const usersMap = new Map(
+      (users || []).map((user: { id: string; [key: string]: unknown }) => [user.id, user])
+    )
 
     // Transform to include follower user info
     return follows
@@ -361,7 +367,9 @@ export const followsRouter = t.router({
     }
 
     // Create a map of user ID to user data
-    const usersMap = new Map((users || []).map((user: { id: string; [key: string]: unknown }) => [user.id, user]))
+    const usersMap = new Map(
+      (users || []).map((user: { id: string; [key: string]: unknown }) => [user.id, user])
+    )
 
     // Transform to include followee user info
     return follows
@@ -373,4 +381,3 @@ export const followsRouter = t.router({
       .filter((follow: { user: unknown }) => follow.user !== null) // Filter out any missing users
   }),
 })
-

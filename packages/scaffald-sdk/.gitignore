@@ -1,0 +1,9 @@
+dist
+node_modules
+*.log
+.turbo
+coverage
+.DS_Store
+
+# Auto-generated types
+src/types/api.ts

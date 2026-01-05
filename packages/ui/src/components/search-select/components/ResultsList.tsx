@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { memo, useMemo } from 'react'
 import { Platform } from 'react-native'
-import { ScrollView, SizableText, YStack } from 'tamagui'
+import { ScrollView, SizableText, YStack } from '@unicornlove/ui'
 import type { SearchSelectOption } from '../types'
 import { EmptyState } from './EmptyState'
 import { ErrorState } from './ErrorState'

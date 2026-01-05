@@ -1,6 +1,6 @@
 import type { IconProps } from '@tamagui/helpers-icon'
 import type { ComponentType } from 'react'
-import { H2, Paragraph, YStack } from 'tamagui'
+import { H2, Paragraph, YStack } from '@unicornlove/ui'
 
 export const StepContent = ({
   icon: Icon,

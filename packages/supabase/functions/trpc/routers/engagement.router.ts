@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../middleware.ts';
+import { protectedProcedure, t } from '../middleware.ts'
 
 // =========================================================
 // Zod Schemas
@@ -50,14 +50,15 @@ export const engagementRouter = t.router({
   /**
    * Track a generic engagement event
    */
-  trackEvent: protectedProcedure
-    .input(trackEventSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.user) {
-        throw new TRPCError({ code: 'UNAUTHORIZED' })
-      }
+  trackEvent: protectedProcedure.input(trackEventSchema).mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
 
-      const { error } = await ctx.supabase.schema('engagement').from('activity_events').insert({
+    const { error } = await ctx.supabase
+      .schema('engagement')
+      .from('activity_events')
+      .insert({
         user_id: ctx.user.id,
         event_type: input.eventType,
         target_type: input.targetType || null,
@@ -66,15 +67,15 @@ export const engagementRouter = t.router({
         occurred_at: new Date().toISOString(),
       })
 
-      if (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to track event: ${error.message}`,
-        })
-      }
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to track event: ${error.message}`,
+      })
+    }
 
-      return { success: true }
-    }),
+    return { success: true }
+  }),
 
   /**
    * Get user's recent engagement activity
@@ -179,4 +180,3 @@ export const engagementRouter = t.router({
       }
     }),
 })
-

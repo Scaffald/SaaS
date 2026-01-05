@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
-import { XStack } from 'tamagui'
+import { XStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 
 export type OnboardingControlsProps = {
@@ -51,8 +51,7 @@ export const OnboardingControls = ({
         bottom={0}
         left={0}
         right={0}
-        display="flex"
-        $sm={{ display: 'none', position: 'relative' }}
+        $ltMd={{ display: 'none' }}
       >
         <Button
           chromeless
@@ -78,7 +77,8 @@ export const OnboardingControls = ({
         padding="$5"
         gap="$5"
         display="none"
-        $sm={{ display: 'flex' }}
+        $xs={{ display: 'flex' }}
+        $gtXs={{ display: 'none' }}
       >
         <Button
           chromeless

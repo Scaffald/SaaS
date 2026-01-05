@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { Database } from '../database.types.ts';
-import { rpc } from './db-helpers.ts';
+import type { Database } from '../database.types.ts'
+import { rpc } from './db-helpers.ts'
 
 type SupabaseAdminClient = SupabaseClient<Database>
 

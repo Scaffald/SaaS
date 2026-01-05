@@ -1,6 +1,6 @@
 import type { TextStyle } from 'react-native'
 import { BarChart as GiftedBarChart } from 'react-native-gifted-charts'
-import { View } from 'tamagui'
+import { View } from '@unicornlove/ui'
 
 export interface BarChartData {
   value: number

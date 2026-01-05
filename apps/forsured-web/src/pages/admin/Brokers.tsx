@@ -1,7 +1,7 @@
 // src/pages/admin/Brokers.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Trash2, Mail, RefreshCcw, Send } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H3, Card, Spinner } from 'tamagui';
+import { YStack, XStack, Text, Button, H1, H3, Card, Spinner } from '@unicornlove/ui';
 import { EmptyState } from '@unicornlove/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { logAdminAction, AUDIT_ACTIONS } from '../../services/auditLogService';

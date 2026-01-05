@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 
-import { officeProcedure, t } from '../../middleware.ts';
+import { officeProcedure, t } from '../../middleware.ts'
 
 type UsageRow = {
   user_id: string
@@ -50,15 +50,26 @@ export const officeStorageRouter = t.router({
       })
     }
 
-    const usageRows: UsageRow[] = (usageData ?? []).map((row: { user_id: string; total_bytes: number; work_log_photos_bytes: number; portfolio_photos_bytes: number; certification_files_bytes: number; storage_limit_bytes: number; updated_at: string; [key: string]: unknown }) => ({
-      user_id: row.user_id,
-      total_bytes: row.total_bytes,
-      work_log_photos_bytes: row.work_log_photos_bytes,
-      portfolio_photos_bytes: row.portfolio_photos_bytes,
-      certification_files_bytes: row.certification_files_bytes,
-      storage_limit_bytes: row.storage_limit_bytes,
-      updated_at: row.updated_at,
-    }))
+    const usageRows: UsageRow[] = (usageData ?? []).map(
+      (row: {
+        user_id: string
+        total_bytes: number
+        work_log_photos_bytes: number
+        portfolio_photos_bytes: number
+        certification_files_bytes: number
+        storage_limit_bytes: number
+        updated_at: string
+        [key: string]: unknown
+      }) => ({
+        user_id: row.user_id,
+        total_bytes: row.total_bytes,
+        work_log_photos_bytes: row.work_log_photos_bytes,
+        portfolio_photos_bytes: row.portfolio_photos_bytes,
+        certification_files_bytes: row.certification_files_bytes,
+        storage_limit_bytes: row.storage_limit_bytes,
+        updated_at: row.updated_at,
+      })
+    )
 
     let totalBytes = 0
     let workLogBytes = 0
@@ -122,7 +133,8 @@ export const officeStorageRouter = t.router({
         })
       }
 
-      usersLookup = new Map((usersData ?? []).map((user: { id: string; display_name?: string | null; username?: string | null; [key: string]: unknown }) => [user.id, user]))
+      // biome-ignore lint/suspicious/noExplicitAny: User row type mismatch
+      usersLookup = new Map((usersData ?? []).map((user: any) => [user.id, user]))
     }
 
     const topUsers = topUsersSource.map((row) => {

@@ -166,10 +166,7 @@ export async function updateSessionTokens(
 /**
  * Delete session (logout)
  */
-export async function deleteSession(
-  supabase: SupabaseClient,
-  sessionId: string
-): Promise<boolean> {
+export async function deleteSession(supabase: SupabaseClient, sessionId: string): Promise<boolean> {
   const { data, error } = await supabase.rpc('delete_auth_session', {
     p_session_id: sessionId,
   })

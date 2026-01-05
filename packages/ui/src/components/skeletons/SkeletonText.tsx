@@ -1,4 +1,4 @@
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 import { SkeletonBox } from './SkeletonBox'
 
 export interface SkeletonTextProps {

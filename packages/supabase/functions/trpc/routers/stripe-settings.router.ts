@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { supabaseUrl } from '../context.ts';
-import { officeProcedure, t } from '../middleware.ts';
+import { supabaseUrl } from '../context.ts'
+import { officeProcedure, t } from '../middleware.ts'
 
 const WEBHOOK_PATH = '/functions/v1/stripe-webhook'
 
@@ -42,16 +42,26 @@ export const stripeSettingsRouter = t.router({
     }
 
     return {
-      publishableKey: data?.publishable_key ?? '',
-      hasApiKey: Boolean(data?.api_key_secret_id),
-      hasWebhookSecret: Boolean(data?.webhook_secret_id),
-      testMode: data?.test_mode ?? true,
-      webhookEndpointUrl: data?.webhook_endpoint_url ?? buildWebhookUrl(),
-      lastTestedAt: data?.last_tested_at ?? null,
-      lastTestedStatus: data?.last_tested_status ?? null,
-      lastTestedError: data?.last_tested_error ?? null,
-      updatedAt: data?.updated_at ?? null,
-      updatedBy: data?.updated_by ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      publishableKey: (data as any)?.publishable_key ?? '',
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      hasApiKey: Boolean((data as any)?.api_key_secret_id),
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      hasWebhookSecret: Boolean((data as any)?.webhook_secret_id),
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      testMode: (data as any)?.test_mode ?? true,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      webhookEndpointUrl: (data as any)?.webhook_endpoint_url ?? buildWebhookUrl(),
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      lastTestedAt: (data as any)?.last_tested_at ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      lastTestedStatus: (data as any)?.last_tested_status ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      lastTestedError: (data as any)?.last_tested_error ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      updatedAt: (data as any)?.updated_at ?? null,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      updatedBy: (data as any)?.updated_by ?? null,
     }
   }),
 

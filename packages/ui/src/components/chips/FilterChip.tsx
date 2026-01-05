@@ -1,7 +1,7 @@
 import { X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import type { GetThemeValueForKey, SizeTokens, ThemeName } from 'tamagui'
-import { Text, XStack } from 'tamagui'
+import type { GetThemeValueForKey, SizeTokens, ThemeName } from '@unicornlove/ui'
+import { Text, XStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 
 type FilterChipProps = {

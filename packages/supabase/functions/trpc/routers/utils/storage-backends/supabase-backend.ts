@@ -6,7 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts';
+import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts'
 
 export class SupabaseStorageBackend implements IStorageBackend {
   readonly type = 'supabase' as const
@@ -32,7 +32,8 @@ export class SupabaseStorageBackend implements IStorageBackend {
     }
 
     // Calculate checksum
-    const hashBuffer = await crypto.subtle.digest('SHA-256', file)
+    // biome-ignore lint/suspicious/noExplicitAny: Uint8Array to BufferSource conversion
+    const hashBuffer = await crypto.subtle.digest('SHA-256', file as any)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const checksum = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 
@@ -57,7 +58,9 @@ export class SupabaseStorageBackend implements IStorageBackend {
   }
 
   async getSignedUrl(path: string, expirySeconds: number): Promise<SignedUrlResult> {
-    const { data, error } = await this.supabase.storage.from(this.bucket).createSignedUrl(path, expirySeconds)
+    const { data, error } = await this.supabase.storage
+      .from(this.bucket)
+      .createSignedUrl(path, expirySeconds)
 
     if (error || !data?.signedUrl) {
       throw {

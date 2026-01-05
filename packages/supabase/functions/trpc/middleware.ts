@@ -1,6 +1,6 @@
 // This file is excluded from expo tsconfig but imported for types
 import { initTRPC, TRPCError } from '@trpc/server'
-import type { Context } from './context.ts';
+import type { Context } from './context.ts'
 
 // Initialize tRPC with context type
 export const t = initTRPC.context<Context>().create()
@@ -99,12 +99,12 @@ export const enforceOfficeRole = t.middleware(async ({ ctx, next, path }) => {
   }
 
   // Check if user has office role with platform scope
-  const hasOfficeRole = (data as Array<{ role?: { name?: string; scope?: string } | null }> | null)?.some(
-    (assignment) => {
-      const role = assignment.role as { name: string; scope: string } | null
-      return role?.name === 'office' && role?.scope === 'platform'
-    }
-  )
+  const hasOfficeRole = (
+    data as Array<{ role?: { name?: string; scope?: string } | null }> | null
+  )?.some((assignment) => {
+    const role = assignment.role as { name: string; scope: string } | null
+    return role?.name === 'office' && role?.scope === 'platform'
+  })
 
   if (!hasOfficeRole) {
     console.warn('[middleware] Office access denied', {

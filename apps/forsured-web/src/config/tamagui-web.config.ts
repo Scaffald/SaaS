@@ -2,14 +2,14 @@
  * Web-specific Tamagui configuration for forsured-web
  * Uses CSS animations instead of moti/reanimated to avoid web compatibility issues
  */
-import { defaultConfig } from '@tamagui/config/v4';
-import { createTamagui, setupDev } from 'tamagui';
-import { animations } from './animations-css';
+import { defaultConfig } from "@tamagui/config/v4";
+import { createTamagui, setupDev } from "@unicornlove/ui";
+import { animations } from "./animations-css";
 // Import themes from the UI package
-import { themes } from '@unicornlove/ui';
+import { themes } from "@unicornlove/ui";
 
 // Development setup - only in development
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   setupDev({
     visualizer: true,
   });
@@ -31,6 +31,6 @@ export const tamaguiWebConfig = createTamagui({
 
 export type TamaguiWebConfig = typeof tamaguiWebConfig;
 
-declare module 'tamagui' {
+declare module "tamagui" {
   interface TamaguiCustomConfig extends TamaguiWebConfig {}
 }

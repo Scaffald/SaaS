@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { mapToArchetype } from '../../_shared/ipip-archetype-mapper.ts';
-import { getScore } from '../../_shared/ipip-score.ts';
-import type { IPIPAnswer } from '../../_shared/ipip-types.ts';
-import { protectedProcedure, publicProcedure, t } from '../middleware.ts';
+import { mapToArchetype } from '../../_shared/ipip-archetype-mapper.ts'
+import { getScore } from '../../_shared/ipip-score.ts'
+import type { IPIPAnswer } from '../../_shared/ipip-types.ts'
+import { protectedProcedure, publicProcedure, t } from '../middleware.ts'
 
 /**
  * Personality Assessment Router - Handles personality assessment operations
@@ -215,6 +215,7 @@ export const personalityAssessmentRouter = t.router({
           updated_at: string
           ipip_completed_at?: string
           current_step?: string
+          next_available_at?: string
         } = {
           ipip_answers: input.answers,
           ipip_current_index: input.current_index,
@@ -1030,29 +1031,15 @@ export const personalityAssessmentRouter = t.router({
         return null
       }
 
+      const archetype = Array.isArray(data.archetypes) ? data.archetypes[0] : data.archetypes
       return {
-        archetype:
-          (
-            data.archetypes as {
-              name: string
-              description: string
-              strengths: string[]
-              work_styles: string
-              team_dynamics: string
-              growth_areas: string[]
-            }
-          )?.name || null,
+        // biome-ignore lint/suspicious/noExplicitAny: Archetype can be array or object from join
+        archetype: (archetype as any)?.name || null,
         confidence: data.confidence_score,
         assessmentDate: data.assessment_date,
         domainScores: data.domain_scores,
-        details: data.archetypes as {
-          name: string
-          description: string
-          strengths: string[]
-          work_styles: string
-          team_dynamics: string
-          growth_areas: string[]
-        } | null,
+        // biome-ignore lint/suspicious/noExplicitAny: Archetype structure varies by query
+        details: archetype as any,
       }
     } catch (error) {
       if (error instanceof TRPCError) throw error
@@ -1098,14 +1085,19 @@ export const personalityAssessmentRouter = t.router({
         })
       }
 
-      return (data || []).map((item: { id: string; archetypes?: { name?: string } | null; confidence_score?: number | null; assessment_date?: string | null; [key: string]: unknown }) => ({
-        id: item.id,
-        archetype: (item.archetypes as { name: string } | null)?.name || null,
-        confidence: item.confidence_score,
-        assessmentDate: item.assessment_date,
-        domainScores: item.domain_scores,
-        isPrimary: item.is_primary,
-      }))
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from database query
+      return (data || []).map((item: any) => {
+        const archetype = Array.isArray(item.archetypes) ? item.archetypes[0] : item.archetypes
+        return {
+          id: item.id,
+          // biome-ignore lint/suspicious/noExplicitAny: Archetype can be array or object from join
+          archetype: (archetype as any)?.name || null,
+          confidence: item.confidence_score,
+          assessmentDate: item.assessment_date,
+          domainScores: item.domain_scores,
+          isPrimary: item.is_primary,
+        }
+      })
     } catch (error) {
       if (error instanceof TRPCError) throw error
       console.error('Error in getArchetypeHistory:', error)
@@ -1341,12 +1333,19 @@ export const personalityAssessmentRouter = t.router({
           archetypeData = data
         }
 
+        const archetype = archetypeData?.archetypes
+          ? Array.isArray(archetypeData.archetypes)
+            ? archetypeData.archetypes[0]
+            : archetypeData.archetypes
+          : null
+
         return {
           answers: assessment.ipip_answers,
           completedAt: assessment.ipip_completed_at,
           archetype: archetypeData
             ? {
-                name: (archetypeData.archetypes as { name: string } | null)?.name || null,
+                // biome-ignore lint/suspicious/noExplicitAny: Archetype can be array or object from join
+                name: (archetype as any)?.name || null,
                 confidence: archetypeData.confidence_score,
               }
             : null,

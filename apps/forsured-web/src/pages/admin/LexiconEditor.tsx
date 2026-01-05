@@ -22,7 +22,7 @@ import {
   AlertTriangle,
   Search,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label, Spinner } from 'tamagui';
+import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label, Spinner } from '@unicornlove/ui';
 import { EmptyState } from '@unicornlove/ui';
 import { trpc } from '../../lib/trpc';
 import { DEFAULT_LEXICON } from '../../contexts/LexiconContext';

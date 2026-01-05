@@ -1,6 +1,6 @@
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { useTheme, YStack } from 'tamagui'
+import type { TamaguiElement } from '@unicornlove/ui'
+import { useTheme, YStack } from '@unicornlove/ui'
 import { borderRadius } from '../../config/radii'
 import { cardShadows } from '../../config/shadows'
 import { spacing } from '../../config/spacing'

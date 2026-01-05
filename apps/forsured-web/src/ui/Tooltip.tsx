@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Tooltip as TamaguiTooltip } from 'tamagui';
+import { Tooltip as TamaguiTooltip } from '@unicornlove/ui';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 

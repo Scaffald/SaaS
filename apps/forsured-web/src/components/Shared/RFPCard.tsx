@@ -1,5 +1,5 @@
 import { FileText, DollarSign, Calendar, Award, Building } from 'lucide-react';
-import { XStack, YStack, Text, SizableText, Card } from 'tamagui';
+import { XStack, YStack, Text, SizableText, Card } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import { PublicRFP } from '../../types';
 

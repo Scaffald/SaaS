@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { AdaptiveSelectSheet } from './AdaptiveSelectSheet'
 
 export interface ResponsiveSelectOption {

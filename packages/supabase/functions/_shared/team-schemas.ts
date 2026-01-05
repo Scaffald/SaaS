@@ -35,4 +35,4 @@ export {
   teamRoleKeySchema,
   teamUpdateSchema,
   teamWorkloadSnapshotInputSchema,
-} from '@scf/schemas';
+} from '@scf/schemas'

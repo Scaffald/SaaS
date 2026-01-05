@@ -31,5 +31,20 @@ export const tamaguiConfig = createTamagui({
   // shorthands: {}, // defaultConfig.shorthands,
   themes,
   // Explicitly include tokens to ensure available during static extraction
-  tokens: defaultConfig.tokens,
+  // Merge to ensure all default tokens (including $full) are included
+  tokens: {
+    ...defaultConfig.tokens,
+    // Ensure $full radius token exists (should be in defaultConfig, but explicitly ensure it)
+    radius: {
+      ...defaultConfig.tokens.radius,
+      // $full should already be in defaultConfig, but ensure it's there
+      ...(defaultConfig.tokens.radius?.$full ? {} : { $full: 9999 }),
+    },
+  },
 })
+
+// Export as 'config' for Tamagui babel/metro plugins
+export const config = tamaguiConfig
+
+// Export as default for Tamagui babel/metro plugins
+export default tamaguiConfig

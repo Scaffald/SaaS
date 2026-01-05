@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context.ts';
-import { t } from '../middleware.ts';
-import { enrichUserSkills } from './utils/skill-enrichment.ts';
+import type { Context } from '../context.ts'
+import { t } from '../middleware.ts'
+import { enrichUserSkills } from './utils/skill-enrichment.ts'
 
 async function userHasPlatformRole(ctx: Context): Promise<boolean> {
   if (!ctx.user?.id) return false
@@ -21,9 +21,11 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment: { role?: { scope?: string; name?: string | null } | null; [key: string]: unknown }) =>
-        assignment.role?.scope === 'platform' &&
-        ['office', 'super_admin'].includes(assignment.role?.name ?? '')
+      // biome-ignore lint/suspicious/noExplicitAny: Role can be array or object from join
+      (assignment: any) => {
+        const role = Array.isArray(assignment.role) ? assignment.role[0] : assignment.role
+        return role?.scope === 'platform' && ['office', 'super_admin'].includes(role?.name ?? '')
+      }
     )
   )
 }
@@ -144,12 +146,22 @@ export const userProfileRouter = t.router({
         avatarPath: user.avatar_path,
         headline: user.headline,
         location,
-        topSkills: (skills || []).slice(0, 5).map((skill: { proficiency_level?: number | null; skill_taxonomy?: string | null; csi_skill_id?: string | null; onet_occupation_id?: string | null; [key: string]: unknown }) => ({
-          proficiency: skill.proficiency_level || 0,
-          taxonomy: skill.skill_taxonomy,
-          csiSkillId: skill.csi_skill_id,
-          onetOccupationId: skill.onet_occupation_id,
-        })),
+        topSkills: (skills || [])
+          .slice(0, 5)
+          .map(
+            (skill: {
+              proficiency_level?: number | null
+              skill_taxonomy?: string | null
+              csi_skill_id?: string | null
+              onet_occupation_id?: string | null
+              [key: string]: unknown
+            }) => ({
+              proficiency: skill.proficiency_level || 0,
+              taxonomy: skill.skill_taxonomy,
+              csiSkillId: skill.csi_skill_id,
+              onetOccupationId: skill.onet_occupation_id,
+            })
+          ),
       }
     }),
   // Get comprehensive user profile
@@ -334,11 +346,18 @@ export const userProfileRouter = t.router({
       const totalReviews = reviewsList.length
 
       // Calculate average rating if rating field exists
-      const ratingsArray = reviewsList.filter((r: { rating?: number | null; [key: string]: unknown }) => r.rating != null).map((r: { rating?: number | null; [key: string]: unknown }) => r.rating)
+      const ratingsArray = reviewsList
+        .filter((r: { rating?: number | null; [key: string]: unknown }) => r.rating != null)
+        .map((r: { rating?: number | null; [key: string]: unknown }) => r.rating)
       const averageRating =
         ratingsArray.length > 0
           ? Math.round(
-              (ratingsArray.reduce((sum: number, val: number | null | undefined) => sum + (val ?? 0), 0) / ratingsArray.length) * 10
+              (ratingsArray.reduce(
+                (sum: number, val: number | null | undefined) => sum + (val ?? 0),
+                0
+              ) /
+                ratingsArray.length) *
+                10
             ) / 10
           : 0
 
@@ -349,14 +368,26 @@ export const userProfileRouter = t.router({
         ratings: {},
         strengths: [],
         improvements: [],
-        reviews: reviewsList.slice(0, 10).map((review: { id: string; headline?: string | null; body?: string | null; created_at: string; rating?: number | null; author_user_id?: string | null; [key: string]: unknown }) => ({
-          id: review.id,
-          headline: review.headline || '',
-          body: review.body || '',
-          date: review.created_at,
-          rating: review.rating || 0,
-          authorId: review.author_user_id,
-        })),
+        reviews: reviewsList
+          .slice(0, 10)
+          .map(
+            (review: {
+              id: string
+              headline?: string | null
+              body?: string | null
+              created_at: string
+              rating?: number | null
+              author_user_id?: string | null
+              [key: string]: unknown
+            }) => ({
+              id: review.id,
+              headline: review.headline || '',
+              body: review.body || '',
+              date: review.created_at,
+              rating: review.rating || 0,
+              authorId: review.author_user_id,
+            })
+          ),
       }
     }),
 

@@ -1,4 +1,4 @@
-import { XStack, YStack } from 'tamagui'
+import { XStack, YStack } from '@unicornlove/ui'
 import { borderRadius } from '../../config/radii'
 import { spacing } from '../../config/spacing'
 import { SkeletonAvatar } from './SkeletonAvatar'

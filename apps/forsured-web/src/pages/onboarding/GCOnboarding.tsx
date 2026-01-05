@@ -1,7 +1,7 @@
 // src/pages/onboarding/GCOnboarding.tsx
 // REQ-126: General Contractor Onboarding Page
 import React from 'react';
-import { View } from 'tamagui';
+import { View } from '@unicornlove/ui';
 import { useOnboarding } from '../../hooks/useOnboarding';
 import OnboardingWizard from '../../components/Onboarding/OnboardingWizard';
 import CompanyStep from '../../components/Onboarding/steps/gc/CompanyStep';

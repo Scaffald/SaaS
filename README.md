@@ -70,6 +70,269 @@ You may need to run `pnpm ios` once to have it generate the env file, and then r
 - [Expo Router](https://docs.expo.dev/router/introduction/)
 - [Supabase](https://supabase.com)
 
+## Scaffald SDK
+
+The **Scaffald SDK** (`@scaffald/sdk`) is a TypeScript SDK that enables third-party developers to integrate with the Scaffald REST API. It provides full type safety, automatic retries, rate limit handling, and React hooks for seamless integration.
+
+### Features
+
+- ✅ **Full TypeScript Support** - Auto-complete and type checking
+- ✅ **Zero Runtime Dependencies** - Uses native Fetch API and Web Crypto
+- ✅ **Dual Authentication** - API keys for server-side, OAuth for user-facing apps
+- ✅ **Automatic Retries** - Exponential backoff (1s → 2s → 4s → 8s)
+- ✅ **Rate Limit Handling** - Built-in tracking of X-RateLimit-* headers
+- ✅ **React Query Integration** - Optional React hooks with caching
+- ✅ **Webhook Verification** - HMAC-SHA256 signature validation
+- ✅ **Cross-Platform** - Works in Node.js 18+, browsers, and React Native
+
+### Installation
+
+```bash
+npm install @scaffald/sdk
+# or
+pnpm add @scaffald/sdk
+# or
+yarn add @scaffald/sdk
+```
+
+### Quick Start
+
+#### Server-Side (API Key)
+
+```typescript
+import Scaffald from '@scaffald/sdk'
+
+const client = new Scaffald({
+  apiKey: 'sk_live_...',
+})
+
+// List jobs
+const jobs = await client.jobs.list({ limit: 20, status: 'published' })
+
+// Get job details
+const job = await client.jobs.retrieve('job_id')
+
+// Submit application
+const application = await client.applications.create({
+  jobId: job.id,
+  currentLocation: 'San Francisco, CA',
+})
+```
+
+#### React Integration
+
+```tsx
+import { ScaffaldProvider, useJobs, useCreateQuickApplication } from '@scaffald/sdk/react'
+
+function App() {
+  return (
+    <ScaffaldProvider config={{ apiKey: process.env.SCAFFALD_API_KEY }}>
+      <JobsList />
+    </ScaffaldProvider>
+  )
+}
+
+function JobsList() {
+  const { data, isLoading } = useJobs({ limit: 20 })
+  const createApp = useCreateQuickApplication()
+
+  if (isLoading) return <div>Loading...</div>
+
+  return (
+    <div>
+      {data?.data.map(job => (
+        <div key={job.id}>
+          <h3>{job.title}</h3>
+          <button onClick={() => createApp.mutate({ jobId: job.id, currentLocation: 'SF' })}>
+            Quick Apply
+          </button>
+        </div>
+      ))}
+    </div>
+  )
+}
+```
+
+#### OAuth 2.0 Flow
+
+```typescript
+// 1. Get authorization URL
+const { url, codeVerifier } = await client.oauth.getAuthorizationUrl({
+  clientId: 'your_app_id',
+  redirectUri: 'https://yourapp.com/callback',
+  scope: ['read:jobs', 'write:applications'],
+})
+
+// 2. Redirect user to authorization URL
+window.location.href = url
+
+// 3. Exchange code for tokens (in callback handler)
+const tokens = await client.oauth.exchangeCode({
+  code: urlParams.get('code'),
+  codeVerifier, // Stored securely from step 1
+  clientId: 'your_app_id',
+  redirectUri: 'https://yourapp.com/callback',
+})
+
+// 4. Create authenticated client
+const authenticatedClient = new Scaffald({
+  accessToken: tokens.access_token,
+})
+```
+
+### API Resources
+
+The SDK provides access to all REST API resources:
+
+```typescript
+// Jobs
+client.jobs.list(params)
+client.jobs.retrieve(id)
+client.jobs.similar(id, params)
+client.jobs.filterOptions()
+
+// Applications
+client.applications.create(input)      // Quick application
+client.applications.createFull(input)  // Full application
+client.applications.retrieve(id)
+client.applications.update(id, input)
+client.applications.withdraw(id, input)
+
+// Profiles
+client.profiles.user(username)
+client.profiles.organization(slug)
+client.profiles.employer(slug)
+
+// OAuth
+client.oauth.getAuthorizationUrl(options)
+client.oauth.exchangeCode(options)
+client.oauth.refreshToken(refreshToken)
+```
+
+### React Hooks
+
+```typescript
+import {
+  // Jobs
+  useJobs,
+  useJob,
+  useSimilarJobs,
+  useJobFilterOptions,
+  // Applications
+  useApplications,
+  useApplication,
+  useCreateQuickApplication,
+  useCreateFullApplication,
+  useUpdateApplication,
+  useWithdrawApplication,
+  // Profiles
+  useUserProfile,
+  useOrganization,
+  useEmployer,
+} from '@scaffald/sdk/react'
+```
+
+### Webhook Verification
+
+```typescript
+import Scaffald from '@scaffald/sdk'
+
+// In your webhook endpoint
+const isValid = await Scaffald.webhooks.verify({
+  payload: req.body,
+  signature: req.headers['x-webhook-signature'],
+  secret: process.env.WEBHOOK_SECRET,
+})
+
+if (!isValid) {
+  return res.status(401).json({ error: 'Invalid signature' })
+}
+
+// Process webhook event
+```
+
+### Rate Limit Tracking
+
+```typescript
+const client = new Scaffald({ apiKey: 'sk_live_...' })
+
+// Get rate limit info
+const rateLimitInfo = client.getRateLimitInfo()
+console.log(rateLimitInfo.remaining) // Requests remaining
+console.log(rateLimitInfo.resetAt)   // Timestamp when limit resets
+
+// Subscribe to rate limit updates
+const unsubscribe = client.onRateLimitUpdate((info) => {
+  if (client.isRateLimitApproaching()) {
+    console.warn('Approaching rate limit:', info)
+  }
+})
+```
+
+### Configuration
+
+```typescript
+const client = new Scaffald({
+  // Authentication (choose one)
+  apiKey: 'sk_live_...',           // For server-side apps
+  accessToken: 'oauth_token',      // For OAuth apps
+
+  // Optional configuration
+  baseUrl: 'https://api.scaffald.com',  // Default API URL
+  maxRetries: 3,                        // Max retry attempts (default: 3)
+  timeout: 30000,                       // Request timeout in ms (default: 30s)
+})
+```
+
+### Error Handling
+
+```typescript
+import { ScaffaldError, RateLimitError, AuthenticationError } from '@scaffald/sdk'
+
+try {
+  const jobs = await client.jobs.list()
+} catch (error) {
+  if (error instanceof RateLimitError) {
+    console.log('Rate limited. Retry after:', error.retryAfter)
+  } else if (error instanceof AuthenticationError) {
+    console.log('Invalid API key or expired token')
+  } else if (error instanceof ScaffaldError) {
+    console.log('API error:', error.message, error.statusCode)
+  }
+}
+```
+
+### Package Location
+
+The SDK is located in this monorepo at:
+```
+packages/scaffald-sdk/
+├── src/
+│   ├── client.ts          # Main SDK class
+│   ├── resources/         # API resources
+│   ├── auth/              # Authentication helpers
+│   ├── http/              # HTTP client with retry logic
+│   ├── webhooks/          # Webhook verification
+│   └── react/             # React hooks (optional)
+├── examples/              # Usage examples
+└── README.md             # Full documentation
+```
+
+### Development
+
+```bash
+# Build SDK
+pnpm --filter @scaffald/sdk build
+
+# Run tests
+pnpm --filter @scaffald/sdk test
+
+# Run integration tests
+cd examples/integration-test && node simple-test.mjs
+```
+
+For complete SDK documentation, see [`packages/scaffald-sdk/README.md`](packages/scaffald-sdk/README.md).
+
 ## First-time Configuration
 
 Note that you don't need to do this if you've already cloned this using `create tamagui`.

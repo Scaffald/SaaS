@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
-import { View } from 'tamagui'
+import { View } from '@unicornlove/ui'
 // useThemeSetting has domain dependencies - use tamagui's useThemeName instead
-import { useThemeName } from 'tamagui'
+import { useThemeName } from '@unicornlove/ui'
 import {
   purpleDark,
   purpleLight,

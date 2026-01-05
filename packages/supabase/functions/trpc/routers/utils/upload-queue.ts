@@ -63,7 +63,10 @@ export class UploadQueue {
   private options: Required<QueueOptions>
   private isProcessing = false
   private processingTimes: number[] = []
-  private resolvers: Map<string, { resolve: (result: UploadResult) => void; reject: (error: Error) => void }> = new Map()
+  private resolvers: Map<
+    string,
+    { resolve: (result: UploadResult) => void; reject: (error: Error) => void }
+  > = new Map()
 
   constructor(handler: UploadHandler, options: QueueOptions = {}) {
     this.handler = handler

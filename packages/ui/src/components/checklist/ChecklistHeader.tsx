@@ -1,4 +1,4 @@
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 import type { ChecklistHeaderProps } from './types'
 
 /**

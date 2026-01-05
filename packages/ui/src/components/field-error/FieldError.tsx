@@ -1,4 +1,4 @@
-import { AnimatePresence, Paragraph } from 'tamagui'
+import { AnimatePresence, Paragraph } from '@unicornlove/ui'
 
 type FieldErrorProps = {
   /**

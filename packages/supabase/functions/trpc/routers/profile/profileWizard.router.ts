@@ -12,8 +12,8 @@ import {
   profileWizardProgressSchema,
   profileWizardSaveStepInputSchema,
 } from '@scf/trpc/schemas'
-import type { Context } from '../../context.ts';
-import { protectedProcedure, t } from '../../middleware.ts';
+import type { Context } from '../../context.ts'
+import { protectedProcedure, t } from '../../middleware.ts'
 
 const TOTAL_WIZARD_WEIGHT = PROFILE_WIZARD_STEPS.reduce(
   (total, step) => total + PROFILE_WIZARD_STEP_WEIGHTS[step],
@@ -71,7 +71,7 @@ function calculateCompletionPercentage(completedSteps: ProfileWizardStepId[]): n
   return Math.min(100, Math.round(percentage))
 }
 
-const storedProgressSchema = profileWizardProgressSchema.deepPartial()
+const storedProgressSchema = profileWizardProgressSchema.partial()
 
 function normalizeProgress(
   progress: Partial<ProfileWizardProgress> | null | undefined

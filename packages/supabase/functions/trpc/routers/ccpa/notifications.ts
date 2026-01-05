@@ -18,7 +18,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types.ts';
+import type { Database } from '../../../_shared/database.types.ts'
 
 type DbClient = SupabaseClient<Database>
 
@@ -48,7 +48,8 @@ export const CCPA_NOTIFICATION_TYPES = {
   EXPORT_EXPIRING: 'ccpa.export_expiring',
 } as const
 
-export type CCPANotificationType = (typeof CCPA_NOTIFICATION_TYPES)[keyof typeof CCPA_NOTIFICATION_TYPES]
+export type CCPANotificationType =
+  (typeof CCPA_NOTIFICATION_TYPES)[keyof typeof CCPA_NOTIFICATION_TYPES]
 
 /**
  * Request types for human-readable display
@@ -224,7 +225,9 @@ Your ${requestTypeLabel} request has been completed successfully.
 **Request ID:** ${request.requestId.slice(0, 8).toUpperCase()}
 **Completed:** ${new Date().toLocaleDateString('en-US', { dateStyle: 'long' })}
 
-${request.requestType === 'access' || request.requestType === 'portability' ? `
+${
+  request.requestType === 'access' || request.requestType === 'portability'
+    ? `
 **Your Data Export:**
 Your data export is now available for download. Please note:
 - The download link will expire in 24 hours
@@ -232,23 +235,27 @@ Your data export is now available for download. Please note:
 - For security, only you can access this download
 
 Click the button below to download your data.
-` : ''}
+`
+    : ''
+}
 
 Thank you for using Scaffald. If you have any questions, contact us at ${NOTIFICATION_CONFIG.SUPPORT_EMAIL}.
 
 Best regards,
 ${NOTIFICATION_CONFIG.FROM_NAME}
         `.trim(),
-        ctaText: request.requestType === 'access' || request.requestType === 'portability'
-          ? 'Download Your Data'
-          : 'View Request Details',
+        ctaText:
+          request.requestType === 'access' || request.requestType === 'portability'
+            ? 'Download Your Data'
+            : 'View Request Details',
         ctaUrl: requestUrl,
       }
 
     case CCPA_NOTIFICATION_TYPES.DELETION_SCHEDULED:
       return {
         title: 'Data Deletion Scheduled',
-        message: 'Your data deletion has been scheduled and will be completed within the required timeframe.',
+        message:
+          'Your data deletion has been scheduled and will be completed within the required timeframe.',
         emailSubject: 'Your Data Deletion Has Been Scheduled',
         emailBody: `
 Dear ${request.userName ?? 'User'},
@@ -265,9 +272,13 @@ ${additionalData?.scheduledDate ? `**Scheduled Deletion Date:** ${new Date(addit
 - Communications (reviews, feedback)
 
 **What will be retained:**
-${additionalData?.retainedCategories && Array.isArray(additionalData.retainedCategories)
-  ? (additionalData.retainedCategories as Array<{ category: string; reason: string }>).map(item => `- ${item.category}: ${item.reason}`).join('\n')
-  : '- Any data required by law or for legitimate business purposes will be retained as required.'}
+${
+  additionalData?.retainedCategories && Array.isArray(additionalData.retainedCategories)
+    ? (additionalData.retainedCategories as Array<{ category: string; reason: string }>)
+        .map((item) => `- ${item.category}: ${item.reason}`)
+        .join('\n')
+    : '- Any data required by law or for legitimate business purposes will be retained as required.'
+}
 
 **Important:** This action cannot be undone. If you wish to cancel this request, please do so before the scheduled deletion date.
 
@@ -294,14 +305,20 @@ Your data deletion request has been completed.
 Your personal data has been permanently deleted from our systems in accordance with your request and the California Consumer Privacy Act (CCPA).
 
 **Deleted data includes:**
-${additionalData?.deletedCategories && Array.isArray(additionalData.deletedCategories)
-  ? (additionalData.deletedCategories as string[]).map(cat => `- ${cat}`).join('\n')
-  : '- All personal information as requested'}
+${
+  additionalData?.deletedCategories && Array.isArray(additionalData.deletedCategories)
+    ? (additionalData.deletedCategories as string[]).map((cat) => `- ${cat}`).join('\n')
+    : '- All personal information as requested'
+}
 
 **Retained data (if any):**
-${additionalData?.retainedCategories && Array.isArray(additionalData.retainedCategories)
-  ? (additionalData.retainedCategories as Array<{ category: string; reason: string }>).map(item => `- ${item.category}: ${item.reason}`).join('\n')
-  : '- Any legally required records'}
+${
+  additionalData?.retainedCategories && Array.isArray(additionalData.retainedCategories)
+    ? (additionalData.retainedCategories as Array<{ category: string; reason: string }>)
+        .map((item) => `- ${item.category}: ${item.reason}`)
+        .join('\n')
+    : '- Any legally required records'
+}
 
 If you have questions about this deletion, contact us at ${NOTIFICATION_CONFIG.SUPPORT_EMAIL}.
 
@@ -323,17 +340,21 @@ Dear ${request.userName ?? 'User'},
 Your opt-out preferences have been updated.
 
 **Effective immediately, we will NOT:**
-${additionalData?.categories && Array.isArray(additionalData.categories)
-  ? (additionalData.categories as string[]).map(cat => {
-      const labels: Record<string, string> = {
-        sale: 'Sell your personal information',
-        sharing: 'Share your personal information with third parties',
-        targeted_advertising: 'Use your data for targeted advertising',
-        profiling: 'Use automated profiling for decision-making',
-      }
-      return `- ${labels[cat] ?? cat}`
-    }).join('\n')
-  : '- Process your data in the ways you opted out of'}
+${
+  additionalData?.categories && Array.isArray(additionalData.categories)
+    ? (additionalData.categories as string[])
+        .map((cat) => {
+          const labels: Record<string, string> = {
+            sale: 'Sell your personal information',
+            sharing: 'Share your personal information with third parties',
+            targeted_advertising: 'Use your data for targeted advertising',
+            profiling: 'Use automated profiling for decision-making',
+          }
+          return `- ${labels[cat] ?? cat}`
+        })
+        .join('\n')
+    : '- Process your data in the ways you opted out of'
+}
 
 You can change your preferences at any time through your Privacy Dashboard.
 
@@ -355,17 +376,21 @@ Dear ${request.userName ?? 'User'},
 Your privacy preferences have been updated.
 
 You have chosen to allow:
-${additionalData?.categories && Array.isArray(additionalData.categories)
-  ? (additionalData.categories as string[]).map(cat => {
-      const labels: Record<string, string> = {
-        sale: 'Sale of personal information',
-        sharing: 'Sharing personal information with third parties',
-        targeted_advertising: 'Targeted advertising',
-        profiling: 'Automated profiling',
-      }
-      return `- ${labels[cat] ?? cat}`
-    }).join('\n')
-  : '- Data processing as selected'}
+${
+  additionalData?.categories && Array.isArray(additionalData.categories)
+    ? (additionalData.categories as string[])
+        .map((cat) => {
+          const labels: Record<string, string> = {
+            sale: 'Sale of personal information',
+            sharing: 'Sharing personal information with third parties',
+            targeted_advertising: 'Targeted advertising',
+            profiling: 'Automated profiling',
+          }
+          return `- ${labels[cat] ?? cat}`
+        })
+        .join('\n')
+    : '- Data processing as selected'
+}
 
 You can change your preferences at any time through your Privacy Dashboard.
 
@@ -391,9 +416,11 @@ This is a reminder that the deadline for your ${requestTypeLabel} request is app
 ${request.deadline ? `**Deadline:** ${new Date(request.deadline).toLocaleDateString('en-US', { dateStyle: 'long' })}` : ''}
 **Days Remaining:** ${daysRemaining ?? 'A few'}
 
-${additionalData?.actionRequired
-  ? `**Action Required:** ${additionalData.actionRequired}`
-  : 'No action is required from you at this time. We are working on your request.'}
+${
+  additionalData?.actionRequired
+    ? `**Action Required:** ${additionalData.actionRequired}`
+    : 'No action is required from you at this time. We are working on your request.'
+}
 
 If you have questions, contact us at ${NOTIFICATION_CONFIG.SUPPORT_EMAIL}.
 
@@ -529,7 +556,8 @@ export async function sendCCPANotification(
       .from('notifications')
       .insert({
         user_id: request.userId,
-        type: type,
+        // biome-ignore lint/suspicious/noExplicitAny: CCPA notification types not in database enum yet
+        type: type as any,
         severity: getSeverityForType(type),
         title: content.title,
         message: content.message,
@@ -539,10 +567,10 @@ export async function sendCCPANotification(
           requestType: request.requestType,
           emailSubject: content.emailSubject,
           ...additionalData,
-        },
+        } as never,
         cta_text: content.ctaText,
         cta_url: content.ctaUrl,
-      })
+      } as never)
       .select('id')
       .single()
 
@@ -619,11 +647,7 @@ export async function notifyRequestSubmitted(
   supabase: DbClient,
   request: CCPARequestInfo
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.REQUEST_SUBMITTED,
-    request
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.REQUEST_SUBMITTED, request)
 }
 
 /**
@@ -633,11 +657,7 @@ export async function notifyVerificationRequired(
   supabase: DbClient,
   request: CCPARequestInfo
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.VERIFICATION_REQUIRED,
-    request
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.VERIFICATION_REQUIRED, request)
 }
 
 /**
@@ -647,11 +667,7 @@ export async function notifyRequestAcknowledged(
   supabase: DbClient,
   request: CCPARequestInfo
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.REQUEST_ACKNOWLEDGED,
-    request
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.REQUEST_ACKNOWLEDGED, request)
 }
 
 /**
@@ -679,12 +695,10 @@ export async function notifyDeletionScheduled(
   scheduledDate: string,
   retainedCategories?: Array<{ category: string; reason: string }>
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.DELETION_SCHEDULED,
-    request,
-    { scheduledDate, retainedCategories }
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.DELETION_SCHEDULED, request, {
+    scheduledDate,
+    retainedCategories,
+  })
 }
 
 /**
@@ -696,12 +710,10 @@ export async function notifyDeletionCompleted(
   deletedCategories: string[],
   retainedCategories?: Array<{ category: string; reason: string }>
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.DELETION_COMPLETED,
-    request,
-    { deletedCategories, retainedCategories }
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.DELETION_COMPLETED, request, {
+    deletedCategories,
+    retainedCategories,
+  })
 }
 
 /**
@@ -712,12 +724,9 @@ export async function notifyOptOutConfirmed(
   request: CCPARequestInfo,
   categories: string[]
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.OPT_OUT_CONFIRMED,
-    request,
-    { categories }
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.OPT_OUT_CONFIRMED, request, {
+    categories,
+  })
 }
 
 /**
@@ -728,12 +737,9 @@ export async function notifyOptInConfirmed(
   request: CCPARequestInfo,
   categories: string[]
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.OPT_IN_CONFIRMED,
-    request,
-    { categories }
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.OPT_IN_CONFIRMED, request, {
+    categories,
+  })
 }
 
 /**
@@ -745,12 +751,10 @@ export async function notifyDeadlineReminder(
   daysRemaining: number,
   actionRequired?: string
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.DEADLINE_REMINDER,
-    request,
-    { daysRemaining, actionRequired }
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.DEADLINE_REMINDER, request, {
+    daysRemaining,
+    actionRequired,
+  })
 }
 
 /**
@@ -761,12 +765,7 @@ export async function notifyRequestDenied(
   request: CCPARequestInfo,
   reason: string
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.REQUEST_DENIED,
-    request,
-    { reason }
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.REQUEST_DENIED, request, { reason })
 }
 
 /**
@@ -778,12 +777,10 @@ export async function notifyExportReady(
   format: string,
   fileSize?: string
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.EXPORT_READY,
-    request,
-    { format, fileSize }
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.EXPORT_READY, request, {
+    format,
+    fileSize,
+  })
 }
 
 /**
@@ -795,12 +792,10 @@ export async function notifyExportExpiring(
   hoursRemaining: number,
   downloadsRemaining: number
 ): Promise<NotificationResult> {
-  return sendCCPANotification(
-    supabase,
-    CCPA_NOTIFICATION_TYPES.EXPORT_EXPIRING,
-    request,
-    { hoursRemaining, downloadsRemaining }
-  )
+  return sendCCPANotification(supabase, CCPA_NOTIFICATION_TYPES.EXPORT_EXPIRING, request, {
+    hoursRemaining,
+    downloadsRemaining,
+  })
 }
 
 // ========================================================
@@ -813,9 +808,7 @@ export async function notifyExportExpiring(
  * This function should be called periodically (e.g., daily cron job)
  * to send reminders for requests approaching their deadline.
  */
-export async function sendDeadlineReminders(
-  supabase: DbClient
-): Promise<{
+export async function sendDeadlineReminders(supabase: DbClient): Promise<{
   success: boolean
   sent: number
   errors: Array<{ requestId: string; error: string }>
@@ -863,12 +856,15 @@ export async function sendDeadlineReminders(
           .schema('core')
           .from('profile')
           .select('email, first_name, last_name')
-          .eq('id', request.user_id)
+          // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+          .eq('id', (request as any).user_id)
           .single()
 
-        if (!profile?.email) {
+        // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+        if (!(profile as any)?.email) {
           errors.push({
-            requestId: request.id,
+            // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+            requestId: (request as any).id,
             error: 'User email not found',
           })
           continue
@@ -877,14 +873,21 @@ export async function sendDeadlineReminders(
         const result = await notifyDeadlineReminder(
           supabase,
           {
-            requestId: request.id,
-            requestType: request.request_type,
-            userId: request.user_id,
-            userEmail: profile.email,
-            userName: profile.first_name
-              ? `${profile.first_name} ${profile.last_name ?? ''}`.trim()
+            // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+            requestId: (request as any).id,
+            // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+            requestType: (request as any).request_type,
+            // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+            userId: (request as any).user_id,
+            // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+            userEmail: (profile as any).email,
+            // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+            userName: (profile as any).first_name
+              ? // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+                `${(profile as any).first_name} ${(profile as any).last_name ?? ''}`.trim()
               : undefined,
-            deadline: request.deadline ?? undefined,
+            // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+            deadline: (request as any).deadline ?? undefined,
           },
           daysAhead
         )
@@ -893,7 +896,8 @@ export async function sendDeadlineReminders(
           sent++
         } else {
           errors.push({
-            requestId: request.id,
+            // biome-ignore lint/suspicious/noExplicitAny: Query result types require assertion
+            requestId: (request as any).id,
             error: result.error ?? 'Unknown error',
           })
         }
@@ -910,10 +914,12 @@ export async function sendDeadlineReminders(
     return {
       success: false,
       sent,
-      errors: [{
-        requestId: 'batch',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }],
+      errors: [
+        {
+          requestId: 'batch',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
+      ],
     }
   }
 }

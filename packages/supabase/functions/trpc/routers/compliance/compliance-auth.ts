@@ -7,8 +7,8 @@
  */
 
 import { TRPCError } from '@trpc/server'
-import type { Context } from '../../context.ts';
-import { t } from '../../middleware.ts';
+import type { Context } from '../../context.ts'
+import { t } from '../../middleware.ts'
 
 // =============================================================================
 // Types
@@ -114,7 +114,9 @@ class SimpleCache<T> {
 // Global caches
 const platformAdminCache = new SimpleCache<boolean>()
 const userRolesCache = new SimpleCache<ComplianceSystemRole[]>()
-const permissionMatrixCache = new SimpleCache<Map<ComplianceSystemRole, Set<ComplianceDbPermission>>>()
+const permissionMatrixCache = new SimpleCache<
+  Map<ComplianceSystemRole, Set<ComplianceDbPermission>>
+>()
 
 // =============================================================================
 // Authorization Helpers
@@ -139,8 +141,11 @@ export async function isPlatformAdmin(
 
   const isAdmin =
     data?.some(
-      (a: { role: { name: string; scope: string } | null }) =>
-        a.role?.name === 'super_admin' && a.role?.scope === 'platform'
+      // biome-ignore lint/suspicious/noExplicitAny: Role can be array or object from join
+      (a: any) => {
+        const role = Array.isArray(a.role) ? a.role[0] : a.role
+        return role?.name === 'super_admin' && role?.scope === 'platform'
+      }
     ) ?? false
 
   platformAdminCache.set(cacheKey, isAdmin)

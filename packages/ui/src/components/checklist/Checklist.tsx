@@ -1,4 +1,4 @@
-import { Spinner, Text, YStack } from 'tamagui'
+import { Spinner, Text, YStack } from '@unicornlove/ui'
 import { ChecklistHeader } from './ChecklistHeader'
 import { ChecklistList } from './ChecklistList'
 import { ChecklistProgress } from './ChecklistProgress'

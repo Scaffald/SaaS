@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, publicProcedure, t } from '../../middleware.ts';
-import { enrichUserSkills } from '../utils/skill-enrichment.ts';
+import { protectedProcedure, publicProcedure, t } from '../../middleware.ts'
+import { enrichUserSkills } from '../utils/skill-enrichment.ts'
 
 /**
  * Profile Widgets router - provides data queries for profile widget components
@@ -210,7 +210,7 @@ export const profileWidgetsRouter = t.router({
     }
 
     const enrichedSkills = await enrichUserSkills(supabase, data ?? [])
-    
+
     // Filter out skills with "Unknown" labels (missing reference data)
     return enrichedSkills.filter(
       (skill) => skill.name !== 'Unknown Occupation' && skill.name !== 'Unknown CSI Skill'

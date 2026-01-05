@@ -24,7 +24,7 @@ import {
   Check,
   AlertTriangle,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H1, H2, H3, Spinner, Input, TextArea } from 'tamagui';
+import { YStack, XStack, Text, Button, Card, H1, H2, H3, Spinner, Input, TextArea } from '@unicornlove/ui';
 import { EmptyState } from '@unicornlove/ui';
 import { trpc } from '../../lib/trpc';
 

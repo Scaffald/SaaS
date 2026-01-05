@@ -1,13 +1,13 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { jobCreateSchema, jobUpdateSchema } from '../../_shared/job-schemas.ts';
-import { employmentProfileSchema, generalProfileSchema } from '../../_shared/profile-schemas.ts';
-import { transformJobSkills } from '../../_shared/skill-helpers.ts';
-import { officeProcedure, t } from '../middleware.ts';
-import { officeProfilesRouter } from './office/profiles.router.ts';
-import { officeStorageRouter } from './office/storage.router.ts';
-import { officeUniversitiesRouter } from './office/universities.router.ts';
-import { officeTeamsRouter } from './teams.router.ts';
+import { jobCreateSchema, jobUpdateSchema } from '../../_shared/job-schemas.ts'
+import { employmentProfileSchema, generalProfileSchema } from '../../_shared/profile-schemas.ts'
+import { transformJobSkills } from '../../_shared/skill-helpers.ts'
+import { officeProcedure, t } from '../middleware.ts'
+import { officeProfilesRouter } from './office/profiles.router.ts'
+import { officeStorageRouter } from './office/storage.router.ts'
+import { officeUniversitiesRouter } from './office/universities.router.ts'
+import { officeTeamsRouter } from './teams.router.ts'
 
 const RESERVED_ORGANIZATION_SLUGS = new Set([
   'admin',
@@ -60,7 +60,10 @@ export const officeRouter = t.router({
   checkOrganizationSlug: officeProcedure
     .input(
       z.object({
-        slug: z.string().min(1, 'Vanity URL is required').max(120, 'Vanity URL must be 120 characters or fewer'),
+        slug: z
+          .string()
+          .min(1, 'Vanity URL is required')
+          .max(120, 'Vanity URL must be 120 characters or fewer'),
         organizationId: z.string().uuid().optional(),
       })
     )
@@ -81,10 +84,7 @@ export const officeRouter = t.router({
         }
       }
 
-      const {
-        data: existing,
-        error: existingError,
-      } = await ctx.supabaseAdmin
+      const { data: existing, error: existingError } = await ctx.supabaseAdmin
         .schema('core')
         .from('organizations')
         .select('id')
@@ -108,7 +108,9 @@ export const officeRouter = t.router({
 
         const suggestions = getOrganizationSlugSuggestions(
           normalizedSlug,
-          (similar || []).map((org: { slug?: string | null }) => org.slug || '').filter((slug: string): slug is string => Boolean(slug))
+          (similar || [])
+            .map((org: { slug?: string | null }) => org.slug || '')
+            .filter((slug: string): slug is string => Boolean(slug))
         )
 
         return {
@@ -160,22 +162,38 @@ export const officeRouter = t.router({
       .in('user_id', userIds)
 
     // Create a map for quick lookup
-    const profilesMap = new Map(profilesData?.map((p: { user_id: string; first_name?: string | null; last_name?: string | null }) => [p.user_id, p]) || [])
+    const profilesMap = new Map(
+      profilesData?.map(
+        (p: { user_id: string; first_name?: string | null; last_name?: string | null }) => [
+          p.user_id,
+          p,
+        ]
+      ) || []
+    )
 
     // Combine the data
-    const users = (usersData ?? []).map((user: { id: string; username?: string | null; display_name?: string | null; avatar_path?: string | null }) => {
-      const profile = profilesMap.get(user.id)
-      return {
-        id: user.id,
-        username: user.username,
-        display_name: user.display_name,
-        first_name: profile?.first_name || '',
-        last_name: profile?.last_name || '',
-        avatar_path: user.avatar_path,
-        created_at: user.created_at,
-        updated_at: user.updated_at,
+    const users = (usersData ?? []).map(
+      (user: {
+        id: string
+        username?: string | null
+        display_name?: string | null
+        avatar_path?: string | null
+        created_at?: string
+        updated_at?: string
+      }) => {
+        const profile = profilesMap.get(user.id)
+        return {
+          id: user.id,
+          username: user.username,
+          display_name: user.display_name,
+          first_name: profile?.first_name || '',
+          last_name: profile?.last_name || '',
+          avatar_path: user.avatar_path,
+          created_at: user.created_at,
+          updated_at: user.updated_at,
+        }
       }
-    })
+    )
 
     return { users, total: count ?? 0 }
   }),
@@ -361,7 +379,8 @@ export const officeRouter = t.router({
 
         // Add organizations from team memberships
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -483,23 +502,26 @@ export const officeRouter = t.router({
         })
       }
 
-      const jobs = (data ?? []).map((job: Record<string, unknown>) => {
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      const jobs = (data ?? []).map((job: any) => {
         const { team_assignments: jobTeamsRaw, ...rest } = job as Record<string, unknown>
         const teamAssignments =
-          (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map((assignment: Record<string, unknown>) => ({
-            teamId: assignment.team_id as string,
-            isPrimary: Boolean(assignment.is_primary),
-            roleKey: assignment.role_key as string,
-            assignedAt: assignment.assigned_at as string,
-            team: assignment.team
-              ? {
-                  id: (assignment.team as Record<string, unknown>).id as string,
-                  name: (assignment.team as Record<string, unknown>).name as string | null,
-                  organization_id: (assignment.team as Record<string, unknown>)
-                    .organization_id as string,
-                }
-              : null,
-          })) ?? []
+          (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map(
+            (assignment: Record<string, unknown>) => ({
+              teamId: assignment.team_id as string,
+              isPrimary: Boolean(assignment.is_primary),
+              roleKey: assignment.role_key as string,
+              assignedAt: assignment.assigned_at as string,
+              team: assignment.team
+                ? {
+                    id: (assignment.team as Record<string, unknown>).id as string,
+                    name: (assignment.team as Record<string, unknown>).name as string | null,
+                    organization_id: (assignment.team as Record<string, unknown>)
+                      .organization_id as string,
+                  }
+                : null,
+            })
+          ) ?? []
 
         const primaryAssignment = teamAssignments.find((assignment) => assignment.isPrimary) ?? null
 
@@ -604,7 +626,8 @@ export const officeRouter = t.router({
             .neq('status', 'removed')
 
           for (const membership of teamMemberships ?? []) {
-            const orgId = membership.teams?.organization_id
+            // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+            const orgId = (membership as any).teams?.organization_id
             if (orgId && typeof orgId === 'string') {
               organizationIds.add(orgId)
             }
@@ -614,7 +637,7 @@ export const officeRouter = t.router({
           if (!organizationIds.has(organizationId)) {
             throw new TRPCError({
               code: 'FORBIDDEN',
-              message: 'You do not have access to this job\'s organization',
+              message: "You do not have access to this job's organization",
             })
           }
         }
@@ -648,7 +671,8 @@ export const officeRouter = t.router({
         job: {
           ...rest,
           job_skills: jobSkills,
-          skills: transformJobSkills(jobSkills || []),
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          skills: transformJobSkills((jobSkills as any) || []),
           teamAssignments: teamAssignments,
           team_ids: teamAssignments.map((assignment) => assignment.teamId),
           primary_team_id: primaryAssignment?.teamId ?? null,
@@ -703,7 +727,8 @@ export const officeRouter = t.router({
         .neq('status', 'removed')
 
       for (const membership of teamMemberships ?? []) {
-        const orgId = membership.teams?.organization_id
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+        const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)
         }
@@ -736,8 +761,8 @@ export const officeRouter = t.router({
       Object.hasOwn(jobData, 'assigned_team_id') &&
       (!jobData.assigned_team_id || jobData.assigned_team_id === '')
     ) {
-      // Normalize falsy values to null for Supabase
-      jobData.assigned_team_id = null
+      // Normalize falsy values to undefined for Supabase
+      jobData.assigned_team_id = undefined
     }
 
     if (requestedTeamIds.length > 0) {
@@ -803,7 +828,7 @@ export const officeRouter = t.router({
 
       jobData.assigned_team_id = primaryTeamId
     } else {
-      jobData.assigned_team_id = null
+      jobData.assigned_team_id = undefined
     }
 
     // Insert job using admin client to bypass RLS
@@ -945,7 +970,8 @@ export const officeRouter = t.router({
         .neq('status', 'removed')
 
       for (const membership of teamMemberships ?? []) {
-        const orgId = membership.teams?.organization_id
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+        const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)
         }
@@ -955,7 +981,7 @@ export const officeRouter = t.router({
       if (!organizationIds.has(currentOrganizationId)) {
         throw new TRPCError({
           code: 'FORBIDDEN',
-          message: 'You do not have access to this job\'s organization',
+          message: "You do not have access to this job's organization",
         })
       }
 
@@ -979,7 +1005,7 @@ export const officeRouter = t.router({
       Object.hasOwn(jobData, 'assigned_team_id') &&
       (!jobData.assigned_team_id || jobData.assigned_team_id === '')
     ) {
-      jobData.assigned_team_id = null
+      jobData.assigned_team_id = undefined
     }
 
     if (requestedTeamIds) {
@@ -998,7 +1024,8 @@ export const officeRouter = t.router({
         }
 
         const missingTeams = requestedTeamIds.filter(
-          (teamId: string) => !(teamRecords ?? []).some((team: { id: string }) => team.id === teamId)
+          (teamId: string) =>
+            !(teamRecords ?? []).some((team: { id: string }) => team.id === teamId)
         )
 
         if (missingTeams.length > 0) {
@@ -1015,7 +1042,7 @@ export const officeRouter = t.router({
         if (invalidTeams.length > 0) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'All teams must belong to the job\'s organization.',
+            message: "All teams must belong to the job's organization.",
           })
         }
       }
@@ -1053,7 +1080,7 @@ export const officeRouter = t.router({
       if (teamRecord.organization_id !== nextOrganizationId) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'Assigned team must belong to the job\'s organization.',
+          message: "Assigned team must belong to the job's organization.",
         })
       }
     } else if (
@@ -1123,8 +1150,12 @@ export const officeRouter = t.router({
         (assignment: { team_id: string }) => assignment.team_id as string
       )
 
-      const teamIdsToInsert = requestedTeamIds.filter((teamId: string) => !existingTeamIds.includes(teamId))
-      const teamIdsToRemove = existingTeamIds.filter((teamId: string) => !requestedTeamIds.includes(teamId))
+      const teamIdsToInsert = requestedTeamIds.filter(
+        (teamId: string) => !existingTeamIds.includes(teamId)
+      )
+      const teamIdsToRemove = existingTeamIds.filter(
+        (teamId: string) => !requestedTeamIds.includes(teamId)
+      )
 
       if (teamIdsToRemove.length > 0) {
         const { error: deleteError } = await supabaseAdmin
@@ -1305,7 +1336,8 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -1315,7 +1347,7 @@ export const officeRouter = t.router({
         if (!organizationIds.has(organizationId)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: 'You do not have access to this job\'s organization',
+            message: "You do not have access to this job's organization",
           })
         }
       }
@@ -1406,7 +1438,8 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -1416,7 +1449,7 @@ export const officeRouter = t.router({
         if (!organizationIds.has(organizationId)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: 'You do not have access to this job\'s organization',
+            message: "You do not have access to this job's organization",
           })
         }
       }
@@ -1505,7 +1538,8 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -1515,7 +1549,7 @@ export const officeRouter = t.router({
         if (!organizationIds.has(organizationId)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: 'You do not have access to this job\'s organization',
+            message: "You do not have access to this job's organization",
           })
         }
       }
@@ -1609,7 +1643,8 @@ export const officeRouter = t.router({
           .neq('status', 'removed')
 
         for (const membership of teamMemberships ?? []) {
-          const orgId = membership.teams?.organization_id
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          const orgId = (membership as any).teams?.organization_id
           if (orgId && typeof orgId === 'string') {
             organizationIds.add(orgId)
           }
@@ -1619,7 +1654,7 @@ export const officeRouter = t.router({
         if (!organizationIds.has(organizationId)) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: 'You do not have access to this job\'s organization',
+            message: "You do not have access to this job's organization",
           })
         }
       }
@@ -1686,12 +1721,19 @@ export const officeRouter = t.router({
           .schema('core')
           .from('job_skills')
           .insert(
-            skills.map((skill: { skill_taxonomy?: string | null; csi_skill_id?: string | null; onet_occupation_id?: string | null; [key: string]: unknown }) => ({
-              job_id: newJob.id,
-              skill_taxonomy: skill.skill_taxonomy,
-              csi_skill_id: skill.csi_skill_id,
-              onet_occupation_id: skill.onet_occupation_id,
-            }))
+            skills.map(
+              (skill: {
+                skill_taxonomy?: string | null
+                csi_skill_id?: string | null
+                onet_occupation_id?: string | null
+                [key: string]: unknown
+              }) => ({
+                job_id: newJob.id,
+                skill_taxonomy: skill.skill_taxonomy,
+                csi_skill_id: skill.csi_skill_id,
+                onet_occupation_id: skill.onet_occupation_id,
+              })
+            )
           )
       }
 
@@ -1707,19 +1749,27 @@ export const officeRouter = t.router({
           .schema('core')
           .from('job_team_assignments')
           .insert(
-            teamAssignments.map((assignment: { team_id: string; is_primary?: boolean | null; role_key?: string | null; organization_id: string; [key: string]: unknown }) => ({
-              job_id: newJob.id,
-              team_id: assignment.team_id,
-              is_primary: assignment.is_primary,
-              role_key: assignment.role_key,
-              organization_id: assignment.organization_id,
-              assigned_by: user.id,
-              metadata: {
-                source: 'duplicate',
-                original_job_id: input.id,
-                created_by: user.id,
-              },
-            }))
+            teamAssignments.map(
+              (assignment: {
+                team_id: string
+                is_primary?: boolean | null
+                role_key?: string | null
+                organization_id: string
+                [key: string]: unknown
+              }) => ({
+                job_id: newJob.id,
+                team_id: assignment.team_id,
+                is_primary: assignment.is_primary,
+                role_key: assignment.role_key,
+                organization_id: assignment.organization_id,
+                assigned_by: user.id,
+                metadata: {
+                  source: 'duplicate',
+                  original_job_id: input.id,
+                  created_by: user.id,
+                },
+              })
+            )
           )
       }
 
@@ -1794,7 +1844,8 @@ export const officeRouter = t.router({
       }
 
       // Transform data to include industry_name
-      const organizations = (data ?? []).map((org: { industry?: { name?: string | null } | null; [key: string]: unknown }) => ({
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      const organizations = (data ?? []).map((org: any) => ({
         ...org,
         industry_name: org.industry?.name || null,
       }))
@@ -2846,7 +2897,8 @@ export const officeRouter = t.router({
 
       // Add organizations from team memberships
       for (const membership of teamMemberships ?? []) {
-        const orgId = membership.teams?.organization_id
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+        const orgId = (membership as any).teams?.organization_id
         if (orgId && typeof orgId === 'string') {
           organizationIds.add(orgId)
         }
@@ -2891,7 +2943,9 @@ export const officeRouter = t.router({
         })
       }
 
-      const jobIds = (jobs ?? []).map((j: { id: string; [key: string]: unknown }) => j.id as string).filter(Boolean)
+      const jobIds = (jobs ?? [])
+        .map((j: { id: string; [key: string]: unknown }) => j.id as string)
+        .filter(Boolean)
 
       // If no jobs found, return empty result
       if (jobIds.length === 0) {
@@ -2907,7 +2961,9 @@ export const officeRouter = t.router({
       }
 
       // Apply job_id filter if provided
-      const filteredJobIds = input.job_id ? jobIds.filter((id: string) => id === input.job_id) : jobIds
+      const filteredJobIds = input.job_id
+        ? jobIds.filter((id: string) => id === input.job_id)
+        : jobIds
 
       if (filteredJobIds.length === 0) {
         return {
@@ -2976,64 +3032,72 @@ export const officeRouter = t.router({
       }
 
       // Transform data to match expected output format
-      const applications = (data ?? []).map((app: { id: string; job?: unknown; candidate?: unknown; answers?: unknown; [key: string]: unknown }) => {
-        const job = app.job as {
+      const applications = (data ?? []).map(
+        (app: {
           id: string
-          title: string | null
-          location: string | null
-          organization_id: string
-          status: string
-        } | null
-        const candidate = app.candidate as {
-          id: string
-          username: string | null
-          display_name: string | null
-          about: string | null
-          avatar_path: string | null
-        } | null
+          job?: unknown
+          candidate?: unknown
+          answers?: unknown
+          [key: string]: unknown
+        }) => {
+          const job = app.job as {
+            id: string
+            title: string | null
+            location: string | null
+            organization_id: string
+            status: string
+          } | null
+          const candidate = app.candidate as {
+            id: string
+            username: string | null
+            display_name: string | null
+            about: string | null
+            avatar_path: string | null
+          } | null
 
-        // Extract data from answers JSONB if it exists
-        const answers = (app.answers as Record<string, unknown> | null) || {}
-        const customQuestionAnswers =
-          (answers.custom_question_answers as Array<{
-            question: string
-            answer: string
-          }>) || []
+          // Extract data from answers JSONB if it exists
+          const answers = (app.answers as Record<string, unknown> | null) || {}
+          const customQuestionAnswers =
+            (answers.custom_question_answers as Array<{
+              question: string
+              answer: string
+            }>) || []
 
-        return {
-          id: app.id,
-          job_id: app.job_id,
-          user_id: app.user_id,
-          status: app.status,
-          applied_at: app.created_at,
-          updated_at: app.stage_changed_at || app.created_at,
-          application_score: (answers.application_score as number | null) || null,
-          auto_rejected: (answers.auto_rejected as boolean | null) || false,
-          current_location: (answers.current_location as string | null) || null,
-          willing_to_relocate: (answers.willing_to_relocate as boolean | null) || false,
-          years_experience: (answers.years_experience as number | null) || 0,
-          is_authorized_to_work: (answers.is_authorized_to_work as boolean | null) || false,
-          earliest_start_date: (answers.earliest_start_date as string | null) || null,
-          custom_question_answers: customQuestionAnswers,
-          attachments: (answers.attachments as Record<string, unknown> | null) || {},
-          candidate_id: candidate?.id || app.user_id,
-          candidate_name: candidate?.display_name || candidate?.username || 'Unknown',
-          profile_about: candidate?.about || null,
-          profile_avatar_path: candidate?.avatar_path || null,
-          job_title: job?.title || 'Unknown Job',
-          job_location: job?.location || null,
-          // Include nested job object for component compatibility
-          job: job
-            ? {
-                id: job.id,
-                title: job.title,
-                location: job.location,
-                organization_id: job.organization_id,
-                status: job.status,
-              }
-            : null,
+          return {
+            id: app.id,
+            job_id: app.job_id,
+            user_id: app.user_id,
+            status: app.status,
+            applied_at: app.created_at,
+            updated_at: app.stage_changed_at || app.created_at,
+            application_score: (answers.application_score as number | null) || null,
+            auto_rejected: (answers.auto_rejected as boolean | null) || false,
+            current_location: (answers.current_location as string | null) || null,
+            willing_to_relocate: (answers.willing_to_relocate as boolean | null) || false,
+            years_experience: (answers.years_experience as number | null) || 0,
+            is_authorized_to_work: (answers.is_authorized_to_work as boolean | null) || false,
+            earliest_start_date: (answers.earliest_start_date as string | null) || null,
+            custom_question_answers: customQuestionAnswers,
+            attachments: (answers.attachments as Record<string, unknown> | null) || {},
+            candidate_id: candidate?.id || app.user_id,
+            candidate_name: candidate?.display_name || candidate?.username || 'Unknown',
+            profile_about: candidate?.about || null,
+            profile_avatar_path: candidate?.avatar_path || null,
+            job_title: job?.title || 'Unknown Job',
+            job_location: job?.location || null,
+            // Include nested job object for component compatibility
+            job: job
+              ? {
+                  id: job.id,
+                  title: job.title,
+                  location: job.location,
+                  organization_id: job.organization_id,
+                  status: job.status,
+                }
+              : null,
+          }
         }
-      })
+      )
 
       return {
         applications,
@@ -3057,9 +3121,10 @@ function normalizeOrganizationSlugInput(value: string): string {
     .slice(0, MAX_ORGANIZATION_SLUG_LENGTH)
 }
 
-function validateOrganizationSlug(
-  slug: string
-): { valid: boolean; reason?: OrganizationSlugValidationReason } {
+function validateOrganizationSlug(slug: string): {
+  valid: boolean
+  reason?: OrganizationSlugValidationReason
+} {
   if (!slug) {
     return { valid: false, reason: 'format' }
   }

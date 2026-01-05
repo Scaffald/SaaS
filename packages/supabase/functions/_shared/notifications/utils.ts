@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-import type { Database, Json } from '../database.types.ts';
+import type { Database, Json } from '../database.types.ts'
 import {
   DeliveryMetadata,
   NOTIFICATION_CHANNELS,
@@ -16,7 +16,7 @@ import {
   NotificationPreferencesRow,
   NotificationRow,
   NotificationSupabaseClient,
-} from './types.ts';
+} from './types.ts'
 
 type ChannelEnabledMap = Record<NotificationChannel, boolean>
 

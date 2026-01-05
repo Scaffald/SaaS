@@ -1,5 +1,3 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { ResumeUploadButton, ResumeUploadModal } from '@scf/core/features/resume'
 import { ControlledAddressForm } from '@scf/core/forms'
 import { api } from '@scf/core/utils/api'
 import {
@@ -11,7 +9,6 @@ import {
 } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
-import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable } from 'react-native'
@@ -38,8 +35,6 @@ import {
 export function PrerequisiteWidget() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToastController()
-  const router = useRouter()
-  const [resumeModalOpen, setResumeModalOpen] = useState(false)
 
   // Check prerequisites status
   const {
@@ -47,10 +42,6 @@ export function PrerequisiteWidget() {
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
   } = api.prerequisites.check.useQuery()
-
-  const { data: resumeStatus } = api.resume.hasUploaded.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  })
 
   // Fetch industries for dropdown
   const { data: industriesData, isLoading: isLoadingIndustries } =
@@ -83,7 +74,7 @@ export function PrerequisiteWidget() {
   } = useForm<PrerequisitesFormData>({
     resolver: zodResolver(prerequisitesSchema),
     defaultValues: prerequisitesDefaults,
-    mode: 'onChange',
+    mode: 'onSubmit', // Validate on submit instead of onChange to prevent premature validation errors
   })
 
   const previousPrefillHashRef = useRef<string | null>(null)
@@ -141,17 +132,6 @@ export function PrerequisiteWidget() {
   return (
     <DashboardWidget>
       <YStack gap={spacing.md}>
-        <ResumeUploadModal
-          open={resumeModalOpen}
-          onOpenChange={setResumeModalOpen}
-          onUploadComplete={(resumeId) => {
-            setResumeModalOpen(false)
-            router.push({
-              pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
-              params: { resumeId },
-            })
-          }}
-        />
         <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Complete Your Profile
@@ -216,21 +196,6 @@ export function PrerequisiteWidget() {
             </YStack>
 
             <Separator />
-
-            {!resumeStatus?.hasUploaded && (
-              <>
-                <YStack gap="$3">
-                  <Text fontWeight="600">Optional: Import Your Resume</Text>
-                  <Text fontSize="$2" color="$color11">
-                    Upload your resume to automatically fill in experience, education, and skills.
-                    You can skip this step and continue manually at any time.
-                  </Text>
-                  <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size="$3" />
-                </YStack>
-
-                <Separator />
-              </>
-            )}
 
             {/* 2. Address */}
             <YStack gap="$3">
@@ -330,20 +295,22 @@ export function PrerequisiteWidget() {
                         <Spinner size="small" />
                         <Text color="$color11">Loading industries...</Text>
                       </XStack>
-                    ) : (
+                    ) : industriesData?.industries && industriesData.industries.length > 0 ? (
                       <ResponsiveSelect
                         value={field.value || ''}
                         onValueChange={field.onChange}
                         placeholder="Select your industry"
-                        options={
-                          industriesData?.industries.map(
-                            (industry: { id: string; name: string }) => ({
-                              value: industry.id,
-                              label: industry.name,
-                            })
-                          ) || []
-                        }
+                        options={industriesData.industries.map(
+                          (industry: { id: string; name: string }) => ({
+                            value: industry.id,
+                            label: industry.name,
+                          })
+                        )}
                       />
+                    ) : (
+                      <Text color="$color11" fontSize="$2">
+                        No industries available
+                      </Text>
                     )}
                   </YStack>
                 )}

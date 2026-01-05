@@ -1,1 +1,1 @@
-export type { Database, Json } from '@scf/supabase/types';
+export type { Database, Json } from '@scf/supabase/types'

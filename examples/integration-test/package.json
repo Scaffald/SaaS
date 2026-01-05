@@ -1,0 +1,18 @@
+{
+  "name": "@scaffald/integration-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Integration tests for Scaffald SDK and API Key system",
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs",
+    "test:watch": "nodemon test.mjs",
+    "test:verbose": "DEBUG=scaffald:* node test.mjs"
+  },
+  "dependencies": {
+    "@scaffald/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

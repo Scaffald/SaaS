@@ -1,9 +1,7 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
-import { ROUTES } from '@scf/core/constants/routes'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { api } from '@scf/core/utils/api'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
-import { usePathname } from '@scf/core/utils/usePathname'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect } from 'react'
@@ -12,7 +10,6 @@ import { Spinner, Text, YStack } from '@unicornlove/ui'
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()
   const router = useRouter()
-  const pathname = usePathname()
 
   // Check prerequisites status - only run when we have a valid user
   // This prevents race conditions after DB resets when session is invalid
@@ -23,17 +20,12 @@ export default function Layout() {
     }
   )
 
-  // Redirect to /dashboard if prerequisites incomplete and not already there
+  // Redirect to /onboarding if prerequisites incomplete
   useEffect(() => {
     if (!isCheckingPrereqs && statusData && !statusData.isComplete) {
-      const dashboardPath = ROUTES.DASHBOARD.path
-      const dashboardIndexPath = `${dashboardPath}/index`
-
-      if (pathname !== dashboardPath && !pathname?.startsWith(dashboardIndexPath)) {
-        router.replace(dashboardPath)
-      }
+      router.replace('/onboarding')
     }
-  }, [statusData, isCheckingPrereqs, pathname, router])
+  }, [statusData, isCheckingPrereqs, router])
 
   // Show loading state BEFORE rendering the drawer
   if (isLoading || isCheckingPrereqs) {

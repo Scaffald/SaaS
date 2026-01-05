@@ -2,7 +2,11 @@ import { serve } from 'https://deno.land/std@0.223.0/http/server'
 import { ZodError } from 'zod'
 
 import { corsHeaders, createCorsResponse } from '../_shared/cors'
-import { NotificationChannel, NotificationEventPayload, notificationEventSchema } from '../_shared/notifications/types'
+import {
+  NotificationChannel,
+  NotificationEventPayload,
+  notificationEventSchema,
+} from '../_shared/notifications/types'
 import {
   createServiceSupabaseClient,
   enqueueDelivery,

@@ -8,8 +8,20 @@ const ENV_FILE_MAP = {
 }
 const envFile = ENV_FILE_MAP[APP_ENV] || '.env'
 const envPath = path.resolve(__dirname, '..', '..', envFile)
-// eslint-disable-next-line no-console
-console.log(`[babel] APP_ENV=${APP_ENV} envPath=${envPath}`)
+// Only log babel config in verbose mode to reduce noise
+if (process.env.BABEL_VERBOSE === 'true') {
+  // eslint-disable-next-line no-console
+  console.log(`[babel] APP_ENV=${APP_ENV} envPath=${envPath}`)
+}
+
+// Resolve Tamagui config - try package first, fallback to source
+let tamaguiConfigPath
+try {
+  tamaguiConfigPath = require.resolve('@unicornlove/ui/tamagui.config')
+} catch {
+  // Fallback to source path for monorepo dev
+  tamaguiConfigPath = path.resolve(__dirname, '../../packages/ui/src/tamagui.config.ts')
+}
 
 module.exports = (api) => {
   api.cache(true)
@@ -59,13 +71,20 @@ module.exports = (api) => {
         '@tamagui/babel-plugin',
         {
           components: ['@unicornlove/ui', 'tamagui'],
-          config: '../../packages/ui/src/tamagui.config.ts',
-          logTimings: true,
+          config: tamaguiConfigPath,
+          logTimings: process.env.DEBUG === 'tamagui',
           // Extraction enabled for proper native component behavior
           // disableExtraction: process.env.NODE_ENV === 'development',
         },
       ],
     ],
-    presets: [['babel-preset-expo', { jsxRuntime: 'automatic' }]],
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          jsxRuntime: 'automatic',
+        },
+      ],
+    ],
   }
 }

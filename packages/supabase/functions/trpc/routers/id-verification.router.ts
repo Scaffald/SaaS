@@ -2,11 +2,11 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
-import { mergeMetadata } from '../../_shared/id-verification-utils.ts';
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import { mergeMetadata } from '../../_shared/id-verification-utils.ts'
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
-const STRIPE_API_VERSION = '2024-06-20'
+const STRIPE_API_VERSION = '2025-11-17.clover'
 
 // Lazy initialization of Stripe to avoid module loading issues
 let StripeClass: typeof import('stripe').default | null = null
@@ -126,6 +126,13 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     return createMockStripeClient()
   }
 
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   const { data: settings, error } = await ctx.supabaseAdmin
     .schema('core')
     .from('stripe_settings')
@@ -172,6 +179,13 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
 async function userHasPlatformRole(ctx: Context): Promise<boolean> {
   if (!ctx.user?.id) return false
 
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   const { data, error } = await ctx.supabaseAdmin
     .schema('core')
     .from('role_assignments')
@@ -187,7 +201,10 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment: { role?: { scope?: string; name?: string | null } | null; [key: string]: unknown }) =>
+      (assignment: {
+        role?: { scope?: string; name?: string | null } | null
+        [key: string]: unknown
+      }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
     )
@@ -228,6 +245,13 @@ async function recordPaymentTransaction(
     paymentIntentId: string
   }
 ) {
+  if (!ctx.supabaseAdmin) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Admin client not available',
+    })
+  }
+
   const { error } = await ctx.supabaseAdmin
     .schema('core')
     .from('payment_transactions')
@@ -319,13 +343,22 @@ export const idVerificationRouter = t.router({
       })
     }
 
-    return (data ?? []).map((row: { id: string; name: string; description: string | null; price_cents: number; metadata?: Record<string, unknown> | null; [key: string]: unknown }) => ({
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      priceCents: row.price_cents,
-      metadata: row.metadata ?? {},
-    }))
+    return (data ?? []).map(
+      (row: {
+        id: string
+        name: string
+        description: string | null
+        price_cents: number
+        metadata?: Record<string, unknown> | null
+        [key: string]: unknown
+      }) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        priceCents: row.price_cents,
+        metadata: row.metadata ?? {},
+      })
+    )
   }),
 
   requestVerification: protectedProcedure
@@ -422,6 +455,13 @@ export const idVerificationRouter = t.router({
 
       await ensureCanRequestForWorker(ctx, workerUserId)
 
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       const initiatedByUserId = metadata.initiated_by_user_id?.length
         ? metadata.initiated_by_user_id
         : (ctx.user?.id ?? null)
@@ -469,7 +509,7 @@ export const idVerificationRouter = t.router({
           badge_expires_at: badgeExpiresAt.toISOString(),
           metadata: mergeMetadata(metadata, {
             service_pricing_id: metadata.service_pricing_id ?? null,
-          }),
+          }) as never,
         })
         .select('*')
         .maybeSingle()
@@ -499,6 +539,13 @@ export const idVerificationRouter = t.router({
     }),
 
   getVerificationStatus: protectedProcedure.input(getStatusInput).query(async ({ ctx, input }) => {
+    if (!ctx.supabaseAdmin) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Admin client not available',
+      })
+    }
+
     const { data, error } = await ctx.supabaseAdmin
       .schema('core')
       .from('id_verifications')
@@ -517,7 +564,7 @@ export const idVerificationRouter = t.router({
       throw new TRPCError({ code: 'NOT_FOUND', message: 'Verification not found' })
     }
 
-    await ensureCanRequestForWorker(ctx, data.worker_user_id)
+    await ensureCanRequestForWorker(ctx, data.worker_user_id ?? '')
 
     return {
       id: data.id,
@@ -543,6 +590,13 @@ export const idVerificationRouter = t.router({
 
       await ensureCanRequestForWorker(ctx, workerUserId)
 
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       const { data, error } = await ctx.supabaseAdmin
         .schema('core')
         .rpc('get_current_verification', {
@@ -556,16 +610,18 @@ export const idVerificationRouter = t.router({
         })
       }
 
-      if (!data) {
+      if (!data || !Array.isArray(data) || data.length === 0) {
         return null
       }
 
+      const record = data[0]
+
       return {
-        id: data.id,
-        verificationLevel: data.verification_level,
-        badgeStatus: data.badge_status,
-        badgeExpiresAt: data.badge_expires_at,
-        verifiedAt: data.verified_at,
+        id: record.id,
+        verificationLevel: record.verification_level,
+        badgeStatus: record.badge_status,
+        badgeExpiresAt: record.badge_expires_at,
+        verifiedAt: record.verified_at,
       }
     }),
 
@@ -768,6 +824,13 @@ export const idVerificationRouter = t.router({
   revokeVerification: officeProcedure
     .input(revokeVerificationInput)
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
+
       const { data, error } = await ctx.supabaseAdmin
         .schema('core')
         .from('id_verifications')

@@ -2,8 +2,8 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 const STRIPE_API_VERSION = '2025-11-17.clover'
 
@@ -423,7 +423,9 @@ export const paymentsRouter = t.router({
       let query = supabaseAdmin
         .schema('core')
         .from('service_pricing')
-        .select('*')
+        .select(
+          'id, service_type, tier, name, description, price_cents, is_active, display_order, metadata, created_at, updated_at'
+        )
         .order('service_type', { ascending: true })
         .order('display_order', { ascending: true })
         .order('name', { ascending: true })
@@ -441,19 +443,33 @@ export const paymentsRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row: { id: string; service_type: string; tier: string; name: string; description: string | null; price_cents: number; is_active: boolean; display_order: number; metadata: Record<string, unknown> | null }) => ({
-        id: row.id,
-        serviceType: row.service_type,
-        tier: row.tier,
-        name: row.name,
-        description: row.description,
-        priceCents: row.price_cents,
-        isActive: row.is_active,
-        displayOrder: row.display_order,
-        metadata: row.metadata ?? {},
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-      }))
+      return (data ?? []).map(
+        (row: {
+          id: string
+          service_type: string
+          tier: string
+          name: string
+          description: string | null
+          price_cents: number
+          is_active: boolean
+          display_order: number
+          metadata: Record<string, unknown> | null
+          created_at: string
+          updated_at: string
+        }) => ({
+          id: row.id,
+          serviceType: row.service_type,
+          tier: row.tier,
+          name: row.name,
+          description: row.description,
+          priceCents: row.price_cents,
+          isActive: row.is_active,
+          displayOrder: row.display_order,
+          metadata: row.metadata ?? {},
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        })
+      )
     }),
 
   /**
@@ -488,7 +504,20 @@ export const paymentsRouter = t.router({
         updated_at: new Date().toISOString(),
       }
 
-      let result: { data: unknown; error: unknown } | undefined
+      let result: {
+        id: string
+        service_type: string
+        tier: string | null
+        name: string
+        description: string | null
+        price_cents: number
+        is_active: boolean
+        display_order: number
+        metadata: Record<string, unknown> | null
+        created_at: string
+        updated_at: string
+      }
+
       if (input.id) {
         const { data, error } = await supabaseAdmin
           .schema('core')
@@ -512,7 +541,7 @@ export const paymentsRouter = t.router({
           })
         }
 
-        result = data
+        result = data as typeof result
       } else {
         const { data, error } = await supabaseAdmin
           .schema('core')
@@ -538,7 +567,7 @@ export const paymentsRouter = t.router({
           })
         }
 
-        result = data
+        result = data as typeof result
       }
 
       return {
@@ -673,19 +702,34 @@ export const paymentsRouter = t.router({
       // Calculate KPIs
       const totalRevenue = allTransactions
         .filter((t: { status: string }) => t.status === 'succeeded')
-        .reduce((sum: number, t: { amount_cents?: number | null }) => sum + (t.amount_cents ?? 0), 0)
+        .reduce(
+          (sum: number, t: { amount_cents?: number | null }) => sum + (t.amount_cents ?? 0),
+          0
+        )
 
       const totalTransactions = allTransactions.length
-      const succeededTransactions = allTransactions.filter((t: { status: string }) => t.status === 'succeeded').length
-      const failedTransactions = allTransactions.filter((t: { status: string }) => t.status === 'failed').length
-      const pendingTransactions = allTransactions.filter((t: { status: string }) => t.status === 'pending').length
+      const succeededTransactions = allTransactions.filter(
+        (t: { status: string }) => t.status === 'succeeded'
+      ).length
+      const failedTransactions = allTransactions.filter(
+        (t: { status: string }) => t.status === 'failed'
+      ).length
+      const pendingTransactions = allTransactions.filter(
+        (t: { status: string }) => t.status === 'pending'
+      ).length
 
       const successRate =
         totalTransactions > 0 ? (succeededTransactions / totalTransactions) * 100 : 0
 
       // Breakdown by transaction type
       const byType = allTransactions.reduce(
-        (acc: Record<string, { count: number; revenue: number; succeeded: number; failed: number }>, t: { transaction_type?: string | null; status: string; amount_cents?: number | null }) => {
+        (
+          acc: Record<
+            string,
+            { count: number; revenue: number; succeeded: number; failed: number }
+          >,
+          t: { transaction_type?: string | null; status: string; amount_cents?: number | null }
+        ) => {
           const type = t.transaction_type ?? 'unknown'
           if (!acc[type]) {
             acc[type] = {
@@ -722,7 +766,10 @@ export const paymentsRouter = t.router({
       const dailyRevenue = allTransactions
         .filter((t: { status: string }) => t.status === 'succeeded')
         .reduce(
-          (acc: Record<string, number>, t: { created_at: string; amount_cents?: number | null }) => {
+          (
+            acc: Record<string, number>,
+            t: { created_at: string; amount_cents?: number | null }
+          ) => {
             const date = new Date(t.created_at).toISOString().split('T')[0] ?? ''
             acc[date] = (acc[date] ?? 0) + (t.amount_cents ?? 0)
             return acc
@@ -733,18 +780,32 @@ export const paymentsRouter = t.router({
       // Failed transactions queue
       const failedQueue = allTransactions
         .filter((t: { status?: string | null }) => t.status === 'failed')
-        .map((t: { id: string; transaction_type?: string | null; amount_cents?: number | null; failure_reason?: string | null; created_at: string; failed_at?: string | null; organization_id: string; user_id: string | null }) => ({
-          id: t.id,
-          transactionType: t.transaction_type,
-          amountCents: t.amount_cents,
-          failureReason: t.failure_reason,
-          createdAt: t.created_at,
-          failedAt: t.failed_at,
-          organizationId: t.organization_id,
-          userId: t.user_id,
-        }))
+        .map(
+          (t: {
+            id: string
+            transaction_type?: string | null
+            amount_cents?: number | null
+            failure_reason?: string | null
+            created_at: string
+            failed_at?: string | null
+            organization_id: string
+            user_id: string | null
+          }) => ({
+            id: t.id,
+            transactionType: t.transaction_type,
+            amountCents: t.amount_cents,
+            failureReason: t.failure_reason,
+            createdAt: t.created_at,
+            failedAt: t.failed_at,
+            organizationId: t.organization_id,
+            userId: t.user_id,
+          })
+        )
         .sort(
-          (a: { failedAt?: string | null; createdAt: string }, b: { failedAt?: string | null; createdAt: string }) =>
+          (
+            a: { failedAt?: string | null; createdAt: string },
+            b: { failedAt?: string | null; createdAt: string }
+          ) =>
             new Date(b.failedAt ?? b.createdAt).getTime() -
             new Date(a.failedAt ?? a.createdAt).getTime()
         )
@@ -842,7 +903,8 @@ export const paymentsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: { id: string; organization_id: string; organization?: { name?: string } | null; user_id: string | null; user?: { display_name?: string; email?: string } | null; amount_cents?: number | null; currency?: string | null; transaction_type?: string | null; status?: string | null; failure_reason?: string | null; stripe_payment_intent_id?: string | null; created_at: string; succeeded_at?: string | null; failed_at?: string | null; refunded_at?: string | null; metadata?: unknown }) => ({
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+        items: (data ?? []).map((row: any) => ({
           id: row.id,
           organizationId: row.organization_id,
           organizationName: (row.organization as { name?: string } | null)?.name ?? null,
@@ -1273,7 +1335,8 @@ export const paymentsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: { id: string; organization_id: string; organization?: { name?: string } | null; user_id: string | null; user?: { display_name?: string; email?: string } | null; amount_cents?: number | null; currency?: string | null; transaction_type?: string | null; status?: string | null; failure_reason?: string | null; stripe_payment_intent_id?: string | null; created_at: string; succeeded_at?: string | null; failed_at?: string | null; refunded_at?: string | null; metadata?: unknown }) => ({
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+        items: (data ?? []).map((row: any) => ({
           id: row.id,
           organizationId: row.organization_id,
           organizationName: (row.organization as { name?: string } | null)?.name ?? null,
@@ -1366,24 +1429,40 @@ export const paymentsRouter = t.router({
         })
       }
 
-      const transactions = (data ?? []).map((row: { id: string; organization?: { name?: string } | null; user?: { display_name?: string; email?: string } | null; amount_cents?: number | null; currency?: string | null; transaction_type?: string | null; status?: string | null; failure_reason?: string | null; stripe_payment_intent_id?: string | null; created_at: string; succeeded_at?: string | null; failed_at?: string | null; refunded_at?: string | null }) => ({
-        id: row.id,
-        organizationName: (row.organization as { name?: string } | null)?.name ?? 'N/A',
-        userName:
-          (row.user as { display_name?: string; email?: string } | null)?.display_name ??
-          (row.user as { display_name?: string; email?: string } | null)?.email ??
-          'N/A',
-        amountCents: row.amount_cents,
-        currency: row.currency,
-        transactionType: row.transaction_type,
-        status: row.status,
-        failureReason: row.failure_reason ?? '',
-        stripePaymentIntentId: row.stripe_payment_intent_id,
-        createdAt: row.created_at,
-        succeededAt: row.succeeded_at ?? '',
-        failedAt: row.failed_at ?? '',
-        refundedAt: row.refunded_at ?? '',
-      }))
+      const transactions = (data ?? []).map(
+        (row: {
+          id: string
+          organization?: { name?: string } | null
+          user?: { display_name?: string; email?: string } | null
+          amount_cents?: number | null
+          currency?: string | null
+          transaction_type?: string | null
+          status?: string | null
+          failure_reason?: string | null
+          stripe_payment_intent_id?: string | null
+          created_at: string
+          succeeded_at?: string | null
+          failed_at?: string | null
+          refunded_at?: string | null
+        }) => ({
+          id: row.id,
+          organizationName: (row.organization as { name?: string } | null)?.name ?? 'N/A',
+          userName:
+            (row.user as { display_name?: string; email?: string } | null)?.display_name ??
+            (row.user as { display_name?: string; email?: string } | null)?.email ??
+            'N/A',
+          amountCents: row.amount_cents,
+          currency: row.currency,
+          transactionType: row.transaction_type,
+          status: row.status,
+          failureReason: row.failure_reason ?? '',
+          stripePaymentIntentId: row.stripe_payment_intent_id,
+          createdAt: row.created_at,
+          succeededAt: row.succeeded_at ?? '',
+          failedAt: row.failed_at ?? '',
+          refundedAt: row.refunded_at ?? '',
+        })
+      )
 
       if (input.format === 'json') {
         return {
@@ -1418,24 +1497,46 @@ export const paymentsRouter = t.router({
         'Refunded At',
       ]
 
-      const rows = transactions.map((t: { id: string; organizationName: string; userName: string; amountCents?: number | null; currency?: string | null; transactionType?: string | null; status?: string | null; failureReason: string; stripePaymentIntentId?: string | null; createdAt: string; succeededAt: string; failedAt: string; refundedAt: string }) => [
-        t.id,
-        t.organizationName,
-        t.userName,
-        String(t.amountCents),
-        t.currency,
-        t.transactionType,
-        t.status,
-        t.failureReason,
-        t.stripePaymentIntentId,
-        t.createdAt,
-        t.succeededAt,
-        t.failedAt,
-        t.refundedAt,
-      ])
+      const rows = transactions.map(
+        (t: {
+          id: string
+          organizationName: string
+          userName: string
+          amountCents?: number | null
+          currency?: string | null
+          transactionType?: string | null
+          status?: string | null
+          failureReason: string
+          stripePaymentIntentId?: string | null
+          createdAt: string
+          succeededAt: string
+          failedAt: string
+          refundedAt: string
+        }) => [
+          t.id,
+          t.organizationName,
+          t.userName,
+          String(t.amountCents),
+          t.currency,
+          t.transactionType,
+          t.status,
+          t.failureReason,
+          t.stripePaymentIntentId,
+          t.createdAt,
+          t.succeededAt,
+          t.failedAt,
+          t.refundedAt,
+        ]
+      )
 
       const csvRows = [headers, ...rows]
-        .map((row: (string | number | null | undefined)[]) => row.map((cell: string | number | null | undefined) => `'${String(cell).replace(/'/g, "''")}'`).join(','))
+        .map((row: (string | number | null | undefined)[]) =>
+          row
+            .map(
+              (cell: string | number | null | undefined) => `'${String(cell).replace(/'/g, "''")}'`
+            )
+            .join(',')
+        )
         .join('\n')
 
       return {
@@ -1451,9 +1552,40 @@ export const paymentsRouter = t.router({
   generateReceipt: officeProcedure
     .input(z.object({ transactionId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const transaction = await ctx.caller.payments.getTransaction({
-        transactionId: input.transactionId,
-      })
+      const { supabaseAdmin } = ctx
+
+      const { data: transaction, error } = await supabaseAdmin
+        .schema('core')
+        .from('payment_transactions')
+        .select(
+          `
+          *,
+          organization:organizations(id, name, address),
+          user:users(id, display_name, email)
+        `
+        )
+        .eq('id', input.transactionId)
+        .maybeSingle()
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to load transaction: ${error.message}`,
+        })
+      }
+
+      if (!transaction) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Transaction not found',
+        })
+      }
+
+      // Verify access (office users can see all, org members can see their org's transactions)
+      const hasPlatformRole = await userHasPlatformRole(ctx)
+      if (!hasPlatformRole && transaction.organization_id) {
+        await ensureOrganizationAccess(ctx, transaction.organization_id)
+      }
 
       const formatCurrency = (cents: number, currency: string): string => {
         return new Intl.NumberFormat('en-US', {
@@ -1472,16 +1604,17 @@ export const paymentsRouter = t.router({
       return {
         transactionId: transaction.id,
         receiptNumber: `RCP-${transaction.id.slice(0, 8).toUpperCase()}`,
-        date: transaction.succeededAt ?? transaction.createdAt,
-        organizationName: transaction.organizationName ?? 'N/A',
-        organizationAddress: transaction.organizationAddress,
-        amount: formatCurrency(transaction.amountCents, transaction.currency),
-        amountCents: transaction.amountCents,
+        date: transaction.succeeded_at ?? transaction.created_at,
+        organizationName: (transaction.organization as { name?: string } | null)?.name ?? 'N/A',
+        organizationAddress:
+          (transaction.organization as { address?: unknown } | null)?.address ?? null,
+        amount: formatCurrency(transaction.amount_cents, transaction.currency),
+        amountCents: transaction.amount_cents,
         currency: transaction.currency,
-        transactionType: formatTransactionType(transaction.transactionType),
+        transactionType: formatTransactionType(transaction.transaction_type),
         status: transaction.status,
-        stripePaymentIntentId: transaction.stripePaymentIntentId,
-        metadata: transaction.metadata,
+        stripePaymentIntentId: transaction.stripe_payment_intent_id,
+        metadata: transaction.metadata ?? {},
       }
     }),
 
@@ -1689,23 +1822,41 @@ export const paymentsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row: { id: string; account_credit_id: string; organization_id: string; amount_cents?: number | null; currency?: string | null; transaction_type?: string | null; direction?: string | null; description?: string | null; payment_transaction_id?: string | null; success_fee_id?: string | null; background_check_id?: string | null; id_verification_id?: string | null; metadata?: unknown; created_by?: string | null; created_at: string }) => ({
-          id: row.id,
-          accountCreditId: row.account_credit_id,
-          organizationId: row.organization_id,
-          amountCents: row.amount_cents,
-          currency: row.currency,
-          transactionType: row.transaction_type,
-          direction: row.direction,
-          description: row.description,
-          paymentTransactionId: row.payment_transaction_id,
-          successFeeId: row.success_fee_id,
-          backgroundCheckId: row.background_check_id,
-          idVerificationId: row.id_verification_id,
-          metadata: row.metadata ?? {},
-          createdBy: row.created_by,
-          createdAt: row.created_at,
-        })),
+        items: (data ?? []).map(
+          (row: {
+            id: string
+            account_credit_id: string
+            organization_id: string
+            amount_cents?: number | null
+            currency?: string | null
+            transaction_type?: string | null
+            direction?: string | null
+            description?: string | null
+            payment_transaction_id?: string | null
+            success_fee_id?: string | null
+            background_check_id?: string | null
+            id_verification_id?: string | null
+            metadata?: unknown
+            created_by?: string | null
+            created_at: string
+          }) => ({
+            id: row.id,
+            accountCreditId: row.account_credit_id,
+            organizationId: row.organization_id,
+            amountCents: row.amount_cents,
+            currency: row.currency,
+            transactionType: row.transaction_type,
+            direction: row.direction,
+            description: row.description,
+            paymentTransactionId: row.payment_transaction_id,
+            successFeeId: row.success_fee_id,
+            backgroundCheckId: row.background_check_id,
+            idVerificationId: row.id_verification_id,
+            metadata: row.metadata ?? {},
+            createdBy: row.created_by,
+            createdAt: row.created_at,
+          })
+        ),
         totalCount: count ?? 0,
       }
     }),
@@ -1749,11 +1900,11 @@ export const paymentsRouter = t.router({
         p_transaction_type: 'withdrawal',
         p_direction: 'debit',
         p_description: input.description,
-        p_payment_transaction_id: input.paymentTransactionId ?? null,
-        p_success_fee_id: input.successFeeId ?? null,
-        p_background_check_id: input.backgroundCheckId ?? null,
-        p_id_verification_id: input.idVerificationId ?? null,
-        p_created_by: ctx.user?.id ?? null,
+        p_payment_transaction_id: input.paymentTransactionId ?? undefined,
+        p_success_fee_id: input.successFeeId ?? undefined,
+        p_background_check_id: input.backgroundCheckId ?? undefined,
+        p_id_verification_id: input.idVerificationId ?? undefined,
+        p_created_by: ctx.user?.id ?? undefined,
       })
 
       if (error) {
@@ -1783,17 +1934,37 @@ export const paymentsRouter = t.router({
     .query(async ({ ctx, input }) => {
       await ensureOrganizationAccess(ctx, input.organizationId)
 
-      const credits = await ctx.caller.payments.getAccountCredits({
-        organizationId: input.organizationId,
-      })
+      const { supabaseAdmin } = ctx
+      if (!supabaseAdmin) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Admin client not available',
+        })
+      }
 
-      const hasSufficientCredits = credits.balanceCents >= input.amountCents
-      const creditAmount = Math.min(credits.balanceCents, input.amountCents)
+      const { data: creditsData, error } = await supabaseAdmin
+        .schema('core')
+        .from('account_credits')
+        .select('*')
+        .eq('organization_id', input.organizationId)
+        .maybeSingle()
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to load account credits: ${error.message}`,
+        })
+      }
+
+      const balanceCents = creditsData?.balance_cents ?? 0
+
+      const hasSufficientCredits = balanceCents >= input.amountCents
+      const creditAmount = Math.min(balanceCents, input.amountCents)
       const remainingAmount = input.amountCents - creditAmount
 
       return {
         hasSufficientCredits,
-        balanceCents: credits.balanceCents,
+        balanceCents,
         creditAmount,
         remainingAmount,
         willUseCredits: hasSufficientCredits && input.autoApply,

@@ -1,6 +1,6 @@
 // @ts-nocheck
-import type { SizeTokens } from 'tamagui'
-import { createStyledContext, styled, ThemeableStack, withStaticProperties } from 'tamagui'
+import type { SizeTokens } from '@unicornlove/ui'
+import { createStyledContext, styled, ThemeableStack, withStaticProperties } from '@unicornlove/ui'
 
 type AlignCells = {
   y: 'center' | 'start' | 'end'

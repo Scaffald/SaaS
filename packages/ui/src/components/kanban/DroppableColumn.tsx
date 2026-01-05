@@ -2,8 +2,8 @@ import type { UniqueIdentifier } from '@dnd-kit/core'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import type { ReactNode } from 'react'
-import type { GetThemeValueForKey } from 'tamagui'
-import { Card, Text, YStack } from 'tamagui'
+import type { GetThemeValueForKey } from '@unicornlove/ui'
+import { Card, Text, YStack } from '@unicornlove/ui'
 import { KanbanColumnHeader } from './KanbanColumnHeader'
 
 interface DroppableColumnProps {

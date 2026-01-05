@@ -1,8 +1,8 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { Database, Json } from './database.types.ts';
+import type { Database, Json } from './database.types.ts'
 
-type ServiceSupabaseClient = SupabaseClient<Database>;
+type ServiceSupabaseClient = SupabaseClient<Database>
 
 /**
  * Team audit action types for logging purposes.
@@ -12,25 +12,25 @@ type ServiceSupabaseClient = SupabaseClient<Database>;
  * If audit logging is needed again, create a new migration to add the table back.
  */
 export type TeamAuditAction =
-  | "invited"
-  | "joined"
-  | "role_changed"
-  | "removed"
-  | "reinstated"
-  | "left"
-  | "invitation_rescinded"
-  | "job_assigned"
-  | "job_unassigned"
-  | "ownership_transferred"
-  | 'workload_rebalanced';
+  | 'invited'
+  | 'joined'
+  | 'role_changed'
+  | 'removed'
+  | 'reinstated'
+  | 'left'
+  | 'invitation_rescinded'
+  | 'job_assigned'
+  | 'job_unassigned'
+  | 'ownership_transferred'
+  | 'workload_rebalanced'
 
 interface RecordTeamAuditLogOptions {
-  supabaseAdmin: ServiceSupabaseClient;
-  teamId: string;
-  action: TeamAuditAction;
-  actorUserId?: string | null;
-  memberUserId?: string | null;
-  metadata?: Json;
+  supabaseAdmin: ServiceSupabaseClient
+  teamId: string
+  action: TeamAuditAction
+  actorUserId?: string | null
+  memberUserId?: string | null
+  metadata?: Json
 }
 
 /**
@@ -52,12 +52,12 @@ export async function recordTeamAuditLog({
   metadata,
 }: RecordTeamAuditLogOptions): Promise<void> {
   // Log to console for observability (table was removed in migration 040)
-  console.log("[team-audit-log] Event recorded", {
+  console.log('[team-audit-log] Event recorded', {
     teamId,
     action,
     actorUserId: actorUserId ?? null,
     memberUserId: memberUserId ?? null,
     metadata: metadata ?? {},
     timestamp: new Date().toISOString(),
-  });
+  })
 }

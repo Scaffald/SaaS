@@ -1,5 +1,7 @@
 import { forwardRef } from 'react'
 import type { ComponentType } from 'react'
+// Import Sheet directly from tamagui to preserve static properties (Frame, Overlay, etc.)
+// The re-export through @unicornlove/ui doesn't preserve static properties
 import { Sheet as TamaguiSheet, withStaticProperties } from 'tamagui'
 import type { SheetProps } from 'tamagui'
 

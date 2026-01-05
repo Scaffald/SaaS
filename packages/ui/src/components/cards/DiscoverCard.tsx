@@ -1,6 +1,6 @@
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { Card, type CardProps } from 'tamagui'
+import type { TamaguiElement } from '@unicornlove/ui'
+import { Card, type CardProps } from '@unicornlove/ui'
 
 import { cardShadows } from '../../config/shadows'
 

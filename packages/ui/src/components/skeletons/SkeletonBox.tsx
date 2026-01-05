@@ -1,5 +1,5 @@
-import type { SizeTokens } from 'tamagui'
-import { View } from 'tamagui'
+import type { SizeTokens } from '@unicornlove/ui'
+import { View } from '@unicornlove/ui'
 
 export interface SkeletonBoxProps {
   /** Width of the skeleton box */

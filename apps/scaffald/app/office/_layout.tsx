@@ -69,6 +69,7 @@ export default function OfficeLayout() {
         <Drawer.Screen name="violations/index" options={{ title: 'Violation Reports' }} />
         <Drawer.Screen name="settings/geographic" options={{ title: 'Geographic Settings' }} />
         <Drawer.Screen name="settings/stripe" options={{ title: 'Stripe Payments' }} />
+        <Drawer.Screen name="api-keys/page" options={{ title: 'API Keys' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )

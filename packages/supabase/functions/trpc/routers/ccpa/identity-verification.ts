@@ -10,8 +10,11 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types.ts';
-import { insertNotification, createServiceSupabaseClient } from '../../../_shared/notifications/utils.ts';
+import type { Database } from '../../../_shared/database.types.ts'
+import {
+  insertNotification,
+  createServiceSupabaseClient,
+} from '../../../_shared/notifications/utils.ts'
 
 type DbClient = SupabaseClient<Database>
 
@@ -144,8 +147,10 @@ export async function initiateEmailVerification(
       user_id: request.user_id,
       title: 'CCPA Verification Code',
       message: `Your verification code is: ${otp}. This code expires in ${EMAIL_OTP_EXPIRY_MINUTES} minutes.`,
-      type: 'ccpa_verification',
-      severity: 'info',
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      type: 'ccpa_verification' as any,
+      // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+      severity: 'info' as any,
       metadata: {
         request_id: requestId,
         verification_type: 'email_otp',
@@ -194,11 +199,13 @@ export async function verifyEmailOTP(
   }
 
   const metadata = request.metadata as Record<string, unknown>
-  const verification = metadata?.verification as {
-    code: string
-    expires_at: string
-    attempts: number
-  } | undefined
+  const verification = metadata?.verification as
+    | {
+        code: string
+        expires_at: string
+        attempts: number
+      }
+    | undefined
 
   if (!verification) {
     return { success: false, error: 'No verification pending for this request' }
@@ -358,11 +365,13 @@ export async function completeEnhancedVerification(
   }
 
   const metadata = request.metadata as Record<string, unknown>
-  const enhancedVerification = metadata?.enhanced_verification as {
-    token: string
-    expires_at: string
-    status: string
-  } | undefined
+  const enhancedVerification = metadata?.enhanced_verification as
+    | {
+        token: string
+        expires_at: string
+        status: string
+      }
+    | undefined
 
   if (!enhancedVerification) {
     return { success: false, error: 'No enhanced verification pending' }
@@ -462,8 +471,10 @@ export async function requestManualVerification(
         user_id: adminUserId,
         title: 'Manual CCPA Verification Required',
         message: `A CCPA request requires manual verification. Reason: ${reason}`,
-        type: 'ccpa_manual_verification',
-        severity: 'warning',
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+        type: 'ccpa_manual_verification' as any,
+        // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+        severity: 'warning' as any,
         metadata: {
           request_id: requestId,
           verification_type: 'manual',
@@ -652,8 +663,12 @@ export async function getVerificationStatus(
     const verification = metadata.manual_verification as { status: string }
     return {
       method,
-      status: verification.status === 'verified' ? 'verified' :
-              verification.status === 'failed' ? 'failed' : 'pending',
+      status:
+        verification.status === 'verified'
+          ? 'verified'
+          : verification.status === 'failed'
+            ? 'failed'
+            : 'pending',
       completedAt: null,
     }
   }

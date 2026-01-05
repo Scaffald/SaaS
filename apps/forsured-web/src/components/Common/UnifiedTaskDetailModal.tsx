@@ -13,7 +13,7 @@ import {
   History,
   Block,
 } from 'lucide-react'
-import { YStack, XStack, Text, H2 } from 'tamagui'
+import { YStack, XStack, Text, H2 } from '@unicornlove/ui'
 import type { Task, User as UserType, EntityType } from '../../types'
 import Modal from './Modal'
 import Button from './Button'

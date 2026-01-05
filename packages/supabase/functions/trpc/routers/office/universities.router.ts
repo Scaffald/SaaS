@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { officeProcedure, protectedProcedure, t } from '../../middleware.ts';
+import { officeProcedure, protectedProcedure, t } from '../../middleware.ts'
 
 /**
  * Office Universities router - handles university catalog management (admin only)
@@ -375,7 +375,9 @@ export const officeUniversitiesRouter = t.router({
     // Get country count
     const { data: countries } = await supabase.schema('data').from('universities').select('country')
 
-    const uniqueCountries = new Set(countries?.map((c: { country?: string | null; [key: string]: unknown }) => c.country) || [])
+    const uniqueCountries = new Set(
+      countries?.map((c: { country?: string | null; [key: string]: unknown }) => c.country) || []
+    )
 
     // Get universities with user education links
     const { count: usedCount } = await supabase

@@ -1,6 +1,6 @@
 import { AlertCircle, Check } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Spinner, Text, XStack, YStack } from 'tamagui'
+import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 

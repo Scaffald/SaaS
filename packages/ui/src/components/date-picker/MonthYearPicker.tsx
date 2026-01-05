@@ -1,5 +1,5 @@
 import { Calendar } from '@tamagui/lucide-icons'
-import { Select, Text, YStack } from 'tamagui'
+import { Select, Text, YStack } from '@unicornlove/ui'
 import { AdaptiveSelectSheet } from '../select/AdaptiveSelectSheet'
 
 interface MonthYearPickerProps {

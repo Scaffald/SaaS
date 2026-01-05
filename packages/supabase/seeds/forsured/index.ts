@@ -32,14 +32,14 @@ export {
   type ForsuredRequirementId,
   type ForsuredTaskId,
   type ForsuredComplianceId,
-} from './test-ids';
+} from './test-ids'
 
 // Re-export seeding functions
 export {
   seedForsuredTestData,
   clearForsuredTestData,
   resetForsuredTestData,
-} from './seed-forsured';
+} from './seed-forsured'
 
 /**
  * Test credentials for ForSured test users
@@ -52,7 +52,10 @@ export const FORSURED_TEST_CREDENTIALS = {
     gcActive: { email: 'gc-active@forsured-test.com', password: 'ForsuredTest123!' },
     gcMultiproject: { email: 'gc-multiproject@forsured-test.com', password: 'ForsuredTest123!' },
     contractorFresh: { email: 'contractor-fresh@forsured-test.com', password: 'ForsuredTest123!' },
-    contractorActive: { email: 'contractor-active@forsured-test.com', password: 'ForsuredTest123!' },
+    contractorActive: {
+      email: 'contractor-active@forsured-test.com',
+      password: 'ForsuredTest123!',
+    },
     contractorNoncompliant: {
       email: 'contractor-noncompliant@forsured-test.com',
       password: 'ForsuredTest123!',
@@ -66,4 +69,4 @@ export const FORSURED_TEST_CREDENTIALS = {
     admin: { email: 'admin@forsured-test.com', password: 'ForsuredTest123!' },
     superAdmin: { email: 'superadmin@forsured-test.com', password: 'ForsuredTest123!' },
   },
-} as const;
+} as const

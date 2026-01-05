@@ -17,4 +17,4 @@
 
 // Re-export the original type - this works at runtime even though
 // it causes type-checking issues
-export type { AppRouter } from './app-router-type';
+export type { AppRouter } from './app-router-type'

@@ -1,5 +1,5 @@
 import { AlertCircle } from '@tamagui/lucide-icons'
-import { Spinner, Text, XStack, YStack } from 'tamagui'
+import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 import { ResponsiveModal } from '../modal/ResponsiveModal'
 

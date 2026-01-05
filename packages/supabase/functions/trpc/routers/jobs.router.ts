@@ -4,10 +4,10 @@ import { z } from 'zod'
 import {
   applicationCreateSchema,
   applicationWithdrawSchema,
-} from '../../_shared/application-schemas.ts';
-import { jobSoftSkillRequirementSchema } from '../../_shared/profile-schemas.ts';
-import { transformJobSkills } from '../../_shared/skill-helpers.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+} from '../../_shared/application-schemas.ts'
+import { jobSoftSkillRequirementSchema } from '../../_shared/profile-schemas.ts'
+import { transformJobSkills } from '../../_shared/skill-helpers.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 type SoftSkillRequirement = z.infer<typeof jobSoftSkillRequirementSchema>
 
@@ -52,7 +52,7 @@ const parseRequiredSoftSkills = (value: unknown): SoftSkillRequirement[] => {
 
 const fetchSoftSkillMetadata = async (
   supabase: SupabaseClient,
-  skillIds: string[],
+  skillIds: string[]
 ): Promise<Map<string, SoftSkillMetadata>> => {
   if (skillIds.length === 0) {
     return new Map()
@@ -88,7 +88,7 @@ const fetchSoftSkillMetadata = async (
 
 const loadUserSoftSkillsForMatching = async (
   supabase: SupabaseClient,
-  userId: string,
+  userId: string
 ): Promise<{ ratings: Map<string, number>; hasAssessment: boolean }> => {
   const { data: latestVersionRow, error: versionError } = await supabase
     .schema('core')
@@ -145,7 +145,7 @@ const loadUserSoftSkillsForMatching = async (
 const computeSoftSkillMatch = (
   requirements: SoftSkillRequirement[],
   ratings: Map<string, number>,
-  metadata: Map<string, SoftSkillMetadata>,
+  metadata: Map<string, SoftSkillMetadata>
 ): { score: number | null; details: SoftSkillMatchDetail[] } => {
   if (requirements.length === 0) {
     return { score: null, details: [] }
@@ -154,8 +154,7 @@ const computeSoftSkillMatch = (
   const details = requirements.map<SoftSkillMatchDetail>((req) => {
     const info = metadata.get(req.skill_id)
     const userRating = ratings.get(req.skill_id)
-    const cappedRating =
-      typeof userRating === 'number' ? Math.min(userRating, req.importance) : 0
+    const cappedRating = typeof userRating === 'number' ? Math.min(userRating, req.importance) : 0
     const contributionRatio = req.importance > 0 ? cappedRating / req.importance : 0
 
     return {
@@ -164,8 +163,7 @@ const computeSoftSkillMatch = (
       category: info?.category ?? null,
       requiredImportance: req.importance,
       userRating: userRating ?? null,
-      meetsRequirement:
-        typeof userRating === 'number' ? userRating >= req.importance : null,
+      meetsRequirement: typeof userRating === 'number' ? userRating >= req.importance : null,
       contribution: Number((contributionRatio * 100).toFixed(2)),
     }
   })
@@ -246,31 +244,45 @@ export const jobsRouter = t.router({
     }
 
     // Transform data to match UI expectations
-    const jobs = (data || []).map((job: { id: string; title?: string | null; company_name?: string | null; company_logo?: string | null; job_location?: string | null; job_type?: string | null; job_category?: string | null; description?: string | null; compensation_min?: number | null; compensation_max?: number | null; [key: string]: unknown }) => ({
-      id: job.id,
-      title: job.title,
-      company_name: job.company_name,
-      company_logo: job.company_logo,
-      job_location: job.job_location,
-      job_type: job.job_type,
-      job_category: job.job_category,
-      description: job.description,
-      compensation_min: job.compensation_min,
-      compensation_max: job.compensation_max,
-      compensation_currency: job.compensation_currency,
-      posted_date: job.posted_date,
-      application_url: job.application_url,
-      external_url: job.external_url,
-      featured: job.featured,
-      industries: Array.isArray(job.external_job_industries)
-        ? job.external_job_industries.map(
-            (eji: { industry?: { name?: string } | null; confidence_score?: number | null }) => ({
-              industry_name: eji.industry?.name || '',
-              confidence_score: eji.confidence_score || 0,
-            })
-          )
-        : [],
-    }))
+    const jobs = (data || []).map(
+      (job: {
+        id: string
+        title?: string | null
+        company_name?: string | null
+        company_logo?: string | null
+        job_location?: string | null
+        job_type?: string | null
+        job_category?: string | null
+        description?: string | null
+        compensation_min?: number | null
+        compensation_max?: number | null
+        [key: string]: unknown
+      }) => ({
+        id: job.id,
+        title: job.title,
+        company_name: job.company_name,
+        company_logo: job.company_logo,
+        job_location: job.job_location,
+        job_type: job.job_type,
+        job_category: job.job_category,
+        description: job.description,
+        compensation_min: job.compensation_min,
+        compensation_max: job.compensation_max,
+        compensation_currency: job.compensation_currency,
+        posted_date: job.posted_date,
+        application_url: job.application_url,
+        external_url: job.external_url,
+        featured: job.featured,
+        industries: Array.isArray(job.external_job_industries)
+          ? job.external_job_industries.map(
+              (eji: { industry?: { name?: string } | null; confidence_score?: number | null }) => ({
+                industry_name: eji.industry?.name || '',
+                confidence_score: eji.confidence_score || 0,
+              })
+            )
+          : [],
+      })
+    )
 
     return { jobs }
   }),
@@ -314,8 +326,9 @@ export const jobsRouter = t.router({
 
       if (Array.isArray(job.external_job_industries)) {
         for (const eji of job.external_job_industries) {
-          if (eji.industry?.name) {
-            industries.add(eji.industry.name)
+          const industry = Array.isArray(eji.industry) ? eji.industry[0] : eji.industry
+          if (industry?.name) {
+            industries.add(industry.name)
           }
         }
       }
@@ -427,29 +440,47 @@ export const jobsRouter = t.router({
       }
 
       // Transform data
-      const jobs = (data || []).map((job: { id: string; title?: string | null; description?: string | null; employment_type?: string | null; remote_option?: string | null; location?: string | null; pay_range_min_cents?: number | null; pay_range_max_cents?: number | null; pay_range_type?: string | null; posted_at?: string | null; created_at: string; organization?: unknown; job_certifications?: unknown; [key: string]: unknown }) => ({
-        id: job.id,
-        title: job.title,
-        description: job.description,
-        employment_type: job.employment_type,
-        remote_option: job.remote_option,
-        location: job.location,
-        pay_range_min_cents: job.pay_range_min_cents,
-        pay_range_max_cents: job.pay_range_max_cents,
-        pay_range_type: job.pay_range_type,
-        posted_at: job.posted_at,
-        created_at: job.created_at,
-        organization: job.organization,
-        certifications: Array.isArray(job.job_certifications)
-          ? job.job_certifications
-              .map(
-                (jc: { certification?: { id?: string; name?: string; slug?: string } | null }) =>
-                  jc.certification
-              )
-              .filter(Boolean)
-          : [],
-        skills: transformJobSkills(job.job_skills || []),
-      }))
+      const jobs = (data || []).map(
+        (job: {
+          id: string
+          title?: string | null
+          description?: string | null
+          employment_type?: string | null
+          remote_option?: string | null
+          location?: string | null
+          pay_range_min_cents?: number | null
+          pay_range_max_cents?: number | null
+          pay_range_type?: string | null
+          posted_at?: string | null
+          created_at: string
+          organization?: unknown
+          job_certifications?: unknown
+          [key: string]: unknown
+        }) => ({
+          id: job.id,
+          title: job.title,
+          description: job.description,
+          employment_type: job.employment_type,
+          remote_option: job.remote_option,
+          location: job.location,
+          pay_range_min_cents: job.pay_range_min_cents,
+          pay_range_max_cents: job.pay_range_max_cents,
+          pay_range_type: job.pay_range_type,
+          posted_at: job.posted_at,
+          created_at: job.created_at,
+          organization: job.organization,
+          certifications: Array.isArray(job.job_certifications)
+            ? job.job_certifications
+                .map(
+                  (jc: { certification?: { id?: string; name?: string; slug?: string } | null }) =>
+                    jc.certification
+                )
+                .filter(Boolean)
+            : // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+              ([] as any),
+          skills: transformJobSkills(Array.isArray(job.job_skills) ? job.job_skills : []),
+        })
+      )
 
       return { jobs, total: count || 0 }
     }),
@@ -472,7 +503,7 @@ export const jobsRouter = t.router({
             slug,
             organization:organizations!jobs_organization_id_fkey(id, name, slug),
             required_soft_skills
-          `,
+          `
         )
         .eq('id', input.jobId)
         .maybeSingle()
@@ -508,7 +539,7 @@ export const jobsRouter = t.router({
 
       const metadata = await fetchSoftSkillMetadata(
         supabase,
-        requirements.map((req) => req.skill_id),
+        requirements.map((req) => req.skill_id)
       )
 
       const match = computeSoftSkillMatch(requirements, ratings, metadata)
@@ -559,7 +590,7 @@ export const jobsRouter = t.router({
             created_at,
             organization:organizations!jobs_organization_id_fkey(id, name, slug),
             required_soft_skills
-          `,
+          `
         )
         .eq('status', 'open')
         .order('created_at', { ascending: false })
@@ -572,10 +603,19 @@ export const jobsRouter = t.router({
         })
       }
 
-      const jobsWithRequirements = (data || []).map((job: { id: string; title?: string | null; slug?: string | null; organization?: unknown; required_soft_skills?: unknown; [key: string]: unknown }) => {
-        const requirements = parseRequiredSoftSkills(job.required_soft_skills)
-        return { job, requirements }
-      })
+      const jobsWithRequirements = (data || []).map(
+        (job: {
+          id: string
+          title?: string | null
+          slug?: string | null
+          organization?: unknown
+          required_soft_skills?: unknown
+          [key: string]: unknown
+        }) => {
+          const requirements = parseRequiredSoftSkills(job.required_soft_skills)
+          return { job, requirements }
+        }
+      )
 
       const skillIds: string[] = []
       for (const entry of jobsWithRequirements) {
@@ -587,26 +627,62 @@ export const jobsRouter = t.router({
       const metadata = await fetchSoftSkillMetadata(supabase, skillIds)
 
       const enriched = jobsWithRequirements
-        .filter((entry: { job: { id: string; title?: string | null; slug?: string | null; organization?: unknown; [key: string]: unknown }; requirements: SoftSkillRequirement[] }) => entry.requirements.length > 0)
-        .map((entry: { job: { id: string; title?: string | null; slug?: string | null; organization?: unknown; [key: string]: unknown }; requirements: SoftSkillRequirement[] }) => {
-          const match = computeSoftSkillMatch(entry.requirements, ratings, metadata)
-          return {
-            jobId: entry.job.id,
-            title: entry.job.title,
-            slug: entry.job.slug ?? null,
-            organization: entry.job.organization,
-            matchScore: match.score,
-            totalRequirements: entry.requirements.length,
-            details: match.details,
+        .filter(
+          (entry: {
+            job: {
+              id: string
+              title?: string | null
+              slug?: string | null
+              organization?: unknown
+              [key: string]: unknown
+            }
+            requirements: SoftSkillRequirement[]
+          }) => entry.requirements.length > 0
+        )
+        .map(
+          (entry: {
+            job: {
+              id: string
+              title?: string | null
+              slug?: string | null
+              organization?: unknown
+              [key: string]: unknown
+            }
+            requirements: SoftSkillRequirement[]
+          }) => {
+            const match = computeSoftSkillMatch(entry.requirements, ratings, metadata)
+            return {
+              jobId: entry.job.id,
+              title: entry.job.title,
+              slug: entry.job.slug ?? null,
+              organization: entry.job.organization,
+              matchScore: match.score,
+              totalRequirements: entry.requirements.length,
+              details: match.details,
+            }
           }
-        })
-        .filter((entry: { matchScore: number | null; [key: string]: unknown }) => entry.matchScore !== null)
+        )
+        .filter(
+          (entry: { matchScore: number | null; [key: string]: unknown }) =>
+            entry.matchScore !== null
+        )
 
       const minScore = typeof input.minMatchScore === 'number' ? input.minMatchScore : null
-      const filtered = minScore !== null ? enriched.filter((entry: { matchScore: number | null; [key: string]: unknown }) => (entry.matchScore ?? 0) >= minScore) : enriched
+      const filtered =
+        minScore !== null
+          ? enriched.filter(
+              (entry: { matchScore: number | null; [key: string]: unknown }) =>
+                (entry.matchScore ?? 0) >= minScore
+            )
+          : enriched
 
       if (input.sortBy === 'match_score') {
-        filtered.sort((a: { matchScore: number | null; [key: string]: unknown }, b: { matchScore: number | null; [key: string]: unknown }) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
+        filtered.sort(
+          (
+            a: { matchScore: number | null; [key: string]: unknown },
+            b: { matchScore: number | null; [key: string]: unknown }
+          ) => (b.matchScore ?? 0) - (a.matchScore ?? 0)
+        )
       }
 
       const total = filtered.length
@@ -1098,8 +1174,9 @@ export const jobsRouter = t.router({
 
       if (Array.isArray(job.job_certifications)) {
         for (const jc of job.job_certifications) {
-          if (jc.certification?.name) {
-            certifications.add(jc.certification.name)
+          const cert = Array.isArray(jc.certification) ? jc.certification[0] : jc.certification
+          if (cert?.name) {
+            certifications.add(cert.name)
           }
         }
       }

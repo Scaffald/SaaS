@@ -11,7 +11,7 @@ import {
   useWindowDimensions,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
 
 export interface BreadcrumbSibling {

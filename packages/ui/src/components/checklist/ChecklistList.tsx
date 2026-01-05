@@ -1,4 +1,4 @@
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 import { ChecklistItem } from './ChecklistItem'
 import type { ChecklistListProps } from './types'
 

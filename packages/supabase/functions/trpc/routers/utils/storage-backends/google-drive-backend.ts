@@ -12,7 +12,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts';
+import type { IStorageBackend, SignedUrlResult, UploadOptions, UploadResult } from './index.ts'
 
 // Google Drive API endpoints
 const GOOGLE_DRIVE_API = 'https://www.googleapis.com/drive/v3'
@@ -94,7 +94,7 @@ export class GoogleDriveStorageBackend implements IStorageBackend {
         return null
       }
 
-      const tokens = await response.json() as { access_token: string; expires_in: number }
+      const tokens = (await response.json()) as { access_token: string; expires_in: number }
 
       // Update the token in the database
       const expiresAt = new Date(Date.now() + tokens.expires_in * 1000)
@@ -158,7 +158,7 @@ export class GoogleDriveStorageBackend implements IStorageBackend {
       }
     }
 
-    const searchResult = await searchResponse.json() as { files: Array<{ id: string }> }
+    const searchResult = (await searchResponse.json()) as { files: Array<{ id: string }> }
 
     if (searchResult.files && searchResult.files.length > 0) {
       this.scaffaldFolderId = searchResult.files[0].id
@@ -185,7 +185,7 @@ export class GoogleDriveStorageBackend implements IStorageBackend {
       }
     }
 
-    const folder = await createResponse.json() as { id: string }
+    const folder = (await createResponse.json()) as { id: string }
     this.scaffaldFolderId = folder.id
     return this.scaffaldFolderId
   }
@@ -218,17 +218,14 @@ export class GoogleDriveStorageBackend implements IStorageBackend {
 
       const body = metadataPart + filePart + base64Content + closeDelimiter
 
-      const response = await fetch(
-        `${GOOGLE_DRIVE_UPLOAD}/files?uploadType=multipart`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': `multipart/related; boundary=${boundary}`,
-          },
-          body,
-        }
-      )
+      const response = await fetch(`${GOOGLE_DRIVE_UPLOAD}/files?uploadType=multipart`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': `multipart/related; boundary=${boundary}`,
+        },
+        body,
+      })
 
       if (!response.ok) {
         const errorText = await response.text()
@@ -238,10 +235,16 @@ export class GoogleDriveStorageBackend implements IStorageBackend {
         }
       }
 
-      const result = await response.json() as { id: string; name: string; size: string; md5Checksum: string }
+      const result = (await response.json()) as {
+        id: string
+        name: string
+        size: string
+        md5Checksum: string
+      }
 
       // Calculate checksum locally if not provided by Google
-      const hashBuffer = await crypto.subtle.digest('SHA-256', file)
+      // biome-ignore lint/suspicious/noExplicitAny: Uint8Array to BufferSource conversion
+      const hashBuffer = await crypto.subtle.digest('SHA-256', file as any)
       const hashArray = Array.from(new Uint8Array(hashBuffer))
       const checksum = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 
@@ -321,7 +324,7 @@ export class GoogleDriveStorageBackend implements IStorageBackend {
         }
       }
 
-      const file = await response.json() as { webContentLink?: string }
+      const file = (await response.json()) as { webContentLink?: string }
 
       if (!file.webContentLink) {
         throw {

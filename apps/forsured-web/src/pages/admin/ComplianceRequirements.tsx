@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react'
-import { YStack, XStack, Text, Button, H1, H2, H3, Card } from 'tamagui'
+import { YStack, XStack, Text, Button, H1, H2, H3, Card } from '@unicornlove/ui'
 import { useUser } from '../../contexts/UserContext'
 import { RequirementsList } from '../../components/Admin/Compliance/RequirementsList'
 import { RequirementEditor } from '../../components/Admin/Compliance/RequirementEditor'

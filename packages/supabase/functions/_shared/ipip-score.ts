@@ -1,9 +1,4 @@
-import type {
-  IPIPAnswer,
-  IPIPFacet,
-  IPIPScoreOptions,
-  IPIPScores,
-} from './ipip-types.ts';
+import type { IPIPAnswer, IPIPFacet, IPIPScoreOptions, IPIPScores } from './ipip-types.ts'
 
 function _calcHandler(score: number, count: number): string {
   const average = score / count

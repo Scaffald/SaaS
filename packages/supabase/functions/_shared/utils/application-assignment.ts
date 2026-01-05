@@ -1,6 +1,6 @@
 import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 
-import type { Database } from '../database.types.ts';
+import type { Database } from '../database.types.ts'
 
 type SupabaseAdminClient = SupabaseClient<Database>
 
@@ -105,7 +105,8 @@ export async function assignApplicationToMember(options: {
       assigned_to: assigneeUserId,
       assigned_by: actorUserId ?? null,
       source,
-      metadata: metadata as Database['core']['Tables']['application_assignment_history']['Row']['metadata'],
+      metadata:
+        metadata as Database['core']['Tables']['application_assignment_history']['Row']['metadata'],
     })
 
   if (historyError) {

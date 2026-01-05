@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { Link } from 'expo-router'
-import { styled, Tabs, Text, useTabsContext, XStack, YStack } from 'tamagui'
+import { styled, Tabs, Text, useTabsContext, XStack, YStack } from '@unicornlove/ui'
 import { useTabGroupVariant } from './TabGroup'
 
 export type TabProps = {

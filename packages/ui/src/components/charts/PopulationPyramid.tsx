@@ -1,6 +1,6 @@
 import type { TextStyle } from 'react-native'
 import { PopulationPyramid as GiftedPopulationPyramid } from 'react-native-gifted-charts'
-import { View } from 'tamagui'
+import { View } from '@unicornlove/ui'
 
 export interface PopulationPyramidData {
   left: number

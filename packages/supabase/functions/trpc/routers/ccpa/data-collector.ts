@@ -6,7 +6,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '../../../_shared/database.types.ts';
+import type { Database } from '../../../_shared/database.types.ts'
 import type {
   BackgroundCheckEntry,
   CertificationEntry,
@@ -30,7 +30,7 @@ import type {
   UsageInformation,
   UserDataExport,
   WorkLogEntry,
-} from './types.ts';
+} from './types.ts'
 
 type DbClient = SupabaseClient<Database>
 
@@ -61,7 +61,8 @@ async function collectPersonalInformation(
 
   // Get auth user data using service role client
   try {
-    const { data: authUser, error: authError } = await serviceRoleClient.auth.admin.getUserById(userId)
+    const { data: authUser, error: authError } =
+      await serviceRoleClient.auth.admin.getUserById(userId)
     if (authError) {
       errors.push(`auth.users: ${authError.message}`)
     } else if (authUser?.user) {
@@ -252,7 +253,8 @@ async function collectProfessionalInformation(
           skillName: null, // Would need join to get name
           taxonomyType: skill.skill_taxonomy ?? null,
           yearsExperience: skill.years_experience ?? null,
-          proficiencyLevel: skill.proficiency_level ?? null,
+          proficiencyLevel:
+            skill.proficiency_level !== null ? String(skill.proficiency_level) : null,
           isVerified: skill.verified ?? false,
         })
       }
@@ -343,7 +345,9 @@ async function collectProfessionalInformation(
     const { data: logsData, error } = await supabase
       .schema('core')
       .from('work_logs')
-      .select('id, project_id, log_date, total_hours, work_description, status, tasks_completed, skills_used, visibility, submitted_at, verified_at')
+      .select(
+        'id, project_id, log_date, total_hours, work_description, status, tasks_completed, skills_used, visibility, submitted_at, verified_at'
+      )
       .eq('user_id', userId)
       .order('log_date', { ascending: false })
       .limit(100) // Limit for performance
@@ -404,8 +408,8 @@ async function collectFinancialInformation(
   const sources: DataSource[] = []
   const now = new Date().toISOString()
 
-  let stripeCustomerId: string | null = null
-  let stripeConnected = false
+  const stripeCustomerId: string | null = null
+  const stripeConnected = false
   const payments: PaymentEntry[] = []
 
   // Note: stripe_settings table exists but is for global platform settings, not per-user
@@ -472,7 +476,8 @@ async function collectUsageInformation(
   // Get profile views
   const profileViews: ProfileViewEntry[] = []
   try {
-    const { data: viewsData, error } = await supabase
+    // biome-ignore lint/suspicious/noExplicitAny: social schema not in database types
+    const { data: viewsData, error } = await (supabase as any)
       .schema('social')
       .from('profile_views')
       .select('id, viewer_user_id, viewed_at')
@@ -485,9 +490,12 @@ async function collectUsageInformation(
     } else if (viewsData) {
       for (const view of viewsData) {
         profileViews.push({
-          id: view.id,
-          viewerId: view.viewer_user_id ?? null,
-          viewedAt: view.viewed_at ?? now,
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          id: (view as any).id,
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          viewerId: (view as any).viewer_user_id ?? null,
+          // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+          viewedAt: (view as any).viewed_at ?? now,
           viewerType: null, // Would need additional lookup
         })
       }

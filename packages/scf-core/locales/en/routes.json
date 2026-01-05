@@ -86,6 +86,9 @@
     }
   },
   "home": "Home",
+  "onboarding": {
+    "title": "Get Started"
+  },
   "office": {
     "applications": {
       "inquiry": "Inquiry Detail",

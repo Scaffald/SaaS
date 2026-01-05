@@ -1,4 +1,4 @@
-import { View, type ViewProps } from 'tamagui'
+import { View, type ViewProps } from '@unicornlove/ui'
 
 export interface RadioProps {
   /** Whether the radio is selected */

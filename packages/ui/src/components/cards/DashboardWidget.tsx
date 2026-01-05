@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from 'react'
-import { Card, type CardProps, useTheme } from 'tamagui'
+import { Card, type CardProps, useTheme } from '@unicornlove/ui'
 import { borderRadius } from '../../config/radii'
 import { cardShadows } from '../../config/shadows'
 import { spacing } from '../../config/spacing'

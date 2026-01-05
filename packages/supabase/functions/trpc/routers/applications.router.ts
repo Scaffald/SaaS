@@ -1,14 +1,14 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { trackServerEvent } from '../../_shared/analytics.ts';
+import { trackServerEvent } from '../../_shared/analytics.ts'
 import {
   applicationStepUpdateSchema,
   applicationSubmitSchema,
   applicationUpdateSchema,
   fileUploadSchema,
-} from '../../_shared/application-schemas.ts';
-import { autoAssignApplicationToTeam } from '../../_shared/utils/application-assignment.ts';
-import { protectedProcedure, t } from '../middleware.ts';
+} from '../../_shared/application-schemas.ts'
+import { autoAssignApplicationToTeam } from '../../_shared/utils/application-assignment.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 const publicProcedure = t.procedure
 const router = t.router
@@ -109,12 +109,17 @@ export const applicationsRouter = router({
       orderedTeamIds.push(job.assigned_team_id as string)
     }
 
-    const sortedAssignments = (teamAssignments ?? []).sort((a: { team_id: string; is_primary: boolean }, b: { team_id: string; is_primary: boolean }) => {
-      if (a.is_primary === b.is_primary) {
-        return 0
+    const sortedAssignments = (teamAssignments ?? []).sort(
+      (
+        a: { team_id: string; is_primary: boolean },
+        b: { team_id: string; is_primary: boolean }
+      ) => {
+        if (a.is_primary === b.is_primary) {
+          return 0
+        }
+        return a.is_primary ? -1 : 1
       }
-      return a.is_primary ? -1 : 1
-    })
+    )
 
     for (const assignment of sortedAssignments) {
       const teamId = assignment.team_id as string
@@ -419,7 +424,20 @@ export const applicationsRouter = router({
         .single()
 
       // Create jobs map for lookup
-      const jobsMap = new Map(jobs?.map((j: { id: string; slug: string; title: string; employment_type: string; remote_option: string; location: string; status: string; organization_id: string }) => [j.id, j]) || [])
+      const jobsMap = new Map(
+        jobs?.map(
+          (j: {
+            id: string
+            slug: string
+            title: string
+            employment_type: string
+            remote_option: string
+            location: string
+            status: string
+            organization_id: string
+          }) => [j.id, j]
+        ) || []
+      )
 
       // Combine applications with job and user data
       const result = applications.map((app: { job_id: string; [key: string]: unknown }) => ({
@@ -740,7 +758,9 @@ export const applicationsRouter = router({
       const { data: application, error: appError } = await supabase
         .schema('core')
         .from('applications')
-        .select('id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))')
+        .select(
+          'id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))'
+        )
         .eq('id', input.applicationId)
         .single()
 
@@ -758,7 +778,9 @@ export const applicationsRouter = router({
       let hasOrgAccess = false
       if (!isApplicant) {
         const orgId = (application.job as { organization_id?: string } | null)?.organization_id
-        const ownerId = (application.job as { organization?: { owner_user_id?: string } | null } | null)?.organization?.owner_user_id
+        const ownerId = (
+          application.job as { organization?: { owner_user_id?: string } | null } | null
+        )?.organization?.owner_user_id
 
         if (ownerId === user.id) {
           hasOrgAccess = true
@@ -817,7 +839,11 @@ export const applicationsRouter = router({
       // Transform messages to include author info and application user_id for sender determination
       return {
         messages: (messages || []).map((msg) => {
-          const author = msg.author as { display_name?: string; username?: string; avatar_path?: string } | null
+          const author = msg.author as {
+            display_name?: string
+            username?: string
+            avatar_path?: string
+          } | null
           return {
             id: msg.id,
             body: msg.body,
@@ -855,7 +881,9 @@ export const applicationsRouter = router({
       const { data: application, error: appError } = await supabase
         .schema('core')
         .from('applications')
-        .select('id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))')
+        .select(
+          'id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))'
+        )
         .eq('id', input.applicationId)
         .single()
 
@@ -873,7 +901,9 @@ export const applicationsRouter = router({
       let hasOrgAccess = false
       if (!isApplicant) {
         const orgId = (application.job as { organization_id?: string } | null)?.organization_id
-        const ownerId = (application.job as { organization?: { owner_user_id?: string } | null } | null)?.organization?.owner_user_id
+        const ownerId = (
+          application.job as { organization?: { owner_user_id?: string } | null } | null
+        )?.organization?.owner_user_id
 
         if (ownerId === user.id) {
           hasOrgAccess = true
@@ -934,7 +964,11 @@ export const applicationsRouter = router({
       }
 
       // Transform message to include author info
-      const author = message.author as { display_name?: string; username?: string; avatar_path?: string } | null
+      const author = message.author as {
+        display_name?: string
+        username?: string
+        avatar_path?: string
+      } | null
       return {
         id: message.id,
         body: message.body,

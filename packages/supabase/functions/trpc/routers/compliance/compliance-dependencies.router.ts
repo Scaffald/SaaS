@@ -8,8 +8,8 @@
 
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, t } from '../../middleware.ts';
-import { enforceCompliancePermission, getOrgIdFromInput } from './compliance-auth.ts';
+import { protectedProcedure, t } from '../../middleware.ts'
+import { enforceCompliancePermission, getOrgIdFromInput } from './compliance-auth.ts'
 
 // =============================================================================
 // Zod Schemas
@@ -188,19 +188,27 @@ async function verifyRequirementAccess(
   requirementId: string,
   organizationId: string
 ): Promise<void> {
-  const { data, error } = await (supabase as unknown as {
-    schema: (s: string) => {
-      from: (t: string) => {
-        select: (s: string) => {
-          eq: (f: string, v: string) => {
-            eq: (f: string, v: string) => {
-              single: () => Promise<{ data: unknown; error: unknown }>
+  const { data, error } = await (
+    supabase as unknown as {
+      schema: (s: string) => {
+        from: (t: string) => {
+          select: (s: string) => {
+            eq: (
+              f: string,
+              v: string
+            ) => {
+              eq: (
+                f: string,
+                v: string
+              ) => {
+                single: () => Promise<{ data: unknown; error: unknown }>
+              }
             }
           }
         }
       }
     }
-  })
+  )
     .schema('forsured')
     .from('compliance_requirements')
     .select('id')
@@ -537,10 +545,12 @@ export const complianceDependenciesRouter = t.router({
       const updateData: Record<string, unknown> = {}
       if (updates.requiredMinimumLimit !== undefined)
         updateData.required_minimum_limit = updates.requiredMinimumLimit
-      if (updates.attachmentPoint !== undefined) updateData.attachment_point = updates.attachmentPoint
+      if (updates.attachmentPoint !== undefined)
+        updateData.attachment_point = updates.attachmentPoint
       if (updates.isScheduled !== undefined) updateData.is_scheduled = updates.isScheduled
       if (updates.followsForm !== undefined) updateData.follows_form = updates.followsForm
-      if (updates.dropDownAllowed !== undefined) updateData.drop_down_allowed = updates.dropDownAllowed
+      if (updates.dropDownAllowed !== undefined)
+        updateData.drop_down_allowed = updates.dropDownAllowed
       if (updates.dropDownSir !== undefined) updateData.drop_down_sir = updates.dropDownSir
       if (updates.exclusions !== undefined) updateData.exclusions = updates.exclusions
       if (updates.notes !== undefined) updateData.notes = updates.notes
@@ -683,7 +693,8 @@ export const complianceDependenciesRouter = t.router({
       const updateData: Record<string, unknown> = {}
       if (updates.ruleType !== undefined) updateData.rule_type = updates.ruleType
       if (updates.conditionField !== undefined) updateData.condition_field = updates.conditionField
-      if (updates.conditionOperator !== undefined) updateData.condition_operator = updates.conditionOperator
+      if (updates.conditionOperator !== undefined)
+        updateData.condition_operator = updates.conditionOperator
       if (updates.conditionValue !== undefined) updateData.condition_value = updates.conditionValue
       if (updates.priority !== undefined) updateData.priority = updates.priority
       if (updates.description !== undefined) updateData.description = updates.description

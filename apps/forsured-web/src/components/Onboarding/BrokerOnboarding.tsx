@@ -14,7 +14,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, ArrowRight, X, User, Building2, Phone, Mail, MapPin, FileText, Lock, Eye, EyeOff, Shield, Users, Plus, Trash2 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Card, Input, Button as TamaguiButton } from 'tamagui';
+import { YStack, XStack, Text, H1, H2, H3, Card, Input, Button as TamaguiButton } from '@unicornlove/ui';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import { useAuth } from '../../contexts/AuthContext';
 

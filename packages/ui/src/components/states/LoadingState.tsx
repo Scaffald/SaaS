@@ -1,4 +1,4 @@
-import { Spinner, Text, YStack } from 'tamagui'
+import { Spinner, Text, YStack } from '@unicornlove/ui'
 import { spacing } from '../../config/spacing'
 import { typography } from '../../config/typography'
 

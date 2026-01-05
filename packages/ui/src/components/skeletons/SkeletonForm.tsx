@@ -1,4 +1,4 @@
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 import { spacing } from '../../config/spacing'
 import { SkeletonBox } from './SkeletonBox'
 import { SkeletonText } from './SkeletonText'

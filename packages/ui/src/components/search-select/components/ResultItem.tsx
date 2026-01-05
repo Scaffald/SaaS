@@ -1,7 +1,7 @@
 import { Check } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { memo, useMemo } from 'react'
-import { SizableText, XStack, YStack } from 'tamagui'
+import { SizableText, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../../buttons/Button'
 import type { SearchSelectHighlightRange, SearchSelectOption } from '../types'
 

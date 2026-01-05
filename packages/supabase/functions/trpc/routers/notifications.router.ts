@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts';
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts';
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 const listInputSchema = z.object({
   status: z.enum(['all', 'unread', 'read', 'archived']).default('all'),
@@ -101,13 +101,15 @@ function buildListQuery(
 }
 
 function mapPreferences(row: Record<string, unknown> | null) {
+  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference from Supabase query
+  const channelEnabled = (row?.channel_enabled as any) ?? {}
   return {
     globalEnabled: row?.global_enabled ?? true,
     channelEnabled: {
-      in_app: row?.channel_enabled?.in_app ?? true,
-      email: row?.channel_enabled?.email ?? true,
-      push: row?.channel_enabled?.push ?? true,
-      sms: row?.channel_enabled?.sms ?? false,
+      in_app: channelEnabled.in_app ?? true,
+      email: channelEnabled.email ?? true,
+      push: channelEnabled.push ?? true,
+      sms: channelEnabled.sms ?? false,
     },
     quietHours: row?.quiet_hours ?? null,
     digestFrequency: row?.digest_frequency ?? 'immediate',
