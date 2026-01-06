@@ -9,18 +9,16 @@ import {
   Card,
   Dialog,
   H3,
-  H4,
   Input,
   Label,
   Paragraph,
   Separator,
-  Sheet,
   XStack,
   YStack,
   Checkbox,
   Spinner,
 } from '@unicornlove/ui'
-import { AlertCircle, CheckCircle, Copy, Key } from '@tamagui/lucide-icons'
+import { AlertCircle, CheckCircle, Copy } from '@tamagui/lucide-icons'
 import { format, addMonths } from 'date-fns'
 
 interface APIKeyCreateModalProps {
@@ -111,11 +109,7 @@ const EXPIRATION_OPTIONS = [
   { label: '1 year', value: 365 },
 ]
 
-export function APIKeyCreateModal({
-  isOpen,
-  onClose,
-  onCreate,
-}: APIKeyCreateModalProps) {
+export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateModalProps) {
   // Form state
   const [step, setStep] = useState<'configure' | 'created'>('configure')
   const [keyName, setKeyName] = useState('')
@@ -142,9 +136,7 @@ export function APIKeyCreateModal({
 
   const toggleScope = (scopeId: string) => {
     setSelectedScopes((prev) =>
-      prev.includes(scopeId)
-        ? prev.filter((s) => s !== scopeId)
-        : [...prev, scopeId]
+      prev.includes(scopeId) ? prev.filter((s) => s !== scopeId) : [...prev, scopeId]
     )
   }
 
@@ -238,9 +230,7 @@ export function APIKeyCreateModal({
               <YStack gap="$4">
                 {/* Key Name */}
                 <YStack gap="$2">
-                  <Label htmlFor="key-name">
-                    Key Name
-                  </Label>
+                  <Label htmlFor="key-name">Key Name</Label>
                   <Input
                     id="key-name"
                     placeholder="Production API Key"
@@ -255,9 +245,7 @@ export function APIKeyCreateModal({
 
                 {/* Scopes Selection */}
                 <YStack gap="$3">
-                  <Label>
-                    Permissions
-                  </Label>
+                  <Label>Permissions</Label>
 
                   {/* Read Permissions */}
                   <YStack gap="$2">
@@ -268,12 +256,8 @@ export function APIKeyCreateModal({
                       <Card
                         key={scope.id}
                         padding="$3"
-                        backgroundColor={
-                          selectedScopes.includes(scope.id) ? '$blue2' : '$gray2'
-                        }
-                        borderColor={
-                          selectedScopes.includes(scope.id) ? '$blue6' : '$gray6'
-                        }
+                        backgroundColor={selectedScopes.includes(scope.id) ? '$blue2' : '$gray2'}
+                        borderColor={selectedScopes.includes(scope.id) ? '$blue6' : '$gray6'}
                         borderWidth={1}
                         pressStyle={{ scale: 0.98 }}
                         onPress={() => toggleScope(scope.id)}
@@ -304,12 +288,8 @@ export function APIKeyCreateModal({
                       <Card
                         key={scope.id}
                         padding="$3"
-                        backgroundColor={
-                          selectedScopes.includes(scope.id) ? '$blue2' : '$gray2'
-                        }
-                        borderColor={
-                          selectedScopes.includes(scope.id) ? '$blue6' : '$gray6'
-                        }
+                        backgroundColor={selectedScopes.includes(scope.id) ? '$blue2' : '$gray2'}
+                        borderColor={selectedScopes.includes(scope.id) ? '$blue6' : '$gray6'}
                         borderWidth={1}
                         pressStyle={{ scale: 0.98 }}
                         onPress={() => toggleScope(scope.id)}
@@ -332,15 +312,14 @@ export function APIKeyCreateModal({
                   </YStack>
 
                   <Paragraph size="$2" color="$gray11">
-                    Selected: {selectedScopes.length} permission{selectedScopes.length !== 1 ? 's' : ''}
+                    Selected: {selectedScopes.length} permission
+                    {selectedScopes.length !== 1 ? 's' : ''}
                   </Paragraph>
                 </YStack>
 
                 {/* Expiration */}
                 <YStack gap="$2">
-                  <Label>
-                    Expiration
-                  </Label>
+                  <Label>Expiration</Label>
                   <XStack gap="$2" flexWrap="wrap">
                     {EXPIRATION_OPTIONS.map((option) => (
                       <Button
@@ -394,11 +373,7 @@ export function APIKeyCreateModal({
             <YStack gap="$4">
               {/* Success Header */}
               <YStack ai="center" gap="$3">
-                <Card
-                  backgroundColor="$green3"
-                  padding="$4"
-                  borderRadius="$10"
-                >
+                <Card backgroundColor="$green3" padding="$4" borderRadius="$10">
                   <CheckCircle size={48} color="$green11" />
                 </Card>
                 <H3>API Key Created!</H3>
@@ -418,8 +393,8 @@ export function APIKeyCreateModal({
                       Save Your API Key Now
                     </Paragraph>
                     <Paragraph size="$3" color="$orange11">
-                      This is the only time you'll see the full key. Make sure to copy it and store it
-                      securely. If you lose it, you'll need to create a new one.
+                      This is the only time you'll see the full key. Make sure to copy it and store
+                      it securely. If you lose it, you'll need to create a new one.
                     </Paragraph>
                   </YStack>
                 </XStack>
@@ -452,12 +427,16 @@ export function APIKeyCreateModal({
 
               {/* Key Details */}
               <YStack gap="$2">
-                <Paragraph size="$2" color="$gray11">Name</Paragraph>
+                <Paragraph size="$2" color="$gray11">
+                  Name
+                </Paragraph>
                 <Paragraph fontWeight="600">{createdKey?.name}</Paragraph>
               </YStack>
 
               <YStack gap="$2">
-                <Paragraph size="$2" color="$gray11">Permissions</Paragraph>
+                <Paragraph size="$2" color="$gray11">
+                  Permissions
+                </Paragraph>
                 <XStack gap="$2" flexWrap="wrap">
                   {createdKey?.scopes.map((scope) => (
                     <Card
@@ -477,7 +456,9 @@ export function APIKeyCreateModal({
 
               {createdKey?.expires_at && (
                 <YStack gap="$2">
-                  <Paragraph size="$2" color="$gray11">Expires</Paragraph>
+                  <Paragraph size="$2" color="$gray11">
+                    Expires
+                  </Paragraph>
                   <Paragraph fontWeight="600" color="$orange11">
                     {format(new Date(createdKey.expires_at), 'MMM d, yyyy')}
                   </Paragraph>

@@ -8,6 +8,7 @@ import oauthRouter from './routes/oauth.ts'
 import applicationsRouter from './routes/applications.ts'
 import profilesRouter from './routes/profiles.ts'
 import apiKeysRouter from './routes/api-keys.ts'
+import authRouter from './routes/auth.ts'
 import openapi from './openapi.ts'
 import { authMiddleware } from './middleware/auth.ts'
 import { trackApiKeyUsage, rateLimitMiddleware } from './middleware/usage-tracker.ts'
@@ -38,6 +39,7 @@ app.route('/oauth', oauthRouter) // REQ-10: OAuth 2.0 authorization server
 app.route('/v1/applications', applicationsRouter)
 app.route('/v1/profiles', profilesRouter)
 app.route('/v1/api-keys', apiKeysRouter) // API key management
+app.route('/v1/auth', authRouter) // Authentication endpoints
 
 // OpenAPI documentation
 app.route('/', openapi)

@@ -19,15 +19,13 @@ import {
   Activity,
   AlertCircle,
   ArrowDown,
-  ArrowUp,
   BarChart3,
-  Calendar,
   CheckCircle,
   Clock,
   TrendingUp,
   XCircle,
 } from '@tamagui/lucide-icons'
-import { format, subDays } from 'date-fns'
+import { format } from 'date-fns'
 import { useAPIKeyUsage } from './hooks'
 
 interface APIKeyUsageData {
@@ -85,32 +83,35 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
   // Transform API data to component format
   // Note: Some analytics features (endpoint breakdown, time series, rate limits)
   // are not yet available from the API and use mock data
-  const data: APIKeyUsageData | null = usageData ? {
-    apiKeyId,
-    apiKeyName: 'API Key', // TODO: Get from API keys list
-    metrics: {
-      totalRequests: usageData.total_requests,
-      successfulRequests: usageData.success_requests,
-      failedRequests: usageData.error_requests,
-      averageResponseTime: usageData.avg_response_time_ms,
-      requestsToday: 0, // TODO: Calculate from usage array
-      requestsThisWeek: 0, // TODO: Calculate from usage array
-      requestsThisMonth: usageData.total_requests,
-    },
-    rateLimitInfo: {
-      // TODO: Get rate limit info from API
-      limit: 1000,
-      remaining: 847,
-      resetAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-      tier: 'pro',
-    },
-    timeSeriesData: [], // TODO: Calculate from usage array
-    endpointBreakdown: [], // TODO: Calculate from usage array
-    statusCodeBreakdown: {}, // TODO: Calculate from usage array
-  } : null
+  const data: APIKeyUsageData | null = usageData
+    ? {
+        apiKeyId,
+        apiKeyName: 'API Key', // TODO: Get from API keys list
+        metrics: {
+          totalRequests: usageData.total_requests,
+          successfulRequests: usageData.success_requests,
+          failedRequests: usageData.error_requests,
+          averageResponseTime: usageData.avg_response_time_ms,
+          requestsToday: 0, // TODO: Calculate from usage array
+          requestsThisWeek: 0, // TODO: Calculate from usage array
+          requestsThisMonth: usageData.total_requests,
+        },
+        rateLimitInfo: {
+          // TODO: Get rate limit info from API
+          limit: 1000,
+          remaining: 847,
+          resetAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+          tier: 'pro',
+        },
+        timeSeriesData: [], // TODO: Calculate from usage array
+        endpointBreakdown: [], // TODO: Calculate from usage array
+        statusCodeBreakdown: {}, // TODO: Calculate from usage array
+      }
+    : null
 
-  const successRate =
-    data ? ((data.metrics.successfulRequests / data.metrics.totalRequests) * 100).toFixed(2) : '0'
+  const successRate = data
+    ? ((data.metrics.successfulRequests / data.metrics.totalRequests) * 100).toFixed(2)
+    : '0'
 
   const getRateLimitPercentage = () => {
     if (!data) return 0
@@ -118,7 +119,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
   }
 
   const getRateLimitColor = () => {
-    const percentage = parseInt(getRateLimitPercentage())
+    const percentage = parseInt(getRateLimitPercentage(), 10)
     if (percentage > 50) return '$green10'
     if (percentage > 20) return '$orange10'
     return '$red10'
@@ -290,12 +291,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
               </XStack>
 
               {/* Progress Bar */}
-              <Card
-                height={8}
-                backgroundColor="$gray4"
-                borderRadius="$10"
-                overflow="hidden"
-              >
+              <Card height={8} backgroundColor="$gray4" borderRadius="$10" overflow="hidden">
                 <Card
                   height="100%"
                   width={`${getRateLimitPercentage()}%`}
@@ -339,11 +335,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                       overflow="hidden"
                       mx="$2"
                     >
-                      <Card
-                        height="100%"
-                        width={`${percentage}%`}
-                        backgroundColor="$blue8"
-                      />
+                      <Card height="100%" width={`${percentage}%`} backgroundColor="$blue8" />
                     </Card>
                     <Paragraph size="$2" fontWeight="600" minWidth={50} textAlign="right">
                       {day.requests}
@@ -363,12 +355,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
 
           <YStack gap="$2">
             {data.endpointBreakdown.map((endpoint, index) => (
-              <Card
-                key={index}
-                backgroundColor="$gray2"
-                padding="$3"
-                borderRadius="$3"
-              >
+              <Card key={index} backgroundColor="$gray2" padding="$3" borderRadius="$3">
                 <YStack gap="$2">
                   <XStack jc="space-between" ai="center">
                     <YStack f={1}>
@@ -411,10 +398,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                     <Paragraph size="$2" color="$gray11">
                       Avg: {endpoint.avgResponseTime}ms
                     </Paragraph>
-                    <Paragraph
-                      size="$2"
-                      color={endpoint.errorRate > 1 ? '$red11' : '$gray11'}
-                    >
+                    <Paragraph size="$2" color={endpoint.errorRate > 1 ? '$red11' : '$gray11'}>
                       Error: {endpoint.errorRate}%
                     </Paragraph>
                   </XStack>
@@ -434,17 +418,13 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
             {Object.entries(data.statusCodeBreakdown).map(([code, count]) => {
               const isSuccess = code.startsWith('2')
               const isClientError = code.startsWith('4')
-              const isServerError = code.startsWith('5')
+              const _isServerError = code.startsWith('5')
 
               return (
                 <Card
                   key={code}
-                  backgroundColor={
-                    isSuccess ? '$green2' : isClientError ? '$orange2' : '$red2'
-                  }
-                  borderColor={
-                    isSuccess ? '$green6' : isClientError ? '$orange6' : '$red6'
-                  }
+                  backgroundColor={isSuccess ? '$green2' : isClientError ? '$orange2' : '$red2'}
+                  borderColor={isSuccess ? '$green6' : isClientError ? '$orange6' : '$red6'}
                   borderWidth={1}
                   padding="$3"
                   borderRadius="$3"
@@ -454,9 +434,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                     <Paragraph
                       size="$2"
                       fontWeight="600"
-                      color={
-                        isSuccess ? '$green11' : isClientError ? '$orange11' : '$red11'
-                      }
+                      color={isSuccess ? '$green11' : isClientError ? '$orange11' : '$red11'}
                     >
                       {code}
                     </Paragraph>

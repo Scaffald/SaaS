@@ -11,12 +11,7 @@ import { APIKeysList } from './APIKeysList'
 import { APIKeyCreateModal } from './APIKeyCreateModal'
 import { APIKeyScopesManager } from './APIKeyScopesManager'
 import { APIKeyUsageChart } from './APIKeyUsageChart'
-import {
-  useAPIKeys,
-  useCreateAPIKey,
-  useUpdateAPIKey,
-  useRevokeAPIKey,
-} from './hooks'
+import { useAPIKeys, useCreateAPIKey, useUpdateAPIKey, useRevokeAPIKey } from './hooks'
 import type { CreateKeyParams } from './APIKeyCreateModal'
 
 export function DeveloperPortal() {
@@ -93,7 +88,9 @@ export function DeveloperPortal() {
 
   const handleRevokeKey = async (keyId: string) => {
     // Confirm before revoking
-    if (!window.confirm('Are you sure you want to revoke this API key? This action cannot be undone.')) {
+    if (
+      !window.confirm('Are you sure you want to revoke this API key? This action cannot be undone.')
+    ) {
       return
     }
 
@@ -168,10 +165,7 @@ export function DeveloperPortal() {
           padding="$4"
           zi={100}
         >
-          <APIKeyUsageChart
-            apiKeyId={usageKeyId}
-            onClose={() => setUsageKeyId(null)}
-          />
+          <APIKeyUsageChart apiKeyId={usageKeyId} onClose={() => setUsageKeyId(null)} />
         </YStack>
       )}
     </YStack>

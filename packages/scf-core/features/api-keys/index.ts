@@ -25,9 +25,7 @@ export type {
   APIKeyUsageData,
 } from './APIKeyUsageChart'
 
-export type {
-  APIKeyScopesManagerProps,
-} from './APIKeyScopesManager'
+export type { APIKeyScopesManagerProps } from './APIKeyScopesManager'
 
 // API Keys Hooks
 export {
