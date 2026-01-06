@@ -55,7 +55,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup && tsc --emitDeclarationOnly --declaration",
+    "build": "tsup",
     "build-storybook": "storybook build",
     "build:esbuild": "node scripts/build.mjs",
     "check": "tamagui check",

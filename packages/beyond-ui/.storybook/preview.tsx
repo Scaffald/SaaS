@@ -2,6 +2,14 @@ import type { Preview } from '@storybook/react'
 import { ThemeProvider } from '../src/playground/ThemeProvider'
 import { colors } from '../src/tokens/colors'
 
+// Load Roboto font
+if (typeof document !== 'undefined') {
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&family=Roboto+Serif:wght@400;500;600&display=swap'
+  document.head.appendChild(link)
+}
+
 const preview: Preview = {
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },

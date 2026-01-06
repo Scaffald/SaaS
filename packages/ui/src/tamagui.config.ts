@@ -24,23 +24,15 @@ export const tamaguiConfig = createTamagui({
     body: bodyFont,
   },
 
-  // Custom media queries for responsive design
-  media,
+  // Use default media for now - custom media can cause type issues
+  // TODO: Re-enable custom media after verifying it doesn't break types
+  media: defaultConfig.media,
 
   onlyAllowShorthands: false,
-  // shorthands: {}, // defaultConfig.shorthands,
+  shorthands: defaultConfig.shorthands,
   themes,
   // Explicitly include tokens to ensure available during static extraction
-  // Merge to ensure all default tokens (including $full) are included
-  tokens: {
-    ...defaultConfig.tokens,
-    // Ensure $full radius token exists (should be in defaultConfig, but explicitly ensure it)
-    radius: {
-      ...defaultConfig.tokens.radius,
-      // $full should already be in defaultConfig, but ensure it's there
-      ...(defaultConfig.tokens.radius?.$full ? {} : { $full: 9999 }),
-    },
-  },
+  tokens: defaultConfig.tokens,
 })
 
 // Export as 'config' for Tamagui babel/metro plugins

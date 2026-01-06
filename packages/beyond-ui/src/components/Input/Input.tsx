@@ -63,7 +63,7 @@
 
 import { useState } from 'react'
 import { View, TextInput, Platform } from 'react-native'
-import type { NativeSyntheticEvent, TextInputFocusEventData } from 'react-native'
+import type { TextInputProps as RNTextInputProps } from 'react-native'
 import type { InputProps } from './Input.types'
 import {
   getInputStyles,
@@ -74,6 +74,7 @@ import { InputLabel } from './InputLabel'
 import { InputHelperText } from './InputHelperText'
 import { InputExternalAddon, InputLeftSide, InputRightSide } from './InputAddon'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../playground/ThemeProvider'
 
 export function Input({
   label,
@@ -97,6 +98,7 @@ export function Input({
   ...textInputProps
 }: InputProps) {
   const [internalFocused, setInternalFocused] = useState(false)
+  const { theme } = useThemeContext()
 
   // Determine actual state (controlled or derived)
   const isFocused = controlledState === 'focused' || internalFocused
@@ -117,17 +119,17 @@ export function Input({
   }
 
   const hasExternalAddon = !!externalAddon
-  const styles = getInputStyles(actualState || 'default', type, disabled, hasExternalAddon)
+  const styles = getInputStyles(actualState || 'default', type, disabled, hasExternalAddon, theme)
 
 
-  const handleFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const handleFocus: RNTextInputProps['onFocus'] = (e) => {
     if (!disabled) {
       setInternalFocused(true)
       onFocus?.(e)
     }
   }
 
-  const handleBlur = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const handleBlur: RNTextInputProps['onBlur'] = (e) => {
     setInternalFocused(false)
     onBlur?.(e)
   }
@@ -190,8 +192,13 @@ export function Input({
             {...textInputProps}
             value={value}
             editable={!disabled}
-            style={[styles.inputText, inputStyle]}
-            placeholderTextColor={colors.text.light.tertiary}
+            style={[
+              styles.inputText,
+              // Remove default browser outline on web
+              Platform.OS === 'web' && { outlineStyle: 'none' as any },
+              inputStyle,
+            ]}
+            placeholderTextColor={colors.text[theme].tertiary}
             onFocus={handleFocus}
             onBlur={handleBlur}
           />

@@ -132,7 +132,9 @@
     "watch": "nx run-many -t watch",
     "watchman:reset": "watchman watch-del \"$(pwd)\" ; watchman watch-project \"$(pwd)\"",
     "web": "pnpm --filter scaffald-app web",
-    "web:build": "pnpm --filter scaffald-app web:build"
+    "web:build": "pnpm --filter scaffald-app web:build",
+    "storybook": "pnpm --filter @unicornlove/beyond-ui storybook",
+    "storybook:build": "pnpm --filter @unicornlove/beyond-ui build-storybook"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^5.4.1",

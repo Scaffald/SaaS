@@ -55,16 +55,36 @@
     "test:unit": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "watch": "tsup --watch"
+    "watch": "tsup --watch",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "storybook:serve": "npx http-server storybook-static -p 6007"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@babel/core": "^7.25.0",
+    "@babel/preset-env": "^7.25.0",
+    "@babel/preset-react": "^7.25.0",
+    "@babel/preset-typescript": "^7.25.0",
     "@biomejs/biome": "~2.3.6",
+    "@storybook/addon-a11y": "^8.6.15",
+    "@storybook/addon-essentials": "^8.6.15",
+    "@storybook/addon-interactions": "^8.6.15",
+    "@storybook/addon-links": "^8.6.15",
+    "@storybook/addon-viewport": "^8.6.15",
+    "@storybook/blocks": "^8.6.15",
+    "@storybook/react": "^8.6.15",
+    "@storybook/react-webpack5": "^8.6.15",
+    "@storybook/test": "^8.6.15",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.3.3",
     "@types/node": "~20.0.0",
     "@types/react": "~19.2.0",
+    "@types/react-dom": "^18.3.1",
+    "babel-loader": "^9.2.1",
+    "react-dom": "catalog:",
+    "react-native-web": "^0.19.13",
+    "storybook": "^8.6.15",
     "tsup": "^8.5.1",
     "typescript": "catalog:",
     "vitest": "^4.0.15"
@@ -76,6 +96,11 @@
   "peerDependenciesMeta": {
     "react-native": {
       "optional": true
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "react-dom": "19.2.0"
     }
   }
 }
