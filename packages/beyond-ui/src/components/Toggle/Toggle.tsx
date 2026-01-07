@@ -1,32 +1,32 @@
 /**
- * Checkbox component
- * Fully-featured checkbox component mapped from Figma Forsured Design System
+ * Toggle component
+ * Fully-featured toggle switch component mapped from Figma Forsured Design System
  *
  * @example
  * ```tsx
- * import { Checkbox } from '@unicornlove/beyond-ui'
+ * import { Toggle } from '@unicornlove/beyond-ui'
  *
- * // Basic checkbox
- * <Checkbox
- *   checked={isChecked}
- *   onChange={setIsChecked}
- *   label="Accept terms and conditions"
+ * // Basic toggle
+ * <Toggle
+ *   checked={isEnabled}
+ *   onChange={setIsEnabled}
+ *   label="Enable notifications"
  * />
  *
- * // Indeterminate checkbox (e.g., "Select all")
- * <Checkbox
- *   indeterminate={someSelected}
- *   checked={allSelected}
- *   onChange={handleSelectAll}
- *   label="Select all"
+ * // Toggle with helper text
+ * <Toggle
+ *   checked={darkMode}
+ *   onChange={setDarkMode}
+ *   label="Dark Mode"
+ *   helperText="Switch to dark theme"
  * />
  *
- * // Checkbox with error state
- * <Checkbox
- *   checked={agreed}
- *   onChange={setAgreed}
- *   error={!agreed}
- *   label="You must accept to continue"
+ * // Red-Green toggle (error/success states)
+ * <Toggle
+ *   checked={isActive}
+ *   onChange={setIsActive}
+ *   color="red-green"
+ *   label="Status"
  * />
  * ```
  */
@@ -38,133 +38,125 @@ import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
-import type { CheckboxProps } from './Checkbox.types'
-import { CheckIcon } from './CheckIcon'
-import { MinusIcon } from './MinusIcon'
+import type { ToggleProps } from './Toggle.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
 
-export function Checkbox({
-  checked: checkedProp,
-  indeterminate = false,
+export function Toggle({
+  checked = false,
   onChange,
   size = 'md',
   color = 'primary',
   disabled = false,
-  error = false,
   label,
   helperText,
   optional = false,
   labelElement,
   containerStyle,
-  checkboxStyle,
+  toggleStyle,
   labelStyle,
   helperTextStyle,
-}: CheckboxProps) {
-  // Support both controlled and uncontrolled mode
-  const [internalChecked, setInternalChecked] = useState(false)
-  const isControlled = checkedProp !== undefined
-  const checked = isControlled ? checkedProp : internalChecked
-
+}: ToggleProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
 
   const handlePress = () => {
     if (disabled) return
-    const newValue = !checked
-
-    // Update internal state if uncontrolled
-    if (!isControlled) {
-      setInternalChecked(newValue)
-    }
-
-    // Always call onChange if provided
-    onChange?.(newValue)
+    onChange?.(!checked)
   }
 
   // Size configuration
+  // Small: 36px width, 20px height, 16px thumb
+  // Medium: 44px width, 24px height, 20px thumb
   const sizeConfig = {
     sm: {
-      size: 16,
-      iconSize: 10,
-      borderRadius: borderRadius.s - 2, // Slightly smaller radius
+      trackWidth: 36,
+      trackHeight: 20,
+      thumbSize: 16,
+      thumbOffset: 2, // Padding inside track
+      thumbTranslate: 36 - 16 - 2 - 2, // Track width - thumb size - left padding - right padding
     },
     md: {
-      size: 20,
-      iconSize: 12,
-      borderRadius: borderRadius.s,
+      trackWidth: 44,
+      trackHeight: 24,
+      thumbSize: 20,
+      thumbOffset: 2,
+      thumbTranslate: 44 - 20 - 2 - 2,
     },
   }[size]
 
-  // Determine current state
-  const isCheckedOrIndeterminate = checked || indeterminate
-  const showCheckIcon = checked && !indeterminate
-  const showMinusIcon = indeterminate
-
   // Color configuration based on state
   const getColors = () => {
-    // Error state overrides color choice
-    if (error) {
+    // Red-Green color (error/success states)
+    if (color === 'red-green') {
       return {
-        border: colors.border[theme].error,
-        background: isCheckedOrIndeterminate ? colors.error[600] : 'transparent',
-        backgroundHover: isCheckedOrIndeterminate ? colors.error[700] : colors.error[50],
-        iconColor: colors.white,
+        trackOff: checked ? colors.success[500] : colors.error[500],
+        trackOn: checked ? colors.success[500] : colors.error[500],
+        trackOffHover: checked ? colors.success[600] : colors.error[600],
+        trackOnHover: checked ? colors.success[600] : colors.error[600],
+        thumbColor: colors.white,
       }
     }
 
     // Primary color
     if (color === 'primary') {
       return {
-        border: disabled
-          ? colors.border[theme].disabled
-          : isCheckedOrIndeterminate
-            ? colors.primary[600]
-            : colors.border[theme].default,
-        background: isCheckedOrIndeterminate
-          ? disabled
-            ? colors.primary[200]
-            : colors.primary[600]
-          : 'transparent',
-        backgroundHover: isCheckedOrIndeterminate ? colors.primary[700] : colors.gray[50],
-        iconColor: colors.white,
+        trackOff: colors.gray[300],
+        trackOn: colors.primary[500],
+        trackOffHover: colors.gray[400],
+        trackOnHover: colors.primary[600],
+        thumbColor: colors.white,
       }
     }
 
     // Gray color
     return {
-      border: disabled
-        ? colors.border[theme].disabled
-        : isCheckedOrIndeterminate
-          ? colors.gray[700]
-          : colors.border[theme].default,
-      background: isCheckedOrIndeterminate
-        ? disabled
-          ? colors.gray[200]
-          : colors.gray[700]
-        : 'transparent',
-      backgroundHover: isCheckedOrIndeterminate ? colors.gray[800] : colors.gray[50],
-      iconColor: colors.white,
+      trackOff: colors.gray[300],
+      trackOn: colors.gray[600],
+      trackOffHover: colors.gray[400],
+      trackOnHover: colors.gray[700],
+      thumbColor: colors.white,
     }
   }
 
   const colorConfig = getColors()
 
+  // Get track background color based on checked and hover state
+  const trackBackgroundColor =
+    isHovered && !disabled
+      ? checked
+        ? colorConfig.trackOnHover
+        : colorConfig.trackOffHover
+      : checked
+        ? colorConfig.trackOn
+        : colorConfig.trackOff
+
+  // Disabled state - use disabled background color
+  const finalTrackBackgroundColor = disabled
+    ? theme === 'light'
+      ? colors.bg.light.disabled
+      : colors.bg.dark.disabled
+    : trackBackgroundColor
+
   // Focus ring style (web only)
   const focusRing =
-    isFocused && !disabled ? (Platform.OS === 'web' ? { boxShadow: boxShadows.focusBase } : {}) : {}
+    isFocused && !disabled
+      ? Platform.OS === 'web'
+        ? { boxShadow: boxShadows.focusBase }
+        : {}
+      : {}
 
   return (
     <View style={[styles.container, containerStyle]}>
       <Pressable
         onPress={handlePress}
         disabled={disabled}
-        accessibilityRole="checkbox"
+        accessibilityRole="switch"
         accessibilityState={{ checked, disabled }}
-        // @ts-expect-error - web-specific props
-        onMouseEnter={Platform.OS === 'web' ? () => setIsHovered(true) : undefined}
-        // @ts-expect-error - web-specific props
-        onMouseLeave={Platform.OS === 'web' ? () => setIsHovered(false) : undefined}
+        {...(Platform.OS === 'web' && {
+          onMouseEnter: () => setIsHovered(true),
+          onMouseLeave: () => setIsHovered(false),
+        })}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         style={({ pressed }) => [
@@ -175,36 +167,30 @@ export function Checkbox({
           pressed && !disabled && { opacity: 0.8 },
         ]}
       >
-        <View
-          style={[
-            styles.checkboxWrapper,
-            {
-              paddingTop: size === 'sm' ? 2 : 0, // Small checkboxes need 2px top padding for alignment
-            },
-          ]}
-        >
+        <View style={styles.toggleWrapper}>
           <View
             style={[
-              styles.checkboxBox,
+              styles.toggleTrack,
               {
-                width: sizeConfig.size,
-                height: sizeConfig.size,
-                borderRadius: sizeConfig.borderRadius,
-                borderColor: colorConfig.border,
-                backgroundColor:
-                  isHovered && !disabled ? colorConfig.backgroundHover : colorConfig.background,
+                width: sizeConfig.trackWidth,
+                height: sizeConfig.trackHeight,
+                backgroundColor: finalTrackBackgroundColor,
+                ...focusRing,
               },
-              focusRing,
               disabled && styles.disabled,
-              checkboxStyle,
+              toggleStyle,
             ]}
           >
-            {showCheckIcon && (
-              <CheckIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
-            )}
-            {showMinusIcon && (
-              <MinusIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
-            )}
+            <View
+              style={[
+                styles.toggleThumb,
+                {
+                  width: sizeConfig.thumbSize,
+                  height: sizeConfig.thumbSize,
+                  transform: [{ translateX: checked ? sizeConfig.thumbTranslate : 0 }],
+                },
+              ]}
+            />
           </View>
         </View>
 
@@ -293,15 +279,28 @@ const styles = StyleSheet.create({
   pressable: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: spacing[8],
+    gap: spacing[10], // 10px gap between toggle and label matching Figma
   },
-  checkboxWrapper: {
-    // Wrapper for checkbox with optional top padding for alignment
+  toggleWrapper: {
+    // Wrapper for toggle switch
   },
-  checkboxBox: {
-    borderWidth: 1.5,
+  toggleTrack: {
+    borderRadius: borderRadius.max, // Fully rounded pill shape
     justifyContent: 'center',
-    alignItems: 'center',
+    padding: 2, // Padding inside track for thumb
+  },
+  toggleThumb: {
+    borderRadius: borderRadius.max, // Fully rounded thumb
+    backgroundColor: colors.white,
+    // Shadow for depth (optional, matching Figma design)
+    ...Platform.select({
+      web: {
+        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        elevation: 1,
+      },
+    }),
   },
   textContainer: {
     flexDirection: 'column',
@@ -331,4 +330,5 @@ const styles = StyleSheet.create({
 })
 
 // Export types
-export type { CheckboxProps, CheckboxSize, CheckboxColor, CheckboxState } from './Checkbox.types'
+export type { ToggleProps, ToggleSize, ToggleColor, ToggleState } from './Toggle.types'
+

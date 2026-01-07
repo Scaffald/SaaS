@@ -22,11 +22,23 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Basic checkbox
+// Basic checkbox (uncontrolled - manages its own state)
 export const Default: Story = {
   args: {
     label: 'Accept terms and conditions',
   },
+}
+
+// Uncontrolled mode - component manages its own state
+export const Uncontrolled: Story = {
+  render: () => (
+    <View style={styles.variantsContainer}>
+      <Text style={styles.sectionTitle}>Click to toggle (no state management needed)</Text>
+      <Checkbox label="Subscribe to newsletter" />
+      <Checkbox label="Accept terms" onChange={(checked) => console.log('Changed to:', checked)} />
+      <Checkbox label="Enable notifications" helperText="You can change this anytime" />
+    </View>
+  ),
 }
 
 // Controlled checkbox example

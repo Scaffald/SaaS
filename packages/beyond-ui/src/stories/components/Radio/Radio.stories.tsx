@@ -23,11 +23,23 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Basic radio
+// Basic radio (uncontrolled - manages its own state)
 export const Default: Story = {
   args: {
     label: 'Option 1',
   },
+}
+
+// Uncontrolled mode - component manages its own state
+export const Uncontrolled: Story = {
+  render: () => (
+    <View style={styles.variantsContainer}>
+      <Text style={styles.sectionTitle}>Click to toggle (no state management needed)</Text>
+      <Radio label="Enable feature" />
+      <Radio label="Subscribe to updates" onChange={(checked) => console.log('Changed to:', checked)} />
+      <Radio label="Send notifications" helperText="Toggle as needed" />
+    </View>
+  ),
 }
 
 // Controlled radio example

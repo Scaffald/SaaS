@@ -106,9 +106,17 @@ export type {
   RadioGroupOrientation,
 } from './components/Radio'
 
+export { Toggle } from './components/Toggle'
+export type {
+  ToggleProps,
+  ToggleSize,
+  ToggleColor,
+  ToggleState,
+} from './components/Toggle'
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
-// Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Switch) - Button ✅
+// Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅
 // Phase 3: Feedback components (Alert, Toast)
 // Phase 4+: Complex components (Dialog, Popover, Select, etc.)
 
