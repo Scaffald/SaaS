@@ -19,7 +19,7 @@
  */
 
 import React, { useState, useRef } from 'react'
-import { Pressable, Text, View, StyleSheet, LayoutChangeEvent } from 'react-native'
+import { Pressable, Text, View, StyleSheet, LayoutChangeEvent, Platform } from 'react-native'
 import type { DropdownProps } from './Dropdown.types'
 import { getDropdownStyles } from './Dropdown.styles'
 import { DropdownMenu } from './DropdownMenu'
@@ -105,6 +105,45 @@ export function Dropdown({
     if (disabled) return
 
     const newOpen = !isOpen
+
+    // If opening, measure trigger position first
+    if (newOpen && triggerRef.current) {
+      // On web, use getBoundingClientRect for more accurate viewport coordinates
+      if (Platform.OS === 'web' && triggerRef.current) {
+        const element = triggerRef.current as any
+        if (element.getBoundingClientRect) {
+          const rect = element.getBoundingClientRect()
+          setTriggerLayout({
+            x: rect.left,
+            y: rect.top,
+            width: rect.width,
+            height: rect.height,
+          })
+        } else {
+          // Fallback to measureInWindow
+          triggerRef.current.measureInWindow((fx, fy, fwidth, fheight) => {
+            setTriggerLayout({
+              x: fx || 0,
+              y: fy || 0,
+              width: fwidth || 100,
+              height: fheight || 40,
+            })
+          })
+        }
+      } else {
+        // Native: use measureInWindow
+        triggerRef.current.measureInWindow((fx, fy, fwidth, fheight) => {
+          setTriggerLayout({
+            x: fx || 0,
+            y: fy || 0,
+            width: fwidth || 100,
+            height: fheight || 40,
+          })
+        })
+      }
+    }
+
+    // Open/close dropdown
     if (controlledOpen === undefined) {
       setInternalOpen(newOpen)
     }
@@ -112,15 +151,28 @@ export function Dropdown({
   }
 
   const handleLayout = (event: LayoutChangeEvent) => {
-    const { x, y, width, height } = event.nativeEvent.layout
-    triggerRef.current?.measureInWindow((fx, fy) => {
+    const { width, height, x: layoutX, y: layoutY } = event.nativeEvent.layout
+    // Pre-measure layout so we have it available
+    // Use measureInWindow for absolute position, or measure for relative position
+    if (triggerRef.current) {
+      triggerRef.current.measureInWindow((fx, fy, fwidth, fheight) => {
+        // Use measureInWindow values as they give absolute window coordinates
+        setTriggerLayout({
+          x: fx,
+          y: fy,
+          width: fwidth || width,
+          height: fheight || height,
+        })
+      })
+    } else {
+      // Fallback to layout values (relative to parent)
       setTriggerLayout({
-        x: fx,
-        y: fy,
+        x: layoutX || 0,
+        y: layoutY || 0,
         width,
         height,
       })
-    })
+    }
   }
 
   const handleDismiss = () => {
