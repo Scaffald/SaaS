@@ -55,7 +55,7 @@ export function AccordionItem({
   const focusRing =
     isFocused && !disabled
       ? Platform.OS === 'web'
-        ? { boxShadow: `${boxShadows.focusBase}, ${boxShadows.buttonShadow.boxShadow}` }
+        ? { boxShadow: `${boxShadows.focusBase}, ${boxShadows.button}` }
         : {}
       : {}
 
@@ -71,7 +71,7 @@ export function AccordionItem({
           {
             backgroundColor: colors.bg[theme].default,
             borderColor: colors.border[theme].default,
-            ...boxShadows.buttonShadow,
+            ...(Platform.OS === 'web' ? { boxShadow: boxShadows.button } : {}),
             ...focusRing,
           },
           accordionContext.width === 'constrained' && styles.constrained,
