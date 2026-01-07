@@ -46,20 +46,22 @@ export const Controlled: Story = {
 // Indeterminate state
 export const Indeterminate: Story = {
   render: () => {
-    const [items, setItems] = useState([false, false, false])
+    const [items, setItems] = useState([
+      { id: '1', checked: false },
+      { id: '2', checked: false },
+      { id: '3', checked: false },
+    ])
 
-    const someChecked = items.some((item) => item) && !items.every((item) => item)
-    const isAllChecked = items.every((item) => item)
+    const someChecked = items.some((item) => item.checked) && !items.every((item) => item.checked)
+    const isAllChecked = items.every((item) => item.checked)
 
     const handleSelectAll = () => {
       const newValue = !isAllChecked
-      setItems(items.map(() => newValue))
+      setItems(items.map((item) => ({ ...item, checked: newValue })))
     }
 
-    const handleItemChange = (index: number) => {
-      const newItems = [...items]
-      newItems[index] = !newItems[index]
-      setItems(newItems)
+    const handleItemChange = (id: string) => {
+      setItems(items.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)))
     }
 
     return (
@@ -71,11 +73,11 @@ export const Indeterminate: Story = {
           label="Select all"
         />
         <View style={styles.indeterminateList}>
-          {items.map((checked, index) => (
+          {items.map((item, index) => (
             <Checkbox
-              key={`item-${index}`}
-              checked={checked}
-              onChange={() => handleItemChange(index)}
+              key={item.id}
+              checked={item.checked}
+              onChange={() => handleItemChange(item.id)}
               label={`Item ${index + 1}`}
             />
           ))}

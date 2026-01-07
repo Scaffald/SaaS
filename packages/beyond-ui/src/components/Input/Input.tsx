@@ -181,7 +181,7 @@ export function Input({
             style={[
               styles.inputText,
               // Remove default browser outline on web
-              Platform.OS === 'web' && { outlineStyle: 'none' as any },
+              Platform.OS === 'web' && ({ outlineStyle: 'none' } as object),
               inputStyle,
             ]}
             placeholderTextColor={colors.text[theme].tertiary}

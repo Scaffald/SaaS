@@ -114,7 +114,7 @@ export function Dropdown({
     if (newOpen && triggerRef.current) {
       // On web, use getBoundingClientRect for more accurate viewport coordinates
       if (Platform.OS === 'web' && triggerRef.current) {
-        const element = triggerRef.current as any
+        const element = triggerRef.current as unknown as HTMLElement
         if (element.getBoundingClientRect) {
           const rect = element.getBoundingClientRect()
           setTriggerLayout({
