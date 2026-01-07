@@ -54,28 +54,15 @@ export const handlers = [
     })
   }),
 
-  http.get(`${BASE_URL}/v1/jobs/:id`, async ({ params }) => {
+  // Specific routes must come before parametric routes
+  http.get(`${BASE_URL}/v1/jobs/filter-options`, async () => {
     await delay(10)
-
-    if (params.id === 'not_found') {
-      return HttpResponse.json(
-        { error: 'Job not found' },
-        { status: 404 }
-      )
-    }
 
     return HttpResponse.json({
       data: {
-        id: params.id,
-        title: 'Senior Software Engineer',
-        organization_id: 'org_1',
-        status: 'published',
-        location: 'San Francisco, CA',
-        employment_type: 'full_time',
-        remote_option: 'hybrid',
-        description: 'We are looking for a senior software engineer...',
-        created_at: '2025-01-01T00:00:00Z',
-        updated_at: '2025-01-01T00:00:00Z',
+        employment_types: ['full_time', 'part_time', 'contract'],
+        remote_options: ['on_site', 'hybrid', 'remote'],
+        locations: ['San Francisco, CA', 'New York, NY', 'Remote'],
       },
     })
   }),
@@ -100,14 +87,29 @@ export const handlers = [
     })
   }),
 
-  http.get(`${BASE_URL}/v1/jobs/filter-options`, async () => {
+  // Parametric route should come last to avoid matching specific routes
+  http.get(`${BASE_URL}/v1/jobs/:id`, async ({ params }) => {
     await delay(10)
+
+    if (params.id === 'not_found') {
+      return HttpResponse.json(
+        { error: 'Job not found' },
+        { status: 404 }
+      )
+    }
 
     return HttpResponse.json({
       data: {
-        employment_types: ['full_time', 'part_time', 'contract'],
-        remote_options: ['on_site', 'hybrid', 'remote'],
-        locations: ['San Francisco, CA', 'New York, NY', 'Remote'],
+        id: params.id,
+        title: 'Senior Software Engineer',
+        organization_id: 'org_1',
+        status: 'published',
+        location: 'San Francisco, CA',
+        employment_type: 'full_time',
+        remote_option: 'hybrid',
+        description: 'We are looking for a senior software engineer...',
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
       },
     })
   }),

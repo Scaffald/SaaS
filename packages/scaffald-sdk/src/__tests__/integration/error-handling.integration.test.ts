@@ -119,19 +119,14 @@ describe('Error Handling Integration Tests', () => {
   })
 
   describe('Timeout Handling', () => {
-    it('should timeout long requests', async () => {
-      const timeoutClient = new Scaffald({
-        apiKey: 'sk_test_key',
-        baseUrl: 'http://localhost:54321/functions/v1/api',
-        timeout: 100, // Very short timeout
-      })
-
+    it('should timeout long requests', { timeout: 10000 }, async () => {
       // The timeout endpoint delays for 70 seconds
+      // We test this with a direct fetch using AbortSignal.timeout
       await expect(
         fetch('http://localhost:54321/functions/v1/api/v1/test/timeout', {
           signal: AbortSignal.timeout(100),
         })
       ).rejects.toThrow()
-    }, { timeout: 10000 })
+    })
   })
 })

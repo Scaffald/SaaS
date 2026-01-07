@@ -127,11 +127,13 @@ export async function handleErrorResponse(response: Response): Promise<never> {
   }
 
   const message =
-    typeof data === 'object' && data !== null && 'message' in data
-      ? String((data as { message: unknown }).message)
-      : typeof data === 'string'
-        ? data
-        : `Request failed with status ${response.status}`
+    typeof data === 'object' && data !== null && 'error' in data
+      ? String((data as { error: unknown }).error)
+      : typeof data === 'object' && data !== null && 'message' in data
+        ? String((data as { message: unknown }).message)
+        : typeof data === 'string'
+          ? data
+          : `Request failed with status ${response.status}`
 
   // Handle rate limiting
   if (response.status === 429) {

@@ -84,7 +84,7 @@ describe('API Keys Integration Tests', () => {
     it('should handle not found errors', async () => {
       await expect(
         client.apiKeys.retrieve('not_found')
-      ).rejects.toThrow('Job not found')
+      ).rejects.toThrow('API key not found')
     })
   })
 
