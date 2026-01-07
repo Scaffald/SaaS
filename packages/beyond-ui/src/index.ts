@@ -121,6 +121,9 @@ export type {
   SelectionCardLeadingType,
 } from './components/SelectionCard'
 
+export { Chip } from './components/Chip'
+export type { ChipProps, ChipType, ChipSize } from './components/Chip'
+
 export { Accordion } from './components/Accordion'
 export type {
   AccordionProps,
@@ -131,6 +134,27 @@ export type {
   AccordionWidth,
   AccordionValue,
 } from './components/Accordion'
+
+export { Avatar, AvatarGroup, AddAvatar } from './components/Avatar'
+export type {
+  AvatarProps,
+  AvatarGroupProps,
+  AddAvatarProps,
+  AvatarSize,
+  AvatarColor,
+  AvatarType,
+  AvatarStatus,
+  AvatarBadge,
+} from './components/Avatar'
+
+export { Alert } from './components/Alert'
+export type {
+  AlertProps,
+  AlertAction,
+  AlertType,
+  AlertVariant,
+  AlertActionsPosition,
+} from './components/Alert'
 
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
