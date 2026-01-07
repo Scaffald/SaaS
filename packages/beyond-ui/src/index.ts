@@ -114,6 +114,16 @@ export type {
   ToggleState,
 } from './components/Toggle'
 
+export { Accordion } from './components/Accordion'
+export type {
+  AccordionProps,
+  AccordionItemProps,
+  AccordionTriggerProps,
+  AccordionContentProps,
+  AccordionMode,
+  AccordionValue,
+} from './components/Accordion'
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅
