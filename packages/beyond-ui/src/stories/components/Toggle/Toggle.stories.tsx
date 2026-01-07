@@ -23,11 +23,23 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Basic toggle
+// Basic toggle (uncontrolled - manages its own state)
 export const Default: Story = {
   args: {
     label: 'Enable notifications',
   },
+}
+
+// Uncontrolled mode - component manages its own state
+export const Uncontrolled: Story = {
+  render: () => (
+    <View style={styles.variantsContainer}>
+      <Text style={styles.sectionTitle}>Click to toggle (no state management needed)</Text>
+      <Toggle label="Dark mode" />
+      <Toggle label="Notifications" onChange={(checked) => console.log('Changed to:', checked)} />
+      <Toggle label="Auto-save" helperText="Changes are saved automatically" />
+    </View>
+  ),
 }
 
 // Controlled toggle example

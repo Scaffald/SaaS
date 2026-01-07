@@ -42,7 +42,7 @@ import type { ToggleProps } from './Toggle.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
 
 export function Toggle({
-  checked = false,
+  checked: checkedProp,
   onChange,
   size = 'md',
   color = 'primary',
@@ -56,13 +56,26 @@ export function Toggle({
   labelStyle,
   helperTextStyle,
 }: ToggleProps) {
+  // Support both controlled and uncontrolled mode
+  const [internalChecked, setInternalChecked] = useState(false)
+  const isControlled = checkedProp !== undefined
+  const checked = isControlled ? checkedProp : internalChecked
+
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
 
   const handlePress = () => {
     if (disabled) return
-    onChange?.(!checked)
+    const newValue = !checked
+
+    // Update internal state if uncontrolled
+    if (!isControlled) {
+      setInternalChecked(newValue)
+    }
+
+    // Always call onChange if provided
+    onChange?.(newValue)
   }
 
   // Size configuration
