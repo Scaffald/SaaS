@@ -3,8 +3,8 @@
  * Individual item within an accordion
  */
 
-import { createContext, useContext } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { createContext, useContext, useState } from 'react'
+import { View, StyleSheet, Platform } from 'react-native'
 import type {
   AccordionItemProps,
   AccordionItemContextValue,
@@ -35,6 +35,7 @@ export function AccordionItem({
 }: AccordionItemProps) {
   const accordionContext = useAccordionContext()
   const { theme } = useThemeContext()
+  const [isFocused, setIsFocused] = useState(false)
 
   // Check if this item is expanded
   const isExpanded = Array.isArray(accordionContext.value)
@@ -50,16 +51,30 @@ export function AccordionItem({
     value,
   }
 
+  // Focus ring style (web only) - applied to entire item, not just trigger
+  const focusRing =
+    isFocused && !disabled
+      ? Platform.OS === 'web'
+        ? { boxShadow: `${boxShadows.focusBase}, ${boxShadows.buttonShadow.boxShadow}` }
+        : {}
+      : {}
+
   return (
     <AccordionItemContext.Provider value={contextValue}>
       <View
+        // @ts-expect-error - web-specific props
+        onFocus={() => setIsFocused(true)}
+        // @ts-expect-error - web-specific props
+        onBlur={() => setIsFocused(false)}
         style={[
           styles.container,
           {
             backgroundColor: colors.bg[theme].default,
             borderColor: colors.border[theme].default,
             ...boxShadows.buttonShadow,
+            ...focusRing,
           },
+          accordionContext.width === 'constrained' && styles.constrained,
           disabled && styles.disabled,
           containerStyle,
         ]}
@@ -76,6 +91,9 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.m,
     paddingHorizontal: spacing[16],
     paddingVertical: spacing[10],
+  },
+  constrained: {
+    alignSelf: 'stretch', // Maintain consistent width
   },
   disabled: {
     opacity: 0.5,

@@ -55,6 +55,7 @@ export function Accordion({
   defaultValue,
   onValueChange,
   mode = 'single',
+  width = 'constrained',
   disabled = false,
   children,
   containerStyle,
@@ -95,6 +96,7 @@ export function Accordion({
     value,
     onValueChange: handleValueChange,
     mode,
+    width,
     disabled,
   }
 

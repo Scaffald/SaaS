@@ -114,6 +114,13 @@ export type {
   ToggleState,
 } from './components/Toggle'
 
+export { SelectionCard } from './components/SelectionCard'
+export type {
+  SelectionCardProps,
+  SelectionCardType,
+  SelectionCardLeadingType,
+} from './components/SelectionCard'
+
 export { Accordion } from './components/Accordion'
 export type {
   AccordionProps,
@@ -121,6 +128,7 @@ export type {
   AccordionTriggerProps,
   AccordionContentProps,
   AccordionMode,
+  AccordionWidth,
   AccordionValue,
 } from './components/Accordion'
 

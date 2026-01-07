@@ -19,5 +19,6 @@ export type {
   AccordionTriggerProps,
   AccordionContentProps,
   AccordionMode,
+  AccordionWidth,
   AccordionValue,
 } from './Accordion.types'

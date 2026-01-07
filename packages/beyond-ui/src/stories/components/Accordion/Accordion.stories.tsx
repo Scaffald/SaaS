@@ -229,6 +229,50 @@ export const CustomContent: Story = {
   ),
 }
 
+// Width variants
+export const WidthVariants: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <Text style={styles.variantTitle}>Constrained (default)</Text>
+      <Text style={styles.variantDescription}>
+        Maintains consistent width when expanded. Best for forms and structured layouts.
+      </Text>
+      <Accordion mode="single" width="constrained" defaultValue="item1">
+        <Accordion.Item value="item1">
+          <Accordion.Trigger>Short title</Accordion.Trigger>
+          <Accordion.Content>
+            This accordion maintains a consistent width regardless of whether it's expanded or
+            collapsed.
+          </Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item value="item2">
+          <Accordion.Trigger>A much longer title that takes up more space</Accordion.Trigger>
+          <Accordion.Content>Notice the width stays consistent.</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
+
+      <View style={{ marginTop: spacing[32] }} />
+
+      <Text style={styles.variantTitle}>Fluid</Text>
+      <Text style={styles.variantDescription}>
+        Adapts to content width. Best for dynamic or variable content.
+      </Text>
+      <Accordion mode="single" width="fluid" defaultValue="item1">
+        <Accordion.Item value="item1">
+          <Accordion.Trigger>Short title</Accordion.Trigger>
+          <Accordion.Content>
+            This accordion's width adapts to its content, so it may change when expanded.
+          </Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item value="item2">
+          <Accordion.Trigger>A much longer title that takes up more space</Accordion.Trigger>
+          <Accordion.Content>The width adapts to fit content naturally.</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
+    </View>
+  ),
+}
+
 // Disabled state
 export const Disabled: Story = {
   render: () => (
@@ -440,5 +484,18 @@ const styles = StyleSheet.create({
   },
   darkText: {
     color: colors.text.dark.primary,
+  },
+  variantTitle: {
+    fontFamily: typography.bodyMedium.fontFamily,
+    fontSize: typography.body.fontSize,
+    fontWeight: typography.bodyMedium.fontWeight,
+    color: colors.text.light.primary,
+    marginBottom: spacing[8],
+  },
+  variantDescription: {
+    fontFamily: typography.body.fontFamily,
+    fontSize: typography.small.fontSize,
+    color: colors.text.light.secondary,
+    marginBottom: spacing[16],
   },
 })

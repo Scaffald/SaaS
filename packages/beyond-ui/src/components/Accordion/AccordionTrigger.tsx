@@ -11,7 +11,6 @@ import { useAccordionItemContext } from './AccordionItem'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
-import { boxShadows } from '../../tokens/shadows'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { ChevronIcon } from './ChevronIcon'
 
@@ -30,20 +29,11 @@ export function AccordionTrigger({
   const { theme } = useThemeContext()
 
   const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
 
   const handlePress = () => {
     if (itemContext.disabled) return
     accordionContext.onValueChange(itemContext.value)
   }
-
-  // Focus ring style (web only)
-  const focusRing =
-    isFocused && !itemContext.disabled
-      ? Platform.OS === 'web'
-        ? { boxShadow: boxShadows.focusBase }
-        : {}
-      : {}
 
   return (
     <Pressable
@@ -58,14 +48,11 @@ export function AccordionTrigger({
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => setIsHovered(false),
       })}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
       style={({ pressed }) => [
         styles.trigger,
         {
           backgroundColor:
             isHovered && !itemContext.disabled ? colors.bg[theme].hover : 'transparent',
-          ...focusRing,
         },
         // Apply pressed effect
         pressed && !itemContext.disabled && { opacity: 0.8 },

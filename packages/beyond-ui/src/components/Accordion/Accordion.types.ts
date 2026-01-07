@@ -8,6 +8,9 @@ import type { ViewStyle, TextStyle } from 'react-native'
 // Accordion mode - controls how items behave
 export type AccordionMode = 'single' | 'multiple'
 
+// Accordion width variant
+export type AccordionWidth = 'fluid' | 'constrained'
+
 // Accordion item value type
 export type AccordionValue = string | string[]
 
@@ -21,6 +24,8 @@ export interface AccordionProps {
   onValueChange?: (value: AccordionValue) => void
   /** Mode: 'single' (one item open) or 'multiple' (many items open) */
   mode?: AccordionMode
+  /** Width behavior: 'fluid' (stretches with content) or 'constrained' (fixed width) */
+  width?: AccordionWidth
   /** Children accordion items */
   children: ReactNode
   /** Disabled state for all items */
@@ -76,6 +81,7 @@ export interface AccordionContextValue {
   value: AccordionValue
   onValueChange: (itemValue: string) => void
   mode: AccordionMode
+  width: AccordionWidth
   disabled: boolean
 }
 
