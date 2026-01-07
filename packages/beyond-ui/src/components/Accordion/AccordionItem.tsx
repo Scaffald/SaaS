@@ -5,10 +5,7 @@
 
 import { createContext, useContext, useState } from 'react'
 import { View, StyleSheet, Platform } from 'react-native'
-import type {
-  AccordionItemProps,
-  AccordionItemContextValue,
-} from './Accordion.types'
+import type { AccordionItemProps, AccordionItemContextValue } from './Accordion.types'
 import { useAccordionContext } from './Accordion'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'

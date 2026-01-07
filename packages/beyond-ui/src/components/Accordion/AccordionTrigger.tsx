@@ -104,9 +104,7 @@ export function AccordionTrigger({
       {/* Right side - Chevron */}
       <ChevronIcon
         expanded={itemContext.isExpanded}
-        color={
-          itemContext.disabled ? colors.text[theme].disabled : colors.text[theme].secondary
-        }
+        color={itemContext.disabled ? colors.text[theme].disabled : colors.text[theme].secondary}
       />
     </Pressable>
   )

@@ -131,11 +131,7 @@ export function Radio({
         : checked
           ? colors.gray[700]
           : colors.border[theme].default,
-      background: checked
-        ? disabled
-          ? colors.gray[200]
-          : colors.gray[700]
-        : 'transparent',
+      background: checked ? (disabled ? colors.gray[200] : colors.gray[700]) : 'transparent',
       backgroundHover: checked ? colors.gray[800] : colors.gray[50],
       iconColor: colors.white,
     }
@@ -144,11 +140,8 @@ export function Radio({
   const colorConfig = getColors()
 
   // Focus ring style (web only)
-  const focusRing = isFocused && !disabled
-    ? Platform.OS === 'web'
-      ? { boxShadow: boxShadows.focusBase }
-      : {}
-    : {}
+  const focusRing =
+    isFocused && !disabled ? (Platform.OS === 'web' ? { boxShadow: boxShadows.focusBase } : {}) : {}
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -179,18 +172,15 @@ export function Radio({
                 width: sizeConfig.size,
                 height: sizeConfig.size,
                 borderColor: colorConfig.border,
-                backgroundColor: isHovered && !disabled
-                  ? colorConfig.backgroundHover
-                  : colorConfig.background,
+                backgroundColor:
+                  isHovered && !disabled ? colorConfig.backgroundHover : colorConfig.background,
               },
               focusRing,
               disabled && styles.disabled,
               radioStyle,
             ]}
           >
-            {checked && (
-              <RadioIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
-            )}
+            {checked && <RadioIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />}
           </View>
         </View>
 
@@ -207,9 +197,15 @@ export function Radio({
                       style={[
                         styles.label,
                         {
-                          fontSize: size === 'sm' ? typography.small.fontSize : typography.body.fontSize,
-                          lineHeight: size === 'sm' ? typography.small.lineHeight : typography.body.lineHeight,
-                          color: disabled ? colors.text[theme].disabled : colors.text[theme].primary,
+                          fontSize:
+                            size === 'sm' ? typography.small.fontSize : typography.body.fontSize,
+                          lineHeight:
+                            size === 'sm'
+                              ? typography.small.lineHeight
+                              : typography.body.lineHeight,
+                          color: disabled
+                            ? colors.text[theme].disabled
+                            : colors.text[theme].primary,
                         },
                         labelStyle,
                       ]}
@@ -221,13 +217,20 @@ export function Radio({
                         style={[
                           styles.optionalText,
                           {
-                            fontSize: size === 'sm' ? typography.small.fontSize : typography.body.fontSize,
-                            lineHeight: size === 'sm' ? typography.small.lineHeight : typography.body.lineHeight,
-                            color: disabled ? colors.text[theme].disabled : colors.text[theme].tertiary,
+                            fontSize:
+                              size === 'sm' ? typography.small.fontSize : typography.body.fontSize,
+                            lineHeight:
+                              size === 'sm'
+                                ? typography.small.lineHeight
+                                : typography.body.lineHeight,
+                            color: disabled
+                              ? colors.text[theme].disabled
+                              : colors.text[theme].tertiary,
                           },
                         ]}
                       >
-                        {' '}(optional)
+                        {' '}
+                        (optional)
                       </Text>
                     )}
                   </>

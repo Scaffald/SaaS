@@ -153,11 +153,7 @@ export function Toggle({
 
   // Focus ring style (web only)
   const focusRing =
-    isFocused && !disabled
-      ? Platform.OS === 'web'
-        ? { boxShadow: boxShadows.focusBase }
-        : {}
-      : {}
+    isFocused && !disabled ? (Platform.OS === 'web' ? { boxShadow: boxShadows.focusBase } : {}) : {}
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -344,4 +340,3 @@ const styles = StyleSheet.create({
 
 // Export types
 export type { ToggleProps, ToggleSize, ToggleColor, ToggleState } from './Toggle.types'
-

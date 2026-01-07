@@ -5,4 +5,3 @@ export type {
   ToggleColor,
   ToggleState,
 } from './Toggle.types'
-

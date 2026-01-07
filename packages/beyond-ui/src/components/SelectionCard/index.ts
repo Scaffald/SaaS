@@ -4,4 +4,3 @@ export type {
   SelectionCardType,
   SelectionCardLeadingType,
 } from './SelectionCard.types'
-

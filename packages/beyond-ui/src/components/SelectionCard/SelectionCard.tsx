@@ -52,7 +52,7 @@ import { useThemeContext } from '../../playground/ThemeProvider'
 
 export function SelectionCard({
   type = 'checkbox',
-  selected = false,
+  selected: selectedProp,
   onChange,
   disabled = false,
   title,
@@ -67,6 +67,11 @@ export function SelectionCard({
   size = 'md',
   color = 'primary',
 }: SelectionCardProps) {
+  // Support both controlled and uncontrolled mode
+  const [internalSelected, setInternalSelected] = useState(false)
+  const isControlled = selectedProp !== undefined
+  const selected = isControlled ? selectedProp : internalSelected
+
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
@@ -75,12 +80,20 @@ export function SelectionCard({
 
   const handlePress = () => {
     if (disabled) return
-    onChange?.(!selected)
+    const newValue = !selected
+
+    // Update internal state if uncontrolled
+    if (!isControlled) {
+      setInternalSelected(newValue)
+    }
+
+    // Always call onChange if provided
+    onChange?.(newValue)
   }
 
   // Determine card state for styling
   const getCardStyles = () => {
-    const baseStyles: any[] = [styles.card]
+    const baseStyles: ViewStyle[] = [styles.card]
 
     // Background color
     if (isLight) {
@@ -159,7 +172,8 @@ export function SelectionCard({
   // Render the appropriate selection control
   const renderSelectionControl = () => {
     // Map color to appropriate type for each control
-    const checkboxColor: CheckboxColor = color === 'red-green' ? 'primary' : (color as CheckboxColor)
+    const checkboxColor: CheckboxColor =
+      color === 'red-green' ? 'primary' : (color as CheckboxColor)
     const radioColor: RadioColor = color === 'red-green' ? 'primary' : (color as RadioColor)
 
     switch (type) {
@@ -183,7 +197,6 @@ export function SelectionCard({
             color={color}
           />
         )
-      case 'checkbox':
       default:
         return (
           <Checkbox
@@ -305,4 +318,3 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
 })
-

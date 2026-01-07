@@ -6,7 +6,10 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { CheckboxTree } from '../../../components/Checkbox/CheckboxTree'
-import { updateNodeChecked, getCheckedNodeIds } from '../../../components/Checkbox/CheckboxTree.utils'
+import {
+  updateNodeChecked,
+  getCheckedNodeIds,
+} from '../../../components/Checkbox/CheckboxTree.utils'
 import type { CheckboxTreeNode } from '../../../components/Checkbox/CheckboxTree.types'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'

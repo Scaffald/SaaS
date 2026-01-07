@@ -32,11 +32,7 @@
 
 import { createContext, useContext, useState } from 'react'
 import { View, StyleSheet } from 'react-native'
-import type {
-  AccordionProps,
-  AccordionContextValue,
-  AccordionValue,
-} from './Accordion.types'
+import type { AccordionProps, AccordionContextValue, AccordionValue } from './Accordion.types'
 import { spacing } from '../../tokens/spacing'
 
 // Accordion context

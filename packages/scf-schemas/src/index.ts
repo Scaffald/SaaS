@@ -29,5 +29,7 @@ export * from './profile/index.ts';
 export * from './projects/index.ts';
 // Team management schemas
 export * from './teams/index.ts';
+// Webhook schemas
+export * from './webhooks/index.ts';
 // Work log schemas
 export * from './work-logs/index.ts';

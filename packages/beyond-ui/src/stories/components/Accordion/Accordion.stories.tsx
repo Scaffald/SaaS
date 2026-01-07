@@ -24,28 +24,28 @@ type Story = StoryObj<typeof meta>
 
 // Example icon components
 const DeviceIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" role="img" aria-label="Device icon">
     <rect x="6" y="4" width="12" height="16" rx="1" stroke="#141c25" strokeWidth="1.5" />
     <path d="M10 18H14" stroke="#141c25" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 )
 
 const ClockIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" role="img" aria-label="Clock icon">
     <circle cx="12" cy="12" r="8" stroke="#1a232d" strokeWidth="1.5" />
     <path d="M12 8V12L14 14" stroke="#1a232d" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 )
 
 const CardIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" role="img" aria-label="Card icon">
     <rect x="4" y="7" width="16" height="10" rx="2" stroke="#ff4d4d" strokeWidth="1.5" />
     <path d="M4 11H20" stroke="#ff4d4d" strokeWidth="1.5" />
   </svg>
 )
 
 const WarningIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" aria-label="Warning icon">
     <path
       d="M8 2L14 14H2L8 2Z"
       fill="#f59e0b"
@@ -59,7 +59,7 @@ const WarningIcon = () => (
 )
 
 const InfoIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" role="img" aria-label="Info icon">
     <circle cx="8" cy="8" r="6" fill="#f59e0b" stroke="#637083" strokeWidth="1.5" />
     <path d="M8 7V11" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
     <circle cx="8" cy="5" r="0.5" fill="white" />
@@ -72,13 +72,17 @@ export const Default: Story = {
     <View style={styles.container}>
       <Accordion mode="single">
         <Accordion.Item value="item1">
-          <Accordion.Trigger icon={<DeviceIcon />} hintMessage="2 issues" hintIcon={<WarningIcon />}>
+          <Accordion.Trigger
+            icon={<DeviceIcon />}
+            hintMessage="2 issues"
+            hintIcon={<WarningIcon />}
+          >
             Connected Devices
           </Accordion.Trigger>
           <Accordion.Content>
             • The battery level of Device 1 is below 20%. Please charge it soon to avoid
-            disconnection.{'\n\n'}• Device 2 is experiencing weak signal strength. Move it closer
-            to the router for a better connection.
+            disconnection.{'\n\n'}• Device 2 is experiencing weak signal strength. Move it closer to
+            the router for a better connection.
           </Accordion.Content>
         </Accordion.Item>
 
@@ -163,9 +167,9 @@ export const MultipleMode: Story = {
             <Accordion.Trigger>What is an accordion?</Accordion.Trigger>
             <Accordion.Content>
               An accordion is a menu composed of vertically stacked headers that reveal more details
-              when triggered (often by a mouse click). Since this web design pattern highlights
-              only the most critical information of a section but makes the rest easily accessible,
-              it's a common element in responsive design.
+              when triggered (often by a mouse click). Since this web design pattern highlights only
+              the most critical information of a section but makes the rest easily accessible, it's
+              a common element in responsive design.
             </Accordion.Content>
           </Accordion.Item>
 
@@ -364,9 +368,9 @@ export const Playground: Story = {
             <Accordion.Trigger>What is an accordion?</Accordion.Trigger>
             <Accordion.Content>
               An accordion is a menu composed of vertically stacked headers that reveal more details
-              when triggered (often by a mouse click). Since this web design pattern highlights
-              only the most critical information of a section but makes the rest easily accessible,
-              it's a common element in responsive design.
+              when triggered (often by a mouse click). Since this web design pattern highlights only
+              the most critical information of a section but makes the rest easily accessible, it's
+              a common element in responsive design.
             </Accordion.Content>
           </Accordion.Item>
         </Accordion>
@@ -416,9 +420,9 @@ export const Playground: Story = {
             <Accordion.Trigger>What is an accordion?</Accordion.Trigger>
             <Accordion.Content>
               An accordion is a menu composed of vertically stacked headers that reveal more details
-              when triggered (often by a mouse click). Since this web design pattern highlights
-              only the most critical information of a section but makes the rest easily accessible,
-              it's a common element in responsive design.
+              when triggered (often by a mouse click). Since this web design pattern highlights only
+              the most critical information of a section but makes the rest easily accessible, it's
+              a common element in responsive design.
             </Accordion.Content>
           </Accordion.Item>
         </Accordion>

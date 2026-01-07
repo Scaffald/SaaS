@@ -36,7 +36,10 @@ export const Uncontrolled: Story = {
     <View style={styles.variantsContainer}>
       <Text style={styles.sectionTitle}>Click to toggle (no state management needed)</Text>
       <Radio label="Enable feature" />
-      <Radio label="Subscribe to updates" onChange={(checked) => console.log('Changed to:', checked)} />
+      <Radio
+        label="Subscribe to updates"
+        onChange={(checked) => console.log('Changed to:', checked)}
+      />
       <Radio label="Send notifications" helperText="Toggle as needed" />
     </View>
   ),
@@ -145,10 +148,7 @@ export const WithHelperText: Story = {
     <View style={styles.variantsContainer}>
       <View style={styles.variantRow}>
         <Text style={styles.variantLabel}>Default</Text>
-        <Radio
-          label="Accept terms"
-          helperText="Please read our terms and conditions carefully"
-        />
+        <Radio label="Accept terms" helperText="Please read our terms and conditions carefully" />
       </View>
       <View style={styles.variantRow}>
         <Text style={styles.variantLabel}>Optional</Text>
@@ -266,11 +266,7 @@ export const Playground: Story = {
           <Radio label="Share Location" helperText="Helper text" />
 
           {/* With optional indicator and helper text */}
-          <Radio
-            label="Email Notifications"
-            optional
-            helperText="We will not spam you, promise!"
-          />
+          <Radio label="Email Notifications" optional helperText="We will not spam you, promise!" />
 
           {/* Simple label */}
           <Radio label="Dark Mode" />
@@ -294,11 +290,7 @@ export const Playground: Story = {
           <Radio label="Share Location" helperText="Helper text" />
 
           {/* With optional indicator and helper text */}
-          <Radio
-            label="Email Notifications"
-            optional
-            helperText="We will not spam you, promise!"
-          />
+          <Radio label="Email Notifications" optional helperText="We will not spam you, promise!" />
 
           {/* Simple label */}
           <Radio label="Dark Mode" />
