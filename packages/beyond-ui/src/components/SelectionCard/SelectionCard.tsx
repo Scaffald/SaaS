@@ -37,14 +37,16 @@
  */
 
 import { useState } from 'react'
-import { View, Pressable, Text, StyleSheet } from 'react-native'
+import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { SelectionCardProps } from './SelectionCard.types'
 import { Checkbox } from '../Checkbox'
+import type { CheckboxColor } from '../Checkbox'
 import { Radio } from '../Radio'
+import type { RadioColor } from '../Radio'
 import { Toggle } from '../Toggle'
 import { useThemeContext } from '../../playground/ThemeProvider'
 
@@ -78,18 +80,18 @@ export function SelectionCard({
 
   // Determine card state for styling
   const getCardStyles = () => {
-    const baseStyles = [styles.card]
+    const baseStyles: any[] = [styles.card]
 
     // Background color
     if (isLight) {
       if (isHovered && !disabled) {
-        baseStyles.push({ backgroundColor: colors.bg.light.hover })
+        baseStyles.push({ backgroundColor: colors.bg.light.subtle })
       } else {
         baseStyles.push({ backgroundColor: colors.bg.light.default })
       }
     } else {
       if (isHovered && !disabled) {
-        baseStyles.push({ backgroundColor: colors.bg.dark.hover })
+        baseStyles.push({ backgroundColor: colors.bg.dark.subtle })
       } else {
         baseStyles.push({ backgroundColor: colors.bg.dark.default })
       }
@@ -98,14 +100,14 @@ export function SelectionCard({
     // Border color
     if (isFocused && !disabled) {
       baseStyles.push({
-        borderColor: isLight ? colors.foreground.light['01'] : colors.foreground.dark['01'],
+        borderColor: isLight ? colors.gray[900] : colors.gray[100],
         borderWidth: 1,
       })
       // Focus ring
       baseStyles.push(styles.focusRing)
     } else if (selected && !disabled) {
       baseStyles.push({
-        borderColor: isLight ? colors.foreground.light['04'] : colors.foreground.dark['04'],
+        borderColor: isLight ? colors.gray[700] : colors.gray[300],
         borderWidth: 1,
       })
     } else if (isHovered && !disabled) {
@@ -156,22 +158,42 @@ export function SelectionCard({
 
   // Render the appropriate selection control
   const renderSelectionControl = () => {
-    const controlProps = {
-      checked: selected,
-      onChange,
-      disabled,
-      size,
-      color,
-    }
+    // Map color to appropriate type for each control
+    const checkboxColor: CheckboxColor = color === 'red-green' ? 'primary' : (color as CheckboxColor)
+    const radioColor: RadioColor = color === 'red-green' ? 'primary' : (color as RadioColor)
 
     switch (type) {
       case 'radio':
-        return <Radio {...controlProps} />
+        return (
+          <Radio
+            checked={selected}
+            onChange={onChange}
+            disabled={disabled}
+            size={size}
+            color={radioColor}
+          />
+        )
       case 'toggle':
-        return <Toggle {...controlProps} />
+        return (
+          <Toggle
+            checked={selected}
+            onChange={onChange}
+            disabled={disabled}
+            size={size}
+            color={color}
+          />
+        )
       case 'checkbox':
       default:
-        return <Checkbox {...controlProps} />
+        return (
+          <Checkbox
+            checked={selected}
+            onChange={onChange}
+            disabled={disabled}
+            size={size}
+            color={checkboxColor}
+          />
+        )
     }
   }
 
