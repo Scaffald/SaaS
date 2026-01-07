@@ -5,10 +5,10 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Checkbox } from './Checkbox'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { typography } from '../../tokens/typography'
+import { Checkbox } from '../../../components/Checkbox'
+import { colors } from '../../../tokens/colors'
+import { spacing } from '../../../tokens/spacing'
+import { typography } from '../../../tokens/typography'
 
 const meta = {
   title: 'Components/Checkbox',

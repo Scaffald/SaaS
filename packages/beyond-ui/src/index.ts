@@ -96,9 +96,19 @@ export {
   getLeafNodeIds,
 } from './components/Checkbox/CheckboxTree.utils'
 
+export { Radio } from './components/Radio'
+export type { RadioProps, RadioSize, RadioColor, RadioState } from './components/Radio'
+
+export { RadioGroup } from './components/Radio'
+export type {
+  RadioGroupProps,
+  RadioGroupOption,
+  RadioGroupOrientation,
+} from './components/Radio'
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
-// Phase 2: Core components (Input ✅, Checkbox ✅, Radio, Switch) - Button ✅
+// Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Switch) - Button ✅
 // Phase 3: Feedback components (Alert, Toast)
 // Phase 4+: Complex components (Dialog, Popover, Select, etc.)
 

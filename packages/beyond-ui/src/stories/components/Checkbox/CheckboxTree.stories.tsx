@@ -5,12 +5,12 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { CheckboxTree } from './CheckboxTree'
-import { updateNodeChecked, getCheckedNodeIds } from './CheckboxTree.utils'
-import type { CheckboxTreeNode } from './CheckboxTree.types'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { typography } from '../../tokens/typography'
+import { CheckboxTree } from '../../../components/Checkbox/CheckboxTree'
+import { updateNodeChecked, getCheckedNodeIds } from '../../../components/Checkbox/CheckboxTree.utils'
+import type { CheckboxTreeNode } from '../../../components/Checkbox/CheckboxTree.types'
+import { colors } from '../../../tokens/colors'
+import { spacing } from '../../../tokens/spacing'
+import { typography } from '../../../tokens/typography'
 
 const meta = {
   title: 'Components/CheckboxTree',

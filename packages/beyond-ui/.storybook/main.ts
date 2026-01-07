@@ -24,15 +24,53 @@ const config: StorybookConfig = {
   webpackFinal: async (config) => {
     // React Native Web alias support
     config.resolve = config.resolve || {}
+
+    // Prioritize .web.tsx and .web.ts extensions for web builds
+    config.resolve.extensions = [
+      '.web.tsx',
+      '.web.ts',
+      '.web.jsx',
+      '.web.js',
+      '.tsx',
+      '.ts',
+      '.jsx',
+      '.js',
+      '.json',
+    ]
+
     config.resolve.alias = {
       ...config.resolve.alias,
       'react-native$': 'react-native-web',
+      // Alias react-native-svg to a mock for web to avoid React Native internals
+      'react-native-svg': require.resolve('./mocks/react-native-svg.js'),
+      // Mock React Native internal modules that don't have web equivalents
+      'react-native/Libraries/ReactNative/requireNativeComponent': require.resolve('./mocks/requireNativeComponent.js'),
+      'react-native/Libraries/Alert/RCTAlertManager': require.resolve('./mocks/RCTAlertManager.js'),
+      'react-native/Libraries/TurboModule/TurboModuleRegistry': require.resolve('./mocks/TurboModuleRegistry.js'),
     }
 
     // Ensure TypeScript files are processed by babel-loader
     if (config.module?.rules) {
       const rules = config.module.rules
-      
+
+      // Add babel-loader for React Native .js files (to handle Flow syntax)
+      rules.push({
+        test: /\.js$/,
+        include: /node_modules\/react-native\//,
+        use: [
+          {
+            loader: require.resolve('babel-loader'),
+            options: {
+              presets: [
+                [require.resolve('@babel/preset-env'), { targets: { browsers: ['last 2 versions'] } }],
+                [require.resolve('@babel/preset-react'), { runtime: 'automatic' }],
+                [require.resolve('@babel/preset-flow'), { allowDeclareFields: true }],
+              ],
+            },
+          },
+        ],
+      })
+
       // Find the rule that handles TypeScript files
       const tsRule = rules.find((rule: any) => {
         if (rule && typeof rule === 'object' && rule.test) {
