@@ -60,7 +60,7 @@ export function getButtonStyles(
   size: ButtonSize,
   disabled: boolean,
   iconOnly: boolean,
-  theme: ThemeMode = 'light',
+  theme: ThemeMode = 'light'
 ): ButtonStyleConfig {
   const sizeStyles = sizeConfig[size]
 
@@ -89,7 +89,15 @@ export function getButtonStyles(
   }
 
   // Get variant-specific styles
-  return getVariantStyles(color, variant, disabled, baseContainer, baseText, sizeStyles.iconSize, theme)
+  return getVariantStyles(
+    color,
+    variant,
+    disabled,
+    baseContainer,
+    baseText,
+    sizeStyles.iconSize,
+    theme
+  )
 }
 
 /**
@@ -102,7 +110,7 @@ function getVariantStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   iconSize: number,
-  theme: ThemeMode,
+  theme: ThemeMode
 ): ButtonStyleConfig {
   // Filled variant
   if (variant === 'filled') {
@@ -132,7 +140,7 @@ function getFilledStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode,
+  theme: ThemeMode
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {
@@ -177,7 +185,7 @@ function getOutlineStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode,
+  theme: ThemeMode
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {
@@ -226,7 +234,7 @@ function getLightStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode,
+  theme: ThemeMode
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {
@@ -270,7 +278,7 @@ function getTextStyles(
   baseContainer: ViewStyle,
   baseText: TextStyle,
   _iconSize: number,
-  theme: ThemeMode,
+  theme: ThemeMode
 ): ButtonStyleConfig {
   const colorMap = {
     gray: {

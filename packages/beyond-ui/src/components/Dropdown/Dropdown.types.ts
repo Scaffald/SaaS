@@ -129,6 +129,16 @@ export interface DropdownSectionProps {
 }
 
 /**
+ * Menu item type variants
+ */
+export type DropdownItemType = 'menu-item' | 'dropdown-menu-item'
+
+/**
+ * Menu item state variants
+ */
+export type DropdownItemState = 'default' | 'hover' | 'active' | 'disabled'
+
+/**
  * Dropdown item props
  */
 export interface DropdownItemProps extends Omit<PressableProps, 'style' | 'children'> {
@@ -138,27 +148,74 @@ export interface DropdownItemProps extends Omit<PressableProps, 'style' | 'child
   children: React.ReactNode
 
   /**
+   * Menu item type
+   * @default 'menu-item'
+   */
+  type?: DropdownItemType
+
+  /**
+   * Menu item state
+   * @default 'default'
+   */
+  state?: DropdownItemState
+
+  /**
    * Show checkbox indicator
    * @default false
    */
   checked?: boolean
 
   /**
-   * Selected state
+   * Selected state (synonym for active state)
    * @default false
    */
   selected?: boolean
 
   /**
-   * Disabled state
+   * Disabled state (overrides state prop)
    * @default false
    */
   disabled?: boolean
 
   /**
-   * Icon component to display before text
+   * Leading icon component to display before text
    */
   icon?: React.ComponentType<{ size: number; color: string }>
+
+  /**
+   * Avatar component to display before text (overrides icon if both provided)
+   */
+  avatar?: React.ReactNode
+
+  /**
+   * Flag component to display before text (overrides icon and avatar if provided)
+   */
+  flag?: React.ReactNode
+
+  /**
+   * Show toggle switch component (for toggle-style menu items)
+   * Pass a Toggle component when available
+   * @default false
+   */
+  showToggle?: boolean
+  toggleValue?: boolean
+  onToggleChange?: (value: boolean) => void
+
+  /**
+   * Badge label to display (text or custom component)
+   */
+  badge?: React.ReactNode
+
+  /**
+   * Keyboard shortcut text to display on the right (e.g., "⌘K")
+   */
+  shortcut?: string
+
+  /**
+   * Show nested dropdown indicator (arrow icon) indicating submenu
+   * @default false
+   */
+  hasSubmenu?: boolean
 
   /**
    * Press handler
@@ -190,7 +247,13 @@ export interface DropdownStyleConfig {
   divider: ViewStyle
   checkbox: ViewStyle
   checkboxChecked: ViewStyle
+  avatar: ViewStyle
+  badge: ViewStyle
+  badgeText: TextStyle
+  shortcut: TextStyle
+  submenuArrow: ViewStyle
+  itemHover: ViewStyle
+  itemActive: ViewStyle
   iconColor: string
   caretColor: string
 }
-

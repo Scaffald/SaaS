@@ -55,12 +55,7 @@ export const Default: Story = {
     const [value, setValue] = useState('')
     return (
       <View style={styles.container}>
-        <Input
-          label="Email"
-          placeholder="Enter your email"
-          value={value}
-          onChangeText={setValue}
-        />
+        <Input label="Email" placeholder="Enter your email" value={value} onChangeText={setValue} />
       </View>
     )
   },
@@ -73,12 +68,7 @@ export const States: Story = {
     const [_value3, setValue3] = useState('')
     return (
       <View style={styles.container}>
-        <Input
-          label="Default"
-          placeholder="Enter text"
-          value={value1}
-          onChangeText={setValue1}
-        />
+        <Input label="Default" placeholder="Enter text" value={value1} onChangeText={setValue1} />
         <Input
           label="Disabled"
           placeholder="Cannot edit"
@@ -147,4 +137,3 @@ const styles = StyleSheet.create({
     width: 400,
   },
 })
-

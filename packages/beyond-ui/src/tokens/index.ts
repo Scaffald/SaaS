@@ -45,14 +45,7 @@ import {
 } from './typography'
 import { borderRadius, radius, borderWidth, borderStyle, borders } from './borders'
 import { shadows, boxShadows, elevation } from './shadows'
-import {
-  duration,
-  easing,
-  transitions,
-  delay,
-  animations,
-  springs,
-} from './animations'
+import { duration, easing, transitions, delay, animations, springs } from './animations'
 import {
   breakpoints,
   mediaQueries,
@@ -63,13 +56,7 @@ import {
 } from './breakpoints'
 import { columns } from './columns'
 import { gradients } from './gradients'
-import {
-  dividers,
-  dividerStyles,
-  dividerColor,
-  dividerWidth,
-  dividerGap,
-} from './dividers'
+import { dividers, dividerStyles, dividerColor, dividerWidth, dividerGap } from './dividers'
 import {
   patterns,
   backgroundGradients,

@@ -48,7 +48,7 @@ export const desktop = {
   sideMargin: 112,
   /** Total content width (container - side margins) */
   contentWidth: 1216,
-} as const;
+} as const
 
 /**
  * Tablet Grid System (768px container)
@@ -67,7 +67,7 @@ export const tablet = {
   sideMargin: 32,
   /** Total content width (container - side margins) */
   contentWidth: 704,
-} as const;
+} as const
 
 /**
  * Mobile Grid System (375px container)
@@ -86,7 +86,7 @@ export const mobile = {
   sideMargin: 16,
   /** Total content width (container - side margins) */
   contentWidth: 343,
-} as const;
+} as const
 
 /**
  * SaaS Layout System (1440px container)
@@ -112,7 +112,7 @@ export const saas = {
   contentWidth: 1104,
   /** Main grid area width (contentWidth - rightMargin) */
   gridWidth: 1072,
-} as const;
+} as const
 
 /**
  * Complete columns configuration object
@@ -122,7 +122,7 @@ export const columns = {
   tablet,
   mobile,
   saas,
-} as const;
+} as const
 
 /**
  * Helper function to calculate column span width
@@ -134,12 +134,9 @@ export const columns = {
  * const width = getColumnSpanWidth(4, 'desktop')  // 4*72 + 3*32 = 384
  * ```
  */
-export function getColumnSpanWidth(
-  span: number,
-  layout: keyof typeof columns,
-): number {
-  const layoutConfig = columns[layout];
-  return span * layoutConfig.columnWidth + (span - 1) * layoutConfig.gutter;
+export function getColumnSpanWidth(span: number, layout: keyof typeof columns): number {
+  const layoutConfig = columns[layout]
+  return span * layoutConfig.columnWidth + (span - 1) * layoutConfig.gutter
 }
 
 /**
@@ -152,29 +149,21 @@ export function getColumnSpanWidth(
  * const totalWidth = getTotalWidth(6, 'desktop')  // includes side margins
  * ```
  */
-export function getTotalWidth(
-  span: number,
-  layout: keyof typeof columns,
-): number {
-  const contentWidth = getColumnSpanWidth(span, layout);
+export function getTotalWidth(span: number, layout: keyof typeof columns): number {
+  const contentWidth = getColumnSpanWidth(span, layout)
 
-  if (layout === "saas") {
-    const saasConfig = columns.saas;
-    return (
-      saasConfig.sidebarWidth +
-      saasConfig.sidebarGap +
-      contentWidth +
-      saasConfig.rightMargin
-    );
+  if (layout === 'saas') {
+    const saasConfig = columns.saas
+    return saasConfig.sidebarWidth + saasConfig.sidebarGap + contentWidth + saasConfig.rightMargin
   }
 
-  const layoutConfig = columns[layout];
-  return contentWidth + layoutConfig.sideMargin * 2;
+  const layoutConfig = columns[layout]
+  return contentWidth + layoutConfig.sideMargin * 2
 }
 
 // Type exports
-export type ColumnLayout = keyof typeof columns;
-export type DesktopColumns = typeof desktop;
-export type TabletColumns = typeof tablet;
-export type MobileColumns = typeof mobile;
-export type SaasColumns = typeof saas;
+export type ColumnLayout = keyof typeof columns
+export type DesktopColumns = typeof desktop
+export type TabletColumns = typeof tablet
+export type MobileColumns = typeof mobile
+export type SaasColumns = typeof saas

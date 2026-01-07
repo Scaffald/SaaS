@@ -4,7 +4,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
-import { dividerStyles, } from '../../tokens/dividers'
+import { dividerStyles } from '../../tokens/dividers'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 
@@ -135,4 +135,3 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.light.default, // Background to make text appear on top of line
   },
 })
-

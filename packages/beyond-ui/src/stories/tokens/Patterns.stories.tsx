@@ -31,7 +31,9 @@ export const BlocksPattern: Story = {
         <View style={styles.example}>
           <Text style={styles.exampleTitle}>Grid-based pattern with alternating blocks</Text>
           <View style={styles.patternInfo}>
-            <Text style={styles.info}>Block Size: {blocksPattern.blockSize}px × {blocksPattern.blockSize}px</Text>
+            <Text style={styles.info}>
+              Block Size: {blocksPattern.blockSize}px × {blocksPattern.blockSize}px
+            </Text>
             <Text style={styles.info}>Gap: {blocksPattern.gap}px</Text>
             <Text style={styles.info}>Border Radius: {blocksPattern.borderRadius}px</Text>
             <Text style={styles.info}>Opacity: {blocksPattern.opacity * 100}%</Text>
@@ -82,15 +84,20 @@ export const NetPattern: Story = {
             <Text style={styles.info}>Opacity: {netPattern.opacity * 100}%</Text>
             <Text style={styles.info}>Stroke Width: {netPattern.strokeWidth}px</Text>
           </View>
-          <View style={[styles.netPreview, {
-            // @ts-ignore - web-specific CSS for net pattern
-            backgroundImage: `
+          <View
+            style={[
+              styles.netPreview,
+              {
+                // @ts-expect-error - web-specific CSS for net pattern
+                backgroundImage: `
               linear-gradient(${netPattern.strokeColor} ${netPattern.strokeWidth}px, transparent ${netPattern.strokeWidth}px),
               linear-gradient(90deg, ${netPattern.strokeColor} ${netPattern.strokeWidth}px, transparent ${netPattern.strokeWidth}px)
             `,
-            backgroundSize: '32px 32px',
-            opacity: netPattern.opacity,
-          }]}>
+                backgroundSize: '32px 32px',
+                opacity: netPattern.opacity,
+              },
+            ]}
+          >
             <Text style={styles.infoNote}>
               Net pattern with {netPattern.strokeWidth}px lines, {netPattern.opacity * 100}% opacity
             </Text>
@@ -108,7 +115,9 @@ export const PatternOpacity: Story = {
         <Text style={styles.sectionTitle}>Pattern Opacity Scale</Text>
         {Object.entries(patternOpacity).map(([name, opacity]) => (
           <View key={name} style={styles.example}>
-            <Text style={styles.exampleTitle}>{name.charAt(0).toUpperCase() + name.slice(1)}: {opacity * 100}%</Text>
+            <Text style={styles.exampleTitle}>
+              {name.charAt(0).toUpperCase() + name.slice(1)}: {opacity * 100}%
+            </Text>
             <View style={styles.opacityPreview}>
               <View
                 style={[
@@ -196,4 +205,3 @@ const styles = StyleSheet.create({
     borderRadius: spacing[4],
   },
 })
-

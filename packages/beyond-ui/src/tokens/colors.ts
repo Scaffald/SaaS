@@ -386,124 +386,124 @@ export const colors = {
   // Semantic tokens organized by usage context with light/dark mode support
   text: {
     light: {
-      primary: '#141c25',      // Base/900 - Reserved for title text
-      secondary: '#344051',    // Base/700 - Reserved for body paragraphs
-      tertiary: '#637083',     // Base/500 - Reserved for secondary text
-      disabled: '#ced2da',     // Base/300 - Context for operational disabilities
-      quaternary: '#ffffff',   // Base/0 White - Contrast for optimal readability (inverse text)
+      primary: '#141c25', // Base/900 - Reserved for title text
+      secondary: '#344051', // Base/700 - Reserved for body paragraphs
+      tertiary: '#637083', // Base/500 - Reserved for secondary text
+      disabled: '#ced2da', // Base/300 - Context for operational disabilities
+      quaternary: '#ffffff', // Base/0 White - Contrast for optimal readability (inverse text)
     },
     dark: {
-      primary: '#ffffff',      // Base/0 White - Reserved for title text
-      secondary: '#e4e7ec',    // Base/200 - Reserved for body paragraphs
-      tertiary: '#97a1af',     // Base/400 - Reserved for secondary text
-      disabled: '#414e62',     // Base/600 - Context for operational disabilities
-      quaternary: '#141c25',   // Base/900 - Contrast for optimal readability (inverse text)
+      primary: '#ffffff', // Base/0 White - Reserved for title text
+      secondary: '#e4e7ec', // Base/200 - Reserved for body paragraphs
+      tertiary: '#97a1af', // Base/400 - Reserved for secondary text
+      disabled: '#414e62', // Base/600 - Context for operational disabilities
+      quaternary: '#141c25', // Base/900 - Contrast for optimal readability (inverse text)
     },
     // Backward compatibility aliases (reference light mode)
-    primary: '#141c25',        // Alias for text.light.primary
-    secondary: '#344051',      // Alias for text.light.secondary
-    tertiary: '#637083',       // Alias for text.light.tertiary
-    disabled: '#97a1af',       // Alias for text.light.disabled (note: uses gray[400] for backward compat)
-    inverse: '#ffffff',        // Alias for text.light.quaternary
+    primary: '#141c25', // Alias for text.light.primary
+    secondary: '#344051', // Alias for text.light.secondary
+    tertiary: '#637083', // Alias for text.light.tertiary
+    disabled: '#97a1af', // Alias for text.light.disabled (note: uses gray[400] for backward compat)
+    inverse: '#ffffff', // Alias for text.light.quaternary
   },
 
   // Background Color Tokens
   // Semantic tokens for different background contexts with light/dark mode support
   bg: {
     light: {
-      default: '#ffffff',      // Base/0 White - For general background color of the entire UI
-      subtle: '#f9fafb',       // Base/50 - For secondary background elements (cards, panels, sections)
-      muted: '#f2f4f7',        // Base/100 - For tertiary background elements (tooltips, badges)
-      emphasis: '#e4e7ec',     // Base/200 - Used for background elements requiring more visual emphasis (selected states, active tabs)
-      active: '#ced2da',       // Base/300 - Used for background elements currently active or hovered over
-      selected: '#dbeafe',     // Blue 50 - Used for background elements currently selected (selected rows, list items)
+      default: '#ffffff', // Base/0 White - For general background color of the entire UI
+      subtle: '#f9fafb', // Base/50 - For secondary background elements (cards, panels, sections)
+      muted: '#f2f4f7', // Base/100 - For tertiary background elements (tooltips, badges)
+      emphasis: '#e4e7ec', // Base/200 - Used for background elements requiring more visual emphasis (selected states, active tabs)
+      active: '#ced2da', // Base/300 - Used for background elements currently active or hovered over
+      selected: '#dbeafe', // Blue 50 - Used for background elements currently selected (selected rows, list items)
       overlay: 'rgba(0, 0, 0, 0.5)', // Black 50 opacity - Used for overlay elements (modals, dialogs)
-      disabled: '#f2f4f7',     // Base/100 - Used for background elements currently disabled
+      disabled: '#f2f4f7', // Base/100 - Used for background elements currently disabled
     },
     dark: {
-      default: '#141c25',      // Base/900 - For general background color of the entire UI
-      subtle: '#1a232d',       // Base/800 - For secondary background elements
-      muted: '#27313f',        // Base/750 - For tertiary background elements
-      emphasis: '#344051',     // Base/700 - Used for background elements requiring more visual emphasis
-      active: '#414e62',       // Base/600 - Used for background elements currently active or hovered over
-      selected: '#1e3a8a',     // Blue 900 - Used for background elements currently selected
+      default: '#141c25', // Base/900 - For general background color of the entire UI
+      subtle: '#1a232d', // Base/800 - For secondary background elements
+      muted: '#27313f', // Base/750 - For tertiary background elements
+      emphasis: '#344051', // Base/700 - Used for background elements requiring more visual emphasis
+      active: '#414e62', // Base/600 - Used for background elements currently active or hovered over
+      selected: '#1e3a8a', // Blue 900 - Used for background elements currently selected
       overlay: 'rgba(0, 0, 0, 0.5)', // Black 50 opacity - Used for overlay elements
-      disabled: '#1a232d',     // Base/800 - Used for background elements currently disabled
+      disabled: '#1a232d', // Base/800 - Used for background elements currently disabled
     },
     // Backward compatibility aliases (reference light mode)
-    primary: '#ffffff',        // Alias for bg.light.default
-    secondary: '#f9fafb',      // Alias for bg.light.subtle
-    tertiary: '#f2f4f7',       // Alias for bg.light.muted
-    hover: '#f9fafb',          // Alias for bg.light.subtle
-    disabled: '#e4e7ec',       // Alias for bg.light.emphasis (note: uses gray[200] for backward compat)
+    primary: '#ffffff', // Alias for bg.light.default
+    secondary: '#f9fafb', // Alias for bg.light.subtle
+    tertiary: '#f2f4f7', // Alias for bg.light.muted
+    hover: '#f9fafb', // Alias for bg.light.subtle
+    disabled: '#e4e7ec', // Alias for bg.light.emphasis (note: uses gray[200] for backward compat)
   },
 
   // Border Color Tokens
   // Semantic tokens for borders with comprehensive states and light/dark mode support
   border: {
     light: {
-      default: '#e4e7ec',      // Base/200 - Primary border color for all general UI elements
-      subtle: '#f2f4f7',       // Base/100 - Used for subtle borders providing delicate visual separation
-      muted: '#ced2da',        // Base/300 - Used for muted borders providing subtle visual separation
-      emphasis: '#97a1af',     // Base/400 - Used for borders requiring more visual emphasis (active tabs, selected items)
-      active: '#3b82f6',       // Blue 500 - Used for borders currently active or hovered over
-      selected: '#3b82f6',     // Blue 500 - Used for borders currently selected
-      disabled: '#e4e7ec',     // Base/200 - Used for borders currently disabled
-      focus: '#3b82f6',        // Blue 500 - Used for borders currently focused (input fields, buttons)
-      error: '#ef4444',        // Red 500 - Used for borders indicating an error state
-      warning: '#f59e0b',      // Yellow 500 - Used for borders indicating a warning state
-      success: '#22c55e',      // Green 500 - Used for borders indicating a success state
-      info: '#3b82f6',         // Blue 500 - Used for borders indicating an informational state
+      default: '#e4e7ec', // Base/200 - Primary border color for all general UI elements
+      subtle: '#f2f4f7', // Base/100 - Used for subtle borders providing delicate visual separation
+      muted: '#ced2da', // Base/300 - Used for muted borders providing subtle visual separation
+      emphasis: '#97a1af', // Base/400 - Used for borders requiring more visual emphasis (active tabs, selected items)
+      active: '#3b82f6', // Blue 500 - Used for borders currently active or hovered over
+      selected: '#3b82f6', // Blue 500 - Used for borders currently selected
+      disabled: '#e4e7ec', // Base/200 - Used for borders currently disabled
+      focus: '#3b82f6', // Blue 500 - Used for borders currently focused (input fields, buttons)
+      error: '#ef4444', // Red 500 - Used for borders indicating an error state
+      warning: '#f59e0b', // Yellow 500 - Used for borders indicating a warning state
+      success: '#22c55e', // Green 500 - Used for borders indicating a success state
+      info: '#3b82f6', // Blue 500 - Used for borders indicating an informational state
     },
     dark: {
-      default: '#344051',      // Base/700 - Primary border color for all general UI elements
-      subtle: '#1a232d',       // Base/800 - Used for subtle borders
-      muted: '#414e62',        // Base/600 - Used for muted borders
-      emphasis: '#637083',     // Base/500 - Used for borders requiring more visual emphasis
-      active: '#3b82f6',       // Blue 500 - Used for borders currently active (same as light)
-      selected: '#3b82f6',     // Blue 500 - Used for borders currently selected (same as light)
-      disabled: '#344051',     // Base/700 - Used for borders currently disabled
-      focus: '#3b82f6',        // Blue 500 - Used for borders currently focused (same as light)
-      error: '#ef4444',        // Red 500 - Used for borders indicating an error state (same as light)
-      warning: '#f59e0b',      // Yellow 500 - Used for borders indicating a warning state (same as light)
-      success: '#22c55e',      // Green 500 - Used for borders indicating a success state (same as light)
-      info: '#3b82f6',         // Blue 500 - Used for borders indicating an informational state (same as light)
+      default: '#344051', // Base/700 - Primary border color for all general UI elements
+      subtle: '#1a232d', // Base/800 - Used for subtle borders
+      muted: '#414e62', // Base/600 - Used for muted borders
+      emphasis: '#637083', // Base/500 - Used for borders requiring more visual emphasis
+      active: '#3b82f6', // Blue 500 - Used for borders currently active (same as light)
+      selected: '#3b82f6', // Blue 500 - Used for borders currently selected (same as light)
+      disabled: '#344051', // Base/700 - Used for borders currently disabled
+      focus: '#3b82f6', // Blue 500 - Used for borders currently focused (same as light)
+      error: '#ef4444', // Red 500 - Used for borders indicating an error state (same as light)
+      warning: '#f59e0b', // Yellow 500 - Used for borders indicating a warning state (same as light)
+      success: '#22c55e', // Green 500 - Used for borders indicating a success state (same as light)
+      info: '#3b82f6', // Blue 500 - Used for borders indicating an informational state (same as light)
     },
     // Backward compatibility aliases (reference light mode)
     // Note: 'light' alias removed - use border.light.subtle instead (conflicts with border.light object)
-    default: '#e4e7ec',        // Alias for border.light.default
-    focus: '#d54e21',          // Alias for border.light.focus (note: uses primary[600] for backward compat)
-    error: '#f62c2c',          // Alias for border.light.error (note: uses error[600] for backward compat)
+    default: '#e4e7ec', // Alias for border.light.default
+    focus: '#d54e21', // Alias for border.light.focus (note: uses primary[600] for backward compat)
+    error: '#f62c2c', // Alias for border.light.error (note: uses error[600] for backward compat)
   },
 
   // Foreground Color Tokens
   // Semantic tokens for non-text foreground elements with light/dark mode support
   fg: {
     light: {
-      default: '#141c25',      // Base/900 - Primary foreground color for all general UI elements
-      subtle: '#344051',       // Base/700 - Used for subtle foreground elements
-      muted: '#637083',        // Base/500 - Used for muted foreground elements
-      emphasis: '#97a1af',     // Base/400 - Used for foreground elements requiring more visual emphasis
-      active: '#3b82f6',       // Blue 500 - Used for foreground elements currently active or hovered over
-      selected: '#3b82f6',     // Blue 500 - Used for foreground elements currently selected
-      disabled: '#ced2da',     // Base/300 - Used for foreground elements currently disabled
-      error: '#ef4444',        // Red 500 - Used for foreground elements indicating an error state
-      warning: '#f59e0b',      // Yellow 500 - Used for foreground elements indicating a warning state
-      success: '#22c55e',      // Green 500 - Used for foreground elements indicating a success state
-      info: '#3b82f6',         // Blue 500 - Used for foreground elements indicating an informational state
+      default: '#141c25', // Base/900 - Primary foreground color for all general UI elements
+      subtle: '#344051', // Base/700 - Used for subtle foreground elements
+      muted: '#637083', // Base/500 - Used for muted foreground elements
+      emphasis: '#97a1af', // Base/400 - Used for foreground elements requiring more visual emphasis
+      active: '#3b82f6', // Blue 500 - Used for foreground elements currently active or hovered over
+      selected: '#3b82f6', // Blue 500 - Used for foreground elements currently selected
+      disabled: '#ced2da', // Base/300 - Used for foreground elements currently disabled
+      error: '#ef4444', // Red 500 - Used for foreground elements indicating an error state
+      warning: '#f59e0b', // Yellow 500 - Used for foreground elements indicating a warning state
+      success: '#22c55e', // Green 500 - Used for foreground elements indicating a success state
+      info: '#3b82f6', // Blue 500 - Used for foreground elements indicating an informational state
     },
     dark: {
-      default: '#ffffff',      // Base/0 White - Primary foreground color for all general UI elements
-      subtle: '#e4e7ec',       // Base/200 - Used for subtle foreground elements
-      muted: '#97a1af',        // Base/400 - Used for muted foreground elements
-      emphasis: '#637083',     // Base/500 - Used for foreground elements requiring more visual emphasis
-      active: '#3b82f6',       // Blue 500 - Used for foreground elements currently active (same as light)
-      selected: '#3b82f6',     // Blue 500 - Used for foreground elements currently selected (same as light)
-      disabled: '#414e62',     // Base/600 - Used for foreground elements currently disabled
-      error: '#ef4444',        // Red 500 - Used for foreground elements indicating an error state (same as light)
-      warning: '#f59e0b',      // Yellow 500 - Used for foreground elements indicating a warning state (same as light)
-      success: '#22c55e',      // Green 500 - Used for foreground elements indicating a success state (same as light)
-      info: '#3b82f6',         // Blue 500 - Used for foreground elements indicating an informational state (same as light)
+      default: '#ffffff', // Base/0 White - Primary foreground color for all general UI elements
+      subtle: '#e4e7ec', // Base/200 - Used for subtle foreground elements
+      muted: '#97a1af', // Base/400 - Used for muted foreground elements
+      emphasis: '#637083', // Base/500 - Used for foreground elements requiring more visual emphasis
+      active: '#3b82f6', // Blue 500 - Used for foreground elements currently active (same as light)
+      selected: '#3b82f6', // Blue 500 - Used for foreground elements currently selected (same as light)
+      disabled: '#414e62', // Base/600 - Used for foreground elements currently disabled
+      error: '#ef4444', // Red 500 - Used for foreground elements indicating an error state (same as light)
+      warning: '#f59e0b', // Yellow 500 - Used for foreground elements indicating a warning state (same as light)
+      success: '#22c55e', // Green 500 - Used for foreground elements indicating a success state (same as light)
+      info: '#3b82f6', // Blue 500 - Used for foreground elements indicating an informational state (same as light)
     },
   },
 
@@ -511,30 +511,30 @@ export const colors = {
   // Semantic tokens specifically for icons with light/dark mode support
   icon: {
     light: {
-      default: '#141c25',      // Base/900 - Primary icon color for all general UI elements
-      subtle: '#344051',       // Base/700 - Used for subtle icons
-      muted: '#637083',        // Base/500 - Used for muted icons (matches Icons/icon-500 from Figma)
-      emphasis: '#97a1af',     // Base/400 - Used for icons requiring more visual emphasis
-      active: '#3b82f6',       // Blue 500 - Used for icons currently active or hovered over
-      selected: '#3b82f6',     // Blue 500 - Used for icons currently selected
-      disabled: '#ced2da',     // Base/300 - Used for icons currently disabled
-      error: '#ef4444',        // Red 500 - Used for icons indicating an error state
-      warning: '#f59e0b',      // Yellow 500 - Used for icons indicating a warning state
-      success: '#22c55e',      // Green 500 - Used for icons indicating a success state
-      info: '#3b82f6',         // Blue 500 - Used for icons indicating an informational state
+      default: '#141c25', // Base/900 - Primary icon color for all general UI elements
+      subtle: '#344051', // Base/700 - Used for subtle icons
+      muted: '#637083', // Base/500 - Used for muted icons (matches Icons/icon-500 from Figma)
+      emphasis: '#97a1af', // Base/400 - Used for icons requiring more visual emphasis
+      active: '#3b82f6', // Blue 500 - Used for icons currently active or hovered over
+      selected: '#3b82f6', // Blue 500 - Used for icons currently selected
+      disabled: '#ced2da', // Base/300 - Used for icons currently disabled
+      error: '#ef4444', // Red 500 - Used for icons indicating an error state
+      warning: '#f59e0b', // Yellow 500 - Used for icons indicating a warning state
+      success: '#22c55e', // Green 500 - Used for icons indicating a success state
+      info: '#3b82f6', // Blue 500 - Used for icons indicating an informational state
     },
     dark: {
-      default: '#ffffff',      // Base/0 White - Primary icon color for all general UI elements
-      subtle: '#e4e7ec',       // Base/200 - Used for subtle icons
-      muted: '#97a1af',        // Base/400 - Used for muted icons
-      emphasis: '#637083',     // Base/500 - Used for icons requiring more visual emphasis
-      active: '#3b82f6',       // Blue 500 - Used for icons currently active (same as light)
-      selected: '#3b82f6',     // Blue 500 - Used for icons currently selected (same as light)
-      disabled: '#414e62',     // Base/600 - Used for icons currently disabled
-      error: '#ef4444',        // Red 500 - Used for icons indicating an error state (same as light)
-      warning: '#f59e0b',      // Yellow 500 - Used for icons indicating a warning state (same as light)
-      success: '#22c55e',      // Green 500 - Used for icons indicating a success state (same as light)
-      info: '#3b82f6',         // Blue 500 - Used for icons indicating an informational state (same as light)
+      default: '#ffffff', // Base/0 White - Primary icon color for all general UI elements
+      subtle: '#e4e7ec', // Base/200 - Used for subtle icons
+      muted: '#97a1af', // Base/400 - Used for muted icons
+      emphasis: '#637083', // Base/500 - Used for icons requiring more visual emphasis
+      active: '#3b82f6', // Blue 500 - Used for icons currently active (same as light)
+      selected: '#3b82f6', // Blue 500 - Used for icons currently selected (same as light)
+      disabled: '#414e62', // Base/600 - Used for icons currently disabled
+      error: '#ef4444', // Red 500 - Used for icons indicating an error state (same as light)
+      warning: '#f59e0b', // Yellow 500 - Used for icons indicating a warning state (same as light)
+      success: '#22c55e', // Green 500 - Used for icons indicating a success state (same as light)
+      info: '#3b82f6', // Blue 500 - Used for icons indicating an informational state (same as light)
     },
   },
 } as const

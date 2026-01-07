@@ -57,9 +57,9 @@ export const mediaQueriesRange = {
  * Device categories based on breakpoints
  */
 export const devices = {
-  mobile: mediaQueriesMax.sm,      // < 800px
+  mobile: mediaQueriesMax.sm, // < 800px
   tablet: mediaQueriesRange.smToMd, // 800px - 1019px
-  desktop: mediaQueries.lg,         // >= 1280px
+  desktop: mediaQueries.lg, // >= 1280px
 } as const
 
 /**

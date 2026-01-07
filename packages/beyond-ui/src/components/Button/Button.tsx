@@ -58,9 +58,9 @@ export function Button({
       disabled={isDisabled}
       onPress={onPress}
       accessibilityRole="button"
-      // @ts-ignore - web-specific props
+      // @ts-expect-error - web-specific props
       onMouseEnter={Platform.OS === 'web' ? () => setIsHovered(true) : undefined}
-      // @ts-ignore - web-specific props
+      // @ts-expect-error - web-specific props
       onMouseLeave={Platform.OS === 'web' ? () => setIsHovered(false) : undefined}
       style={({ pressed }) => [
         styles.container,

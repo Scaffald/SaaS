@@ -4,7 +4,7 @@
  * Mapped from Figma Forsured Design System
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, Modal, Pressable, StyleSheet, Platform } from 'react-native'
 import type { DropdownMenuProps } from './Dropdown.types'
 import { getDropdownStyles } from './Dropdown.styles'
@@ -53,9 +53,9 @@ export function DropdownMenu({
     // On web, Modal coordinates are relative to the viewport (0,0 at top-left)
     // measureInWindow also gives viewport coordinates, so they should match
     // Ensure we're calculating from the button's bottom edge for bottom positions
-    
+
     switch (position) {
-      case 'bottom-right':
+      case 'bottom-right': {
         // Menu appears BELOW the button, right-aligned
         // top = button's bottom edge (y + height) + gap
         const bottomRightTop = y + height + gap
@@ -66,12 +66,10 @@ export function DropdownMenu({
           // Fallback: position below with minimum gap
           positionStyle.top = y + height + spacing[8]
         }
-        
+
         if (Platform.OS === 'web') {
           // Right edge aligned: window width - (button left + button width)
-          const rightPos = typeof window !== 'undefined' 
-            ? window.innerWidth - (x + width)
-            : 0
+          const rightPos = typeof window !== 'undefined' ? window.innerWidth - (x + width) : 0
           positionStyle.right = Math.max(0, rightPos)
           delete positionStyle.left
         } else {
@@ -81,7 +79,8 @@ export function DropdownMenu({
         }
         delete positionStyle.bottom
         break
-      case 'bottom-left':
+      }
+      case 'bottom-left': {
         // Menu appears BELOW the button, left-aligned
         // top = button's bottom edge (y + height) + gap
         const bottomLeftTop = y + height + gap
@@ -97,10 +96,13 @@ export function DropdownMenu({
         delete positionStyle.right
         delete positionStyle.bottom
         break
+      }
       case 'top-right':
         if (Platform.OS === 'web') {
-          positionStyle.bottom = typeof window !== 'undefined' ? window.innerHeight - y : undefined
-          positionStyle.right = typeof window !== 'undefined' ? window.innerWidth - x - width : 0
+          if (typeof window !== 'undefined') {
+            positionStyle.bottom = window.innerHeight - y + gap
+            positionStyle.right = window.innerWidth - (x + width)
+          }
           delete positionStyle.top
           delete positionStyle.left
         } else {
@@ -112,7 +114,9 @@ export function DropdownMenu({
         break
       case 'top-left':
         if (Platform.OS === 'web') {
-          positionStyle.bottom = typeof window !== 'undefined' ? window.innerHeight - y : undefined
+          if (typeof window !== 'undefined') {
+            positionStyle.bottom = window.innerHeight - y + gap
+          }
           positionStyle.left = x
           delete positionStyle.top
           delete positionStyle.right
@@ -142,10 +146,7 @@ export function DropdownMenu({
       onRequestClose={onDismiss}
       statusBarTranslucent
     >
-      <Pressable
-        style={StyleSheet.absoluteFill}
-        onPress={onDismiss}
-      >
+      <Pressable style={StyleSheet.absoluteFill} onPress={onDismiss}>
         <View
           style={[styles.menu, menuPosition, style]}
           onStartShouldSetResponder={() => true}
@@ -160,4 +161,3 @@ export function DropdownMenu({
     </Modal>
   )
 }
-

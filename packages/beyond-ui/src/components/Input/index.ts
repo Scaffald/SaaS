@@ -1,6 +1,6 @@
 /**
  * Input component exports
- * 
+ *
  * Provides both complete Input component and composable sub-components
  * for maximum flexibility matching Figma design system guidelines
  */
@@ -26,4 +26,3 @@ export type {
   InputLeftSideProps,
   InputRightSideProps,
 } from './InputAddon'
-

@@ -130,4 +130,3 @@ export const dividerStyles = {
 export type DividerToken = keyof typeof dividers
 export type DividerWidthToken = keyof typeof dividerWidth
 export type DividerStyleToken = keyof typeof dividerStyles
-

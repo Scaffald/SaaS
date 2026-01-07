@@ -49,9 +49,7 @@ export function PasswordStrengthIndicator({
           />
         ))}
       </View>
-      {displayLabel && (
-        <Text style={[styles.label, { color: textColor }]}>{displayLabel}</Text>
-      )}
+      {displayLabel && <Text style={[styles.label, { color: textColor }]}>{displayLabel}</Text>}
     </View>
   )
 }
@@ -82,4 +80,3 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 })
-

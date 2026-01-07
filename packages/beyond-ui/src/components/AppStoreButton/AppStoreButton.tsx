@@ -94,10 +94,7 @@ export function AppStoreButton({
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      style={({ pressed }) => [
-        containerStyle,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [containerStyle, pressed && styles.pressed]}
       {...pressableProps}
     >
       <View style={styles.content}>

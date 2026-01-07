@@ -25,17 +25,17 @@ export const fontFamily = {
  */
 export const fontSize = {
   // Paragraph sizes
-  xs: 12,   // Extra small
-  sm: 14,   // Paragraph S
-  md: 16,   // Paragraph M (base)
-  lg: 18,   // Paragraph L
-  xl: 20,   // Extra large
+  xs: 12, // Extra small
+  sm: 14, // Paragraph S
+  md: 16, // Paragraph M (base)
+  lg: 18, // Paragraph L
+  xl: 20, // Extra large
   '2xl': 22,
 
   // Heading sizes
-  h6: 24,   // H6
-  h5: 28,   // H5
-  h4: 36,   // H4
+  h6: 24, // H6
+  h5: 28, // H5
+  h4: 36, // H4
   h3: 48,
   h2: 60,
   h1: 72,
@@ -58,15 +58,15 @@ export const fontWeight = {
 export const lineHeight = {
   // Paragraph line heights
   xs: 16,
-  sm: 20,   // Paragraph S line height
-  md: 24,   // Paragraph M line height
-  lg: 28,   // Paragraph L line height
+  sm: 20, // Paragraph S line height
+  md: 24, // Paragraph M line height
+  lg: 28, // Paragraph L line height
   xl: 32,
 
   // Heading line heights
-  h6: 32,   // H6 line height
-  h5: 36,   // H5 line height
-  h4: 44,   // H4 line height
+  h6: 32, // H6 line height
+  h5: 36, // H5 line height
+  h4: 44, // H4 line height
   h3: 56,
   h2: 68,
   h1: 80,
@@ -78,11 +78,11 @@ export const lineHeight = {
  * Converted to CSS em units for relative spacing
  */
 export const letterSpacing = {
-  tighter: '-0.02em',  // -2% for H1-H2 headings
-  tight: '-0.01em',    // -1% for H3-H6 headings
-  normal: '0',         // 0 for body text
-  wide: '0.005em',     // 0.5% for emphasis
-  wider: '0.01em',     // 1% for wider spacing
+  tighter: '-0.02em', // -2% for H1-H2 headings
+  tight: '-0.01em', // -1% for H3-H6 headings
+  normal: '0', // 0 for body text
+  wide: '0.005em', // 0.5% for emphasis
+  wider: '0.01em', // 1% for wider spacing
 } as const
 
 /**

@@ -184,28 +184,28 @@ export const shadows = {
  */
 export const boxShadows = {
   none: 'none',
-  
+
   // Extra small shadow - shadow-xs
   xs: '0 1px 2px 0 rgba(20, 28, 37, 0.051)', // #141c250d
-  
+
   // Small shadow - shadow-s
   s: '0 1px 3px 0 rgba(20, 28, 37, 0.078)', // #141c2514
-  
+
   // Medium shadow - shadow-m
   m: '0 4px 6px -1px rgba(20, 28, 37, 0.078)', // #141c2514, spread: -1
-  
+
   // Large shadow - shadow-l
   l: '0 10px 15px -3px rgba(20, 28, 37, 0.078)', // #141c2514, spread: -3
-  
+
   // Extra large shadow - shadow-xl
   xl: '0 20px 25px -5px rgba(20, 28, 37, 0.102)', // #141c251a, spread: -5
-  
+
   // Extra extra large shadow - shadow-xxl
   xxl: '0 25px 50px -12px rgba(20, 28, 37, 0.251)', // #141c2540, spread: -12
-  
+
   // Button shadow - button-shadow
   button: '0 1px 2px 0 rgba(20, 28, 37, 0.039)', // #141c250a
-  
+
   // Tabs shadow - tabs-shadow
   tabs: '0 1px 3px 0 rgba(20, 28, 37, 0.051)', // #141c250d
 
@@ -234,13 +234,13 @@ export const boxShadows = {
  * Maps semantic names to shadow tokens for consistent usage
  */
 export const elevation = {
-  flat: shadows.none,        // No shadow
-  raised: shadows.xs,        // Slightly elevated (subtle elevation)
-  floating: shadows.s,       // Floating above (cards, chips)
-  modal: shadows.m,          // Modal dialogs, dropdowns
-  drawer: shadows.l,         // Side sheets, drawers
-  overlay: shadows.xl,       // Large overlays
-  topLevel: shadows.xxl,     // Top-level overlays, maximum elevation
+  flat: shadows.none, // No shadow
+  raised: shadows.xs, // Slightly elevated (subtle elevation)
+  floating: shadows.s, // Floating above (cards, chips)
+  modal: shadows.m, // Modal dialogs, dropdowns
+  drawer: shadows.l, // Side sheets, drawers
+  overlay: shadows.xl, // Large overlays
+  topLevel: shadows.xxl, // Top-level overlays, maximum elevation
 
   // Legacy aliases for backward compatibility
   sm: shadows.s,

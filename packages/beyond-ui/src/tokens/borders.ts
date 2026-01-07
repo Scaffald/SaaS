@@ -10,18 +10,18 @@
  * Mapped from Figma radius tokens exactly
  */
 export const borderRadius = {
-  none: 0,      // radius-none
-  xxxs: 2,      // radius-xxxs
-  xxs: 4,       // radius-xxs
-  xs: 6,        // radius-xs
-  s: 8,         // radius-s
-  m: 10,        // radius-m
-  l: 12,        // radius-l
-  xl: 16,       // radius-xl
-  xxl: 20,      // radius-xxl
-  xxxl: 32,     // radius-xxxl
-  xxxxl: 48,    // radius-xxxxl
-  max: 999,     // radius-max (fully rounded/pill shape)
+  none: 0, // radius-none
+  xxxs: 2, // radius-xxxs
+  xxs: 4, // radius-xxs
+  xs: 6, // radius-xs
+  s: 8, // radius-s
+  m: 10, // radius-m
+  l: 12, // radius-l
+  xl: 16, // radius-xl
+  xxl: 20, // radius-xxl
+  xxxl: 32, // radius-xxxl
+  xxxxl: 48, // radius-xxxxl
+  max: 999, // radius-max (fully rounded/pill shape)
 } as const
 
 /**
@@ -29,18 +29,18 @@ export const borderRadius = {
  * Provides convenient aliases matching common naming conventions
  */
 export const radius = {
-  none: borderRadius.none,      // 0
-  xxxs: borderRadius.xxxs,      // 2
-  xxs: borderRadius.xxs,        // 4
-  xs: borderRadius.xs,          // 6
-  sm: borderRadius.s,           // 8
-  md: borderRadius.m,           // 10
-  lg: borderRadius.l,           // 12
-  xl: borderRadius.xl,          // 16
-  '2xl': borderRadius.xxl,      // 20
-  '3xl': borderRadius.xxxl,     // 32
-  '4xl': borderRadius.xxxxl,    // 48
-  full: borderRadius.max,       // 999 (pill shape)
+  none: borderRadius.none, // 0
+  xxxs: borderRadius.xxxs, // 2
+  xxs: borderRadius.xxs, // 4
+  xs: borderRadius.xs, // 6
+  sm: borderRadius.s, // 8
+  md: borderRadius.m, // 10
+  lg: borderRadius.l, // 12
+  xl: borderRadius.xl, // 16
+  '2xl': borderRadius.xxl, // 20
+  '3xl': borderRadius.xxxl, // 32
+  '4xl': borderRadius.xxxxl, // 48
+  full: borderRadius.max, // 999 (pill shape)
 } as const
 
 /**

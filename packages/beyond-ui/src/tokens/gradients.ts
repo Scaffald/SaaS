@@ -23,7 +23,7 @@ import { colors } from './colors'
  */
 function createGradient(
   start: string,
-  end: string,
+  end: string
 ): {
   colors: [string, string]
   css: string
@@ -177,4 +177,3 @@ export type SuccessGradientToken = keyof typeof successGradients
 export type WarningGradientToken = keyof typeof warningGradients
 export type ErrorGradientToken = keyof typeof errorGradients
 export type NamedGradientToken = keyof typeof namedGradients
-

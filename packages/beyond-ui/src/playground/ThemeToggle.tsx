@@ -31,10 +31,8 @@ export function ThemeToggle({ variant = 'button' }: ThemeToggleProps) {
       style={({ pressed }) => [
         styles.button,
         {
-          backgroundColor:
-            theme === 'light' ? colors.bg.light.subtle : colors.bg.dark.subtle,
-          borderColor:
-            theme === 'light' ? colors.border.light.default : colors.border.dark.default,
+          backgroundColor: theme === 'light' ? colors.bg.light.subtle : colors.bg.dark.subtle,
+          borderColor: theme === 'light' ? colors.border.light.default : colors.border.dark.default,
           opacity: pressed ? 0.8 : 1,
         },
       ]}
@@ -43,8 +41,7 @@ export function ThemeToggle({ variant = 'button' }: ThemeToggleProps) {
         style={[
           styles.text,
           {
-            color:
-              theme === 'light' ? colors.text.light.primary : colors.text.dark.primary,
+            color: theme === 'light' ? colors.text.light.primary : colors.text.dark.primary,
           },
         ]}
       >
@@ -77,4 +74,3 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 })
-

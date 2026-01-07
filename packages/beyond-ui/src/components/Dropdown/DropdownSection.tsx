@@ -4,8 +4,7 @@
  * Mapped from Figma Forsured Design System
  */
 
-import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text } from 'react-native'
 import type { DropdownSectionProps } from './Dropdown.types'
 import { getDropdownStyles } from './Dropdown.styles'
 
@@ -20,12 +19,9 @@ export function DropdownSection({
 
   return (
     <View style={[styles.section, style]}>
-      {heading && (
-        <Text style={[styles.sectionHeading, headingStyle]}>{heading}</Text>
-      )}
+      {heading && <Text style={[styles.sectionHeading, headingStyle]}>{heading}</Text>}
       {children}
       {divider && <View style={styles.divider} />}
     </View>
   )
 }
-

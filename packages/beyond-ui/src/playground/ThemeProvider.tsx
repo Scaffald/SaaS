@@ -90,4 +90,3 @@ const styles = StyleSheet.create({
     // For web, the parent html/body should have height: 100%
   },
 })
-

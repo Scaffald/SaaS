@@ -134,4 +134,3 @@ export const backgroundGradients = {
 export type PatternToken = keyof typeof patterns
 export type PatternOpacityToken = keyof typeof patternOpacity
 export type BackgroundGradientToken = keyof typeof backgroundGradients
-

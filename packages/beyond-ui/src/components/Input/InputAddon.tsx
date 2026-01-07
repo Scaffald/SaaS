@@ -2,17 +2,17 @@
  * Input Addon components
  * Composable addon components for Input fields
  * Maps to Figma External Addon and Left/Right Side Base components
- * 
+ *
  * These components can be used independently to build custom input layouts
- * 
+ *
  * @example
  * ```tsx
- * import { 
- *   InputExternalAddon, 
- *   InputLeftSide, 
- *   InputRightSide 
+ * import {
+ *   InputExternalAddon,
+ *   InputLeftSide,
+ *   InputRightSide
  * } from '@unicornlove/beyond-ui'
- * 
+ *
  * <View style={{ flexDirection: 'row' }}>
  *   <InputExternalAddon>https://</InputExternalAddon>
  *   <View style={inputStyle}>
@@ -196,4 +196,3 @@ export function InputRightSide({
     </View>
   )
 }
-

@@ -20,7 +20,7 @@ export function getInputStyles(
   type: InputType,
   disabled: boolean,
   hasExternalAddon: boolean,
-  theme: ThemeMode = 'light',
+  theme: ThemeMode = 'light'
 ): InputStyleConfig {
   const isError = state === 'error'
   const isFocused = state === 'focused'
@@ -113,8 +113,10 @@ export function getInputStyles(
     backgroundColor,
     borderColor,
     borderRadius: hasExternalAddon && type === 'classic' ? undefined : inputBorderRadius,
-    borderTopLeftRadius: hasExternalAddon && type === 'classic' ? borderRadius.none : inputBorderRadius,
-    borderBottomLeftRadius: hasExternalAddon && type === 'classic' ? borderRadius.none : inputBorderRadius,
+    borderTopLeftRadius:
+      hasExternalAddon && type === 'classic' ? borderRadius.none : inputBorderRadius,
+    borderBottomLeftRadius:
+      hasExternalAddon && type === 'classic' ? borderRadius.none : inputBorderRadius,
     ...shadowStyle,
   }
 
@@ -188,4 +190,3 @@ export function getFocusBoxShadow(state: InputState): string | undefined {
   }
   return undefined
 }
-

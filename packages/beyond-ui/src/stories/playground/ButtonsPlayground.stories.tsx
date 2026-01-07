@@ -291,4 +291,3 @@ const styles = StyleSheet.create({
     padding: spacing[80],
   },
 })
-

@@ -46,13 +46,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 // User chip component for "Add Users" input
-function UserChip({
-  name,
-  onRemove,
-}: {
-  name: string
-  onRemove: () => void
-}) {
+function UserChip({ name, onRemove }: { name: string; onRemove: () => void }) {
   const { theme } = useThemeContext()
   const borderColor = theme === 'light' ? colors.border.light.default : colors.border.dark.default
   const bgColor = theme === 'light' ? colors.bg.light[100] : colors.bg.dark[100]
@@ -94,9 +88,19 @@ function AddUsersInput() {
 
   return (
     <View style={styles.inputContainer}>
-      <Text style={[styles.label, { color: theme === 'light' ? colors.text.light.primary : colors.text.dark.primary }]}>
+      <Text
+        style={[
+          styles.label,
+          { color: theme === 'light' ? colors.text.light.primary : colors.text.dark.primary },
+        ]}
+      >
         Add Users
-        <Text style={[styles.optionalText, { color: theme === 'light' ? colors.text.light.tertiary : colors.text.dark.tertiary }]}>
+        <Text
+          style={[
+            styles.optionalText,
+            { color: theme === 'light' ? colors.text.light.tertiary : colors.text.dark.tertiary },
+          ]}
+        >
           {' '}
           (optional)
         </Text>
@@ -120,7 +124,6 @@ function AddUsersInput() {
     </View>
   )
 }
-
 
 // Custom "Amount" input with line type
 function AmountInput() {
@@ -333,4 +336,3 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 })
-

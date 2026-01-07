@@ -114,4 +114,3 @@ export interface InputStyleConfig {
   externalAddonContainer?: ViewStyle
   externalAddonText?: TextStyle
 }
-

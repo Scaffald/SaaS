@@ -18,8 +18,8 @@
  * ```
  */
 
-import React, { useState, useRef } from 'react'
-import { Pressable, Text, View, StyleSheet, LayoutChangeEvent, Platform } from 'react-native'
+import { useState, useRef } from 'react'
+import { Pressable, Text, View, type LayoutChangeEvent, Platform } from 'react-native'
 import type { DropdownProps } from './Dropdown.types'
 import { getDropdownStyles } from './Dropdown.styles'
 import { DropdownMenu } from './DropdownMenu'
@@ -29,30 +29,34 @@ import { DropdownMenu } from './DropdownMenu'
  */
 function CaretIcon({ isOpen }: { isOpen: boolean }) {
   const styles = getDropdownStyles()
-  
+
   // Simple arrow shape using View borders
   return (
     <View style={caretContainerStyle}>
       {isOpen ? (
         // Up arrow
-        <View style={[
-          caretArrowBaseStyle,
-          {
-            borderBottomWidth: 8,
-            borderTopWidth: 0,
-            borderBottomColor: styles.caretColor,
-          },
-        ]} />
+        <View
+          style={[
+            caretArrowBaseStyle,
+            {
+              borderBottomWidth: 8,
+              borderTopWidth: 0,
+              borderBottomColor: styles.caretColor,
+            },
+          ]}
+        />
       ) : (
         // Down arrow
-        <View style={[
-          caretArrowBaseStyle,
-          {
-            borderTopWidth: 8,
-            borderBottomWidth: 0,
-            borderTopColor: styles.caretColor,
-          },
-        ]} />
+        <View
+          style={[
+            caretArrowBaseStyle,
+            {
+              borderTopWidth: 8,
+              borderBottomWidth: 0,
+              borderTopColor: styles.caretColor,
+            },
+          ]}
+        />
       )}
     </View>
   )
@@ -197,9 +201,7 @@ export function Dropdown({
           triggerStyle,
         ]}
       >
-        <Text style={styles.triggerText}>
-          {trigger || 'Select'}
-        </Text>
+        <Text style={styles.triggerText}>{trigger || 'Select'}</Text>
         <CaretIcon isOpen={isOpen} />
       </Pressable>
 
@@ -222,4 +224,3 @@ export function Dropdown({
 const dropdownContainerStyle = {
   position: 'relative' as const,
 }
-

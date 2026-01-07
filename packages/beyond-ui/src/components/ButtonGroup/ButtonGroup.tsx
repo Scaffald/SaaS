@@ -58,7 +58,7 @@ export function ButtonGroup({
 }: ButtonGroupProps) {
   // Internal state for uncontrolled mode
   const [internalValue, setInternalValue] = useState<string | string[]>(
-    defaultValue || (mode === 'single' ? '' : []),
+    defaultValue || (mode === 'single' ? '' : [])
   )
 
   // Use controlled value if provided, otherwise use internal state
@@ -130,10 +130,10 @@ export function ButtonGroup({
               styles.button,
               {
                 height: sizeConfig.height,
-                paddingHorizontal: item.label ? sizeConfig.paddingHorizontal : sizeConfig.height / 2,
-                backgroundColor: selected
-                  ? colors.gray[100]
-                  : 'transparent',
+                paddingHorizontal: item.label
+                  ? sizeConfig.paddingHorizontal
+                  : sizeConfig.height / 2,
+                backgroundColor: selected ? colors.gray[100] : 'transparent',
                 borderColor: colors.border[theme].default,
                 borderWidth: 1,
                 borderTopLeftRadius: isFirst ? borderRadius.s : 0,

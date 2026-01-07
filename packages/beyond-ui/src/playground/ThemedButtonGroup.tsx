@@ -34,7 +34,7 @@ export function ThemedButtonGroup({
 }: ThemedButtonGroupProps) {
   const { theme } = useTheme()
   const [internalValue, setInternalValue] = useState<string | string[]>(
-    defaultValue || (mode === 'single' ? '' : []),
+    defaultValue || (mode === 'single' ? '' : [])
   )
 
   const value = controlledValue !== undefined ? controlledValue : internalValue
@@ -97,8 +97,14 @@ export function ThemedButtonGroup({
               styles.button,
               {
                 height: sizeConfig.height,
-                paddingHorizontal: item.label ? sizeConfig.paddingHorizontal : sizeConfig.height / 2,
-                backgroundColor: selected ? selectedBg : (theme === 'light' ? colors.bg.light.default : colors.bg.dark.default),
+                paddingHorizontal: item.label
+                  ? sizeConfig.paddingHorizontal
+                  : sizeConfig.height / 2,
+                backgroundColor: selected
+                  ? selectedBg
+                  : theme === 'light'
+                    ? colors.bg.light.default
+                    : colors.bg.dark.default,
                 borderColor,
                 borderWidth: 1,
                 borderTopLeftRadius: isFirst ? borderRadius.s : 0,
@@ -191,4 +197,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 })
-

@@ -22,7 +22,11 @@ export { SocialButton } from './components/SocialButton'
 export type { SocialButtonProps, SocialBrand, SocialButtonStyle } from './components/SocialButton'
 
 export { AppStoreButton } from './components/AppStoreButton'
-export type { AppStoreButtonProps, AppStore, AppStoreButtonStyle } from './components/AppStoreButton'
+export type {
+  AppStoreButtonProps,
+  AppStore,
+  AppStoreButtonStyle,
+} from './components/AppStoreButton'
 
 export { ButtonGroup } from './components/ButtonGroup'
 export type {
@@ -53,7 +57,12 @@ export type {
 } from './components/Input'
 
 export { Dropdown } from './components/Dropdown'
-export type { DropdownProps, DropdownPosition } from './components/Dropdown'
+export type {
+  DropdownProps,
+  DropdownPosition,
+  DropdownItemType,
+  DropdownItemState,
+} from './components/Dropdown'
 
 // Dropdown composable sub-components
 export {
@@ -68,7 +77,24 @@ export type {
 } from './components/Dropdown'
 
 export { Checkbox } from './components/Checkbox'
-export type { CheckboxProps, CheckboxSize, CheckboxColor, CheckboxState } from './components/Checkbox'
+export type {
+  CheckboxProps,
+  CheckboxSize,
+  CheckboxColor,
+  CheckboxState,
+} from './components/Checkbox'
+
+export { CheckboxTree } from './components/Checkbox/CheckboxTree'
+export type { CheckboxTreeProps, CheckboxTreeNode } from './components/Checkbox/CheckboxTree'
+
+// Checkbox Tree utilities
+export {
+  updateNodeChecked,
+  findNode,
+  getAllNodeIds,
+  getCheckedNodeIds,
+  getLeafNodeIds,
+} from './components/Checkbox/CheckboxTree.utils'
 
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
@@ -85,4 +111,5 @@ export const VERSION = '0.1.0'
  * Package metadata
  */
 export const PACKAGE_NAME = '@unicornlove/beyond-ui'
-export const PACKAGE_DESCRIPTION = 'Custom UI component library - Next generation of @unicornlove/ui'
+export const PACKAGE_DESCRIPTION =
+  'Custom UI component library - Next generation of @unicornlove/ui'

@@ -150,4 +150,3 @@ const styles = StyleSheet.create({
     color: colors.text.light.secondary,
   },
 })
-

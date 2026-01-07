@@ -2,13 +2,13 @@
  * Input Label component
  * Composable label component for Input fields
  * Maps to Figma "_Label Base" component
- * 
+ *
  * Can be used independently or as part of the Input component
- * 
+ *
  * @example
  * ```tsx
  * import { InputLabel } from '@unicornlove/beyond-ui'
- * 
+ *
  * <InputLabel required note="(optional)" showInfo>
  *   Email Address
  * </InputLabel>
@@ -98,9 +98,7 @@ export function InputLabel({
   return (
     <View style={[{ flexDirection: 'row', alignItems: 'center', gap: spacing[4] }, style]}>
       <Text style={[labelTextStyle, labelStyle]}>{children}</Text>
-      {required && (
-        <Text style={[labelTextStyle, { color: colors.primary[500] }]}>*</Text>
-      )}
+      {required && <Text style={[labelTextStyle, { color: colors.primary[500] }]}>*</Text>}
       {note && <Text style={[noteTextStyle, noteStyle]}>{note}</Text>}
       {showInfo && InfoIcon && (
         <View style={{ width: iconSize, height: iconSize }}>
@@ -110,4 +108,3 @@ export function InputLabel({
     </View>
   )
 }
-

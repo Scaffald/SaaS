@@ -1,6 +1,6 @@
 /**
  * Dropdown component exports
- * 
+ *
  * Provides both complete Dropdown component and composable sub-components
  * for maximum flexibility matching Figma design system guidelines
  */
@@ -20,5 +20,8 @@ export { DropdownSection } from './DropdownSection'
 export type { DropdownSectionProps } from './Dropdown.types'
 
 export { DropdownItem } from './DropdownItem'
-export type { DropdownItemProps } from './Dropdown.types'
-
+export type {
+  DropdownItemProps,
+  DropdownItemType,
+  DropdownItemState,
+} from './Dropdown.types'

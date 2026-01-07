@@ -3,12 +3,11 @@
  * All styles mapped from Figma Forsured Design System
  */
 
-import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import { shadows, boxShadows } from '../../tokens/shadows'
+import { shadows } from '../../tokens/shadows'
 import type { DropdownStyleConfig } from './Dropdown.types'
 
 /**
@@ -102,6 +101,54 @@ export function getDropdownStyles(): DropdownStyleConfig {
       backgroundColor: colors.primary[500],
       borderColor: colors.primary[500],
     },
+    // Avatar styles
+    avatar: {
+      width: 20,
+      height: 20,
+      borderRadius: borderRadius.max,
+      backgroundColor: colors.gray[300],
+    },
+    // Badge styles
+    badge: {
+      paddingHorizontal: spacing[4],
+      paddingVertical: spacing[2],
+      borderRadius: borderRadius.max,
+      backgroundColor: colors.gray[200],
+      minWidth: 20,
+      alignItems: 'center',
+      justifyContent: 'center' as const,
+    },
+    badgeText: {
+      fontFamily: typography.caption.fontFamily,
+      fontSize: typography.caption.fontSize,
+      fontWeight: typography.captionBold.fontWeight,
+      lineHeight: typography.caption.lineHeight,
+      color: colors.text.light.secondary,
+    },
+    // Shortcut text styles
+    shortcut: {
+      fontFamily: typography.caption.fontFamily,
+      fontSize: typography.caption.fontSize,
+      fontWeight: typography.caption.fontWeight,
+      lineHeight: typography.caption.lineHeight,
+      color: colors.text.light.tertiary,
+      paddingHorizontal: spacing[4],
+    },
+    // Submenu arrow styles
+    submenuArrow: {
+      width: 20,
+      height: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    // Hover state styles
+    itemHover: {
+      backgroundColor: colors.bg.light.subtle,
+    },
+    // Active state styles
+    itemActive: {
+      backgroundColor: colors.bg.light.selected,
+    },
     // Icon colors
     iconColor: colors.icon.light.muted, // #637083 for menu item icons
     caretColor: colors.white, // White for trigger caret
@@ -112,30 +159,50 @@ export function getDropdownStyles(): DropdownStyleConfig {
  * Get dark mode dropdown styles
  */
 export function getDropdownDarkStyles(): DropdownStyleConfig {
+  const baseStyles = getDropdownStyles()
   return {
-    ...getDropdownStyles(),
+    ...baseStyles,
     menu: {
-      ...getDropdownStyles().menu,
+      ...baseStyles.menu,
       backgroundColor: colors.bg.dark.default,
       borderColor: colors.border.dark.default,
     },
     sectionHeading: {
-      ...getDropdownStyles().sectionHeading,
+      ...baseStyles.sectionHeading,
       color: colors.text.dark.tertiary,
       borderBottomColor: colors.border.dark[100],
     },
     item: {
-      ...getDropdownStyles().item,
+      ...baseStyles.item,
     },
     itemText: {
-      ...getDropdownStyles().itemText,
+      ...baseStyles.itemText,
       color: colors.text.dark.secondary,
     },
     divider: {
-      ...getDropdownStyles().divider,
+      ...baseStyles.divider,
       backgroundColor: colors.border.dark[100],
+    },
+    badge: {
+      ...baseStyles.badge,
+      backgroundColor: colors.gray[750],
+    },
+    badgeText: {
+      ...baseStyles.badgeText,
+      color: colors.text.dark.secondary,
+    },
+    shortcut: {
+      ...baseStyles.shortcut,
+      color: colors.text.dark.tertiary,
+    },
+    itemHover: {
+      ...baseStyles.itemHover,
+      backgroundColor: colors.bg.dark.subtle,
+    },
+    itemActive: {
+      ...baseStyles.itemActive,
+      backgroundColor: colors.bg.dark.selected,
     },
     iconColor: colors.icon.dark.muted,
   }
 }
-

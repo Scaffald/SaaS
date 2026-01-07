@@ -33,7 +33,13 @@ const ColorSwatch = ({ name, color, value }: { name: string; color: string; valu
   </View>
 )
 
-const ColorScale = ({ title, colorScale }: { title: string; colorScale: Record<string, string> }) => (
+const ColorScale = ({
+  title,
+  colorScale,
+}: {
+  title: string
+  colorScale: Record<string, string>
+}) => (
   <View style={styles.section}>
     <Text style={styles.sectionTitle}>{title}</Text>
     <View style={styles.swatchGrid}>
@@ -77,19 +83,53 @@ export const TextColors: Story = {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Light Mode Text Colors</Text>
         <View style={styles.swatchGrid}>
-          <ColorSwatch name="Primary" color={colors.text.light.primary} value={colors.text.light.primary} />
-          <ColorSwatch name="Secondary" color={colors.text.light.secondary} value={colors.text.light.secondary} />
-          <ColorSwatch name="Tertiary" color={colors.text.light.tertiary} value={colors.text.light.tertiary} />
-          <ColorSwatch name="Disabled" color={colors.text.light.disabled} value={colors.text.light.disabled} />
+          <ColorSwatch
+            name="Primary"
+            color={colors.text.light.primary}
+            value={colors.text.light.primary}
+          />
+          <ColorSwatch
+            name="Secondary"
+            color={colors.text.light.secondary}
+            value={colors.text.light.secondary}
+          />
+          <ColorSwatch
+            name="Tertiary"
+            color={colors.text.light.tertiary}
+            value={colors.text.light.tertiary}
+          />
+          <ColorSwatch
+            name="Disabled"
+            color={colors.text.light.disabled}
+            value={colors.text.light.disabled}
+          />
         </View>
       </View>
       <View style={[styles.section, { backgroundColor: colors.bg.dark.default }]}>
-        <Text style={[styles.sectionTitle, { color: colors.text.dark.primary }]}>Dark Mode Text Colors</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text.dark.primary }]}>
+          Dark Mode Text Colors
+        </Text>
         <View style={styles.swatchGrid}>
-          <ColorSwatch name="Primary" color={colors.text.dark.primary} value={colors.text.dark.primary} />
-          <ColorSwatch name="Secondary" color={colors.text.dark.secondary} value={colors.text.dark.secondary} />
-          <ColorSwatch name="Tertiary" color={colors.text.dark.tertiary} value={colors.text.dark.tertiary} />
-          <ColorSwatch name="Disabled" color={colors.text.dark.disabled} value={colors.text.dark.disabled} />
+          <ColorSwatch
+            name="Primary"
+            color={colors.text.dark.primary}
+            value={colors.text.dark.primary}
+          />
+          <ColorSwatch
+            name="Secondary"
+            color={colors.text.dark.secondary}
+            value={colors.text.dark.secondary}
+          />
+          <ColorSwatch
+            name="Tertiary"
+            color={colors.text.dark.tertiary}
+            value={colors.text.dark.tertiary}
+          />
+          <ColorSwatch
+            name="Disabled"
+            color={colors.text.dark.disabled}
+            value={colors.text.dark.disabled}
+          />
         </View>
       </View>
     </ScrollView>
@@ -102,19 +142,41 @@ export const BackgroundColors: Story = {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Light Mode Background Colors</Text>
         <View style={styles.swatchGrid}>
-          <ColorSwatch name="Default" color={colors.bg.light.default} value={colors.bg.light.default} />
-          <ColorSwatch name="Subtle" color={colors.bg.light.subtle} value={colors.bg.light.subtle} />
+          <ColorSwatch
+            name="Default"
+            color={colors.bg.light.default}
+            value={colors.bg.light.default}
+          />
+          <ColorSwatch
+            name="Subtle"
+            color={colors.bg.light.subtle}
+            value={colors.bg.light.subtle}
+          />
           <ColorSwatch name="Muted" color={colors.bg.light.muted} value={colors.bg.light.muted} />
-          <ColorSwatch name="Emphasis" color={colors.bg.light.emphasis} value={colors.bg.light.emphasis} />
+          <ColorSwatch
+            name="Emphasis"
+            color={colors.bg.light.emphasis}
+            value={colors.bg.light.emphasis}
+          />
         </View>
       </View>
       <View style={[styles.section, { backgroundColor: colors.bg.dark.default }]}>
-        <Text style={[styles.sectionTitle, { color: colors.text.dark.primary }]}>Dark Mode Background Colors</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text.dark.primary }]}>
+          Dark Mode Background Colors
+        </Text>
         <View style={styles.swatchGrid}>
-          <ColorSwatch name="Default" color={colors.bg.dark.default} value={colors.bg.dark.default} />
+          <ColorSwatch
+            name="Default"
+            color={colors.bg.dark.default}
+            value={colors.bg.dark.default}
+          />
           <ColorSwatch name="Subtle" color={colors.bg.dark.subtle} value={colors.bg.dark.subtle} />
           <ColorSwatch name="Muted" color={colors.bg.dark.muted} value={colors.bg.dark.muted} />
-          <ColorSwatch name="Emphasis" color={colors.bg.dark.emphasis} value={colors.bg.dark.emphasis} />
+          <ColorSwatch
+            name="Emphasis"
+            color={colors.bg.dark.emphasis}
+            value={colors.bg.dark.emphasis}
+          />
         </View>
       </View>
     </ScrollView>
@@ -166,4 +228,3 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
 })
-

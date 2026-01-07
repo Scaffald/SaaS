@@ -1,7 +1,7 @@
 /**
  * Input component
  * Fully-featured input component mapped from Figma Forsured Design System
- * 
+ *
  * Can be used as a complete component or composed from sub-components for maximum flexibility.
  *
  * @example
@@ -34,17 +34,17 @@
  *   onChangeText={setWebsite}
  * />
  * ```
- * 
+ *
  * @example Composable usage
  * ```tsx
- * import { 
- *   InputLabel, 
- *   InputExternalAddon, 
+ * import {
+ *   InputLabel,
+ *   InputExternalAddon,
  *   InputLeftSide,
  *   InputRightSide,
- *   InputHelperText 
+ *   InputHelperText
  * } from '@unicornlove/beyond-ui'
- * 
+ *
  * // Compose manually for maximum control
  * <View>
  *   <InputLabel required note="(optional)">Custom Label</InputLabel>
@@ -65,11 +65,7 @@ import { useState } from 'react'
 import { View, TextInput, Platform } from 'react-native'
 import type { TextInputProps as RNTextInputProps } from 'react-native'
 import type { InputProps } from './Input.types'
-import {
-  getInputStyles,
-  getFocusBoxShadow,
-  getFocusShadowStyle,
-} from './Input.styles'
+import { getInputStyles, getFocusBoxShadow, getFocusShadowStyle } from './Input.styles'
 import { InputLabel } from './InputLabel'
 import { InputHelperText } from './InputHelperText'
 import { InputExternalAddon, InputLeftSide, InputRightSide } from './InputAddon'
@@ -121,7 +117,6 @@ export function Input({
   const hasExternalAddon = !!externalAddon
   const styles = getInputStyles(actualState || 'default', type, disabled, hasExternalAddon, theme)
 
-
   const handleFocus: RNTextInputProps['onFocus'] = (e) => {
     if (!disabled) {
       setInternalFocused(true)
@@ -142,10 +137,7 @@ export function Input({
     <View style={[styles.container, fullWidth && { width: '100%' }, containerStyle]}>
       {/* Label */}
       {label && (
-        <InputLabel
-          required={required}
-          labelStyle={labelStyle}
-        >
+        <InputLabel required={required} labelStyle={labelStyle}>
           {label}
         </InputLabel>
       )}
@@ -163,8 +155,7 @@ export function Input({
           <InputExternalAddon
             type={type}
             borderColor={
-              (styles.input.borderColor as string | undefined) ||
-              colors.border.light.default
+              (styles.input.borderColor as string | undefined) || colors.border.light.default
             }
           >
             {externalAddon}
@@ -180,12 +171,7 @@ export function Input({
           ]}
         >
           {/* Left Side - Leading Icon or Text */}
-          {IconStart && (
-            <InputLeftSide
-              icon={IconStart}
-              color={styles.iconColor}
-            />
-          )}
+          {IconStart && <InputLeftSide icon={IconStart} color={styles.iconColor} />}
 
           {/* Text Input */}
           <TextInput
@@ -204,21 +190,13 @@ export function Input({
           />
 
           {/* Right Side - Trailing Icon */}
-          {IconEnd && (
-            <InputRightSide
-              icon={IconEnd}
-              color={styles.iconColor}
-            />
-          )}
+          {IconEnd && <InputRightSide icon={IconEnd} color={styles.iconColor} />}
         </View>
       </View>
 
       {/* Helper Text / Error Message */}
       {(helperText || error) && (
-        <InputHelperText
-          error={!!error}
-          textStyle={helperTextStyle}
-        >
+        <InputHelperText error={!!error} textStyle={helperTextStyle}>
           {error || helperText || ''}
         </InputHelperText>
       )}
@@ -228,4 +206,3 @@ export function Input({
 
 // Export types
 export type { InputProps, InputState, InputType } from './Input.types'
-

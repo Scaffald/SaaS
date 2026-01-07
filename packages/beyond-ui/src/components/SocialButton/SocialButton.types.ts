@@ -8,14 +8,7 @@ import type { ButtonProps } from '../Button/Button.types'
 /**
  * Social media brands
  */
-export type SocialBrand =
-  | 'apple'
-  | 'google'
-  | 'microsoft'
-  | 'facebook'
-  | 'x'
-  | 'dribbble'
-  | 'figma'
+export type SocialBrand = 'apple' | 'google' | 'microsoft' | 'facebook' | 'x' | 'dribbble' | 'figma'
 
 /**
  * Social button style variants
@@ -25,7 +18,8 @@ export type SocialButtonStyle = 'filled' | 'outline' | 'outlineGray'
 /**
  * Social button props
  */
-export interface SocialButtonProps extends Omit<ButtonProps, 'children' | 'color' | 'variant' | 'iconStart' | 'iconEnd'> {
+export interface SocialButtonProps
+  extends Omit<ButtonProps, 'children' | 'color' | 'variant' | 'iconStart' | 'iconEnd'> {
   /**
    * Social media brand
    * @required

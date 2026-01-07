@@ -151,4 +151,3 @@ const styles = StyleSheet.create({
     lineHeight: undefined,
   },
 })
-

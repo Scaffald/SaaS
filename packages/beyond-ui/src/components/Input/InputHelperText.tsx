@@ -2,13 +2,13 @@
  * Input Helper Text component
  * Composable helper text component for Input fields
  * Maps to Figma "_Hint Message Base" component
- * 
+ *
  * Can be used independently or as part of the Input component
- * 
+ *
  * @example
  * ```tsx
  * import { InputHelperText } from '@unicornlove/beyond-ui'
- * 
+ *
  * <InputHelperText error showIcon icon={ErrorIcon}>
  *   This field is required
  * </InputHelperText>
@@ -86,4 +86,3 @@ export function InputHelperText({
     </View>
   )
 }
-
