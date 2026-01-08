@@ -172,15 +172,16 @@ export type {
   PaginationRadius,
 } from './components/Pagination'
 
-export { Stepper, Step, Breadcrumb } from './components/Stepper'
+export { Stepper, Step } from './components/Stepper'
+export { Breadcrumb as BreadcrumbDeprecated } from './components/Stepper'
 export type {
   StepperProps,
   StepProps,
   StepData,
   StepStatus,
   StepperColor,
-  BreadcrumbProps,
 } from './components/Stepper'
+export type { BreadcrumbProps as BreadcrumbDeprecatedProps } from './components/Stepper'
 
 export { ProgressBar, ProgressBarBase, ProgressIndicator, HintMessage } from './components/ProgressBar'
 export type {
@@ -233,6 +234,21 @@ export {
   generateFileId,
   fileToUploadedFile,
 } from './components/FileUpload'
+
+export { Breadcrumb } from './components/Breadcrumb'
+export type {
+  BreadcrumbProps,
+  BreadcrumbItemData,
+  BreadcrumbItemProps,
+  BreadcrumbSeparatorProps,
+  BreadcrumbItemState,
+} from './components/Breadcrumb'
+
+// Breadcrumb composable sub-components
+export {
+  BreadcrumbItem,
+  BreadcrumbSeparator,
+} from './components/Breadcrumb'
 
 export { Tabs } from './components/Tabs'
 export type {
