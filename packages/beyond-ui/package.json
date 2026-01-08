@@ -103,5 +103,8 @@
     "overrides": {
       "react-dom": "19.2.0"
     }
+  },
+  "dependencies": {
+    "lucide-react-native": "^0.562.0"
   }
 }

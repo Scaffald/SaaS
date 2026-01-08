@@ -156,6 +156,14 @@ export type {
   AlertActionsPosition,
 } from './components/Alert'
 
+export { StatusIndicator } from './components/StatusIndicator'
+export type {
+  StatusIndicatorProps,
+  StatusIndicatorType,
+  StatusIndicatorStyle,
+  StatusIndicatorIconType,
+} from './components/StatusIndicator'
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅

@@ -48,13 +48,8 @@ import { borderRadius } from '../../tokens/borders'
 import { colors } from '../../tokens/colors'
 import { borderWidth } from '../../tokens/borders'
 
-// Import icons
-import { InfoIcon } from './icons/InfoIcon'
-import { SuccessIcon } from './icons/SuccessIcon'
-import { WarningIcon } from './icons/WarningIcon'
-import { ErrorIcon } from './icons/ErrorIcon'
-import { AIIcon } from './icons/AIIcon'
-import { CloseIcon } from './icons/CloseIcon'
+// Import Lucide icons
+import { AlertCircle, CheckCircle, AlertTriangle, XCircle, Sparkles, X } from 'lucide-react-native'
 
 export function Alert({
   title,
@@ -109,17 +104,17 @@ export function Alert({
 
     switch (type) {
       case 'info':
-        return <InfoIcon color={iconColor} size={iconSize} />
+        return <AlertCircle size={iconSize} color={iconColor} fill={iconColor} />
       case 'success':
-        return <SuccessIcon color={iconColor} size={iconSize} />
+        return <CheckCircle size={iconSize} color={iconColor} fill={iconColor} />
       case 'warning':
-        return <WarningIcon color={iconColor} size={iconSize} />
+        return <AlertTriangle size={iconSize} color={iconColor} fill={iconColor} />
       case 'error':
-        return <ErrorIcon color={iconColor} size={iconSize} />
+        return <XCircle size={iconSize} color={iconColor} fill={iconColor} />
       case 'ai':
-        return <AIIcon color={iconColor} size={iconSize} />
+        return <Sparkles size={iconSize} color={iconColor} fill={iconColor} />
       default:
-        return <InfoIcon color={iconColor} size={iconSize} />
+        return <AlertCircle size={iconSize} color={iconColor} fill={iconColor} />
     }
   }
 
@@ -197,7 +192,7 @@ export function Alert({
             accessibilityLabel="Close alert"
             style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
           >
-            <CloseIcon color={closeColor} size={24} />
+            <X size={24} color={closeColor} />
           </Pressable>
         )}
       </View>
