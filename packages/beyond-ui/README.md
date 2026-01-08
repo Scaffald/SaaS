@@ -31,7 +31,7 @@ yarn add @unicornlove/beyond-ui react react-native
 ## Quick Start
 
 ```typescript
-import { Button, TextInput, Stack, Row } from '@unicornlove/beyond-ui'
+import { Button, TextInput, Stack, Row, Tabs } from '@unicornlove/beyond-ui'
 
 function MyForm() {
   const [value, setValue] = useState('')
@@ -55,6 +55,60 @@ function MyForm() {
     </Stack>
   )
 }
+```
+
+### Tabs Component
+
+```typescript
+import { Tabs } from '@unicornlove/beyond-ui'
+
+// Basic tabs
+<Tabs defaultValue="tab1">
+  <Tabs.Item value="tab1">
+    <Tabs.Trigger>Summary</Tabs.Trigger>
+    <Tabs.Content>Summary content goes here</Tabs.Content>
+  </Tabs.Item>
+  <Tabs.Item value="tab2">
+    <Tabs.Trigger>Transactions</Tabs.Trigger>
+    <Tabs.Content>Transactions content goes here</Tabs.Content>
+  </Tabs.Item>
+</Tabs>
+
+// With variants
+<Tabs
+  type="line"
+  color="primary"
+  size="lg"
+  orientation="horizontal"
+  defaultValue="tab1"
+>
+  <Tabs.Item value="tab1">
+    <Tabs.Trigger iconStart={MyIcon}>Tab 1</Tabs.Trigger>
+    <Tabs.Content>Content 1</Tabs.Content>
+  </Tabs.Item>
+</Tabs>
+
+// With bordered content for visual grouping
+<Tabs contentVariant="bordered" defaultValue="tab1">
+  <Tabs.Item value="tab1">
+    <Tabs.Trigger>Tab 1</Tabs.Trigger>
+    <Tabs.Content>
+      Content with border, padding, and background for clear visual grouping
+    </Tabs.Content>
+  </Tabs.Item>
+</Tabs>
+
+// With trigger sizing control (auto, equal, or fixed)
+<Tabs triggerSizing="equal" fullWidth defaultValue="tab1">
+  <Tabs.Item value="tab1">
+    <Tabs.Trigger>Tab 1</Tabs.Trigger>
+    <Tabs.Content>Content 1</Tabs.Content>
+  </Tabs.Item>
+  <Tabs.Item value="tab2">
+    <Tabs.Trigger>Longer Tab 2</Tabs.Trigger>
+    <Tabs.Content>Content 2 - tab width independent of content</Tabs.Content>
+  </Tabs.Item>
+</Tabs>
 ```
 
 ## Design Tokens
@@ -100,7 +154,10 @@ gradients.named['warm-flame'].colors  // ['#fb923c', '#fb7185']
 - **Input**: TextInput, TextArea, NumberInput, PasswordInput, SearchInput
 - **Selection**: Checkbox, Radio, Switch
 
-### Phase 3+ (📅 Future)
+### Phase 3 (✅ Complete)
+- **Tabs**: Tab navigation with multiple variants (default, line, shadow), colors (gray, primary), sizes (sm, md, lg), and orientations (horizontal, vertical)
+
+### Phase 4+ (📅 Future)
 - Alert, Toast, Dialog, Popover, Select, and more...
 
 ## Development Roadmap

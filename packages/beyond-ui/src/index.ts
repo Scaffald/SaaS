@@ -194,11 +194,78 @@ export type {
   HintMessageProps,
 } from './components/ProgressBar'
 
+export { Spinner } from './components/Spinner'
+export type { SpinnerProps, SpinnerSize, SpinnerColor } from './components/Spinner'
+
+export { Slider } from './components/Slider'
+export type {
+  SliderProps,
+  SliderColor,
+  SliderIndicatorPosition,
+  SliderHandleState,
+} from './components/Slider'
+
+export { FileUpload } from './components/FileUpload'
+export type {
+  FileUploadProps,
+  FileUploadDropZoneProps,
+  FileUploadListProps,
+  FileUploadItemProps,
+  FileUploadProgressProps,
+  UploadedFile,
+  FileUploadStatus,
+  FileUploadVariant,
+} from './components/FileUpload'
+
+// FileUpload composable sub-components
+export {
+  FileUploadDropZone,
+  FileUploadList,
+  FileUploadItem,
+  FileUploadProgress,
+} from './components/FileUpload'
+
+// FileUpload utility functions
+export {
+  validateFile,
+  formatFileSize,
+  getFileIcon,
+  generateFileId,
+  fileToUploadedFile,
+} from './components/FileUpload'
+
+export { Tabs } from './components/Tabs'
+export type {
+  TabsProps,
+  TabItemProps,
+  TabTriggerProps,
+  TabContentProps,
+  TabType,
+  TabColor,
+  TabSize,
+  TabOrientation,
+  TabState,
+  TabContentVariant,
+} from './components/Tabs'
+
+export { Tooltip } from './components/Tooltip'
+export type {
+  TooltipProps,
+  TooltipArrowPosition,
+  TooltipAction,
+  TooltipType,
+  TooltipColor,
+  TooltipContentProps,
+  TooltipArrowProps,
+  TriggerLayout,
+  TooltipStyleConfig,
+} from './components/Tooltip'
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅
-// Phase 3: Feedback components (Alert, Toast)
-// Phase 4+: Complex components (Dialog, Popover, Select, etc.)
+// Phase 3: Feedback components (Alert ✅, Toast)
+// Phase 4+: Complex components (Dialog, Popover, Select, Tooltip ✅, etc.)
 
 /**
  * Package version
