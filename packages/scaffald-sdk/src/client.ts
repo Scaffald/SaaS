@@ -4,6 +4,7 @@ import { ApplicationsResource } from './resources/applications.js'
 import { ProfilesResource } from './resources/profiles.js'
 import { AuthResource } from './resources/auth.js'
 import { APIKeysResource } from './resources/api-keys.js'
+import { WebhooksResource } from './resources/webhooks.js'
 import { type ScaffaldConfig, validateConfig, getDefaultConfig } from './config.js'
 import type { RateLimitInfo } from './http/rate-limit.js'
 import type { InterceptorManager } from './http/interceptors.js'
@@ -60,6 +61,11 @@ export class Scaffald {
    */
   public readonly apiKeys: APIKeysResource
 
+  /**
+   * Webhooks API resource
+   */
+  public readonly webhooks: WebhooksResource
+
   constructor(config: ScaffaldConfig) {
     // Validate configuration
     validateConfig(config)
@@ -88,6 +94,7 @@ export class Scaffald {
     this.applications = new ApplicationsResource(this.http)
     this.profiles = new ProfilesResource(this.http)
     this.apiKeys = new APIKeysResource(this.http)
+    this.webhooks = new WebhooksResource(this.http)
   }
 
   /**
