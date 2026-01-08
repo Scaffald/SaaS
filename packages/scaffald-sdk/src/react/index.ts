@@ -12,6 +12,10 @@ export type { ScaffaldProviderProps } from './provider.js'
 
 // Hooks
 export {
+  // Authentication
+  useMagicLink,
+  useRoles,
+  useSession,
   // Jobs
   useJobs,
   useJob,
@@ -28,4 +32,11 @@ export {
   useUserProfile,
   useOrganization,
   useEmployer,
+  // API Keys
+  useAPIKeys,
+  useAPIKey,
+  useCreateAPIKey,
+  useUpdateAPIKey,
+  useRevokeAPIKey,
+  useAPIKeyUsage,
 } from './hooks.js'

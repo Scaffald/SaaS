@@ -1,6 +1,9 @@
 import { handleErrorResponse, NetworkError } from './errors.js'
 import { RateLimitTracker } from './rate-limit.js'
 import { RetryMiddleware } from './retry.js'
+import { InterceptorManager } from './interceptors.js'
+import { ResponseCache, type CacheConfig } from './cache.js'
+import { RequestDeduplicator } from './deduplication.js'
 
 /**
  * HTTP client configuration
@@ -12,6 +15,8 @@ export interface HttpClientConfig {
   maxRetries?: number
   headers?: Record<string, string>
   timeout?: number
+  cache?: CacheConfig
+  enableDeduplication?: boolean
 }
 
 /**
@@ -25,17 +30,21 @@ export interface RequestOptions {
 }
 
 /**
- * HTTP client with retry and rate limit tracking
+ * HTTP client with retry, rate limit tracking, caching, and interceptors
  */
 export class HttpClient {
   private config: HttpClientConfig
   private retryMiddleware: RetryMiddleware
   public rateLimitTracker: RateLimitTracker
+  public interceptors: InterceptorManager
+  public cache: ResponseCache
+  private deduplicator: RequestDeduplicator
 
   constructor(config: HttpClientConfig) {
     this.config = {
       maxRetries: 3,
       timeout: 60000,
+      enableDeduplication: true,
       ...config,
     }
 
@@ -44,6 +53,9 @@ export class HttpClient {
     })
 
     this.rateLimitTracker = new RateLimitTracker()
+    this.interceptors = new InterceptorManager()
+    this.cache = new ResponseCache(this.config.cache)
+    this.deduplicator = new RequestDeduplicator(this.config.enableDeduplication)
   }
 
   /**
@@ -54,24 +66,36 @@ export class HttpClient {
     const headers = this.buildHeaders(options.headers)
     const method = options.method || 'GET'
 
-    const fetchFn = async () => {
+    // Check cache first (GET requests only)
+    const cachedData = this.cache.get({ url, method, body: options.body })
+    if (cachedData !== null) {
+      return cachedData as T
+    }
+
+    const fetchFn = async (): Promise<Response> => {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
 
       try {
-        const response = await fetch(url, {
+        // Execute request interceptors
+        const intercepted = await this.interceptors.executeRequestInterceptors(url, {
           method,
           headers,
           body: options.body ? JSON.stringify(options.body) : undefined,
           signal: controller.signal,
         })
 
+        const response = await fetch(intercepted.url, intercepted.init)
+
         clearTimeout(timeoutId)
 
-        // Update rate limit tracker
-        this.rateLimitTracker.update(response)
+        // Execute response interceptors
+        const interceptedResponse = await this.interceptors.executeResponseInterceptors(response)
 
-        return response
+        // Update rate limit tracker
+        this.rateLimitTracker.update(interceptedResponse)
+
+        return interceptedResponse
       } catch (error) {
         clearTimeout(timeoutId)
 
@@ -79,15 +103,29 @@ export class HttpClient {
           throw new NetworkError('Request timeout')
         }
 
+        // Execute error interceptors
+        const interceptedError = await this.interceptors.executeErrorInterceptors(
+          error instanceof Error ? error : new Error('Network request failed')
+        )
+
+        // If error interceptor returned a Response, use it
+        if (interceptedError instanceof Response) {
+          return interceptedError
+        }
+
         throw new NetworkError(
-          error instanceof Error ? error.message : 'Network request failed',
-          error instanceof Error ? error : undefined
+          interceptedError instanceof Error ? interceptedError.message : 'Network request failed',
+          interceptedError instanceof Error ? interceptedError : undefined
         )
       }
     }
 
+    // Deduplicate concurrent requests
+    const deduplicatedFetch = () =>
+      this.deduplicator.deduplicate(url, method, options.body, fetchFn)
+
     // Execute with retry middleware
-    const response = await this.retryMiddleware.execute(fetchFn, method)
+    const response = await this.retryMiddleware.execute(deduplicatedFetch, method)
 
     // Handle error responses
     if (!response.ok) {
@@ -96,11 +134,19 @@ export class HttpClient {
 
     // Parse response
     const contentType = response.headers.get('content-type')
+    let data: T
     if (contentType?.includes('application/json')) {
-      return response.json() as Promise<T>
+      data = (await response.json()) as T
+    } else {
+      data = (await response.text()) as T
     }
 
-    return response.text() as Promise<T>
+    // Cache successful GET requests
+    if (method === 'GET' && response.ok) {
+      this.cache.set({ url, method, body: options.body }, response, data)
+    }
+
+    return data
   }
 
   /**

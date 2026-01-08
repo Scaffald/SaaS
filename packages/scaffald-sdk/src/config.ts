@@ -1,3 +1,5 @@
+import type { CacheConfig } from './http/cache.js'
+
 /**
  * Scaffald SDK configuration
  */
@@ -35,6 +37,18 @@ export interface ScaffaldConfig {
    * Additional headers to include in all requests
    */
   headers?: Record<string, string>
+
+  /**
+   * Response cache configuration
+   * @default { enabled: false, defaultTtl: 300000, maxSize: 100 }
+   */
+  cache?: CacheConfig
+
+  /**
+   * Enable request deduplication for concurrent identical requests
+   * @default true
+   */
+  enableDeduplication?: boolean
 }
 
 /**

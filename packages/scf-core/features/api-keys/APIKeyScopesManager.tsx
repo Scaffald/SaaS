@@ -10,7 +10,6 @@ import {
   Dialog,
   H3,
   H4,
-  Label,
   Paragraph,
   Separator,
   Spinner,
@@ -19,14 +18,7 @@ import {
   Checkbox,
   ScrollView,
 } from '@unicornlove/ui'
-import {
-  AlertCircle,
-  CheckCircle,
-  Info,
-  Lock,
-  Shield,
-  XCircle,
-} from '@tamagui/lucide-icons'
+import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from '@tamagui/lucide-icons'
 
 interface APIKeyScopesManagerProps {
   isOpen: boolean
@@ -278,12 +270,8 @@ export function APIKeyScopesManager({
                       <Card
                         key={scope.id}
                         padding="$3"
-                        backgroundColor={
-                          selectedScopes.includes(scope.id) ? '$green2' : '$gray2'
-                        }
-                        borderColor={
-                          selectedScopes.includes(scope.id) ? '$green6' : '$gray6'
-                        }
+                        backgroundColor={selectedScopes.includes(scope.id) ? '$green2' : '$gray2'}
+                        borderColor={selectedScopes.includes(scope.id) ? '$green6' : '$gray6'}
                         borderWidth={1}
                         pressStyle={{ scale: 0.98 }}
                         onPress={() => toggleScope(scope.id)}
@@ -338,12 +326,8 @@ export function APIKeyScopesManager({
                       <Card
                         key={scope.id}
                         padding="$3"
-                        backgroundColor={
-                          selectedScopes.includes(scope.id) ? '$orange2' : '$gray2'
-                        }
-                        borderColor={
-                          selectedScopes.includes(scope.id) ? '$orange6' : '$gray6'
-                        }
+                        backgroundColor={selectedScopes.includes(scope.id) ? '$orange2' : '$gray2'}
+                        borderColor={selectedScopes.includes(scope.id) ? '$orange6' : '$gray6'}
                         borderWidth={1}
                         pressStyle={{ scale: 0.98 }}
                         onPress={() => toggleScope(scope.id)}

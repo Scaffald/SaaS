@@ -20,6 +20,16 @@
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.mjs",
       "require": "./dist/react/index.js"
+    },
+    "./oauth": {
+      "types": "./dist/oauth/oauth.d.ts",
+      "import": "./dist/oauth/oauth.mjs",
+      "require": "./dist/oauth/oauth.js"
+    },
+    "./webhooks": {
+      "types": "./dist/webhooks/verify.d.ts",
+      "import": "./dist/webhooks/verify.mjs",
+      "require": "./dist/webhooks/verify.js"
     }
   },
   "main": "./dist/index.js",
@@ -32,6 +42,8 @@
   "scripts": {
     "build": "tsup && pnpm generate:types || true",
     "build:no-types": "tsup",
+    "build:analyze": "pnpm build:no-types && pnpm analyze",
+    "analyze": "tsx scripts/analyze-bundle.ts",
     "dev": "tsup --watch",
     "generate:types": "tsx scripts/generate-types.ts",
     "test": "vitest run",

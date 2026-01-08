@@ -7,3 +7,6 @@ coverage
 
 # Auto-generated types
 src/types/api.ts
+
+# OpenAPI spec cache
+openapi-spec.json

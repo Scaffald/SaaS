@@ -4,7 +4,17 @@
  */
 
 import { useState } from 'react'
-import { Button, Card, H2, H4, Paragraph, Separator, Spinner, XStack, YStack } from '@unicornlove/ui'
+import {
+  Button,
+  Card,
+  H2,
+  H4,
+  Paragraph,
+  Separator,
+  Spinner,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import { Copy, Key, MoreVertical, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { format } from 'date-fns'
 
@@ -75,7 +85,9 @@ export function APIKeysList({
     return (
       <YStack f={1} jc="center" ai="center" padding="$6">
         <Spinner size="large" color="$blue10" />
-        <Paragraph mt="$4" color="$gray11">Loading API keys...</Paragraph>
+        <Paragraph mt="$4" color="$gray11">
+          Loading API keys...
+        </Paragraph>
       </YStack>
     )
   }
@@ -90,11 +102,7 @@ export function APIKeysList({
             Manage API keys for third-party integrations and SDK access
           </Paragraph>
         </YStack>
-        <Button
-          icon={Plus}
-          onPress={onCreateKey}
-          theme="blue"
-        >
+        <Button icon={Plus} onPress={onCreateKey} theme="blue">
           Create API Key
         </Button>
       </XStack>
@@ -112,11 +120,7 @@ export function APIKeysList({
                 Create your first API key to start using the Scaffald SDK
               </Paragraph>
             </YStack>
-            <Button
-              icon={Plus}
-              onPress={onCreateKey}
-              theme="blue"
-            >
+            <Button icon={Plus} onPress={onCreateKey} theme="blue">
               Create Your First API Key
             </Button>
           </YStack>
@@ -169,12 +173,7 @@ export function APIKeysList({
                   </YStack>
 
                   {/* Actions Menu */}
-                  <Button
-                    size="$3"
-                    chromeless
-                    circular
-                    icon={MoreVertical}
-                  />
+                  <Button size="$3" chromeless circular icon={MoreVertical} />
                 </XStack>
 
                 {/* Key Metadata */}
@@ -191,7 +190,8 @@ export function APIKeysList({
                       borderRadius="$2"
                     >
                       <Paragraph size="$2" color="$gray12" fontWeight="600">
-                        {key.rate_limit_tier.toUpperCase()} - {getRateLimitDescription(key.rate_limit_tier)}
+                        {key.rate_limit_tier.toUpperCase()} -{' '}
+                        {getRateLimitDescription(key.rate_limit_tier)}
                       </Paragraph>
                     </Card>
                   </YStack>
@@ -255,19 +255,11 @@ export function APIKeysList({
 
                 {/* Actions */}
                 <XStack gap="$2">
-                  <Button
-                    size="$3"
-                    variant="outlined"
-                    onPress={() => onViewUsage(key.id)}
-                  >
+                  <Button size="$3" variant="outlined" onPress={() => onViewUsage(key.id)}>
                     View Usage
                   </Button>
                   {onManageScopes && key.is_active && (
-                    <Button
-                      size="$3"
-                      variant="outlined"
-                      onPress={() => onManageScopes(key.id)}
-                    >
+                    <Button size="$3" variant="outlined" onPress={() => onManageScopes(key.id)}>
                       Manage Scopes
                     </Button>
                   )}

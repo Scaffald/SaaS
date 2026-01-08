@@ -1,0 +1,24 @@
+# Storybook files
+.storybook/
+storybook-static/
+src/stories/
+src/playground/
+
+# Build outputs
+dist/
+*.tsbuildinfo
+
+# Development files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
