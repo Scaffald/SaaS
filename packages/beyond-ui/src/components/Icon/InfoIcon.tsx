@@ -11,8 +11,8 @@
  * ```
  */
 
-import { View, Text, StyleSheet } from 'react-native'
-import type { ViewStyle, TextStyle } from 'react-native'
+import { View, Text, } from 'react-native'
+import type { ViewStyle, } from 'react-native'
 
 export interface InfoIconProps {
   /**

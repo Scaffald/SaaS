@@ -4,7 +4,7 @@
  * Uses View borders for cross-platform arrow rendering
  */
 
-import { View, Platform } from 'react-native'
+import { View, } from 'react-native'
 import type { TooltipArrowProps } from './Tooltip.types'
 import { getTooltipStyles } from './Tooltip.styles'
 import { colors } from '../../tokens/colors'
@@ -19,7 +19,7 @@ export function TooltipArrow({ position, color }: TooltipArrowProps) {
     return null
   }
 
-  const styles = getTooltipStyles('default', color)
+  const _styles = getTooltipStyles('default', color)
   const arrowColor = color === 'primary' ? colors.primary[50] : colors.gray[100]
 
   // Arrow dimensions from design: 6px height, 13px width

@@ -11,7 +11,7 @@
  * ```
  */
 
-import { View, StyleSheet } from 'react-native'
+import { View, } from 'react-native'
 import type { ViewStyle } from 'react-native'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { colors } from '../../tokens/colors'

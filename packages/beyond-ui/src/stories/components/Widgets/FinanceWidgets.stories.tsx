@@ -54,7 +54,7 @@ export const Balance02: BalanceWidgetStory = {
   },
 }
 
-const SpendingLimitWidgetMeta = {
+const _SpendingLimitWidgetMeta = {
   title: 'Widgets/Finance/SpendingLimitWidget',
   component: SpendingLimitWidget,
   parameters: {
@@ -72,7 +72,7 @@ export const SpendingLimit01: StoryObj<typeof SpendingLimitWidget> = {
   },
 }
 
-const CreditCardWidgetMeta = {
+const _CreditCardWidgetMeta = {
   title: 'Widgets/Finance/CreditCardWidget',
   component: CreditCardWidget,
   parameters: {
@@ -100,7 +100,7 @@ export const CreditCardWithLimit: StoryObj<typeof CreditCardWidget> = {
   },
 }
 
-const VirtualCardsWidgetMeta = {
+const _VirtualCardsWidgetMeta = {
   title: 'Widgets/Finance/VirtualCardsWidget',
   component: VirtualCardsWidget,
   parameters: {
@@ -118,7 +118,7 @@ export const VirtualCards: StoryObj<typeof VirtualCardsWidget> = {
   },
 }
 
-const TransactionsWidgetMeta = {
+const _TransactionsWidgetMeta = {
   title: 'Widgets/Finance/TransactionsWidget',
   component: TransactionsWidget,
   parameters: {
@@ -137,7 +137,7 @@ export const Transactions: StoryObj<typeof TransactionsWidget> = {
   },
 }
 
-const EarningsWidgetMeta = {
+const _EarningsWidgetMeta = {
   title: 'Widgets/Finance/EarningsWidget',
   component: EarningsWidget,
   parameters: {
@@ -157,7 +157,7 @@ export const Earnings: StoryObj<typeof EarningsWidget> = {
   },
 }
 
-const ContactsWidgetMeta = {
+const _ContactsWidgetMeta = {
   title: 'Widgets/Finance/ContactsWidget',
   component: ContactsWidget,
   parameters: {
@@ -176,7 +176,7 @@ export const Contacts: StoryObj<typeof ContactsWidget> = {
   },
 }
 
-const CurrencyConverterWidgetMeta = {
+const _CurrencyConverterWidgetMeta = {
   title: 'Widgets/Finance/CurrencyConverterWidget',
   component: CurrencyConverterWidget,
   parameters: {
@@ -195,7 +195,7 @@ export const CurrencyConverter: StoryObj<typeof CurrencyConverterWidget> = {
   },
 }
 
-const SubscriptionsWidgetMeta = {
+const _SubscriptionsWidgetMeta = {
   title: 'Widgets/Finance/SubscriptionsWidget',
   component: SubscriptionsWidget,
   parameters: {
@@ -215,7 +215,7 @@ export const Subscriptions: StoryObj<typeof SubscriptionsWidget> = {
   },
 }
 
-const LargeBalanceWidgetMeta = {
+const _LargeBalanceWidgetMeta = {
   title: 'Widgets/Finance/LargeBalanceWidget',
   component: LargeBalanceWidget,
   parameters: {

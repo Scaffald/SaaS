@@ -17,7 +17,6 @@
 import { View, Text, StyleSheet } from 'react-native'
 import type { ViewStyle } from 'react-native'
 import { LinearChart } from '../Charts'
-import { BalanceWidget } from './BalanceWidget'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'

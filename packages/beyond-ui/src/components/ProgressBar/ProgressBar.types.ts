@@ -3,7 +3,6 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
-import type React from 'react'
 
 export type ProgressBarColor = 'primary' | 'gray' | 'error' | 'success'
 export type ProgressBarOrientation = 'horizontal' | 'vertical'

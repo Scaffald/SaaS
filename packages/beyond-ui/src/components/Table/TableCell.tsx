@@ -18,15 +18,11 @@
  */
 
 import { useState } from 'react'
-import { View, Text, Pressable, Image, Platform } from 'react-native'
+import { View, Text, Pressable, Platform } from 'react-native'
 import {
   ChevronRight,
   ChevronDown,
   MoreVertical,
-  Share2,
-  Download,
-  Edit,
-  Trash2,
   ArrowUpRight,
   Star,
 } from 'lucide-react-native'
@@ -91,7 +87,7 @@ export function TableCell(props: TableCellProps) {
   const symbol = 'symbol' in props ? props.symbol : undefined
   const trendIcon = 'trendIcon' in props ? props.trendIcon : undefined
   const trendDirection = 'trendDirection' in props ? props.trendDirection : undefined
-  const trendValue = 'trendValue' in props ? props.trendValue : undefined
+  const _trendValue = 'trendValue' in props ? props.trendValue : undefined
   const statusType = 'statusType' in props ? props.statusType : undefined
   const statusLabel = 'statusLabel' in props ? props.statusLabel : undefined
   const statusStyle = 'statusStyle' in props ? props.statusStyle : undefined
@@ -104,7 +100,7 @@ export function TableCell(props: TableCellProps) {
   const rating = 'rating' in props ? props.rating : undefined
   const maxRating = 'maxRating' in props ? props.maxRating : 5
   const chartType = 'chartType' in props ? props.chartType : undefined
-  const chartData = 'chartData' in props ? props.chartData : undefined
+  const _chartData = 'chartData' in props ? props.chartData : undefined
   const chartComponent = 'chartComponent' in props ? props.chartComponent : undefined
   const children = 'children' in props ? props.children : undefined
 
@@ -446,13 +442,11 @@ export function TableCell(props: TableCellProps) {
 
       {/* Avatar cell */}
       {type === 'avatar' && (
-        <>
-          {typeof avatar === 'string' ? (
+        typeof avatar === 'string' ? (
             <Avatar size={40} src={avatar} status={showIndicator ? 'online' : undefined} />
           ) : (
             avatar
-          )}
-        </>
+          )
       )}
 
       {/* Assignee cell (avatar group) */}
@@ -472,8 +466,7 @@ export function TableCell(props: TableCellProps) {
 
       {/* Card cell */}
       {type === 'card' && (
-        <>
-          {cardIcon || (
+        cardIcon || (
             <View
               style={{
                 width: 43,
@@ -484,14 +477,12 @@ export function TableCell(props: TableCellProps) {
                 borderRadius: borderRadius.xs,
               }}
             />
-          )}
-        </>
+          )
       )}
 
       {/* File cell */}
       {type === 'file' && (
-        <>
-          {fileIcon || (
+        fileIcon || (
             <View
               style={{
                 width: 32,
@@ -504,8 +495,7 @@ export function TableCell(props: TableCellProps) {
             >
               <Text style={{ fontSize: 9, color: colors.text[theme].secondary }}>{fileType || 'PDF'}</Text>
             </View>
-          )}
-        </>
+          )
       )}
 
       {/* Brand icon cell */}
@@ -519,8 +509,7 @@ export function TableCell(props: TableCellProps) {
 
       {/* Crypto cell */}
       {type === 'crypto' && (
-        <>
-          {cryptoIcon || (
+        cryptoIcon || (
             <View
               style={{
                 width: 28,
@@ -529,20 +518,17 @@ export function TableCell(props: TableCellProps) {
                 borderRadius: borderRadius.s,
               }}
             />
-          )}
-        </>
+          )
       )}
 
       {/* Stock market cell */}
       {type === 'stock-market' && (
-        <>
-          {trendIcon || (
+        trendIcon || (
             <ArrowUpRight
               size={16}
               color={trendDirection === 'up' ? colors.success[500] : colors.error[500]}
             />
-          )}
-        </>
+          )
       )}
 
       {/* Text content */}

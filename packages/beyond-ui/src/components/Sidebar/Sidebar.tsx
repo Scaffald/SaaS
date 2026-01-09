@@ -18,7 +18,6 @@
 
 import { useState, createContext, useContext } from 'react'
 import { View, StyleSheet, ScrollView, Platform } from 'react-native'
-import type { ViewStyle } from 'react-native'
 import type { SidebarProps, SidebarContextValue } from './Sidebar.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { colors } from '../../tokens/colors'
@@ -60,7 +59,7 @@ export function Sidebar({
   const isControlled = collapsedProp !== undefined
   const collapsed = isControlled ? collapsedProp : internalCollapsed
 
-  const handleCollapseChange = (newCollapsed: boolean) => {
+  const _handleCollapseChange = (newCollapsed: boolean) => {
     if (!isControlled) {
       setInternalCollapsed(newCollapsed)
     }
@@ -88,7 +87,6 @@ export function Sidebar({
         return colors.green[500]
       case 'crypto':
         return colors.orange[500]
-      case 'main':
       default:
         return colors.primary[500]
     }

@@ -47,7 +47,7 @@ export const Stock02: CryptoStockWidgetStory = {
   },
 }
 
-const CryptoBalanceWidgetMeta = {
+const _CryptoBalanceWidgetMeta = {
   title: 'Widgets/Crypto/CryptoBalanceWidget',
   component: CryptoBalanceWidget,
   parameters: {
@@ -64,7 +64,7 @@ export const CryptoBalance: StoryObj<typeof CryptoBalanceWidget> = {
   },
 }
 
-const CryptoSinglePriceWidgetMeta = {
+const _CryptoSinglePriceWidgetMeta = {
   title: 'Widgets/Crypto/CryptoSinglePriceWidget',
   component: CryptoSinglePriceWidget,
   parameters: {
@@ -84,7 +84,7 @@ export const CryptoSinglePrice: StoryObj<typeof CryptoSinglePriceWidget> = {
   },
 }
 
-const CryptoConverterWidgetMeta = {
+const _CryptoConverterWidgetMeta = {
   title: 'Widgets/Crypto/CryptoConverterWidget',
   component: CryptoConverterWidget,
   parameters: {
@@ -103,7 +103,7 @@ export const CryptoConverter: StoryObj<typeof CryptoConverterWidget> = {
   },
 }
 
-const MarketTrendingWidgetMeta = {
+const _MarketTrendingWidgetMeta = {
   title: 'Widgets/Crypto/MarketTrendingWidget',
   component: MarketTrendingWidget,
   parameters: {
@@ -122,7 +122,7 @@ export const MarketTrending: StoryObj<typeof MarketTrendingWidget> = {
   },
 }
 
-const FearGreedIndexWidgetMeta = {
+const _FearGreedIndexWidgetMeta = {
   title: 'Widgets/Crypto/FearGreedIndexWidget',
   component: FearGreedIndexWidget,
   parameters: {

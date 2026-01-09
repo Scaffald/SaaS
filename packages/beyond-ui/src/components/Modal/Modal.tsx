@@ -22,8 +22,8 @@
  * ```
  */
 
-import { useState, useEffect } from 'react'
-import { View, Modal as RNModal, Pressable, StyleSheet, Platform } from 'react-native'
+import { useState, useEffect, useCallback } from 'react'
+import { View, Modal as RNModal, Pressable, Platform } from 'react-native'
 import type { ModalProps } from './Modal.types'
 import { getModalStyles } from './Modal.styles'
 import { useThemeContext } from '../../playground/ThemeProvider'
@@ -47,13 +47,13 @@ export function Modal({
   const isControlled = controlledVisible !== undefined
   const isVisible = isControlled ? controlledVisible : internalVisible
 
-  // Handle close
-  const handleClose = () => {
+  // Handle close - memoized to avoid recreating on each render
+  const handleClose = useCallback(() => {
     if (!isControlled) {
       setInternalVisible(false)
     }
     onClose?.()
-  }
+  }, [isControlled, onClose])
 
   // Handle Escape key press (web only)
   useEffect(() => {

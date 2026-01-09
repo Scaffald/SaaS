@@ -4,7 +4,6 @@
  */
 
 import { View, Text, StyleSheet } from 'react-native'
-import type { ViewStyle, TextStyle } from 'react-native'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'

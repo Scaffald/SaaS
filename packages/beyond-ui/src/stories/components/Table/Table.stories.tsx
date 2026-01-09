@@ -11,7 +11,6 @@ import {
   TableColumnHeader,
   ExpandedTableRow,
 } from '../../../components/Table'
-import { Button } from '../../../components/Button'
 import { spacing } from '../../../tokens/spacing'
 import type { TableColumn } from '../../../components/Table'
 

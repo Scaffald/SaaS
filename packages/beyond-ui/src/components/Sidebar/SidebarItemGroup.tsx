@@ -14,7 +14,6 @@
  */
 
 import { View, StyleSheet } from 'react-native'
-import type { ViewStyle } from 'react-native'
 import type { SidebarItemGroupProps } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
 import { SidebarMenuItem } from './SidebarMenuItem'

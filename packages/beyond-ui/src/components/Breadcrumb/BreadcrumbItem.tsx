@@ -64,7 +64,7 @@ export function BreadcrumbItem({
   }
 
   // Get icon color (same as text color)
-  const iconColor = getTextColor()
+  const _iconColor = getTextColor()
 
   // Handle press
   const handlePress = () => {

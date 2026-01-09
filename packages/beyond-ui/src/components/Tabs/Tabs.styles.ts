@@ -7,16 +7,14 @@ import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
-import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import { shadows, boxShadows } from '../../tokens/shadows'
+import { boxShadows } from '../../tokens/shadows'
 import type {
   TabType,
   TabColor,
   TabSize,
   TabOrientation,
   TabStyleConfig,
-  TabContentVariant,
 } from './Tabs.types'
 
 /**
@@ -69,7 +67,7 @@ const sizeConfig = {
 export function getTabsStyles(
   orientation: TabOrientation,
   fullWidth: boolean,
-  theme: ThemeMode = 'light'
+  _theme: ThemeMode = 'light'
 ): ViewStyle {
   return {
     flexDirection: orientation === 'horizontal' ? 'row' : 'column',
@@ -82,7 +80,7 @@ export function getTabsStyles(
  */
 export function getTabListStyles(
   orientation: TabOrientation,
-  theme: ThemeMode = 'light'
+  _theme: ThemeMode = 'light'
 ): ViewStyle {
   return {
     flexDirection: orientation === 'horizontal' ? 'row' : 'column',

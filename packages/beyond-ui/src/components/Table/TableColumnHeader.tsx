@@ -55,7 +55,7 @@ export function TableColumnHeader({
   ...pressableProps
 }: TableColumnHeaderProps) {
   const { theme } = useThemeContext()
-  const [isHovered, setIsHovered] = useState(false)
+  const [_isHovered, setIsHovered] = useState(false)
 
   // Get styles for current state, alignment, and theme
   const styles = getTableColumnHeaderStyles(state, align, theme, width)

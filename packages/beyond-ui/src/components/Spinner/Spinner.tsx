@@ -4,9 +4,7 @@
  */
 
 import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native'
-import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
 import type { SpinnerProps } from './Spinner.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
 

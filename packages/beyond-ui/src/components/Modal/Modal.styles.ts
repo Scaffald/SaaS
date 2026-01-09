@@ -7,7 +7,7 @@ import { Platform, StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { borderRadius, borderWidth } from '../../tokens/borders'
-import { elevation } from '../../tokens/shadows'
+import { shadows, boxShadows } from '../../tokens/shadows'
 
 export interface ModalStyleConfig {
   overlay: ViewStyle
@@ -19,6 +19,9 @@ export function getModalStyles(
   theme: ThemeMode = 'light',
   width: number | string = 520
 ): ModalStyleConfig {
+  // Modal uses shadow-m (medium shadow)
+  const modalShadow = shadows.m
+
   return {
     overlay: {
       flex: 1,
@@ -35,18 +38,17 @@ export function getModalStyles(
       backgroundColor: colors.bg[theme].default,
       borderRadius: borderRadius.xl, // 16px
       borderWidth: borderWidth.none,
-      // Use elevation.modal shadow - for React Native we need to convert
-      // For web, we can use boxShadow
+      // Use modal shadow (shadow-m) - elevation.modal maps to shadows.m
       ...(Platform.OS === 'web'
         ? {
-            boxShadow: elevation.modal,
+            boxShadow: boxShadows.m,
           }
         : {
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 16,
-            elevation: 8,
+            shadowColor: modalShadow.shadowColor,
+            shadowOffset: modalShadow.shadowOffset,
+            shadowOpacity: modalShadow.shadowOpacity,
+            shadowRadius: modalShadow.shadowRadius,
+            elevation: modalShadow.elevation,
           }),
     },
   }

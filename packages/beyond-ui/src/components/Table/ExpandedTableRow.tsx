@@ -35,7 +35,6 @@ import { useThemeContext } from '../../playground/ThemeProvider'
 import { Input } from '../Input'
 import { TableCell } from './TableCell'
 import { spacing } from '../../tokens/spacing'
-import { borderWidth } from '../../tokens/borders'
 import { colors } from '../../tokens/colors'
 
 /**
@@ -102,7 +101,7 @@ export function ExpandedTableRow({
 
   // Render default variant (form inputs)
   const fieldsPerColumn = Math.ceil((fields?.length || 0) / columns)
-  const columnWidthPercent = 100 / columns
+  const _columnWidthPercent = 100 / columns
 
   return (
     <View style={[styles.container, style]}>

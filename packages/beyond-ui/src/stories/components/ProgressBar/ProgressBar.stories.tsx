@@ -3,7 +3,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 import { ProgressBar } from '../../../components/ProgressBar'
 import { ThemeComparison } from '../../../playground'

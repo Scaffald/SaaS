@@ -6,7 +6,6 @@
 import { View, StyleSheet, Platform } from 'react-native'
 import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import { borderRadius } from '../../tokens/borders'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import type { SliderColor, SliderHandleState } from './Slider.types'
 

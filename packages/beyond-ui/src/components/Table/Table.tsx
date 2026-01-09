@@ -31,7 +31,7 @@
 
 import { useState, useMemo } from 'react'
 import { View, Text, ScrollView } from 'react-native'
-import type { TableProps, TableRowData, TableSortConfig, TableSelectionConfig, TableExpansionConfig } from './Table.types'
+import type { TableProps, TableSortConfig, TableSelectionConfig, TableExpansionConfig } from './Table.types'
 import { getTableStyles } from './Table.styles'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { TableColumnHeader } from './TableColumnHeader'
@@ -361,7 +361,7 @@ export function Table({
         <View>
           {/* Column Headers */}
           <View style={{ flexDirection: 'row' }}>
-            {columns.map((column, colIndex) => {
+            {columns.map((column, _colIndex) => {
               // Check if this column should show select all checkbox
               // Look for the first column with showCheckbox set
               const selectColumn = columns.find((col) => col.showCheckbox)

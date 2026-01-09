@@ -28,7 +28,7 @@ export function TabContent({
   }
 
   const isBordered = tabsContext.contentVariant === 'bordered'
-  const isHorizontal = tabsContext.orientation === 'horizontal'
+  const _isHorizontal = tabsContext.orientation === 'horizontal'
 
   return (
     <View

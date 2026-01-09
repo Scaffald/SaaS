@@ -6,7 +6,7 @@
 import type React from 'react'
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { View, StyleSheet, PanResponder, Platform, type LayoutChangeEvent, Pressable } from 'react-native'
-import type { ViewStyle, GestureResponderEvent } from 'react-native'
+import type { GestureResponderEvent } from 'react-native'
 import type { SliderProps } from './Slider.types'
 import { SliderTrack } from './SliderTrack'
 import { SliderHandle } from './SliderHandle'

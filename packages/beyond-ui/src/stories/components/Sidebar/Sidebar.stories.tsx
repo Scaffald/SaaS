@@ -15,12 +15,8 @@ import {
   Settings, 
   Bell, 
   MessageCircle, 
-  LogOut,
   Home,
   Calendar,
-  PieChart,
-  Wallet,
-  ChevronRight,
 } from 'lucide-react-native'
 
 const meta: Meta<typeof Sidebar> = {

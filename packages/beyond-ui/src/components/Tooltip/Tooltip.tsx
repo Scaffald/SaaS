@@ -149,8 +149,6 @@ function calculateTooltipPosition(
       }
       break
     }
-
-    case 'none':
     default: {
       // No arrow - position below by default
       positionStyle.top = y + height + gap
@@ -346,7 +344,7 @@ export function Tooltip({
 
   // Handle layout measurement
   const handleLayout = useCallback(
-    (event: LayoutChangeEvent) => {
+    (_event: LayoutChangeEvent) => {
       // Only measure if tooltip is about to be shown
       if (Platform.OS !== 'web' && !triggerLayout) {
         measureTrigger()

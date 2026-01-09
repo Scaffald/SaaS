@@ -26,7 +26,7 @@
 
 import { useState } from 'react'
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native'
-import type { ViewStyle, TextStyle } from 'react-native'
+import type { ViewStyle, } from 'react-native'
 import type { SidebarMenuItemProps } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
 import { colors } from '../../tokens/colors'

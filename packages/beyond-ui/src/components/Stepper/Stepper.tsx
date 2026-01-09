@@ -19,7 +19,6 @@
  */
 
 import { View, StyleSheet } from 'react-native'
-import type { ViewStyle } from 'react-native'
 import { spacing } from '../../tokens/spacing'
 import type { StepperProps, StepStatus } from './Stepper.types'
 import { Step } from './Step'

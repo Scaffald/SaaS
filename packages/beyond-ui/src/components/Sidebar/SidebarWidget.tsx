@@ -26,7 +26,6 @@
  */
 
 import { View, Text, Pressable, StyleSheet } from 'react-native'
-import type { ViewStyle } from 'react-native'
 import type { SidebarWidgetProps } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
 import { colors } from '../../tokens/colors'

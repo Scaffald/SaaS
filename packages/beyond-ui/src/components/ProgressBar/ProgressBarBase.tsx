@@ -4,7 +4,7 @@
  */
 
 import { View, StyleSheet } from 'react-native'
-import type { ViewStyle, DimensionValue } from 'react-native'
+import type { DimensionValue } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import type { ProgressBarBaseProps } from './ProgressBar.types'

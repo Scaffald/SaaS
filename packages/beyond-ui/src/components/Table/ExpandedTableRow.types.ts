@@ -2,7 +2,7 @@
  * ExpandedTableRow component types
  */
 
-import type { ViewStyle, TextStyle } from 'react-native'
+import type { ViewStyle, } from 'react-native'
 import type React from 'react'
 
 /**

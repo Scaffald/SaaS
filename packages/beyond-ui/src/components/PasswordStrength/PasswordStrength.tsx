@@ -35,7 +35,6 @@ import { CancelIcon } from '../Icon'
 import type {
   PasswordStrengthProps,
   PasswordStrengthLevel,
-  PasswordStrengthVariant,
   PasswordRequirement,
 } from './PasswordStrength.types'
 

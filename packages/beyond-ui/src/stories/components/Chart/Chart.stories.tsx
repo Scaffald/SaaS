@@ -6,7 +6,6 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { View, Text, StyleSheet } from 'react-native'
 import {
   BarChart,
-  BarChartBase,
   LinearChart,
   DonutChart,
   CircleChart,
