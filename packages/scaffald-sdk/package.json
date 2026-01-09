@@ -1,25 +1,26 @@
 {
   "name": "@scaffald/sdk",
   "version": "0.1.0",
-  "description": "Official JavaScript SDK for Scaffald API",
-  "keywords": [
-    "scaffald",
-    "api",
-    "sdk",
-    "rest",
-    "jobs",
-    "applications",
-    "oauth",
-    "typescript"
-  ],
+  "description": "Official JavaScript/TypeScript SDK for the Scaffald API",
+  "author": "Scaffald <dev@scaffald.com>",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Unicorn/UNI-Construct.git",
     "directory": "packages/scaffald-sdk"
   },
-  "license": "MIT",
-  "author": "Scaffald Team",
-  "type": "module",
+  "keywords": [
+    "scaffald",
+    "api",
+    "sdk",
+    "jobs",
+    "recruiting",
+    "oauth",
+    "typescript"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -30,70 +31,51 @@
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.mjs",
       "require": "./dist/react/index.js"
-    },
-    "./oauth": {
-      "types": "./dist/oauth/oauth.d.ts",
-      "import": "./dist/oauth/oauth.mjs",
-      "require": "./dist/oauth/oauth.js"
-    },
-    "./webhooks": {
-      "types": "./dist/webhooks/verify.d.ts",
-      "import": "./dist/webhooks/verify.mjs",
-      "require": "./dist/webhooks/verify.js"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
-    "analyze": "tsx scripts/analyze-bundle.ts",
-    "bench": "vitest bench --run",
-    "bench:watch": "vitest bench",
-    "build": "tsup && pnpm generate:types || true",
-    "build:analyze": "pnpm build:no-types && pnpm analyze",
-    "build:no-types": "tsup",
+    "build": "tsup",
     "dev": "tsup --watch",
-    "format": "biome format --write .",
-    "generate:types": "tsx scripts/generate-types.ts",
-    "lint": "biome lint .",
-    "prepublishOnly": "pnpm build && pnpm test",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate:types": "tsx scripts/generate-types.ts",
+    "prepublishOnly": "pnpm build && pnpm test"
   },
   "dependencies": {
-    "zod": "catalog:"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@tanstack/react-query": "catalog:",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "msw": "catalog:",
-    "openapi-typescript": "^7.4.4",
-    "react": "catalog:",
-    "tsup": "catalog:",
-    "tsx": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "@tanstack/react-query": "^5.17.9",
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.2.46",
+    "msw": "^2.0.11",
+    "openapi-typescript": "^6.7.3",
+    "react": "^18.2.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
   },
   "peerDependencies": {
-    "@tanstack/react-query": "^5.0.0",
-    "react": "^18.0.0"
+    "react": "^18.0.0",
+    "@tanstack/react-query": "^5.0.0"
   },
   "peerDependenciesMeta": {
-    "@tanstack/react-query": {
+    "react": {
       "optional": true
     },
-    "react": {
+    "@tanstack/react-query": {
       "optional": true
     }
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "sideEffects": false
 }

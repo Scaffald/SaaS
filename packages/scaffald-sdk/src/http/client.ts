@@ -1,229 +1,151 @@
-import { handleErrorResponse, NetworkError } from './errors.js'
-import { RateLimitTracker } from './rate-limit.js'
-import { RetryMiddleware } from './retry.js'
-import { InterceptorManager } from './interceptors.js'
-import { ResponseCache, type CacheConfig } from './cache.js'
-import { RequestDeduplicator } from './deduplication.js'
+import type { ScaffaldConfigInternal } from '../config.js'
+import { createErrorFromResponse, ScaffaldError } from './errors.js'
 
-/**
- * HTTP client configuration
- */
-export interface HttpClientConfig {
-  baseUrl: string
-  apiKey?: string
-  accessToken?: string
-  maxRetries?: number
-  headers?: Record<string, string>
-  timeout?: number
-  cache?: CacheConfig
-  enableDeduplication?: boolean
-}
-
-/**
- * HTTP request options
- */
 export interface RequestOptions {
-  method?: string
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+  path: string
+  query?: Record<string, any>
+  body?: any
   headers?: Record<string, string>
-  body?: unknown
-  query?: Record<string, string | number | boolean | undefined>
+  idempotencyKey?: string
 }
 
-/**
- * HTTP client with retry, rate limit tracking, caching, and interceptors
- */
+export interface RateLimitInfo {
+  limit: number
+  remaining: number
+  reset: number
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 export class HttpClient {
-  private config: HttpClientConfig
-  private retryMiddleware: RetryMiddleware
-  public rateLimitTracker: RateLimitTracker
-  public interceptors: InterceptorManager
-  public cache: ResponseCache
-  private deduplicator: RequestDeduplicator
+  private config: ScaffaldConfigInternal
+  private rateLimitInfo?: RateLimitInfo
 
-  constructor(config: HttpClientConfig) {
-    this.config = {
-      maxRetries: 3,
-      timeout: 60000,
-      enableDeduplication: true,
-      ...config,
-    }
-
-    this.retryMiddleware = new RetryMiddleware({
-      maxRetries: this.config.maxRetries ?? 3,
-    })
-
-    this.rateLimitTracker = new RateLimitTracker()
-    this.interceptors = new InterceptorManager()
-    this.cache = new ResponseCache(this.config.cache)
-    this.deduplicator = new RequestDeduplicator(this.config.enableDeduplication)
+  constructor(config: ScaffaldConfigInternal) {
+    this.config = config
   }
 
-  /**
-   * Make an HTTP request
-   */
-  async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-    const url = this.buildUrl(path, options.query)
-    const headers = this.buildHeaders(options.headers)
-    const method = options.method || 'GET'
-
-    // Check cache first (GET requests only)
-    const cachedData = this.cache.get({ url, method, body: options.body })
-    if (cachedData !== null) {
-      return cachedData as T
-    }
-
-    const fetchFn = async (): Promise<Response> => {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
-
-      try {
-        // Execute request interceptors
-        const intercepted = await this.interceptors.executeRequestInterceptors(url, {
-          method,
-          headers,
-          body: options.body ? JSON.stringify(options.body) : undefined,
-          signal: controller.signal,
-        })
-
-        const response = await fetch(intercepted.url, intercepted.init)
-
-        clearTimeout(timeoutId)
-
-        // Execute response interceptors
-        const interceptedResponse = await this.interceptors.executeResponseInterceptors(response)
-
-        // Update rate limit tracker
-        this.rateLimitTracker.update(interceptedResponse)
-
-        return interceptedResponse
-      } catch (error) {
-        clearTimeout(timeoutId)
-
-        if (error instanceof Error && error.name === 'AbortError') {
-          throw new NetworkError('Request timeout')
-        }
-
-        // Execute error interceptors
-        const interceptedError = await this.interceptors.executeErrorInterceptors(
-          error instanceof Error ? error : new Error('Network request failed')
-        )
-
-        // If error interceptor returned a Response, use it
-        if (interceptedError instanceof Response) {
-          return interceptedError
-        }
-
-        throw new NetworkError(
-          interceptedError instanceof Error ? interceptedError.message : 'Network request failed',
-          interceptedError instanceof Error ? interceptedError : undefined
-        )
-      }
-    }
-
-    // Deduplicate concurrent requests
-    const deduplicatedFetch = () =>
-      this.deduplicator.deduplicate(url, method, options.body, fetchFn)
-
-    // Execute with retry middleware
-    const response = await this.retryMiddleware.execute(deduplicatedFetch, method)
-
-    // Handle error responses
-    if (!response.ok) {
-      await handleErrorResponse(response)
-    }
-
-    // Parse response
-    const contentType = response.headers.get('content-type')
-    let data: T
-    if (contentType?.includes('application/json')) {
-      data = (await response.json()) as T
-    } else {
-      data = (await response.text()) as T
-    }
-
-    // Cache successful GET requests
-    if (method === 'GET' && response.ok) {
-      this.cache.set({ url, method, body: options.body }, response, data)
-    }
-
-    return data
+  getRateLimitInfo(): RateLimitInfo | undefined {
+    return this.rateLimitInfo
   }
 
-  /**
-   * Build full URL with query parameters
-   */
-  private buildUrl(
-    path: string,
-    query?: Record<string, string | number | boolean | undefined>
-  ): string {
+  async request<T = any>(options: RequestOptions, attempt = 0): Promise<T> {
+    const { method, path, query, body, headers = {}, idempotencyKey } = options
     const url = new URL(path, this.config.baseUrl)
-
+    
     if (query) {
-      for (const [key, value] of Object.entries(query)) {
-        if (value !== undefined) {
+      Object.entries(query).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
           url.searchParams.append(key, String(value))
         }
+      })
+    }
+
+    const requestHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'scaffald-sdk-js/0.1.0',
+      ...this.config.headers,
+      ...headers,
+    }
+
+    if (this.config.apiKey) {
+      requestHeaders['Authorization'] = 'Bearer ' + this.config.apiKey
+    } else if (this.config.accessToken) {
+      requestHeaders['Authorization'] = 'Bearer ' + this.config.accessToken
+    }
+
+    if (method === 'POST' && idempotencyKey) {
+      requestHeaders['Idempotency-Key'] = idempotencyKey
+    }
+
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
+      const urlString = url.toString()
+
+      const response = await fetch(urlString, {
+        method,
+        headers: requestHeaders,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+      this.parseRateLimitHeaders(response)
+      const requestId = response.headers.get('x-request-id') || undefined
+
+      if (response.ok) {
+        if (response.status === 204) return undefined as T
+        const data = await response.json()
+        return data
+      }
+
+      const errorBody = await response.json().catch(() => ({}))
+      const error = createErrorFromResponse(response.status, errorBody, requestId)
+
+      if (this.shouldRetry(method, response.status, attempt)) {
+        const delay = this.getRetryDelay(response, attempt)
+        await sleep(delay)
+        return this.request(options, attempt + 1)
+      }
+
+      throw error
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new ScaffaldError('Request timeout')
+      }
+      if (error instanceof ScaffaldError) throw error
+      throw new ScaffaldError(error instanceof Error ? error.message : 'Unknown error')
+    }
+  }
+
+  private parseRateLimitHeaders(response: Response): void {
+    const limit = response.headers.get('x-ratelimit-limit')
+    const remaining = response.headers.get('x-ratelimit-remaining')
+    const reset = response.headers.get('x-ratelimit-reset')
+
+    if (limit && remaining && reset) {
+      this.rateLimitInfo = {
+        limit: parseInt(limit, 10),
+        remaining: parseInt(remaining, 10),
+        reset: parseInt(reset, 10),
       }
     }
-
-    return url.toString()
   }
 
-  /**
-   * Build request headers
-   */
-  private buildHeaders(additionalHeaders?: Record<string, string>): Record<string, string> {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      'User-Agent': `scaffald-sdk-js/${this.getVersion()}`,
-      ...this.config.headers,
-      ...additionalHeaders,
+  private shouldRetry(method: string, statusCode: number, attempt: number): boolean {
+    if (attempt >= this.config.maxRetries) return false
+    if (method === 'POST') return false
+    return [408, 429, 500, 502, 503, 504].includes(statusCode)
+  }
+
+  private getRetryDelay(response: Response, attempt: number): number {
+    const retryAfter = response.headers.get('retry-after')
+    if (retryAfter) {
+      const retryAfterMs = parseInt(retryAfter, 10) * 1000
+      if (!isNaN(retryAfterMs)) return Math.min(retryAfterMs, 30000)
     }
-
-    // Add authentication
-    if (this.config.accessToken) {
-      headers.Authorization = `Bearer ${this.config.accessToken}`
-    } else if (this.config.apiKey) {
-      headers.Authorization = `Bearer ${this.config.apiKey}`
-    }
-
-    return headers
+    return Math.min(1000 * Math.pow(2, attempt), 30000)
   }
 
-  /**
-   * Get SDK version
-   */
-  private getVersion(): string {
-    // This will be replaced during build
-    return '0.1.0'
+  async get<T = any>(path: string, query?: Record<string, any>, headers?: Record<string, string>): Promise<T> {
+    return this.request<T>({ method: 'GET', path, query, headers })
   }
 
-  /**
-   * GET request
-   */
-  get<T>(path: string, query?: Record<string, string | number | boolean | undefined>): Promise<T> {
-    return this.request<T>(path, { method: 'GET', query })
+  async post<T = any>(path: string, body?: any, headers?: Record<string, string>, idempotencyKey?: string): Promise<T> {
+    return this.request<T>({ method: 'POST', path, body, headers, idempotencyKey })
   }
 
-  /**
-   * POST request
-   */
-  post<T>(path: string, body?: unknown): Promise<T> {
-    return this.request<T>(path, { method: 'POST', body })
+  async put<T = any>(path: string, body?: any, headers?: Record<string, string>): Promise<T> {
+    return this.request<T>({ method: 'PUT', path, body, headers })
   }
 
-  /**
-   * PATCH request
-   */
-  patch<T>(path: string, body?: unknown): Promise<T> {
-    return this.request<T>(path, { method: 'PATCH', body })
+  async patch<T = any>(path: string, body?: any, headers?: Record<string, string>): Promise<T> {
+    return this.request<T>({ method: 'PATCH', path, body, headers })
   }
 
-  /**
-   * DELETE request
-   */
-  delete<T>(path: string): Promise<T> {
-    return this.request<T>(path, { method: 'DELETE' })
+  async delete<T = any>(path: string, headers?: Record<string, string>): Promise<T> {
+    return this.request<T>({ method: 'DELETE', path, headers })
   }
 }

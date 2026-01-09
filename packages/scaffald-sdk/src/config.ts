@@ -1,8 +1,7 @@
-import type { CacheConfig } from './http/cache.js'
-
 /**
- * Scaffald SDK configuration
+ * SDK Configuration Types
  */
+
 export interface ScaffaldConfig {
   /**
    * API key for server-side authentication
@@ -11,78 +10,49 @@ export interface ScaffaldConfig {
   apiKey?: string
 
   /**
-   * OAuth access token for user authentication
+   * OAuth access token for user-facing applications
    */
   accessToken?: string
 
   /**
-   * Base URL for the API
-   * @default "https://api.scaffald.com"
+   * Base URL for the Scaffald API
+   * @default 'https://api.scaffald.com'
    */
   baseUrl?: string
 
   /**
-   * Maximum number of retry attempts
+   * Maximum number of retry attempts for failed requests
    * @default 3
    */
   maxRetries?: number
 
   /**
-   * Request timeout in milliseconds
-   * @default 60000 (60 seconds)
+   * Timeout for API requests in milliseconds
+   * @default 30000 (30 seconds)
    */
   timeout?: number
 
   /**
-   * Additional headers to include in all requests
+   * Custom headers to include with every request
    */
   headers?: Record<string, string>
 
   /**
-   * Response cache configuration
-   * @default { enabled: false, defaultTtl: 300000, maxSize: 100 }
+   * Enable debug logging
+   * @default false
    */
-  cache?: CacheConfig
-
-  /**
-   * Enable request deduplication for concurrent identical requests
-   * @default true
-   */
-  enableDeduplication?: boolean
+  debug?: boolean
 }
 
-/**
- * Validate SDK configuration
- */
-export function validateConfig(config: ScaffaldConfig): void {
-  if (!config.apiKey && !config.accessToken) {
-    throw new Error('Either apiKey or accessToken must be provided')
-  }
-
-  if (config.apiKey && config.accessToken) {
-    throw new Error('Cannot provide both apiKey and accessToken')
-  }
-
-  if (config.apiKey && !config.apiKey.startsWith('sk_')) {
-    throw new Error('API key must start with "sk_"')
-  }
-
-  if (config.maxRetries !== undefined && (config.maxRetries < 0 || config.maxRetries > 10)) {
-    throw new Error('maxRetries must be between 0 and 10')
-  }
-
-  if (config.timeout !== undefined && (config.timeout < 1000 || config.timeout > 300000)) {
-    throw new Error('timeout must be between 1000ms and 300000ms (5 minutes)')
-  }
+export interface ScaffaldConfigInternal extends Required<Omit<ScaffaldConfig, 'apiKey' | 'accessToken'>> {
+  apiKey?: string
+  accessToken?: string
 }
 
-/**
- * Get default configuration
- */
-export function getDefaultConfig(): Partial<ScaffaldConfig> {
-  return {
-    baseUrl: 'https://api.scaffald.com',
-    maxRetries: 3,
-    timeout: 60000,
-  }
+export const DEFAULT_CONFIG: Omit<ScaffaldConfigInternal, 'apiKey' | 'accessToken'> = {
+  baseUrl: 'https://api.scaffald.com',
+  maxRetries: 3,
+  timeout: 30000,
+  headers: {},
+  debug: false,
 }

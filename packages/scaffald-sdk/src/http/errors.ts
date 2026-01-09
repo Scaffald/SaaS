@@ -1,179 +1,93 @@
 /**
- * Base error class for all Scaffald SDK errors
+ * SDK Error Types
  */
+
 export class ScaffaldError extends Error {
   public readonly statusCode?: number
-  public readonly response?: Response
-  public readonly data?: unknown
+  public readonly code?: string
+  public readonly requestId?: string
 
-  constructor(message: string, statusCode?: number, response?: Response, data?: unknown) {
+  constructor(message: string, statusCode?: number, code?: string, requestId?: string) {
     super(message)
     this.name = 'ScaffaldError'
     this.statusCode = statusCode
-    this.response = response
-    this.data = data
+    this.code = code
+    this.requestId = requestId
 
-    // Maintains proper stack trace for where error was thrown (only available on V8)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, ScaffaldError)
     }
   }
 }
 
-/**
- * Error thrown when rate limit is exceeded
- */
-export class RateLimitError extends ScaffaldError {
-  public readonly retryAfter: number
-  public readonly limit: number
-  public readonly remaining: number
-  public readonly reset: number
-
-  constructor(
-    message: string,
-    retryAfter: number,
-    limit: number,
-    remaining: number,
-    reset: number,
-    response?: Response
-  ) {
-    super(message, 429, response)
-    this.name = 'RateLimitError'
-    this.retryAfter = retryAfter
-    this.limit = limit
-    this.remaining = remaining
-    this.reset = reset
-  }
-}
-
-/**
- * Error thrown when authentication fails
- */
 export class AuthenticationError extends ScaffaldError {
-  constructor(message: string, response?: Response, data?: unknown) {
-    super(message, 401, response, data)
+  constructor(message: string, requestId?: string) {
+    super(message, 401, 'authentication_error', requestId)
     this.name = 'AuthenticationError'
   }
 }
 
-/**
- * Error thrown when authorization fails (user doesn't have permission)
- */
-export class AuthorizationError extends ScaffaldError {
-  constructor(message: string, response?: Response, data?: unknown) {
-    super(message, 403, response, data)
-    this.name = 'AuthorizationError'
+export class PermissionError extends ScaffaldError {
+  constructor(message: string, requestId?: string) {
+    super(message, 403, 'permission_error', requestId)
+    this.name = 'PermissionError'
   }
 }
 
-/**
- * Error thrown when a resource is not found
- */
 export class NotFoundError extends ScaffaldError {
-  constructor(message: string, response?: Response, data?: unknown) {
-    super(message, 404, response, data)
+  constructor(message: string, requestId?: string) {
+    super(message, 404, 'not_found', requestId)
     this.name = 'NotFoundError'
   }
 }
 
-/**
- * Error thrown when request validation fails
- */
 export class ValidationError extends ScaffaldError {
-  public readonly errors?: unknown
+  public readonly errors?: Record<string, string[]>
 
-  constructor(message: string, errors?: unknown, response?: Response) {
-    super(message, 400, response, errors)
+  constructor(message: string, errors?: Record<string, string[]>, requestId?: string) {
+    super(message, 422, 'validation_error', requestId)
     this.name = 'ValidationError'
     this.errors = errors
   }
 }
 
-/**
- * Error thrown when the server returns a 5xx error
- */
-export class ServerError extends ScaffaldError {
-  constructor(message: string, statusCode: number, response?: Response, data?: unknown) {
-    super(message, statusCode, response, data)
-    this.name = 'ServerError'
+export class RateLimitError extends ScaffaldError {
+  public readonly retryAfter?: number
+
+  constructor(message: string, retryAfter?: number, requestId?: string) {
+    super(message, 429, 'rate_limit_error', requestId)
+    this.name = 'RateLimitError'
+    this.retryAfter = retryAfter
   }
 }
 
-/**
- * Error thrown when a network request fails
- */
-export class NetworkError extends ScaffaldError {
-  constructor(message: string, cause?: Error) {
-    super(message, undefined, undefined, { cause })
-    this.name = 'NetworkError'
+export class APIError extends ScaffaldError {
+  constructor(message: string, statusCode: number, code: string, requestId?: string) {
+    super(message, statusCode, code, requestId)
+    this.name = 'APIError'
   }
 }
 
-/**
- * Parse error response and throw appropriate error
- */
-export async function handleErrorResponse(response: Response): Promise<never> {
-  let data: unknown
+export function createErrorFromResponse(
+  statusCode: number,
+  body: any,
+  requestId?: string
+): ScaffaldError {
+  const message = body?.error?.message || body?.message || 'HTTP ' + statusCode + ' error'
+  const code = body?.error?.code || body?.code
 
-  try {
-    const contentType = response.headers.get('content-type')
-    if (contentType?.includes('application/json')) {
-      data = await response.json()
-    } else {
-      data = await response.text()
-    }
-  } catch {
-    // Ignore parsing errors
+  switch (statusCode) {
+    case 401:
+      return new AuthenticationError(message, requestId)
+    case 403:
+      return new PermissionError(message, requestId)
+    case 404:
+      return new NotFoundError(message, requestId)
+    case 422:
+      return new ValidationError(message, body?.error?.errors || body?.errors, requestId)
+    case 429:
+      return new RateLimitError(message, body?.retry_after, requestId)
+    default:
+      return new APIError(message, statusCode, code || 'api_error', requestId)
   }
-
-  const message =
-    typeof data === 'object' && data !== null && 'error' in data
-      ? String((data as { error: unknown }).error)
-      : typeof data === 'object' && data !== null && 'message' in data
-        ? String((data as { message: unknown }).message)
-        : typeof data === 'string'
-          ? data
-          : `Request failed with status ${response.status}`
-
-  // Handle rate limiting
-  if (response.status === 429) {
-    const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10)
-    const limit = parseInt(response.headers.get('X-RateLimit-Limit') || '0', 10)
-    const remaining = parseInt(response.headers.get('X-RateLimit-Remaining') || '0', 10)
-    const reset = parseInt(response.headers.get('X-RateLimit-Reset') || '0', 10)
-
-    throw new RateLimitError(message, retryAfter, limit, remaining, reset, response)
-  }
-
-  // Handle authentication errors
-  if (response.status === 401) {
-    throw new AuthenticationError(message, response, data)
-  }
-
-  // Handle authorization errors
-  if (response.status === 403) {
-    throw new AuthorizationError(message, response, data)
-  }
-
-  // Handle not found
-  if (response.status === 404) {
-    throw new NotFoundError(message, response, data)
-  }
-
-  // Handle validation errors
-  if (response.status === 400 || response.status === 422) {
-    const errors =
-      typeof data === 'object' && data !== null && 'errors' in data
-        ? (data as { errors: unknown }).errors
-        : undefined
-    throw new ValidationError(message, errors, response)
-  }
-
-  // Handle server errors
-  if (response.status >= 500) {
-    throw new ServerError(message, response.status, response, data)
-  }
-
-  // Generic error
-  throw new ScaffaldError(message, response.status, response, data)
 }
