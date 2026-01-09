@@ -37,7 +37,6 @@ export function BreadcrumbSeparator({ separator, style }: BreadcrumbSeparatorPro
     <View
       style={[styles.container, style]}
       accessibilityRole="none"
-      // @ts-expect-error - React Native Web types
       aria-hidden={true}
     >
       <ChevronIcon size={18} color={separatorColor} />

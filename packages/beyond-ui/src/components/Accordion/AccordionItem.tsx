@@ -59,9 +59,7 @@ export function AccordionItem({
   return (
     <AccordionItemContext.Provider value={contextValue}>
       <View
-        // @ts-expect-error - web-specific props
         onFocus={() => setIsFocused(true)}
-        // @ts-expect-error - web-specific props
         onBlur={() => setIsFocused(false)}
         style={[
           styles.container,
