@@ -3,8 +3,9 @@
  * Interactive slider for single value or range selection
  */
 
-import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react'
-import { View, StyleSheet, PanResponder, Platform, LayoutChangeEvent, Pressable } from 'react-native'
+import type React from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import { View, StyleSheet, PanResponder, Platform, type LayoutChangeEvent, Pressable } from 'react-native'
 import type { ViewStyle, GestureResponderEvent } from 'react-native'
 import type { SliderProps } from './Slider.types'
 import { SliderTrack } from './SliderTrack'

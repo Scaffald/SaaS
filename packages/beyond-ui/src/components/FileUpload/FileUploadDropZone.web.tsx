@@ -195,17 +195,17 @@ export function FileUploadDropZone({
         pressed && !disabled && { opacity: 0.8 },
         style,
       ]}
-      // @ts-ignore - React Native Web types don't include mouse and drag events
+      // @ts-expect-error - React Native Web types don't include mouse and drag events
       onMouseEnter={() => setIsHovered(true)}
-      // @ts-ignore - React Native Web types don't include mouse and drag events
+      // @ts-expect-error - React Native Web types don't include mouse and drag events
       onMouseLeave={() => setIsHovered(false)}
-      // @ts-ignore - React Native Web types don't include mouse and drag events
+      // @ts-expect-error - React Native Web types don't include mouse and drag events
       onDragEnter={handleDragEnter}
-      // @ts-ignore - React Native Web types don't include mouse and drag events
+      // @ts-expect-error - React Native Web types don't include mouse and drag events
       onDragOver={handleDragOver}
-      // @ts-ignore - React Native Web types don't include mouse and drag events
+      // @ts-expect-error - React Native Web types don't include mouse and drag events
       onDragLeave={handleDragLeave}
-      // @ts-ignore - React Native Web types don't include mouse and drag events
+      // @ts-expect-error - React Native Web types don't include mouse and drag events
       onDrop={handleDrop}
       accessibilityRole="button"
       accessibilityLabel={message}

@@ -101,7 +101,7 @@ export function BreadcrumbItem({
     return (
       <View
         style={styles.wrapper}
-        // @ts-ignore - React Native Web types
+        // @ts-expect-error - React Native Web types
         role="link"
         aria-current={isActive ? 'page' : undefined}
         accessibilityRole="link"
@@ -127,14 +127,14 @@ export function BreadcrumbItem({
       {...(Platform.OS === 'web' && {
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => setIsHovered(false),
-        // @ts-ignore - React Native Web cursor
+        // @ts-expect-error - React Native Web cursor
         style: ({ pressed }: { pressed: boolean }) => [
           styles.wrapper,
           pressed && shouldBeInteractive && { opacity: 0.8 },
           shouldBeInteractive && { cursor: 'pointer' },
         ],
       })}
-      // @ts-ignore - React Native Web types
+      // @ts-expect-error - React Native Web types
       role="link"
       aria-current={isActive ? 'page' : undefined}
       accessibilityRole="link"

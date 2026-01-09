@@ -1,0 +1,117 @@
+/**
+ * Modal component
+ * Base modal dialog with overlay and backdrop
+ * Mapped from Figma Forsured Design System
+ *
+ * @example
+ * ```tsx
+ * import { Modal } from '@unicornlove/beyond-ui'
+ *
+ * // Controlled modal
+ * <Modal visible={isVisible} onClose={() => setIsVisible(false)}>
+ *   <ModalHeader title="Modal Title" />
+ *   <ModalContent>Content here</ModalContent>
+ *   <ModalActions primaryAction={{ label: 'Save', onPress: handleSave }} />
+ * </Modal>
+ *
+ * // Uncontrolled modal
+ * <Modal defaultVisible={true} onClose={handleClose}>
+ *   <ModalHeader title="Modal Title" />
+ *   <ModalContent>Content here</ModalContent>
+ * </Modal>
+ * ```
+ */
+
+import { useState, useEffect } from 'react'
+import { View, Modal as RNModal, Pressable, StyleSheet, Platform } from 'react-native'
+import type { ModalProps } from './Modal.types'
+import { getModalStyles } from './Modal.styles'
+import { useThemeContext } from '../../playground/ThemeProvider'
+
+export function Modal({
+  visible: controlledVisible,
+  defaultVisible = false,
+  onClose,
+  closeOnBackdropPress = true,
+  closeOnEscapeKey = true,
+  width = 520,
+  style,
+  children,
+  testID,
+}: ModalProps) {
+  const { theme } = useThemeContext()
+  const styles = getModalStyles(theme, width)
+
+  // Controlled/uncontrolled visibility state
+  const [internalVisible, setInternalVisible] = useState(defaultVisible)
+  const isControlled = controlledVisible !== undefined
+  const isVisible = isControlled ? controlledVisible : internalVisible
+
+  // Handle close
+  const handleClose = () => {
+    if (!isControlled) {
+      setInternalVisible(false)
+    }
+    onClose?.()
+  }
+
+  // Handle Escape key press (web only)
+  useEffect(() => {
+    if (!closeOnEscapeKey || !isVisible || Platform.OS !== 'web') {
+      return
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' || event.keyCode === 27) {
+        handleClose()
+      }
+    }
+
+    if (typeof document !== 'undefined') {
+      document.addEventListener('keydown', handleEscape)
+      return () => {
+        document.removeEventListener('keydown', handleEscape)
+      }
+    }
+  }, [isVisible, closeOnEscapeKey, handleClose])
+
+  // Handle backdrop press
+  const handleBackdropPress = () => {
+    if (closeOnBackdropPress) {
+      handleClose()
+    }
+  }
+
+  if (!isVisible) {
+    return null
+  }
+
+  return (
+    <RNModal
+      visible={isVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleClose}
+      statusBarTranslucent
+      testID={testID}
+    >
+      <Pressable style={styles.overlay} onPress={handleBackdropPress}>
+        <View
+          style={[styles.container, style]}
+          onStartShouldSetResponder={() => true}
+          onTouchEnd={(e) => {
+            // Prevent touch events from bubbling to backdrop handler
+            e.stopPropagation()
+          }}
+          // @ts-expect-error - web-specific props
+          onMouseDown={(e) => {
+            // Prevent mouse events from bubbling to backdrop handler
+            e.stopPropagation()
+          }}
+        >
+          {children}
+        </View>
+      </Pressable>
+    </RNModal>
+  )
+}

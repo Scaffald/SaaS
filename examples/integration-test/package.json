@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "node test.mjs",
-    "test:watch": "nodemon test.mjs",
-    "test:verbose": "DEBUG=scaffald:* node test.mjs"
+    "test:verbose": "DEBUG=scaffald:* node test.mjs",
+    "test:watch": "nodemon test.mjs"
   },
   "dependencies": {
     "@scaffald/sdk": "workspace:*"

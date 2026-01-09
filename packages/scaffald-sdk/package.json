@@ -2,6 +2,16 @@
   "name": "@scaffald/sdk",
   "version": "0.1.0",
   "description": "Official JavaScript SDK for Scaffald API",
+  "keywords": [
+    "scaffald",
+    "api",
+    "sdk",
+    "rest",
+    "jobs",
+    "applications",
+    "oauth",
+    "typescript"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Unicorn/UNI-Construct.git",
@@ -40,21 +50,21 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup && pnpm generate:types || true",
-    "build:no-types": "tsup",
-    "build:analyze": "pnpm build:no-types && pnpm analyze",
     "analyze": "tsx scripts/analyze-bundle.ts",
-    "dev": "tsup --watch",
-    "generate:types": "tsx scripts/generate-types.ts",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
     "bench": "vitest bench --run",
     "bench:watch": "vitest bench",
-    "typecheck": "tsc --noEmit",
-    "lint": "biome lint .",
+    "build": "tsup && pnpm generate:types || true",
+    "build:analyze": "pnpm build:no-types && pnpm analyze",
+    "build:no-types": "tsup",
+    "dev": "tsup --watch",
     "format": "biome format --write .",
-    "prepublishOnly": "pnpm build && pnpm test"
+    "generate:types": "tsx scripts/generate-types.ts",
+    "lint": "biome lint .",
+    "prepublishOnly": "pnpm build && pnpm test",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "catalog:"
@@ -72,27 +82,17 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "@tanstack/react-query": "^5.0.0"
+    "@tanstack/react-query": "^5.0.0",
+    "react": "^18.0.0"
   },
   "peerDependenciesMeta": {
-    "react": {
+    "@tanstack/react-query": {
       "optional": true
     },
-    "@tanstack/react-query": {
+    "react": {
       "optional": true
     }
   },
-  "keywords": [
-    "scaffald",
-    "api",
-    "sdk",
-    "rest",
-    "jobs",
-    "applications",
-    "oauth",
-    "typescript"
-  ],
   "publishConfig": {
     "access": "public"
   }

@@ -99,7 +99,7 @@ export function Breadcrumb({
   return (
     <View
       style={[styles.container, style]}
-      // @ts-ignore - React Native Web types
+      // @ts-expect-error - React Native Web types
       role="navigation"
       aria-label={ariaLabel}
       accessibilityRole="none"
