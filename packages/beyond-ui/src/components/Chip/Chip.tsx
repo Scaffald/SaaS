@@ -31,7 +31,7 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { View, Pressable, Text, StyleSheet, Platform, type GestureResponderEvent } from 'react-native'
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
@@ -108,7 +108,7 @@ export function Chip({
   }
 
   // Get chip container styles
-  const getChipStyles = () => {
+  const chipStyles = useMemo(() => {
     const baseStyles: ViewStyle[] = [
       styles.chip,
       {
@@ -175,10 +175,20 @@ export function Chip({
     }
 
     return baseStyles
-  }
+  }, [
+    sizeConfig.height,
+    sizeConfig.paddingHorizontal,
+    sizeConfig.paddingVertical,
+    sizeConfig.gap,
+    isLight,
+    selected,
+    isHovered,
+    disabled,
+    isFocused,
+  ])
 
   // Get text styles
-  const getTextStyles = () => {
+  const textStyles = useMemo(() => {
     const baseTextStyles: TextStyle[] = [
       styles.text,
       {
@@ -204,7 +214,7 @@ export function Chip({
     }
 
     return baseTextStyles
-  }
+  }, [sizeConfig.fontSize, sizeConfig.lineHeight, isLight, selected, disabled])
 
   // Render leading content based on type
   const renderLeadingContent = () => {
@@ -299,7 +309,7 @@ export function Chip({
       disabled={disabled}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
-      style={[...getChipStyles(), style]}
+      style={[...chipStyles, style]}
       {...(Platform.OS === 'web' && {
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => setIsHovered(false),
@@ -309,7 +319,7 @@ export function Chip({
       {renderLeadingContent()}
 
       {typeof children === 'string' ? (
-        <Text style={[...getTextStyles(), textStyle]} numberOfLines={1}>
+        <Text style={[...textStyles, textStyle]} numberOfLines={1}>
           {children}
         </Text>
       ) : (

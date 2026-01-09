@@ -3,7 +3,7 @@
  * Displays user avatars with various types, sizes, and indicators
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { View, Text, Image, Pressable, StyleSheet, Platform } from 'react-native'
 import type { AvatarProps } from './Avatar.types'
 import { colors } from '../../tokens/colors'
@@ -61,7 +61,7 @@ export function Avatar({
   const hasIcon = !!icon
 
   // Get background color based on color prop
-  const getBackgroundColor = () => {
+  const backgroundColor = useMemo(() => {
     switch (color) {
       case 'primary':
         return colors.primary[100]
@@ -76,10 +76,10 @@ export function Avatar({
       default:
         return colors.gray[100]
     }
-  }
+  }, [color])
 
   // Get text color based on color prop
-  const getTextColor = () => {
+  const textColor = useMemo(() => {
     switch (color) {
       case 'primary':
         return colors.primary[700]
@@ -94,10 +94,10 @@ export function Avatar({
       default:
         return colors.gray[700]
     }
-  }
+  }, [color])
 
   // Get ring color
-  const getRingColor = () => {
+  const ringColor = useMemo(() => {
     switch (color) {
       case 'primary':
         return colors.primary[600]
@@ -112,7 +112,7 @@ export function Avatar({
       default:
         return colors.gray[300]
     }
-  }
+  }, [color])
 
   const avatarContent = (
     <View
@@ -136,7 +136,7 @@ export function Avatar({
               height: dimensions.size,
               borderRadius: dimensions.size / 2,
               borderWidth: dimensions.ringWidth,
-              borderColor: getRingColor(),
+              borderColor: ringColor,
             },
           ]}
         />
@@ -150,7 +150,7 @@ export function Avatar({
             width: dimensions.size - (showRing ? dimensions.ringWidth * 2 : 0),
             height: dimensions.size - (showRing ? dimensions.ringWidth * 2 : 0),
             borderRadius: (dimensions.size - (showRing ? dimensions.ringWidth * 2 : 0)) / 2,
-            backgroundColor: hasImage ? 'transparent' : getBackgroundColor(),
+            backgroundColor: hasImage ? 'transparent' : backgroundColor,
           },
           avatarStyle,
         ]}
@@ -194,7 +194,7 @@ export function Avatar({
               styles.initials,
               {
                 fontSize: dimensions.fontSize,
-                color: getTextColor(),
+                color: textColor,
                 fontFamily: fontFamily.body,
                 fontWeight: fontWeight.medium,
               },

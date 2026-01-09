@@ -21,7 +21,7 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Pressable, Text, View, ActivityIndicator, Platform } from 'react-native'
 import type { ButtonProps } from './Button.types'
 import { getButtonStyles } from './Button.styles'
@@ -48,7 +48,10 @@ export function Button({
   const { theme } = useThemeContext()
 
   // Get styles based on current props and theme
-  const styles = getButtonStyles(color, variant, size, isDisabled, iconOnly, theme)
+  const styles = useMemo(
+    () => getButtonStyles(color, variant, size, isDisabled, iconOnly, theme),
+    [color, variant, size, isDisabled, iconOnly, theme]
+  )
 
   // Calculate icon size based on button size
   const iconSize = size === 'sm' ? 20 : 24
