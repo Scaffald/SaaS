@@ -338,6 +338,19 @@ export type {
   SidebarItemGroupProps,
 } from './components/Sidebar'
 
+// Crypto Wallet components
+export { CryptoWalletLayout } from './components/CryptoWalletLayout'
+export type {
+  CryptoWalletLayoutProps,
+  CryptoWalletLayoutVariant,
+} from './components/CryptoWalletLayout'
+
+export { CryptoAssetCard } from './components/CryptoAssetCard'
+export type { CryptoAssetCardProps, ChangeType } from './components/CryptoAssetCard'
+
+export { TradeControls } from './components/TradeControls'
+export type { TradeControlsProps, TradeMode, TradeAsset } from './components/TradeControls'
+
 // Navigation components
 export { NavIconButton } from './components/NavIconButton'
 export type {

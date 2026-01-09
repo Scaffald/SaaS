@@ -32,7 +32,7 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -95,8 +95,8 @@ export function Radio({
     },
   }[size]
 
-  // Color configuration based on state
-  const getColors = () => {
+  // Color configuration based on state (memoized for performance)
+  const colorConfig = useMemo(() => {
     // Error state overrides color choice
     if (error) {
       return {
@@ -136,9 +136,7 @@ export function Radio({
       backgroundHover: checked ? colors.gray[800] : colors.gray[50],
       iconColor: colors.white,
     }
-  }
-
-  const colorConfig = getColors()
+  }, [error, checked, color, disabled, theme])
 
   // Focus ring style (web only)
   const focusRing =

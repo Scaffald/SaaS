@@ -55,7 +55,7 @@ export class Jobs extends Resource {
   }
 
   async retrieve(id: string): Promise<Job> {
-    return this.get<Job>('/v1/jobs/' + id)
+    return this.get<Job>(`/v1/jobs/${id}`)
   }
 
   async create(params: CreateJobParams): Promise<Job> {
@@ -63,14 +63,14 @@ export class Jobs extends Resource {
   }
 
   async update(id: string, params: Partial<CreateJobParams>): Promise<Job> {
-    return this.patch<Job>('/v1/jobs/' + id, params)
+    return this.patch<Job>(`/v1/jobs/${id}`, params)
   }
 
   async delete(id: string): Promise<void> {
-    return this.del<void>('/v1/jobs/' + id)
+    return this.del<void>(`/v1/jobs/${id}`)
   }
 
   async similar(id: string, limit?: number): Promise<JobListResponse> {
-    return this.get<JobListResponse>('/v1/jobs/' + id + '/similar', { limit })
+    return this.get<JobListResponse>(`/v1/jobs/${id}/similar`, { limit })
   }
 }

@@ -73,7 +73,7 @@ export function createErrorFromResponse(
   body: any,
   requestId?: string
 ): ScaffaldError {
-  const message = body?.error?.message || body?.message || 'HTTP ' + statusCode + ' error'
+  const message = body?.error?.message || body?.message || `HTTP ${statusCode} error`
   const code = body?.error?.code || body?.code
 
   switch (statusCode) {

@@ -36,7 +36,7 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { View, Pressable, Text, StyleSheet, Platform, type ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -91,8 +91,8 @@ export function SelectionCard({
     onChange?.(newValue)
   }
 
-  // Determine card state for styling
-  const getCardStyles = () => {
+  // Determine card state for styling (memoized for performance)
+  const cardStyles = useMemo(() => {
     const baseStyles: ViewStyle[] = [styles.card]
 
     // Background color
@@ -144,7 +144,7 @@ export function SelectionCard({
     }
 
     return baseStyles
-  }
+  }, [isLight, isHovered, disabled, isFocused, selected])
 
   // Render leading content based on type or custom content
   const renderLeadingContent = () => {
@@ -216,7 +216,7 @@ export function SelectionCard({
       disabled={disabled}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
-      style={[...getCardStyles(), style]}
+      style={[...cardStyles, style]}
       {...(Platform.OS === 'web' && {
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => setIsHovered(false),

@@ -50,9 +50,9 @@ export class HttpClient {
     }
 
     if (this.config.apiKey) {
-      requestHeaders['Authorization'] = 'Bearer ' + this.config.apiKey
+      requestHeaders['Authorization'] = `Bearer ${this.config.apiKey}`
     } else if (this.config.accessToken) {
-      requestHeaders['Authorization'] = 'Bearer ' + this.config.accessToken
+      requestHeaders['Authorization'] = `Bearer ${this.config.accessToken}`
     }
 
     if (method === 'POST' && idempotencyKey) {
@@ -106,10 +106,20 @@ export class HttpClient {
     const reset = response.headers.get('x-ratelimit-reset')
 
     if (limit && remaining && reset) {
+      const limitNum = parseInt(limit, 10)
+      const remainingNum = parseInt(remaining, 10)
+
       this.rateLimitInfo = {
-        limit: parseInt(limit, 10),
-        remaining: parseInt(remaining, 10),
+        limit: limitNum,
+        remaining: remainingNum,
         reset: parseInt(reset, 10),
+      }
+
+      // Warn when rate limit is below 10%
+      if (remainingNum / limitNum < 0.1) {
+        console.warn(
+          `[Scaffald SDK] Rate limit warning: ${remainingNum}/${limitNum} requests remaining`
+        )
       }
     }
   }
@@ -124,9 +134,9 @@ export class HttpClient {
     const retryAfter = response.headers.get('retry-after')
     if (retryAfter) {
       const retryAfterMs = parseInt(retryAfter, 10) * 1000
-      if (!isNaN(retryAfterMs)) return Math.min(retryAfterMs, 30000)
+      if (!Number.isNaN(retryAfterMs)) return Math.min(retryAfterMs, 30000)
     }
-    return Math.min(1000 * Math.pow(2, attempt), 30000)
+    return Math.min(1000 * 2 ** attempt, 30000)
   }
 
   async get<T = any>(path: string, query?: Record<string, any>, headers?: Record<string, string>): Promise<T> {

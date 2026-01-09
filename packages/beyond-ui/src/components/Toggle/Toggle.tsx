@@ -31,7 +31,7 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -99,8 +99,8 @@ export function Toggle({
     },
   }[size]
 
-  // Color configuration based on state
-  const getColors = () => {
+  // Color configuration based on state (memoized for performance)
+  const colorConfig = useMemo(() => {
     // Red-Green color (error/success states)
     if (color === 'red-green') {
       return {
@@ -131,9 +131,7 @@ export function Toggle({
       trackOnHover: colors.gray[700],
       thumbColor: colors.white,
     }
-  }
-
-  const colorConfig = getColors()
+  }, [color, checked])
 
   // Get track background color based on checked and hover state
   const trackBackgroundColor =
