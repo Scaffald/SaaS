@@ -41,6 +41,7 @@ import { boxShadows } from '../../tokens/shadows'
 import type { RadioProps } from './Radio.types'
 import { RadioIcon } from './RadioIcon'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { HelperText } from '../HelperText'
 
 export function Radio({
   checked: checkedProp,
@@ -240,19 +241,12 @@ export function Radio({
 
             {/* Helper text */}
             {helperText && (
-              <Text
-                style={[
-                  styles.helperText,
-                  {
-                    fontSize: typography.small.fontSize,
-                    lineHeight: typography.small.lineHeight,
-                    color: disabled ? colors.text[theme].disabled : colors.text[theme].tertiary,
-                  },
-                  helperTextStyle,
-                ]}
+              <HelperText
+                type={disabled ? 'disabled' : error ? 'error' : 'default'}
+                textStyle={helperTextStyle}
               >
                 {helperText}
-              </Text>
+              </HelperText>
             )}
           </View>
         )}

@@ -106,6 +106,13 @@ export interface TooltipProps {
   delay?: number
 
   /**
+   * Delay in milliseconds before hiding tooltip after mouse leave
+   * Prevents flickering on quick mouse movements
+   * @default 100
+   */
+  leaveDelay?: number
+
+  /**
    * Controlled visibility state
    */
   visible?: boolean

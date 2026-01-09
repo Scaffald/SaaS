@@ -14,6 +14,24 @@
 // Export all tokens
 export * from './tokens'
 
+// Export shared types and conventions
+export type {
+  ComponentSize,
+  ExtendedSize,
+  ColorVariant,
+  SemanticType,
+  InteractiveState,
+  StyleVariant,
+  IconComponent,
+  LabelProps,
+  HelperTextProps,
+  ThemeMode,
+} from './components/types'
+
+// Export icon utilities
+export { getIconSize, getIconColor, getIconSizeForComponent } from './utils/icon'
+export type { IconSize } from './utils/icon'
+
 // Components
 export { Button } from './components/Button'
 export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './components/Button'
@@ -50,7 +68,9 @@ export {
 } from './components/Input'
 export type {
   InputLabelProps,
+  InputLabelType,
   InputHelperTextProps,
+  InputHelperTextType,
   InputExternalAddonProps,
   InputLeftSideProps,
   InputRightSideProps,
@@ -194,6 +214,26 @@ export type {
   HintMessageType,
   HintMessageProps,
 } from './components/ProgressBar'
+
+// Shared components
+export { HelperText } from './components/HelperText'
+export type { HelperTextProps, HelperTextType } from './components/HelperText'
+
+export { Icon, InfoIcon, CheckIcon, CancelIcon } from './components/Icon'
+export type {
+  IconProps,
+  InfoIconProps,
+  CheckIconProps,
+  CancelIconProps,
+} from './components/Icon'
+
+export { PasswordStrength } from './components/PasswordStrength'
+export type {
+  PasswordStrengthProps,
+  PasswordStrengthLevel,
+  PasswordStrengthVariant,
+  PasswordRequirement,
+} from './components/PasswordStrength'
 
 export { Spinner } from './components/Spinner'
 export type { SpinnerProps, SpinnerSize, SpinnerColor } from './components/Spinner'

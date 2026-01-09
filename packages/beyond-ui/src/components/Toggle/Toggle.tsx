@@ -40,6 +40,7 @@ import { typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
 import type { ToggleProps } from './Toggle.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { HelperText } from '../HelperText'
 
 export function Toggle({
   checked: checkedProp,
@@ -259,19 +260,12 @@ export function Toggle({
 
             {/* Helper text */}
             {helperText && (
-              <Text
-                style={[
-                  styles.helperText,
-                  {
-                    fontSize: typography.small.fontSize,
-                    lineHeight: typography.small.lineHeight,
-                    color: disabled ? colors.text[theme].disabled : colors.text[theme].tertiary,
-                  },
-                  helperTextStyle,
-                ]}
+              <HelperText
+                type={disabled ? 'disabled' : 'default'}
+                textStyle={helperTextStyle}
               >
                 {helperText}
-              </Text>
+              </HelperText>
             )}
           </View>
         )}

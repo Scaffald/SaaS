@@ -9,8 +9,12 @@
  * ```tsx
  * import { InputLabel } from '@unicornlove/beyond-ui'
  *
- * <InputLabel required note="(optional)" showInfo>
+ * <InputLabel required note="(optional)" showIcon>
  *   Email Address
+ * </InputLabel>
+ *
+ * <InputLabel type="error" required>
+ *   Invalid Email
  * </InputLabel>
  * ```
  */
@@ -20,12 +24,22 @@ import { View, Text, type ViewStyle, type TextStyle } from 'react-native'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
 import { typography } from '../../tokens/typography'
+import { InfoIcon } from '../Icon'
+import { useThemeContext } from '../../playground/ThemeProvider'
+
+export type InputLabelType = 'default' | 'error' | 'disabled'
 
 export interface InputLabelProps {
   /**
    * Label text
    */
   children: string
+
+  /**
+   * Label type/state
+   * @default 'default'
+   */
+  type?: InputLabelType
 
   /**
    * Show required asterisk
@@ -42,10 +56,20 @@ export interface InputLabelProps {
    * Show info tooltip icon
    * @default false
    */
+  showIcon?: boolean
+
+  /**
+   * Icon component (overrides default InfoIcon)
+   */
+  icon?: React.ComponentType<{ size: number; color: string }>
+
+  /**
+   * @deprecated Use `showIcon` instead
+   */
   showInfo?: boolean
 
   /**
-   * Info icon component
+   * @deprecated Use `icon` instead
    */
   infoIcon?: React.ComponentType<{ size: number; color: string }>
 
@@ -67,21 +91,77 @@ export interface InputLabelProps {
 
 export function InputLabel({
   children,
+  type = 'default',
   required = false,
   note,
-  showInfo = false,
-  infoIcon: InfoIcon,
+  showIcon: showIconProp,
+  icon: IconComponent,
+  showInfo: showInfoDeprecated,
+  infoIcon: InfoIconDeprecated,
   style,
   labelStyle,
   noteStyle,
 }: InputLabelProps) {
+  const { theme } = useThemeContext()
+  const isLight = theme === 'light'
+
+  // Handle deprecated props with warnings
+  const showIcon = showIconProp ?? showInfoDeprecated ?? false
+  const Icon = IconComponent ?? InfoIconDeprecated
+
+  if (showInfoDeprecated && __DEV__) {
+    console.warn(
+      'InputLabel: `showInfo` prop is deprecated. Use `showIcon` instead.',
+    )
+  }
+  if (InfoIconDeprecated && __DEV__) {
+    console.warn(
+      'InputLabel: `infoIcon` prop is deprecated. Use `icon` instead.',
+    )
+  }
+
+  // Get label text color based on type
+  const getLabelColor = (): string => {
+    if (type === 'disabled') {
+      return isLight ? colors.text.light.disabled : colors.text.dark.disabled
+    }
+    if (type === 'error') {
+      return colors.error[500]
+    }
+    return isLight ? colors.text.light.primary : colors.text.dark.primary
+  }
+
+  // Get asterisk color based on type
+  const getAsteriskColor = (): string => {
+    if (type === 'error') {
+      return colors.error[500]
+    }
+    return colors.primary[500]
+  }
+
+  // Get note text color based on type
+  const getNoteColor = (): string => {
+    if (type === 'disabled') {
+      return isLight ? colors.text.light.disabled : colors.text.dark.disabled
+    }
+    return isLight ? colors.text.light.tertiary : colors.text.dark.tertiary
+  }
+
+  // Get icon color based on type
+  const getIconColor = (): string => {
+    if (type === 'disabled') {
+      return isLight ? colors.text.light.disabled : colors.text.dark.disabled
+    }
+    return isLight ? colors.icon.light.muted : colors.icon.dark.muted
+  }
+
   const labelTextStyle: TextStyle = {
     fontFamily: typography.bodyMedium.fontFamily,
     fontSize: typography.small.fontSize,
     fontWeight: typography.bodyMedium.fontWeight,
     lineHeight: typography.small.lineHeight,
     letterSpacing: 0,
-    color: colors.text.primary,
+    color: getLabelColor(),
   }
 
   const noteTextStyle: TextStyle = {
@@ -90,7 +170,7 @@ export function InputLabel({
     fontWeight: typography.body.fontWeight,
     lineHeight: typography.small.lineHeight,
     letterSpacing: 0,
-    color: colors.text.light.tertiary,
+    color: getNoteColor(),
   }
 
   const iconSize = 18
@@ -98,11 +178,17 @@ export function InputLabel({
   return (
     <View style={[{ flexDirection: 'row', alignItems: 'center', gap: spacing[4] }, style]}>
       <Text style={[labelTextStyle, labelStyle]}>{children}</Text>
-      {required && <Text style={[labelTextStyle, { color: colors.primary[500] }]}>*</Text>}
+      {required && (
+        <Text style={[labelTextStyle, { color: getAsteriskColor() }]}>*</Text>
+      )}
       {note && <Text style={[noteTextStyle, noteStyle]}>{note}</Text>}
-      {showInfo && InfoIcon && (
+      {showIcon && (
         <View style={{ width: iconSize, height: iconSize }}>
-          <InfoIcon size={iconSize} color={colors.icon.light.muted} />
+          {Icon ? (
+            <Icon size={iconSize} color={getIconColor()} />
+          ) : (
+            <InfoIcon size={iconSize} color={getIconColor()} />
+          )}
         </View>
       )}
     </View>

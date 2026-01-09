@@ -177,6 +177,7 @@ export function Tooltip({
   actions,
   showActions = true,
   delay = 200,
+  leaveDelay = 100, // Add leave delay to prevent flickering
   visible: controlledVisible,
   defaultVisible = false,
   onVisibleChange,
@@ -187,8 +188,10 @@ export function Tooltip({
   const [triggerLayout, setTriggerLayout] = useState<TriggerLayout>()
 
   const triggerRef = useRef<View>(null)
-  const hasMeasuredRef = useRef(false)
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const enterTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isHoveringTrigger = useRef(false)
+  const isHoveringTooltip = useRef(false)
   const isControlled = controlledVisible !== undefined
   const isVisible = isControlled ? controlledVisible : internalVisible
 
@@ -199,103 +202,143 @@ export function Tooltip({
     }
   }
 
-  // Measure trigger element - use requestAnimationFrame to avoid interrupting hover
+  // Measure trigger element position
   const measureTrigger = useCallback(() => {
-    if (hasMeasuredRef.current) return // Don't re-measure if we already have layout
-    
-    hasMeasuredRef.current = true
-    
-    if (Platform.OS === 'web') {
-      // Use requestAnimationFrame on web to measure after current render
-      requestAnimationFrame(() => {
-        if (!triggerRef.current) {
-          hasMeasuredRef.current = false
-          return
-        }
-
-        const element = triggerRef.current as unknown as HTMLElement
-        if (element && typeof element.getBoundingClientRect === 'function') {
-          const rect = element.getBoundingClientRect()
-          setTriggerLayout({
-            x: rect.left,
-            y: rect.top,
-            width: rect.width,
-            height: rect.height,
-          })
-        } else {
-          hasMeasuredRef.current = false
-        }
-      })
-    } else {
-      // Native: use measureInWindow
-      if (triggerRef.current && typeof triggerRef.current.measureInWindow === 'function') {
-        triggerRef.current.measureInWindow((fx, fy, fwidth, fheight) => {
-          setTriggerLayout({
-            x: fx || 0,
-            y: fy || 0,
-            width: fwidth || 100,
-            height: fheight || 40,
-          })
+    if (Platform.OS === 'web' && triggerRef.current) {
+      const element = triggerRef.current as unknown as HTMLElement
+      if (element && typeof element.getBoundingClientRect === 'function') {
+        const rect = element.getBoundingClientRect()
+        setTriggerLayout({
+          x: rect.left + window.scrollX,
+          y: rect.top + window.scrollY,
+          width: rect.width,
+          height: rect.height,
         })
-      } else {
-        hasMeasuredRef.current = false
       }
+    } else if (triggerRef.current && typeof triggerRef.current.measureInWindow === 'function') {
+      triggerRef.current.measureInWindow((fx, fy, fwidth, fheight) => {
+        setTriggerLayout({
+          x: fx || 0,
+          y: fy || 0,
+          width: fwidth || 100,
+          height: fheight || 40,
+        })
+      })
     }
   }, [])
 
   // Handle visibility change
-  const handleVisibleChange = useCallback(
+  const setVisible = useCallback(
     (newVisible: boolean) => {
       if (!isControlled) {
         setInternalVisible(newVisible)
       }
       onVisibleChange?.(newVisible)
-
-      // Don't measure here - it causes re-renders that interrupt hover events
-      // Measurement happens on hover enter instead
     },
     [isControlled, onVisibleChange]
   )
 
-  // Handle hover (web) - simplified, only called from handleMouseEnterWithMeasure
-  // Removed - logic is now directly in handleMouseEnterWithMeasure
+  // Clear all timeouts
+  const clearAllTimeouts = useCallback(() => {
+    if (enterTimeoutRef.current) {
+      clearTimeout(enterTimeoutRef.current)
+      enterTimeoutRef.current = null
+    }
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current)
+      leaveTimeoutRef.current = null
+    }
+  }, [])
 
+  // Show tooltip (with delay)
+  const showTooltip = useCallback(() => {
+    clearAllTimeouts()
+
+    // Measure position before showing
+    measureTrigger()
+
+    enterTimeoutRef.current = setTimeout(() => {
+      setVisible(true)
+      enterTimeoutRef.current = null
+    }, delay)
+  }, [clearAllTimeouts, measureTrigger, setVisible, delay])
+
+  // Hide tooltip (with delay)
+  const hideTooltip = useCallback(() => {
+    clearAllTimeouts()
+
+    leaveTimeoutRef.current = setTimeout(() => {
+      // Only hide if neither trigger nor tooltip is hovered
+      if (!isHoveringTrigger.current && !isHoveringTooltip.current) {
+        setVisible(false)
+      }
+      leaveTimeoutRef.current = null
+    }, leaveDelay)
+  }, [clearAllTimeouts, setVisible, leaveDelay])
+
+  // Handle mouse enter on trigger
+  const handleMouseEnter = useCallback(() => {
+    if (Platform.OS !== 'web') return
+    isHoveringTrigger.current = true
+    showTooltip()
+  }, [showTooltip])
+
+  // Handle mouse leave on trigger
   const handleMouseLeave = useCallback(() => {
     if (Platform.OS !== 'web') return
+    isHoveringTrigger.current = false
+    hideTooltip()
+  }, [hideTooltip])
 
-    // Clear timeout to prevent tooltip from showing
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current)
-      hoverTimeoutRef.current = null
-    }
-    
-    // Reset measurement flag when leaving
-    hasMeasuredRef.current = false
-    
-    // Hide tooltip
-    handleVisibleChange(false)
-  }, [handleVisibleChange])
+  // Handle mouse enter on tooltip content
+  const handleTooltipMouseEnter = useCallback(() => {
+    if (Platform.OS !== 'web') return
+    isHoveringTooltip.current = true
+    clearAllTimeouts()
+  }, [clearAllTimeouts])
+
+  // Handle mouse leave on tooltip content
+  const handleTooltipMouseLeave = useCallback(() => {
+    if (Platform.OS !== 'web') return
+    isHoveringTooltip.current = false
+    hideTooltip()
+  }, [hideTooltip])
 
   // Handle long press (native/mobile)
   const handleLongPress = useCallback(() => {
     if (Platform.OS === 'web') return
-    handleVisibleChange(true)
-  }, [handleVisibleChange])
+    measureTrigger()
+    setVisible(true)
+  }, [measureTrigger, setVisible])
 
   // Handle dismiss
   const handleDismiss = useCallback(() => {
-    handleVisibleChange(false)
-  }, [handleVisibleChange])
+    isHoveringTrigger.current = false
+    isHoveringTooltip.current = false
+    clearAllTimeouts()
+    setVisible(false)
+  }, [clearAllTimeouts, setVisible])
 
-  // Cleanup timeout on unmount
+  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current)
-        hoverTimeoutRef.current = null
+      clearAllTimeouts()
+    }
+  }, [clearAllTimeouts])
+
+  // Re-measure on window resize (web only)
+  useEffect(() => {
+    if (Platform.OS !== 'web') return
+
+    const handleResize = () => {
+      if (isVisible) {
+        measureTrigger()
       }
     }
-  }, [])
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isVisible, measureTrigger])
 
   // Calculate tooltip position
   const tooltipPosition = calculateTooltipPosition(triggerLayout, arrowPosition)
@@ -304,58 +347,16 @@ export function Tooltip({
   // Handle layout measurement
   const handleLayout = useCallback(
     (event: LayoutChangeEvent) => {
-      const { width, height } = event.nativeEvent.layout
-
-      if (triggerRef.current) {
-        if (Platform.OS === 'web' && triggerRef.current) {
-          const element = triggerRef.current as unknown as HTMLElement
-          if (element.getBoundingClientRect) {
-            const rect = element.getBoundingClientRect()
-            setTriggerLayout({
-              x: rect.left,
-              y: rect.top,
-              width: rect.width,
-              height: rect.height,
-            })
-            return
-          }
-        }
-
-        triggerRef.current.measureInWindow((fx, fy, fwidth, fheight) => {
-          setTriggerLayout({
-            x: fx || 0,
-            y: fy || 0,
-            width: fwidth || width,
-            height: fheight || height,
-          })
-        })
+      // Only measure if tooltip is about to be shown
+      if (Platform.OS !== 'web' && !triggerLayout) {
+        measureTrigger()
       }
     },
-    []
+    [measureTrigger, triggerLayout]
   )
 
-  // Enhanced hover handler that measures immediately then shows tooltip
-  const handleMouseEnterWithMeasure = useCallback(() => {
-    if (Platform.OS !== 'web') return
-    
-    // Clear any existing timeout first to prevent duplicates
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current)
-      hoverTimeoutRef.current = null
-    }
-    
-    // Measure trigger immediately on hover start (async, won't interrupt hover)
-    measureTrigger()
-    
-    // Set up timeout to show tooltip after delay
-    hoverTimeoutRef.current = setTimeout(() => {
-      handleVisibleChange(true)
-      hoverTimeoutRef.current = null
-    }, delay)
-  }, [measureTrigger, handleVisibleChange, delay])
-
   // Clone children to add hover handlers directly if it's a single element
-  // Use useMemo to prevent recreating on every render (which causes mouse event issues)
+  // Memoize to prevent unnecessary re-renders
   const triggerElement = useMemo(() => {
     if (!isValidElement(children)) {
       return children
@@ -370,9 +371,7 @@ export function Tooltip({
           originalHandler(e)
         }
         // Handle tooltip hover
-        if (Platform.OS === 'web') {
-          handleMouseEnterWithMeasure()
-        }
+        handleMouseEnter()
       },
       // @ts-expect-error - web-specific props
       onMouseLeave: (e: any) => {
@@ -382,9 +381,7 @@ export function Tooltip({
           originalHandler(e)
         }
         // Handle tooltip hover
-        if (Platform.OS === 'web') {
-          handleMouseLeave()
-        }
+        handleMouseLeave()
       },
       ref: (node: any) => {
         // Set tooltip ref
@@ -401,11 +398,11 @@ export function Tooltip({
         }
       },
     } as any)
-  }, [children, handleMouseEnterWithMeasure, handleMouseLeave])
+  }, [children, handleMouseEnter, handleMouseLeave])
 
   return (
     <>
-      {/* Trigger wrapper - use View for layout measurement */}
+      {/* Trigger wrapper */}
       <View
         ref={triggerRef}
         onLayout={handleLayout}
@@ -415,7 +412,7 @@ export function Tooltip({
           alignSelf: 'flex-start' as const,
         }}
       >
-        <Pressable 
+        <Pressable
           onLongPress={Platform.OS !== 'web' ? handleLongPress : undefined}
           delayLongPress={500}
         >
@@ -438,6 +435,10 @@ export function Tooltip({
                 // Prevent touch events from bubbling to dismiss handler
                 e.stopPropagation()
               }}
+              // @ts-expect-error - web-specific props
+              onMouseEnter={handleTooltipMouseEnter}
+              // @ts-expect-error - web-specific props
+              onMouseLeave={handleTooltipMouseLeave}
             >
               {/* Arrow - positioned above content for down, below for up, etc */}
               {arrowPosition !== 'none' && (
@@ -493,4 +494,3 @@ export function Tooltip({
 
 // Export types
 export type { TooltipProps, TooltipArrowPosition, TooltipAction, TooltipType, TooltipColor } from './Tooltip.types'
-

@@ -42,6 +42,7 @@ import type { CheckboxProps } from './Checkbox.types'
 import { CheckIcon } from './CheckIcon'
 import { MinusIcon } from './MinusIcon'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { HelperText } from '../HelperText'
 
 export function Checkbox({
   checked: checkedProp,
@@ -264,19 +265,12 @@ export function Checkbox({
 
             {/* Helper text */}
             {helperText && (
-              <Text
-                style={[
-                  styles.helperText,
-                  {
-                    fontSize: typography.small.fontSize,
-                    lineHeight: typography.small.lineHeight,
-                    color: disabled ? colors.text[theme].disabled : colors.text[theme].tertiary,
-                  },
-                  helperTextStyle,
-                ]}
+              <HelperText
+                type={disabled ? 'disabled' : error ? 'error' : 'default'}
+                textStyle={helperTextStyle}
               >
                 {helperText}
-              </Text>
+              </HelperText>
             )}
           </View>
         )}
