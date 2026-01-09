@@ -20,6 +20,8 @@ export * from './feedback/index.ts';
 export * from './inquiries/index.ts';
 // Job schemas
 export * from './jobs/index.ts';
+// OAuth schemas
+export * from './oauth/oauth.schema.ts';
 // Organization schemas
 export * from './organizations/index.ts';
 // Profile schemas
