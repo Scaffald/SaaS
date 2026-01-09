@@ -36,5 +36,16 @@ export type {
 
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
+export {
+  OAuthClient,
+  type OAuthConfig,
+  type AuthorizationUrlOptions,
+  type AuthorizationUrlResult,
+  type TokenResponse,
+  type TokenExchangeOptions,
+} from './auth/oauth.js'
+
+export { generateCodeVerifier, generateCodeChallenge, generateState } from './auth/pkce.js'
+
 import { Scaffald } from './client.js'
 export default Scaffald
