@@ -115,19 +115,19 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
   }
 
   return (
-    <YStack flex={1} gap="$4">
+    <YStack flex={1} gap="$4" data-testid="oauth-app-detail">
       {/* Header */}
       <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$2" flex={1}>
-          <SizableText size="$6" fontWeight="600">
+          <SizableText size="$6" fontWeight="600" data-testid="oauth-app-detail-name">
             {app.display_name}
           </SizableText>
           <XStack gap="$2" alignItems="center">
-            <Badge backgroundColor={statusColor} color="white">
+            <Badge backgroundColor={statusColor} color="white" data-testid="oauth-app-detail-status">
               {app.status.toUpperCase()}
             </Badge>
             {app.requires_approval && isPending && (
-              <Badge backgroundColor="$blue10" color="white">
+              <Badge backgroundColor="$blue10" color="white" data-testid="oauth-app-requires-approval">
                 REQUIRES APPROVAL
               </Badge>
             )}
@@ -135,17 +135,17 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
         </YStack>
 
         {/* Action Buttons */}
-        <XStack gap="$2">
+        <XStack gap="$2" data-testid="oauth-app-actions">
           {isPending && (
             <>
-              <Button variant="outlined" onPress={() => setShowRejectDialog(true)}>
+              <Button variant="outlined" onPress={() => setShowRejectDialog(true)} data-testid="oauth-app-reject-button">
                 Reject
               </Button>
-              <Button onPress={() => setShowApproveDialog(true)}>Approve</Button>
+              <Button onPress={() => setShowApproveDialog(true)} data-testid="oauth-app-approve-button">Approve</Button>
             </>
           )}
           {isActive && (
-            <Button variant="outlined" onPress={() => setShowSuspendDialog(true)}>
+            <Button variant="outlined" onPress={() => setShowSuspendDialog(true)} data-testid="oauth-app-suspend-button">
               Suspend
             </Button>
           )}
@@ -172,7 +172,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
             <SizableText size="$3" color="$color11">
               Client ID
             </SizableText>
-            <SizableText size="$3" fontFamily="$mono">
+            <SizableText size="$3" fontFamily="$mono" data-testid="oauth-app-client-id">
               {app.client_id}
             </SizableText>
           </YStack>
@@ -240,7 +240,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       </Card>
 
       {/* Redirect URIs */}
-      <Card padding="$4" gap="$4">
+      <Card padding="$4" gap="$4" data-testid="oauth-app-redirect-uris">
         <YStack gap="$3">
           <SizableText size="$5" fontWeight="600">
             Redirect URIs
@@ -248,7 +248,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
           <YStack gap="$2">
             {app.redirect_uris.map((uri, index) => (
               <YStack key={index} gap="$1">
-                <SizableText size="$3" fontFamily="$mono" color="$blue10">
+                <SizableText size="$3" fontFamily="$mono" color="$blue10" data-testid={`oauth-app-redirect-uri-${index}`}>
                   {uri}
                 </SizableText>
               </YStack>
@@ -258,7 +258,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       </Card>
 
       {/* Allowed Scopes */}
-      <Card padding="$4" gap="$4">
+      <Card padding="$4" gap="$4" data-testid="oauth-app-scopes">
         <YStack gap="$3">
           <SizableText size="$5" fontWeight="600">
             Allowed Scopes
@@ -266,13 +266,13 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
           {app.allowed_scopes.length > 0 ? (
             <XStack gap="$2" flexWrap="wrap">
               {app.allowed_scopes.map((scope) => (
-                <Badge key={scope} backgroundColor="$blue2" color="$blue10">
+                <Badge key={scope} backgroundColor="$blue2" color="$blue10" data-testid={`oauth-app-scope-${scope}`}>
                   {scope}
                 </Badge>
               ))}
             </XStack>
           ) : (
-            <Paragraph size="$3" color="$color11">
+            <Paragraph size="$3" color="$color11" data-testid="oauth-app-no-scopes">
               No scopes approved yet
             </Paragraph>
           )}
