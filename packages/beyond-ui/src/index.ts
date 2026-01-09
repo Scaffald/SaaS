@@ -217,7 +217,7 @@ export type {
 
 // Shared components
 export { HelperText } from './components/HelperText'
-export type { HelperTextProps, HelperTextType } from './components/HelperText'
+export type { HelperTextType } from './components/HelperText'
 
 export { Icon, InfoIcon, CheckIcon, CancelIcon } from './components/Icon'
 export type {
@@ -394,22 +394,10 @@ export type {
   ExpandedTableRowVariant,
 } from './components/Table'
 // TableHeaderProps removed - use Table component with actions prop instead
-
-export { TableColumnHeader } from './components/Table'
-export type { TableColumnHeaderProps } from './components/Table'
-
 // TableRow removed - use Table component with data/columns instead
-
-export { TableCell } from './components/Table'
-export type { TableCellProps } from './components/Table'
-
-export { ExpandedTableRow } from './components/Table'
-export type { ExpandedTableRowProps } from './components/Table'
 
 // Table shared types
 export type {
-  TableSortDirection,
-  TableAlign,
   TableStyleConfig,
 } from './components/Table'
 
@@ -457,7 +445,12 @@ export type {
 export { LegendIndicator } from './components/Widgets/LegendIndicator'
 export type { LegendIndicatorProps, LegendItem } from './components/Widgets/LegendIndicator'
 
-export { LinearChart, CircleChart, DonutChart, PieChart } from './components/Widgets/Charts'
+export {
+  LinearChart as LinearChartWidget,
+  CircleChart as CircleChartWidget,
+  DonutChart as DonutChartWidget,
+  PieChart as PieChartWidget,
+} from './components/Widgets/Charts'
 export type {
   LinearChartWidgetProps,
   CircleChartWidgetProps,

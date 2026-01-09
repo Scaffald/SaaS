@@ -32,10 +32,11 @@ export function ConfirmationModal({
 }: ConfirmationModalProps) {
   const { theme } = useThemeContext()
 
-  // Default icon: CheckCircle with success gradient background
-  const defaultIcon = icon || (
-    <CheckCircle size={24} color={colors.text[theme].primary} />
-  )
+  // Default icon: CheckCircle with success color
+  const defaultIcon =
+    icon || (
+      <CheckCircle size={24} color={colors.success[500]} fill={colors.success[500]} />
+    )
 
   return (
     <View style={[localStyles.container, style]}>
@@ -67,13 +68,11 @@ const localStyles = StyleSheet.create({
     height: spacing[48],
     borderRadius: borderRadius.max, // Fully rounded
     borderWidth: borderWidth.thin,
-    borderColor: colors.border[theme].default,
+    borderColor: colors.success[100],
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Platform.OS === 'web'
-      ? `linear-gradient(180deg, ${colors.success[50]} 0%, ${colors.success[100]} 100%)`
-      : colors.success[50], // Fallback for native
-    // Shadow for icon container
+    backgroundColor: colors.success[50],
+    // Shadow for icon container (double border effect via shadow)
     ...(Platform.OS === 'web'
       ? {
           boxShadow: `0 0 0 2px ${colors.white}, 0 0 0 3px ${colors.success[100]}`,
