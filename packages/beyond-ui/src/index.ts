@@ -317,6 +317,143 @@ export type {
   TooltipStyleConfig,
 } from './components/Tooltip'
 
+export { Sidebar, useSidebarContext } from './components/Sidebar'
+export {
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarWidget,
+  SidebarItemGroup,
+} from './components/Sidebar'
+export type {
+  SidebarProps,
+  SidebarVariant,
+  SidebarMenuItemProps,
+  SidebarItemType,
+  SidebarItemState,
+  SidebarHeaderProps,
+  SidebarFooterProps,
+  SidebarWidgetProps,
+  SidebarWidgetType,
+  SidebarItemGroupProps,
+} from './components/Sidebar'
+
+// Navigation components
+export { NavIconButton } from './components/NavIconButton'
+export type {
+  NavIconButtonProps,
+  NavIconButtonBadge,
+  NavIconButtonState,
+  NavIconButtonVariant,
+} from './components/NavIconButton'
+
+export { NotificationListItem } from './components/NotificationListItem'
+export type {
+  NotificationListItemProps,
+  NotificationListItemVariant,
+  NotificationState,
+  NotificationAction,
+  NotificationLink,
+  NotificationFile,
+} from './components/NotificationListItem'
+
+export { SaaSSectionHeader } from './components/SaaSSectionHeader'
+export type {
+  SaaSSectionHeaderProps,
+  SaaSSectionHeaderVariant,
+  SectionHeaderAction,
+  TimePeriodOption,
+} from './components/SaaSSectionHeader'
+
+export { SaaSNavigation } from './components/SaaSNavigation'
+export type {
+  SaaSNavigationProps,
+  SaaSNavigationVariant,
+  NavigationAction,
+  NavigationAvatar,
+} from './components/SaaSNavigation'
+
+export { Table, TableCell, TableColumnHeader, ExpandedTableRow } from './components/Table'
+export type {
+  TableProps,
+  TableColumn,
+  TableRowData,
+  TableHeaderAction,
+  TableSortConfig,
+  TableSelectionConfig,
+  TableExpansionConfig,
+  TableCellProps,
+  TableCellType,
+  TableCellState,
+  TableCellAlign,
+  TableColumnHeaderProps,
+  SortDirection,
+  TableColumnHeaderState,
+  TableColumnHeaderAlign,
+  ExpandedTableRowProps,
+  ExpandedTableRowVariant,
+} from './components/Table'
+export type { TableHeaderProps } from './components/Table'
+
+export { TableColumnHeader } from './components/Table'
+export type { TableColumnHeaderProps } from './components/Table'
+
+export { TableRow } from './components/Table'
+export type { TableRowProps } from './components/Table'
+
+export { TableCell } from './components/Table'
+export type { TableCellProps } from './components/Table'
+
+export { ExpandedTableRow } from './components/Table'
+export type { ExpandedTableRowProps } from './components/Table'
+
+// Table shared types
+export type {
+  TableSortDirection,
+  TableAlign,
+  TableStyleConfig,
+} from './components/Table'
+
+export { BarChart } from './components/Chart'
+export type { BarChartProps } from './components/Chart'
+
+export { BarChartBase } from './components/Chart'
+export type { BarChartBaseProps } from './components/Chart'
+
+export { LinearChart } from './components/Chart'
+export type { LinearChartProps } from './components/Chart'
+
+export { DonutChart } from './components/Chart'
+export type { DonutChartProps } from './components/Chart'
+
+export { CircleChart } from './components/Chart'
+export type { CircleChartProps } from './components/Chart'
+
+export { HalfPieChart } from './components/Chart'
+export type { HalfPieChartProps } from './components/Chart'
+
+export { MiniLinearChart } from './components/Chart'
+export type { MiniLinearChartProps } from './components/Chart'
+
+export { SmallCircleChart } from './components/Chart'
+export type { SmallCircleChartProps } from './components/Chart'
+
+export { Chart } from './components/Chart'
+export type { ChartProps } from './components/Chart'
+
+// Chart shared types
+export type {
+  ChartDataPoint,
+  ChartSeries,
+  DonutChartData,
+  ChartPeriod,
+  ChartSize,
+  CircleChartSize,
+  HalfPieChartSize,
+  ChartColorScheme,
+  ChartStyleConfig,
+} from './components/Chart'
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅
