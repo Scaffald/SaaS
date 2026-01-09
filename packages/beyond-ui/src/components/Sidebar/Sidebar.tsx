@@ -115,9 +115,10 @@ export function Sidebar({
           },
           style,
         ]}
-        // @ts-expect-error - web-specific props
-        role="navigation"
-        aria-label="Main navigation"
+        {...(Platform.OS === 'web' && {
+          role: 'navigation',
+          'aria-label': 'Main navigation',
+        } as any)}
         accessibilityRole="navigation"
         accessibilityLabel="Main navigation sidebar"
       >
@@ -129,8 +130,9 @@ export function Sidebar({
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={true}
-          // @ts-expect-error - web-specific props
-          role="navigation"
+          {...(Platform.OS === 'web' && {
+            role: 'navigation',
+          } as any)}
         >
           {children}
         </ScrollView>
@@ -151,7 +153,7 @@ const styles = StyleSheet.create({
       position: 'fixed',
       top: 0,
       left: 0,
-    }),
+    } as any),
   },
   scrollView: {
     flex: 1,

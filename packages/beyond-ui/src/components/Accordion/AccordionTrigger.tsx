@@ -52,7 +52,7 @@ export function AccordionTrigger({
         styles.trigger,
         {
           backgroundColor:
-            isHovered && !itemContext.disabled ? colors.bg[theme].hover : 'transparent',
+            isHovered && !itemContext.disabled ? colors.bg[theme].subtle : 'transparent',
         },
         // Apply pressed effect
         pressed && !itemContext.disabled && { opacity: 0.8 },

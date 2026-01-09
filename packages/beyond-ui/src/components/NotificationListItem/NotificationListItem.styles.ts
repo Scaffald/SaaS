@@ -9,7 +9,7 @@ import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
-import { typography } from '../../tokens/typography'
+import { typography, lineHeight } from '../../tokens/typography'
 import type { NotificationListItemVariant, NotificationState } from './NotificationListItem.types'
 
 /**
@@ -108,7 +108,7 @@ export function getContentTextStyles(state: NotificationState, theme: ThemeMode 
   return {
     ...typography.paragraphSRegular,
     color: state === 'new' ? colors.text[theme].primary : colors.text[theme].secondary,
-    lineHeight: typography.lineHeight.sm,
+    lineHeight: lineHeight.sm,
   }
 }
 
@@ -119,7 +119,7 @@ export function getTimestampTextStyles(theme: ThemeMode = 'light'): TextStyle {
   return {
     ...typography.captionRegular,
     color: colors.text[theme].tertiary,
-    lineHeight: typography.lineHeight.xs,
+    lineHeight: lineHeight.xs,
   }
 }
 

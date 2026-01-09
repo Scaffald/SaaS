@@ -103,11 +103,12 @@ export function Modal({
             // Prevent touch events from bubbling to backdrop handler
             e.stopPropagation()
           }}
-          // @ts-expect-error - web-specific props
-          onMouseDown={(e) => {
-            // Prevent mouse events from bubbling to backdrop handler
-            e.stopPropagation()
-          }}
+          {...(Platform.OS === 'web' && {
+            onMouseDown: (e: any) => {
+              // Prevent mouse events from bubbling to backdrop handler
+              e.stopPropagation()
+            },
+          } as any)}
         >
           {children}
         </View>

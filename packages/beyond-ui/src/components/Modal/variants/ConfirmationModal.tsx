@@ -14,10 +14,12 @@
  * ```
  */
 
-import { View, Text, StyleSheet, Platform } from 'react-native'
+import { useMemo } from 'react'
+import { View, Text, StyleSheet, Platform, type ViewStyle, type TextStyle } from 'react-native'
 import { CheckCircle } from 'lucide-react-native'
 import type { ConfirmationModalProps } from './ConfirmationModal.types'
 import { useThemeContext } from '../../../playground/ThemeProvider'
+import type { ThemeMode } from '../../../playground/ThemeProvider'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { borderRadius, borderWidth } from '../../../tokens/borders'
@@ -38,16 +40,19 @@ export function ConfirmationModal({
       <CheckCircle size={24} color={colors.success[500]} fill={colors.success[500]} />
     )
 
+  const iconContainerStyle = useMemo(() => getIconContainerStyle(theme), [theme])
+  const messageTextStyle = useMemo(() => getMessageStyle(theme), [theme])
+
   return (
     <View style={[localStyles.container, style]}>
       {/* Icon with gradient background */}
-      <View style={[localStyles.iconContainer(theme), iconStyle]}>
+      <View style={[iconContainerStyle, iconStyle]}>
         {defaultIcon}
       </View>
 
       {/* Message text */}
       {message && (
-        <Text style={[localStyles.message(theme), messageStyle]}>
+        <Text style={[messageTextStyle, messageStyle]}>
           {message}
         </Text>
       )}
@@ -55,15 +60,8 @@ export function ConfirmationModal({
   )
 }
 
-const localStyles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing[20],
-    gap: spacing[12],
-  },
-  iconContainer: (theme: 'light' | 'dark') => ({
+function getIconContainerStyle(theme: ThemeMode): ViewStyle {
+  return {
     width: spacing[48],
     height: spacing[48],
     borderRadius: borderRadius.max, // Fully rounded
@@ -84,13 +82,26 @@ const localStyles = StyleSheet.create({
           shadowRadius: 3,
           elevation: 2,
         }),
-  }),
-  message: (theme: 'light' | 'dark') => ({
+  }
+}
+
+function getMessageStyle(theme: ThemeMode): TextStyle {
+  return {
     fontFamily: typography.paragraphLMedium.fontFamily,
     fontSize: typography.paragraphLMedium.fontSize,
     fontWeight: typography.paragraphLMedium.fontWeight,
     lineHeight: typography.paragraphLMedium.lineHeight,
     color: colors.text[theme].primary,
     textAlign: 'center',
-  }),
+  }
+}
+
+const localStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing[20],
+    gap: spacing[12],
+  },
 })

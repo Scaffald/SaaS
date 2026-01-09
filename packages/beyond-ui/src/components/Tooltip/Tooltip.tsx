@@ -101,7 +101,7 @@ function calculateTooltipPosition(
       const tooltipBottom = viewportHeight - y + gap + 6 // +6 for arrow height
       if (Platform.OS === 'web') {
         positionStyle.bottom = tooltipBottom
-        positionStyle.top = undefined
+        delete positionStyle.top
       } else {
         positionStyle.top = Math.max(0, y - tooltipHeight - gap - 6)
       }
@@ -135,7 +135,7 @@ function calculateTooltipPosition(
         positionStyle.right = viewportWidth - x + gap + 6
       } else {
         positionStyle.left = Math.max(0, x - tooltipWidth - gap - 6)
-        positionStyle.right = undefined
+        delete positionStyle.right
       }
       break
     }
@@ -361,7 +361,6 @@ export function Tooltip({
     }
 
     return cloneElement(children as ReactElement<any>, {
-      // @ts-expect-error - web-specific props
       onMouseEnter: (e: any) => {
         // Call original handler if it exists
         const originalHandler = (children as ReactElement<any>).props?.onMouseEnter
@@ -371,7 +370,6 @@ export function Tooltip({
         // Handle tooltip hover
         handleMouseEnter()
       },
-      // @ts-expect-error - web-specific props
       onMouseLeave: (e: any) => {
         // Call original handler if it exists
         const originalHandler = (children as ReactElement<any>).props?.onMouseLeave
@@ -384,11 +382,11 @@ export function Tooltip({
       ref: (node: any) => {
         // Set tooltip ref
         if (triggerRef) {
-          // @ts-expect-error - ref assignment
           triggerRef.current = node
         }
         // Support child's ref if it exists
-        const childRef = (children as ReactElement<any>).ref
+        const child = children as any
+        const childRef = child?.ref
         if (typeof childRef === 'function') {
           childRef(node)
         } else if (childRef && typeof childRef === 'object' && childRef !== null) {
@@ -405,7 +403,7 @@ export function Tooltip({
         ref={triggerRef}
         onLayout={handleLayout}
         style={{
-          display: 'inline-flex',
+          display: 'flex',
           position: 'relative' as const,
           alignSelf: 'flex-start' as const,
         }}
@@ -433,10 +431,10 @@ export function Tooltip({
                 // Prevent touch events from bubbling to dismiss handler
                 e.stopPropagation()
               }}
-              // @ts-expect-error - web-specific props
-              onMouseEnter={handleTooltipMouseEnter}
-              // @ts-expect-error - web-specific props
-              onMouseLeave={handleTooltipMouseLeave}
+              {...(Platform.OS === 'web' && {
+                onMouseEnter: handleTooltipMouseEnter,
+                onMouseLeave: handleTooltipMouseLeave,
+              } as any)}
             >
               {/* Arrow - positioned above content for down, below for up, etc */}
               {arrowPosition !== 'none' && (

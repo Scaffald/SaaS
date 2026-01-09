@@ -63,10 +63,10 @@ export function TabTrigger({
         selected: itemContext.isSelected,
         disabled: itemContext.disabled || tabsContext.disabled,
       }}
-      // @ts-expect-error - web-specific props
-      onMouseEnter={Platform.OS === 'web' ? () => setIsHovered(true) : undefined}
-      // @ts-expect-error - web-specific props
-      onMouseLeave={Platform.OS === 'web' ? () => setIsHovered(false) : undefined}
+      {...(Platform.OS === 'web' && {
+        onMouseEnter: () => setIsHovered(true),
+        onMouseLeave: () => setIsHovered(false),
+      } as any)}
       style={({ pressed }) => [
         styles.container,
         // Pressed state

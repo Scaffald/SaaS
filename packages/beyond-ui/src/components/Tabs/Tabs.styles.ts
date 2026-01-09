@@ -215,7 +215,7 @@ export function getTabTriggerStyles(
 
     // Hover state (web only) - light background tint
     if (isHovered && !isSelected && !isDisabled) {
-      backgroundColor = colors.bg[theme].hover
+      backgroundColor = colors.bg[theme].subtle
     }
   } else if (type === 'line') {
     // Line type: Border/underline indicator only, no background changes
@@ -244,7 +244,7 @@ export function getTabTriggerStyles(
 
     // Hover state (web only) - light background tint
     if (isHovered && !isSelected && !isDisabled) {
-      backgroundColor = colors.bg[theme].hover
+      backgroundColor = colors.bg[theme].subtle
     }
   } else if (type === 'shadow') {
     // Shadow type: Box shadow for selected tab, no borders
@@ -259,7 +259,7 @@ export function getTabTriggerStyles(
 
     // Hover state (web only) - light background tint
     if (isHovered && !isSelected && !isDisabled) {
-      backgroundColor = colors.bg[theme].hover
+      backgroundColor = colors.bg[theme].subtle
     }
   }
 

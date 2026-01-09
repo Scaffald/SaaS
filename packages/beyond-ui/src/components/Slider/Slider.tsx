@@ -88,7 +88,7 @@ export function Slider({
     (event: GestureResponderEvent | React.MouseEvent) => {
       if (disabled || trackWidth === 0) return
 
-      const pageX = 'nativeEvent' in event ? event.nativeEvent.pageX : event.pageX
+      const pageX = 'nativeEvent' in event ? event.nativeEvent.pageX : (event as React.MouseEvent).pageX
 
       trackRef.current?.measureInWindow((trackX, _pageY, _width, _height) => {
         const relativeX = pageX - trackX

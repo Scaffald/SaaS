@@ -15,7 +15,7 @@
  */
 
 import { useState, useRef } from 'react'
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native'
 import { Upload } from 'lucide-react-native'
 import type { FileUploadDropZoneProps } from './FileUpload.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
@@ -195,18 +195,14 @@ export function FileUploadDropZone({
         pressed && !disabled && { opacity: 0.8 },
         style,
       ]}
-      // @ts-expect-error - React Native Web types don't include mouse and drag events
-      onMouseEnter={() => setIsHovered(true)}
-      // @ts-expect-error - React Native Web types don't include mouse and drag events
-      onMouseLeave={() => setIsHovered(false)}
-      // @ts-expect-error - React Native Web types don't include mouse and drag events
-      onDragEnter={handleDragEnter}
-      // @ts-expect-error - React Native Web types don't include mouse and drag events
-      onDragOver={handleDragOver}
-      // @ts-expect-error - React Native Web types don't include mouse and drag events
-      onDragLeave={handleDragLeave}
-      // @ts-expect-error - React Native Web types don't include mouse and drag events
-      onDrop={handleDrop}
+      {...(Platform.OS === 'web' && {
+        onMouseEnter: () => setIsHovered(true),
+        onMouseLeave: () => setIsHovered(false),
+        onDragEnter: handleDragEnter,
+        onDragOver: handleDragOver,
+        onDragLeave: handleDragLeave,
+        onDrop: handleDrop,
+      } as any)}
       accessibilityRole="button"
       accessibilityLabel={message}
     >

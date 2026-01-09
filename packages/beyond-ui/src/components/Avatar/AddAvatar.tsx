@@ -20,7 +20,7 @@ export function AddAvatar({ size = 40, onPress, containerStyle }: AddAvatarProps
           width: size,
           height: size,
           borderRadius: size / 2,
-          backgroundColor: colors.bg[theme].secondary,
+          backgroundColor: colors.bg[theme].subtle,
           borderWidth: 1.5,
           borderColor: colors.border[theme].default,
           borderStyle: 'dashed',

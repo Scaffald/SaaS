@@ -32,7 +32,7 @@
  */
 
 import { useState } from 'react'
-import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
+import { View, Pressable, Text, StyleSheet, Platform, type GestureResponderEvent } from 'react-native'
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -101,7 +101,7 @@ export function Chip({
     onPress?.()
   }
 
-  const handleClose = (e: React.SyntheticEvent) => {
+  const handleClose = (e: GestureResponderEvent) => {
     e.stopPropagation()
     if (disabled) return
     onClose?.()

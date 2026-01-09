@@ -37,7 +37,7 @@
  */
 
 import { useState } from 'react'
-import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
+import { View, Pressable, Text, StyleSheet, Platform, type ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'

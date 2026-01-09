@@ -27,7 +27,7 @@
 import { useState } from 'react'
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native'
 import type { ViewStyle, } from 'react-native'
-import type { SidebarMenuItemProps } from './Sidebar.types'
+import type { SidebarMenuItemProps, SidebarItemType } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -253,7 +253,7 @@ export function SidebarMenuItem({
 
       {/* Text content */}
       {!collapsed && (
-        <View style={styles.textContainer} flex={1}>
+        <View style={[styles.textContainer, { flex: 1 }]}>
           {label && (
             <Text
               style={[
@@ -316,8 +316,8 @@ export function SidebarMenuItem({
     return wrappedContent
   }
 
-  const accessibilityLabel = label || (type === 'heading' ? 'Heading' : 'Menu item')
-  const accessibilityRole = type === 'heading' ? 'text' : 'button'
+  const accessibilityLabel = label || ((type as SidebarItemType) === 'heading' ? 'Heading' : 'Menu item')
+  const accessibilityRole = (type as SidebarItemType) === 'heading' ? 'text' : 'button'
   const accessibilityState = {
     disabled,
     selected: actualState === 'active',
@@ -330,10 +330,12 @@ export function SidebarMenuItem({
       disabled={disabled}
       onPressIn={() => !disabled && setIsHovered(true)}
       onPressOut={() => setIsHovered(false)}
-      // @ts-expect-error - web-specific props
-      onMouseEnter={Platform.OS === 'web' ? () => !disabled && setIsHovered(true) : undefined}
-      // @ts-expect-error - web-specific props
-      onMouseLeave={Platform.OS === 'web' ? () => setIsHovered(false) : undefined}
+      {...(Platform.OS === 'web' && {
+        onMouseEnter: () => !disabled && setIsHovered(true),
+        onMouseLeave: () => setIsHovered(false),
+        id: id,
+        'data-value': value,
+      } as any)}
       style={({ pressed }) => [
         pressed && !disabled && actualState !== 'active' && {
           opacity: 0.8,
@@ -343,10 +345,6 @@ export function SidebarMenuItem({
       accessibilityLabel={accessibilityLabel}
       accessibilityState={accessibilityState}
       accessibilityHint={showExpandIcon ? (expanded ? 'Collapse submenu' : 'Expand submenu') : undefined}
-      // @ts-expect-error - web-specific props
-      id={id}
-      // @ts-expect-error - web-specific props
-      data-value={value}
     >
       {wrappedContent}
     </Pressable>

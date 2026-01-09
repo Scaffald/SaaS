@@ -8,7 +8,7 @@ import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
-import { typography } from '../../tokens/typography'
+import { typography, fontWeight } from '../../tokens/typography'
 import type {
   NavIconButtonBadge,
   NavIconButtonState,
@@ -132,7 +132,7 @@ export function getBadgeTextStyles(badge: NavIconButtonBadge, variant: NavIconBu
 
   return {
     fontSize: size * 0.7,
-    fontWeight: typography.fontWeight.medium,
+    fontWeight: fontWeight.medium,
     color: colors.white,
     textAlign: 'center',
     includeFontPadding: false,

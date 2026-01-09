@@ -2,7 +2,7 @@
  * Modal component style functions
  */
 
-import type { ViewStyle } from 'react-native'
+import type { ViewStyle, DimensionValue } from 'react-native'
 import { Platform, StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
@@ -34,7 +34,7 @@ export function getModalStyles(
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     container: {
-      width: width,
+      width: width as DimensionValue,
       backgroundColor: colors.bg[theme].default,
       borderRadius: borderRadius.xl, // 16px
       borderWidth: borderWidth.none,

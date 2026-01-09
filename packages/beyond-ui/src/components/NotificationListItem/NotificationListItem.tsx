@@ -57,6 +57,7 @@ import {
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { Avatar } from '../Avatar'
 import { typography } from '../../tokens/typography'
+import { spacing } from '../../tokens/spacing'
 
 export function NotificationListItem({
   variant = 'single-text',
@@ -193,10 +194,10 @@ export function NotificationListItem({
     <Pressable
       disabled={disabled}
       onPress={onPress}
-      // @ts-expect-error - web-specific props
-      onMouseEnter={Platform.OS === 'web' ? () => setInternalHovered(true) : undefined}
-      // @ts-expect-error - web-specific props
-      onMouseLeave={Platform.OS === 'web' ? () => setInternalHovered(false) : undefined}
+      {...(Platform.OS === 'web' && {
+        onMouseEnter: () => setInternalHovered(true),
+        onMouseLeave: () => setInternalHovered(false),
+      } as any)}
       style={({ pressed }) => [
         pressed && Platform.OS !== 'web' && styles.pressed,
       ]}

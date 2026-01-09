@@ -75,14 +75,15 @@ export const lineHeight = {
 /**
  * Letter spacing
  * Figma uses percentages: -2% for H1-H2, -1% for H3-H6, 0 for body text
- * Converted to CSS em units for relative spacing
+ * Converted to numeric values for React Native compatibility
+ * Note: React Native uses numbers (pixels), not em units
  */
 export const letterSpacing = {
-  tighter: '-0.02em', // -2% for H1-H2 headings
-  tight: '-0.01em', // -1% for H3-H6 headings
-  normal: '0', // 0 for body text
-  wide: '0.005em', // 0.5% for emphasis
-  wider: '0.01em', // 1% for wider spacing
+  tighter: -1.5, // -2% approximation for H1-H2 headings
+  tight: -0.5, // -1% approximation for H3-H6 headings
+  normal: 0, // 0 for body text
+  wide: 0.25, // 0.5% approximation for emphasis
+  wider: 0.5, // 1% approximation for wider spacing
 } as const
 
 /**
@@ -529,6 +530,11 @@ export const typography = {
   h5: typographyVariants.h5SemiBold,
   h6: typographyVariants.h6Medium,
 
+  // Subtitle text
+  subtitle: typographyVariants.subtitleRegular,
+  subtitleMedium: typographyVariants.subtitleMedium,
+  subtitleBold: typographyVariants.subtitleSemiBold,
+
   // Body shortcuts
   body: typographyVariants.paragraphMRegular,
   bodyMedium: typographyVariants.paragraphMMedium,
@@ -548,6 +554,15 @@ export const typography = {
   caption: typographyVariants.captionRegular,
   captionMedium: typographyVariants.captionMedium,
   captionBold: typographyVariants.captionBold,
+
+  // Aliases for direct variant access (for backward compatibility)
+  paragraphLMedium: typographyVariants.paragraphLMedium,
+  paragraphLSemiBold: typographyVariants.paragraphLSemiBold,
+  paragraphMMedium: typographyVariants.paragraphMMedium,
+  paragraphSMedium: typographyVariants.paragraphSMedium,
+  paragraphSRegular: typographyVariants.paragraphSRegular,
+  captionRegular: typographyVariants.captionRegular,
+  h6Medium: typographyVariants.h6Medium,
 } as const
 
 export type FontFamilyToken = keyof typeof fontFamily

@@ -13,7 +13,7 @@
  * ```
  */
 
-import type React from 'react'
+import React from 'react'
 import { View, Text, type ViewStyle, type TextStyle } from 'react-native'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'

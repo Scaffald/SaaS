@@ -6,7 +6,7 @@
 import { View, Text, StyleSheet } from 'react-native'
 import type { AvatarGroupProps } from './Avatar.types'
 import { colors } from '../../tokens/colors'
-import { typography } from '../../tokens/typography'
+import { fontFamily, fontWeight } from '../../tokens/typography'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import React, { Children } from 'react'
 
@@ -40,9 +40,7 @@ export function AvatarGroup({
             ]}
           >
             {React.isValidElement(child)
-              ? React.cloneElement(child, { size, showRing: true } as Partial<
-                  React.ComponentProps<typeof child.type>
-                >)
+              ? React.cloneElement(child, { size, showRing: true } as any)
               : child}
           </View>
         )
@@ -78,8 +76,8 @@ export function AvatarGroup({
                 {
                   fontSize: size / 3,
                   color: colors.gray[700],
-                  fontFamily: typography.fonts.body,
-                  fontWeight: typography.fontWeights.medium,
+                  fontFamily: fontFamily.body,
+                  fontWeight: fontWeight.medium,
                 },
               ]}
             >

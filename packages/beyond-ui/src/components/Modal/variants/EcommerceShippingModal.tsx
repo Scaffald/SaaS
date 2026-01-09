@@ -63,10 +63,6 @@ export function EcommerceShippingModal({
             leadingContent={option.icon}
             size="md"
             color="primary"
-            style={[
-              localStyles.card,
-              isSelected && localStyles.cardSelected(theme),
-            ]}
           />
         )
       })}
@@ -80,13 +76,4 @@ const localStyles = StyleSheet.create({
     gap: spacing[8],
     paddingVertical: spacing[8],
   },
-  card: {
-    borderWidth: borderWidth.thin,
-    borderRadius: borderRadius.l, // 12px
-    padding: spacing[16],
-  },
-  cardSelected: (theme: 'light' | 'dark') => ({
-    borderColor: colors.gray[600], // foreground-04 equivalent
-    borderWidth: borderWidth.thin,
-  }),
 })

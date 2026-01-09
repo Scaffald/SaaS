@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { View, Text, Image, Pressable, StyleSheet, Platform } from 'react-native'
 import type { AvatarProps } from './Avatar.types'
 import { colors } from '../../tokens/colors'
-import { typography } from '../../tokens/typography'
+import { fontFamily, fontWeight } from '../../tokens/typography'
 import { useThemeContext } from '../../playground/ThemeProvider'
 
 // Avatar size to dimensions mapping
@@ -195,8 +195,8 @@ export function Avatar({
               {
                 fontSize: dimensions.fontSize,
                 color: getTextColor(),
-                fontFamily: typography.fonts.body,
-                fontWeight: typography.fontWeights.medium,
+                fontFamily: fontFamily.body,
+                fontWeight: fontWeight.medium,
               },
             ]}
           >

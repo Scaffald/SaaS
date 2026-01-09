@@ -373,6 +373,31 @@ export type {
   NavigationAvatar,
 } from './components/SaaSNavigation'
 
+// DatePicker components
+export { DatePickerDay } from './components/DatePickerDay'
+export type {
+  DatePickerDayProps,
+  DatePickerDayState,
+} from './components/DatePickerDay'
+
+export { DatePickerHeader } from './components/DatePickerHeader'
+export type {
+  DatePickerHeaderProps,
+  DatePickerHeaderType,
+  DatePickerHeaderPosition,
+} from './components/DatePickerHeader'
+
+export { DatePickerBase } from './components/DatePickerBase'
+export type { DatePickerBaseProps } from './components/DatePickerBase'
+
+export { DatePicker } from './components/DatePicker'
+export type {
+  DatePickerProps,
+  DatePickerType,
+  DatePickerSize,
+  DatePickerPresetOption,
+} from './components/DatePicker'
+
 export { Table, TableCell, TableColumnHeader, ExpandedTableRow } from './components/Table'
 export type {
   TableProps,
@@ -393,8 +418,54 @@ export type {
   ExpandedTableRowProps,
   ExpandedTableRowVariant,
 } from './components/Table'
-// TableHeaderProps removed - use Table component with actions prop instead
-// TableRow removed - use Table component with data/columns instead
+
+export {
+  Modal,
+  ModalHeader,
+  ModalActions,
+  ModalContent,
+  ConfirmationModal,
+  EcommerceShippingModal,
+  EcommerceCartPreviewModal,
+  WorkspaceMembersModal,
+} from './components/Modal'
+export type {
+  ModalProps,
+  ModalHeaderProps,
+  ModalHeaderOrientation,
+  ModalActionsProps,
+  ModalAction,
+  ModalActionsOrientation,
+  ModalContentProps,
+  ModalContentVariant,
+  ConfirmationModalProps,
+  EcommerceShippingModalProps,
+  ShippingOption,
+  EcommerceCartPreviewModalProps,
+  CartItem,
+  WorkspaceMembersModalProps,
+  Member,
+} from './components/Modal'
+
+export { List } from './components/List'
+export type { ListProps } from './components/List'
+
+export { ListItem } from './components/ListItem'
+export type {
+  ListItemProps,
+  ListItemVariant,
+  UserProfile01Props,
+  UserProfile02Props,
+  ProductProps,
+  SearchResult01Props,
+  SearchResult02Props,
+  SearchResult03Props,
+  TaskProps,
+  SongTitleProps,
+  CloudFileProps,
+  PhoneNumberProps,
+  IntegrationProps,
+} from './components/ListItem'
 
 // Table shared types
 export type {
@@ -513,6 +584,25 @@ export type {
   MarketTrendingWidgetProps,
   FearGreedIndexWidgetProps,
 } from './components/Widgets/Crypto'
+
+// Command Menu components
+export { CommandMenu } from './components/CommandMenu'
+export type { CommandMenuProps, CommandMenuTab } from './components/CommandMenu'
+
+export { CommandMenuItem } from './components/CommandMenu'
+export type {
+  CommandMenuItemProps,
+  CommandMenuItemType,
+  CommandMenuItemOrientation,
+  CommandMenuItemState,
+  CommandMenuItemData,
+} from './components/CommandMenu'
+
+export { CommandShortcut } from './components/CommandMenu'
+export type { CommandShortcutProps, CommandShortcutVariant } from './components/CommandMenu'
+
+export { CommandMenuFooter } from './components/CommandMenu'
+export type { CommandMenuFooterProps, ShortcutHint } from './components/CommandMenu'
 
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)

@@ -21,7 +21,7 @@ import type { SidebarHeaderProps } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
-import { borderWidth } from '../../tokens/borders'
+import { borderWidth, borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import { Menu, X } from 'lucide-react-native'
 

@@ -250,10 +250,10 @@ export function TableCell(props: TableCellProps) {
 
     return (
       <Container
-        // @ts-expect-error - web-specific props
-        onMouseEnter={Platform.OS === 'web' && onPress ? () => setIsHovered(true) : undefined}
-        // @ts-expect-error - web-specific props
-        onMouseLeave={Platform.OS === 'web' && onPress ? () => setIsHovered(false) : undefined}
+        {...(Platform.OS === 'web' && onPress && {
+          onMouseEnter: () => setIsHovered(true),
+          onMouseLeave: () => setIsHovered(false),
+        } as any)}
         onPress={onPress}
         style={({ pressed }) => [
           styles.container,
@@ -426,10 +426,10 @@ export function TableCell(props: TableCellProps) {
 
   return (
     <Container
-      // @ts-expect-error - web-specific props
-      onMouseEnter={Platform.OS === 'web' && onPress ? () => setIsHovered(true) : undefined}
-      // @ts-expect-error - web-specific props
-      onMouseLeave={Platform.OS === 'web' && onPress ? () => setIsHovered(false) : undefined}
+      {...(Platform.OS === 'web' && onPress && {
+        onMouseEnter: () => setIsHovered(true),
+        onMouseLeave: () => setIsHovered(false),
+      } as any)}
       onPress={onPress}
       style={({ pressed }) => [
         styles.container,

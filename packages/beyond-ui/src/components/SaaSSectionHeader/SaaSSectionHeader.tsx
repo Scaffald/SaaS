@@ -42,6 +42,7 @@
 
 import { View, Text, StyleSheet } from 'react-native'
 import type { SaaSSectionHeaderProps } from './SaaSSectionHeader.types'
+import { colors } from '../../tokens/colors'
 import {
   getContainerStyles,
   getHeaderRowStyles,

@@ -53,8 +53,6 @@ function mapHintMessageTypeToHelperTextType(type?: HintMessageType): HelperTextT
       return 'error'
     case 'warning':
       return 'warning'
-    case 'disabled':
-      return 'disabled'
     default:
       return 'default'
   }

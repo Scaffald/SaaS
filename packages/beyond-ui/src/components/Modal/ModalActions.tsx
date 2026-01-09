@@ -59,7 +59,7 @@ export function ModalActions({
               variant={secondaryAction.variant || 'outline'}
               color={secondaryAction.color || 'gray'}
               size="md"
-              fullWidth={orientation === 'center'}
+              fullWidth={false}
               disabled={secondaryAction.disabled}
               loading={secondaryAction.loading}
               onPress={secondaryAction.onPress}

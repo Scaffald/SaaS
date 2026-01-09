@@ -8,7 +8,7 @@ import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
-import { typography } from '../../tokens/typography'
+import { typography, lineHeight } from '../../tokens/typography'
 
 /**
  * Get container styles
@@ -88,7 +88,7 @@ export function getTitleStyles(theme: ThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphLMedium,
     color: colors.text[theme].primary,
-    lineHeight: typography.lineHeight.lg,
+    lineHeight: lineHeight.lg,
   }
 }
 
@@ -99,7 +99,7 @@ export function getDescriptionStyles(theme: ThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphSRegular,
     color: colors.text[theme].secondary,
-    lineHeight: typography.lineHeight.sm,
+    lineHeight: lineHeight.sm,
   }
 }
 
@@ -142,6 +142,6 @@ export function getSubHeaderTextStyles(theme: ThemeMode = 'light'): TextStyle {
   return {
     ...typography.paragraphSMedium,
     color: colors.text[theme].primary,
-    lineHeight: typography.lineHeight.sm,
+    lineHeight: lineHeight.sm,
   }
 }

@@ -108,10 +108,10 @@ export function NavIconButton({
       onPress={onPress}
       onPressIn={() => setInternalPressed(true)}
       onPressOut={() => setInternalPressed(false)}
-      // @ts-expect-error - web-specific props
-      onMouseEnter={Platform.OS === 'web' ? () => setInternalHovered(true) : undefined}
-      // @ts-expect-error - web-specific props
-      onMouseLeave={Platform.OS === 'web' ? () => setInternalHovered(false) : undefined}
+      {...(Platform.OS === 'web' && {
+        onMouseEnter: () => setInternalHovered(true),
+        onMouseLeave: () => setInternalHovered(false),
+      } as any)}
       style={({ pressed }) => [
         styles.pressable,
         pressed && Platform.OS !== 'web' && styles.pressed,

@@ -109,7 +109,7 @@ export function SaaSNavigation({
     return (
       <View
         style={[containerStyles, { minHeight: 72, paddingVertical: spacing[0] }, style]}
-        accessibilityRole="navigation"
+        {...({ accessibilityRole: 'navigation' } as any)}
         accessibilityLabel={accessibilityLabel || 'Footer navigation'}
       >
         <Text style={[titleStyles, titleStyle]}>{pageTitle || ''}</Text>
@@ -122,7 +122,7 @@ export function SaaSNavigation({
     return (
       <View
         style={[containerStyles, { minHeight: 76, paddingVertical: spacing[0] }, style]}
-        accessibilityRole="navigation"
+        {...({ accessibilityRole: 'navigation' } as any)}
         accessibilityLabel={accessibilityLabel || 'Onboarding navigation'}
       >
         {showPageTitle && pageTitle && (
@@ -137,7 +137,7 @@ export function SaaSNavigation({
     return (
       <View
         style={[containerStyles, { minHeight: 72, paddingVertical: spacing[0] }, style]}
-        accessibilityRole="navigation"
+        {...({ accessibilityRole: 'navigation' } as any)}
         accessibilityLabel={accessibilityLabel || 'Navigation links'}
       >
         {showPageTitle && pageTitle && (
@@ -156,7 +156,7 @@ export function SaaSNavigation({
           { minHeight: 138, paddingVertical: spacing[0] },
           style,
         ]}
-        accessibilityRole="navigation"
+        {...({ accessibilityRole: 'navigation' } as any)}
         accessibilityLabel={accessibilityLabel || 'Finance banking navigation'}
       >
         {showFeaturedIcon && FeaturedIcon && (
@@ -194,7 +194,7 @@ export function SaaSNavigation({
   const mainNavigationContent = (
     <View
       style={[containerStyles, style]}
-      accessibilityRole="navigation"
+      {...({ accessibilityRole: 'navigation' } as any)}
       accessibilityLabel={accessibilityLabel || 'Main navigation'}
     >
       {/* Left section: Icon + Content */}

@@ -3,7 +3,8 @@
  * Mapped from Figma Forsured Design System Tooltip component
  */
 
-import type { ViewStyle, TextStyle, ReactNode } from 'react-native'
+import type { ReactNode } from 'react'
+import type { ViewStyle, TextStyle } from 'react-native'
 
 /**
  * Tooltip type variants
