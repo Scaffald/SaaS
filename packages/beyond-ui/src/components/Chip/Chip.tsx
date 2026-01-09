@@ -31,8 +31,8 @@
  * ```
  */
 
-import { useState, useMemo } from 'react'
-import { View, Pressable, Text, StyleSheet, Platform, type GestureResponderEvent } from 'react-native'
+import { useMemo } from 'react'
+import { View, Pressable, Text, StyleSheet, type GestureResponderEvent } from 'react-native'
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -40,6 +40,7 @@ import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { ChipProps } from './Chip.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Chip({
   children,
@@ -59,9 +60,8 @@ export function Chip({
   textStyle,
   ...pressableProps
 }: ChipProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
 
   const isLight = theme === 'light'
 
@@ -307,13 +307,8 @@ export function Chip({
     <Pressable
       onPress={handlePress}
       disabled={disabled}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
       style={[...chipStyles, style]}
-      {...(Platform.OS === 'web' && {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
-      })}
+      {...interactiveProps}
       {...pressableProps}
     >
       {renderLeadingContent()}

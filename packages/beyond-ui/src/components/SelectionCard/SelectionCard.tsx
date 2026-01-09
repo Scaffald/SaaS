@@ -37,7 +37,7 @@
  */
 
 import { useState, useMemo } from 'react'
-import { View, Pressable, Text, StyleSheet, Platform, type ViewStyle } from 'react-native'
+import { View, Pressable, Text, StyleSheet, type ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -49,6 +49,7 @@ import { Radio } from '../Radio'
 import type { RadioColor } from '../Radio'
 import { Toggle } from '../Toggle'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function SelectionCard({
   type = 'checkbox',
@@ -72,9 +73,8 @@ export function SelectionCard({
   const isControlled = selectedProp !== undefined
   const selected = isControlled ? selectedProp : internalSelected
 
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
 
   const isLight = theme === 'light'
 
@@ -214,13 +214,8 @@ export function SelectionCard({
     <Pressable
       onPress={handlePress}
       disabled={disabled}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
       style={[...cardStyles, style]}
-      {...(Platform.OS === 'web' && {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
-      })}
+      {...interactiveProps}
     >
       <View style={styles.content}>
         {/* Leading content */}

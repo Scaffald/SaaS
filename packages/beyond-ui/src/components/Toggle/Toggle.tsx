@@ -41,6 +41,7 @@ import { boxShadows } from '../../tokens/shadows'
 import type { ToggleProps } from './Toggle.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { HelperText } from '../HelperText'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Toggle({
   checked: checkedProp,
@@ -62,9 +63,8 @@ export function Toggle({
   const isControlled = checkedProp !== undefined
   const checked = isControlled ? checkedProp : internalChecked
 
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
 
   const handlePress = () => {
     if (disabled) return
@@ -161,16 +161,11 @@ export function Toggle({
         disabled={disabled}
         accessibilityRole="switch"
         accessibilityState={{ checked, disabled }}
-        {...(Platform.OS === 'web' && {
-          onMouseEnter: () => setIsHovered(true),
-          onMouseLeave: () => setIsHovered(false),
-        })}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        {...interactiveProps}
         style={({ pressed }) => [
           styles.pressable,
           // Apply hover effect
-          isHovered && !disabled && Platform.OS === 'web' && { opacity: 0.9 },
+          isHovered && !disabled && { opacity: 0.9 },
           // Apply pressed effect
           pressed && !disabled && { opacity: 0.8 },
         ]}

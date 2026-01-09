@@ -21,11 +21,12 @@
  * ```
  */
 
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Pressable, Text, View, ActivityIndicator, Platform } from 'react-native'
 import type { ButtonProps } from './Button.types'
 import { getButtonStyles } from './Button.styles'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Button({
   children,
@@ -44,8 +45,8 @@ export function Button({
   ...pressableProps
 }: ButtonProps) {
   const isDisabled = disabled || loading
-  const [isHovered, setIsHovered] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, interactiveProps } = useInteractiveState(isDisabled)
 
   // Get styles based on current props and theme
   const styles = useMemo(
@@ -61,10 +62,7 @@ export function Button({
       disabled={isDisabled}
       onPress={onPress}
       accessibilityRole="button"
-      {...(Platform.OS === 'web' && {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
-      } as any)}
+      {...interactiveProps}
       style={({ pressed }) => [
         styles.container,
         fullWidth && { width: '100%' },

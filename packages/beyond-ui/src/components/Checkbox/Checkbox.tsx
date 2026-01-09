@@ -32,7 +32,7 @@
  */
 
 import { useState, useMemo } from 'react'
-import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
+import { View, Pressable, Text, StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -43,6 +43,7 @@ import { CheckIcon } from './CheckIcon'
 import { MinusIcon } from './MinusIcon'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { HelperText } from '../HelperText'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Checkbox({
   checked: checkedProp,
@@ -66,9 +67,8 @@ export function Checkbox({
   const isControlled = checkedProp !== undefined
   const checked = isControlled ? checkedProp : internalChecked
 
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
 
   const handlePress = () => {
     if (disabled) return
@@ -160,16 +160,11 @@ export function Checkbox({
         disabled={disabled}
         accessibilityRole="checkbox"
         accessibilityState={{ checked, disabled }}
-        {...(Platform.OS === 'web' && {
-          onMouseEnter: () => setIsHovered(true),
-          onMouseLeave: () => setIsHovered(false),
-        } as any)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        {...interactiveProps}
         style={({ pressed }) => [
           styles.pressable,
           // Apply hover effect
-          isHovered && !disabled && Platform.OS === 'web' && { opacity: 0.9 },
+          isHovered && !disabled && { opacity: 0.9 },
           // Apply pressed effect
           pressed && !disabled && { opacity: 0.8 },
         ]}

@@ -1,11 +1,15 @@
 import { DEFAULT_CONFIG, type ScaffaldConfig, type ScaffaldConfigInternal } from './config.js'
 import { HttpClient, type RateLimitInfo } from './http/client.js'
 import { Jobs } from './resources/jobs.js'
+import { Applications } from './resources/applications.js'
+import { Profiles } from './resources/profiles.js'
 
 export class Scaffald {
   private http: HttpClient
 
   public readonly jobs: Jobs
+  public readonly applications: Applications
+  public readonly profiles: Profiles
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken) {
@@ -19,6 +23,8 @@ export class Scaffald {
 
     this.http = new HttpClient(internalConfig)
     this.jobs = new Jobs(this.http)
+    this.applications = new Applications(this.http)
+    this.profiles = new Profiles(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

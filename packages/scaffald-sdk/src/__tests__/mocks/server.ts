@@ -111,6 +111,145 @@ export const handlers = [
       offset: 0,
     })
   }),
+
+  // POST /v1/applications - Create application
+  http.post(`${BASE_URL}/v1/applications`, async ({ request }) => {
+    const body = await request.json()
+    return HttpResponse.json(
+      {
+        id: 'app_new',
+        user_id: 'user_1',
+        status: 'pending',
+        is_complete: false,
+        applied_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        ...body,
+      },
+      { status: 201 }
+    )
+  }),
+
+  // GET /v1/applications/:id - Get application
+  http.get(`${BASE_URL}/v1/applications/:id`, ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({
+      id,
+      job_id: 'job_1',
+      user_id: 'user_1',
+      status: 'pending',
+      current_location: 'San Francisco, CA',
+      willing_to_relocate: true,
+      years_experience: 5,
+      is_authorized_to_work: true,
+      earliest_start_date: '2024-02-01',
+      is_complete: true,
+      applied_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
+    })
+  }),
+
+  // PATCH /v1/applications/:id - Update application
+  http.patch(`${BASE_URL}/v1/applications/:id`, async ({ params, request }) => {
+    const { id } = params
+    const body = await request.json()
+    return HttpResponse.json({
+      id,
+      job_id: 'job_1',
+      user_id: 'user_1',
+      status: 'pending',
+      current_location: 'San Francisco, CA',
+      willing_to_relocate: true,
+      years_experience: 5,
+      is_authorized_to_work: true,
+      earliest_start_date: '2024-02-01',
+      is_complete: true,
+      ...body,
+      applied_at: '2024-01-01T00:00:00Z',
+      updated_at: new Date().toISOString(),
+    })
+  }),
+
+  // POST /v1/applications/:id/withdraw - Withdraw application
+  http.post(`${BASE_URL}/v1/applications/:id/withdraw`, async ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({
+      id,
+      job_id: 'job_1',
+      user_id: 'user_1',
+      status: 'withdrawn',
+      current_location: 'San Francisco, CA',
+      willing_to_relocate: true,
+      years_experience: 5,
+      is_authorized_to_work: true,
+      earliest_start_date: '2024-02-01',
+      is_complete: true,
+      applied_at: '2024-01-01T00:00:00Z',
+      updated_at: new Date().toISOString(),
+    })
+  }),
+
+  // GET /v1/profiles/:username - Get user profile
+  http.get(`${BASE_URL}/v1/profiles/:username`, ({ params }) => {
+    const { username } = params
+    return HttpResponse.json({
+      id: 'user_1',
+      username,
+      full_name: 'John Doe',
+      bio: 'Software engineer with 5 years of experience',
+      avatar_url: 'https://example.com/avatar.jpg',
+      location: 'San Francisco, CA',
+      website: 'https://johndoe.com',
+      linkedin_url: 'https://linkedin.com/in/johndoe',
+      github_url: 'https://github.com/johndoe',
+      years_experience: 5,
+      current_position: 'Senior Software Engineer',
+      skills: ['JavaScript', 'TypeScript', 'React', 'Node.js'],
+      certifications: [
+        {
+          name: 'AWS Certified Solutions Architect',
+          issuer: 'Amazon Web Services',
+          issued_at: '2023-01-01',
+        },
+      ],
+      created_at: '2020-01-01T00:00:00Z',
+    })
+  }),
+
+  // GET /v1/profiles/organizations/:slug - Get organization profile
+  http.get(`${BASE_URL}/v1/profiles/organizations/:slug`, ({ params }) => {
+    const { slug } = params
+    return HttpResponse.json({
+      id: 'org_1',
+      slug,
+      name: 'Acme Corporation',
+      description: 'Leading technology company',
+      logo_url: 'https://example.com/logo.png',
+      website: 'https://acme.com',
+      industry: 'Technology',
+      size: '1000-5000',
+      location: 'San Francisco, CA',
+      founded_year: 2010,
+      created_at: '2020-01-01T00:00:00Z',
+      job_count: 25,
+    })
+  }),
+
+  // GET /v1/profiles/employers/:slug - Get employer profile
+  http.get(`${BASE_URL}/v1/profiles/employers/:slug`, ({ params }) => {
+    const { slug } = params
+    return HttpResponse.json({
+      id: 'emp_1',
+      slug,
+      name: 'Startup Inc',
+      description: 'Innovative startup',
+      logo_url: 'https://example.com/startup-logo.png',
+      website: 'https://startup.com',
+      industry: 'SaaS',
+      location: 'New York, NY',
+      created_at: '2021-01-01T00:00:00Z',
+      active_jobs_count: 10,
+    })
+  }),
 ]
 
 export const server = setupServer(...handlers)
