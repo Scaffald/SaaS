@@ -111,7 +111,7 @@ export const feedbackUploadRequestSchema = z.object({
     .min(3, { message: 'File name must be at least 3 characters' })
     .max(255, { message: 'File name is too long' }),
   fileType: z.enum(FEEDBACK_ALLOWED_MIME_TYPES, {
-    invalid_type_error: 'Unsupported file type',
+    message: 'Unsupported file type',
   }),
   fileSize: z
     .number()

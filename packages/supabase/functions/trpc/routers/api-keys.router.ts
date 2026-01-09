@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { generateApiKey, getKeyPrefix, hashApiKey } from '../_shared/utils/api-key.ts'
-import { protectedProcedure, t } from '../middleware.ts'
+import { generateApiKey, getKeyPrefix, hashApiKey } from '../_shared/utils/api-key'
+import { protectedProcedure, t } from '../middleware'
 
 const router = t.router
 

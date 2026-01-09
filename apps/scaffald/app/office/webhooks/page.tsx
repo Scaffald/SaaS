@@ -6,31 +6,18 @@
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native'
 import { useState } from 'react'
 import { Link, useRouter } from 'expo-router'
-import { trpc } from '@scf/core/hooks/trpc'
-import { useCurrentOrganization } from '@scf/core/hooks/useCurrentOrganization'
+import { api } from '@scf/core/utils/api'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { Button } from '@ui/components/Button'
-import { Card } from '@ui/components/Card'
-import { Badge } from '@ui/components/Badge'
-import { colors } from '@ui/tokens/colors'
-import { spacing } from '@ui/tokens/spacing'
-import { typography } from '@ui/tokens/typography'
+import { Button, Card, Badge, colors, spacing, typography } from '@unicornlove/ui'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import type { WebhookConfig } from '@scf/schemas'
 
 export default function WebhooksPage() {
   const router = useRouter()
-  const { organization } = useCurrentOrganization()
   const [selectedWebhook, setSelectedWebhook] = useState<string | null>(null)
 
   // Fetch webhooks
-  const { data: webhooksData, isLoading } = trpc.webhooks.list.useQuery(
-    {
-      organizationId: organization?.id ?? '',
-    },
-    {
-      enabled: !!organization?.id,
-    }
-  )
+  const { data: webhooksData, isLoading } = api.webhooks.list.useQuery()
 
   const webhooks = webhooksData?.data ?? []
 
@@ -39,11 +26,11 @@ export default function WebhooksPage() {
       title="Webhooks"
       description="Manage webhook endpoints for real-time event notifications"
       breadcrumbs={[
-        { label: 'Office', href: '/office' },
-        { label: 'Webhooks', href: '/office/webhooks' },
+        { label: 'Office', href: ROUTES.OFFICE.path },
+        { label: 'Webhooks', href: ROUTES.OFFICE.WEBHOOKS.path },
       ]}
       actions={
-        <Link href="/office/webhooks/create" asChild>
+        <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
           <Button variant="primary" size="md">
             Create Webhook
           </Button>
@@ -60,11 +47,9 @@ export default function WebhooksPage() {
               organization. Configure endpoints to receive POST requests when jobs are created,
               applications are submitted, and more.
             </Text>
-            <Link href="/docs/webhooks" asChild>
-              <Pressable style={styles.docLink}>
-                <Text style={styles.docLinkText}>View Documentation →</Text>
-              </Pressable>
-            </Link>
+            <Pressable style={styles.docLink}>
+              <Text style={styles.docLinkText}>View Documentation →</Text>
+            </Pressable>
           </View>
         </Card>
 
@@ -79,7 +64,7 @@ export default function WebhooksPage() {
             <Text style={styles.emptyText}>
               Create your first webhook endpoint to start receiving real-time event notifications.
             </Text>
-            <Link href="/office/webhooks/create" asChild>
+            <Link href={ROUTES.OFFICE.WEBHOOKS.CREATE.path} asChild>
               <Button variant="primary" size="md" style={{ marginTop: spacing[16] }}>
                 Create Your First Webhook
               </Button>
@@ -93,7 +78,7 @@ export default function WebhooksPage() {
                 webhook={webhook}
                 isSelected={selectedWebhook === webhook.id}
                 onPress={() => setSelectedWebhook(webhook.id)}
-                onViewDetails={() => router.push(`/office/webhooks/${webhook.id}`)}
+                onViewDetails={() => router.push(buildPath(ROUTES.OFFICE.WEBHOOKS.DETAIL, { id: webhook.id }))}
               />
             ))}
           </View>
@@ -114,11 +99,9 @@ export default function WebhooksPage() {
               <EventTypeBadge label="inquiry.created" category="Inquiries" />
               <EventTypeBadge label="background_check.completed" category="Background Checks" />
             </View>
-            <Link href="/docs/webhooks/events" asChild>
-              <Pressable style={styles.viewAllLink}>
-                <Text style={styles.viewAllLinkText}>View All Event Types →</Text>
-              </Pressable>
-            </Link>
+            <Pressable style={styles.viewAllLink}>
+              <Text style={styles.viewAllLinkText}>View All Event Types →</Text>
+            </Pressable>
           </Card>
         )}
       </ScrollView>

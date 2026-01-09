@@ -4,16 +4,11 @@
  */
 
 import { z } from 'zod'
-import { router, authenticatedProcedure } from '../trpc'
+import { protectedProcedure, t } from '../middleware.ts'
 import { TRPCError } from '@trpc/server'
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../../../../../types/supabase'
-import {
-  CreateWebhookInputSchema,
-  UpdateWebhookInputSchema,
-  WebhookDeliveryFilterSchema,
-  WebhookEventType,
-} from '@scf/schemas'
+import { CreateWebhookInputSchema, WebhookEventType } from '@scf/schemas'
+
+const router = t.router
 
 // Generate a secure random secret for HMAC signing
 function generateWebhookSecret(): string {
@@ -26,74 +21,63 @@ export const webhooksRouter = router({
   /**
    * List webhooks for the current user's organization
    */
-  list: authenticatedProcedure
-    .input(
-      z.object({
-        organizationId: z.string().uuid(),
+  list: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx
+
+    // Get user's organization through team membership
+    const { data: membership, error: membershipError } = await supabase
+      .schema('core')
+      .from('team_members')
+      .select('team:teams(organization_id)')
+      .eq('user_id', user.id)
+      .limit(1)
+      .single()
+
+    if (membershipError || !membership || !membership.team) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You must belong to an organization to view webhooks',
       })
-    )
-    .query(async ({ ctx, input }) => {
-      const supabase = createClient<Database>(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-        {
-          auth: {
-            persistSession: false,
-          },
-        }
-      )
+    }
 
-      // Verify user has access to the organization
-      const { data: roleAssignment } = await supabase
-        .from('role_assignments')
-        .select('id')
-        .eq('organization_id', input.organizationId)
-        .eq('user_id', ctx.user.id)
-        .single()
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase query type inference limitation
+    const organizationId = (membership.team as any).organization_id
 
-      if (!roleAssignment) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'You do not have access to this organization',
-        })
-      }
+    if (!organizationId) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'Invalid organization membership',
+      })
+    }
 
-      // Get webhooks
-      const { data: webhooks, error } = await supabase
-        .from('webhooks')
-        .select('*')
-        .eq('organization_id', input.organizationId)
-        .order('created_at', { ascending: false })
+    // Get webhooks
+    const { data: webhooks, error } = await supabase
+      .from('webhooks')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .order('created_at', { ascending: false })
 
-      if (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch webhooks',
-        })
-      }
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch webhooks',
+      })
+    }
 
-      return { data: webhooks }
-    }),
+    return { data: webhooks }
+  }),
 
   /**
    * Get a single webhook by ID
    */
-  retrieve: authenticatedProcedure
+  retrieve: protectedProcedure
     .input(
       z.object({
         id: z.string().uuid(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const supabase = createClient<Database>(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-        {
-          auth: {
-            persistSession: false,
-          },
-        }
-      )
+      const { supabase, user } = ctx
 
       const { data: webhook, error } = await supabase
         .from('webhooks')
@@ -113,7 +97,7 @@ export const webhooksRouter = router({
         .from('role_assignments')
         .select('id')
         .eq('organization_id', webhook.organization_id)
-        .eq('user_id', ctx.user.id)
+        .eq('user_id', user.id)
         .single()
 
       if (!roleAssignment) {
@@ -129,29 +113,43 @@ export const webhooksRouter = router({
   /**
    * Create a new webhook
    */
-  create: authenticatedProcedure
-    .input(
-      CreateWebhookInputSchema.extend({
-        organizationId: z.string().uuid(),
-      })
-    )
+  create: protectedProcedure
+    .input(CreateWebhookInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const supabase = createClient<Database>(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-        {
-          auth: {
-            persistSession: false,
-          },
-        }
-      )
+      const { supabase, user } = ctx
+
+      // Get user's organization through team membership
+      const { data: membership, error: membershipError } = await supabase
+        .schema('core')
+        .from('team_members')
+        .select('team:teams(organization_id)')
+        .eq('user_id', user.id)
+        .limit(1)
+        .single()
+
+      if (membershipError || !membership || !membership.team) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You must belong to an organization to create webhooks',
+        })
+      }
+
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase query type inference limitation
+      const organizationId = (membership.team as any).organization_id
+
+      if (!organizationId) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Invalid organization membership',
+        })
+      }
 
       // Verify user has admin role in organization
       const { data: roleAssignment } = await supabase
         .from('role_assignments')
         .select('role')
-        .eq('organization_id', input.organizationId)
-        .eq('user_id', ctx.user.id)
+        .eq('organization_id', organizationId)
+        .eq('user_id', user.id)
         .single()
 
       if (!roleAssignment || !['owner', 'admin'].includes(roleAssignment.role)) {
@@ -168,7 +166,7 @@ export const webhooksRouter = router({
       const { data: webhook, error } = await supabase
         .from('webhooks')
         .insert({
-          organization_id: input.organizationId,
+          organization_id: organizationId,
           url: input.url,
           description: input.description,
           secret,
@@ -177,7 +175,7 @@ export const webhooksRouter = router({
           timeout_ms: input.timeout_ms ?? 10000,
           rate_limit_per_minute: input.rate_limit_per_minute,
           metadata: input.metadata ?? {},
-          created_by: ctx.user.id,
+          created_by: user.id,
         })
         .select()
         .single()
@@ -198,23 +196,22 @@ export const webhooksRouter = router({
   /**
    * Update a webhook
    */
-  update: authenticatedProcedure
+  update: protectedProcedure
     .input(
       z.object({
         id: z.string().uuid(),
-        data: UpdateWebhookInputSchema,
+        url: z.string().url().startsWith('https://').optional(),
+        description: z.string().optional(),
+        is_active: z.boolean().optional(),
+        events: z.array(z.string()).min(1).optional(),
+        retry_max_attempts: z.number().int().min(0).max(10).optional(),
+        timeout_ms: z.number().int().min(1000).max(60000).optional(),
+        rate_limit_per_minute: z.number().int().positive().optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const supabase = createClient<Database>(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-        {
-          auth: {
-            persistSession: false,
-          },
-        }
-      )
+      const { supabase, user } = ctx
 
       // Get existing webhook
       const { data: existingWebhook, error: fetchError } = await supabase
@@ -235,7 +232,7 @@ export const webhooksRouter = router({
         .from('role_assignments')
         .select('role')
         .eq('organization_id', existingWebhook.organization_id)
-        .eq('user_id', ctx.user.id)
+        .eq('user_id', user.id)
         .single()
 
       if (!roleAssignment || !['owner', 'admin'].includes(roleAssignment.role)) {
@@ -246,13 +243,14 @@ export const webhooksRouter = router({
       }
 
       // Update webhook
+      const { id, ...updateData } = input
       const { data: webhook, error } = await supabase
         .from('webhooks')
         .update({
-          ...input.data,
-          updated_by: ctx.user.id,
+          ...updateData,
+          updated_by: user.id,
         })
-        .eq('id', input.id)
+        .eq('id', id)
         .select()
         .single()
 
@@ -269,22 +267,14 @@ export const webhooksRouter = router({
   /**
    * Delete a webhook
    */
-  delete: authenticatedProcedure
+  delete: protectedProcedure
     .input(
       z.object({
         id: z.string().uuid(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const supabase = createClient<Database>(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-        {
-          auth: {
-            persistSession: false,
-          },
-        }
-      )
+      const { supabase, user } = ctx
 
       // Get existing webhook
       const { data: existingWebhook, error: fetchError } = await supabase
@@ -305,7 +295,7 @@ export const webhooksRouter = router({
         .from('role_assignments')
         .select('role')
         .eq('organization_id', existingWebhook.organization_id)
-        .eq('user_id', ctx.user.id)
+        .eq('user_id', user.id)
         .single()
 
       if (!roleAssignment || roleAssignment.role !== 'owner') {
@@ -331,23 +321,18 @@ export const webhooksRouter = router({
   /**
    * Get deliveries for a webhook
    */
-  deliveries: authenticatedProcedure
+  deliveries: protectedProcedure
     .input(
       z.object({
         webhookId: z.string().uuid(),
-        filter: WebhookDeliveryFilterSchema.optional(),
+        event_type: z.string().optional(),
+        status: z.enum(['pending', 'success', 'failed', 'retrying']).optional(),
+        limit: z.number().int().positive().max(100).default(50),
+        offset: z.number().int().min(0).default(0),
       })
     )
     .query(async ({ ctx, input }) => {
-      const supabase = createClient<Database>(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-        {
-          auth: {
-            persistSession: false,
-          },
-        }
-      )
+      const { supabase, user } = ctx
 
       // Get webhook and verify access
       const { data: webhook, error: webhookError } = await supabase
@@ -368,7 +353,7 @@ export const webhooksRouter = router({
         .from('role_assignments')
         .select('id')
         .eq('organization_id', webhook.organization_id)
-        .eq('user_id', ctx.user.id)
+        .eq('user_id', user.id)
         .single()
 
       if (!roleAssignment) {
@@ -385,16 +370,16 @@ export const webhooksRouter = router({
         .eq('webhook_id', input.webhookId)
 
       // Apply filters
-      if (input.filter?.event_type) {
-        query = query.eq('event_type', input.filter.event_type)
+      if (input.event_type) {
+        query = query.eq('event_type', input.event_type)
       }
-      if (input.filter?.status) {
-        query = query.eq('status', input.filter.status)
+      if (input.status) {
+        query = query.eq('status', input.status)
       }
 
       // Apply pagination
-      const limit = input.filter?.limit ?? 50
-      const offset = input.filter?.offset ?? 0
+      const limit = input.limit
+      const offset = input.offset
       query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
 
       const { data: deliveries, error } = await query
@@ -412,22 +397,14 @@ export const webhooksRouter = router({
   /**
    * Retry a failed webhook delivery
    */
-  retryDelivery: authenticatedProcedure
+  retryDelivery: protectedProcedure
     .input(
       z.object({
         deliveryId: z.string().uuid(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const supabase = createClient<Database>(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-        {
-          auth: {
-            persistSession: false,
-          },
-        }
-      )
+      const { supabase, user } = ctx
 
       // Get delivery and verify access
       const { data: delivery, error: deliveryError } = await supabase
@@ -462,7 +439,7 @@ export const webhooksRouter = router({
         .from('role_assignments')
         .select('role')
         .eq('organization_id', webhook.organization_id)
-        .eq('user_id', ctx.user.id)
+        .eq('user_id', user.id)
         .single()
 
       if (!roleAssignment || !['owner', 'admin'].includes(roleAssignment.role)) {
@@ -494,7 +471,7 @@ export const webhooksRouter = router({
   /**
    * Get available webhook event types
    */
-  eventTypes: authenticatedProcedure.query(async () => {
+  eventTypes: protectedProcedure.query(async () => {
     return {
       data: WebhookEventType.options.map((type) => ({
         value: type,

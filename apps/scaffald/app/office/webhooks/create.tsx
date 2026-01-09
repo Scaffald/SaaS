@@ -6,31 +6,25 @@
 import { View, Text, ScrollView, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
-import { trpc } from '@scf/core/hooks/trpc'
-import { useCurrentOrganization } from '@scf/core/hooks/useCurrentOrganization'
+import { api } from '@scf/core/utils/api'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { Button } from '@ui/components/Button'
-import { Card } from '@ui/components/Card'
-import { Checkbox } from '@ui/components/Checkbox'
-import { colors } from '@ui/tokens/colors'
-import { spacing } from '@ui/tokens/spacing'
-import { typography } from '@ui/tokens/typography'
+import { Button, Card, Checkbox, colors, spacing, typography } from '@unicornlove/ui'
+import { ROUTES } from '@scf/core/constants/routes'
 import type { WebhookEventType } from '@scf/schemas'
 
 export default function CreateWebhookPage() {
   const router = useRouter()
-  const { organization } = useCurrentOrganization()
   const [url, setUrl] = useState('')
   const [description, setDescription] = useState('')
   const [selectedEvents, setSelectedEvents] = useState<Set<WebhookEventType>>(new Set())
   const [secret, setSecret] = useState('')
 
   // Fetch available event types
-  const { data: eventTypesData } = trpc.webhooks.eventTypes.useQuery()
+  const { data: eventTypesData } = api.webhooks.eventTypes.useQuery()
   const eventTypes = eventTypesData?.data ?? []
 
   // Create webhook mutation
-  const createWebhook = trpc.webhooks.create.useMutation({
+  const createWebhook = api.webhooks.create.useMutation({
     onSuccess: (data) => {
       // Show secret once
       setSecret(data.data.secret)
@@ -42,7 +36,7 @@ export default function CreateWebhookPage() {
             text: 'Copy Secret & Continue',
             onPress: () => {
               // TODO: Implement clipboard copy
-              router.push('/office/webhooks')
+              router.push(ROUTES.OFFICE.WEBHOOKS.path)
             },
           },
         ]
@@ -75,7 +69,6 @@ export default function CreateWebhookPage() {
     }
 
     createWebhook.mutate({
-      organizationId: organization?.id ?? '',
       url,
       description,
       events: Array.from(selectedEvents),
@@ -101,9 +94,9 @@ export default function CreateWebhookPage() {
         title="Webhook Created"
         description="Save your webhook secret"
         breadcrumbs={[
-          { label: 'Office', href: '/office' },
-          { label: 'Webhooks', href: '/office/webhooks' },
-          { label: 'Created', href: '/office/webhooks/create' },
+          { label: 'Office', href: ROUTES.OFFICE.path },
+          { label: 'Webhooks', href: ROUTES.OFFICE.WEBHOOKS.path },
+          { label: 'Created', href: ROUTES.OFFICE.WEBHOOKS.CREATE.path },
         ]}
       >
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -119,7 +112,7 @@ export default function CreateWebhookPage() {
               </Text>
             </View>
 
-            <Button variant="primary" size="md" onPress={() => router.push('/office/webhooks')}>
+            <Button variant="primary" size="md" onPress={() => router.push(ROUTES.OFFICE.WEBHOOKS.path)}>
               I've Saved My Secret
             </Button>
           </Card>
@@ -133,9 +126,9 @@ export default function CreateWebhookPage() {
       title="Create Webhook"
       description="Configure a new webhook endpoint"
       breadcrumbs={[
-        { label: 'Office', href: '/office' },
-        { label: 'Webhooks', href: '/office/webhooks' },
-        { label: 'Create', href: '/office/webhooks/create' },
+        { label: 'Office', href: ROUTES.OFFICE.path },
+        { label: 'Webhooks', href: ROUTES.OFFICE.WEBHOOKS.path },
+        { label: 'Create', href: ROUTES.OFFICE.WEBHOOKS.CREATE.path },
       ]}
       actions={
         <View style={styles.headerActions}>

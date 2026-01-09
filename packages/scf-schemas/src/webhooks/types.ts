@@ -61,8 +61,8 @@ export const WebhookEventPayloadSchema = z.object({
   type: WebhookEventType,
   created_at: z.string().datetime(),
   organization_id: z.string().uuid(),
-  data: z.record(z.unknown()),
-  metadata: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 export type WebhookEventPayload = z.infer<typeof WebhookEventPayloadSchema>
@@ -130,7 +130,7 @@ export const WebhookConfigSchema = z.object({
   retry_backoff_seconds: z.array(z.number().int().positive()).default([60, 300, 900]),
   timeout_ms: z.number().int().min(1000).max(60000).default(10000),
   rate_limit_per_minute: z.number().int().positive().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 })
@@ -158,14 +158,14 @@ export const WebhookDeliverySchema = z.object({
   webhook_id: z.string().uuid(),
   event_type: WebhookEventType,
   event_id: z.string().uuid(),
-  event_data: z.record(z.unknown()),
+  event_data: z.record(z.string(), z.unknown()),
   attempt_number: z.number().int().positive(),
   status: WebhookDeliveryStatus,
-  request_headers: z.record(z.string()).optional(),
-  request_body: z.record(z.unknown()),
+  request_headers: z.record(z.string(), z.string()).optional(),
+  request_body: z.record(z.string(), z.unknown()),
   request_signature: z.string().optional(),
   response_status_code: z.number().int().optional(),
-  response_headers: z.record(z.string()).optional(),
+  response_headers: z.record(z.string(), z.string()).optional(),
   response_body: z.string().optional(),
   response_time_ms: z.number().int().optional(),
   error_message: z.string().optional(),
@@ -189,7 +189,7 @@ export const CreateWebhookInputSchema = z.object({
   retry_max_attempts: z.number().int().min(0).max(10).default(3),
   timeout_ms: z.number().int().min(1000).max(60000).default(10000),
   rate_limit_per_minute: z.number().int().positive().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 export type CreateWebhookInput = z.infer<typeof CreateWebhookInputSchema>
@@ -205,7 +205,7 @@ export const UpdateWebhookInputSchema = z.object({
   retry_max_attempts: z.number().int().min(0).max(10).optional(),
   timeout_ms: z.number().int().min(1000).max(60000).optional(),
   rate_limit_per_minute: z.number().int().positive().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 export type UpdateWebhookInput = z.infer<typeof UpdateWebhookInputSchema>
