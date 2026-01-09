@@ -10,12 +10,30 @@ export const handlers = [
       data: [
         {
           id: 'job_1',
-          title: 'Senior Software Engineer',
-          description: 'We are looking for a senior software engineer...',
+          title: 'Software Engineer',
+          description: 'We are looking for a software engineer...',
           status: 'published',
           location: {
             city: 'San Francisco',
             state: 'CA',
+            country: 'US',
+          },
+          salary_min: 120000,
+          salary_max: 160000,
+          employment_type: 'full_time',
+          organization_id: 'org_1',
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+          published_at: '2024-01-01T00:00:00Z',
+        },
+        {
+          id: 'job_2',
+          title: 'Senior Software Engineer',
+          description: 'We are looking for a senior software engineer...',
+          status: 'published',
+          location: {
+            city: 'New York',
+            state: 'NY',
             country: 'US',
           },
           salary_min: 150000,
@@ -27,7 +45,7 @@ export const handlers = [
           published_at: '2024-01-01T00:00:00Z',
         },
       ],
-      total: 1,
+      total: 2,
       limit: 20,
       offset: 0,
     })
@@ -38,16 +56,16 @@ export const handlers = [
     const { id } = params
     return HttpResponse.json({
       id,
-      title: 'Senior Software Engineer',
-      description: 'We are looking for a senior software engineer...',
+      title: 'Software Engineer',
+      description: 'We are looking for a software engineer...',
       status: 'published',
       location: {
         city: 'San Francisco',
         state: 'CA',
         country: 'US',
       },
-      salary_min: 150000,
-      salary_max: 200000,
+      salary_min: 120000,
+      salary_max: 160000,
       employment_type: 'full_time',
       organization_id: 'org_1',
       created_at: '2024-01-01T00:00:00Z',
@@ -56,12 +74,31 @@ export const handlers = [
     })
   }),
 
+  // GET /v1/jobs/filter-options - Get filter options
+  http.get(`${BASE_URL}/v1/jobs/filter-options`, () => {
+    return HttpResponse.json({
+      industries: [
+        { value: 'technology', label: 'Technology' },
+        { value: 'finance', label: 'Finance' },
+      ],
+      locations: [
+        { value: 'san-francisco', label: 'San Francisco' },
+        { value: 'new-york', label: 'New York' },
+      ],
+      experienceLevels: [
+        { value: 'junior', label: 'Junior' },
+        { value: 'mid', label: 'Mid-Level' },
+        { value: 'senior', label: 'Senior' },
+      ],
+    })
+  }),
+
   // POST /v1/jobs - Create job
   http.post(`${BASE_URL}/v1/jobs`, async ({ request }) => {
     const body = await request.json()
     return HttpResponse.json(
       {
-        id: 'job_new',
+        id: 'job_new_123',
         ...body,
         organization_id: 'org_1',
         created_at: new Date().toISOString(),
@@ -77,9 +114,6 @@ export const handlers = [
     const body = await request.json()
     return HttpResponse.json({
       id,
-      title: 'Senior Software Engineer',
-      description: 'We are looking for a senior software engineer...',
-      status: 'published',
       ...body,
       organization_id: 'org_1',
       created_at: '2024-01-01T00:00:00Z',
@@ -105,8 +139,17 @@ export const handlers = [
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z',
         },
+        {
+          id: 'job_similar_2',
+          title: 'Backend Engineer',
+          description: 'Another similar role...',
+          status: 'published',
+          organization_id: 'org_1',
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+        },
       ],
-      total: 1,
+      total: 2,
       limit: 10,
       offset: 0,
     })
@@ -136,7 +179,7 @@ export const handlers = [
       id,
       job_id: 'job_1',
       user_id: 'user_1',
-      status: 'pending',
+      status: 'submitted',
       current_location: 'San Francisco, CA',
       willing_to_relocate: true,
       years_experience: 5,
@@ -156,14 +199,13 @@ export const handlers = [
       id,
       job_id: 'job_1',
       user_id: 'user_1',
-      status: 'pending',
-      current_location: 'San Francisco, CA',
+      status: 'submitted',
+      ...body,
       willing_to_relocate: true,
       years_experience: 5,
       is_authorized_to_work: true,
       earliest_start_date: '2024-02-01',
       is_complete: true,
-      ...body,
       applied_at: '2024-01-01T00:00:00Z',
       updated_at: new Date().toISOString(),
     })
@@ -194,7 +236,7 @@ export const handlers = [
     return HttpResponse.json({
       id: 'user_1',
       username,
-      full_name: 'John Doe',
+      displayName: 'John Doe',
       bio: 'Software engineer with 5 years of experience',
       avatar_url: 'https://example.com/avatar.jpg',
       location: 'San Francisco, CA',
@@ -221,7 +263,7 @@ export const handlers = [
     return HttpResponse.json({
       id: 'org_1',
       slug,
-      name: 'Acme Corporation',
+      name: 'ACME Corporation',
       description: 'Leading technology company',
       logo_url: 'https://example.com/logo.png',
       website: 'https://acme.com',
@@ -240,7 +282,7 @@ export const handlers = [
     return HttpResponse.json({
       id: 'emp_1',
       slug,
-      name: 'Startup Inc',
+      name: 'Tech Startup Inc',
       description: 'Innovative startup',
       logo_url: 'https://example.com/startup-logo.png',
       website: 'https://startup.com',

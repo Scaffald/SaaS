@@ -73,4 +73,8 @@ export class Jobs extends Resource {
   async similar(id: string, limit?: number): Promise<JobListResponse> {
     return this.get<JobListResponse>(`/v1/jobs/${id}/similar`, { limit })
   }
+
+  async filterOptions(): Promise<any> {
+    return this.get<any>('/v1/jobs/filter-options')
+  }
 }
