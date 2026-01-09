@@ -9,7 +9,7 @@ import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { borderWidth } from '../../tokens/borders'
-import { typography } from '../../tokens/typography'
+import { typographyVariants } from '../../tokens/typography'
 import { shadows } from '../../tokens/shadows'
 import type { TableCellType, TableCellState, TableCellAlign } from './TableCell.types'
 
@@ -52,15 +52,15 @@ export function getTableCellStyles(
     borderBottomWidth: borderWidth.thin,
     borderBottomColor: colors.border[theme].default,
     backgroundColor: colors.bg[theme].default,
-    ...(width && { width: typeof width === 'number' ? width : width }),
+    ...(width && { width: typeof width === 'string' ? (parseFloat(width) || undefined) : width }),
   }
 
   // Base text styles
   const baseText: TextStyle = {
-    fontFamily: typography.paragraph.s.regular.fontFamily,
-    fontSize: typography.paragraph.s.regular.fontSize,
-    fontWeight: typography.paragraph.s.regular.fontWeight,
-    lineHeight: typography.paragraph.s.regular.lineHeight,
+    fontFamily: typographyVariants.paragraphSRegular.fontFamily,
+    fontSize: typographyVariants.paragraphSRegular.fontSize,
+    fontWeight: typographyVariants.paragraphSRegular.fontWeight,
+    lineHeight: typographyVariants.paragraphSRegular.lineHeight,
     color: colors.text[theme].primary,
     textAlign: align,
   }
@@ -68,7 +68,7 @@ export function getTableCellStyles(
   // Base description text styles
   const descriptionText: TextStyle = {
     ...baseText,
-    fontWeight: typography.paragraph.s.regular.fontWeight,
+    fontWeight: typographyVariants.paragraphSRegular.fontWeight,
     color: colors.text[theme].tertiary,
   }
 
@@ -252,7 +252,7 @@ function getInteractiveCellStyles(
       return {
         container: {
           ...baseContainer,
-          backgroundColor: colors.bg[theme].hover || colors.gray[50],
+          backgroundColor: colors.bg[theme].subtle || colors.gray[50],
         },
         text: baseText,
       }

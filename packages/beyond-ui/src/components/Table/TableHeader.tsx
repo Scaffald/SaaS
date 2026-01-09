@@ -19,8 +19,16 @@
  */
 
 import { View, TextInput, StyleSheet } from 'react-native'
-import type { TableHeaderProps } from './Table.types'
 import { getTableStyles } from './Table.styles'
+
+// Legacy component - TableHeaderProps moved to Table component
+interface TableHeaderProps {
+  searchValue?: string
+  onSearchChange?: (value: string) => void
+  searchPlaceholder?: string
+  actions?: React.ReactNode
+  style?: any
+}
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'

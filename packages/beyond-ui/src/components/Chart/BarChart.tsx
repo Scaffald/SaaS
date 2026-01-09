@@ -16,7 +16,6 @@ import { View } from 'react-native'
 import Svg, { Rect } from 'react-native-svg'
 import type { BarChartProps } from './Chart.types'
 import { normalizeData, getBarChartColors } from './Chart.utils'
-import { colors } from '../../tokens/colors'
 
 export function BarChart({
   data,

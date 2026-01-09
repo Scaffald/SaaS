@@ -48,61 +48,66 @@ import { borderWidth } from '../../tokens/borders'
 /**
  * TableCell component
  */
-export function TableCell({
-  type = 'interactive-default',
-  state = 'default',
-  align = 'left',
-  width,
-  style,
-  textStyle,
-  text,
-  description,
-  showCheckbox,
-  showRadio,
-  showSwitch,
-  checked,
-  radioChecked,
-  switchChecked,
-  onSelectionChange,
-  avatar,
-  showIndicator,
-  avatars,
-  maxAvatars = 3,
-  cardIcon,
-  expirationDate,
-  fileType,
-  fileSize,
-  fileIcon,
-  brandIcon,
-  brandHandle,
-  flag,
-  countryCode,
-  logo,
-  cryptoIcon,
-  symbol,
-  trendIcon,
-  trendDirection,
-  trendValue,
-  statusType,
-  statusLabel,
-  statusStyle,
-  labels,
-  maxLabels = 3,
-  actions,
-  maxActions = 4,
-  progress,
-  progressColor = 'primary',
-  rating,
-  maxRating = 5,
-  chartType,
-  chartData,
-  chartComponent,
-  onPress,
-  onIconPress,
-  onMorePress,
-  children,
-  ...pressableProps
-}: TableCellProps) {
+export function TableCell(props: TableCellProps) {
+  // Extract base props that exist on all variants
+  const type = props.type || 'interactive-default'
+  const align = props.align || 'left'
+  const width = props.width
+  const style = props.style
+  const textStyle = props.textStyle
+  const onPress = 'onPress' in props ? props.onPress : undefined
+  
+  // Extract pressableProps (all other props not explicitly handled)
+  const { type: _, align: __, width: ___, style: ____, textStyle: _____, onPress: ______, ...pressableProps } = props as any
+
+  // Extract props that may not exist on all variants (using type guards)
+  const state = 'state' in props ? props.state : 'default'
+  const text = 'text' in props ? props.text : undefined
+  const description = 'description' in props ? props.description : undefined
+  const showCheckbox = 'showCheckbox' in props ? props.showCheckbox : undefined
+  const showRadio = 'showRadio' in props ? props.showRadio : undefined
+  const showSwitch = 'showSwitch' in props ? props.showSwitch : undefined
+  const checked = 'checked' in props ? props.checked : undefined
+  const radioChecked = 'radioChecked' in props ? props.radioChecked : undefined
+  const switchChecked = 'switchChecked' in props ? props.switchChecked : undefined
+  const onSelectionChange = 'onSelectionChange' in props ? props.onSelectionChange : undefined
+  const onIconPress = 'onIconPress' in props ? props.onIconPress : undefined
+  const onMorePress = 'onMorePress' in props ? props.onMorePress : undefined
+  const avatar = 'avatar' in props ? props.avatar : undefined
+  const showIndicator = 'showIndicator' in props ? props.showIndicator : undefined
+  const avatars = 'avatars' in props ? props.avatars : undefined
+  const maxAvatars = 'maxAvatars' in props ? props.maxAvatars : 3
+  const cardIcon = 'cardIcon' in props ? props.cardIcon : undefined
+  const expirationDate = 'expirationDate' in props ? props.expirationDate : undefined
+  const fileType = 'fileType' in props ? props.fileType : undefined
+  const fileSize = 'fileSize' in props ? props.fileSize : undefined
+  const fileIcon = 'fileIcon' in props ? props.fileIcon : undefined
+  const brandIcon = 'brandIcon' in props ? props.brandIcon : undefined
+  const brandHandle = 'brandHandle' in props ? props.brandHandle : undefined
+  const flag = 'flag' in props ? props.flag : undefined
+  const countryCode = 'countryCode' in props ? props.countryCode : undefined
+  const logo = 'logo' in props ? props.logo : undefined
+  const cryptoIcon = 'cryptoIcon' in props ? props.cryptoIcon : undefined
+  const symbol = 'symbol' in props ? props.symbol : undefined
+  const trendIcon = 'trendIcon' in props ? props.trendIcon : undefined
+  const trendDirection = 'trendDirection' in props ? props.trendDirection : undefined
+  const trendValue = 'trendValue' in props ? props.trendValue : undefined
+  const statusType = 'statusType' in props ? props.statusType : undefined
+  const statusLabel = 'statusLabel' in props ? props.statusLabel : undefined
+  const statusStyle = 'statusStyle' in props ? props.statusStyle : undefined
+  const labels = 'labels' in props ? props.labels : undefined
+  const maxLabels = 'maxLabels' in props ? props.maxLabels : 3
+  const actions = 'actions' in props ? props.actions : undefined
+  const maxActions = 'maxActions' in props ? props.maxActions : 4
+  const progress = 'progress' in props ? props.progress : undefined
+  const progressColor = 'progressColor' in props ? props.progressColor : 'primary'
+  const rating = 'rating' in props ? props.rating : undefined
+  const maxRating = 'maxRating' in props ? props.maxRating : 5
+  const chartType = 'chartType' in props ? props.chartType : undefined
+  const chartData = 'chartData' in props ? props.chartData : undefined
+  const chartComponent = 'chartComponent' in props ? props.chartComponent : undefined
+  const children = 'children' in props ? props.children : undefined
+
   const { theme } = useThemeContext()
   const [isHovered, setIsHovered] = useState(false)
 
@@ -295,9 +300,9 @@ export function TableCell({
     return (
       <View style={[styles.container, style]}>
         <StatusIndicator
-          type={statusType || 'success'}
+          type={(statusType as any) || 'success'}
           variant={statusStyle || 'light'}
-          label={statusLabel}
+          label={statusLabel || ''}
         />
       </View>
     )
@@ -305,8 +310,9 @@ export function TableCell({
 
   // Render labels cell
   if (type === 'labels') {
-    const displayLabels = labels?.slice(0, maxLabels) || []
-    const remainingCount = (labels?.length || 0) - maxLabels
+    const maxLabelsValue = maxLabels ?? 3
+    const displayLabels = labels?.slice(0, maxLabelsValue) || []
+    const remainingCount = (labels?.length || 0) - maxLabelsValue
 
     return (
       <View style={[styles.container, style]}>
@@ -381,11 +387,12 @@ export function TableCell({
   // Render rating cell
   if (type === 'rating') {
     const ratingValue = rating || 0
-    const stars = Array.from({ length: maxRating }, (_, i) => i + 1)
+    const maxRatingValue = maxRating ?? 5
+    const stars = Array.from({ length: maxRatingValue }, (_, i) => i + 1)
 
     return (
       <View style={[styles.container, style]}>
-        {stars.map((starNum) => (
+        {stars.map((starNum: number) => (
           <Star
             key={starNum}
             size={24}

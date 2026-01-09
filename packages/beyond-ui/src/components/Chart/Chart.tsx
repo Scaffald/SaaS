@@ -22,12 +22,9 @@ import { getChartStyles } from './Chart.styles'
 import { getPeriodLabels } from './Chart.utils'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { spacing } from '../../tokens/spacing'
-import { typography } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'
 
 export function Chart({
-  type,
-  data,
   xAxisLabels: customXAxisLabels,
   yAxisLabels: customYAxisLabels,
   period,

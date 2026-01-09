@@ -393,13 +393,12 @@ export type {
   ExpandedTableRowProps,
   ExpandedTableRowVariant,
 } from './components/Table'
-export type { TableHeaderProps } from './components/Table'
+// TableHeaderProps removed - use Table component with actions prop instead
 
 export { TableColumnHeader } from './components/Table'
 export type { TableColumnHeaderProps } from './components/Table'
 
-export { TableRow } from './components/Table'
-export type { TableRowProps } from './components/Table'
+// TableRow removed - use Table component with data/columns instead
 
 export { TableCell } from './components/Table'
 export type { TableCellProps } from './components/Table'

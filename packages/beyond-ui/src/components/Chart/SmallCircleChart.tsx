@@ -12,12 +12,11 @@
  * ```
  */
 
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import Svg, { Circle } from 'react-native-svg'
-import type { SmallCircleChartProps } from './Chart.types'
 import { getSmallCircleChartSize } from './Chart.utils'
 import { colors } from '../../tokens/colors'
-import { typography } from '../../tokens/typography'
+import type { SmallCircleChartProps } from './Chart.types'
 
 export function SmallCircleChart({
   value,

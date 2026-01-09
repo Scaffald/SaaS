@@ -16,12 +16,9 @@ import { View } from 'react-native'
 import Svg, { Rect } from 'react-native-svg'
 import type { BarChartBaseProps } from './Chart.types'
 import { normalizeData, getBarChartColors } from './Chart.utils'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
 
 export function BarChartBase({
   data,
-  period,
   colors: customColors,
   height = 180,
   width: widthProp = 229,

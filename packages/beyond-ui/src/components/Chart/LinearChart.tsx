@@ -24,14 +24,13 @@ import { generateLinePath, normalizeData } from './Chart.utils'
 import { colors } from '../../tokens/colors'
 
 export function LinearChart({
-  data,
-  period,
   color = colors.primary[600],
   height = 247,
   width: widthProp = 847,
   showShadow = false,
   sharpen = false,
   series,
+  data,
   style,
 }: LinearChartProps) {
   // Normalize width to number for calculations
@@ -50,7 +49,7 @@ export function LinearChart({
   const normalizedYValues = normalizeData(allYValues, 0, height)
 
   // Convert to points with normalized y values
-  const normalizedPoints = allPoints.map((point, index) => {
+  const normalizedPoints = allPoints.map((point) => {
     const pointIndex = allYValues.indexOf(typeof point === 'object' ? point.y : point)
     const xValue = typeof point === 'object' ? point.x : pointIndex
     return {

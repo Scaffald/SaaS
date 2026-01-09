@@ -18,8 +18,30 @@
 
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
-import type { TableRowProps } from './Table.types'
-import { getTableStyles, getRowStyles } from './Table.styles'
+import { getTableStyles } from './Table.styles'
+import { colors } from '../../tokens/colors'
+import type { ThemeMode } from '../../tokens/colors'
+
+// Legacy component - TableRowProps moved to Table component
+interface TableRowProps {
+  children?: React.ReactNode
+  selected?: boolean
+  expanded?: boolean
+  onExpand?: (expanded: boolean) => void
+  onPress?: () => void
+  style?: any
+}
+
+// Helper function for row styles
+function getRowStyles(selected: boolean, expanded: boolean, theme: ThemeMode = 'light') {
+  return {
+    backgroundColor: selected
+      ? (theme === 'light' ? colors.primary[50] : colors.primary[900])
+      : expanded
+        ? colors.bg[theme].subtle || colors.gray[50]
+        : colors.bg[theme].default,
+  }
+}
 import { useThemeContext } from '../../playground/ThemeProvider'
 
 export function TableRow({
@@ -57,10 +79,15 @@ export function TableRow({
 
   return (
     <Pressable
-      {...pressableProps}
       onPress={onPress || onExpand ? handlePress : undefined}
       style={({ pressed }) => [
-        styles.row,
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          minHeight: 68,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border[theme].default,
+        },
         rowStyles,
         pressed && { opacity: 0.7 },
         style,

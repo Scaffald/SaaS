@@ -8,7 +8,7 @@ import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
-import { typography } from '../../tokens/typography'
+import { typographyVariants } from '../../tokens/typography'
 import type { ExpandedTableRowVariant } from './ExpandedTableRow.types'
 
 /**
@@ -37,7 +37,7 @@ export function getExpandedTableRowStyles(
     flexDirection: 'row',
     borderBottomWidth: borderWidth.thin,
     borderBottomColor: colors.border[theme].default,
-    backgroundColor: colors.bg[theme].secondary || colors.gray[50],
+    backgroundColor: colors.bg[theme].subtle || colors.gray[50],
   }
 
   // Guideline cell (40px width)
@@ -61,49 +61,49 @@ export function getExpandedTableRowStyles(
 
   // Title styles (for variant2)
   const title: TextStyle = {
-    fontFamily: typography.paragraph.m.medium.fontFamily,
-    fontSize: typography.paragraph.m.medium.fontSize,
-    fontWeight: typography.paragraph.m.medium.fontWeight,
-    lineHeight: typography.paragraph.m.medium.lineHeight,
+    fontFamily: typographyVariants.paragraphMMedium.fontFamily,
+    fontSize: typographyVariants.paragraphMMedium.fontSize,
+    fontWeight: typographyVariants.paragraphMMedium.fontWeight,
+    lineHeight: typographyVariants.paragraphMMedium.lineHeight,
     color: colors.text[theme].primary,
     marginBottom: spacing[4],
   }
 
   // Field label styles (for default variant)
   const fieldLabel: TextStyle = {
-    fontFamily: typography.paragraph.s.medium.fontFamily,
-    fontSize: typography.paragraph.s.medium.fontSize,
-    fontWeight: typography.paragraph.s.medium.fontWeight,
-    lineHeight: typography.paragraph.s.medium.lineHeight,
+    fontFamily: typographyVariants.paragraphSMedium.fontFamily,
+    fontSize: typographyVariants.paragraphSMedium.fontSize,
+    fontWeight: typographyVariants.paragraphSMedium.fontWeight,
+    lineHeight: typographyVariants.paragraphSMedium.lineHeight,
     color: colors.text[theme].primary,
     marginBottom: spacing[4],
   }
 
   // Field value styles (for variant2)
   const fieldValue: TextStyle = {
-    fontFamily: typography.paragraph.m.medium.fontFamily,
-    fontSize: typography.paragraph.m.medium.fontSize,
-    fontWeight: typography.paragraph.m.medium.fontWeight,
-    lineHeight: typography.paragraph.m.medium.lineHeight,
+    fontFamily: typographyVariants.paragraphMMedium.fontFamily,
+    fontSize: typographyVariants.paragraphMMedium.fontSize,
+    fontWeight: typographyVariants.paragraphMMedium.fontWeight,
+    lineHeight: typographyVariants.paragraphMMedium.lineHeight,
     color: colors.text[theme].secondary,
   }
 
   // Info label styles (for variant2)
   const infoLabel: TextStyle = {
-    fontFamily: typography.paragraph.s.regular.fontFamily,
-    fontSize: typography.paragraph.s.regular.fontSize,
-    fontWeight: typography.paragraph.s.regular.fontWeight,
-    lineHeight: typography.paragraph.s.regular.lineHeight,
+    fontFamily: typographyVariants.paragraphSRegular.fontFamily,
+    fontSize: typographyVariants.paragraphSRegular.fontSize,
+    fontWeight: typographyVariants.paragraphSRegular.fontWeight,
+    lineHeight: typographyVariants.paragraphSRegular.lineHeight,
     color: colors.text[theme].tertiary,
     marginBottom: spacing[4],
   }
 
   // Info value styles (for variant2)
   const infoValue: TextStyle = {
-    fontFamily: typography.paragraph.m.medium.fontFamily,
-    fontSize: typography.paragraph.m.medium.fontSize,
-    fontWeight: typography.paragraph.m.medium.fontWeight,
-    lineHeight: typography.paragraph.m.medium.lineHeight,
+    fontFamily: typographyVariants.paragraphMMedium.fontFamily,
+    fontSize: typographyVariants.paragraphMMedium.fontSize,
+    fontWeight: typographyVariants.paragraphMMedium.fontWeight,
+    lineHeight: typographyVariants.paragraphMMedium.lineHeight,
     color: colors.text[theme].secondary,
   }
 

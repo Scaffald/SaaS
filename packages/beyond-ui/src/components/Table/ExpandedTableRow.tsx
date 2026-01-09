@@ -102,7 +102,7 @@ export function ExpandedTableRow({
 
   // Render default variant (form inputs)
   const fieldsPerColumn = Math.ceil((fields?.length || 0) / columns)
-  const columnWidth = `${100 / columns}%`
+  const columnWidthPercent = 100 / columns
 
   return (
     <View style={[styles.container, style]}>
@@ -127,21 +127,22 @@ export function ExpandedTableRow({
             <View
               key={colIndex}
               style={{
-                width: columnWidth,
-                gap: spacing[20],
+                flex: 1,
+                minWidth: 0,
               }}
             >
               {columnFields.map((field, fieldIndex) => (
-                <Input
-                  key={fieldIndex}
-                  label={field.label}
-                  placeholder={field.placeholder}
-                  value={field.value}
-                  onChangeText={(value) => onFieldChange?.(field.type || field.label, value)}
-                  required={field.required}
-                  helperText={field.helperText}
-                  error={field.error}
-                />
+                <View key={fieldIndex} style={{ marginBottom: spacing[20] }}>
+                  <Input
+                    label={field.label}
+                    placeholder={field.placeholder}
+                    value={field.value}
+                    onChangeText={(value) => onFieldChange?.(field.type || field.label, value)}
+                    required={field.required}
+                    helperText={field.helperText}
+                    error={field.error}
+                  />
+                </View>
               ))}
             </View>
           )

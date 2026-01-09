@@ -249,7 +249,7 @@ export function Table({
                     placeholder={searchPlaceholder}
                     value={searchValue}
                     onChangeText={handleSearchChange}
-                    style={{ flex: 1, maxWidth: 263 }}
+                    containerStyle={{ flex: 1, maxWidth: 263 }}
                   />
                 )}
                 {actions.length > 0 && (
@@ -289,7 +289,7 @@ export function Table({
                   placeholder={searchPlaceholder}
                   value={searchValue}
                   onChangeText={handleSearchChange}
-                  style={{ flex: 1, maxWidth: 263 }}
+                  containerStyle={{ flex: 1, maxWidth: 263 }}
                 />
               )}
               {actions.length > 0 && (
@@ -332,7 +332,7 @@ export function Table({
                 placeholder={searchPlaceholder}
                 value={searchValue}
                 onChangeText={handleSearchChange}
-                style={{ flex: 1, maxWidth: 263 }}
+                containerStyle={{ flex: 1, maxWidth: 263 }}
               />
             )}
             {actions.length > 0 && (
@@ -404,9 +404,13 @@ export function Table({
                     // Render custom cell if render function provided
                     if (column.render) {
                       return (
-                        <TableCell key={column.id} type={cellType} width={column.width} align={column.align}>
-                          {column.render(cellValue, row, rowIndex)}
-                        </TableCell>
+                        <TableCell
+                          key={column.id}
+                          type={cellType}
+                          width={column.width}
+                          align={column.align}
+                          {...({ children: column.render(cellValue, row, rowIndex) } as any)}
+                        />
                       )
                     }
 
@@ -450,7 +454,7 @@ export function Table({
                         type={cellType}
                         width={column.width}
                         align={column.align}
-                        text={cellValue !== null && cellValue !== undefined ? String(cellValue) : ''}
+                        {...({ text: cellValue !== null && cellValue !== undefined ? String(cellValue) : '' } as any)}
                       />
                     )
                   })}

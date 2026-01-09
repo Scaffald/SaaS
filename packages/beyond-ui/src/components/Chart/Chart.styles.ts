@@ -6,7 +6,6 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import type { ChartStyleConfig } from './Chart.types'
 
@@ -14,7 +13,6 @@ import type { ChartStyleConfig } from './Chart.types'
  * Get chart styles based on theme
  */
 export function getChartStyles(theme: ThemeMode = 'light'): ChartStyleConfig {
-  const isLight = theme === 'light'
 
   // Base container styles
   const container: ViewStyle = {

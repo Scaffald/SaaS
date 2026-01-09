@@ -55,9 +55,7 @@ export type {
   ExpandedRowInfoItem,
 } from './ExpandedTableRow.types'
 
-export type {
-  TableCellStyleConfig,
-  TableColumnHeaderStyleConfig,
-  ExpandedTableRowStyleConfig,
-  TableStyleConfig,
-} from './Table.styles'
+export type { TableStyleConfig } from './Table.styles'
+export type { TableCellStyleConfig } from './TableCell.styles'
+export type { TableColumnHeaderStyleConfig } from './TableColumnHeader.styles'
+export type { ExpandedTableRowStyleConfig } from './ExpandedTableRow.styles'

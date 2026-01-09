@@ -4,8 +4,6 @@
  */
 
 import type {
-  ChartDataPoint,
-  ChartSeries,
   DonutChartData,
   ChartSize,
   CircleChartSize,
