@@ -45,9 +45,13 @@
     "lint:fix": "biome lint --write .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "generate:types": "tsx scripts/generate-types.ts",
-    "prepublishOnly": "pnpm build && pnpm test"
+    "prepublishOnly": "pnpm build && pnpm test",
+    "prerelease": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "release:dry": "npm publish --dry-run",
+    "size": "size-limit"
   },
   "dependencies": {
     "zod": "^3.22.4"
