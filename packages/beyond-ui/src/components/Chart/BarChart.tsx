@@ -28,12 +28,39 @@ export function BarChart({
   // Normalize width to number for calculations
   const width = typeof widthProp === 'string' ? parseFloat(widthProp) || 229 : widthProp
 
-  if (data.length === 0) {
-    return <View style={[{ width: width as number, height }, style]} />
+  // Validate and filter data
+  const validatedData = data.filter((value) => {
+    if (!Number.isFinite(value)) {
+      if (__DEV__) {
+        console.warn('[BarChart] Invalid data value detected:', value)
+      }
+      return false
+    }
+    return true
+  })
+
+  if (validatedData.length === 0) {
+    if (__DEV__ && data.length > 0) {
+      console.warn('[BarChart] All data values were invalid or filtered out')
+    }
+    return (
+      <View
+        style={[{ width: width as number, height }, style]}
+        accessible={true}
+        accessibilityLabel="Empty bar chart with no data"
+        accessibilityRole="image"
+      />
+    )
   }
 
+  // Generate accessible description
+  const maxValue = Math.max(...validatedData)
+  const minValue = Math.min(...validatedData)
+  const avgValue = validatedData.reduce((sum, val) => sum + val, 0) / validatedData.length
+  const accessibilityLabel = `Bar chart with ${validatedData.length} bars. Values range from ${minValue.toFixed(1)} to ${maxValue.toFixed(1)}, with an average of ${avgValue.toFixed(1)}.`
+
   const chartColors = customColors || getBarChartColors(variant)
-  const normalizedData = normalizeData(data, 0, height)
+  const normalizedData = normalizeData(validatedData, 0, height)
 
   // Calculate bar dimensions based on variant
   let barWidth: number
@@ -43,26 +70,37 @@ export function BarChart({
     case '1':
       // Thin bars (8px)
       barWidth = 8
-      gap = (width - barWidth * data.length) / (data.length + 1)
+      gap = (width - barWidth * validatedData.length) / (validatedData.length + 1)
       break
     case '2':
       // Medium bars (8px, same as variant 1 but different spacing)
       barWidth = 8
-      gap = (width - barWidth * data.length) / (data.length + 1)
+      gap = (width - barWidth * validatedData.length) / (validatedData.length + 1)
       break
     case '3':
       // Thick bars (28px)
       barWidth = 28
-      gap = (width - barWidth * data.length) / (data.length + 1)
+      gap = (width - barWidth * validatedData.length) / (validatedData.length + 1)
       break
     default:
       barWidth = 8
-      gap = (width - barWidth * data.length) / (data.length + 1)
+      gap = (width - barWidth * validatedData.length) / (validatedData.length + 1)
   }
 
   return (
-    <View style={[{ width: width as number, height }, style]}>
-      <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+    <View
+      style={[{ width: width as number, height }, style]}
+      accessible={true}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole="image"
+    >
+      <Svg
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        accessible={false}
+        importantForAccessibility="no-hide-descendants"
+      >
         {normalizedData.map((value, index) => {
           const x = gap + index * (barWidth + gap)
           const y = height - value

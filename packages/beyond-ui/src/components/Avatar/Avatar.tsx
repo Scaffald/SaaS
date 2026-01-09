@@ -3,7 +3,7 @@
  * Displays user avatars with various types, sizes, and indicators
  */
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { View, Text, Image, Pressable, StyleSheet, Platform } from 'react-native'
 import type { AvatarProps } from './Avatar.types'
 import { colors } from '../../tokens/colors'
@@ -48,12 +48,47 @@ export function Avatar({
   containerStyle,
   avatarStyle,
   onPress,
+  onError,
 }: AvatarProps) {
   const { theme } = useThemeContext()
   const [imageError, setImageError] = useState(false)
 
+  // Enhanced image error handler
+  const handleImageError = useCallback(() => {
+    setImageError(true)
+    if (__DEV__) {
+      console.warn('[Avatar] Image load failed:', src)
+    }
+    if (onError) {
+      onError(new Error('Failed to load avatar image'))
+    }
+  }, [src, onError])
+
   const dimensions = SIZE_DIMENSIONS[size]
   const isClickable = !!onPress
+
+  // Accessibility label
+  const getAccessibilityLabel = () => {
+    let label = alt || 'Avatar'
+    if (status) {
+      label += `, status: ${status}`
+    }
+    if (verified) {
+      label += ', verified'
+    }
+    if (star) {
+      label += ', starred'
+    }
+    return label
+  }
+
+  // Accessibility hint for status
+  const getAccessibilityHint = () => {
+    if (status) {
+      return `User status: ${status}`
+    }
+    return undefined
+  }
 
   // Determine avatar type
   const hasImage = src && !imageError
@@ -125,6 +160,11 @@ export function Avatar({
         },
         containerStyle,
       ]}
+      accessible={true}
+      accessibilityLabel={getAccessibilityLabel()}
+      accessibilityHint={getAccessibilityHint()}
+      accessibilityRole="image"
+      {...(status && { accessibilityLiveRegion: 'polite' as const })}
     >
       {/* Ring border */}
       {showRing && (
@@ -167,7 +207,7 @@ export function Avatar({
                 borderRadius: (dimensions.size - (showRing ? dimensions.ringWidth * 2 : 0)) / 2,
               },
             ]}
-            onError={() => setImageError(true)}
+            onError={handleImageError}
             accessibilityLabel={alt}
           />
         )}
@@ -182,7 +222,7 @@ export function Avatar({
                 borderRadius: (dimensions.size - (showRing ? dimensions.ringWidth * 2 : 0)) / 2,
               },
             ]}
-            onError={() => setImageError(true)}
+            onError={handleImageError}
             accessibilityLabel={alt}
           />
         )}
@@ -292,7 +332,8 @@ export function Avatar({
         onPress={onPress}
         style={({ pressed }) => [pressed && Platform.OS !== 'web' && { opacity: 0.8 }]}
         accessibilityRole="button"
-        accessibilityLabel={alt || 'Avatar'}
+        accessibilityLabel={getAccessibilityLabel()}
+        accessibilityHint="Double tap to open profile"
       >
         {avatarContent}
       </Pressable>

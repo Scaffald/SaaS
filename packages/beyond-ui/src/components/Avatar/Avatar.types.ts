@@ -11,14 +11,8 @@ export type AvatarSize = 16 | 20 | 24 | 32 | 36 | 40 | 48 | 56 | 64 | 72 | 80
 // Avatar colors (ring/background colors)
 export type AvatarColor = 'gray' | 'primary' | 'info' | 'success' | 'warning' | 'error'
 
-// Avatar types
-export type AvatarType = 'photo' | 'initials' | 'icon' | 'logo'
-
 // Status indicator types
 export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away'
-
-// Indicator badge types
-export type AvatarBadge = 'verified' | 'star' | 'icon' | 'company' | 'status'
 
 // Base avatar props
 export interface AvatarProps {
@@ -50,6 +44,8 @@ export interface AvatarProps {
   avatarStyle?: ViewStyle
   /** Press handler */
   onPress?: () => void
+  /** Error handler for image loading failures */
+  onError?: (error: Error) => void
 }
 
 // Avatar group props

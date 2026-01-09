@@ -95,7 +95,12 @@ export function Modal({
       statusBarTranslucent
       testID={testID}
     >
-      <Pressable style={styles.overlay} onPress={handleBackdropPress}>
+      <Pressable
+        style={styles.overlay}
+        onPress={handleBackdropPress}
+        accessibilityRole="button"
+        accessibilityLabel="Close modal"
+      >
         <View
           style={[styles.container, style]}
           onStartShouldSetResponder={() => true}
@@ -108,7 +113,12 @@ export function Modal({
               // Prevent mouse events from bubbling to backdrop handler
               e.stopPropagation()
             },
+            role: 'dialog',
+            'aria-modal': 'true',
           } as any)}
+          accessible={true}
+          accessibilityRole="alert"
+          accessibilityViewIsModal={true}
         >
           {children}
         </View>
