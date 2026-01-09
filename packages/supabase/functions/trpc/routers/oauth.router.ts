@@ -1177,5 +1177,27 @@ export const oauthRouter = t.router({
 
         return { success: true }
       }),
+
+    listScopes: protectedProcedure
+      .use(enforceOfficeRole)
+      .query(async ({ ctx }) => {
+        const { supabase } = ctx
+
+        const { data: scopes, error } = await supabase
+          .schema('core')
+          .from('oauth_scopes')
+          .select('*')
+          .order('category', { ascending: true })
+          .order('scope', { ascending: true })
+
+        if (error) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to fetch scopes',
+          })
+        }
+
+        return { scopes }
+      }),
   }),
 })
