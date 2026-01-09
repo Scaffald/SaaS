@@ -14,9 +14,9 @@ import { typography } from '../../tokens/typography'
  * Get container styles based on variant
  */
 export function getContainerStyles(
-  variant: string,
+  _variant: string,
   showTabs: boolean,
-  theme: ThemeMode = 'light'
+  _theme: ThemeMode = 'light'
 ): ViewStyle {
   const baseContainer: ViewStyle = {
     flexDirection: 'row',

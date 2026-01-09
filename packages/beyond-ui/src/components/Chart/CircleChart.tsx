@@ -68,7 +68,18 @@ export function CircleChart({
       {/* Label */}
       {showLabel && (
         <View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={[typography.body, { color: colors.text.light.primary }]}>
+          <Text
+            style={[
+              {
+                fontFamily: typography.body.fontFamily,
+                fontSize: typography.body.fontSize,
+                fontWeight: typography.body.fontWeight,
+                lineHeight: typography.body.lineHeight,
+                letterSpacing: typeof typography.body.letterSpacing === 'string' ? parseFloat(typography.body.letterSpacing) || 0 : typography.body.letterSpacing,
+              },
+              { color: colors.text.light.primary },
+            ]}
+          >
             {clampedValue}%
           </Text>
         </View>

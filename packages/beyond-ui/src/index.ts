@@ -454,6 +454,74 @@ export type {
   ChartStyleConfig,
 } from './components/Chart'
 
+// Widget components
+export { LegendIndicator } from './components/Widgets/LegendIndicator'
+export type { LegendIndicatorProps, LegendItem } from './components/Widgets/LegendIndicator'
+
+export { LinearChart, CircleChart, DonutChart, PieChart } from './components/Widgets/Charts'
+export type {
+  LinearChartWidgetProps,
+  CircleChartWidgetProps,
+  DonutChartWidgetProps,
+  PieChartWidgetProps,
+  WidgetChartDataPoint,
+} from './components/Widgets/Charts'
+
+export { MetricWidget } from './components/Widgets/Metrics'
+export type { MetricWidgetProps, MetricWidgetType, MetricChangeType } from './components/Widgets/Metrics'
+
+export {
+  BalanceWidget,
+  SpendingLimitWidget,
+  CreditCardWidget,
+  VirtualCardsWidget,
+  TransactionsWidget,
+  EarningsWidget,
+  ContactsWidget,
+  CurrencyConverterWidget,
+  SubscriptionsWidget,
+  LargeBalanceWidget,
+} from './components/Widgets/Finance'
+export type {
+  BalanceWidgetProps,
+  BalanceWidgetVariant,
+  SpendingLimitWidgetProps,
+  SpendingLimitWidgetVariant,
+  CreditCardWidgetProps,
+  CreditCardWidgetVariant,
+  VirtualCardsWidgetProps,
+  VirtualCard,
+  TransactionsWidgetProps,
+  Transaction,
+  EarningsWidgetProps,
+  EarningsDataItem,
+  ContactsWidgetProps,
+  Contact,
+  CurrencyConverterWidgetProps,
+  SubscriptionsWidgetProps,
+  Subscription,
+  LargeBalanceWidgetProps,
+  LargeBalanceChartData,
+} from './components/Widgets/Finance'
+
+export {
+  CryptoStockWidget,
+  CryptoBalanceWidget,
+  CryptoSinglePriceWidget,
+  CryptoConverterWidget,
+  MarketTrendingWidget,
+  FearGreedIndexWidget,
+} from './components/Widgets/Crypto'
+export type {
+  CryptoStockWidgetProps,
+  CryptoStockWidgetVariant,
+  CryptoBalanceWidgetProps,
+  CryptoSinglePriceWidgetProps,
+  CryptoConverterWidgetProps,
+  MarketTrendingWidgetProps,
+  FearGreedIndexWidgetProps,
+} from './components/Widgets/Crypto'
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box, Stack, Row, Flex)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅

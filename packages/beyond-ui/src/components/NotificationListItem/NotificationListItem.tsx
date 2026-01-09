@@ -110,9 +110,9 @@ export function NotificationListItem({
         {/* Actions/Links based on variant */}
         {variant === 'double-cta' && actions.length > 0 && (
           <View style={getActionsContainerStyles()}>
-            {actions.slice(0, 2).map((action, index) => (
+            {actions.slice(0, 2).map((action) => (
               <Pressable
-                key={index}
+                key={action.label}
                 onPress={action.onPress}
                 style={({ pressed }) => [
                   getActionButtonStyles(action.variant || 'secondary', theme),
@@ -149,9 +149,9 @@ export function NotificationListItem({
 
         {variant === 'double-link' && links.length > 0 && (
           <View style={getLinksContainerStyles()}>
-            {links.slice(0, 2).map((link, index) => (
+            {links.slice(0, 2).map((link) => (
               <Pressable
-                key={index}
+                key={link.label}
                 onPress={link.onPress}
                 style={({ pressed }) => [
                   styles.linkContainer,

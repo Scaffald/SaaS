@@ -23,11 +23,14 @@ export function BarChart({
   variant = '1',
   colors: customColors,
   height = 180,
-  width = 229,
+  width: widthProp = 229,
   style,
 }: BarChartProps) {
+  // Normalize width to number for calculations
+  const width = typeof widthProp === 'string' ? parseFloat(widthProp) || 229 : widthProp
+
   if (data.length === 0) {
-    return <View style={[{ width, height }, style]} />
+    return <View style={[{ width: width as number, height }, style]} />
   }
 
   const chartColors = customColors || getBarChartColors(variant)
@@ -59,7 +62,7 @@ export function BarChart({
   }
 
   return (
-    <View style={[{ width, height }, style]}>
+    <View style={[{ width: width as number, height }, style]}>
       <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         {normalizedData.map((value, index) => {
           const x = gap + index * (barWidth + gap)

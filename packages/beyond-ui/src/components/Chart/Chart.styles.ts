@@ -35,10 +35,11 @@ export function getChartStyles(theme: ThemeMode = 'light'): ChartStyleConfig {
     opacity: 0.3,
   }
 
-  // Axis styles
+  // Axis styles (Note: strokeColor is not a valid ViewStyle property)
+  // This is kept for SVG components that use it directly
   const axis: ViewStyle = {
-    strokeColor: colors.border[theme].default,
-    strokeWidth: 1,
+    borderColor: colors.border[theme].default,
+    borderWidth: 1,
   }
 
   // Axis label styles

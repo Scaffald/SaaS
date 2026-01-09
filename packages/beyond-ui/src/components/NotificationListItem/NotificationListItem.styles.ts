@@ -82,7 +82,7 @@ export function getAvatarIndicatorStyles(indicatorColor: string): ViewStyle {
 /**
  * Get content container styles
  */
-export function getContentContainerStyles(variant: NotificationListItemVariant): ViewStyle {
+export function getContentContainerStyles(_variant: NotificationListItemVariant): ViewStyle {
   return {
     flex: 1,
     flexDirection: 'column',
@@ -156,7 +156,7 @@ export function getActionButtonStyles(
       backgroundColor: colors.primary[500],
       ...(Platform.OS === 'web' && {
         boxShadow: '0px 1px 2px 0px rgba(20, 28, 37, 0.04)',
-      } as any),
+      } as ViewStyle),
     }
   }
 
@@ -167,7 +167,7 @@ export function getActionButtonStyles(
     borderColor: colors.border[theme].default,
     ...(Platform.OS === 'web' && {
       boxShadow: '0px 1px 2px 0px rgba(20, 28, 37, 0.04)',
-    } as any),
+    } as ViewStyle),
   }
 }
 

@@ -131,9 +131,9 @@ export function SaaSSectionHeader({
         {/* Right section: Variant-specific content */}
         {variant === 'ctas' && actions.length > 0 && (
           <View style={getActionsContainerStyles()}>
-            {actions.map((action, index) => (
+            {actions.map((action) => (
               <Button
-                key={index}
+                key={action.label}
                 variant={action.variant === 'primary' ? 'filled' : 'outline'}
                 color={action.variant === 'primary' ? 'primary' : 'gray'}
                 size="sm"

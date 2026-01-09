@@ -86,7 +86,13 @@ export function DonutChart({
               <Text
                 key={index}
                 style={[
-                  typography.caption,
+                  {
+                    fontFamily: typography.caption.fontFamily,
+                    fontSize: typography.caption.fontSize,
+                    fontWeight: typography.caption.fontWeight,
+                    lineHeight: typography.caption.lineHeight,
+                    letterSpacing: typeof typography.caption.letterSpacing === 'string' ? parseFloat(typography.caption.letterSpacing) || 0 : typography.caption.letterSpacing,
+                  },
                   {
                     position: 'absolute',
                     left: labelX,

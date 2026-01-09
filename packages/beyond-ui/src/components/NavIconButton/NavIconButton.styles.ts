@@ -84,8 +84,8 @@ export function getContainerStyles(
  * Get icon color based on variant and state
  */
 export function getIconColor(
-  variant: NavIconButtonVariant,
-  state: NavIconButtonState,
+  _variant: NavIconButtonVariant,
+  _state: NavIconButtonState,
   disabled: boolean,
   theme: ThemeMode = 'light'
 ): string {
@@ -103,7 +103,7 @@ export function getIconColor(
 export function getBadgeStyles(
   badge: NavIconButtonBadge,
   variant: NavIconButtonVariant,
-  state: NavIconButtonState
+  _state: NavIconButtonState
 ): ViewStyle {
   const badgeConfig = BADGE_SIZES[badge][variant]
 

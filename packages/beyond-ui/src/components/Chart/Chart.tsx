@@ -33,12 +33,15 @@ export function Chart({
   period,
   showGrid = true,
   height = 247,
-  width = 847,
+  width: widthProp = 847,
   children,
   style,
 }: ChartProps) {
   const { theme } = useThemeContext()
   const styles = getChartStyles(theme)
+
+  // Normalize width to number for calculations
+  const width = typeof widthProp === 'string' ? parseFloat(widthProp) || 847 : widthProp
 
   // Get x-axis labels from period or custom
   const xAxisLabels =
@@ -55,7 +58,7 @@ export function Chart({
   }))
 
   return (
-    <View style={[styles.container, { width, height }, style]}>
+    <View style={[styles.container, { width: width as number, height }, style]}>
       {/* Chart with Grid */}
       <View style={styles.chartArea}>
         {/* Grid Lines */}

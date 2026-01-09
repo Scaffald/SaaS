@@ -13,7 +13,7 @@ import { typography } from '../../tokens/typography'
 /**
  * Get container styles
  */
-export function getContainerStyles(tabsBelow: boolean, theme: ThemeMode = 'light'): ViewStyle {
+export function getContainerStyles(tabsBelow: boolean, _theme: ThemeMode = 'light'): ViewStyle {
   return {
     flexDirection: 'column',
     gap: tabsBelow ? spacing[0] : spacing[0],

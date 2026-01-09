@@ -28,17 +28,20 @@ export function LinearChart({
   period,
   color = colors.primary[600],
   height = 247,
-  width = 847,
+  width: widthProp = 847,
   showShadow = false,
   sharpen = false,
   series,
   style,
 }: LinearChartProps) {
+  // Normalize width to number for calculations
+  const width = typeof widthProp === 'string' ? parseFloat(widthProp) || 847 : widthProp
+
   // Use series if provided, otherwise use single data array
   const chartSeries = series || (data ? [{ name: 'default', data, color }] : [])
 
   if (chartSeries.length === 0) {
-    return <View style={[{ width, height }, style]} />
+    return <View style={[{ width: width as number, height }, style]} />
   }
 
   // Get all data points for normalization
@@ -49,8 +52,9 @@ export function LinearChart({
   // Convert to points with normalized y values
   const normalizedPoints = allPoints.map((point, index) => {
     const pointIndex = allYValues.indexOf(typeof point === 'object' ? point.y : point)
+    const xValue = typeof point === 'object' ? point.x : pointIndex
     return {
-      x: typeof point === 'object' ? point.x : pointIndex,
+      x: typeof xValue === 'string' ? parseFloat(xValue) || pointIndex : (typeof xValue === 'number' ? xValue : pointIndex),
       y: normalizedYValues[pointIndex] || 0,
     }
   })
@@ -58,7 +62,7 @@ export function LinearChart({
   const path = generateLinePath(normalizedPoints, width, height, !sharpen)
 
   return (
-    <View style={[{ width, height }, style]}>
+    <View style={[{ width: width as number, height }, style]}>
       <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <Defs>
           {showShadow && (

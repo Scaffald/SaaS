@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { SaaSNavigation } from '../../../components/SaaSNavigation'
 import { View, StyleSheet } from 'react-native'
 import { spacing } from '../../../tokens/spacing'
-import { Dashboard, Search, Bell } from 'lucide-react-native'
+import { Dashboard } from 'lucide-react-native'
 import { Tabs } from '../../../components/Tabs'
 
 const meta: Meta<typeof SaaSNavigation> = {

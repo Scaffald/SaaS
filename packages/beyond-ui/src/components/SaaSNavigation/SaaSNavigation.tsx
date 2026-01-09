@@ -255,7 +255,7 @@ export function SaaSNavigation({
           <AvatarGroup size={32} max={6} spacing={-14}>
             {avatarGroupItems.map((avatar, index) => (
               <Avatar
-                key={index}
+                key={avatar.src || avatar.initials || `avatar-${index}`}
                 src={avatar.src}
                 initials={avatar.initials}
                 alt={avatar.alt}
@@ -268,9 +268,9 @@ export function SaaSNavigation({
         {/* CTAs */}
         {showCta && ctaActions.length > 0 && (
           <View style={getCtasContainerStyles()}>
-            {ctaActions.map((action, index) => (
+            {ctaActions.map((action) => (
               <Button
-                key={index}
+                key={action.label}
                 variant={action.variant === 'primary' ? 'filled' : 'outline'}
                 color={action.variant === 'primary' ? 'primary' : 'gray'}
                 size="sm"
