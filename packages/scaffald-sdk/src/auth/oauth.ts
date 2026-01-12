@@ -69,7 +69,9 @@ export class OAuthClient {
    * window.location.href = url
    * ```
    */
-  async getAuthorizationUrl(options: AuthorizationUrlOptions = {}): Promise<AuthorizationUrlResult> {
+  async getAuthorizationUrl(
+    options: AuthorizationUrlOptions = {}
+  ): Promise<AuthorizationUrlResult> {
     const state = options.state || generateState()
     const codeVerifier = options.codeVerifier || generateCodeVerifier()
     const codeChallenge = await generateCodeChallenge(codeVerifier)
@@ -207,7 +209,10 @@ export class OAuthClient {
    * localStorage.removeItem('refresh_token')
    * ```
    */
-  async revokeToken(token: string, tokenTypeHint?: 'access_token' | 'refresh_token'): Promise<void> {
+  async revokeToken(
+    token: string,
+    tokenTypeHint?: 'access_token' | 'refresh_token'
+  ): Promise<void> {
     const body: Record<string, string> = {
       token,
       client_id: this.config.clientId,

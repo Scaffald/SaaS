@@ -231,6 +231,190 @@ const employer = await client.profiles.getEmployer('tech-startup')
 console.log(`${employer.data.active_jobs_count} active positions`)
 ```
 
+### Industries
+
+Industry lookup and categorization for job filtering.
+
+```typescript
+// List all industries
+const { data, total } = await client.industries.list()
+console.log(`${total} industries available`)
+
+data.forEach(industry => {
+  console.log(`${industry.name} (${industry.slug})`)
+})
+
+// Get specific industry by slug
+const industry = await client.industries.retrieve('technology')
+console.log(industry?.name) // 'Technology'
+console.log(industry?.description) // 'Technology and software development industry'
+```
+
+### Organizations
+
+Manage organizations, members, documents, and settings.
+
+```typescript
+// Get organization details
+const org = await client.organizations.retrieve('org_123')
+console.log(`${org.name} - ${org.description}`)
+
+// Get open jobs count
+const { count } = await client.organizations.getOpenJobsCount('org_123')
+console.log(`${count} open positions`)
+
+// List organization members
+const { data: members } = await client.organizations.listMembers('org_123', {
+  search: 'john',
+  roleNames: ['admin', 'member']
+})
+
+members.forEach(member => {
+  console.log(`${member.user_profile.displayName} - ${member.role_name}`)
+})
+
+// Invite a new member
+const { id, token } = await client.organizations.inviteMember('org_123', {
+  email: 'newuser@example.com',
+  roleName: 'member',
+  message: 'Welcome to the team!'
+})
+
+// Remove a member
+await client.organizations.removeMember('org_123', 'user_456', {
+  reason: 'Left the company'
+})
+
+// List organization documents
+const { data: docs } = await client.organizations.listDocuments('org_123', {
+  category: 'policies',
+  limit: 10
+})
+
+// Get a specific document
+const doc = await client.organizations.getDocument('org_123', 'doc_1')
+
+// Create document upload session
+const session = await client.organizations.createDocumentUploadSession('org_123', {
+  name: 'Employee Handbook',
+  fileName: 'handbook.pdf',
+  mimeType: 'application/pdf',
+  fileSize: 2048000,
+  category: 'policies'
+})
+// Use session.uploadUrl to upload the file
+
+// Create download URL for a document
+const { downloadUrl } = await client.organizations.createDocumentDownloadUrl('org_123', 'doc_1')
+
+// Get organization settings
+const settings = await client.organizations.getSettings('org_123')
+console.log(`Timezone: ${settings.timezone}`)
+console.log(`MFA enforced: ${settings.enforce_mfa}`)
+
+// Update organization settings
+await client.organizations.updateSettings('org_123', {
+  timezone: 'America/Los_Angeles',
+  enforceMfa: true,
+  sessionTimeoutMinutes: 30
+})
+```
+
+### Teams
+
+Collaborative hiring teams for managing applications, members, and job assignments.
+
+```typescript
+// List teams for an organization
+const { teams } = await client.teams.list({
+  organizationId: 'org_123',
+  includeArchived: false
+})
+
+teams.forEach(team => {
+  console.log(`${team.name} - ${team.purpose}`)
+})
+
+// Get team details
+const { team } = await client.teams.retrieve('team_123')
+console.log(`${team.name} has ${team.workloadStrategy} workload strategy`)
+
+// Create a new team
+const { team: newTeam } = await client.teams.create({
+  organizationId: 'org_123',
+  name: 'Engineering Hiring Team',
+  purpose: 'Hire software engineers',
+  visibility: 'organization',
+  invitationPolicy: 'invite_only',
+  autoAssignJobs: true,
+  workloadStrategy: 'auto_balanced'
+})
+
+// Update a team
+await client.teams.update('team_123', {
+  name: 'Senior Engineering Hiring',
+  description: 'Focus on senior-level positions',
+  allowSelfJoin: true
+})
+
+// Archive a team
+await client.teams.archive('team_123', {
+  reason: 'Hiring season ended'
+})
+
+// List team members
+const { members } = await client.teams.listMembers('team_123')
+members.forEach(member => {
+  console.log(`${member.user?.displayName} - ${member.role?.name}`)
+})
+
+// Add a team member
+const { member } = await client.teams.addMember('team_123', {
+  userId: 'user_456',
+  roleKey: 'recruiter'
+})
+
+// Update a team member's role
+await client.teams.updateMember('team_123', 'user_456', {
+  roleKey: 'lead',
+  status: 'active'
+})
+
+// Remove a team member
+await client.teams.removeMember('team_123', 'user_456', {
+  reason: 'Role ended'
+})
+
+// List team invitations
+const { invitations } = await client.teams.listInvitations('team_123')
+const pending = invitations.filter(inv => inv.status === 'pending')
+
+// Invite a member
+const { invitation } = await client.teams.inviteMember('team_123', {
+  email: 'recruiter@example.com',
+  roleKey: 'recruiter',
+  message: 'Join our hiring team!'
+})
+
+// Cancel an invitation
+await client.teams.cancelInvitation('team_123', 'inv_456')
+
+// List job assignments
+const { assignments } = await client.teams.listJobAssignments('team_123')
+assignments.forEach(assignment => {
+  console.log(`${assignment.job?.title} ${assignment.isPrimary ? '(Primary)' : ''}`)
+})
+
+// Assign a job to the team
+const { assignment } = await client.teams.createJobAssignment('team_123', {
+  jobId: 'job_789',
+  isPrimary: true
+})
+
+// Remove a job assignment
+await client.teams.deleteJobAssignment('team_123', 'assignment_999')
+```
+
 ### API Keys
 
 Programmatically manage your organization's API keys for third-party integrations and SDK access.
@@ -504,6 +688,37 @@ Complete list of available hooks:
 - `useUserProfile(username)` - Get user profile
 - `useOrganization(slug)` - Get organization profile
 - `useEmployer(slug)` - Get employer profile
+
+### Industries Hooks
+- `useIndustries()` - List all industries
+- `useIndustry(slug)` - Get industry by slug
+
+### Organizations Hooks
+- `useOrganization(id)` - Get organization by ID
+- `useOrganizationJobsCount(id)` - Get open jobs count
+- `useOrganizationMembers(id, params?)` - List organization members
+- `useInviteOrganizationMember()` - Invite member mutation
+- `useOrganizationDocuments(id, params?)` - List documents
+- `useCreateDocumentUpload()` - Create upload session mutation
+- `useOrganizationSettings(id)` - Get organization settings
+- `useUpdateOrganizationSettings()` - Update settings mutation
+
+### Teams Hooks
+- `useTeams(params?)` - List teams
+- `useTeam(id)` - Get team by ID
+- `useCreateTeam()` - Create team mutation
+- `useUpdateTeam()` - Update team mutation
+- `useArchiveTeam()` - Archive team mutation
+- `useTeamMembers(teamId)` - List team members
+- `useAddTeamMember()` - Add member mutation
+- `useUpdateTeamMember()` - Update member mutation
+- `useRemoveTeamMember()` - Remove member mutation
+- `useTeamInvitations(teamId)` - List team invitations
+- `useInviteTeamMember()` - Invite member mutation
+- `useCancelTeamInvitation()` - Cancel invitation mutation
+- `useTeamJobAssignments(teamId)` - List job assignments
+- `useCreateTeamJobAssignment()` - Create assignment mutation
+- `useDeleteTeamJobAssignment()` - Delete assignment mutation
 
 ### API Keys Hooks
 - `useAPIKeys(params?)` - List all API keys

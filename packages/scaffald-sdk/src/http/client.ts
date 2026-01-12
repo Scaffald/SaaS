@@ -33,7 +33,7 @@ export class HttpClient {
   async request<T = any>(options: RequestOptions, attempt = 0): Promise<T> {
     const { method, path, query, body, headers = {}, idempotencyKey } = options
     const url = new URL(path, this.config.baseUrl)
-    
+
     if (query) {
       Object.entries(query).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -139,11 +139,20 @@ export class HttpClient {
     return Math.min(1000 * 2 ** attempt, 30000)
   }
 
-  async get<T = any>(path: string, query?: Record<string, any>, headers?: Record<string, string>): Promise<T> {
+  async get<T = any>(
+    path: string,
+    query?: Record<string, any>,
+    headers?: Record<string, string>
+  ): Promise<T> {
     return this.request<T>({ method: 'GET', path, query, headers })
   }
 
-  async post<T = any>(path: string, body?: any, headers?: Record<string, string>, idempotencyKey?: string): Promise<T> {
+  async post<T = any>(
+    path: string,
+    body?: any,
+    headers?: Record<string, string>,
+    idempotencyKey?: string
+  ): Promise<T> {
     return this.request<T>({ method: 'POST', path, body, headers, idempotencyKey })
   }
 

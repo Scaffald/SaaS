@@ -1,5 +1,5 @@
 import { beforeAll, afterEach, afterAll } from 'vitest'
-import { server } from './src/__tests__/setup/msw-server.js'
+import { server } from './src/__tests__/mocks/server'
 
 // Start MSW server before all tests
 beforeAll(() => {

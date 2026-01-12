@@ -44,7 +44,8 @@ export interface ScaffaldConfig {
   debug?: boolean
 }
 
-export interface ScaffaldConfigInternal extends Required<Omit<ScaffaldConfig, 'apiKey' | 'accessToken'>> {
+export interface ScaffaldConfigInternal
+  extends Required<Omit<ScaffaldConfig, 'apiKey' | 'accessToken'>> {
   apiKey?: string
   accessToken?: string
 }

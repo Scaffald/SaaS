@@ -1,6 +1,6 @@
 {
   "name": "@scaffald/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Official JavaScript/TypeScript SDK for the Scaffald API",
   "author": "Scaffald <dev@scaffald.com>",
   "license": "MIT",

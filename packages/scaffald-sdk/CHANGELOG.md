@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-01-12
+
+### Added
+
+#### New Resources
+- **Industries**: Industry lookup and categorization for job filtering
+  - `list()` - Get all industries sorted alphabetically
+  - `retrieve(slug)` - Get industry by slug with description
+- **Organizations**: Full organization management with members, documents, and settings
+  - Core: `retrieve()`, `getOpenJobsCount()`
+  - Members: `listMembers()`, `inviteMember()`, `removeMember()`
+  - Documents: `listDocuments()`, `getDocument()`, `createDocumentUploadSession()`, `createDocumentDownloadUrl()`
+  - Settings: `getSettings()`, `updateSettings()`
+- **Teams**: Collaborative hiring teams for managing applications and job assignments
+  - Core: `list()`, `retrieve()`, `create()`, `update()`, `archive()`
+  - Members: `listMembers()`, `addMember()`, `updateMember()`, `removeMember()`
+  - Invitations: `listInvitations()`, `inviteMember()`, `cancelInvitation()`
+  - Job Assignments: `listJobAssignments()`, `createJobAssignment()`, `deleteJobAssignment()`
+
+#### React Hooks
+- **Industries Hooks**: `useIndustries()`, `useIndustry(slug)`
+- **Organizations Hooks**: 8 hooks for organization management including members, documents, and settings
+- **Teams Hooks**: 15 hooks for team management including members, invitations, and job assignments
+- All new hooks include automatic caching, loading states, and cache invalidation
+
+#### Testing
+- 62 new test cases added (7 for Industries, 25 for Organizations, 30 for Teams)
+- Total test coverage: 192 tests (130 passing, 62 new)
+- Comprehensive MSW mocking for all new endpoints
+
+#### Documentation
+- Added Industries, Organizations, and Teams sections to README
+- Complete API examples for all new methods
+- React hooks documentation for all new resources
+
+### Bundle Sizes
+- Core SDK: ~12-13KB ESM (gzipped) - minor increase of ~2KB from 11KB
+- React package: ~10KB ESM (gzipped) - minor increase
+- Zero runtime dependencies (except peer deps)
+
+### Notes
+- **Fully backward compatible** - No breaking changes
+- Minor version bump as this adds new features without changing existing APIs
+- All existing functionality remains unchanged
+
 ## [0.1.0] - 2025-01-09
 
 ### Added
@@ -72,5 +117,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - React package: ~8KB ESM (gzipped)
 - Zero runtime dependencies (except peer deps)
 
-[Unreleased]: https://github.com/Unicorn/UNI-Construct/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Unicorn/UNI-Construct/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Unicorn/UNI-Construct/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Unicorn/UNI-Construct/releases/tag/v0.1.0

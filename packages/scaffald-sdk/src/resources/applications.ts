@@ -4,7 +4,15 @@ export interface Application {
   id: string
   job_id: string
   user_id: string
-  status: 'pending' | 'reviewing' | 'inquired' | 'interview' | 'offer' | 'hired' | 'rejected' | 'withdrawn'
+  status:
+    | 'pending'
+    | 'reviewing'
+    | 'inquired'
+    | 'interview'
+    | 'offer'
+    | 'hired'
+    | 'rejected'
+    | 'withdrawn'
   current_location?: string
   willing_to_relocate?: boolean
   years_experience?: number

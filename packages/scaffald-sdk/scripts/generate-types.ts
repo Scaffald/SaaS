@@ -46,7 +46,9 @@ async function saveOpenAPISpec(url: string): Promise<void> {
     await fs.writeFile(SPEC_CACHE_PATH, JSON.stringify(spec, null, 2))
     console.log(`💾 Cached OpenAPI spec to: ${SPEC_CACHE_PATH}`)
   } catch (error) {
-    console.log(`   ⚠️  Could not cache spec: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    console.log(
+      `   ⚠️  Could not cache spec: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 
@@ -89,7 +91,10 @@ async function generateTypes() {
     console.log(`   Output: ${OUTPUT_PATH}`)
 
     // Cache the OpenAPI spec if we got it from a URL
-    if (successfulSource && (successfulSource.startsWith('http://') || successfulSource.startsWith('https://'))) {
+    if (
+      successfulSource &&
+      (successfulSource.startsWith('http://') || successfulSource.startsWith('https://'))
+    ) {
       await saveOpenAPISpec(successfulSource)
     }
 

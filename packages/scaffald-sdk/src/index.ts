@@ -34,6 +34,54 @@ export type {
   Certification,
 } from './resources/profiles.js'
 
+export type { Industry, IndustryListResponse } from './resources/industries.js'
+
+export type {
+  Organization,
+  OrganizationMember,
+  OrganizationDocument,
+  OrganizationSettings,
+  ListMembersParams,
+  InviteMemberParams,
+  RemoveMemberParams,
+  ListDocumentsParams,
+  CreateDocumentUploadParams,
+  DocumentUploadSession,
+  DocumentDownloadUrl,
+  UpdateSettingsParams,
+  OpenJobsCountResponse,
+  MembersListResponse,
+  DocumentsListResponse,
+  InvitationResponse,
+} from './types/organizations.js'
+
+export type {
+  Team,
+  TeamMember,
+  TeamInvitation,
+  TeamJobAssignment,
+  TeamRole,
+  TeamUserProfile,
+  ListTeamsParams,
+  CreateTeamParams,
+  UpdateTeamParams,
+  ArchiveTeamParams,
+  AddTeamMemberParams,
+  UpdateTeamMemberParams,
+  RemoveTeamMemberParams,
+  InviteTeamMemberParams,
+  CreateJobAssignmentParams,
+  TeamsListResponse,
+  TeamResponse,
+  TeamMembersListResponse,
+  TeamMemberResponse,
+  TeamInvitationsListResponse,
+  TeamInvitationResponse,
+  TeamJobAssignmentsListResponse,
+  TeamJobAssignmentResponse,
+  DeleteResponse,
+} from './types/teams.js'
+
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
 export {
