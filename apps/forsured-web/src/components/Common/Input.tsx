@@ -1,11 +1,10 @@
 /**
- * Input - Re-export Input from @unicornlove/ui
- * 
- * The package component is called Input (from Tamagui).
+ * Input - Re-export Input from @unicornlove/beyond-ui
+ * Migrated from Tamagui to Beyond UI
  */
-export { Input } from '@unicornlove/ui';
-export type { InputProps } from '@unicornlove/ui';
+export { Input } from '@unicornlove/beyond-ui';
+export type { InputProps } from '@unicornlove/beyond-ui';
 
 // Default export for backward compatibility
-import { Input } from '@unicornlove/ui';
+import { Input } from '@unicornlove/beyond-ui';
 export default Input;

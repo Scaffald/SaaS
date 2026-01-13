@@ -1,58 +1,43 @@
-import { XStack, YStack, Text, styled, Spinner } from '@unicornlove/ui'
-import { CheckCircle, AlertCircle, Sparkles } from 'lucide-react'
+/**
+ * AIProcessingIndicator - AI processing indicator using Beyond UI
+ * Migrated from Tamagui to Beyond UI
+ */
+import { Row, Stack, Text, Spinner } from '@unicornlove/beyond-ui';
+import { CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 
-export type AIProcessingState = 'analyzing' | 'processing' | 'complete' | 'error'
+export type AIProcessingState = 'analyzing' | 'processing' | 'complete' | 'error';
 
 interface AIProcessingIndicatorProps {
-  state: AIProcessingState
-  message?: string
-  progress?: number // 0-100
+  state: AIProcessingState;
+  message?: string;
+  progress?: number; // 0-100
 }
 
-const Container = styled(YStack, {
-  name: 'AIProcessingIndicator',
-  padding: '$4',
-  borderRadius: '$3',
-  borderWidth: 1,
+const stateStyles = {
+  analyzing: {
+    backgroundColor: 'var(--color-blue-2)',
+    borderColor: 'var(--color-blue-6)',
+  },
+  processing: {
+    backgroundColor: 'var(--color-blue-2)',
+    borderColor: 'var(--color-blue-6)',
+  },
+  complete: {
+    backgroundColor: 'var(--color-green-2)',
+    borderColor: 'var(--color-green-6)',
+  },
+  error: {
+    backgroundColor: 'var(--color-red-2)',
+    borderColor: 'var(--color-red-6)',
+  },
+};
 
-  variants: {
-    state: {
-      analyzing: {
-        backgroundColor: '$blue2',
-        borderColor: '$blue6',
-      },
-      processing: {
-        backgroundColor: '$blue2',
-        borderColor: '$blue6',
-      },
-      complete: {
-        backgroundColor: '$green2',
-        borderColor: '$green6',
-      },
-      error: {
-        backgroundColor: '$red2',
-        borderColor: '$red6',
-      },
-    },
-  } as const,
-})
-
-const ProgressBar = styled(YStack, {
-  name: 'ProgressBar',
-  width: '100%',
-  backgroundColor: '$backgroundHover',
-  borderRadius: '$10',
-  height: 8,
-  overflow: 'hidden',
-})
-
-const ProgressFill = styled(YStack, {
-  name: 'ProgressFill',
-  height: 8,
-  backgroundColor: '$blue9',
-  borderRadius: '$10',
-  transition: 'width 300ms',
-})
+const textColors = {
+  analyzing: 'var(--color-blue-11)',
+  processing: 'var(--color-blue-11)',
+  complete: 'var(--color-green-11)',
+  error: 'var(--color-red-11)',
+};
 
 export default function AIProcessingIndicator({
   state,
@@ -62,48 +47,71 @@ export default function AIProcessingIndicator({
   const getDefaultMessage = () => {
     switch (state) {
       case 'analyzing':
-        return 'AI analyzing...'
+        return 'AI analyzing...';
       case 'processing':
-        return 'AI processing...'
+        return 'AI processing...';
       case 'complete':
-        return 'Analysis complete'
+        return 'Analysis complete';
       case 'error':
-        return 'Analysis failed, please retry'
+        return 'Analysis failed, please retry';
     }
-  }
+  };
 
-  const displayMessage = message || getDefaultMessage()
+  const displayMessage = message || getDefaultMessage();
 
   return (
-    <Container state={state}>
-      <XStack alignItems="center" gap="$3">
+    <Stack
+      padding={16}
+      style={{
+        borderRadius: 12,
+        border: '1px solid',
+        ...stateStyles[state],
+      }}
+    >
+      <Row alignItems="center" gap={12}>
         {state === 'analyzing' && (
-          <YStack position="relative" width={20} height={20}>
-            <Sparkles size={20} color="currentColor" />
-            <YStack position="absolute" top={0} left={0}>
-              <Spinner size="small" color="$blue9" />
-            </YStack>
-          </YStack>
+          <Stack style={{ position: 'relative', width: 20, height: 20 }}>
+            <Sparkles size={20} />
+            <Stack style={{ position: 'absolute', top: 0, left: 0 }}>
+              <Spinner size="sm" />
+            </Stack>
+          </Stack>
         )}
-        {state === 'processing' && <Spinner size="small" color="$blue9" />}
-        {state === 'complete' && <CheckCircle size={20} color="currentColor" />}
-        {state === 'error' && <AlertCircle size={20} color="currentColor" />}
+        {state === 'processing' && <Spinner size="sm" />}
+        {state === 'complete' && <CheckCircle size={20} />}
+        {state === 'error' && <AlertCircle size={20} />}
 
-        <YStack flex={1} gap="$2">
+        <Stack flex={1} gap={8}>
           <Text
-            fontSize="$2"
-            fontWeight="500"
-            color={state === 'complete' ? '$green11' : state === 'error' ? '$red11' : '$blue11'}
+            size="sm"
+            weight="medium"
+            style={{ color: textColors[state] }}
           >
             {displayMessage}
           </Text>
           {state === 'processing' && progress !== undefined && (
-            <ProgressBar>
-              <ProgressFill width={`${progress}%`} />
-            </ProgressBar>
+            <Stack
+              style={{
+                width: '100%',
+                backgroundColor: 'var(--color-background-hover)',
+                borderRadius: 20,
+                height: 8,
+                overflow: 'hidden',
+              }}
+            >
+              <Stack
+                style={{
+                  height: 8,
+                  backgroundColor: 'var(--color-blue-9)',
+                  borderRadius: 20,
+                  width: `${progress}%`,
+                  transition: 'width 300ms',
+                }}
+              />
+            </Stack>
           )}
-        </YStack>
-      </XStack>
-    </Container>
-  )
+        </Stack>
+      </Row>
+    </Stack>
+  );
 }

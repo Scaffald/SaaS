@@ -1,10 +1,10 @@
 /**
- * Modal - Re-export from @unicornlove/ui
+ * Modal - Wrapper using Beyond UI Modal
+ * Migrated from Tamagui to Beyond UI
  *
- * Note: Uses ResponsiveModal from @unicornlove/ui internally
  * Provides backward-compatible props (isOpen, onClose) mapped to the new API
  */
-import { ResponsiveModal, type ResponsiveModalProps } from '@unicornlove/ui';
+import { Modal as BeyondModal, ModalHeader, ModalContent } from '@unicornlove/beyond-ui';
 import type { ReactNode } from 'react';
 
 export interface ModalProps {
@@ -34,30 +34,31 @@ const Modal = ({
   title = '',
   children,
   size = 'medium',
+  closeOnOverlayClick = true,
   ...props
 }: ModalProps) => {
   // Support both isOpen and open props for backward compatibility
   const modalOpen = open ?? isOpen ?? false;
 
   // Handle both onClose and onOpenChange callbacks
-  const handleOpenChange = (newOpen: boolean) => {
+  const handleClose = () => {
     if (onOpenChange) {
-      onOpenChange(newOpen);
+      onOpenChange(false);
     }
-    if (!newOpen && onClose) {
+    if (onClose) {
       onClose();
     }
   };
 
   return (
-    <ResponsiveModal
+    <BeyondModal
       open={modalOpen}
-      onOpenChange={handleOpenChange}
-      title={title}
-      size={size}
+      onClose={handleClose}
+      closeOnOverlayClick={closeOnOverlayClick}
     >
-      {children}
-    </ResponsiveModal>
+      {title && <ModalHeader title={title} onClose={handleClose} />}
+      <ModalContent>{children}</ModalContent>
+    </BeyondModal>
   );
 };
 

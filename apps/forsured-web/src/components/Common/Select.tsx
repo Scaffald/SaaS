@@ -1,9 +1,13 @@
 /**
- * Select - Re-export from @unicornlove/ui
+ * Select - Re-export SearchSelect from @unicornlove/beyond-ui as Select
+ * Migrated from Tamagui to Beyond UI
+ *
+ * Note: Beyond UI uses SearchSelect for dropdown selection.
+ * The API is slightly different - uses 'value' instead of 'selected'.
  */
-export { Select } from '@unicornlove/ui';
-export type { SelectProps, SelectOption } from '@unicornlove/ui';
+export { SearchSelect as Select } from '@unicornlove/beyond-ui';
+export type { SearchSelectProps as SelectProps, SearchSelectOption as SelectOption } from '@unicornlove/beyond-ui';
 
 // Default export for backward compatibility
-import { Select as FormsSelect } from '@unicornlove/ui';
+import { SearchSelect as FormsSelect } from '@unicornlove/beyond-ui';
 export default FormsSelect;

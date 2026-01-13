@@ -1,10 +1,10 @@
 /**
- * IconButton - Tamagui-based icon button component
+ * IconButton - Icon button component using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
 import React, { forwardRef } from 'react';
 import { LucideIcon } from 'lucide-react';
-import { Button, XStack, Text, styled } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Button, Row, Text } from '@unicornlove/beyond-ui';
 
 export type IconButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type IconButtonSize = 'sm' | 'md' | 'lg';
@@ -21,69 +21,18 @@ export interface IconButtonProps
   tooltip?: string;
 }
 
-const IconButtonBase = styled(Button, {
-  name: 'IconButton',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderWidth: 0,
-  backgroundColor: 'transparent',
-  
-  variants: {
-    variant: {
-      primary: {
-        color: '$blue9',
-        hoverStyle: { backgroundColor: '$blue3' },
-        pressStyle: { backgroundColor: '$blue4', scale: 0.95 },
-      },
-      secondary: {
-        color: '$orange9',
-        hoverStyle: { backgroundColor: '$orange3' },
-        pressStyle: { backgroundColor: '$orange4', scale: 0.95 },
-      },
-      ghost: {
-        color: '$color11',
-        hoverStyle: { backgroundColor: '$backgroundHover', color: '$blue9' },
-        pressStyle: { backgroundColor: '$backgroundPress', scale: 0.95 },
-      },
-      danger: {
-        color: '$red9',
-        hoverStyle: { backgroundColor: '$red3' },
-        pressStyle: { backgroundColor: '$red4', scale: 0.95 },
-      },
-    },
-    size: {
-      sm: {
-        padding: '$1',
-        minWidth: '$3',
-        minHeight: '$3',
-      },
-      md: {
-        padding: '$2',
-        minWidth: '$4',
-        minHeight: '$4',
-      },
-      lg: {
-        padding: '$3',
-        minWidth: '$5',
-        minHeight: '$5',
-      },
-    },
-    shape: {
-      square: {
-        borderRadius: '$3',
-      },
-      round: {
-        borderRadius: '$10',
-      },
-    },
-  } as const,
-  
-  defaultVariants: {
-    variant: 'ghost',
-    size: 'md',
-    shape: 'square',
-  },
-});
+const variantStyles: Record<IconButtonVariant, React.CSSProperties> = {
+  primary: { color: 'var(--color-blue-9)' },
+  secondary: { color: 'var(--color-orange-9)' },
+  ghost: { color: 'var(--color-text)' },
+  danger: { color: 'var(--color-red-9)' },
+};
+
+const sizeStyles: Record<IconButtonSize, { padding: number; minSize: number }> = {
+  sm: { padding: 4, minSize: 24 },
+  md: { padding: 8, minSize: 32 },
+  lg: { padding: 12, minSize: 40 },
+};
 
 const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   (
@@ -101,41 +50,50 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     ref
   ) => {
     const iconSize = size === 'sm' ? 16 : size === 'md' ? 20 : 24;
+    const { padding, minSize } = sizeStyles[size];
 
     return (
-      <XStack position="relative" alignItems="center" justifyContent="center">
-        <IconButtonBase
+      <Row style={{ position: 'relative' }} alignItems="center" justifyContent="center">
+        <Button
           ref={ref}
-          variant={variant}
-          size={size}
-          shape={shape}
+          variant="ghost"
           disabled={disabled}
           title={tooltip}
           aria-label={tooltip}
+          style={{
+            padding,
+            minWidth: minSize,
+            minHeight: minSize,
+            borderRadius: shape === 'round' ? '50%' : 8,
+            ...variantStyles[variant],
+          }}
           {...props}
         >
           <Icon size={iconSize} />
-        </IconButtonBase>
+        </Button>
         {badge && (
-          <XStack
-            position="absolute"
-            top={-4}
-            right={-4}
-            backgroundColor="$orange9"
-            borderRadius="$10"
-            minWidth={20}
-            minHeight={20}
+          <Row
             alignItems="center"
             justifyContent="center"
-            paddingHorizontal="$1"
-            zIndex={10}
+            style={{
+              position: 'absolute',
+              top: -4,
+              right: -4,
+              backgroundColor: 'var(--color-orange-9)',
+              borderRadius: 10,
+              minWidth: 20,
+              minHeight: 20,
+              paddingLeft: 4,
+              paddingRight: 4,
+              zIndex: 10,
+            }}
           >
-            <Text fontSize="$1" color="$color1" fontWeight="600">
+            <Text size="xs" style={{ color: 'white', fontWeight: 600 }}>
               {badgeContent || ''}
             </Text>
-          </XStack>
+          </Row>
         )}
-      </XStack>
+      </Row>
     );
   }
 );

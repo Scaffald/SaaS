@@ -1,10 +1,9 @@
 /**
- * AISummaryScreen - AI analysis summary screen using Tamagui
+ * AISummaryScreen - AI analysis summary screen using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
 import React from 'react';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
-import { Button } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Chip } from '@unicornlove/beyond-ui';
 import {
   CheckCircle,
   AlertTriangle,
@@ -25,25 +24,18 @@ interface AISummaryScreenProps {
   onConfirm?: () => void;
 }
 
-const ActionSection = styled(YStack, {
-  name: 'ActionSection',
-  borderRadius: '$3',
-  padding: '$4',
-  borderWidth: 1,
-  
-  variants: {
-    type: {
-      success: {
-        backgroundColor: '$green2',
-        borderColor: '$green6',
-      },
-      warning: {
-        backgroundColor: '$yellow2',
-        borderColor: '$yellow6',
-      },
-    },
-  } as const,
-});
+const actionSectionStyles = {
+  success: {
+    backgroundColor: 'var(--color-green-2)',
+    borderColor: 'var(--color-green-6)',
+    textColor: 'var(--color-green-11)',
+  },
+  warning: {
+    backgroundColor: 'var(--color-yellow-2)',
+    borderColor: 'var(--color-yellow-6)',
+    textColor: 'var(--color-yellow-11)',
+  },
+};
 
 export default function AISummaryScreen({
   title,
@@ -63,151 +55,175 @@ export default function AISummaryScreen({
   };
 
   return (
-    <YStack gap="$6">
+    <Stack gap={24}>
       {/* Header */}
-      <XStack
+      <Row
         alignItems="center"
-        gap="$3"
-        paddingBottom="$4"
-        borderBottomWidth={1}
-        borderBottomColor="$borderColor"
+        gap={12}
+        style={{
+          paddingBottom: 16,
+          borderBottom: '1px solid var(--color-border)',
+        }}
       >
-        <YStack
-          width={40}
-          height={40}
-          backgroundColor="$blue3"
-          borderRadius="$10"
+        <Stack
           alignItems="center"
           justifyContent="center"
+          style={{
+            width: 40,
+            height: 40,
+            backgroundColor: 'var(--color-blue-3)',
+            borderRadius: '50%',
+          }}
         >
-          <Sparkles size={20} color="currentColor" />
-        </YStack>
-        <YStack flex={1}>
-          <Text fontSize="$5" fontWeight="600" color="$color11">
+          <Sparkles size={20} />
+        </Stack>
+        <Stack flex={1}>
+          <Text size="lg" weight="semibold">
             {title}
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text size="sm" muted>
             AI Analysis Summary
           </Text>
-        </YStack>
-        <Badge variant={getConfidenceVariant(confidence)} size="md">
+        </Stack>
+        <Chip variant={getConfidenceVariant(confidence)} size="md">
           {confidence}% confidence
-        </Badge>
-      </XStack>
+        </Chip>
+      </Row>
 
       {/* What Was Analyzed */}
-      <YStack gap="$2">
-        <XStack alignItems="center" gap="$2">
-          <FileCheck size={16} color="currentColor" />
-          <Text fontSize="$2" fontWeight="600" color="$color11">
+      <Stack gap={8}>
+        <Row alignItems="center" gap={8}>
+          <FileCheck size={16} />
+          <Text size="sm" weight="semibold">
             What Was Analyzed
           </Text>
-        </XStack>
-        <Text fontSize="$2" color="$color10">
+        </Row>
+        <Text size="sm" muted>
           {whatWasAnalyzed}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Key Findings */}
       {keyFindings.length > 0 && (
-        <YStack gap="$3">
-          <XStack alignItems="center" gap="$2">
-            <TrendingUp size={16} color="currentColor" />
-            <Text fontSize="$2" fontWeight="600" color="$color11">
+        <Stack gap={12}>
+          <Row alignItems="center" gap={8}>
+            <TrendingUp size={16} />
+            <Text size="sm" weight="semibold">
               Key Findings
             </Text>
-          </XStack>
-          <YStack gap="$2">
+          </Row>
+          <Stack gap={8}>
             {keyFindings.map((finding, index) => (
-              <XStack key={index} alignItems="flex-start" gap="$2">
+              <Row key={index} alignItems="flex-start" gap={8}>
                 <CheckCircle
                   size={16}
-                  color="currentColor"
                   style={{ marginTop: 2, flexShrink: 0 }}
                 />
-                <Text fontSize="$2" color="$color10" flex={1}>
+                <Text size="sm" muted style={{ flex: 1 }}>
                   {finding}
                 </Text>
-              </XStack>
+              </Row>
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Recommendations */}
       {recommendations.length > 0 && (
-        <YStack gap="$3">
-          <Text fontSize="$2" fontWeight="600" color="$color11">
+        <Stack gap={12}>
+          <Text size="sm" weight="semibold">
             Recommendations
           </Text>
-          <YStack gap="$2">
+          <Stack gap={8}>
             {recommendations.map((rec, index) => (
-              <XStack key={index} alignItems="flex-start" gap="$2">
-                <Text fontSize="$2" color="$blue9" style={{ marginTop: 2 }}>
+              <Row key={index} alignItems="flex-start" gap={8}>
+                <Text size="sm" style={{ color: 'var(--color-blue-9)', marginTop: 2 }}>
                   •
                 </Text>
-                <Text fontSize="$2" color="$color10" flex={1}>
+                <Text size="sm" muted style={{ flex: 1 }}>
                   {rec}
                 </Text>
-              </XStack>
+              </Row>
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Actions Taken Automatically */}
       {actionsTaken.length > 0 && (
-        <ActionSection type="success">
-          <XStack alignItems="center" gap="$2" mb="$2">
-            <CheckCircle size={16} color="currentColor" />
-            <Text fontSize="$2" fontWeight="600" color="$green11">
+        <Stack
+          padding={16}
+          gap={8}
+          style={{
+            borderRadius: 12,
+            border: '1px solid',
+            ...actionSectionStyles.success,
+          }}
+        >
+          <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
+            <CheckCircle size={16} />
+            <Text size="sm" weight="semibold" style={{ color: actionSectionStyles.success.textColor }}>
               Actions Taken Automatically
             </Text>
-          </XStack>
-          <YStack gap="$1">
+          </Row>
+          <Stack gap={4}>
             {actionsTaken.map((action, index) => (
-              <Text key={index} fontSize="$2" color="$green11">
+              <Text key={index} size="sm" style={{ color: actionSectionStyles.success.textColor }}>
                 ✓ {action}
               </Text>
             ))}
-          </YStack>
-        </ActionSection>
+          </Stack>
+        </Stack>
       )}
 
       {/* Actions Requiring Review */}
       {actionsRequiringReview.length > 0 && (
-        <ActionSection type="warning">
-          <XStack alignItems="center" gap="$2" mb="$2">
-            <AlertTriangle size={16} color="currentColor" />
-            <Text fontSize="$2" fontWeight="600" color="$yellow11">
+        <Stack
+          padding={16}
+          gap={8}
+          style={{
+            borderRadius: 12,
+            border: '1px solid',
+            ...actionSectionStyles.warning,
+          }}
+        >
+          <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
+            <AlertTriangle size={16} />
+            <Text size="sm" weight="semibold" style={{ color: actionSectionStyles.warning.textColor }}>
               Actions Requiring Review
             </Text>
-          </XStack>
-          <YStack gap="$1">
+          </Row>
+          <Stack gap={4}>
             {actionsRequiringReview.map((action, index) => (
-              <Text key={index} fontSize="$2" color="$yellow11">
+              <Text key={index} size="sm" style={{ color: actionSectionStyles.warning.textColor }}>
                 ⚠ {action}
               </Text>
             ))}
-          </YStack>
-        </ActionSection>
+          </Stack>
+        </Stack>
       )}
 
       {/* Actions */}
       {(onClose || onConfirm) && (
-        <XStack gap="$3" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+        <Row
+          gap={12}
+          style={{
+            paddingTop: 16,
+            borderTop: '1px solid var(--color-border)',
+          }}
+        >
           {onClose && (
-            <Button variant="secondary" onPress={onClose} fullWidth>
+            <Button variant="secondary" onClick={onClose} style={{ flex: 1 }}>
               Close
             </Button>
           )}
           {onConfirm && (
-            <Button variant="primary" onPress={onConfirm} fullWidth>
+            <Button variant="primary" onClick={onConfirm} style={{ flex: 1 }}>
               Confirm & Continue
             </Button>
           )}
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   );
 }

@@ -1,9 +1,10 @@
 /**
  * ErrorBoundary - React Error Boundary for handling component errors
  * Prevents full application crashes and provides user-friendly error messages
+ * Migrated from Tamagui to Beyond UI
  */
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { YStack, Text, Button } from '@unicornlove/ui';
+import { Stack, Text, Button } from '@unicornlove/beyond-ui';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -35,7 +36,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
 
-    // Call optional error handler
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
@@ -55,55 +55,58 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       }
 
       return (
-        <YStack
+        <Stack
           flex={1}
           alignItems="center"
           justifyContent="center"
-          padding="$6"
-          gap="$4"
-          backgroundColor="$background"
+          padding={24}
+          gap={16}
+          style={{ backgroundColor: 'var(--color-background)' }}
         >
-          <YStack
-            maxWidth={600}
-            padding="$6"
-            borderRadius="$4"
-            backgroundColor="$backgroundHover"
-            borderWidth={1}
-            borderColor="$borderColor"
-            gap="$4"
+          <Stack
+            padding={24}
+            gap={16}
+            style={{
+              maxWidth: 600,
+              borderRadius: 16,
+              backgroundColor: 'var(--color-background-hover)',
+              border: '1px solid var(--color-border)',
+            }}
           >
-            <Text fontSize="$8" fontWeight="600" color="$red10">
+            <Text size="xl" weight="semibold" style={{ color: 'var(--color-red-10)' }}>
               Something went wrong
             </Text>
 
-            <Text fontSize="$4" color="$color11">
+            <Text>
               We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.
             </Text>
 
             {this.state.error && (
-              <YStack
-                padding="$4"
-                borderRadius="$2"
-                backgroundColor="$red2"
-                borderWidth={1}
-                borderColor="$red6"
+              <Stack
+                padding={16}
+                style={{
+                  borderRadius: 8,
+                  backgroundColor: 'var(--color-red-2)',
+                  border: '1px solid var(--color-red-6)',
+                }}
               >
-                <Text fontSize="$3" fontFamily="$mono" color="$red11">
+                <Text
+                  size="sm"
+                  style={{
+                    fontFamily: 'monospace',
+                    color: 'var(--color-red-11)',
+                  }}
+                >
                   {this.state.error.message}
                 </Text>
-              </YStack>
+              </Stack>
             )}
 
-            <Button
-              onPress={this.handleReset}
-              backgroundColor="$blue9"
-              color="$color1"
-              pressStyle={{ opacity: 0.8 }}
-            >
+            <Button onClick={this.handleReset} variant="primary">
               Try Again
             </Button>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       );
     }
 

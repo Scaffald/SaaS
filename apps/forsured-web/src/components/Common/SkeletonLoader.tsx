@@ -1,19 +1,15 @@
 /**
- * SkeletonLoader - Loading skeleton component using Tamagui
+ * SkeletonLoader - Loading skeleton component using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
 import React from 'react';
-import { YStack, XStack, styled } from '@unicornlove/ui';
-
-// Use Tamagui's animation prop instead of CSS animationDuration
-// Tamagui will handle the animation properly without passing it to DOM
-const SkeletonBox = styled(YStack, {
-  name: 'SkeletonBox',
-  backgroundColor: '$color4',
-  borderRadius: '$3',
-  animation: 'pulse',
-  // Remove animationDuration - use Tamagui's animation system instead
-  // animationDuration is handled by the 'pulse' animation config
-});
+import {
+  Skeleton,
+  SkeletonText,
+  SkeletonCard,
+  Stack,
+  Row,
+} from '@unicornlove/beyond-ui';
 
 interface SkeletonLoaderProps {
   variant?: 'card' | 'table' | 'chart' | 'text';
@@ -27,99 +23,48 @@ export default function SkeletonLoader({
   const renderSkeleton = () => {
     switch (variant) {
       case 'card':
-        return (
-          <YStack
-            backgroundColor="$backgroundHover"
-            borderRadius="$3"
-            shadowColor="$shadowColor"
-            shadowRadius={4}
-            shadowOffset={{ width: 0, height: 2 }}
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$6"
-          >
-            <SkeletonBox height={24} width="33%" mb="$4" />
-            <SkeletonBox height={16} width="66%" mb="$2" />
-            <SkeletonBox height={16} width="50%" />
-          </YStack>
-        );
+        return <SkeletonCard />;
 
       case 'table':
         return (
-          <YStack
-            backgroundColor="$backgroundHover"
-            borderRadius="$3"
-            shadowColor="$shadowColor"
-            shadowRadius={4}
-            shadowOffset={{ width: 0, height: 2 }}
-            borderWidth={1}
-            borderColor="$borderColor"
-            overflow="hidden"
-          >
-            <YStack padding="$6" borderBottomWidth={1} borderBottomColor="$borderColor" gap="$2">
-              <SkeletonBox height={24} width="25%" />
-              <SkeletonBox height={16} width="33%" />
-            </YStack>
-            <YStack>
+          <Stack gap={0}>
+            <Stack padding={24} gap={8}>
+              <Skeleton height={24} width="25%" />
+              <Skeleton height={16} width="33%" />
+            </Stack>
+            <Stack>
               {[...Array(5)].map((_, i) => (
-                <XStack
-                  key={i}
-                  padding="$6"
-                  alignItems="center"
-                  gap="$4"
-                  borderBottomWidth={i < 4 ? 1 : 0}
-                  borderBottomColor="$borderColor"
-                >
-                  <SkeletonBox width={48} height={48} borderRadius="$10" />
-                  <YStack flex={1} gap="$2">
-                    <SkeletonBox height={16} width="25%" />
-                    <SkeletonBox height={12} width="33%" />
-                  </YStack>
-                  <SkeletonBox height={32} width={80} />
-                </XStack>
+                <Row key={i} padding={24} alignItems="center" gap={16}>
+                  <Skeleton height={48} width={48} shape="circle" />
+                  <Stack flex={1} gap={8}>
+                    <Skeleton height={16} width="25%" />
+                    <Skeleton height={12} width="33%" />
+                  </Stack>
+                  <Skeleton height={32} width={80} />
+                </Row>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         );
 
       case 'chart':
         return (
-          <YStack
-            backgroundColor="$backgroundHover"
-            borderRadius="$3"
-            shadowColor="$shadowColor"
-            shadowRadius={4}
-            shadowOffset={{ width: 0, height: 2 }}
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$6"
-            gap="$6"
-          >
-            <SkeletonBox height={24} width="33%" />
-            <YStack gap="$4">
+          <Stack padding={24} gap={24}>
+            <Skeleton height={24} width="33%" />
+            <Stack gap={16}>
               {[...Array(6)].map((_, i) => (
-                <XStack key={i} alignItems="center" gap="$3">
-                  <SkeletonBox height={16} width={64} />
-                  <SkeletonBox
-                    flex={1}
-                    height={32}
-                    width={`${Math.random() * 60 + 40}%`}
-                  />
-                  <SkeletonBox height={16} width={64} />
-                </XStack>
+                <Row key={i} alignItems="center" gap={12}>
+                  <Skeleton height={16} width={64} />
+                  <Skeleton height={32} style={{ flex: 1 }} />
+                  <Skeleton height={16} width={64} />
+                </Row>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         );
 
       case 'text':
-        return (
-          <YStack gap="$2">
-            <SkeletonBox height={16} width="100%" />
-            <SkeletonBox height={16} width="83%" />
-            <SkeletonBox height={16} width="66%" />
-          </YStack>
-        );
+        return <SkeletonText lines={3} />;
 
       default:
         return null;
@@ -129,9 +74,9 @@ export default function SkeletonLoader({
   return (
     <>
       {[...Array(count)].map((_, index) => (
-        <YStack key={index} mb={count > 1 ? '$4' : 0}>
+        <Stack key={index} style={{ marginBottom: count > 1 ? 16 : 0 }}>
           {renderSkeleton()}
-        </YStack>
+        </Stack>
       ))}
     </>
   );
@@ -139,44 +84,20 @@ export default function SkeletonLoader({
 
 export function DashboardSkeleton() {
   return (
-    <YStack gap="$6">
-      <YStack gap="$2">
-        <SkeletonBox height={32} width="25%" />
-        <SkeletonBox height={16} width="33%" />
-      </YStack>
+    <Stack gap={24}>
+      <Stack gap={8}>
+        <Skeleton height={32} width="25%" />
+        <Skeleton height={16} width="33%" />
+      </Stack>
 
-      <XStack
-        flexDirection="row"
-        flexWrap="wrap"
-        gap="$6"
-      >
+      <Row gap={24} style={{ flexWrap: 'wrap' }}>
         {[...Array(4)].map((_, i) => (
-          <YStack
-            key={i}
-            flex={1}
-            minWidth={200}
-            backgroundColor="$backgroundHover"
-            borderRadius="$3"
-            shadowColor="$shadowColor"
-            shadowRadius={4}
-            shadowOffset={{ width: 0, height: 2 }}
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$6"
-            gap="$4"
-          >
-            <XStack alignItems="center" justifyContent="space-between" mb="$4">
-              <SkeletonBox width={48} height={48} borderRadius="$3" />
-              <SkeletonBox height={32} width={64} />
-            </XStack>
-            <SkeletonBox height={16} width="66%" mb="$2" />
-            <SkeletonBox height={12} width="50%" />
-          </YStack>
+          <SkeletonCard key={i} />
         ))}
-      </XStack>
+      </Row>
 
       <SkeletonLoader variant="chart" />
       <SkeletonLoader variant="table" />
-    </YStack>
+    </Stack>
   );
 }

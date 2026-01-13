@@ -1,16 +1,23 @@
 /**
- * ThemeSwitcher - Theme switcher using Tamagui
+ * ThemeSwitcher - Theme switcher using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sun, Moon, Leaf } from 'lucide-react';
-import { YStack, XStack, Text, Button, styled } from '@unicornlove/ui';
-import { useTheme as useTamaguiTheme } from '@unicornlove/ui';
+import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
 
 type Theme = 'light' | 'dark' | 'earth';
 
 export default function ThemeSwitcher() {
-  const tamaguiTheme = useTamaguiTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [currentThemeName, setCurrentThemeName] = useState<Theme>('light');
+
+  useEffect(() => {
+    const storedTheme = document.documentElement.getAttribute('data-theme') as Theme;
+    if (storedTheme) {
+      setCurrentThemeName(storedTheme);
+    }
+  }, []);
 
   const themes: {
     value: Theme;
@@ -23,106 +30,89 @@ export default function ThemeSwitcher() {
     { value: 'earth', label: 'Earth', icon: Leaf, color: 'rgb(184, 97, 54)' },
   ];
 
-  const currentThemeName = (tamaguiTheme?.name || 'light') as Theme;
   const currentTheme = themes.find((t) => t.value === currentThemeName) || themes[0];
 
   const handleThemeChange = (newTheme: Theme) => {
-    // Update document data-theme attribute for CSS variable compatibility
     document.documentElement.setAttribute('data-theme', newTheme);
+    setCurrentThemeName(newTheme);
     setIsOpen(false);
   };
 
-  const ThemeButton = styled(Button, {
-    name: 'ThemeButton',
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: '$3',
-    paddingHorizontal: '$4',
-    paddingVertical: '$3',
-    borderRadius: '$3',
-    backgroundColor: 'transparent',
-    
-    variants: {
-      active: {
-        true: {
-          backgroundColor: '$blue3',
-          color: '$blue11',
-        },
-        false: {
-          color: '$color10',
-          hoverStyle: {
-            backgroundColor: '$backgroundHover',
-            color: '$color11',
-          },
-        },
-      },
-    } as const,
-  });
-
   return (
-    <YStack
-      position="fixed"
-      bottom="$6"
-      right="$6"
-      zIndex={50}
+    <Stack
+      style={{
+        position: 'fixed',
+        bottom: 24,
+        right: 24,
+        zIndex: 50,
+      }}
     >
-      <YStack position="relative">
+      <Stack style={{ position: 'relative' }}>
         {isOpen && (
           <>
-            <YStack
-              position="fixed"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              onPress={() => setIsOpen(false)}
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+              onClick={() => setIsOpen(false)}
             />
-            <YStack
-              position="absolute"
-              bottom="100%"
-              right={0}
-              mb="$3"
-              backgroundColor="$backgroundHover"
-              borderRadius="$5"
-              shadowColor="$shadowColor"
-              shadowRadius={20}
-              shadowOffset={{ width: 0, height: 8 }}
-              borderWidth={2}
-              borderColor="$borderColor"
-              padding="$2"
-              minWidth={160}
+            <Stack
+              style={{
+                position: 'absolute',
+                bottom: '100%',
+                right: 0,
+                marginBottom: 12,
+                backgroundColor: 'var(--color-background-hover)',
+                borderRadius: 12,
+                boxShadow: '0 8px 20px var(--color-shadow)',
+                border: '2px solid var(--color-border)',
+                padding: 8,
+                minWidth: 160,
+              }}
             >
               {themes.map((t) => {
                 const Icon = t.icon;
                 const isActive = currentThemeName === t.value;
                 return (
-                  <ThemeButton
+                  <Button
                     key={t.value}
-                    onPress={() => handleThemeChange(t.value)}
-                    active={isActive}
+                    onClick={() => handleThemeChange(t.value)}
+                    variant="ghost"
+                    style={{
+                      width: '100%',
+                      justifyContent: 'flex-start',
+                      gap: 12,
+                      paddingLeft: 16,
+                      paddingRight: 16,
+                      paddingTop: 12,
+                      paddingBottom: 12,
+                      backgroundColor: isActive ? 'var(--color-blue-3)' : 'transparent',
+                      color: isActive ? 'var(--color-blue-11)' : 'var(--color-text-muted)',
+                    }}
                   >
                     <Icon size={20} color={isActive ? t.color : undefined} />
-                    <Text fontWeight="500">{t.label}</Text>
-                  </ThemeButton>
+                    <Text weight="medium">{t.label}</Text>
+                  </Button>
                 );
               })}
-            </YStack>
+            </Stack>
           </>
         )}
 
         <Button
-          onPress={() => setIsOpen(!isOpen)}
-          backgroundColor="$backgroundHover"
-          hoverStyle={{ backgroundColor: '$backgroundPress', borderColor: '$borderColorHover', scale: 1.1 }}
-          color="$color11"
-          borderRadius="$10"
-          padding="$4"
-          shadowColor="$shadowColor"
-          shadowRadius={20}
-          shadowOffset={{ width: 0, height: 8 }}
-          borderWidth={2}
-          borderColor="$borderColor"
+          onClick={() => setIsOpen(!isOpen)}
+          variant="ghost"
+          style={{
+            backgroundColor: 'var(--color-background-hover)',
+            borderRadius: '50%',
+            padding: 16,
+            boxShadow: '0 8px 20px var(--color-shadow)',
+            border: '2px solid var(--color-border)',
+          }}
           aria-label="Change theme"
         >
           <currentTheme.icon
@@ -130,7 +120,7 @@ export default function ThemeSwitcher() {
             color={currentTheme.color}
           />
         </Button>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 }

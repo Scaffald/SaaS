@@ -1,10 +1,10 @@
 /**
- * Task Status Badge Component - Using Tamagui
+ * Task Status Badge Component - Using Beyond UI
  * REQ-282: Project Tasks Display
+ * Migrated from Tamagui to Beyond UI
  */
 import React, { useState } from 'react';
-import { XStack, YStack, Text, styled } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Row, Stack, Text, Chip } from '@unicornlove/beyond-ui';
 import {
   CheckCircle,
   Clock,
@@ -68,27 +68,6 @@ const LEGACY_STATUS_MAP: Record<string, ProjectTaskStatus | null> = {
   cancelled: null,
 };
 
-const Tooltip = styled(YStack, {
-  name: 'Tooltip',
-  position: 'absolute',
-  zIndex: 50,
-  bottom: '100%',
-  left: '50%',
-  transform: [{ translateX: '-50%' }],
-  marginBottom: '$2',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  fontSize: '$1',
-  color: '$color1',
-  backgroundColor: '$color12',
-  borderRadius: '$3',
-  shadowColor: '$shadowColor',
-  shadowRadius: 8,
-  shadowOffset: { width: 0, height: 4 },
-  whiteSpace: 'pre-line',
-  maxWidth: 320,
-});
-
 interface TaskStatusBadgeProps {
   status: string;
   rejectionReason?: string;
@@ -147,8 +126,8 @@ export default function TaskStatusBadge({
   };
 
   return (
-    <YStack position="relative" display="inline-block">
-      <Badge
+    <Stack style={{ position: 'relative', display: 'inline-block' }}>
+      <Chip
         variant={config.variant}
         size={size}
         onMouseEnter={() => setShowTooltip(true)}
@@ -159,19 +138,40 @@ export default function TaskStatusBadge({
         role="status"
         aria-label={`Status: ${config.label}. ${getTooltipContent()}`}
       >
-        <XStack gap="$1" alignItems="center">
+        <Row gap={4} alignItems="center">
           {showIcon && <Icon size={iconSizes[size]} />}
-          <Text>{config.label}</Text>
-        </XStack>
-      </Badge>
+          <span>{config.label}</span>
+        </Row>
+      </Chip>
 
       {/* Tooltip */}
       {showTooltip && (
-        <Tooltip role="tooltip">
-          <Text>{getTooltipContent()}</Text>
-        </Tooltip>
+        <Stack
+          role="tooltip"
+          style={{
+            position: 'absolute',
+            zIndex: 50,
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginBottom: 8,
+            paddingLeft: 12,
+            paddingRight: 12,
+            paddingTop: 8,
+            paddingBottom: 8,
+            fontSize: 12,
+            color: 'var(--color-background)',
+            backgroundColor: 'var(--color-text)',
+            borderRadius: 12,
+            boxShadow: '0 4px 8px var(--color-shadow)',
+            whiteSpace: 'pre-line',
+            maxWidth: 320,
+          }}
+        >
+          <Text size="xs">{getTooltipContent()}</Text>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

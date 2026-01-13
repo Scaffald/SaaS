@@ -1,8 +1,9 @@
 /**
  * DataTable - A wrapper component providing a data table with sorting and pagination
- * Built on top of @tanstack/react-table and Tamagui primitives
+ * Built on top of @tanstack/react-table and Beyond UI primitives
+ * Migrated from Tamagui to Beyond UI
  */
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,7 +13,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table';
-import { YStack, XStack, Text, Button, styled } from '@unicornlove/ui';
+import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface DataTableProps<TData> {
@@ -22,72 +23,6 @@ export interface DataTableProps<TData> {
   enablePagination?: boolean;
   pageSize?: number;
 }
-
-const TableContainer = styled(YStack, {
-  name: 'TableContainer',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: '$4',
-  overflow: 'hidden',
-});
-
-const TableElement = styled(YStack, {
-  name: 'TableElement',
-  tag: 'table',
-  width: '100%',
-});
-
-const TableHead = styled(XStack, {
-  name: 'TableHead',
-  tag: 'thead',
-  backgroundColor: '$backgroundSecondary',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-});
-
-const TableBody = styled(YStack, {
-  name: 'TableBody',
-  tag: 'tbody',
-});
-
-const TableRow = styled(XStack, {
-  name: 'TableRow',
-  tag: 'tr',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  hoverStyle: {
-    backgroundColor: '$backgroundHover',
-  },
-});
-
-const TableHeaderCell = styled(XStack, {
-  name: 'TableHeaderCell',
-  tag: 'th',
-  flex: 1,
-  padding: '$3',
-  alignItems: 'center',
-  gap: '$2',
-  cursor: 'pointer',
-  userSelect: 'none',
-});
-
-const TableCell = styled(XStack, {
-  name: 'TableCell',
-  tag: 'td',
-  flex: 1,
-  padding: '$3',
-  alignItems: 'center',
-});
-
-const PaginationContainer = styled(XStack, {
-  name: 'PaginationContainer',
-  padding: '$3',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  backgroundColor: '$backgroundSecondary',
-});
 
 export function DataTable<TData>({
   data,
@@ -119,79 +54,117 @@ export function DataTable<TData>({
   const totalPages = table.getPageCount();
 
   return (
-    <TableContainer>
-      <TableElement>
-        <TableHead>
+    <Stack
+      style={{
+        border: '1px solid var(--color-border)',
+        borderRadius: 16,
+        overflow: 'hidden',
+      }}
+    >
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead
+          style={{
+            backgroundColor: 'var(--color-background-secondary)',
+            borderBottom: '1px solid var(--color-border)',
+          }}
+        >
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 const canSort = enableSorting && header.column.getCanSort();
                 const sortDirection = header.column.getIsSorted();
 
                 return (
-                  <TableHeaderCell
+                  <th
                     key={header.id}
-                    onPress={canSort ? header.column.getToggleSortingHandler() : undefined}
-                    style={{ cursor: canSort ? 'pointer' : 'default' }}
+                    onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
+                    style={{
+                      padding: 12,
+                      textAlign: 'left',
+                      cursor: canSort ? 'pointer' : 'default',
+                      userSelect: 'none',
+                    }}
                   >
-                    <Text fontWeight="600" fontSize="$3">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </Text>
-                    {canSort && sortDirection && (
-                      sortDirection === 'asc' ? (
-                        <ChevronUp size={14} />
-                      ) : (
-                        <ChevronDown size={14} />
-                      )
-                    )}
-                  </TableHeaderCell>
+                    <Row alignItems="center" gap={8}>
+                      <Text weight="semibold" size="sm">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </Text>
+                      {canSort && sortDirection && (
+                        sortDirection === 'asc' ? (
+                          <ChevronUp size={14} />
+                        ) : (
+                          <ChevronDown size={14} />
+                        )
+                      )}
+                    </Row>
+                  </th>
                 );
               })}
-            </TableRow>
+            </tr>
           ))}
-        </TableHead>
+        </thead>
 
-        <TableBody>
+        <tbody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
+            <tr
+              key={row.id}
+              style={{
+                borderBottom: '1px solid var(--color-border)',
+              }}
+            >
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
+                <td
+                  key={cell.id}
+                  style={{
+                    padding: 12,
+                  }}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
+                </td>
               ))}
-            </TableRow>
+            </tr>
           ))}
-        </TableBody>
-      </TableElement>
+        </tbody>
+      </table>
 
       {enablePagination && totalPages > 1 && (
-        <PaginationContainer>
-          <Text fontSize="$2" color="$color10">
+        <Row
+          padding={12}
+          alignItems="center"
+          justifyContent="space-between"
+          style={{
+            borderTop: '1px solid var(--color-border)',
+            backgroundColor: 'var(--color-background-secondary)',
+          }}
+        >
+          <Text size="sm" muted>
             Page {currentPage} of {totalPages}
           </Text>
-          <XStack gap="$2">
+          <Row gap={8}>
             <Button
-              size="$2"
-              onPress={() => table.previousPage()}
+              size="sm"
+              variant="ghost"
+              onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              opacity={!table.getCanPreviousPage() ? 0.5 : 1}
+              style={{ opacity: !table.getCanPreviousPage() ? 0.5 : 1 }}
             >
               <ChevronLeft size={16} />
             </Button>
             <Button
-              size="$2"
-              onPress={() => table.nextPage()}
+              size="sm"
+              variant="ghost"
+              onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              opacity={!table.getCanNextPage() ? 0.5 : 1}
+              style={{ opacity: !table.getCanNextPage() ? 0.5 : 1 }}
             >
               <ChevronRight size={16} />
             </Button>
-          </XStack>
-        </PaginationContainer>
+          </Row>
+        </Row>
       )}
-    </TableContainer>
+    </Stack>
   );
 }
 

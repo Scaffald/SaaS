@@ -1,35 +1,10 @@
 /**
- * ComplianceScore - Compliance score display using Tamagui
+ * ComplianceScore - Compliance score display using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
 import React from 'react';
-import { XStack, YStack, Text, styled } from '@unicornlove/ui';
+import { Row, Stack, Text } from '@unicornlove/beyond-ui';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-
-const ScoreCircle = styled(YStack, {
-  name: 'ScoreCircle',
-  borderRadius: '$10',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontWeight: '700',
-  
-  variants: {
-    size: {
-      sm: { width: 48, height: 48, fontSize: '$5' },
-      md: { width: 64, height: 64, fontSize: '$8' },
-      lg: { width: 80, height: 80, fontSize: '$10' },
-    },
-    score: {
-      high: { backgroundColor: '$green3', color: '$green11' },
-      medium: { backgroundColor: '$yellow3', color: '$yellow11' },
-      low: { backgroundColor: '$orange3', color: '$orange11' },
-    },
-  } as const,
-  
-  defaultVariants: {
-    size: 'md',
-    score: 'high',
-  },
-});
 
 interface ComplianceScoreProps {
   score: number;
@@ -37,6 +12,18 @@ interface ComplianceScoreProps {
   size?: 'sm' | 'md' | 'lg';
   showTrend?: boolean;
 }
+
+const sizeStyles = {
+  sm: { width: 48, height: 48, fontSize: 16 },
+  md: { width: 64, height: 64, fontSize: 20 },
+  lg: { width: 80, height: 80, fontSize: 24 },
+};
+
+const scoreColors = {
+  high: { background: 'var(--color-green-3)', text: 'var(--color-green-11)' },
+  medium: { background: 'var(--color-yellow-3)', text: 'var(--color-yellow-11)' },
+  low: { background: 'var(--color-orange-3)', text: 'var(--color-orange-11)' },
+};
 
 export default function ComplianceScore({
   score,
@@ -56,23 +43,46 @@ export default function ComplianceScore({
     lg: 18,
   };
 
+  const variant = getScoreVariant();
+  const { width, height, fontSize } = sizeStyles[size];
+  const colors = scoreColors[variant];
+
   return (
-    <XStack alignItems="center" gap="$3">
-      <ScoreCircle size={size} score={getScoreVariant()}>
-        <Text>{score}</Text>
-      </ScoreCircle>
+    <Row alignItems="center" gap={12}>
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        style={{
+          width,
+          height,
+          borderRadius: '50%',
+          backgroundColor: colors.background,
+        }}
+      >
+        <Text
+          weight="bold"
+          style={{
+            fontSize,
+            color: colors.text,
+          }}
+        >
+          {score}
+        </Text>
+      </Stack>
       {showTrend && trend && trend !== 'stable' && (
-        <XStack
+        <Row
           alignItems="center"
-          color={trend === 'up' ? '$green9' : '$orange9'}
+          style={{
+            color: trend === 'up' ? 'var(--color-green-9)' : 'var(--color-orange-9)',
+          }}
         >
           {trend === 'up' ? (
             <TrendingUp size={trendIconSize[size]} />
           ) : (
             <TrendingDown size={trendIconSize[size]} />
           )}
-        </XStack>
+        </Row>
       )}
-    </XStack>
+    </Row>
   );
 }

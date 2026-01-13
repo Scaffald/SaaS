@@ -1,10 +1,10 @@
 /**
- * Task Severity Badge Component - Using Tamagui
+ * Task Severity Badge Component - Using Beyond UI
  * REQ-266: Task Correlation with Compliance Score
+ * Migrated from Tamagui to Beyond UI
  */
 import React, { useState } from 'react';
-import { XStack, YStack, Text, styled } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Row, Stack, Text, Chip } from '@unicornlove/beyond-ui';
 import {
   AlertTriangle,
   AlertCircle,
@@ -47,27 +47,6 @@ const SEVERITY_VARIANT_MAP: Record<TaskSeverity, 'default' | 'success' | 'warnin
   low: 'info',
   info: 'default',
 };
-
-const Tooltip = styled(YStack, {
-  name: 'Tooltip',
-  position: 'absolute',
-  zIndex: 50,
-  bottom: '100%',
-  left: '50%',
-  transform: [{ translateX: '-50%' }],
-  marginBottom: '$2',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  fontSize: '$1',
-  color: '$color1',
-  backgroundColor: '$color12',
-  borderRadius: '$3',
-  shadowColor: '$shadowColor',
-  shadowRadius: 8,
-  shadowOffset: { width: 0, height: 4 },
-  whiteSpace: 'pre-line',
-  maxWidth: 320,
-});
 
 interface TaskSeverityBadgeProps {
   severity: TaskSeverity;
@@ -112,8 +91,8 @@ export default function TaskSeverityBadge({
   };
 
   return (
-    <YStack position="relative" display="inline-block">
-      <Badge
+    <Stack style={{ position: 'relative', display: 'inline-block' }}>
+      <Chip
         variant={variant}
         size={size}
         onMouseEnter={() => setShowTooltip(true)}
@@ -124,19 +103,40 @@ export default function TaskSeverityBadge({
         role="status"
         aria-label={`Severity: ${config.label}. ${SEVERITY_DEFINITIONS[severity]}`}
       >
-        <XStack gap="$1" alignItems="center">
+        <Row gap={4} alignItems="center">
           {showIcon && <Icon size={iconSizes[size]} />}
-          {showLabel && <Text>{config.label}</Text>}
-        </XStack>
-      </Badge>
+          {showLabel && <span>{config.label}</span>}
+        </Row>
+      </Chip>
 
       {/* Tooltip */}
       {showTooltip && (
-        <Tooltip role="tooltip">
-          <Text>{getTooltipContent()}</Text>
-        </Tooltip>
+        <Stack
+          role="tooltip"
+          style={{
+            position: 'absolute',
+            zIndex: 50,
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginBottom: 8,
+            paddingLeft: 12,
+            paddingRight: 12,
+            paddingTop: 8,
+            paddingBottom: 8,
+            fontSize: 12,
+            color: 'var(--color-background)',
+            backgroundColor: 'var(--color-text)',
+            borderRadius: 12,
+            boxShadow: '0 4px 8px var(--color-shadow)',
+            whiteSpace: 'pre-line',
+            maxWidth: 320,
+          }}
+        >
+          <Text size="xs">{getTooltipContent()}</Text>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 
@@ -157,14 +157,14 @@ export function CompactSeverityIndicator({
   const variant = SEVERITY_VARIANT_MAP[severity];
 
   return (
-    <Badge
+    <Chip
       variant={variant}
-      size="$2"
+      size="sm"
       title={`${config.label} severity`}
       aria-label={`${config.label} severity`}
     >
       <Icon size={12} />
-    </Badge>
+    </Chip>
   );
 }
 
@@ -177,30 +177,19 @@ interface SeverityDotProps {
   className?: string;
 }
 
-const Dot = styled(YStack, {
-  name: 'SeverityDot',
-  borderRadius: '$10',
-  
-  variants: {
-    size: {
-      sm: { width: 8, height: 8 },
-      md: { width: 12, height: 12 },
-      lg: { width: 16, height: 16 },
-    },
-    severity: {
-      critical: { backgroundColor: '$red9' },
-      high: { backgroundColor: '$orange9' },
-      medium: { backgroundColor: '$yellow9' },
-      low: { backgroundColor: '$blue9' },
-      info: { backgroundColor: '$color8' },
-    },
-  } as const,
-  
-  defaultVariants: {
-    size: 'md',
-    severity: 'info',
-  },
-});
+const dotSizes = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+};
+
+const dotColors: Record<TaskSeverity, string> = {
+  critical: 'var(--color-red-9)',
+  high: 'var(--color-orange-9)',
+  medium: 'var(--color-yellow-9)',
+  low: 'var(--color-blue-9)',
+  info: 'var(--color-text-muted)',
+};
 
 export function SeverityDot({
   severity,
@@ -208,13 +197,18 @@ export function SeverityDot({
   className = '',
 }: SeverityDotProps) {
   const config = TASK_SEVERITY_CONFIG[severity];
+  const dotSize = dotSizes[size];
 
   return (
-    <Dot
-      size={size}
-      severity={severity}
+    <Stack
       title={`${config.label} severity`}
       aria-label={`${config.label} severity`}
+      style={{
+        width: dotSize,
+        height: dotSize,
+        borderRadius: '50%',
+        backgroundColor: dotColors[severity],
+      }}
     />
   );
 }
