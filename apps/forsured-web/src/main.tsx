@@ -12,25 +12,30 @@ import { AuthProvider } from './contexts/AuthContext';
 import { DatabaseProvider } from './contexts/DatabaseContext';
 import { TRPCProvider } from './providers/TRPCProvider';
 import { LexiconProvider } from './contexts/LexiconContext';
+// Beyond UI provider for gradual migration from Tamagui
+import { BeyondUIProvider } from './providers/BeyondUIProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    {/* Dual-provider pattern: TamaguiProvider + BeyondUIProvider coexist during migration */}
     <TamaguiProvider config={tamaguiWebConfig} defaultTheme="light">
-      <BrowserRouter>
-        <ThemeProvider>
-          <AuthProvider>
-            <TRPCProvider>
-              <LexiconProvider>
-                <UserProvider>
-                  <DatabaseProvider>
-                    <App />
-                  </DatabaseProvider>
-                </UserProvider>
-              </LexiconProvider>
-            </TRPCProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
+      <BeyondUIProvider initialTheme="light">
+        <BrowserRouter>
+          <ThemeProvider>
+            <AuthProvider>
+              <TRPCProvider>
+                <LexiconProvider>
+                  <UserProvider>
+                    <DatabaseProvider>
+                      <App />
+                    </DatabaseProvider>
+                  </UserProvider>
+                </LexiconProvider>
+              </TRPCProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </BeyondUIProvider>
     </TamaguiProvider>
   </StrictMode>
 );

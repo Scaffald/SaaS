@@ -55,6 +55,7 @@
     "@tamagui/metro-plugin": "catalog:",
     "@tamagui/toast": "catalog:",
     "@trpc/server": "catalog:",
+    "@unicornlove/beyond-ui": "workspace:*",
     "@unicornlove/ui": "file:../../packages/ui",
     "babel-plugin-module-resolver": "catalog:",
     "burnt": "catalog:",

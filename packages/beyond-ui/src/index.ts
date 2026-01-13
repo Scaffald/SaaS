@@ -32,6 +32,30 @@ export type {
 export { getIconSize, getIconColor, getIconSizeForComponent } from './utils/icon'
 export type { IconSize } from './utils/icon'
 
+// Export hooks
+export { useResponsive } from './hooks'
+export type { ResponsiveValue, UseResponsiveReturn } from './hooks'
+
+// Layout components
+export { Box, Stack, Row, Spacer, Separator } from './components/Layout'
+export type {
+  BoxProps,
+  StackProps,
+  RowProps,
+  SpacerProps,
+  SeparatorProps,
+  SeparatorOrientation,
+  SeparatorThickness,
+  SpacingValue,
+  GapValue,
+  PaddingValue,
+  AlignItems,
+  JustifyContent,
+  FlexDirection,
+  FlexWrap,
+  Position,
+} from './components/Layout'
+
 // Components
 export { Button } from './components/Button'
 export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './components/Button'
@@ -618,10 +642,14 @@ export { CommandMenuFooter } from './components/CommandMenu'
 export type { CommandMenuFooterProps, ShortcutHint } from './components/CommandMenu'
 
 // Note: Additional components will be exported here as they are implemented
-// Phase 1: Layout primitives (Box, Stack, Row, Flex)
+// Phase 1: Layout primitives (Box ✅, Stack ✅, Row ✅, Spacer ✅, Separator ✅)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅
 // Phase 3: Feedback components (Alert ✅, Toast)
 // Phase 4+: Complex components (Dialog, Popover, Select, Tooltip ✅, etc.)
+
+// Theme Provider (temporary location in playground - will be moved to proper location)
+export { ThemeProvider, ThemeContext, useThemeContext } from './playground/ThemeProvider'
+export type { ThemeContextValue } from './playground/ThemeProvider'
 
 /**
  * Package version

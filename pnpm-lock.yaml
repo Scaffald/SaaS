@@ -396,6 +396,9 @@ importers:
       '@trpc/server':
         specifier: 'catalog:'
         version: 11.8.0(typescript@5.9.3)
+      '@unicornlove/beyond-ui':
+        specifier: workspace:*
+        version: link:../../packages/beyond-ui
       '@unicornlove/compliance':
         specifier: workspace:*
         version: link:../../packages/compliance
@@ -511,6 +514,9 @@ importers:
       '@trpc/server':
         specifier: 'catalog:'
         version: 11.8.0(typescript@5.9.3)
+      '@unicornlove/beyond-ui':
+        specifier: workspace:*
+        version: link:../../packages/beyond-ui
       '@unicornlove/ui':
         specifier: file:../../packages/ui
         version: file:packages/ui(cf42c046bef98137738a933f5765fa1b)

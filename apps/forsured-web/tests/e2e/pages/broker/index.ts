@@ -1,0 +1,15 @@
+export { BrokerDashboardPage } from './dashboard.page';
+export { BrokerClientsPage } from './clients.page';
+export { BrokerTasksPage } from './tasks.page';
+export { BrokerTaskDetailPage } from './task-detail.page';
+export { BrokerClientDetailPage } from './client-detail.page';
+export { BrokerProjectsPage } from './projects.page';
+export { BrokerProjectDetailPage } from './project-detail.page';
+export { BrokerTeamPage } from './team.page';
+export { BrokerDocumentsPage } from './documents.page';
+export { BrokerInsurancePage } from './insurance.page';
+export { BrokerPolicyDetailPage } from './policy-detail.page';
+export { BrokerSettingsPage } from './settings.page';
+export { BrokerNotificationsPage } from './notifications.page';
+export { BrokerAcknowledgementsPage } from './acknowledgements.page';
+export { BrokerAcknowledgementDetailPage } from './acknowledgement-detail.page';
