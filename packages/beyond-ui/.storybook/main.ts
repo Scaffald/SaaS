@@ -43,6 +43,8 @@ const config: StorybookConfig = {
       'react-native$': 'react-native-web',
       // Alias react-native-svg to a mock for web to avoid React Native internals
       'react-native-svg': require.resolve('./mocks/react-native-svg.js'),
+      // Alias lucide-react-native to lucide-react for web compatibility
+      'lucide-react-native': 'lucide-react',
       // Mock React Native internal modules that don't have web equivalents
       'react-native/Libraries/ReactNative/requireNativeComponent': require.resolve('./mocks/requireNativeComponent.js'),
       'react-native/Libraries/Alert/RCTAlertManager': require.resolve('./mocks/RCTAlertManager.js'),

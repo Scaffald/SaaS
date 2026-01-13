@@ -31,7 +31,7 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -40,6 +40,8 @@ import { typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
 import type { ToggleProps } from './Toggle.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { HelperText } from '../HelperText'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Toggle({
   checked: checkedProp,
@@ -61,9 +63,8 @@ export function Toggle({
   const isControlled = checkedProp !== undefined
   const checked = isControlled ? checkedProp : internalChecked
 
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
 
   const handlePress = () => {
     if (disabled) return
@@ -98,8 +99,8 @@ export function Toggle({
     },
   }[size]
 
-  // Color configuration based on state
-  const getColors = () => {
+  // Color configuration based on state (memoized for performance)
+  const colorConfig = useMemo(() => {
     // Red-Green color (error/success states)
     if (color === 'red-green') {
       return {
@@ -130,9 +131,7 @@ export function Toggle({
       trackOnHover: colors.gray[700],
       thumbColor: colors.white,
     }
-  }
-
-  const colorConfig = getColors()
+  }, [color, checked])
 
   // Get track background color based on checked and hover state
   const trackBackgroundColor =
@@ -153,11 +152,7 @@ export function Toggle({
 
   // Focus ring style (web only)
   const focusRing =
-    isFocused && !disabled
-      ? Platform.OS === 'web'
-        ? { boxShadow: boxShadows.focusBase }
-        : {}
-      : {}
+    isFocused && !disabled ? (Platform.OS === 'web' ? { boxShadow: boxShadows.focusBase } : {}) : {}
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -166,16 +161,11 @@ export function Toggle({
         disabled={disabled}
         accessibilityRole="switch"
         accessibilityState={{ checked, disabled }}
-        {...(Platform.OS === 'web' && {
-          onMouseEnter: () => setIsHovered(true),
-          onMouseLeave: () => setIsHovered(false),
-        })}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        {...interactiveProps}
         style={({ pressed }) => [
           styles.pressable,
           // Apply hover effect
-          isHovered && !disabled && Platform.OS === 'web' && { opacity: 0.9 },
+          isHovered && !disabled && { opacity: 0.9 },
           // Apply pressed effect
           pressed && !disabled && { opacity: 0.8 },
         ]}
@@ -263,19 +253,12 @@ export function Toggle({
 
             {/* Helper text */}
             {helperText && (
-              <Text
-                style={[
-                  styles.helperText,
-                  {
-                    fontSize: typography.small.fontSize,
-                    lineHeight: typography.small.lineHeight,
-                    color: disabled ? colors.text[theme].disabled : colors.text[theme].tertiary,
-                  },
-                  helperTextStyle,
-                ]}
+              <HelperText
+                type={disabled ? 'disabled' : 'default'}
+                textStyle={helperTextStyle}
               >
                 {helperText}
-              </Text>
+              </HelperText>
             )}
           </View>
         )}
@@ -344,4 +327,3 @@ const styles = StyleSheet.create({
 
 // Export types
 export type { ToggleProps, ToggleSize, ToggleColor, ToggleState } from './Toggle.types'
-

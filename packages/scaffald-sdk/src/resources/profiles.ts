@@ -1,172 +1,75 @@
-import { BaseResource } from './base.js'
+import { Resource } from './base.js'
 
-/**
- * User certification
- */
-export interface UserCertification {
-  name: string
-  issuer: string | null
-  issued_at: string | null
-}
-
-/**
- * Public user profile
- */
-export interface PublicProfile {
+export interface UserProfile {
   id: string
   username: string
-  full_name: string | null
-  bio: string | null
-  avatar_url: string | null
-  location: string | null
-  website: string | null
-  linkedin_url: string | null
-  github_url: string | null
-  years_experience: number | null
-  current_position: string | null
-  skills: string[]
-  certifications: UserCertification[]
+  full_name?: string
+  bio?: string
+  avatar_url?: string
+  location?: string
+  website?: string
+  linkedin_url?: string
+  github_url?: string
+  years_experience?: number
+  current_position?: string
+  skills?: string[]
+  certifications?: Certification[]
   created_at: string
 }
 
-/**
- * Organization profile
- */
+export interface Certification {
+  name: string
+  issuer?: string
+  issued_at?: string
+}
+
 export interface OrganizationProfile {
   id: string
   slug: string
   name: string
-  description: string | null
-  logo_url: string | null
-  website: string | null
-  industry: string | null
-  size: string | null
-  location: string | null
-  founded_year: number | null
+  description?: string
+  logo_url?: string
+  website?: string
+  industry?: string
+  size?: string
+  location?: string
+  founded_year?: number
   created_at: string
   job_count: number
 }
 
-/**
- * Employer profile
- */
 export interface EmployerProfile {
   id: string
   slug: string
   name: string
-  description: string | null
-  logo_url: string | null
-  website: string | null
-  industry: string | null
-  location: string | null
+  description?: string
+  logo_url?: string
+  website?: string
+  industry?: string
+  location?: string
   created_at: string
   active_jobs_count: number
 }
 
-/**
- * Profile response
- */
-export interface ProfileResponse {
-  data: PublicProfile
-}
-
-/**
- * Organization response
- */
-export interface OrganizationResponse {
-  data: OrganizationProfile
-}
-
-/**
- * Employer response
- */
-export interface EmployerResponse {
-  data: EmployerProfile
-}
-
-/**
- * Profiles resource
- * All endpoints are rate-limited to 100 requests per 15 minutes
- */
-export class ProfilesResource extends BaseResource {
+export class Profiles extends Resource {
   /**
-   * Get public user profile by username
-   * Alias for getUser()
-   *
-   * @example
-   * ```typescript
-   * const profile = await client.profiles.user('johndoe')
-   * console.log(profile.data.skills)
-   * ```
+   * Get a user profile by username
    */
-  async user(username: string): Promise<ProfileResponse> {
-    return this.getUser(username)
+  async getUser(username: string): Promise<UserProfile> {
+    return this.get<UserProfile>(`/v1/profiles/${username}`)
   }
 
   /**
-   * Get public user profile by username
-   *
-   * @example
-   * ```typescript
-   * const profile = await client.profiles.getUser('johndoe')
-   * console.log(profile.data.skills)
-   * ```
+   * Get an organization profile by slug
    */
-  async getUser(username: string): Promise<ProfileResponse> {
-    return this.client.get<ProfileResponse>(`/v1/profiles/${username}`)
+  async getOrganization(slug: string): Promise<OrganizationProfile> {
+    return this.get<OrganizationProfile>(`/v1/profiles/organizations/${slug}`)
   }
 
   /**
-   * Get organization profile by slug
-   * Alias for getOrganization()
-   *
-   * @example
-   * ```typescript
-   * const org = await client.profiles.organization('acme-corp')
-   * console.log(`${org.data.name} has ${org.data.job_count} jobs`)
-   * ```
+   * Get an employer profile by slug
    */
-  async organization(slug: string): Promise<OrganizationResponse> {
-    return this.getOrganization(slug)
-  }
-
-  /**
-   * Get organization profile by slug
-   *
-   * @example
-   * ```typescript
-   * const org = await client.profiles.getOrganization('acme-corp')
-   * console.log(`${org.data.name} has ${org.data.job_count} jobs`)
-   * ```
-   */
-  async getOrganization(slug: string): Promise<OrganizationResponse> {
-    return this.client.get<OrganizationResponse>(`/v1/profiles/organizations/${slug}`)
-  }
-
-  /**
-   * Get employer profile by slug
-   * Alias for getEmployer()
-   *
-   * @example
-   * ```typescript
-   * const employer = await client.profiles.employer('tech-startup')
-   * console.log(`${employer.data.active_jobs_count} active jobs`)
-   * ```
-   */
-  async employer(slug: string): Promise<EmployerResponse> {
-    return this.getEmployer(slug)
-  }
-
-  /**
-   * Get employer profile by slug
-   *
-   * @example
-   * ```typescript
-   * const employer = await client.profiles.getEmployer('tech-startup')
-   * console.log(`${employer.data.active_jobs_count} active jobs`)
-   * ```
-   */
-  async getEmployer(slug: string): Promise<EmployerResponse> {
-    return this.client.get<EmployerResponse>(`/v1/profiles/employers/${slug}`)
+  async getEmployer(slug: string): Promise<EmployerProfile> {
+    return this.get<EmployerProfile>(`/v1/profiles/employers/${slug}`)
   }
 }

@@ -980,6 +980,88 @@ export const oauthRouter = t.router({
     }),
 
   /**
+   * User Consent Management
+   * Task 11: User can view and manage authorized apps
+   */
+  listUserConsents: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx
+
+    const { data: consents, error } = await supabase
+      .schema('core')
+      .from('oauth_user_consents')
+      .select(
+        `
+        *,
+        oauth_app:oauth_apps (
+          id,
+          display_name,
+          description,
+          logo_url,
+          homepage_url
+        )
+      `
+      )
+      .eq('user_id', user.id)
+      .is('revoked_at', null)
+
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch authorized apps',
+      })
+    }
+
+    return { consents }
+  }),
+
+  /**
+   * Revoke User Consent
+   * Task 11: User can revoke app authorization
+   */
+  revokeConsent: protectedProcedure
+    .input(z.object({ consent_id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
+
+      // Update consent to mark as revoked
+      const { error } = await supabase
+        .schema('core')
+        .from('oauth_user_consents')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('id', input.consent_id)
+        .eq('user_id', user.id) // Ensure user can only revoke their own consents
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to revoke consent',
+        })
+      }
+
+      // Revoke all active tokens for this user-app pair
+      const { data: consent } = await supabase
+        .schema('core')
+        .from('oauth_user_consents')
+        .select('oauth_app_id')
+        .eq('id', input.consent_id)
+        .single()
+
+      if (consent) {
+        await supabase
+          .schema('core')
+          .from('oauth_tokens')
+          .update({ revoked_at: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .eq('oauth_app_id', consent.oauth_app_id)
+          .is('revoked_at', null)
+      }
+
+      await logOAuthEvent(supabase, 'consent_revoked', {}, consent?.oauth_app_id, user.id)
+
+      return { success: true }
+    }),
+
+  /**
    * Admin Procedures
    * Task 11: Admin OAuth app management
    */
@@ -1176,6 +1258,28 @@ export const oauthRouter = t.router({
         await logOAuthEvent(supabase, 'app_revoked', {}, input.app_id, user?.id)
 
         return { success: true }
+      }),
+
+    listScopes: protectedProcedure
+      .use(enforceOfficeRole)
+      .query(async ({ ctx }) => {
+        const { supabase } = ctx
+
+        const { data: scopes, error } = await supabase
+          .schema('core')
+          .from('oauth_scopes')
+          .select('*')
+          .order('category', { ascending: true })
+          .order('scope', { ascending: true })
+
+        if (error) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to fetch scopes',
+          })
+        }
+
+        return { scopes }
       }),
   }),
 })

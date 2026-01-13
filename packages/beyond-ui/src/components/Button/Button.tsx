@@ -21,11 +21,12 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { Pressable, Text, View, ActivityIndicator, Platform } from 'react-native'
 import type { ButtonProps } from './Button.types'
 import { getButtonStyles } from './Button.styles'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Button({
   children,
@@ -44,11 +45,14 @@ export function Button({
   ...pressableProps
 }: ButtonProps) {
   const isDisabled = disabled || loading
-  const [isHovered, setIsHovered] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, interactiveProps } = useInteractiveState(isDisabled)
 
   // Get styles based on current props and theme
-  const styles = getButtonStyles(color, variant, size, isDisabled, iconOnly, theme)
+  const styles = useMemo(
+    () => getButtonStyles(color, variant, size, isDisabled, iconOnly, theme),
+    [color, variant, size, isDisabled, iconOnly, theme]
+  )
 
   // Calculate icon size based on button size
   const iconSize = size === 'sm' ? 20 : 24
@@ -58,10 +62,7 @@ export function Button({
       disabled={isDisabled}
       onPress={onPress}
       accessibilityRole="button"
-      // @ts-expect-error - web-specific props
-      onMouseEnter={Platform.OS === 'web' ? () => setIsHovered(true) : undefined}
-      // @ts-expect-error - web-specific props
-      onMouseLeave={Platform.OS === 'web' ? () => setIsHovered(false) : undefined}
+      {...interactiveProps}
       style={({ pressed }) => [
         styles.container,
         fullWidth && { width: '100%' },

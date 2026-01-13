@@ -36,8 +36,8 @@
  * ```
  */
 
-import { useState } from 'react'
-import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
+import { useState, useMemo } from 'react'
+import { View, Pressable, Text, StyleSheet, type ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -49,10 +49,11 @@ import { Radio } from '../Radio'
 import type { RadioColor } from '../Radio'
 import { Toggle } from '../Toggle'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function SelectionCard({
   type = 'checkbox',
-  selected = false,
+  selected: selectedProp,
   onChange,
   disabled = false,
   title,
@@ -67,20 +68,32 @@ export function SelectionCard({
   size = 'md',
   color = 'primary',
 }: SelectionCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
+  // Support both controlled and uncontrolled mode
+  const [internalSelected, setInternalSelected] = useState(false)
+  const isControlled = selectedProp !== undefined
+  const selected = isControlled ? selectedProp : internalSelected
+
   const { theme } = useThemeContext()
+  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
 
   const isLight = theme === 'light'
 
   const handlePress = () => {
     if (disabled) return
-    onChange?.(!selected)
+    const newValue = !selected
+
+    // Update internal state if uncontrolled
+    if (!isControlled) {
+      setInternalSelected(newValue)
+    }
+
+    // Always call onChange if provided
+    onChange?.(newValue)
   }
 
-  // Determine card state for styling
-  const getCardStyles = () => {
-    const baseStyles: any[] = [styles.card]
+  // Determine card state for styling (memoized for performance)
+  const cardStyles = useMemo(() => {
+    const baseStyles: ViewStyle[] = [styles.card]
 
     // Background color
     if (isLight) {
@@ -131,7 +144,7 @@ export function SelectionCard({
     }
 
     return baseStyles
-  }
+  }, [isLight, isHovered, disabled, isFocused, selected])
 
   // Render leading content based on type or custom content
   const renderLeadingContent = () => {
@@ -159,7 +172,8 @@ export function SelectionCard({
   // Render the appropriate selection control
   const renderSelectionControl = () => {
     // Map color to appropriate type for each control
-    const checkboxColor: CheckboxColor = color === 'red-green' ? 'primary' : (color as CheckboxColor)
+    const checkboxColor: CheckboxColor =
+      color === 'red-green' ? 'primary' : (color as CheckboxColor)
     const radioColor: RadioColor = color === 'red-green' ? 'primary' : (color as RadioColor)
 
     switch (type) {
@@ -183,7 +197,6 @@ export function SelectionCard({
             color={color}
           />
         )
-      case 'checkbox':
       default:
         return (
           <Checkbox
@@ -201,13 +214,8 @@ export function SelectionCard({
     <Pressable
       onPress={handlePress}
       disabled={disabled}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      style={[...getCardStyles(), style]}
-      {...(Platform.OS === 'web' && {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
-      })}
+      style={[...cardStyles, style]}
+      {...interactiveProps}
     >
       <View style={styles.content}>
         {/* Leading content */}
@@ -305,4 +313,3 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
 })
-

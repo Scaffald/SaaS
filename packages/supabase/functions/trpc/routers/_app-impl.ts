@@ -53,6 +53,7 @@ import { workLogsRouter } from './work-logs.router.ts'
 import { workersRouter } from './workers.router.ts'
 import { complianceRequirementsRouter, complianceDependenciesRouter } from './compliance/index.ts'
 import { oauthRouter } from './oauth.router.ts'
+import { webhooksRouter } from './webhooks.router.ts'
 
 /**
  * Main application router - merges all feature routers into a single tRPC router
@@ -106,4 +107,6 @@ export const appRouter = t.router({
   ccpa: ccpaRouter,
   // OAuth router (REQ-10)
   oauth: oauthRouter,
+  // Webhooks router
+  webhooks: webhooksRouter,
 })

@@ -81,33 +81,152 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
   const { data: usageData, isLoading } = useAPIKeyUsage(apiKeyId, timeRange)
 
   // Transform API data to component format
-  // Note: Some analytics features (endpoint breakdown, time series, rate limits)
-  // are not yet available from the API and use mock data
   const data: APIKeyUsageData | null = usageData
     ? {
         apiKeyId,
-        apiKeyName: 'API Key', // TODO: Get from API keys list
+        apiKeyName: 'API Key',
         metrics: {
           totalRequests: usageData.total_requests,
           successfulRequests: usageData.success_requests,
           failedRequests: usageData.error_requests,
           averageResponseTime: usageData.avg_response_time_ms,
-          requestsToday: 0, // TODO: Calculate from usage array
-          requestsThisWeek: 0, // TODO: Calculate from usage array
+          requestsToday: calculateRequestsInPeriod(usageData.usage, 1),
+          requestsThisWeek: calculateRequestsInPeriod(usageData.usage, 7),
           requestsThisMonth: usageData.total_requests,
         },
         rateLimitInfo: {
-          // TODO: Get rate limit info from API
           limit: 1000,
-          remaining: 847,
-          resetAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+          remaining: Math.max(0, 1000 - calculateRequestsInPeriod(usageData.usage, 1)),
+          resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           tier: 'pro',
         },
-        timeSeriesData: [], // TODO: Calculate from usage array
-        endpointBreakdown: [], // TODO: Calculate from usage array
-        statusCodeBreakdown: {}, // TODO: Calculate from usage array
+        timeSeriesData: calculateTimeSeriesData(usageData.usage, timeRange),
+        endpointBreakdown: calculateEndpointBreakdown(usageData.usage),
+        statusCodeBreakdown: calculateStatusCodeBreakdown(usageData.usage),
       }
     : null
+
+  // Helper function to calculate requests in a time period
+  function calculateRequestsInPeriod(
+    usage: Array<{ timestamp: string }>,
+    days: number
+  ): number {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - days)
+    return usage.filter((u) => new Date(u.timestamp) >= cutoff).length
+  }
+
+  // Helper function to calculate time series data
+  function calculateTimeSeriesData(
+    usage: Array<{
+      timestamp: string
+      status_code: number
+      response_time_ms: number | null
+    }>,
+    days: number
+  ): Array<{ date: string; requests: number; errors: number; avgResponseTime: number }> {
+    const series: Record<
+      string,
+      { requests: number; errors: number; totalResponseTime: number }
+    > = {}
+
+    // Group by date
+    usage.forEach((u) => {
+      const date = format(new Date(u.timestamp), 'MMM dd')
+      if (!series[date]) {
+        series[date] = { requests: 0, errors: 0, totalResponseTime: 0 }
+      }
+      series[date].requests++
+      if (u.status_code >= 400) {
+        series[date].errors++
+      }
+      series[date].totalResponseTime += u.response_time_ms || 0
+    })
+
+    // Convert to array and calculate averages
+    return Object.entries(series)
+      .map(([date, stats]) => ({
+        date,
+        requests: stats.requests,
+        errors: stats.errors,
+        avgResponseTime: Math.round(stats.totalResponseTime / stats.requests),
+      }))
+      .sort((a, b) => {
+        const dateA = new Date(`${a.date} ${new Date().getFullYear()}`)
+        const dateB = new Date(`${b.date} ${new Date().getFullYear()}`)
+        return dateA.getTime() - dateB.getTime()
+      })
+      .slice(-days)
+  }
+
+  // Helper function to calculate endpoint breakdown
+  function calculateEndpointBreakdown(
+    usage: Array<{
+      endpoint: string
+      method: string
+      status_code: number
+      response_time_ms: number | null
+    }>
+  ): Array<{
+    endpoint: string
+    method: string
+    count: number
+    avgResponseTime: number
+    errorRate: number
+  }> {
+    const breakdown: Record<
+      string,
+      {
+        method: string
+        count: number
+        errors: number
+        totalResponseTime: number
+      }
+    > = {}
+
+    usage.forEach((u) => {
+      const key = `${u.method}:${u.endpoint}`
+      if (!breakdown[key]) {
+        breakdown[key] = {
+          method: u.method,
+          count: 0,
+          errors: 0,
+          totalResponseTime: 0,
+        }
+      }
+      breakdown[key].count++
+      if (u.status_code >= 400) {
+        breakdown[key].errors++
+      }
+      breakdown[key].totalResponseTime += u.response_time_ms || 0
+    })
+
+    // Convert to array and calculate metrics
+    return Object.entries(breakdown)
+      .map(([endpoint, stats]) => ({
+        endpoint: endpoint.split(':')[1],
+        method: stats.method,
+        count: stats.count,
+        avgResponseTime: Math.round(stats.totalResponseTime / stats.count),
+        errorRate: Number.parseFloat(((stats.errors / stats.count) * 100).toFixed(2)),
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5) // Top 5 endpoints
+  }
+
+  // Helper function to calculate status code breakdown
+  function calculateStatusCodeBreakdown(
+    usage: Array<{ status_code: number }>
+  ): Record<string, number> {
+    const breakdown: Record<string, number> = {}
+
+    usage.forEach((u) => {
+      const code = String(u.status_code)
+      breakdown[code] = (breakdown[code] || 0) + 1
+    })
+
+    return breakdown
+  }
 
   const successRate = data
     ? ((data.metrics.successfulRequests / data.metrics.totalRequests) * 100).toFixed(2)

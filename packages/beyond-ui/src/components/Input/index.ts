@@ -11,10 +11,10 @@ export type { InputProps, InputState, InputType } from './Input.types'
 
 // Composable sub-components (can be used independently)
 export { InputLabel } from './InputLabel'
-export type { InputLabelProps } from './InputLabel'
+export type { InputLabelProps, InputLabelType } from './InputLabel'
 
 export { InputHelperText } from './InputHelperText'
-export type { InputHelperTextProps } from './InputHelperText'
+export type { InputHelperTextProps, InputHelperTextType } from './InputHelperText'
 
 export {
   InputExternalAddon,

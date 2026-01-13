@@ -32,7 +32,7 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -41,6 +41,8 @@ import { boxShadows } from '../../tokens/shadows'
 import type { RadioProps } from './Radio.types'
 import { RadioIcon } from './RadioIcon'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { HelperText } from '../HelperText'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Radio({
   checked: checkedProp,
@@ -65,9 +67,8 @@ export function Radio({
   const isControlled = checkedProp !== undefined
   const checked = isControlled ? checkedProp : internalChecked
 
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
 
   const handlePress = () => {
     if (disabled) return
@@ -94,8 +95,8 @@ export function Radio({
     },
   }[size]
 
-  // Color configuration based on state
-  const getColors = () => {
+  // Color configuration based on state (memoized for performance)
+  const colorConfig = useMemo(() => {
     // Error state overrides color choice
     if (error) {
       return {
@@ -131,24 +132,15 @@ export function Radio({
         : checked
           ? colors.gray[700]
           : colors.border[theme].default,
-      background: checked
-        ? disabled
-          ? colors.gray[200]
-          : colors.gray[700]
-        : 'transparent',
+      background: checked ? (disabled ? colors.gray[200] : colors.gray[700]) : 'transparent',
       backgroundHover: checked ? colors.gray[800] : colors.gray[50],
       iconColor: colors.white,
     }
-  }
-
-  const colorConfig = getColors()
+  }, [error, checked, color, disabled, theme])
 
   // Focus ring style (web only)
-  const focusRing = isFocused && !disabled
-    ? Platform.OS === 'web'
-      ? { boxShadow: boxShadows.focusBase }
-      : {}
-    : {}
+  const focusRing =
+    isFocused && !disabled ? (Platform.OS === 'web' ? { boxShadow: boxShadows.focusBase } : {}) : {}
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -157,16 +149,11 @@ export function Radio({
         disabled={disabled}
         accessibilityRole="radio"
         accessibilityState={{ checked, disabled }}
-        // @ts-expect-error - web-specific props
-        onMouseEnter={Platform.OS === 'web' ? () => setIsHovered(true) : undefined}
-        // @ts-expect-error - web-specific props
-        onMouseLeave={Platform.OS === 'web' ? () => setIsHovered(false) : undefined}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        {...interactiveProps}
         style={({ pressed }) => [
           styles.pressable,
           // Apply hover effect
-          isHovered && !disabled && Platform.OS === 'web' && { opacity: 0.9 },
+          isHovered && !disabled && { opacity: 0.9 },
           // Apply pressed effect
           pressed && !disabled && { opacity: 0.8 },
         ]}
@@ -179,18 +166,15 @@ export function Radio({
                 width: sizeConfig.size,
                 height: sizeConfig.size,
                 borderColor: colorConfig.border,
-                backgroundColor: isHovered && !disabled
-                  ? colorConfig.backgroundHover
-                  : colorConfig.background,
+                backgroundColor:
+                  isHovered && !disabled ? colorConfig.backgroundHover : colorConfig.background,
               },
               focusRing,
               disabled && styles.disabled,
               radioStyle,
             ]}
           >
-            {checked && (
-              <RadioIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
-            )}
+            {checked && <RadioIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />}
           </View>
         </View>
 
@@ -207,9 +191,15 @@ export function Radio({
                       style={[
                         styles.label,
                         {
-                          fontSize: size === 'sm' ? typography.small.fontSize : typography.body.fontSize,
-                          lineHeight: size === 'sm' ? typography.small.lineHeight : typography.body.lineHeight,
-                          color: disabled ? colors.text[theme].disabled : colors.text[theme].primary,
+                          fontSize:
+                            size === 'sm' ? typography.small.fontSize : typography.body.fontSize,
+                          lineHeight:
+                            size === 'sm'
+                              ? typography.small.lineHeight
+                              : typography.body.lineHeight,
+                          color: disabled
+                            ? colors.text[theme].disabled
+                            : colors.text[theme].primary,
                         },
                         labelStyle,
                       ]}
@@ -221,13 +211,20 @@ export function Radio({
                         style={[
                           styles.optionalText,
                           {
-                            fontSize: size === 'sm' ? typography.small.fontSize : typography.body.fontSize,
-                            lineHeight: size === 'sm' ? typography.small.lineHeight : typography.body.lineHeight,
-                            color: disabled ? colors.text[theme].disabled : colors.text[theme].tertiary,
+                            fontSize:
+                              size === 'sm' ? typography.small.fontSize : typography.body.fontSize,
+                            lineHeight:
+                              size === 'sm'
+                                ? typography.small.lineHeight
+                                : typography.body.lineHeight,
+                            color: disabled
+                              ? colors.text[theme].disabled
+                              : colors.text[theme].tertiary,
                           },
                         ]}
                       >
-                        {' '}(optional)
+                        {' '}
+                        (optional)
                       </Text>
                     )}
                   </>
@@ -237,19 +234,12 @@ export function Radio({
 
             {/* Helper text */}
             {helperText && (
-              <Text
-                style={[
-                  styles.helperText,
-                  {
-                    fontSize: typography.small.fontSize,
-                    lineHeight: typography.small.lineHeight,
-                    color: disabled ? colors.text[theme].disabled : colors.text[theme].tertiary,
-                  },
-                  helperTextStyle,
-                ]}
+              <HelperText
+                type={disabled ? 'disabled' : error ? 'error' : 'default'}
+                textStyle={helperTextStyle}
               >
                 {helperText}
-              </Text>
+              </HelperText>
             )}
           </View>
         )}

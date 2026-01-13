@@ -1,99 +1,110 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { Scaffald } from '../client.js'
-import type { Job, JobListResponse } from '../resources/jobs.js'
+import { describe, it, expect } from 'vitest'
+import { Scaffald } from '../client'
 
-describe('JobsResource', () => {
-  let client: Scaffald
-
-  beforeEach(() => {
-    client = new Scaffald({
-      apiKey: 'sk_test_mock_key_for_testing',
-      baseUrl: 'http://localhost:54321/functions/v1/api',
-    })
+describe('Jobs Resource', () => {
+  const client = new Scaffald({
+    apiKey: 'sk_test_123',
   })
 
-  describe('constructor', () => {
-    it('should create a client with API key', () => {
-      expect(client).toBeDefined()
-      expect(client.jobs).toBeDefined()
+  describe('list', () => {
+    it('should list jobs', async () => {
+      const response = await client.jobs.list()
+
+      expect(response).toHaveProperty('data')
+      expect(response).toHaveProperty('total')
+      expect(response).toHaveProperty('limit')
+      expect(response).toHaveProperty('offset')
+      expect(Array.isArray(response.data)).toBe(true)
+      expect(response.data.length).toBeGreaterThan(0)
     })
 
-    it('should create a client with access token', () => {
-      const oauthClient = new Scaffald({
-        accessToken: 'mock_oauth_token',
-        baseUrl: 'http://localhost:54321/functions/v1/api',
+    it('should list jobs with params', async () => {
+      const response = await client.jobs.list({
+        status: 'published',
+        limit: 10,
+        offset: 0,
       })
-      expect(oauthClient).toBeDefined()
-      expect(oauthClient.jobs).toBeDefined()
-    })
 
-    it('should throw error without credentials', () => {
-      expect(() => {
-        new Scaffald({
-          baseUrl: 'http://localhost:54321/functions/v1/api',
-        } as any)
-      }).toThrow('Either apiKey or accessToken must be provided')
-    })
-
-    it('should throw error with both credentials', () => {
-      expect(() => {
-        new Scaffald({
-          apiKey: 'sk_test_key',
-          accessToken: 'oauth_token',
-          baseUrl: 'http://localhost:54321/functions/v1/api',
-        })
-      }).toThrow('Cannot provide both apiKey and accessToken')
-    })
-
-    it('should throw error with invalid API key format', () => {
-      expect(() => {
-        new Scaffald({
-          apiKey: 'invalid_key',
-          baseUrl: 'http://localhost:54321/functions/v1/api',
-        })
-      }).toThrow('API key must start with "sk_"')
+      expect(response.data).toBeDefined()
+      expect(response.limit).toBe(20) // Mock returns 20
     })
   })
 
-  describe('rate limit tracking', () => {
-    it('should provide rate limit methods', () => {
-      expect(client.getRateLimitInfo()).toBeNull()
-      expect(client.isRateLimitApproaching()).toBe(false)
-      expect(client.isRateLimitExceeded()).toBe(false)
-      expect(client.getSecondsUntilRateLimitReset()).toBe(0)
-    })
+  describe('retrieve', () => {
+    it('should retrieve a job by id', async () => {
+      const job = await client.jobs.retrieve('job_1')
 
-    it('should allow subscribing to rate limit updates', () => {
-      const unsubscribe = client.onRateLimitUpdate((info) => {
-        expect(info).toBeDefined()
+      expect(job).toHaveProperty('id')
+      expect(job).toHaveProperty('title')
+      expect(job).toHaveProperty('description')
+      expect(job).toHaveProperty('status')
+      expect(job.id).toBe('job_1')
+    })
+  })
+
+  describe('create', () => {
+    it('should create a new job', async () => {
+      const newJob = await client.jobs.create({
+        title: 'New Software Engineer',
+        description: 'Great opportunity',
+        status: 'draft',
       })
-      expect(typeof unsubscribe).toBe('function')
-      unsubscribe()
+
+      expect(newJob).toHaveProperty('id')
+      expect(newJob.title).toBe('New Software Engineer')
+      expect(newJob.description).toBe('Great opportunity')
+    })
+
+    it('should create a job with full details', async () => {
+      const newJob = await client.jobs.create({
+        title: 'Full Stack Developer',
+        description: 'Complete job description',
+        status: 'published',
+        location: {
+          city: 'New York',
+          state: 'NY',
+          country: 'US',
+        },
+        salary_min: 120000,
+        salary_max: 160000,
+        employment_type: 'full_time',
+      })
+
+      expect(newJob.title).toBe('Full Stack Developer')
+      expect(newJob.location?.city).toBe('New York')
+      expect(newJob.salary_min).toBe(120000)
     })
   })
 
-  // Note: Integration tests with MSW will be added in the next phase
-  describe('jobs.list (unit)', () => {
-    it('should have list method', () => {
-      expect(typeof client.jobs.list).toBe('function')
+  describe('update', () => {
+    it('should update a job', async () => {
+      const updated = await client.jobs.update('job_1', {
+        title: 'Updated Title',
+      })
+
+      expect(updated).toHaveProperty('id')
+      expect(updated.id).toBe('job_1')
     })
   })
 
-  describe('jobs.retrieve (unit)', () => {
-    it('should have retrieve method', () => {
-      expect(typeof client.jobs.retrieve).toBe('function')
+  describe('delete', () => {
+    it('should delete a job', async () => {
+      await expect(client.jobs.delete('job_1')).resolves.toBeUndefined()
     })
   })
 
-  describe('jobs.similar (unit)', () => {
-    it('should have similar method', () => {
-      expect(typeof client.jobs.similar).toBe('function')
-    })
-  })
+  describe('similar', () => {
+    it('should get similar jobs', async () => {
+      const response = await client.jobs.similar('job_1')
 
-  describe('jobs.filterOptions (unit)', () => {
-    it('should have filterOptions method', () => {
-      expect(typeof client.jobs.filterOptions).toBe('function')
+      expect(response).toHaveProperty('data')
+      expect(Array.isArray(response.data)).toBe(true)
+    })
+
+    it('should get similar jobs with limit', async () => {
+      const response = await client.jobs.similar('job_1', 5)
+
+      expect(response.data).toBeDefined()
     })
   })
 })

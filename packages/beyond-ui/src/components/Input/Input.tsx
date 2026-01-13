@@ -137,7 +137,11 @@ export function Input({
     <View style={[styles.container, fullWidth && { width: '100%' }, containerStyle]}>
       {/* Label */}
       {label && (
-        <InputLabel required={required} labelStyle={labelStyle}>
+        <InputLabel
+          type={error ? 'error' : disabled ? 'disabled' : 'default'}
+          required={required}
+          labelStyle={labelStyle}
+        >
           {label}
         </InputLabel>
       )}
@@ -196,7 +200,10 @@ export function Input({
 
       {/* Helper Text / Error Message */}
       {(helperText || error) && (
-        <InputHelperText error={!!error} textStyle={helperTextStyle}>
+        <InputHelperText
+          type={error ? 'error' : 'default'}
+          textStyle={helperTextStyle}
+        >
           {error || helperText || ''}
         </InputHelperText>
       )}

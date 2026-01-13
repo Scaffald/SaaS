@@ -1,235 +1,110 @@
-import { BaseResource } from './base.js'
+import { Resource } from './base.js'
 
-/**
- * Application status enum
- */
-export type ApplicationStatus =
-  | 'pending'
-  | 'reviewing'
-  | 'inquired'
-  | 'interviewing'
-  | 'offered'
-  | 'accepted'
-  | 'rejected'
-  | 'withdrawn'
-
-/**
- * Application type
- */
-export type ApplicationType = 'quick' | 'full'
-
-/**
- * Application object
- */
 export interface Application {
   id: string
   job_id: string
-  applicant_id: string
-  status: ApplicationStatus
-  application_type: ApplicationType
-  current_location: string
-  available_start_date: string | null
-  cover_letter: string | null
-  resume_url: string | null
-  linkedin_url: string | null
-  portfolio_url: string | null
-  years_experience: number | null
-  salary_expectation_min_cents: number | null
-  salary_expectation_max_cents: number | null
-  willing_to_relocate: boolean | null
-  requires_sponsorship: boolean | null
-  custom_responses: Record<string, unknown> | null
-  withdrawal_reason: string | null
-  created_at: string
+  user_id: string
+  status:
+    | 'pending'
+    | 'reviewing'
+    | 'inquired'
+    | 'interview'
+    | 'offer'
+    | 'hired'
+    | 'rejected'
+    | 'withdrawn'
+  current_location?: string
+  willing_to_relocate?: boolean
+  years_experience?: number
+  is_authorized_to_work?: boolean
+  earliest_start_date?: string
+  screening_answers?: Record<string, unknown>
+  custom_question_answers?: CustomQuestionAnswer[]
+  attachments?: Record<string, AttachmentMetadata>
+  completed_steps?: string[]
+  is_complete: boolean
+  applied_at: string
   updated_at: string
+  score?: number
 }
 
-/**
- * Create application input (quick application)
- */
-export interface CreateQuickApplicationInput {
-  jobId: string
-  currentLocation: string
-  availableStartDate?: string
+export interface CustomQuestionAnswer {
+  question_id: string
+  question: string
+  answer: string | string[] | boolean
+  type: 'short_text' | 'long_text' | 'single_choice' | 'multiple_choice' | 'yes_no'
 }
 
-/**
- * Create application input (full application)
- */
-export interface CreateFullApplicationInput {
-  jobId: string
-  currentLocation: string
-  availableStartDate?: string
-  coverLetter?: string
-  resumeUrl?: string
-  linkedinUrl?: string
-  portfolioUrl?: string
-  yearsExperience?: number
-  salaryExpectationMinCents?: number
-  salaryExpectationMaxCents?: number
-  willingToRelocate?: boolean
-  requiresSponsorship?: boolean
-  customResponses?: Record<string, unknown>
+export interface AttachmentMetadata {
+  path: string
+  filename: string
+  size: number
+  mime_type: string
+  uploaded_at: string
 }
 
-/**
- * Update application input
- */
-export interface UpdateApplicationInput {
-  coverLetter?: string
-  resumeUrl?: string
-  linkedinUrl?: string
-  portfolioUrl?: string
-  yearsExperience?: number
-  salaryExpectationMinCents?: number
-  salaryExpectationMaxCents?: number
-  willingToRelocate?: boolean
-  requiresSponsorship?: boolean
-  customResponses?: Record<string, unknown>
+export interface CreateApplicationParams {
+  job_id: string
+  current_location?: string
+  willing_to_relocate?: boolean
+  years_experience?: number
+  is_authorized_to_work?: boolean
+  earliest_start_date?: string
+  screening_answers?: Record<string, unknown>
+  custom_question_answers?: CustomQuestionAnswer[]
+  attachments?: Record<string, AttachmentMetadata>
+  completed_steps?: string[]
+  is_complete?: boolean
+  notes?: Record<string, unknown>
+  metadata?: Record<string, unknown>
 }
 
-/**
- * Withdraw application input
- */
-export interface WithdrawApplicationInput {
+export interface UpdateApplicationParams {
+  status?: Application['status']
+  current_location?: string
+  willing_to_relocate?: boolean
+  years_experience?: number
+  is_authorized_to_work?: boolean
+  earliest_start_date?: string
+  screening_answers?: Record<string, unknown>
+  custom_question_answers?: CustomQuestionAnswer[]
+  attachments?: Record<string, AttachmentMetadata>
+  completed_steps?: string[]
+  is_complete?: boolean
+  notes?: Record<string, unknown>
+  metadata?: Record<string, unknown>
+}
+
+export interface WithdrawApplicationParams {
   reason?: string
 }
 
-/**
- * Application response
- */
-export interface ApplicationResponse {
-  data: Application
-}
-
-/**
- * Applications resource
- */
-export class ApplicationsResource extends BaseResource {
+export class Applications extends Resource {
   /**
-   * Submit a job application (defaults to quick application)
-   * Alias for createQuick()
-   *
-   * @example
-   * ```typescript
-   * const application = await client.applications.create({
-   *   jobId: 'job_123',
-   *   currentLocation: 'San Francisco, CA',
-   * })
-   * ```
+   * Create a new job application
    */
-  async create(input: CreateQuickApplicationInput): Promise<ApplicationResponse> {
-    return this.createQuick(input)
+  async create(params: CreateApplicationParams): Promise<Application> {
+    return this.post<Application>('/v1/applications', params)
   }
 
   /**
-   * Submit a quick job application
-   *
-   * @example
-   * ```typescript
-   * const application = await client.applications.createQuick({
-   *   jobId: 'job_123',
-   *   currentLocation: 'San Francisco, CA',
-   *   availableStartDate: '2025-03-01'
-   * })
-   * ```
+   * Retrieve an application by ID
    */
-  async createQuick(input: CreateQuickApplicationInput): Promise<ApplicationResponse> {
-    return this.client.post<ApplicationResponse>('/v1/applications', {
-      job_id: input.jobId,
-      application_type: 'quick',
-      current_location: input.currentLocation,
-      available_start_date: input.availableStartDate,
-    })
-  }
-
-  /**
-   * Submit a full job application
-   *
-   * @example
-   * ```typescript
-   * const application = await client.applications.createFull({
-   *   jobId: 'job_123',
-   *   currentLocation: 'San Francisco, CA',
-   *   coverLetter: 'I am excited to apply...',
-   *   resumeUrl: 'https://example.com/resume.pdf',
-   *   yearsExperience: 5,
-   *   salaryExpectationMinCents: 12000000, // $120k
-   *   salaryExpectationMaxCents: 15000000  // $150k
-   * })
-   * ```
-   */
-  async createFull(input: CreateFullApplicationInput): Promise<ApplicationResponse> {
-    return this.client.post<ApplicationResponse>('/v1/applications', {
-      job_id: input.jobId,
-      application_type: 'full',
-      current_location: input.currentLocation,
-      available_start_date: input.availableStartDate,
-      cover_letter: input.coverLetter,
-      resume_url: input.resumeUrl,
-      linkedin_url: input.linkedinUrl,
-      portfolio_url: input.portfolioUrl,
-      years_experience: input.yearsExperience,
-      salary_expectation_min_cents: input.salaryExpectationMinCents,
-      salary_expectation_max_cents: input.salaryExpectationMaxCents,
-      willing_to_relocate: input.willingToRelocate,
-      requires_sponsorship: input.requiresSponsorship,
-      custom_responses: input.customResponses,
-    })
-  }
-
-  /**
-   * Get application details by ID
-   *
-   * @example
-   * ```typescript
-   * const application = await client.applications.retrieve('app_123')
-   * ```
-   */
-  async retrieve(id: string): Promise<ApplicationResponse> {
-    return this.client.get<ApplicationResponse>(`/v1/applications/${id}`)
+  async retrieve(id: string): Promise<Application> {
+    return this.get<Application>(`/v1/applications/${id}`)
   }
 
   /**
    * Update an application
-   * Only works for applications in pending or reviewing status
-   *
-   * @example
-   * ```typescript
-   * const updated = await client.applications.update('app_123', {
-   *   coverLetter: 'Updated cover letter...',
-   *   resumeUrl: 'https://example.com/new-resume.pdf'
-   * })
-   * ```
    */
-  async update(id: string, input: UpdateApplicationInput): Promise<ApplicationResponse> {
-    return this.client.patch<ApplicationResponse>(`/v1/applications/${id}`, {
-      cover_letter: input.coverLetter,
-      resume_url: input.resumeUrl,
-      linkedin_url: input.linkedinUrl,
-      portfolio_url: input.portfolioUrl,
-      years_experience: input.yearsExperience,
-      salary_expectation_min_cents: input.salaryExpectationMinCents,
-      salary_expectation_max_cents: input.salaryExpectationMaxCents,
-      willing_to_relocate: input.willingToRelocate,
-      requires_sponsorship: input.requiresSponsorship,
-      custom_responses: input.customResponses,
-    })
+  async update(id: string, params: UpdateApplicationParams): Promise<Application> {
+    return this.patch<Application>(`/v1/applications/${id}`, params)
   }
 
   /**
    * Withdraw an application
-   *
-   * @example
-   * ```typescript
-   * await client.applications.withdraw('app_123', {
-   *   reason: 'Accepted another offer'
-   * })
-   * ```
    */
-  async withdraw(id: string, input?: WithdrawApplicationInput): Promise<ApplicationResponse> {
-    return this.client.post<ApplicationResponse>(`/v1/applications/${id}/withdraw`, {
-      reason: input?.reason,
-    })
+  async withdraw(id: string, params?: WithdrawApplicationParams): Promise<Application> {
+    return this.post<Application>(`/v1/applications/${id}/withdraw`, params)
   }
 }

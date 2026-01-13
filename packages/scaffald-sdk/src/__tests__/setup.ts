@@ -1,21 +1,11 @@
-/**
- * Test setup file
- * Runs before all tests
- */
+import { afterAll, afterEach, beforeAll } from 'vitest'
+import { server } from './mocks/server'
 
-import { beforeAll, afterEach, afterAll } from 'vitest'
+// Start mock server before all tests
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 
-// Setup MSW (Mock Service Worker) will be configured here
-// For now, this is a placeholder
+// Reset handlers after each test
+afterEach(() => server.resetHandlers())
 
-beforeAll(() => {
-  // Setup code here
-})
-
-afterEach(() => {
-  // Cleanup after each test
-})
-
-afterAll(() => {
-  // Cleanup after all tests
-})
+// Clean up after all tests
+afterAll(() => server.close())

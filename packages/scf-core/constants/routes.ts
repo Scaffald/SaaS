@@ -655,6 +655,42 @@ const ROUTES_CONFIG = {
       exact: true,
       icon: AlertTriangle,
     },
+    API_KEYS: {
+      path: "/office/api-keys",
+      titleKey: "routes.office.apiKeys.title",
+      protected: true,
+      exact: true,
+    },
+    WEBHOOKS: {
+      path: "/office/webhooks",
+      titleKey: "routes.office.webhooks.title",
+      protected: true,
+      exact: false,
+      CREATE: {
+        path: "/office/webhooks/create",
+        titleKey: "routes.office.webhooks.create",
+        protected: true,
+        exact: true,
+      },
+      DETAIL: {
+        path: "/office/webhooks/:id",
+        titleKey: "routes.office.webhooks.detail",
+        protected: true,
+        exact: true,
+      },
+    },
+    OAUTH_APPS: {
+      path: "/office/oauth-apps",
+      titleKey: "routes.office.oauthApps.title",
+      protected: true,
+      exact: false,
+      DETAIL: {
+        path: "/office/oauth-apps/:id",
+        titleKey: "routes.office.oauthApps.detail",
+        protected: true,
+        exact: true,
+      },
+    },
     SETTINGS: {
       path: "/office/settings",
       titleKey: "routes.office.settings.title",

@@ -1,112 +1,100 @@
-import { generateCodeVerifier, generateCodeChallenge, generateState } from './pkce.js'
+import { generateCodeChallenge, generateCodeVerifier, generateState } from './pkce.js'
 
-/**
- * OAuth scope
- */
-export type OAuthScope =
-  | 'read:jobs'
-  | 'read:applications'
-  | 'write:applications'
-  | 'read:profile'
-  | 'write:profile'
-
-/**
- * Authorization URL options
- */
-export interface AuthorizationUrlOptions {
-  clientId: string
-  redirectUri: string
-  scope: OAuthScope[]
-  state?: string
-}
-
-/**
- * Authorization URL result
- */
-export interface AuthorizationUrlResult {
-  url: string
-  codeVerifier: string
-  state: string
-}
-
-/**
- * Token exchange options
- */
-export interface TokenExchangeOptions {
-  code: string
-  codeVerifier: string
+export interface OAuthConfig {
   clientId: string
   clientSecret?: string
   redirectUri: string
+  baseUrl?: string
 }
 
-/**
- * Token response
- */
+export interface AuthorizationUrlOptions {
+  scope?: string[]
+  state?: string
+  codeVerifier?: string
+}
+
+export interface AuthorizationUrlResult {
+  url: string
+  state: string
+  codeVerifier: string
+}
+
 export interface TokenResponse {
   access_token: string
-  refresh_token: string
-  expires_in: number
   token_type: string
-  scope: string
+  expires_in: number
+  refresh_token?: string
+  scope?: string
 }
 
-/**
- * OAuth 2.0 client with PKCE support
- */
-export class OAuthClient {
-  private baseUrl: string
+export interface TokenExchangeOptions {
+  code: string
+  codeVerifier: string
+  clientSecret?: string
+}
 
-  constructor(baseUrl = 'https://api.scaffald.com') {
-    this.baseUrl = baseUrl
+export class OAuthClient {
+  private config: Required<OAuthConfig>
+
+  constructor(config: OAuthConfig) {
+    this.config = {
+      ...config,
+      baseUrl: config.baseUrl || 'https://api.scaffald.com',
+      clientSecret: config.clientSecret || '',
+    }
   }
 
   /**
-   * Get authorization URL with PKCE
+   * Generate an authorization URL with PKCE
    *
-   * @param options - Authorization URL options
-   * @returns Authorization URL, code verifier, and state
+   * @param options - Authorization options
+   * @returns Authorization URL, state, and code verifier
    *
    * @example
    * ```typescript
-   * const oauth = new OAuthClient()
-   * const { url, codeVerifier, state } = await oauth.getAuthorizationUrl({
+   * const oauth = new OAuthClient({
    *   clientId: 'your_client_id',
-   *   redirectUri: 'https://yourapp.com/callback',
+   *   redirectUri: 'https://yourapp.com/callback'
+   * })
+   *
+   * const { url, state, codeVerifier } = await oauth.getAuthorizationUrl({
    *   scope: ['read:jobs', 'write:applications']
    * })
    *
-   * // Store codeVerifier and state securely
-   * sessionStorage.setItem('pkce_verifier', codeVerifier)
+   * // Store state and codeVerifier securely (e.g., session storage)
    * sessionStorage.setItem('oauth_state', state)
+   * sessionStorage.setItem('oauth_verifier', codeVerifier)
    *
    * // Redirect user to authorization URL
    * window.location.href = url
    * ```
    */
-  async getAuthorizationUrl(options: AuthorizationUrlOptions): Promise<AuthorizationUrlResult> {
-    // Generate PKCE parameters
-    const codeVerifier = generateCodeVerifier()
-    const codeChallenge = await generateCodeChallenge(codeVerifier)
+  async getAuthorizationUrl(
+    options: AuthorizationUrlOptions = {}
+  ): Promise<AuthorizationUrlResult> {
     const state = options.state || generateState()
+    const codeVerifier = options.codeVerifier || generateCodeVerifier()
+    const codeChallenge = await generateCodeChallenge(codeVerifier)
 
-    // Build authorization URL
     const params = new URLSearchParams({
       response_type: 'code',
-      client_id: options.clientId,
-      redirect_uri: options.redirectUri,
-      scope: options.scope.join(' '),
+      client_id: this.config.clientId,
+      redirect_uri: this.config.redirectUri,
       code_challenge: codeChallenge,
       code_challenge_method: 'S256',
       state,
     })
 
-    const url = `${this.baseUrl}/oauth/authorize?${params.toString()}`
+    if (options.scope && options.scope.length > 0) {
+      params.append('scope', options.scope.join(' '))
+    }
+
+    const url = `${this.config.baseUrl}/oauth/authorize?${params.toString()}`
 
     return {
       url,
-      codeVerifier,
       state,
+      codeVerifier,
     }
   }
 
@@ -114,158 +102,141 @@ export class OAuthClient {
    * Exchange authorization code for access token
    *
    * @param options - Token exchange options
-   * @returns Token response with access and refresh tokens
+   * @returns Access token and refresh token
    *
    * @example
    * ```typescript
-   * // In your OAuth callback handler
+   * // In your callback route handler
    * const code = new URL(window.location.href).searchParams.get('code')
    * const state = new URL(window.location.href).searchParams.get('state')
-   * const storedState = sessionStorage.getItem('oauth_state')
+   * const codeVerifier = sessionStorage.getItem('oauth_verifier')
    *
-   * // Verify state to prevent CSRF
-   * if (state !== storedState) {
-   *   throw new Error('Invalid state parameter')
+   * // Verify state matches
+   * if (state !== sessionStorage.getItem('oauth_state')) {
+   *   throw new Error('State mismatch')
    * }
    *
-   * const codeVerifier = sessionStorage.getItem('pkce_verifier')
-   * const tokens = await oauth.exchangeCode({
+   * const tokens = await oauth.exchangeCodeForToken({
    *   code,
-   *   codeVerifier,
-   *   clientId: 'your_client_id',
-   *   redirectUri: 'https://yourapp.com/callback'
+   *   codeVerifier
    * })
    *
-   * // Store access token securely
+   * // Store tokens securely
    * localStorage.setItem('access_token', tokens.access_token)
-   *
-   * // Create authenticated SDK client
-   * const client = new Scaffald({ accessToken: tokens.access_token })
    * ```
    */
-  async exchangeCode(options: TokenExchangeOptions): Promise<TokenResponse> {
-    const body = new URLSearchParams({
+  async exchangeCodeForToken(options: TokenExchangeOptions): Promise<TokenResponse> {
+    const body: Record<string, string> = {
       grant_type: 'authorization_code',
       code: options.code,
+      redirect_uri: this.config.redirectUri,
+      client_id: this.config.clientId,
       code_verifier: options.codeVerifier,
-      client_id: options.clientId,
-      redirect_uri: options.redirectUri,
-    })
-
-    if (options.clientSecret) {
-      body.append('client_secret', options.clientSecret)
     }
 
-    const response = await fetch(`${this.baseUrl}/oauth/token`, {
+    if (options.clientSecret || this.config.clientSecret) {
+      body.client_secret = options.clientSecret || this.config.clientSecret
+    }
+
+    const response = await fetch(`${this.config.baseUrl}/oauth/token`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: body.toString(),
+      body: JSON.stringify(body),
     })
 
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Token exchange failed: ${error}`)
+      const error = await response.json().catch(() => ({}))
+      throw new Error(error.error_description || error.error || 'Token exchange failed')
     }
 
     return response.json()
   }
 
   /**
-   * Refresh access token using refresh token
+   * Refresh an access token using a refresh token
    *
    * @param refreshToken - The refresh token
-   * @param clientId - Your OAuth client ID
-   * @param clientSecret - Your OAuth client secret (optional)
-   * @returns New token response
+   * @returns New access token and refresh token
    *
    * @example
    * ```typescript
-   * const refreshToken = localStorage.getItem('refresh_token')
-   * const tokens = await oauth.refreshToken(refreshToken, 'your_client_id')
-   *
-   * // Update stored tokens
-   * localStorage.setItem('access_token', tokens.access_token)
-   * localStorage.setItem('refresh_token', tokens.refresh_token)
+   * const newTokens = await oauth.refreshToken(storedRefreshToken)
+   * localStorage.setItem('access_token', newTokens.access_token)
+   * if (newTokens.refresh_token) {
+   *   localStorage.setItem('refresh_token', newTokens.refresh_token)
+   * }
    * ```
    */
-  async refreshToken(
-    refreshToken: string,
-    clientId: string,
-    clientSecret?: string
-  ): Promise<TokenResponse> {
-    const body = new URLSearchParams({
+  async refreshToken(refreshToken: string): Promise<TokenResponse> {
+    const body: Record<string, string> = {
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
-      client_id: clientId,
-    })
-
-    if (clientSecret) {
-      body.append('client_secret', clientSecret)
+      client_id: this.config.clientId,
     }
 
-    const response = await fetch(`${this.baseUrl}/oauth/token`, {
+    if (this.config.clientSecret) {
+      body.client_secret = this.config.clientSecret
+    }
+
+    const response = await fetch(`${this.config.baseUrl}/oauth/token`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: body.toString(),
+      body: JSON.stringify(body),
     })
 
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Token refresh failed: ${error}`)
+      const error = await response.json().catch(() => ({}))
+      throw new Error(error.error_description || error.error || 'Token refresh failed')
     }
 
     return response.json()
   }
 
   /**
-   * Revoke access or refresh token
+   * Revoke an access or refresh token
    *
    * @param token - The token to revoke
-   * @param tokenTypeHint - Type of token ('access_token' or 'refresh_token')
-   * @param clientId - Your OAuth client ID
-   * @param clientSecret - Your OAuth client secret (optional)
+   * @param tokenTypeHint - Optional hint about token type ('access_token' or 'refresh_token')
    *
    * @example
    * ```typescript
-   * const accessToken = localStorage.getItem('access_token')
-   * await oauth.revokeToken(accessToken, 'access_token', 'your_client_id')
-   *
-   * // Clear stored tokens
+   * await oauth.revokeToken(accessToken, 'access_token')
    * localStorage.removeItem('access_token')
    * localStorage.removeItem('refresh_token')
    * ```
    */
   async revokeToken(
     token: string,
-    tokenTypeHint: 'access_token' | 'refresh_token',
-    clientId: string,
-    clientSecret?: string
+    tokenTypeHint?: 'access_token' | 'refresh_token'
   ): Promise<void> {
-    const body = new URLSearchParams({
+    const body: Record<string, string> = {
       token,
-      token_type_hint: tokenTypeHint,
-      client_id: clientId,
-    })
-
-    if (clientSecret) {
-      body.append('client_secret', clientSecret)
+      client_id: this.config.clientId,
     }
 
-    const response = await fetch(`${this.baseUrl}/oauth/revoke`, {
+    if (tokenTypeHint) {
+      body.token_type_hint = tokenTypeHint
+    }
+
+    if (this.config.clientSecret) {
+      body.client_secret = this.config.clientSecret
+    }
+
+    const response = await fetch(`${this.config.baseUrl}/oauth/revoke`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: body.toString(),
+      body: JSON.stringify(body),
     })
 
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Token revocation failed: ${error}`)
+      const error = await response.json().catch(() => ({}))
+      throw new Error(error.error_description || error.error || 'Token revocation failed')
     }
   }
 }

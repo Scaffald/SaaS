@@ -257,11 +257,7 @@ export const WithHelperText: Story = {
       </View>
       <View style={styles.variantRow}>
         <Text style={styles.variantLabel}>On</Text>
-        <Toggle
-          checked
-          label="Auto-save enabled"
-          helperText="Your work is automatically saved"
-        />
+        <Toggle checked label="Auto-save enabled" helperText="Your work is automatically saved" />
       </View>
       <View style={styles.variantRow}>
         <Text style={styles.variantLabel}>Disabled</Text>
@@ -321,4 +317,3 @@ const styles = StyleSheet.create({
     marginBottom: spacing[8],
   },
 })
-

@@ -5,10 +5,7 @@
 
 import { createContext, useContext, useState } from 'react'
 import { View, StyleSheet, Platform } from 'react-native'
-import type {
-  AccordionItemProps,
-  AccordionItemContextValue,
-} from './Accordion.types'
+import type { AccordionItemProps, AccordionItemContextValue } from './Accordion.types'
 import { useAccordionContext } from './Accordion'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -62,9 +59,7 @@ export function AccordionItem({
   return (
     <AccordionItemContext.Provider value={contextValue}>
       <View
-        // @ts-expect-error - web-specific props
         onFocus={() => setIsFocused(true)}
-        // @ts-expect-error - web-specific props
         onBlur={() => setIsFocused(false)}
         style={[
           styles.container,

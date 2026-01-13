@@ -74,4 +74,3 @@ export interface ToggleProps {
    */
   helperTextStyle?: object
 }
-

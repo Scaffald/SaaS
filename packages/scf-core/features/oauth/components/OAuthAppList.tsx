@@ -44,20 +44,20 @@ export function OAuthAppList() {
 
       <YStack gap="$2">
         {listApps.data?.apps.map((app) => (
-          <Card key={app.id} padding="$3">
+          <Card key={app.id} padding="$3" data-testid={`oauth-app-${app.id}`}>
             <XStack gap="$3" alignItems="center">
               <YStack flex={1} gap="$1">
-                <SizableText size="$4" fontWeight="600">
+                <SizableText size="$4" fontWeight="600" data-testid="oauth-app-name">
                   {app.display_name}
                 </SizableText>
-                <SizableText size="$2" color="$color11">
+                <SizableText size="$2" color="$color11" data-testid="oauth-app-description">
                   {app.description}
                 </SizableText>
-                <SizableText size="$1" color="$color11">
+                <SizableText size="$1" color="$color11" data-testid="oauth-app-metadata">
                   Status: {app.status} | Created: {new Date(app.created_at).toLocaleDateString()}
                 </SizableText>
               </YStack>
-              <Button href={`/office/oauth-apps/${app.id}`} size="$2">
+              <Button href={`/office/oauth-apps/${app.id}`} size="$2" data-testid="oauth-app-view-button">
                 View
               </Button>
             </XStack>

@@ -31,7 +31,7 @@ yarn add @unicornlove/beyond-ui react react-native
 ## Quick Start
 
 ```typescript
-import { Button, TextInput, Stack, Row } from '@unicornlove/beyond-ui'
+import { Button, TextInput, Stack, Row, Tabs } from '@unicornlove/beyond-ui'
 
 function MyForm() {
   const [value, setValue] = useState('')
@@ -55,6 +55,172 @@ function MyForm() {
     </Stack>
   )
 }
+```
+
+### Tabs Component
+
+```typescript
+import { Tabs } from '@unicornlove/beyond-ui'
+
+// Basic tabs
+<Tabs defaultValue="tab1">
+  <Tabs.Item value="tab1">
+    <Tabs.Trigger>Summary</Tabs.Trigger>
+    <Tabs.Content>Summary content goes here</Tabs.Content>
+  </Tabs.Item>
+  <Tabs.Item value="tab2">
+    <Tabs.Trigger>Transactions</Tabs.Trigger>
+    <Tabs.Content>Transactions content goes here</Tabs.Content>
+  </Tabs.Item>
+</Tabs>
+
+// With variants
+<Tabs
+  type="line"
+  color="primary"
+  size="lg"
+  orientation="horizontal"
+  defaultValue="tab1"
+>
+  <Tabs.Item value="tab1">
+    <Tabs.Trigger iconStart={MyIcon}>Tab 1</Tabs.Trigger>
+    <Tabs.Content>Content 1</Tabs.Content>
+  </Tabs.Item>
+</Tabs>
+
+// With bordered content for visual grouping
+<Tabs contentVariant="bordered" defaultValue="tab1">
+  <Tabs.Item value="tab1">
+    <Tabs.Trigger>Tab 1</Tabs.Trigger>
+    <Tabs.Content>
+      Content with border, padding, and background for clear visual grouping
+    </Tabs.Content>
+  </Tabs.Item>
+</Tabs>
+
+// With trigger sizing control (auto, equal, or fixed)
+<Tabs triggerSizing="equal" fullWidth defaultValue="tab1">
+  <Tabs.Item value="tab1">
+    <Tabs.Trigger>Tab 1</Tabs.Trigger>
+    <Tabs.Content>Content 1</Tabs.Content>
+  </Tabs.Item>
+  <Tabs.Item value="tab2">
+    <Tabs.Trigger>Longer Tab 2</Tabs.Trigger>
+    <Tabs.Content>Content 2 - tab width independent of content</Tabs.Content>
+  </Tabs.Item>
+</Tabs>
+```
+
+### Table Component
+
+```typescript
+import { Table, TableHeader, TableRow, TableCell, TableColumnHeader, Pagination } from '@unicornlove/beyond-ui'
+
+// Basic table with search and actions
+<Table>
+  <TableHeader
+    searchValue={searchValue}
+    onSearchChange={setSearchValue}
+    searchPlaceholder="Search..."
+    actions={
+      <>
+        <Button size="sm" variant="outline">Export</Button>
+        <Button size="sm">Add New</Button>
+      </>
+    }
+  />
+  <TableRow>
+    <TableColumnHeader width={40} />
+    <TableColumnHeader sortable>Name</TableColumnHeader>
+    <TableColumnHeader sortable>Email</TableColumnHeader>
+    <TableColumnHeader>Status</TableColumnHeader>
+  </TableRow>
+  <TableRow>
+    <TableCell width={40}>1</TableCell>
+    <TableCell>John Doe</TableCell>
+    <TableCell>john@example.com</TableCell>
+    <TableCell>Active</TableCell>
+  </TableRow>
+</Table>
+<Pagination totalPages={10} />
+
+// Table with expanded rows
+<TableRow expanded={expanded} onExpand={setExpanded}>
+  <TableCell>Row Content</TableCell>
+</TableRow>
+<ExpandedTableRow isExpanded={expanded}>
+  <View>Additional details...</View>
+</ExpandedTableRow>
+```
+
+### Chart Components
+
+```typescript
+import {
+  BarChart,
+  LinearChart,
+  DonutChart,
+  CircleChart,
+  MiniLinearChart,
+  Chart
+} from '@unicornlove/beyond-ui'
+
+// Bar Chart with variants
+<BarChart
+  data={[10, 20, 15, 30, 25]}
+  variant="1" // '1' | '2' | '3' for different bar widths
+  colors={['#3b82f6', '#10b981', '#f59e0b']}
+/>
+
+// Linear Chart with period support
+<LinearChart
+  data={[
+    { x: 0, y: 10 },
+    { x: 1, y: 20 },
+    { x: 2, y: 15 },
+  ]}
+  period="month" // 'week' | 'month' | 'year'
+  showShadow={true}
+/>
+
+// Donut Chart with size variants
+<DonutChart
+  data={[
+    { label: 'A', value: 30 },
+    { label: 'B', value: 50 },
+    { label: 'C', value: 20 },
+  ]}
+  size="md" // '3x-small' | '2x-small' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2x-large'
+  colorScheme="primary" // 'primary' | 'colorful'
+  showLabel={true}
+  showPercentage={true}
+/>
+
+// Circle Chart (progress indicator)
+<CircleChart
+  value={75} // 0-100
+  size="md" // 'sm' | 'md' | 'lg' | 'xl'
+  showLabel={true}
+/>
+
+// Mini Linear Chart for dashboards
+<MiniLinearChart
+  data={[10, 20, 15, 30, 25]}
+  shadow={true}
+  width={112}
+  height={59}
+/>
+
+// Main Chart with grid and axes
+<Chart
+  type="linear"
+  xAxisLabels={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+  yAxisLabels={[0, 20, 40, 60, 80, 100]}
+  period="month"
+  showGrid={true}
+>
+  <LinearChart data={chartData} />
+</Chart>
 ```
 
 ## Design Tokens
@@ -100,7 +266,10 @@ gradients.named['warm-flame'].colors  // ['#fb923c', '#fb7185']
 - **Input**: TextInput, TextArea, NumberInput, PasswordInput, SearchInput
 - **Selection**: Checkbox, Radio, Switch
 
-### Phase 3+ (📅 Future)
+### Phase 3 (✅ Complete)
+- **Tabs**: Tab navigation with multiple variants (default, line, shadow), colors (gray, primary), sizes (sm, md, lg), and orientations (horizontal, vertical)
+
+### Phase 4+ (📅 Future)
 - Alert, Toast, Dialog, Popover, Select, and more...
 
 ## Development Roadmap

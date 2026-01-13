@@ -31,8 +31,8 @@
  * ```
  */
 
-import { useState } from 'react'
-import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
+import { useState, useMemo } from 'react'
+import { View, Pressable, Text, StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -42,6 +42,8 @@ import type { CheckboxProps } from './Checkbox.types'
 import { CheckIcon } from './CheckIcon'
 import { MinusIcon } from './MinusIcon'
 import { useThemeContext } from '../../playground/ThemeProvider'
+import { HelperText } from '../HelperText'
+import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Checkbox({
   checked: checkedProp,
@@ -65,9 +67,8 @@ export function Checkbox({
   const isControlled = checkedProp !== undefined
   const checked = isControlled ? checkedProp : internalChecked
 
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
   const { theme } = useThemeContext()
+  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
 
   const handlePress = () => {
     if (disabled) return
@@ -101,8 +102,8 @@ export function Checkbox({
   const showCheckIcon = checked && !indeterminate
   const showMinusIcon = indeterminate
 
-  // Color configuration based on state
-  const getColors = () => {
+  // Color configuration based on state (memoized for performance)
+  const colorConfig = useMemo(() => {
     // Error state overrides color choice
     if (error) {
       return {
@@ -146,9 +147,7 @@ export function Checkbox({
       backgroundHover: isCheckedOrIndeterminate ? colors.gray[800] : colors.gray[50],
       iconColor: colors.white,
     }
-  }
-
-  const colorConfig = getColors()
+  }, [error, isCheckedOrIndeterminate, color, disabled, theme])
 
   // Focus ring style (web only)
   const focusRing =
@@ -161,16 +160,11 @@ export function Checkbox({
         disabled={disabled}
         accessibilityRole="checkbox"
         accessibilityState={{ checked, disabled }}
-        // @ts-expect-error - web-specific props
-        onMouseEnter={Platform.OS === 'web' ? () => setIsHovered(true) : undefined}
-        // @ts-expect-error - web-specific props
-        onMouseLeave={Platform.OS === 'web' ? () => setIsHovered(false) : undefined}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        {...interactiveProps}
         style={({ pressed }) => [
           styles.pressable,
           // Apply hover effect
-          isHovered && !disabled && Platform.OS === 'web' && { opacity: 0.9 },
+          isHovered && !disabled && { opacity: 0.9 },
           // Apply pressed effect
           pressed && !disabled && { opacity: 0.8 },
         ]}
@@ -264,19 +258,12 @@ export function Checkbox({
 
             {/* Helper text */}
             {helperText && (
-              <Text
-                style={[
-                  styles.helperText,
-                  {
-                    fontSize: typography.small.fontSize,
-                    lineHeight: typography.small.lineHeight,
-                    color: disabled ? colors.text[theme].disabled : colors.text[theme].tertiary,
-                  },
-                  helperTextStyle,
-                ]}
+              <HelperText
+                type={disabled ? 'disabled' : error ? 'error' : 'default'}
+                textStyle={helperTextStyle}
               >
                 {helperText}
-              </Text>
+              </HelperText>
             )}
           </View>
         )}

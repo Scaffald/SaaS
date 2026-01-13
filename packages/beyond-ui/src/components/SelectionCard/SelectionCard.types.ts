@@ -90,4 +90,3 @@ export interface SelectionCardProps {
    */
   color?: 'gray' | 'primary' | 'red-green'
 }
-

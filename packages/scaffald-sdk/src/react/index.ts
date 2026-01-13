@@ -1,42 +1,45 @@
-/**
- * React integration for Scaffald SDK
- *
- * Provides React hooks and components for using Scaffald API with React Query
- *
- * @packageDocumentation
- */
-
-// Provider
 export { ScaffaldProvider, useScaffald } from './provider.js'
 export type { ScaffaldProviderProps } from './provider.js'
 
-// Hooks
 export {
-  // Authentication
-  useMagicLink,
-  useRoles,
-  useSession,
-  // Jobs
   useJobs,
   useJob,
   useSimilarJobs,
   useJobFilterOptions,
-  // Applications
-  useApplications,
-  useCreateQuickApplication,
-  useCreateFullApplication,
+  useCreateJob,
+  useUpdateJob,
+  useDeleteJob,
   useApplication,
+  useCreateApplication,
   useUpdateApplication,
   useWithdrawApplication,
-  // Profiles
   useUserProfile,
+  useOrganizationProfile,
+  useEmployerProfile,
+  useIndustries,
+  useIndustry,
   useOrganization,
-  useEmployer,
-  // API Keys
-  useAPIKeys,
-  useAPIKey,
-  useCreateAPIKey,
-  useUpdateAPIKey,
-  useRevokeAPIKey,
-  useAPIKeyUsage,
+  useOrganizationJobsCount,
+  useOrganizationMembers,
+  useInviteOrganizationMember,
+  useOrganizationDocuments,
+  useCreateDocumentUpload,
+  useOrganizationSettings,
+  useUpdateOrganizationSettings,
+  useTeams,
+  useTeam,
+  useCreateTeam,
+  useUpdateTeam,
+  useArchiveTeam,
+  useTeamMembers,
+  useAddTeamMember,
+  useUpdateTeamMember,
+  useRemoveTeamMember,
+  useTeamInvitations,
+  useInviteTeamMember,
+  useCancelTeamInvitation,
+  useTeamJobAssignments,
+  useCreateTeamJobAssignment,
+  useDeleteTeamJobAssignment,
+  useScaffaldAuth,
 } from './hooks.js'

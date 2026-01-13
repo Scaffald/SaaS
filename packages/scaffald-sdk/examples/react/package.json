@@ -1,11 +1,11 @@
 {
   "name": "scaffald-sdk-react-example",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "dev": "vite"
   },
   "dependencies": {
     "@scaffald/sdk": "workspace:*",

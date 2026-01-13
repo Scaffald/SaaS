@@ -1,120 +1,93 @@
 /**
- * Webhook event types
- */
-export type WebhookEvent = 'application.created' | 'application.updated' | 'application.withdrawn'
-
-/**
- * Webhook payload structure
- */
-export interface WebhookPayload<T = unknown> {
-  event: WebhookEvent
-  timestamp: string
-  data: T
-}
-
-/**
- * Verify webhook signature using HMAC SHA-256
+ * Webhook signature verification utilities
  *
- * @param payload - The webhook payload (string or object)
- * @param signature - The signature from X-Webhook-Signature header
- * @param secret - Your webhook secret
- * @returns Promise<boolean> - True if signature is valid
+ * Scaffald webhooks are signed with HMAC-SHA256 to ensure authenticity.
+ * The signature is sent in the 'x-webhook-signature' header.
+ */
+
+/**
+ * Verify a webhook signature
+ *
+ * @param payload - The raw webhook payload (string or object)
+ * @param signature - The signature from the 'x-webhook-signature' header
+ * @param secret - Your webhook secret from the Scaffald dashboard
+ * @returns true if the signature is valid, false otherwise
  *
  * @example
  * ```typescript
- * import { verifyWebhookSignature } from '@scaffald/sdk'
+ * import { Webhooks } from '@scaffald/sdk'
  *
- * // In your webhook handler
+ * // Express.js middleware
  * app.post('/webhooks/scaffald', async (req, res) => {
- *   const signature = req.headers['x-webhook-signature']
- *   const isValid = await verifyWebhookSignature(
- *     req.body,
- *     signature,
- *     process.env.SCAFFALD_WEBHOOK_SECRET
- *   )
+ *   const signature = req.headers['x-webhook-signature'] as string
+ *   const isValid = await Webhooks.verify(req.body, signature, process.env.WEBHOOK_SECRET)
  *
  *   if (!isValid) {
- *     return res.status(401).send('Invalid signature')
+ *     return res.status(401).json({ error: 'Invalid signature' })
  *   }
  *
- *   // Process webhook
- *   const payload = req.body as WebhookPayload
- *   console.log('Event:', payload.event)
- *   console.log('Data:', payload.data)
- *
- *   res.status(200).send('OK')
+ *   // Process webhook...
+ *   res.json({ received: true })
  * })
  * ```
  */
 export async function verifyWebhookSignature(
   payload: string | object,
-  signature: string | undefined,
+  signature: string,
   secret: string
 ): Promise<boolean> {
-  if (!signature) {
+  try {
+    const encoder = new TextEncoder()
+    const data = typeof payload === 'string' ? payload : JSON.stringify(payload)
+
+    // Import the secret key
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    )
+
+    // Calculate the signature
+    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
+    const calculatedSignature = Array.from(new Uint8Array(signatureBuffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+
+    // Compare signatures (constant-time comparison)
+    return signature === calculatedSignature
+  } catch (error) {
+    console.error('[Scaffald SDK] Webhook signature verification failed:', error)
     return false
   }
-
-  const encoder = new TextEncoder()
-  const data = typeof payload === 'string' ? payload : JSON.stringify(payload)
-
-  // Import crypto key
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  )
-
-  // Calculate signature
-  const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
-  const calculatedSignature = Array.from(new Uint8Array(signatureBuffer))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-
-  // Constant-time comparison to prevent timing attacks
-  return signature === calculatedSignature
 }
 
 /**
- * Parse and verify webhook payload
- *
- * @param body - The webhook request body
- * @param signature - The signature from X-Webhook-Signature header
- * @param secret - Your webhook secret
- * @returns Promise<WebhookPayload | null> - Parsed payload if valid, null if invalid
- *
- * @example
- * ```typescript
- * const payload = await parseWebhook(req.body, req.headers['x-webhook-signature'], secret)
- * if (!payload) {
- *   return res.status(401).send('Invalid signature')
- * }
- *
- * switch (payload.event) {
- *   case 'application.created':
- *     console.log('New application:', payload.data)
- *     break
- *   case 'application.updated':
- *     console.log('Application updated:', payload.data)
- *     break
- *   case 'application.withdrawn':
- *     console.log('Application withdrawn:', payload.data)
- *     break
- * }
- * ```
+ * Webhook event types
  */
-export async function parseWebhook(
-  body: string | object,
-  signature: string | undefined,
-  secret: string
-): Promise<WebhookPayload | null> {
-  const isValid = await verifyWebhookSignature(body, signature, secret)
-  if (!isValid) {
-    return null
-  }
+export type WebhookEvent =
+  | 'application.created'
+  | 'application.updated'
+  | 'application.withdrawn'
+  | 'job.created'
+  | 'job.updated'
+  | 'job.published'
+  | 'job.closed'
 
-  const payload = typeof body === 'string' ? JSON.parse(body) : body
-  return payload as WebhookPayload
+/**
+ * Webhook payload structure
+ */
+export interface WebhookPayload<T = any> {
+  event: WebhookEvent
+  data: T
+  timestamp: string
+  webhook_id: string
+}
+
+/**
+ * Webhooks namespace
+ */
+export const Webhooks = {
+  verify: verifyWebhookSignature,
 }

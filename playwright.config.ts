@@ -18,6 +18,8 @@ export default defineConfig({
     "**/test-a002-*.spec.ts", // Auth page renders
     "**/test-r003-*.spec.ts", // Dashboard navigation
     "**/user-journeys.spec.ts", // Basic user flows
+    "**/test-office-webhooks.spec.ts", // Webhooks E2E tests
+    "**/test-office-api-keys-analytics.spec.ts", // API Keys analytics E2E tests
   ],
 
   // Exclude debug/exploration files permanently

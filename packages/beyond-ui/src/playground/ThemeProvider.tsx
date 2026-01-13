@@ -9,6 +9,9 @@ import { View, StyleSheet } from 'react-native'
 import type { ThemeMode } from './useTheme'
 import { colors } from '../tokens/colors'
 
+// Re-export ThemeMode for convenience
+export type { ThemeMode } from './useTheme'
+
 export interface ThemeContextValue {
   theme: ThemeMode
   setTheme: (theme: ThemeMode) => void

@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { SelectionCard } from '../../../components/SelectionCard'
-import { Playground, PlaygroundSection, ThemeComparison } from '../../../playground'
+import { ThemeComparison } from '../../../playground'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typography } from '../../../tokens/typography'
@@ -64,6 +64,33 @@ export const Controlled: Story = {
       </View>
     )
   },
+}
+
+// Uncontrolled mode - component manages its own state
+export const Uncontrolled: Story = {
+  render: () => (
+    <View style={styles.variantsContainer}>
+      <Text style={styles.sectionTitle}>Click to toggle (no state management needed)</Text>
+      <SelectionCard
+        type="checkbox"
+        title="Express Shipping"
+        description="Click to select/deselect"
+        icon={TruckIcon}
+      />
+      <SelectionCard
+        type="radio"
+        title="Standard Shipping"
+        description="Click to select"
+        icon={TruckIcon}
+      />
+      <SelectionCard
+        type="toggle"
+        title="Enable Notifications"
+        description="Click to toggle on/off"
+        icon={TruckIcon}
+      />
+    </View>
+  ),
 }
 
 // All states for Checkbox type
@@ -225,11 +252,26 @@ export const WithoutDescription: Story = {
     <View style={styles.variantsContainer}>
       <Text style={styles.sectionTitle}>Cards Without Description</Text>
 
-      <SelectionCard type="checkbox" title="Express Shipping" showDescription={false} icon={TruckIcon} />
+      <SelectionCard
+        type="checkbox"
+        title="Express Shipping"
+        showDescription={false}
+        icon={TruckIcon}
+      />
 
-      <SelectionCard type="radio" title="Standard Shipping" showDescription={false} icon={TruckIcon} />
+      <SelectionCard
+        type="radio"
+        title="Standard Shipping"
+        showDescription={false}
+        icon={TruckIcon}
+      />
 
-      <SelectionCard type="toggle" title="Enable Notifications" showDescription={false} icon={TruckIcon} />
+      <SelectionCard
+        type="toggle"
+        title="Enable Notifications"
+        showDescription={false}
+        icon={TruckIcon}
+      />
     </View>
   ),
 }
@@ -280,36 +322,38 @@ export const ShippingOptions: Story = {
 export const ThemeVariants: Story = {
   render: () => (
     <ThemeComparison>
-      <View style={styles.variantsContainer}>
-        <SelectionCard
-          type="checkbox"
-          title="Express Shipping"
-          description="Fast shipping for additional $29"
-          icon={TruckIcon}
-        />
+      {() => (
+        <View style={styles.variantsContainer}>
+          <SelectionCard
+            type="checkbox"
+            title="Express Shipping"
+            description="Fast shipping for additional $29"
+            icon={TruckIcon}
+          />
 
-        <SelectionCard
-          type="checkbox"
-          title="Express Shipping"
-          description="Fast shipping for additional $29"
-          selected={true}
-          icon={TruckIcon}
-        />
+          <SelectionCard
+            type="checkbox"
+            title="Express Shipping"
+            description="Fast shipping for additional $29"
+            selected={true}
+            icon={TruckIcon}
+          />
 
-        <SelectionCard
-          type="radio"
-          title="Standard Shipping"
-          description="Delivery in 5-7 business days"
-          icon={TruckIcon}
-        />
+          <SelectionCard
+            type="radio"
+            title="Standard Shipping"
+            description="Delivery in 5-7 business days"
+            icon={TruckIcon}
+          />
 
-        <SelectionCard
-          type="toggle"
-          title="Enable Notifications"
-          description="Get updates about your order"
-          icon={TruckIcon}
-        />
-      </View>
+          <SelectionCard
+            type="toggle"
+            title="Enable Notifications"
+            description="Get updates about your order"
+            icon={TruckIcon}
+          />
+        </View>
+      )}
     </ThemeComparison>
   ),
 }
@@ -403,4 +447,3 @@ const styles = StyleSheet.create({
     marginTop: spacing[8],
   },
 })
-

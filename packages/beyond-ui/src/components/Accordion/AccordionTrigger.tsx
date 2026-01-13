@@ -52,7 +52,7 @@ export function AccordionTrigger({
         styles.trigger,
         {
           backgroundColor:
-            isHovered && !itemContext.disabled ? colors.bg[theme].hover : 'transparent',
+            isHovered && !itemContext.disabled ? colors.bg[theme].subtle : 'transparent',
         },
         // Apply pressed effect
         pressed && !itemContext.disabled && { opacity: 0.8 },
@@ -104,9 +104,7 @@ export function AccordionTrigger({
       {/* Right side - Chevron */}
       <ChevronIcon
         expanded={itemContext.isExpanded}
-        color={
-          itemContext.disabled ? colors.text[theme].disabled : colors.text[theme].secondary
-        }
+        color={itemContext.disabled ? colors.text[theme].disabled : colors.text[theme].secondary}
       />
     </Pressable>
   )
