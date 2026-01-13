@@ -1,5 +1,9 @@
+/**
+ * Divider wrapper - migrated from Tamagui to Beyond UI Separator
+ * Provides backwards-compatible API for existing code
+ */
 import React, { ReactNode } from 'react';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
+import { Separator, Row, Text } from '@unicornlove/beyond-ui';
 
 export interface DividerProps {
   orientation?: 'horizontal' | 'vertical';
@@ -7,59 +11,29 @@ export interface DividerProps {
   className?: string;
 }
 
-const VerticalDivider = styled(YStack, {
-  name: 'VerticalDivider',
-  display: 'inline-block',
-  height: '100%',
-  width: 1, // w-px
-  backgroundColor: '$borderColor',
-});
-
-const HorizontalDivider = styled(YStack, {
-  name: 'HorizontalDivider',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-});
-
-const LabeledDividerContainer = styled(XStack, {
-  name: 'LabeledDividerContainer',
-  position: 'relative',
-  alignItems: 'center',
-});
-
-const DividerLine = styled(YStack, {
-  name: 'DividerLine',
-  flex: 1,
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-});
-
-const DividerLabel = styled(Text, {
-  name: 'DividerLabel',
-  flexShrink: 0,
-  marginHorizontal: '$4',
-  fontSize: '$2',
-  color: '$color9',
-});
-
 export default function Divider({
   orientation = 'horizontal',
   label,
   className = '',
 }: DividerProps) {
+  // Beyond UI Separator uses 'horizontal' | 'vertical' orientation, same as this wrapper
   if (orientation === 'vertical') {
-    return <VerticalDivider className={className} />;
+    return <Separator orientation="vertical" />;
   }
 
+  // For labeled dividers, we need a custom implementation
+  // Beyond UI Separator doesn't support labels directly
   if (label) {
     return (
-      <LabeledDividerContainer className={className}>
-        <DividerLine />
-        <DividerLabel>{label}</DividerLabel>
-        <DividerLine />
-      </LabeledDividerContainer>
+      <Row alignItems="center" gap={16}>
+        <Separator orientation="horizontal" style={{ flex: 1 }} />
+        <Text size="sm" color="secondary">
+          {label}
+        </Text>
+        <Separator orientation="horizontal" style={{ flex: 1 }} />
+      </Row>
     );
   }
 
-  return <HorizontalDivider as="hr" className={className} />;
+  return <Separator orientation="horizontal" />;
 }

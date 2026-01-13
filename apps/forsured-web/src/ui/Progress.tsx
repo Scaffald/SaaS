@@ -1,5 +1,13 @@
+/**
+ * Progress wrapper - migrated from Tamagui to Beyond UI ProgressBar
+ * Provides backwards-compatible API for existing code
+ */
 import React from 'react';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
+import {
+  ProgressBar as BeyondProgressBar,
+  type ProgressBarColor,
+} from '@unicornlove/beyond-ui';
+import { View, Text, StyleSheet } from 'react-native';
 
 export type ProgressVariant = 'primary' | 'success' | 'warning' | 'error';
 export type ProgressSize = 'sm' | 'md' | 'lg';
@@ -14,51 +22,13 @@ export interface ProgressProps {
   className?: string;
 }
 
-const ProgressContainer = styled(YStack, {
-  name: 'ProgressContainer',
-});
-
-const ProgressBar = styled(XStack, {
-  name: 'ProgressBar',
-  width: '100%',
-  backgroundColor: '$gray4',
-  borderRadius: '$full',
-  overflow: 'hidden',
-  variants: {
-    size: {
-      sm: { height: 4 }, // h-1
-      md: { height: 8 }, // h-2
-      lg: { height: 12 }, // h-3
-    },
-  } as const,
-});
-
-const ProgressFill = styled(XStack, {
-  name: 'ProgressFill',
-  borderRadius: '$full',
-  transition: 'all 0.3s ease-out',
-  variants: {
-    variant: {
-      primary: {
-        backgroundColor: '$primary9',
-      },
-      success: {
-        backgroundColor: '$green9',
-      },
-      warning: {
-        backgroundColor: '$orange9',
-      },
-      error: {
-        backgroundColor: '$red9',
-      },
-    },
-    size: {
-      sm: { height: 4 },
-      md: { height: 8 },
-      lg: { height: 12 },
-    },
-  } as const,
-});
+// Map our variant to Beyond UI color
+const variantToColor: Record<ProgressVariant, ProgressBarColor> = {
+  primary: 'primary',
+  success: 'success',
+  warning: 'primary', // Beyond UI doesn't have warning, map to primary
+  error: 'error',
+};
 
 export default function Progress({
   value,
@@ -72,34 +42,19 @@ export default function Progress({
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   return (
-    <ProgressContainer className={className}>
-      {(showLabel || label) && (
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
-          <Text fontSize="$2" fontWeight="500" color="$color11">
-            {label || `${Math.round(percentage)}%`}
-          </Text>
-          {label && showLabel && (
-            <Text fontSize="$2" color="$color10">
-              {Math.round(percentage)}%
-            </Text>
-          )}
-        </XStack>
-      )}
-      <ProgressBar size={size}>
-        <ProgressFill
-          variant={variant}
-          size={size}
-          style={{ width: `${percentage}%` }}
-          role="progressbar"
-          aria-valuenow={value}
-          aria-valuemin={0}
-          aria-valuemax={max}
-        />
-      </ProgressBar>
-    </ProgressContainer>
+    <BeyondProgressBar
+      value={percentage}
+      color={variantToColor[variant]}
+      label={label}
+      showLabel={showLabel || !!label}
+      showIndicator={showLabel}
+      indicatorIconType="none"
+    />
   );
 }
 
+// CircularProgress - Beyond UI doesn't have a direct equivalent,
+// so we keep a simplified version
 export function CircularProgress({
   value,
   max = 100,
@@ -114,20 +69,31 @@ export function CircularProgress({
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (percentage / 100) * circumference;
 
-  const variantColors = {
-    primary: '$primary9',
-    success: '$green9',
-    warning: '$orange9',
-    error: '$red9',
+  const variantColors: Record<ProgressVariant, string> = {
+    primary: '#6366f1',
+    success: '#22c55e',
+    warning: '#f59e0b',
+    error: '#ef4444',
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      position: 'relative',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: size,
+      height: size,
+    },
+    label: {
+      position: 'absolute',
+      fontSize: 14,
+      fontWeight: '600',
+      color: variantColors[variant],
+    },
+  });
+
   return (
-    <XStack
-      position="relative"
-      alignItems="center"
-      justifyContent="center"
-      className={className}
-    >
+    <View style={styles.container}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
         <circle
           cx={size / 2}
@@ -142,7 +108,7 @@ export function CircularProgress({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="currentColor"
+          stroke={variantColors[variant]}
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
@@ -151,15 +117,10 @@ export function CircularProgress({
         />
       </svg>
       {showLabel && (
-        <Text
-          position="absolute"
-          fontSize="$3"
-          fontWeight="600"
-          color={variantColors[variant]}
-        >
+        <Text style={styles.label}>
           {Math.round(percentage)}%
         </Text>
       )}
-    </XStack>
+    </View>
   );
 }

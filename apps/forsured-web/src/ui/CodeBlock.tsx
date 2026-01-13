@@ -1,6 +1,15 @@
+/**
+ * CodeBlock component - migrated from Tamagui to Beyond UI
+ * Custom component for code display with copy functionality
+ *
+ * Note: Beyond UI doesn't have a direct CodeBlock equivalent,
+ * so this uses Beyond UI primitives for the implementation.
+ */
 import React, { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
-import { YStack, XStack, Text, Button, styled, useTheme } from '@unicornlove/ui';
+import { View, Text as RNText, Pressable, StyleSheet, Platform } from 'react-native';
+import { Stack, Row, Button, Text, useThemeContext } from '@unicornlove/beyond-ui';
+import { colors } from '@unicornlove/beyond-ui';
 
 export interface CodeBlockProps {
   code: string;
@@ -8,83 +17,6 @@ export interface CodeBlockProps {
   showLineNumbers?: boolean;
   className?: string;
 }
-
-const CodeBlockContainer = styled(YStack, {
-  name: 'CodeBlockContainer',
-  position: 'relative',
-});
-
-const CopyButton = styled(Button, {
-  name: 'CodeBlockCopyButton',
-  position: 'absolute',
-  top: '$2',
-  right: '$2',
-  opacity: 0,
-  zIndex: 10,
-  alignItems: 'center',
-  gap: '$1',
-  paddingHorizontal: '$3',
-  paddingVertical: '$1.5',
-  backgroundColor: '$gray11',
-  color: '$color1',
-  fontSize: '$1',
-  borderRadius: '$3',
-  transition: 'opacity 0.2s ease-in-out',
-  hoverStyle: {
-    backgroundColor: '$gray10',
-  },
-});
-
-const CodeBlockWrapper = styled(YStack, {
-  name: 'CodeBlockWrapper',
-  backgroundColor: '$gray12',
-  borderRadius: '$4',
-  overflow: 'hidden',
-});
-
-const CodeBlockHeader = styled(XStack, {
-  name: 'CodeBlockHeader',
-  paddingHorizontal: '$4',
-  paddingVertical: '$2',
-  backgroundColor: '$gray11',
-  borderBottomWidth: 1,
-  borderBottomColor: '$gray10',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-});
-
-const CodeBlockContent = styled(YStack, {
-  name: 'CodeBlockContent',
-  overflowX: 'auto',
-});
-
-const CodePre = styled(YStack, {
-  name: 'CodePre',
-  padding: '$4',
-  fontFamily: '$mono',
-  fontSize: '$2',
-  color: '$gray2',
-});
-
-const CodeLine = styled(XStack, {
-  name: 'CodeLine',
-  width: '100%',
-});
-
-const LineNumber = styled(Text, {
-  name: 'CodeLineNumber',
-  paddingRight: '$4',
-  textAlign: 'right',
-  color: '$gray7',
-  userSelect: 'none',
-  fontFamily: '$mono',
-});
-
-const LineContent = styled(Text, {
-  name: 'CodeLineContent',
-  color: '$gray2',
-  fontFamily: '$mono',
-});
 
 export default function CodeBlock({
   code,
@@ -94,7 +26,7 @@ export default function CodeBlock({
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const theme = useTheme();
+  const { theme } = useThemeContext();
 
   const handleCopy = async () => {
     try {
@@ -108,50 +40,118 @@ export default function CodeBlock({
 
   const lines = code.split('\n');
 
+  const styles = StyleSheet.create({
+    container: {
+      position: 'relative',
+    },
+    copyButton: {
+      position: 'absolute',
+      top: 8,
+      right: 8,
+      zIndex: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      backgroundColor: theme === 'dark' ? colors.gray[700] : colors.gray[800],
+      borderRadius: 6,
+      opacity: isHovered ? 1 : 0,
+    },
+    copyButtonText: {
+      color: '#fff',
+      fontSize: 12,
+    },
+    wrapper: {
+      backgroundColor: theme === 'dark' ? colors.gray[900] : colors.gray[900],
+      borderRadius: 8,
+      overflow: 'hidden',
+    },
+    header: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      backgroundColor: theme === 'dark' ? colors.gray[800] : colors.gray[800],
+      borderBottomWidth: 1,
+      borderBottomColor: theme === 'dark' ? colors.gray[700] : colors.gray[700],
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    headerText: {
+      fontSize: 12,
+      color: colors.gray[400],
+      fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    },
+    content: {
+      overflowX: 'auto' as any,
+    },
+    pre: {
+      padding: 16,
+    },
+    codeLine: {
+      flexDirection: 'row',
+      width: '100%',
+    },
+    lineNumber: {
+      paddingRight: 16,
+      textAlign: 'right',
+      color: colors.gray[600],
+      fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+      fontSize: 14,
+      minWidth: 32,
+    },
+    lineContent: {
+      color: colors.gray[200],
+      fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+      fontSize: 14,
+    },
+    codeText: {
+      color: colors.gray[200],
+      fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+      fontSize: 14,
+    },
+  });
+
   return (
-    <CodeBlockContainer 
-      className={className}
-      onHoverIn={() => setIsHovered(true)}
-      onHoverOut={() => setIsHovered(false)}
+    <View
+      style={styles.container}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <CopyButton onPress={handleCopy} style={{ opacity: isHovered ? 1 : 0 }}>
+      <Pressable onPress={handleCopy} style={styles.copyButton}>
         {copied ? (
           <>
-            <Check size={14} color={theme.color1.val} />
-            <Text color="$color1">Copied!</Text>
+            <Check size={14} color="#fff" />
+            <RNText style={styles.copyButtonText}>Copied!</RNText>
           </>
         ) : (
           <>
-            <Copy size={14} color={theme.color1.val} />
-            <Text color="$color1">Copy</Text>
+            <Copy size={14} color="#fff" />
+            <RNText style={styles.copyButtonText}>Copy</RNText>
           </>
         )}
-      </CopyButton>
-      <CodeBlockWrapper>
-        <CodeBlockHeader>
-          <Text fontSize="$1" color="$gray7" fontFamily="$mono">
-            {language}
-          </Text>
-        </CodeBlockHeader>
-        <CodeBlockContent>
-          <CodePre as="pre">
+      </Pressable>
+      <View style={styles.wrapper}>
+        <View style={styles.header}>
+          <RNText style={styles.headerText}>{language}</RNText>
+        </View>
+        <View style={styles.content}>
+          <View style={styles.pre}>
             {showLineNumbers ? (
-              <YStack as="code" fontSize="$2" fontFamily="$mono" color="$gray2">
+              <View>
                 {lines.map((line, index) => (
-                  <CodeLine key={index}>
-                    <LineNumber>{index + 1}</LineNumber>
-                    <LineContent>{line || ' '}</LineContent>
-                  </CodeLine>
+                  <View key={index} style={styles.codeLine}>
+                    <RNText style={styles.lineNumber}>{index + 1}</RNText>
+                    <RNText style={styles.lineContent}>{line || ' '}</RNText>
+                  </View>
                 ))}
-              </YStack>
+              </View>
             ) : (
-              <Text as="code" fontSize="$2" fontFamily="$mono" color="$gray2">
-                {code}
-              </Text>
+              <RNText style={styles.codeText}>{code}</RNText>
             )}
-          </CodePre>
-        </CodeBlockContent>
-      </CodeBlockWrapper>
-    </CodeBlockContainer>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }

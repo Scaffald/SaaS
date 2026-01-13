@@ -1,80 +1,32 @@
-import React, { InputHTMLAttributes, forwardRef } from 'react';
-import { Check, Minus } from 'lucide-react';
-import { YStack, XStack, Text, styled, useTheme } from '@unicornlove/ui';
+/**
+ * Checkbox wrapper - migrated from Tamagui to Beyond UI
+ * Provides backwards-compatible API for existing code
+ */
+import React, { forwardRef, useCallback, useId } from 'react';
+import { Checkbox as BeyondCheckbox, type CheckboxSize } from '@unicornlove/beyond-ui';
 
-export interface CheckboxProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
+export interface CheckboxProps {
   label?: string;
   error?: string;
   helperText?: string;
   indeterminate?: boolean;
   size?: 'sm' | 'md' | 'lg';
+  checked?: boolean;
+  defaultChecked?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onCheckedChange?: (checked: boolean) => void;
+  id?: string;
+  name?: string;
+  value?: string;
+  className?: string;
 }
 
-const CheckboxContainer = styled(YStack, {
-  name: 'CheckboxContainer',
-});
-
-const CheckboxWrapper = styled(XStack, {
-  name: 'CheckboxWrapper',
-  alignItems: 'flex-start',
-});
-
-const CheckboxInputWrapper = styled(XStack, {
-  name: 'CheckboxInputWrapper',
-  alignItems: 'center',
-  height: 20, // h-5
-});
-
-const CheckboxButton = styled(XStack, {
-  name: 'CheckboxButton',
-  borderWidth: 2,
-  borderRadius: '$2',
-  backgroundColor: '$background',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease-in-out',
-  variants: {
-    size: {
-      sm: { width: 16, height: 16 },
-      md: { width: 20, height: 20 },
-      lg: { width: 24, height: 24 },
-    },
-    checked: {
-      true: {
-        backgroundColor: '$primary9',
-        borderColor: '$primary9',
-      },
-      false: {
-        borderColor: '$borderColor',
-        backgroundColor: '$background',
-      },
-    },
-    error: {
-      true: {
-        borderColor: '$red9',
-      },
-      false: {},
-    },
-    disabled: {
-      true: {
-        opacity: 0.5,
-        cursor: 'not-allowed',
-      },
-      false: {},
-    },
-  } as const,
-});
-
-const CheckboxLabel = styled(Text, {
-  name: 'CheckboxLabel',
-  marginLeft: '$3',
-  fontSize: '$2',
-  cursor: 'pointer',
-  fontWeight: '500',
-  color: '$color11',
-});
+// Map size - Beyond UI only supports 'sm' | 'md', so 'lg' maps to 'md'
+const mapSize = (size: 'sm' | 'md' | 'lg'): CheckboxSize => {
+  return size === 'lg' ? 'md' : size;
+};
 
 const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
@@ -84,70 +36,51 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       helperText,
       indeterminate = false,
       size = 'md',
+      checked,
+      defaultChecked,
+      disabled,
+      required,
+      onChange,
+      onCheckedChange,
       className = '',
-      id,
       ...props
     },
-    ref
+    _ref
   ) => {
-    const checkboxId =
-      id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
-    const isChecked = props.checked || false;
-    const theme = useTheme();
+    const generatedId = useId();
+    const checkboxId = props.id || generatedId;
 
-    const iconSizes = {
-      sm: 12,
-      md: 14,
-      lg: 16,
-    };
+    // Handle both old onChange (event-based) and new onCheckedChange (boolean) APIs
+    const handleChange = useCallback(
+      (isChecked: boolean) => {
+        onCheckedChange?.(isChecked);
+        // Simulate event for backwards compatibility
+        if (onChange) {
+          const syntheticEvent = {
+            target: { checked: isChecked, name: props.name, value: props.value },
+            currentTarget: { checked: isChecked, name: props.name, value: props.value },
+          } as React.ChangeEvent<HTMLInputElement>;
+          onChange(syntheticEvent);
+        }
+      },
+      [onChange, onCheckedChange, props.name, props.value]
+    );
+
+    // Build label with required indicator if needed
+    const labelWithRequired = label && required ? `${label} *` : label;
 
     return (
-      <CheckboxContainer className={className}>
-        <CheckboxWrapper>
-          <CheckboxInputWrapper>
-            <XStack position="relative" alignItems="center">
-              <input
-                ref={ref}
-                id={checkboxId}
-                type="checkbox"
-                style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
-                {...props}
-              />
-              <CheckboxButton
-                size={size}
-                checked={isChecked}
-                error={!!error}
-                disabled={props.disabled}
-                as="label"
-                htmlFor={checkboxId}
-              >
-                {isChecked && !indeterminate && (
-                  <Check color={theme.color1.val} size={iconSizes[size]} strokeWidth={3} />
-                )}
-                {indeterminate && (
-                  <Minus color={theme.color1.val} size={iconSizes[size]} strokeWidth={3} />
-                )}
-              </CheckboxButton>
-            </XStack>
-          </CheckboxInputWrapper>
-          {label && (
-            <CheckboxLabel as="label" htmlFor={checkboxId}>
-              {label}
-              {props.required && <Text color="$red9" marginLeft="$1">*</Text>}
-            </CheckboxLabel>
-          )}
-        </CheckboxWrapper>
-        {error && (
-          <Text fontSize="$2" color="$red9" marginTop="$1.5" marginLeft="$8">
-            {error}
-          </Text>
-        )}
-        {helperText && !error && (
-          <Text fontSize="$2" color="$color9" marginTop="$1.5" marginLeft="$8">
-            {helperText}
-          </Text>
-        )}
-      </CheckboxContainer>
+      <BeyondCheckbox
+        checked={checked ?? defaultChecked}
+        indeterminate={indeterminate}
+        onChange={handleChange}
+        size={mapSize(size)}
+        disabled={disabled}
+        error={!!error}
+        label={labelWithRequired}
+        helperText={error || helperText}
+        containerStyle={{ className } as any}
+      />
     );
   }
 );
