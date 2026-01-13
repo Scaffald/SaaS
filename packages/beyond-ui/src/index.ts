@@ -547,6 +547,28 @@ export type {
   Member,
 } from './components/Modal'
 
+// Sheet components (bottom sheet/drawer)
+export { Sheet, SheetHeader, SheetContent, SheetFooter } from './components/Sheet'
+export type {
+  SheetProps,
+  SheetHeaderProps,
+  SheetContentProps,
+  SheetFooterProps,
+  SheetHeight,
+  SheetAnimation,
+} from './components/Sheet'
+
+// Popover components
+export { Popover, PopoverHeader, PopoverContent, PopoverFooter } from './components/Popover'
+export type {
+  PopoverProps,
+  PopoverHeaderProps,
+  PopoverContentProps,
+  PopoverFooterProps,
+  PopoverPlacement,
+  PopoverTrigger,
+} from './components/Popover'
+
 export { List } from './components/List'
 export type { ListProps } from './components/List'
 
