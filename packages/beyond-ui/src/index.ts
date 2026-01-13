@@ -56,6 +56,29 @@ export type {
   Position,
 } from './components/Layout'
 
+// Typography components (replaces Tamagui H1-H6, Paragraph, SizableText)
+export { Heading, H1, H2, H3, H4, H5, H6, Paragraph, Label, Text, Caption } from './components/Typography'
+export type {
+  HeadingProps,
+  HeadingLevel,
+  H1Props,
+  H2Props,
+  H3Props,
+  H4Props,
+  H5Props,
+  H6Props,
+  ParagraphProps,
+  TextProps,
+  CaptionProps,
+  TextSize,
+  TextWeight,
+  TextColor,
+  TextAlign,
+  BaseTextProps,
+} from './components/Typography'
+// Note: LabelProps from Typography is exported as FormLabelProps to avoid conflict with shared LabelProps
+export type { LabelProps as FormLabelProps } from './components/Typography'
+
 // Components
 export { Button } from './components/Button'
 export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './components/Button'
