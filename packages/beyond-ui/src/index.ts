@@ -569,6 +569,24 @@ export type {
   PopoverTrigger,
 } from './components/Popover'
 
+// Form layout components
+export { Form, Fieldset, FormField, FormRow, FormActions } from './components/Form'
+export type {
+  FormProps,
+  FieldsetProps,
+  FormFieldProps,
+  FormRowProps,
+  FormActionsProps,
+} from './components/Form'
+
+// SearchSelect component
+export { SearchSelect } from './components/SearchSelect'
+export type { SearchSelectProps, SearchSelectOption } from './components/SearchSelect'
+
+// ScrollArea component
+export { ScrollArea, scrollTo, scrollToEnd } from './components/ScrollArea'
+export type { ScrollAreaProps } from './components/ScrollArea'
+
 export { List } from './components/List'
 export type { ListProps } from './components/List'
 
