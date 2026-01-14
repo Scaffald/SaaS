@@ -274,7 +274,7 @@ export default function TaskModal({
             {task ? 'Edit Task' : 'Create New Task'}
           </H2>
           <button
-            onClick={onClose}
+            onPress={onClose}
             style={{
               background: 'none',
               border: 'none',
@@ -539,7 +539,7 @@ export default function TaskModal({
               <Button
                 type="button"
                 variant="ghost"
-                onClick={onClose}
+                onPress={onClose}
                 disabled={isSaving}
               >
                 Cancel

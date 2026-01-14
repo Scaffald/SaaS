@@ -79,7 +79,7 @@ export function AddTeamMemberModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="add-member-modal-title"
-      onClick={handleBackdropClick}
+      onPress={handleBackdropClick}
     >
       <Card
         style={{
@@ -91,7 +91,7 @@ export function AddTeamMemberModal({
           marginLeft: 16,
           marginRight: 16,
         }}
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        onPress={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* Header */}
         <Row
@@ -135,7 +135,7 @@ export function AddTeamMemberModal({
 
           {/* Close Button */}
           <Button
-            onClick={onClose}
+            onPress={onClose}
             disabled={loading}
             variant="outline"
             size="sm"

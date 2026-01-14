@@ -51,7 +51,7 @@ export default function SubcontractorVetting() {
             Import
           </Button>
           <Button
-            onClick={() => setShowAddModal(true)}
+            onPress={() => setShowAddModal(true)}
             variant="primary"
             leftIcon={Plus}
             iconSize={16}
@@ -108,7 +108,7 @@ export default function SubcontractorVetting() {
             {filteredSubcontractors.map((subcontractor) => (
               <Button
                 key={subcontractor.id}
-                onClick={() => setSelectedSubcontractor(subcontractor.id)}
+                onPress={() => setSelectedSubcontractor(subcontractor.id)}
                 variant="ghost"
                 style={{
                   width: '100%',

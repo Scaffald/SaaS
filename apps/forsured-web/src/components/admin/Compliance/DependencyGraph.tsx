@@ -103,13 +103,13 @@ function TreeNode({ node, level, onSelect }: TreeNodeProps) {
           marginLeft: level * 24,
           userSelect: 'none',
         }}
-        onClick={() => onSelect(node.requirement_id)}
+        onPress={() => onSelect(node.requirement_id)}
       >
         {hasChildren ? (
           <Button
             variant="ghost"
             style={{ padding: 4, borderRadius: 6 }}
-            onClick={(e) => {
+            onPress={(e) => {
               e.stopPropagation()
               setIsExpanded(!isExpanded)
             }}
@@ -297,7 +297,7 @@ export function DependencyGraph({
                     backgroundColor:
                       selectedRequirement?.id === req.id ? 'var(--color-blue-3)' : 'transparent',
                   }}
-                  onClick={() => onSelectRequirement(req)}
+                  onPress={() => onSelectRequirement(req)}
                 >
                   <Stack>
                     <Text style={{ fontWeight: 600, fontSize: 14, color: selectedRequirement?.id === req.id ? 'var(--color-blue-11)' : 'var(--color-12)' }}>

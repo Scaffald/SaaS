@@ -76,7 +76,7 @@ function BrokerInfoStep({ onComplete, initialData = {}, isLoading = false }: Bro
           </Stack>
           <Stack style={{ marginTop: 24 }}>
             <Button
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               variant="primary"
               disabled={isLoading}
             >

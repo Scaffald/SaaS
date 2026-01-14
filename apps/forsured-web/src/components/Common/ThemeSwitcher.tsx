@@ -58,7 +58,7 @@ export default function ThemeSwitcher() {
                 right: 0,
                 bottom: 0,
               }}
-              onClick={() => setIsOpen(false)}
+              onPress={() => setIsOpen(false)}
             />
             <Stack
               style={{
@@ -80,7 +80,7 @@ export default function ThemeSwitcher() {
                 return (
                   <Button
                     key={t.value}
-                    onClick={() => handleThemeChange(t.value)}
+                    onPress={() => handleThemeChange(t.value)}
                     variant="ghost"
                     style={{
                       width: '100%',
@@ -104,7 +104,7 @@ export default function ThemeSwitcher() {
         )}
 
         <Button
-          onClick={() => setIsOpen(!isOpen)}
+          onPress={() => setIsOpen(!isOpen)}
           variant="ghost"
           style={{
             backgroundColor: 'var(--color-background-hover)',

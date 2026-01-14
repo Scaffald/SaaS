@@ -145,7 +145,7 @@ export function ParticipantsComplianceView({
         {activeFilter !== 'all' && (
           <Button
             variant="ghost"
-            onClick={() => setActiveFilter('all')}
+            onPress={() => setActiveFilter('all')}
             style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue-9)' }}
           >
             Clear filter

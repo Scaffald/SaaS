@@ -289,7 +289,7 @@ export default function ManagerAcknowledgementsList() {
             return (
               <Card
                 key={packet.id}
-                onClick={() => setSelectedPacketId(packet.id)}
+                onPress={() => setSelectedPacketId(packet.id)}
                 style={{
                   backgroundColor: 'var(--color-background)',
                   borderRadius: 12,
@@ -452,7 +452,7 @@ export default function ManagerAcknowledgementsList() {
                       <Button
                         variant="outlined"
                         size="sm"
-                        onClick={(e) => {
+                        onPress={(e) => {
                           e.stopPropagation();
                           setSelectedPacketId(packet.id);
                         }}

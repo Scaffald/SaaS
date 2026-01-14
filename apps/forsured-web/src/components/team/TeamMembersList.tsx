@@ -192,7 +192,7 @@ export function TeamMembersList({
         </Text>
         {(searchQuery || activeRole !== 'all') && (
           <Button
-            onClick={() => {
+            onPress={() => {
               setSearchQuery('');
               setActiveRole('all');
               onSearch?.('');
@@ -219,7 +219,7 @@ export function TeamMembersList({
             >
               <TeamMemberCard
                 member={member}
-                onClick={onMemberClick}
+                onPress={onMemberClick}
                 onEdit={onMemberEdit}
                 onRemove={onMemberRemove}
               />

@@ -63,7 +63,7 @@ export function TaskViewToggle({
         role="tab"
         aria-selected={currentView === 'inbox'}
         aria-controls="task-list"
-        onClick={() => onViewChange('inbox')}
+        onPress={() => onViewChange('inbox')}
         style={getToggleButtonStyle(currentView === 'inbox')}
       >
         <Inbox
@@ -84,7 +84,7 @@ export function TaskViewToggle({
         role="tab"
         aria-selected={currentView === 'assigned-by-me'}
         aria-controls="task-list"
-        onClick={() => onViewChange('assigned-by-me')}
+        onPress={() => onViewChange('assigned-by-me')}
         style={getToggleButtonStyle(currentView === 'assigned-by-me')}
       >
         <Send

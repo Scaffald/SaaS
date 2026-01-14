@@ -441,7 +441,7 @@ export default function OrgCoverageRequirementsPage({
                     <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16, alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
                       <Button
                         variant="ghost"
-                        onClick={() => setEditingRequirement(requirement)}
+                        onPress={() => setEditingRequirement(requirement)}
                         style={{
                           padding: 8,
                           color: 'var(--color-color10)',
@@ -453,7 +453,7 @@ export default function OrgCoverageRequirementsPage({
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={() => setDeleteConfirm(requirement)}
+                        onPress={() => setDeleteConfirm(requirement)}
                         style={{
                           padding: 8,
                           color: 'var(--color-color10)',
@@ -547,7 +547,7 @@ export default function OrgCoverageRequirementsPage({
           <Row style={{ justifyContent: 'flex-end', gap: 12 }}>
             <ButtonCommon
               variant="ghost"
-              onClick={() => setDeleteConfirm(null)}
+              onPress={() => setDeleteConfirm(null)}
               disabled={isSubmitting}
             >
               Cancel

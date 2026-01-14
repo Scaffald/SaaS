@@ -180,7 +180,7 @@ function VersionItem({
         borderColor,
         backgroundColor,
       }}
-      onClick={onSelect}
+      onPress={onSelect}
     >
       <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
         <Text style={{ fontWeight: 600, fontSize: 14 }}>Version {version.version_number}</Text>
@@ -231,7 +231,7 @@ function VersionItem({
             backgroundColor: isCompareFrom ? 'var(--color-purple-10)' : 'var(--color-gray-3)',
             color: isCompareFrom ? 'white' : 'var(--color-gray-11)',
           }}
-          onClick={(e) => {
+          onPress={(e) => {
             e.stopPropagation()
             onSetCompareFrom()
           }}
@@ -250,7 +250,7 @@ function VersionItem({
             backgroundColor: isCompareTo ? 'var(--color-purple-10)' : 'var(--color-gray-3)',
             color: isCompareTo ? 'white' : 'var(--color-gray-11)',
           }}
-          onClick={(e) => {
+          onPress={(e) => {
             e.stopPropagation()
             onSetCompareTo()
           }}
@@ -400,7 +400,7 @@ export function VersionHistory({
                     borderRadius: 12,
                     backgroundColor: selectedRequirement?.id === req.id ? 'var(--color-blue-3)' : 'transparent',
                   }}
-                  onClick={() => {
+                  onPress={() => {
                     onSelectRequirement(req)
                     setSelectedVersion(null)
                     setCompareFrom(null)
@@ -474,7 +474,7 @@ export function VersionHistory({
               <Button
                 size="sm"
                 variant="outlined"
-                onClick={() => handleRestore(selectedVersion)}
+                onPress={() => handleRestore(selectedVersion)}
                 disabled={
                   restoreMutation.isPending ||
                   selectedVersion.version_number === versions[0]?.version_number

@@ -144,7 +144,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
-                  onClick={() => handleSort('title')}
+                  onPress={() => handleSort('title')}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
@@ -164,7 +164,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
-                  onClick={() => handleSort('status')}
+                  onPress={() => handleSort('status')}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
@@ -184,7 +184,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
-                  onClick={() => handleSort('priority')}
+                  onPress={() => handleSort('priority')}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
@@ -217,7 +217,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
-                  onClick={() => handleSort('due_date')}
+                  onPress={() => handleSort('due_date')}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
@@ -240,7 +240,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                       backgroundColor: overdue ? 'var(--color-red2)' : 'var(--color-background)',
                       borderTop: index > 0 ? '1px solid var(--color-border)' : 'none',
                     }}
-                    onClick={() => onTaskClick?.(task)}
+                    onPress={() => onTaskClick?.(task)}
                     onMouseEnter={(e) => {
                       if (!overdue) {
                         e.currentTarget.style.backgroundColor = 'var(--color-color2)';
@@ -343,7 +343,7 @@ export const TaskList: React.FC<TaskListProps> = ({
             </Text>
             <Row style={{ gap: '8px', alignItems: 'center' }}>
               <Button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onPress={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
                 variant="outline"
                 size="sm"
@@ -355,7 +355,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                 Page {page} of {totalPages}
               </Text>
               <Button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                onPress={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
                 variant="outline"
                 size="sm"

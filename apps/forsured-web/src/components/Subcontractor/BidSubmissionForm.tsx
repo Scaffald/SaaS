@@ -340,7 +340,7 @@ export default function BidSubmissionForm({
                         </Stack>
                       </Row>
                       <button
-                        onClick={() => removeFile(index)}
+                        onPress={() => removeFile(index)}
                         style={{
                           padding: 4,
                           backgroundColor: 'transparent',
@@ -367,7 +367,7 @@ export default function BidSubmissionForm({
           <Row gap={12} style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
             <Button
               variant="secondary"
-              onClick={handleClose}
+              onPress={handleClose}
               fullWidth
               disabled={loading}
             >
@@ -375,7 +375,7 @@ export default function BidSubmissionForm({
             </Button>
             <Button
               variant="primary"
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               fullWidth
               disabled={
                 loading ||

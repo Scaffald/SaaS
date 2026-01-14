@@ -317,14 +317,14 @@ export default function BrokerClientsPage() {
                         <Row gap={8}>
                           <button
                             type="button"
-                            onClick={() => setInviteClientType('manager')}
+                            onPress={() => setInviteClientType('manager')}
                             style={clientTypeButtonStyle(inviteClientType === 'manager')}
                           >
                             Manager/GC
                           </button>
                           <button
                             type="button"
-                            onClick={() => setInviteClientType('subcontractor')}
+                            onPress={() => setInviteClientType('subcontractor')}
                             style={clientTypeButtonStyle(inviteClientType === 'subcontractor')}
                           >
                             Contractor

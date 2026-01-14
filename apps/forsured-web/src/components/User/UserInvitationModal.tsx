@@ -203,14 +203,14 @@ export default function UserInvitationModal({
                       borderRadius: '4px',
                       cursor: 'pointer',
                     }}
-                    onClick={() => toggleProject(project.id)}
+                    onPress={() => toggleProject(project.id)}
                   >
                     <input
                       type="checkbox"
                       checked={selectedProjects.includes(project.id)}
                       onChange={() => toggleProject(project.id)}
                       style={{ borderRadius: '4px', border: '1px solid var(--color-border)' }}
-                      onClick={(e) => e.stopPropagation()}
+                      onPress={(e) => e.stopPropagation()}
                     />
                     <Text style={{ fontSize: '14px', color: 'var(--color-12)' }}>
                       {project.name}
@@ -248,14 +248,14 @@ export default function UserInvitationModal({
                       borderRadius: '4px',
                       cursor: 'pointer',
                     }}
-                    onClick={() => toggleClient(client.id)}
+                    onPress={() => toggleClient(client.id)}
                   >
                     <input
                       type="checkbox"
                       checked={selectedClients.includes(client.id)}
                       onChange={() => toggleClient(client.id)}
                       style={{ borderRadius: '4px', border: '1px solid var(--color-border)' }}
-                      onClick={(e) => e.stopPropagation()}
+                      onPress={(e) => e.stopPropagation()}
                     />
                     <Text style={{ fontSize: '14px', color: 'var(--color-12)' }}>
                       {client.name}
@@ -284,14 +284,14 @@ export default function UserInvitationModal({
         <Row style={{ gap: '12px', paddingTop: '16px', borderTop: '1px solid var(--color-border)' }}>
           <Button
             variant="outlined"
-            onClick={handleClose}
+            onPress={handleClose}
             style={{ flex: 1 }}
             disabled={loading}
           >
             Cancel
           </Button>
           <Button
-            onClick={handleSubmit}
+            onPress={handleSubmit}
             style={{ flex: 1, opacity: loading || !email.trim() || !name.trim() ? 0.5 : 1 }}
             disabled={loading || !email.trim() || !name.trim()}
           >

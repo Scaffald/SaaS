@@ -99,7 +99,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
     <Stack style={{ position: 'relative' }} ref={dropdownRef}>
       {/* Dropdown Trigger */}
       <Button
-        onClick={() => setIsOpen(!isOpen)}
+        onPress={() => setIsOpen(!isOpen)}
         variant="secondary"
         data-testid="clients-dropdown-trigger"
         style={{
@@ -170,7 +170,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
               />
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery('')}
+                  onPress={() => setSearchQuery('')}
                   style={{
                     position: 'absolute',
                     right: 8,
@@ -233,7 +233,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                     {gcs.map((client) => (
                       <button
                         key={client.id}
-                        onClick={() => handleClientClick(client)}
+                        onPress={() => handleClientClick(client)}
                         style={clientItemStyle}
                         onMouseEnter={(e) => {
                           (e.currentTarget as HTMLElement).style.backgroundColor =
@@ -307,7 +307,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                     {subs.map((client) => (
                       <button
                         key={client.id}
-                        onClick={() => handleClientClick(client)}
+                        onPress={() => handleClientClick(client)}
                         style={clientItemStyle}
                         onMouseEnter={(e) => {
                           (e.currentTarget as HTMLElement).style.backgroundColor =
@@ -366,7 +366,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
             }}
           >
             <Button
-              onClick={() => {
+              onPress={() => {
                 setIsOpen(false);
                 navigate('/broker/clients');
               }}

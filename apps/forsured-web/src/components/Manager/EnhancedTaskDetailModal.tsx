@@ -90,10 +90,10 @@ const ModalOverlay = ({
       justifyContent: 'center',
       zIndex: 1000,
     }}
-    onClick={onClose}
+    onPress={onClose}
   >
     <Card
-      onClick={(e: React.MouseEvent) => e.stopPropagation()}
+      onPress={(e: React.MouseEvent) => e.stopPropagation()}
       style={{
         backgroundColor: 'var(--color-background)',
         padding: 24,
@@ -331,7 +331,7 @@ export default function EnhancedTaskDetailModal({
               )}
             </Stack>
             <div
-              onClick={onClose}
+              onPress={onClose}
               style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
             >
               <X size={24} color="var(--color-text-muted)" />
@@ -393,7 +393,7 @@ export default function EnhancedTaskDetailModal({
                 Assigned To
               </Text>
               <div
-                onClick={() => setShowReassignModal(true)}
+                onPress={() => setShowReassignModal(true)}
                 style={{ cursor: 'pointer' }}
               >
                 <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-10)' }}>
@@ -531,7 +531,7 @@ export default function EnhancedTaskDetailModal({
             <Row gap={8}>
               <Button
                 variant={task.status === 'in_progress' ? 'primary' : 'secondary'}
-                onClick={() => handleStatusChange('in_progress')}
+                onPress={() => handleStatusChange('in_progress')}
                 leftIcon={Clock}
                 style={{ flex: 1 }}
               >
@@ -539,7 +539,7 @@ export default function EnhancedTaskDetailModal({
               </Button>
               <Button
                 variant={task.status === 'completed' ? 'success' : 'secondary'}
-                onClick={() => handleStatusChange('completed')}
+                onPress={() => handleStatusChange('completed')}
                 leftIcon={CheckCircle}
                 style={{ flex: 1 }}
               >
@@ -551,14 +551,14 @@ export default function EnhancedTaskDetailModal({
             <Row gap={8}>
               <Button
                 variant="secondary"
-                onClick={() => handleStatusChange('pending')}
+                onPress={() => handleStatusChange('pending')}
                 style={{ flex: 1 }}
               >
                 Mark Pending
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => setShowAddNoteModal(true)}
+                onPress={() => setShowAddNoteModal(true)}
                 leftIcon={MessageSquare}
                 style={{ flex: 1 }}
               >
@@ -606,7 +606,7 @@ export default function EnhancedTaskDetailModal({
             <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 8 }}>
               <H3 style={{ fontSize: 18, fontWeight: 600 }}>Reassign Task</H3>
               <div
-                onClick={() => setShowReassignModal(false)}
+                onPress={() => setShowReassignModal(false)}
                 style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
               >
                 <X size={20} color="var(--color-text-muted)" />
@@ -641,14 +641,14 @@ export default function EnhancedTaskDetailModal({
             <Row gap={12}>
               <Button
                 variant="secondary"
-                onClick={() => setShowReassignModal(false)}
+                onPress={() => setShowReassignModal(false)}
                 style={{ flex: 1 }}
               >
                 Cancel
               </Button>
               <Button
                 variant="primary"
-                onClick={handleReassign}
+                onPress={handleReassign}
                 style={{ flex: 1 }}
               >
                 Reassign
@@ -665,7 +665,7 @@ export default function EnhancedTaskDetailModal({
             <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 8 }}>
               <H3 style={{ fontSize: 18, fontWeight: 600 }}>Add Note</H3>
               <div
-                onClick={() => setShowAddNoteModal(false)}
+                onPress={() => setShowAddNoteModal(false)}
                 style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
               >
                 <X size={20} color="var(--color-text-muted)" />
@@ -695,14 +695,14 @@ export default function EnhancedTaskDetailModal({
             <Row gap={12}>
               <Button
                 variant="secondary"
-                onClick={() => setShowAddNoteModal(false)}
+                onPress={() => setShowAddNoteModal(false)}
                 style={{ flex: 1 }}
               >
                 Cancel
               </Button>
               <Button
                 variant="primary"
-                onClick={handleAddNote}
+                onPress={handleAddNote}
                 style={{ flex: 1 }}
               >
                 Add Note

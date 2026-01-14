@@ -465,7 +465,7 @@ export default function MyBrokerPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => setShowCodeEntry(!showCodeEntry)}
+                  onPress={() => setShowCodeEntry(!showCodeEntry)}
                 >
                   {showCodeEntry ? 'Hide' : 'Enter Code'}
                 </Button>
@@ -548,9 +548,9 @@ export default function MyBrokerPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => setShowInviteForm(!showInviteForm)}
+                  iconStart={UserPlus}
+                  onPress={() => setShowInviteForm(!showInviteForm)}
                 >
-                  <UserPlus size={16} />
                   {showInviteForm ? 'Cancel' : 'Invite Broker'}
                 </Button>
               </Row>

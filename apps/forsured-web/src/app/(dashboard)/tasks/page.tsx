@@ -204,7 +204,7 @@ export default function TasksPage() {
               {hasActiveFilters && (
                 <Stack style={{ justifyContent: 'flex-end' }}>
                   <Button
-                    onClick={clearFilters}
+                    onPress={clearFilters}
                     style={{
                       fontSize: 'var(--font-size-2)',
                       color: 'var(--color-gray-11)',
@@ -230,7 +230,7 @@ export default function TasksPage() {
             </Text>
             <Row style={{ gap: 'var(--space-2)' }}>
               <Button
-                onClick={() => handleBulkAction('complete')}
+                onPress={() => handleBulkAction('complete')}
                 style={{
                   backgroundColor: 'var(--color-blue-9)',
                   color: 'white',
@@ -241,7 +241,7 @@ export default function TasksPage() {
                 Mark Complete
               </Button>
               <Button
-                onClick={() => handleBulkAction('export')}
+                onPress={() => handleBulkAction('export')}
                 style={{
                   backgroundColor: 'white',
                   color: 'var(--color-blue-11)',
@@ -254,7 +254,7 @@ export default function TasksPage() {
                 Export
               </Button>
               <Button
-                onClick={() => setSelectedTaskIds([])}
+                onPress={() => setSelectedTaskIds([])}
                 style={{
                   fontSize: 'var(--font-size-2)',
                   color: 'var(--color-gray-11)',

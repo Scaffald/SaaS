@@ -176,7 +176,7 @@ export default function MyManagersPage() {
             lastActivity={relationship.lastActivity}
             relationshipHealth={relationship.relationshipHealth}
             activeProjects={relationship.activeProjects}
-            onClick={() => {
+            onPress={() => {
               console.log('Navigate to manager:', relationship.id);
             }}
           />

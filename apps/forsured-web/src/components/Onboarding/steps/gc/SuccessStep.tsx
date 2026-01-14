@@ -34,7 +34,7 @@ function SuccessStep({ onComplete, isLoading = false }: SuccessStepProps) {
         </Text>
       </Stack>
       <Button
-        onClick={onComplete}
+        onPress={onComplete}
         variant="primary"
         disabled={isLoading}
         size="lg"

@@ -250,7 +250,7 @@ export default function SubcontractorPrequalificationWizard({
       <Stack style={{ maxWidth: 1280, width: '100%', marginLeft: 'auto', marginRight: 'auto', paddingLeft: 16, paddingRight: 16 }}>
         {onSkip && (
           <Button
-            onClick={onSkip}
+            onPress={onSkip}
             variant="ghost"
             style={{
               position: 'absolute',
@@ -414,7 +414,7 @@ export default function SubcontractorPrequalificationWizard({
 
           <Row style={{ paddingLeft: 32, paddingRight: 32, paddingTop: 24, paddingBottom: 24, backgroundColor: 'var(--color-background-hover)', borderTop: '1px solid var(--color-border)', alignItems: 'center', justifyContent: 'space-between' }}>
             <Button
-              onClick={handlePrevious}
+              onPress={handlePrevious}
               disabled={currentStep === 1}
               variant="ghost"
               style={{
@@ -444,7 +444,7 @@ export default function SubcontractorPrequalificationWizard({
 
             {currentStep < STEPS.length ? (
               <Button
-                onClick={handleNext}
+                onPress={handleNext}
                 disabled={!isStepValid(currentStep)}
                 variant="primary"
                 style={{
@@ -459,7 +459,7 @@ export default function SubcontractorPrequalificationWizard({
               </Button>
             ) : (
               <Button
-                onClick={handleSubmit}
+                onPress={handleSubmit}
                 disabled={!isStepValid(currentStep)}
                 variant="primary"
                 style={{
@@ -577,7 +577,7 @@ function CertificationSearchSelect({
               <Text style={{ fontSize: 14 }}>{cert}</Text>
               <Button
                 type="button"
-                onClick={() => handleRemoveCertification(cert)}
+                onPress={() => handleRemoveCertification(cert)}
                 variant="ghost"
                 style={{ padding: 2 }}
               >
@@ -629,7 +629,7 @@ function CertificationSearchSelect({
                   <Button
                     key={cert}
                     type="button"
-                    onClick={() => handleAddCertification(cert)}
+                    onPress={() => handleAddCertification(cert)}
                     variant="ghost"
                     style={{
                       width: '100%',

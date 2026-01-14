@@ -744,7 +744,7 @@ export default function COIComparisonViewer({
                 <Stack style={{ gap: 8 }}>
                   <Button
                     variant="success"
-                    onClick={handleApprove}
+                    onPress={handleApprove}
                     leftIcon={CheckCircle}
                     fullWidth
                   >
@@ -752,7 +752,7 @@ export default function COIComparisonViewer({
                   </Button>
                   <Button
                     variant="secondary"
-                    onClick={() => setShowRequestChangesModal(true)}
+                    onPress={() => setShowRequestChangesModal(true)}
                     leftIcon={MessageSquare}
                     fullWidth
                   >
@@ -761,7 +761,7 @@ export default function COIComparisonViewer({
                   {comparisonResult && comparisonResult.gaps.length > 0 && (
                     <Button
                       variant="outline"
-                      onClick={() => setShowOverrideModal(true)}
+                      onPress={() => setShowOverrideModal(true)}
                       leftIcon={UserCheck}
                       fullWidth
                     >
@@ -798,7 +798,7 @@ export default function COIComparisonViewer({
           <Row style={{ gap: 12 }}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowRequestChangesModal(false);
                 setRequestChangesComment('');
               }}
@@ -808,7 +808,7 @@ export default function COIComparisonViewer({
             </Button>
             <Button
               variant="primary"
-              onClick={handleRequestChanges}
+              onPress={handleRequestChanges}
               disabled={!requestChangesComment.trim()}
               fullWidth
             >
@@ -856,7 +856,7 @@ export default function COIComparisonViewer({
           <Row style={{ gap: 12 }}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowOverrideModal(false);
                 setOverrideReason('');
               }}
@@ -866,7 +866,7 @@ export default function COIComparisonViewer({
             </Button>
             <Button
               variant="danger"
-              onClick={handleOverride}
+              onPress={handleOverride}
               disabled={!overrideReason.trim()}
               fullWidth
             >

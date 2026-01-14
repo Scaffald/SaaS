@@ -76,14 +76,14 @@ function ConnectionDialog({
         <Row style={{ justifyContent: 'flex-end', gap: '12px' }}>
           <Button
             variant="secondary"
-            onClick={onCreateNew}
+            onPress={onCreateNew}
             disabled={isLoading}
           >
             Create New Company Instead
           </Button>
           <Button
             variant="primary"
-            onClick={() => scaffaldCompany && onConnect(scaffaldCompany.id)}
+            onPress={() => scaffaldCompany && onConnect(scaffaldCompany.id)}
             disabled={isLoading || !scaffaldCompany}
           >
             Connect This Company

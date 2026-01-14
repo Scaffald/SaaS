@@ -251,28 +251,28 @@ export default function ReferralManagementPage() {
       <Row style={{ gap: 'var(--space-2)', borderBottomWidth: 1, borderColor: 'var(--color-border)', paddingBottom: 'var(--space-2)' }}>
         <Button
           variant={activeTab === 'overview' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('overview')}
+          onPress={() => setActiveTab('overview')}
           style={{ backgroundColor: activeTab === 'overview' ? 'var(--color-blue-9)' : 'transparent', color: activeTab === 'overview' ? 'white' : 'var(--color-11)' }}
         >
           Overview
         </Button>
         <Button
           variant={activeTab === 'settings' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('settings')}
+          onPress={() => setActiveTab('settings')}
           style={{ backgroundColor: activeTab === 'settings' ? 'var(--color-blue-9)' : 'transparent', color: activeTab === 'settings' ? 'white' : 'var(--color-11)' }}
         >
           Settings
         </Button>
         <Button
           variant={activeTab === 'campaigns' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('campaigns')}
+          onPress={() => setActiveTab('campaigns')}
           style={{ backgroundColor: activeTab === 'campaigns' ? 'var(--color-blue-9)' : 'transparent', color: activeTab === 'campaigns' ? 'white' : 'var(--color-11)' }}
         >
           Campaigns
         </Button>
         <Button
           variant={activeTab === 'rewards' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('rewards')}
+          onPress={() => setActiveTab('rewards')}
           style={{ backgroundColor: activeTab === 'rewards' ? 'var(--color-blue-9)' : 'transparent', color: activeTab === 'rewards' ? 'white' : 'var(--color-11)' }}
         >
           Rewards
@@ -387,18 +387,16 @@ export default function ReferralManagementPage() {
               {!editingSettings ? (
                 <Button
                   variant="outline"
-                  onClick={() => setEditingSettings(true)}
+                  iconStart={Edit}
+                  onPress={() => setEditingSettings(true)}
                 >
-                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
-                    <Edit size={16} />
-                    <span>Edit Settings</span>
-                  </Row>
+                  Edit Settings
                 </Button>
               ) : (
                 <Row style={{ gap: 'var(--space-2)' }}>
                   <Button
                     variant="outline"
-                    onClick={() => {
+                    onPress={() => {
                       setEditingSettings(false);
                       fetchSettings();
                     }}
@@ -406,9 +404,9 @@ export default function ReferralManagementPage() {
                     Cancel
                   </Button>
                   <Button
-                    onClick={handleSaveSettings}
+                    color="primary"
+                    onPress={handleSaveSettings}
                     disabled={savingSettings}
-                    style={{ backgroundColor: 'var(--color-blue-9)', color: 'white' }}
                   >
                     {savingSettings ? 'Saving...' : 'Save Changes'}
                   </Button>
@@ -653,12 +651,10 @@ export default function ReferralManagementPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => toast.info('Campaign editing coming soon')}
+                      iconStart={Edit}
+                      onPress={() => toast.info('Campaign editing coming soon')}
                     >
-                      <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
-                        <Edit size={14} />
-                        <span>Edit</span>
-                      </Row>
+                      Edit
                     </Button>
                   </Row>
                 </Card>
@@ -734,23 +730,19 @@ export default function ReferralManagementPage() {
                       <Row style={{ gap: 'var(--space-2)' }}>
                         <Button
                           size="sm"
-                          onClick={() => toast.info('Reward approval coming soon')}
+                          iconStart={CheckCircle}
+                          onPress={() => toast.info('Reward approval coming soon')}
                           style={{ backgroundColor: 'var(--color-green-9)', color: 'white' }}
                         >
-                          <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
-                            <CheckCircle size={14} />
-                            <span>Approve</span>
-                          </Row>
+                          Approve
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => toast.info('Reward rejection coming soon')}
+                          iconStart={XCircle}
+                          onPress={() => toast.info('Reward rejection coming soon')}
                         >
-                          <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
-                            <XCircle size={14} />
-                            <span>Reject</span>
-                          </Row>
+                          Reject
                         </Button>
                       </Row>
                     )}

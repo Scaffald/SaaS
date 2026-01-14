@@ -590,14 +590,14 @@ export default function InvitationLandingPage() {
                 <Button
                   variant="outline"
                   style={{ flex: 1 }}
-                  onClick={() => setShowDeclineReason(false)}
+                  onPress={() => setShowDeclineReason(false)}
                   disabled={declineMutation.isPending}
                 >
                   Cancel
                 </Button>
                 <Button
                   style={{ flex: 1, backgroundColor: 'var(--color-red-9)' }}
-                  onClick={handleDecline}
+                  onPress={handleDecline}
                   disabled={declineMutation.isPending}
                 >
                   <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
@@ -613,7 +613,7 @@ export default function InvitationLandingPage() {
               <Button
                 variant="outline"
                 style={{ flex: 1 }}
-                onClick={() => setShowDeclineReason(true)}
+                onPress={() => setShowDeclineReason(true)}
                 disabled={acceptMutation.isPending}
               >
                 <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
@@ -623,7 +623,7 @@ export default function InvitationLandingPage() {
               </Button>
               <Button
                 style={{ flex: 1 }}
-                onClick={handleAccept}
+                onPress={handleAccept}
                 disabled={acceptMutation.isPending}
               >
                 <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>

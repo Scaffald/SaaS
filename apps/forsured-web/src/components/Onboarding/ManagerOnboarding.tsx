@@ -71,7 +71,7 @@ export default function ManagerOnboarding() {
     >
       <Stack style={{ width: '100%', maxWidth: 448, position: 'relative' }}>
         <Button
-          onClick={handleSkip}
+          onPress={handleSkip}
           disabled={isSubmitting}
           variant="ghost"
           style={{

@@ -88,7 +88,7 @@ function BrokerClients() {
         <H1>My Clients</H1>
         <Button
           data-testid="invite-client-button"
-          onClick={handleAddClient}
+          onPress={handleAddClient}
           color="primary"
           leftIcon={<UserPlus size={18} />}
         >

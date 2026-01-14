@@ -41,7 +41,7 @@ export default function BrokerTaskDetailPage() {
     return (
       <Stack gap={24}>
         <button
-          onClick={() => navigate(-1)}
+          onPress={() => navigate(-1)}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -131,7 +131,7 @@ export default function BrokerTaskDetailPage() {
     <Stack gap={24}>
       <Row alignItems="center" justifyContent="space-between">
         <button
-          onClick={() => navigate(-1)}
+          onPress={() => navigate(-1)}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -285,7 +285,7 @@ export default function BrokerTaskDetailPage() {
               {task.status !== 'completed' && (
                 <Button
                   variant="primary"
-                  onClick={() => handleStatusChange('completed')}
+                  onPress={() => handleStatusChange('completed')}
                   disabled={isUpdating}
                   style={{ width: '100%' }}
                 >
@@ -298,7 +298,7 @@ export default function BrokerTaskDetailPage() {
               {task.status === 'pending' && (
                 <Button
                   variant="outlined"
-                  onClick={() => handleStatusChange('in_progress')}
+                  onPress={() => handleStatusChange('in_progress')}
                   disabled={isUpdating}
                   style={{ width: '100%' }}
                 >
@@ -311,7 +311,7 @@ export default function BrokerTaskDetailPage() {
               {task.status === 'completed' && (
                 <Button
                   variant="outlined"
-                  onClick={() => handleStatusChange('pending')}
+                  onPress={() => handleStatusChange('pending')}
                   disabled={isUpdating}
                   style={{ width: '100%' }}
                 >

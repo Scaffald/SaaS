@@ -168,7 +168,7 @@ function GraphNode({ node, position, isSelected, onClick }: GraphNodeProps) {
   return (
     <g
       transform={`translate(${position.x}, ${position.y})`}
-      onClick={() => onClick(node)}
+      onPress={() => onClick(node)}
       style={{ cursor: 'pointer' }}
     >
       {/* Node rectangle */}
@@ -656,7 +656,7 @@ export function DependencyVisualizer({
                   node={node}
                   position={position}
                   isSelected={selectedNode?.id === node.id}
-                  onClick={handleNodeClick}
+                  onPress={handleNodeClick}
                 />
               );
             })}
@@ -692,7 +692,7 @@ export function DependencyVisualizer({
             <Button
               variant="secondary"
               size="$2"
-              onClick={() => setSelectedNode(null)}
+              onPress={() => setSelectedNode(null)}
             >
               Clear
             </Button>

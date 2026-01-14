@@ -77,7 +77,7 @@ export function DataTable<TData>({
                 return (
                   <th
                     key={header.id}
-                    onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
+                    onPress={canSort ? header.column.getToggleSortingHandler() : undefined}
                     style={{
                       padding: 12,
                       textAlign: 'left',
@@ -146,7 +146,7 @@ export function DataTable<TData>({
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => table.previousPage()}
+              onPress={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
               style={{ opacity: !table.getCanPreviousPage() ? 0.5 : 1 }}
             >
@@ -155,7 +155,7 @@ export function DataTable<TData>({
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => table.nextPage()}
+              onPress={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
               style={{ opacity: !table.getCanNextPage() ? 0.5 : 1 }}
             >

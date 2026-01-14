@@ -81,13 +81,13 @@ function GCTeamSettings() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleEditMember(member.id)}
+                  onPress={() => handleEditMember(member.id)}
                   leftIcon={<Edit size={16} />}
                 />
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleToggleMemberStatus(member.id, member.status)}
+                  onPress={() => handleToggleMemberStatus(member.id, member.status)}
                   leftIcon={<UserX size={16} />}
                 >
                   {member.status === 'active' ? 'Deactivate' : 'Activate'}

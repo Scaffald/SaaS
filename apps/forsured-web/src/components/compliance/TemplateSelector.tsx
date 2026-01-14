@@ -107,7 +107,7 @@ export default function TemplateSelector({
       <Card style={{ backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-5)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
         <Text style={{ color: 'var(--color-red-11)', marginBottom: 8 }}>Error: {error}</Text>
         <button
-          onClick={() => loadTemplates()}
+          onPress={() => loadTemplates()}
           style={{
             fontSize: 'var(--font-size-3)',
             color: 'var(--color-red-10)',
@@ -129,7 +129,7 @@ export default function TemplateSelector({
         <h2 style={{ fontSize: 'var(--font-size-7)', fontWeight: 700, color: 'var(--color-12)', margin: 0 }}>Select a Template</h2>
         {onCancel && (
           <button
-            onClick={onCancel}
+            onPress={onCancel}
             style={{
               color: 'var(--color-10)',
               backgroundColor: 'transparent',
@@ -145,7 +145,7 @@ export default function TemplateSelector({
       {/* Type Filter */}
       <Row style={{ gap: 8, flexWrap: 'wrap' }}>
         <button
-          onClick={() => setSelectedType('all')}
+          onPress={() => setSelectedType('all')}
           style={{
             paddingLeft: 'var(--space-4)',
             paddingRight: 'var(--space-4)',
@@ -165,7 +165,7 @@ export default function TemplateSelector({
         {Object.values(CoverageType).map((type) => (
           <button
             key={type}
-            onClick={() => setSelectedType(type)}
+            onPress={() => setSelectedType(type)}
             style={{
               paddingLeft: 'var(--space-4)',
               paddingRight: 'var(--space-4)',
@@ -195,7 +195,7 @@ export default function TemplateSelector({
           {filteredTemplates.map((template) => (
             <Card
               key={template.id}
-              onClick={() => onSelectTemplate(template)}
+              onPress={() => onSelectTemplate(template)}
               style={{
                 backgroundColor: 'var(--color-background)',
                 borderRadius: 'var(--radius-4)',
@@ -265,7 +265,7 @@ export default function TemplateSelector({
             </Text>
           </Stack>
           <button
-            onClick={() => onSelectTemplate({
+            onPress={() => onSelectTemplate({
               id: '',
               name: '',
               type: CoverageType.CUSTOM,

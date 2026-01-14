@@ -287,7 +287,7 @@ export function RequirementEditor({
           inset: 0,
           backgroundColor: 'rgba(0,0,0,0.5)',
         }}
-        onClick={onClose}
+        onPress={onClose}
       />
 
       {/* Modal */}
@@ -324,7 +324,7 @@ export function RequirementEditor({
           <Button
             variant="ghost"
             style={{ padding: 8, color: 'var(--color-gray-10)', borderRadius: 6 }}
-            onClick={onClose}
+            onPress={onClose}
           >
             <X size={20} />
           </Button>
@@ -657,7 +657,7 @@ export function RequirementEditor({
               color: 'var(--color-gray-12)',
               borderRadius: 12,
             }}
-            onClick={onClose}
+            onPress={onClose}
           >
             <Text>Cancel</Text>
           </Button>

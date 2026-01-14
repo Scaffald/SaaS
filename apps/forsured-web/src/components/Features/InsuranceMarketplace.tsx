@@ -122,7 +122,7 @@ export default function InsuranceMarketplace() {
         </Stack>
         <Row style={{ position: 'relative' }}>
           <Button
-            onClick={() => setShowCart(!showCart)}
+            onPress={() => setShowCart(!showCart)}
             variant="primary"
           >
             <Row style={{ alignItems: 'center', gap: 8 }}>
@@ -185,7 +185,7 @@ export default function InsuranceMarketplace() {
             {categories.map((category) => (
               <Button
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
+                onPress={() => setSelectedCategory(category.id)}
                 variant={selectedCategory === category.id ? 'primary' : 'ghost'}
               >
                 {category.name}
@@ -399,7 +399,7 @@ export default function InsuranceMarketplace() {
                   Shopping Cart
                 </Text>
                 <Button
-                  onClick={() => setShowCart(false)}
+                  onPress={() => setShowCart(false)}
                   variant="ghost"
                   size="sm"
                 >

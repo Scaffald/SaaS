@@ -125,7 +125,7 @@ export function TeamMemberCard({
         padding: 16,
         cursor: 'pointer',
       }}
-      onClick={handleCardClick}
+      onPress={handleCardClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -213,7 +213,7 @@ export function TeamMemberCard({
           {(onEdit || onRemove) && (
             <div style={{ position: 'relative' }} ref={menuRef}>
               <Button
-                onClick={handleMenuClick}
+                onPress={handleMenuClick}
                 variant="outline"
                 size="sm"
                 style={{ padding: 4 }}
@@ -242,7 +242,7 @@ export function TeamMemberCard({
                 >
                   {onEdit && (
                     <Button
-                      onClick={handleEdit}
+                      onPress={handleEdit}
                       variant="ghost"
                       size="sm"
                       style={{
@@ -265,7 +265,7 @@ export function TeamMemberCard({
                   )}
                   {onRemove && (
                     <Button
-                      onClick={handleRemove}
+                      onPress={handleRemove}
                       variant="ghost"
                       size="sm"
                       style={{

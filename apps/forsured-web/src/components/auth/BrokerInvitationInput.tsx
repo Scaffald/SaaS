@@ -76,7 +76,7 @@ export function BrokerInvitationInput({
       >
         <Text style={{ color: 'var(--color-color10)' }}>Are you an insurance broker?</Text>
         <Button
-          onClick={() => setShowInvitation(true)}
+          onPress={() => setShowInvitation(true)}
           data-testid="broker-invitation-link"
           variant="ghost"
         >
@@ -169,7 +169,7 @@ export function BrokerInvitationInput({
           />
           <Row style={{ gap: '12px' }}>
             <Button
-              onClick={handleVerify}
+              onPress={handleVerify}
               disabled={isLoading || invitationCode.length < 4}
               data-testid="verify-invitation-button"
               variant="primary"
@@ -185,7 +185,7 @@ export function BrokerInvitationInput({
               )}
             </Button>
             <Button
-              onClick={handleCancel}
+              onPress={handleCancel}
               data-testid="cancel-invitation-button"
               variant="ghost"
             >

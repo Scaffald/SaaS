@@ -492,7 +492,7 @@ export default function GCOnboarding() {
                   </Stack>
                   {getRecommendedSettings() && (
                     <Button
-                      onClick={applyRecommendedSettings}
+                      onPress={applyRecommendedSettings}
                       style={{
                         backgroundColor: 'var(--color-blue-10)',
                         color: 'white',
@@ -1029,7 +1029,7 @@ export default function GCOnboarding() {
           {/* Navigation */}
           <Row style={{ padding: '24px 32px', backgroundColor: 'var(--color-background-hover)', borderTop: '1px solid var(--color-border)', alignItems: 'center', justifyContent: 'space-between' }}>
             <Button
-              onClick={handlePrevious}
+              onPress={handlePrevious}
               disabled={currentStep === 1}
               style={{
                 opacity: currentStep === 1 ? 0.5 : 1,
@@ -1061,7 +1061,7 @@ export default function GCOnboarding() {
 
             {currentStep < 3 ? (
               <Button
-                onClick={handleNext}
+                onPress={handleNext}
                 disabled={
                   currentStep === 1 &&
                   (!companyInfo.companyName ||
@@ -1099,7 +1099,7 @@ export default function GCOnboarding() {
               </Button>
             ) : (
               <Button
-                onClick={handleFinish}
+                onPress={handleFinish}
                 style={{
                   padding: '8px 24px',
                   backgroundColor: 'var(--color-green-10)',
@@ -1144,7 +1144,7 @@ export default function GCOnboarding() {
                 </Text>
                 <Row style={{ gap: '12px', width: '100%' }}>
                   <Button
-                    onClick={() => setShowConfirmationModal(false)}
+                    onPress={() => setShowConfirmationModal(false)}
                     style={{
                       flex: 1,
                       padding: '8px 16px',
@@ -1156,7 +1156,7 @@ export default function GCOnboarding() {
                     Cancel
                   </Button>
                   <Button
-                    onClick={handleConfirmFinish}
+                    onPress={handleConfirmFinish}
                     style={{
                       flex: 1,
                       padding: '8px 16px',

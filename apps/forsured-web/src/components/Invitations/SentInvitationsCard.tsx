@@ -132,7 +132,7 @@ export function SentInvitationsCard({
           <Button
             size="small"
             variant="outline"
-            onClick={() => navigate('/notifications')}
+            onPress={() => navigate('/notifications')}
           >
             <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
               <Text style={{ fontSize: 'var(--font-size-2)' }}>View All</Text>

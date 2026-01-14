@@ -45,7 +45,7 @@ function UserTypeCard({ selected, disabled, onClick, children, 'data-testid': te
   return (
     <Stack
       as="button"
-      onClick={disabled ? undefined : onClick}
+      onPress={disabled ? undefined : onClick}
       style={baseStyle}
       data-testid={testId}
     >
@@ -78,7 +78,7 @@ export function UserTypeSelection({
       <Row style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
         {/* Manager Card - uses lexicon labels */}
         <UserTypeCard
-          onClick={() => onSelect('manager')}
+          onPress={() => onSelect('manager')}
           disabled={isLoading}
           selected={selectedType === 'manager'}
           data-testid="user-type-manager"
@@ -127,7 +127,7 @@ export function UserTypeSelection({
 
         {/* Contractor Card - uses lexicon labels */}
         <UserTypeCard
-          onClick={() => onSelect('subcontractor')}
+          onPress={() => onSelect('subcontractor')}
           disabled={isLoading}
           selected={selectedType === 'subcontractor'}
           data-testid="user-type-contractor"

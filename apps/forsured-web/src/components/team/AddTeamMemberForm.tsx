@@ -237,7 +237,7 @@ export function AddTeamMemberForm({
           </Button>
           <Button
             type="button"
-            onClick={onCancel}
+            onPress={onCancel}
             disabled={loading}
             variant="outline"
             style={{ opacity: loading ? 0.5 : 1 }}

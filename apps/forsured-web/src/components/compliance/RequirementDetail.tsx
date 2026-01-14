@@ -128,7 +128,7 @@ export default function RequirementDetail({
               border: 'none',
               cursor: 'pointer',
             }}
-            onClick={onClose}
+            onPress={onClose}
           >
             Close
           </button>
@@ -285,7 +285,7 @@ export default function RequirementDetail({
                 border: 'none',
                 cursor: 'pointer',
               }}
-              onClick={() => setShowVersions(!showVersions)}
+              onPress={() => setShowVersions(!showVersions)}
             >
               {showVersions ? 'Hide' : 'Show'} Versions ({versions.length})
             </button>
@@ -331,7 +331,7 @@ export default function RequirementDetail({
                           border: 'none',
                           cursor: 'pointer',
                         }}
-                        onClick={() => onViewVersion(version.id)}
+                        onPress={() => onViewVersion(version.id)}
                       >
                         View
                       </button>

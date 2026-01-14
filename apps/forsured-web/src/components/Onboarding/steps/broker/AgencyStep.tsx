@@ -89,7 +89,7 @@ function AgencyStep({ onComplete, initialData = {}, isLoading = false }: AgencyS
           </Stack>
           <Stack style={{ marginTop: 24 }}>
             <Button
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               variant="primary"
               disabled={isLoading}
             >

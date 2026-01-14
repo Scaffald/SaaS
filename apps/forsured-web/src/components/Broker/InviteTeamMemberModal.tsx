@@ -187,7 +187,7 @@ export default function InviteTeamMemberModal({
 
   return (
     <Stack
-      onClick={handleBackdropClick}
+      onPress={handleBackdropClick}
       style={{
         position: 'fixed',
         top: 0,
@@ -205,7 +205,7 @@ export default function InviteTeamMemberModal({
       aria-labelledby="invite-member-modal-title"
     >
       <Card
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        onPress={(e: React.MouseEvent) => e.stopPropagation()}
         style={{
           backgroundColor: 'var(--color-background)',
           borderRadius: 12,
@@ -251,7 +251,7 @@ export default function InviteTeamMemberModal({
 
           {/* Close Button */}
           <Button
-            onClick={handleClose}
+            onPress={handleClose}
             disabled={loading}
             variant="ghost"
             style={{ padding: 4, opacity: loading ? 0.5 : 1 }}
@@ -360,14 +360,14 @@ export default function InviteTeamMemberModal({
           <Row gap={12} style={{ paddingTop: 8 }}>
             <Button
               variant="outlined"
-              onClick={handleClose}
+              onPress={handleClose}
               disabled={loading}
               style={{ flex: 1, opacity: loading ? 0.5 : 1 }}
             >
               Cancel
             </Button>
             <Button
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               disabled={loading || !email.trim() || !name.trim()}
               style={{
                 flex: 1,

@@ -285,7 +285,7 @@ export default function RFPCard({
               <Button
                 variant="primary"
                 style={{ flex: 1 }}
-                onClick={onRespond}
+                onPress={onRespond}
                 disabled={hasResponded}
               >
                 {hasResponded ? 'Response Submitted' : 'Submit Proposal'}

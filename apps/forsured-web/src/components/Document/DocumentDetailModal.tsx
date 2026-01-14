@@ -288,7 +288,7 @@ export default function DocumentDetailModal({
             <Button
               variant={viewMode === 'inline' ? 'primary' : 'ghost'}
               size="sm"
-              onClick={() => handleViewModeChange('inline')}
+              onPress={() => handleViewModeChange('inline')}
               leftIcon={Maximize2}
             >
               Inline
@@ -296,7 +296,7 @@ export default function DocumentDetailModal({
             <Button
               variant={viewMode === 'modal' ? 'primary' : 'ghost'}
               size="sm"
-              onClick={() => handleViewModeChange('modal')}
+              onPress={() => handleViewModeChange('modal')}
               leftIcon={Minimize2}
             >
               Modal
@@ -304,7 +304,7 @@ export default function DocumentDetailModal({
             <Button
               variant={viewMode === 'split-screen' ? 'primary' : 'ghost'}
               size="sm"
-              onClick={() => handleViewModeChange('split-screen')}
+              onPress={() => handleViewModeChange('split-screen')}
               leftIcon={Layout}
             >
               Split
@@ -545,7 +545,7 @@ export default function DocumentDetailModal({
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={handleExtractFields}
+                        onPress={handleExtractFields}
                         fullWidth
                       >
                         Re-extract Fields

@@ -169,7 +169,7 @@ export default function BrokerAcknowledgementList() {
                 padding: 'var(--space-6)',
                 cursor: 'pointer',
               }}
-              onClick={() => navigate(`/broker/acknowledgements/${form.id}`)}
+              onPress={() => navigate(`/broker/acknowledgements/${form.id}`)}
             >
               <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
                 <Stack style={{ flex: 1 }}>

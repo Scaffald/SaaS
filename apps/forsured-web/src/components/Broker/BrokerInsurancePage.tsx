@@ -163,7 +163,7 @@ export default function BrokerInsurancePage() {
                 {expiringPolicies.slice(0, 3).map((policy) => (
                   <Card
                     key={policy.id}
-                    onClick={() => navigate(`/broker/insurance/policies/${policy.id}`)}
+                    onPress={() => navigate(`/broker/insurance/policies/${policy.id}`)}
                     style={{
                       backgroundColor: 'white',
                       borderRadius: 8,
@@ -202,7 +202,7 @@ export default function BrokerInsurancePage() {
                   return (
                     <Card
                       key={policy.id}
-                      onClick={() => navigate(`/broker/insurance/policies/${policy.id}`)}
+                      onPress={() => navigate(`/broker/insurance/policies/${policy.id}`)}
                       style={{
                         backgroundColor: 'var(--color-gray-2)',
                         borderRadius: 8,
@@ -295,7 +295,7 @@ export default function BrokerInsurancePage() {
                 return (
                   <Card
                     key={policy.id}
-                    onClick={() => navigate(`/broker/insurance/policies/${policy.id}`)}
+                    onPress={() => navigate(`/broker/insurance/policies/${policy.id}`)}
                     style={{
                       backgroundColor: 'var(--color-background)',
                       borderRadius: 12,

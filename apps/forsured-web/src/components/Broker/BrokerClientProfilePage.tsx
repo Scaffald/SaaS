@@ -65,7 +65,7 @@ export default function BrokerClientProfilePage() {
         <Row
           alignItems="center"
           gap={8}
-          onClick={() => navigate(-1)}
+          onPress={() => navigate(-1)}
           style={{ cursor: 'pointer' }}
         >
           <ArrowLeft size={20} color="var(--color-text-muted)" />
@@ -514,7 +514,7 @@ export default function BrokerClientProfilePage() {
               return (
                 <Card
                   key={project.id}
-                  onClick={() => navigate(`/broker/projects/${project.id}`)}
+                  onPress={() => navigate(`/broker/projects/${project.id}`)}
                   style={{
                     backgroundColor: 'var(--color-background)',
                     borderRadius: 12,
@@ -622,7 +622,7 @@ export default function BrokerClientProfilePage() {
         <Row alignItems="center" gap={16}>
           <Button
             variant="ghost"
-            onClick={() => navigate('/broker/clients')}
+            onPress={() => navigate('/broker/clients')}
             leftIcon={ArrowLeft}
             size="sm"
           >

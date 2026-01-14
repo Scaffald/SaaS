@@ -117,7 +117,7 @@ export default function NavigationDrawer({
     <>
       {isOpen && (
         <Box
-          onClick={onClose}
+          onPress={onClose}
           className="lg:hidden"
           style={{
             position: 'fixed',
@@ -152,7 +152,7 @@ export default function NavigationDrawer({
           <ForsuredLogo height={24} />
           <Box
             as="button"
-            onClick={onClose}
+            onPress={onClose}
             className="lg:hidden"
             style={{
               padding: 'var(--space-2)',
@@ -179,7 +179,7 @@ export default function NavigationDrawer({
                     <>
                       <Row
                         as="button"
-                        onClick={() => toggleSection(item.id)}
+                        onPress={() => toggleSection(item.id)}
                         style={{
                           width: '100%',
                           alignItems: 'center',
@@ -213,7 +213,7 @@ export default function NavigationDrawer({
                             <Box
                               key={child.id}
                               as="button"
-                              onClick={() =>
+                              onPress={() =>
                                 child.href && handleNavigate(child.href)
                               }
                               style={{
@@ -240,7 +240,7 @@ export default function NavigationDrawer({
                   ) : (
                     <Row
                       as="button"
-                      onClick={() => item.href && handleNavigate(item.href)}
+                      onPress={() => item.href && handleNavigate(item.href)}
                       style={{
                         width: '100%',
                         alignItems: 'center',
@@ -273,7 +273,7 @@ export function DrawerToggle({ onClick }: { onClick: () => void }) {
   return (
     <Box
       as="button"
-      onClick={onClick}
+      onPress={onClick}
       className="lg:hidden"
       style={{
         position: 'fixed',

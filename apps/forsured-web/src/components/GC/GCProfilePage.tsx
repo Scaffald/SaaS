@@ -192,7 +192,7 @@ export default function GCProfilePage() {
     return (
       <Stack style={{ gap: 'var(--space-6)' }}>
         <Button
-          onClick={() => navigate(-1)}
+          onPress={() => navigate(-1)}
           variant="ghost"
           leftIcon={ArrowLeft}
         >
@@ -241,7 +241,7 @@ export default function GCProfilePage() {
         <Row style={{ alignItems: 'center', gap: 'var(--space-4)' }}>
           <Button
             variant="ghost"
-            onClick={() => navigate('/broker/clients')}
+            onPress={() => navigate('/broker/clients')}
             leftIcon={ArrowLeft}
             size="sm"
           >
@@ -476,7 +476,7 @@ export default function GCProfilePage() {
                           cursor: 'pointer',
                           backgroundColor: isExpanded ? 'var(--color-background-hover)' : 'transparent',
                         }}
-                        onClick={() => handleRowClick(sub.id)}
+                        onPress={() => handleRowClick(sub.id)}
                         data-testid="subcontractor-row"
                       >
                         {/* Expand Indicator */}
@@ -700,7 +700,7 @@ export default function GCProfilePage() {
                                   variant="primary"
                                   size="sm"
                                   leftIcon={Eye}
-                                  onClick={(e) => handleViewFullProfile(e, sub.id)}
+                                  onPress={(e) => handleViewFullProfile(e, sub.id)}
                                   data-testid="view-profile-btn"
                                 >
                                   View Full Profile
@@ -709,7 +709,7 @@ export default function GCProfilePage() {
                                   variant="outline"
                                   size="sm"
                                   leftIcon={StickyNote}
-                                  onClick={(e) => handleAddNote(e, sub.id)}
+                                  onPress={(e) => handleAddNote(e, sub.id)}
                                   data-testid="add-note-btn"
                                 >
                                   Add Note
@@ -718,7 +718,7 @@ export default function GCProfilePage() {
                                   variant="outline"
                                   size="sm"
                                   leftIcon={MessageSquare}
-                                  onClick={(e) => handleSendMessage(e, sub.id)}
+                                  onPress={(e) => handleSendMessage(e, sub.id)}
                                   data-testid="send-message-btn"
                                 >
                                   Send Message

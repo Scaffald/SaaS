@@ -411,7 +411,7 @@ export default function NotificationsAndApprovalsPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() =>
+                onPress={() =>
                   setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
                 }
               >
@@ -441,7 +441,7 @@ export default function NotificationsAndApprovalsPage() {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => handleBulkAction('approve')}
+                  onPress={() => handleBulkAction('approve')}
                 >
                   <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <CheckCircle size={16} />
@@ -451,7 +451,7 @@ export default function NotificationsAndApprovalsPage() {
                 <Button
                   variant="danger"
                   size="sm"
-                  onClick={() => handleBulkAction('reject')}
+                  onPress={() => handleBulkAction('reject')}
                 >
                   <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <XCircle size={16} />
@@ -500,7 +500,7 @@ export default function NotificationsAndApprovalsPage() {
                         color: 'var(--color-text-secondary)',
                         cursor: 'pointer',
                       }}
-                      onClick={() => toggleSelectItem(approval.id)}
+                      onPress={() => toggleSelectItem(approval.id)}
                     >
                       {selectedItems.includes(approval.id) ? (
                         <CheckSquare size={20} color="var(--color-blue-9)" />
@@ -627,7 +627,7 @@ export default function NotificationsAndApprovalsPage() {
                           <Button
                             variant="primary"
                             size="sm"
-                            onClick={() => handleApprove(approval.id)}
+                            onPress={() => handleApprove(approval.id)}
                           >
                             <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                               <CheckCircle size={16} />
@@ -637,7 +637,7 @@ export default function NotificationsAndApprovalsPage() {
                           <Button
                             variant="danger"
                             size="sm"
-                            onClick={() => handleReject(approval.id, 'Rejected')}
+                            onPress={() => handleReject(approval.id, 'Rejected')}
                           >
                             <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                               <XCircle size={16} />
@@ -647,7 +647,7 @@ export default function NotificationsAndApprovalsPage() {
                           <Button
                             variant="secondary"
                             size="sm"
-                            onClick={() => setShowRequestMoreInfoModal(approval.id)}
+                            onPress={() => setShowRequestMoreInfoModal(approval.id)}
                           >
                             <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                               <MessageSquare size={16} />
@@ -657,7 +657,7 @@ export default function NotificationsAndApprovalsPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setShowDeferModal(approval.id)}
+                            onPress={() => setShowDeferModal(approval.id)}
                           >
                             <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                               <Clock size={16} />
@@ -735,7 +735,7 @@ export default function NotificationsAndApprovalsPage() {
             <Row style={{ gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
               <Button
                 variant="secondary"
-                onClick={() => {
+                onPress={() => {
                   setShowRequestMoreInfoModal(null);
                   setRequestInfoComment('');
                 }}
@@ -745,7 +745,7 @@ export default function NotificationsAndApprovalsPage() {
               </Button>
               <Button
                 variant="primary"
-                onClick={() => handleRequestMoreInfo(showRequestMoreInfoModal)}
+                onPress={() => handleRequestMoreInfo(showRequestMoreInfoModal)}
                 disabled={!requestInfoComment.trim()}
                 style={{ flex: 1 }}
               >
@@ -796,7 +796,7 @@ export default function NotificationsAndApprovalsPage() {
             <Row style={{ gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
               <Button
                 variant="secondary"
-                onClick={() => {
+                onPress={() => {
                   setShowDeferModal(null);
                   setDeferAssignee('');
                 }}
@@ -806,7 +806,7 @@ export default function NotificationsAndApprovalsPage() {
               </Button>
               <Button
                 variant="primary"
-                onClick={() => handleDefer(showDeferModal)}
+                onPress={() => handleDefer(showDeferModal)}
                 disabled={!deferAssignee.trim()}
                 style={{ flex: 1 }}
               >

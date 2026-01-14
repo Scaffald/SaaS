@@ -207,7 +207,7 @@ export default function CreateBrokerAckFormModal({
             Create Broker Acknowledgement Form
           </Text>
           <BeyondButton
-            onClick={onClose}
+            onPress={onClose}
             style={{
               padding: 'var(--space-1)',
               backgroundColor: 'transparent',
@@ -492,7 +492,7 @@ export default function CreateBrokerAckFormModal({
             <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)' }}>
               <Button
                 variant="outline"
-                onClick={onClose}
+                onPress={onClose}
                 type="button"
                 disabled={loading}
               >

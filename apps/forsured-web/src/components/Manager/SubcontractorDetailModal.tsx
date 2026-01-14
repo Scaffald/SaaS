@@ -221,10 +221,10 @@ export default function SubcontractorDetailModal({
         justifyContent: 'center',
         zIndex: 1000,
       }}
-      onClick={onClose}
+      onPress={onClose}
     >
       <Card
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        onPress={(e: React.MouseEvent) => e.stopPropagation()}
         data-testid="subcontractor-detail-modal"
         style={{
           backgroundColor: 'var(--color-background)',
@@ -384,7 +384,7 @@ export default function SubcontractorDetailModal({
 
           <Row style={{ borderBottom: '1px solid var(--color-border)' }}>
             <div
-              onClick={() => setActiveTab('overview')}
+              onPress={() => setActiveTab('overview')}
               style={{
                 paddingLeft: 16,
                 paddingRight: 16,
@@ -403,7 +403,7 @@ export default function SubcontractorDetailModal({
               </Text>
             </div>
             <div
-              onClick={() => setActiveTab('policies')}
+              onPress={() => setActiveTab('policies')}
               style={{
                 paddingLeft: 16,
                 paddingRight: 16,
@@ -422,7 +422,7 @@ export default function SubcontractorDetailModal({
               </Text>
             </div>
             <div
-              onClick={() => setActiveTab('documents')}
+              onPress={() => setActiveTab('documents')}
               style={{
                 paddingLeft: 16,
                 paddingRight: 16,
@@ -441,7 +441,7 @@ export default function SubcontractorDetailModal({
               </Text>
             </div>
             <div
-              onClick={() => setActiveTab('issues')}
+              onPress={() => setActiveTab('issues')}
               style={{
                 paddingLeft: 16,
                 paddingRight: 16,
@@ -890,7 +890,7 @@ export default function SubcontractorDetailModal({
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() =>
+                              onPress={() =>
                                 setSelectedDocument({
                                   id: doc.id,
                                   name: doc.file_name,
@@ -912,7 +912,7 @@ export default function SubcontractorDetailModal({
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() =>
+                                onPress={() =>
                                   window.open(doc.file_url, '_blank')
                                 }
                                 leftIcon={Download}
@@ -1092,7 +1092,7 @@ export default function SubcontractorDetailModal({
                             <Button
                               variant="outlined"
                               size="sm"
-                              onClick={() => handleMarkIssueResolved(issue.id)}
+                              onPress={() => handleMarkIssueResolved(issue.id)}
                             >
                               Mark Resolved
                             </Button>

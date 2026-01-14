@@ -212,13 +212,13 @@ export default function TasksInbox({
 
         <Row gap={16}>
           <button
-            onClick={() => setActiveTab('urgent')}
+            onPress={() => setActiveTab('urgent')}
             style={tabButtonStyle(activeTab === 'urgent')}
           >
             Urgent ({urgentTasks.length})
           </button>
           <button
-            onClick={() => setActiveTab('upcoming')}
+            onPress={() => setActiveTab('upcoming')}
             style={tabButtonStyle(activeTab === 'upcoming')}
           >
             Upcoming ({upcomingTasks.length})
@@ -233,7 +233,7 @@ export default function TasksInbox({
             return (
               <Card
                 key={task.id}
-                onClick={() => onTaskClick?.(task)}
+                onPress={() => onTaskClick?.(task)}
                 style={{
                   border: '1px solid var(--color-border)',
                   borderRadius: 12,
@@ -323,7 +323,7 @@ export default function TasksInbox({
                             color: 'var(--color-blue-10)',
                             textDecoration: 'none',
                           }}
-                          onClick={(e) => e.stopPropagation()}
+                          onPress={(e) => e.stopPropagation()}
                         >
                           <FileText size={12} />
                           <span>View Document</span>
@@ -347,7 +347,7 @@ export default function TasksInbox({
                           e.stopPropagation();
                           onUpdateTaskStatus?.(task.id, e.target.value);
                         }}
-                        onClick={(e) => e.stopPropagation()}
+                        onPress={(e) => e.stopPropagation()}
                         style={{
                           fontSize: 12,
                           border: '1px solid var(--color-border)',

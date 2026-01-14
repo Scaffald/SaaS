@@ -87,7 +87,7 @@ export default function NotificationPanel({
           Notifications
         </Text>
         <Button
-          onClick={onClose}
+          onPress={onClose}
           variant="ghost"
           style={{ padding: 4 }}
         >

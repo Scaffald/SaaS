@@ -383,7 +383,7 @@ export function RequirementEditorForm({
   }) => (
     <button
       type="button"
-      onClick={() => toggleSection(section)}
+      onPress={() => toggleSection(section)}
       style={{
         width: '100%',
         padding: 'var(--space-4)',
@@ -651,7 +651,7 @@ export function RequirementEditorForm({
                   </Row>
                   <button
                     type="button"
-                    onClick={() => removeEndorsement(index)}
+                    onPress={() => removeEndorsement(index)}
                     style={{
                       padding: 'var(--space-2)',
                       color: 'var(--color-10)',
@@ -719,7 +719,7 @@ export function RequirementEditorForm({
                   </Stack>
                   <button
                     type="button"
-                    onClick={() => removeCondition(index)}
+                    onPress={() => removeCondition(index)}
                     style={{
                       padding: 'var(--space-2)',
                       color: 'var(--color-10)',
@@ -789,7 +789,7 @@ export function RequirementEditorForm({
                   </Stack>
                   <button
                     type="button"
-                    onClick={() => removeDocumentationRequirement(index)}
+                    onPress={() => removeDocumentationRequirement(index)}
                     style={{
                       padding: 'var(--space-2)',
                       color: 'var(--color-10)',

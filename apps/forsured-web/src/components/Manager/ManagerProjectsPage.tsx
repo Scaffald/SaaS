@@ -404,7 +404,7 @@ export default function ManagerProjectsPage() {
             </H2>
           </Row>
           <div
-            onClick={() => setComplianceFilter('all')}
+            onPress={() => setComplianceFilter('all')}
             style={{
               padding: '8px 16px',
               fontSize: 14,
@@ -730,7 +730,7 @@ export default function ManagerProjectsPage() {
                   {selectedProject.name}
                 </H2>
                 <div
-                  onClick={() => setSelectedProject(null)}
+                  onPress={() => setSelectedProject(null)}
                   style={{ cursor: 'pointer' }}
                 >
                   <X size={24} color="var(--color-11)" />
@@ -886,7 +886,7 @@ export default function ManagerProjectsPage() {
             justifyContent: 'center',
             zIndex: 9999,
           }}
-          onClick={closeInviteModal}
+          onPress={closeInviteModal}
           role="dialog"
           aria-modal="true"
           aria-labelledby="invite-modal-title"
@@ -902,7 +902,7 @@ export default function ManagerProjectsPage() {
               overflow: 'auto',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            onPress={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {/* Header */}
             <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -915,7 +915,7 @@ export default function ManagerProjectsPage() {
                 </Text>
               </Stack>
               <button
-                onClick={closeInviteModal}
+                onPress={closeInviteModal}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -982,7 +982,7 @@ export default function ManagerProjectsPage() {
                         return (
                           <Row
                             key={sub.id}
-                            onClick={() => {
+                            onPress={() => {
                               if (!alreadyInvited) {
                                 setSelectedSubcontractorId(isSelected ? null : sub.id);
                               }

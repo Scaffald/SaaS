@@ -401,7 +401,7 @@ export default function TaskTypeSettingsPage({
                     <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16, alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
                       <Button
                         variant="ghost"
-                        onClick={() => setEditingTaskType(taskType)}
+                        onPress={() => setEditingTaskType(taskType)}
                         style={{
                           padding: 8,
                           color: 'var(--color-color10)',
@@ -412,7 +412,7 @@ export default function TaskTypeSettingsPage({
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={() => setDeleteConfirm(taskType)}
+                        onPress={() => setDeleteConfirm(taskType)}
                         style={{
                           padding: 8,
                           color: 'var(--color-color10)',
@@ -479,14 +479,14 @@ export default function TaskTypeSettingsPage({
           <Row style={{ justifyContent: 'flex-end', gap: 12 }}>
             <ButtonCommon
               variant="ghost"
-              onClick={() => setDeleteConfirm(null)}
+              onPress={() => setDeleteConfirm(null)}
               disabled={isSubmitting}
             >
               Cancel
             </ButtonCommon>
             <ButtonCommon
               variant="danger"
-              onClick={handleDelete}
+              onPress={handleDelete}
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Deleting...' : 'Delete'}

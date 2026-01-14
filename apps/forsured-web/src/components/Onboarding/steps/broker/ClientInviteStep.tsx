@@ -67,7 +67,7 @@ function ClientInviteStep({ onComplete, initialData = {}, isLoading = false }: C
           </Stack>
           <Stack style={{ marginTop: 24 }}>
             <Button
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               variant="primary"
               disabled={isLoading}
             >

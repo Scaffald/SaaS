@@ -312,7 +312,7 @@ export default function BidComparisonView({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              onPress={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               leftIcon={ArrowUpDown}
             >
               {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
@@ -535,7 +535,7 @@ export default function BidComparisonView({
                       <Button
                         variant="success"
                         size="sm"
-                        onClick={() => {
+                        onPress={() => {
                           setSelectedBid(bid.id);
                           setShowAwardModal(true);
                         }}
@@ -546,7 +546,7 @@ export default function BidComparisonView({
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => {
+                        onPress={() => {
                           setSelectedBid(bid.id);
                           setShowClarificationModal(true);
                         }}
@@ -557,7 +557,7 @@ export default function BidComparisonView({
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() => {
+                        onPress={() => {
                           setSelectedBid(bid.id);
                           setShowRejectModal(true);
                         }}
@@ -568,7 +568,7 @@ export default function BidComparisonView({
                       <Button
                         variant="outlined"
                         size="sm"
-                        onClick={() => setShowAISummary(bid.id)}
+                        onPress={() => setShowAISummary(bid.id)}
                         leftIcon={Sparkles}
                       >
                         View AI Summary
@@ -646,7 +646,7 @@ export default function BidComparisonView({
           <Row gap={12}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowAwardModal(false);
                 setSelectedBid(null);
               }}
@@ -656,7 +656,7 @@ export default function BidComparisonView({
             </Button>
             <Button
               variant="success"
-              onClick={() => selectedBid && handleAwardBid(selectedBid)}
+              onPress={() => selectedBid && handleAwardBid(selectedBid)}
               fullWidth
               leftIcon={Trophy}
             >
@@ -690,7 +690,7 @@ export default function BidComparisonView({
           <Row gap={12}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowRejectModal(false);
                 setSelectedBid(null);
                 setRejectReason('');
@@ -701,7 +701,7 @@ export default function BidComparisonView({
             </Button>
             <Button
               variant="danger"
-              onClick={handleRejectBid}
+              onPress={handleRejectBid}
               disabled={!rejectReason.trim()}
               fullWidth
               leftIcon={XCircle}
@@ -736,7 +736,7 @@ export default function BidComparisonView({
           <Row gap={12}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowClarificationModal(false);
                 setSelectedBid(null);
                 setClarificationQuestion('');
@@ -747,7 +747,7 @@ export default function BidComparisonView({
             </Button>
             <Button
               variant="primary"
-              onClick={handleRequestClarification}
+              onPress={handleRequestClarification}
               disabled={!clarificationQuestion.trim()}
               fullWidth
               leftIcon={MessageSquare}

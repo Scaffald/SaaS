@@ -489,7 +489,7 @@ export default function ProjectCoverageRequirementsPage({
                     <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16, alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
                       <Button
                         variant="ghost"
-                        onClick={() => setEditingRequirement(requirement)}
+                        onPress={() => setEditingRequirement(requirement)}
                         style={{
                           padding: 8,
                           color: 'var(--color-color10)',
@@ -501,7 +501,7 @@ export default function ProjectCoverageRequirementsPage({
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={() => setDeleteConfirm(requirement)}
+                        onPress={() => setDeleteConfirm(requirement)}
                         style={{
                           padding: 8,
                           color: 'var(--color-color10)',
@@ -523,7 +523,7 @@ export default function ProjectCoverageRequirementsPage({
       {/* Inherited Org Requirements (Read-only) */}
       <CardCommon>
         <Stack
-          onClick={() => setShowOrgRequirements(!showOrgRequirements)}
+          onPress={() => setShowOrgRequirements(!showOrgRequirements)}
           style={{
             paddingLeft: 16,
             paddingRight: 16,
@@ -731,7 +731,7 @@ export default function ProjectCoverageRequirementsPage({
           <Row style={{ justifyContent: 'flex-end', gap: 12 }}>
             <ButtonCommon
               variant="ghost"
-              onClick={() => setDeleteConfirm(null)}
+              onPress={() => setDeleteConfirm(null)}
               disabled={isSubmitting}
             >
               Cancel

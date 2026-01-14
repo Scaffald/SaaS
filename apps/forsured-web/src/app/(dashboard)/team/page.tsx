@@ -218,7 +218,7 @@ export default function TeamPage() {
             </Text>
           </Stack>
           <Button
-            onClick={handleAddMember}
+            onPress={handleAddMember}
             style={{ backgroundColor: 'var(--color-blue-9)', color: 'white', fontSize: 'var(--font-size-2)', fontWeight: 500, borderRadius: 'var(--radius-4)' }}
           >
             <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>

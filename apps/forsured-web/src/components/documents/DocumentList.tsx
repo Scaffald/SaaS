@@ -236,7 +236,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
               border: 'none',
               padding: 0,
             }}
-            onClick={handleRetry}
+            onPress={handleRetry}
           >
             <RefreshCw size={16} />
             <Text style={{ marginLeft: '4px' }}>Refresh</Text>
@@ -268,7 +268,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
             </Stack>
           </Row>
           <Button
-            onClick={handleRetry}
+            onPress={handleRetry}
             style={{
               marginTop: '12px',
               paddingLeft: '16px',
@@ -441,7 +441,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
                 return (
                   <tr
                     key={document.id}
-                    onClick={() => handleDocumentClick(document)}
+                    onPress={() => handleDocumentClick(document)}
                     style={{
                       cursor: 'pointer',
                       borderTop: '1px solid var(--color-border)',

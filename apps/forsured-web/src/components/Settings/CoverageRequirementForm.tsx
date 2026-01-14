@@ -224,7 +224,7 @@ export default function CoverageRequirementForm({
               <Button
                 key={amount}
                 type="button"
-                onClick={() => handleChange('minimum_limit', amount)}
+                onPress={() => handleChange('minimum_limit', amount)}
                 style={{
                   paddingLeft: 12,
                   paddingRight: 12,

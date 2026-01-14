@@ -307,7 +307,7 @@ export default function DocumentsPage() {
         </Stack>
         <Row gap={8}>
           <CommonButton
-            onClick={() => {
+            onPress={() => {
               console.log('[DocumentsPage] Upload button clicked');
               // Use startTransition to prevent blocking the UI
               startTransition(() => {
@@ -324,7 +324,7 @@ export default function DocumentsPage() {
           </CommonButton>
           <CommonButton
             variant="ghost"
-            onClick={loadDocuments}
+            onPress={loadDocuments}
             disabled={loading}
           >
             <Row alignItems="center" gap={8}>
@@ -467,19 +467,19 @@ export default function DocumentsPage() {
       >
         <Row alignItems="center" gap={8}>
           <button
-            onClick={() => setFilter('verified')}
+            onPress={() => setFilter('verified')}
             style={getFilterButtonStyle(filter === 'verified')}
           >
             Verified ({stats.verified})
           </button>
           <button
-            onClick={() => setFilter('pending')}
+            onPress={() => setFilter('pending')}
             style={getFilterButtonStyle(filter === 'pending')}
           >
             Pending ({stats.pending})
           </button>
           <button
-            onClick={() => setFilter('expiring')}
+            onPress={() => setFilter('expiring')}
             style={getFilterButtonStyle(filter === 'expiring')}
           >
             Expiring ({stats.expiring})
@@ -631,7 +631,7 @@ export default function DocumentsPage() {
                     <td>
                       <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16, justifyContent: 'flex-end' }} alignItems="center" gap={8}>
                         <button
-                          onClick={() => setSelectedDocument(doc)}
+                          onPress={() => setSelectedDocument(doc)}
                           style={getActionButtonStyle()}
                         >
                           <Eye size={16} />
@@ -693,7 +693,7 @@ export default function DocumentsPage() {
             justifyContent: 'center',
             zIndex: 1000,
           }}
-          onClick={handleModalClose}
+          onPress={handleModalClose}
         >
           <Card
             style={{
@@ -704,7 +704,7 @@ export default function DocumentsPage() {
               maxHeight: '90vh',
               overflow: 'auto',
             }}
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            onPress={(e: React.MouseEvent) => e.stopPropagation()}
             data-testid="upload-modal"
           >
             <Stack gap={16}>

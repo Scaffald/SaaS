@@ -97,7 +97,7 @@ export default function ProjectCard({
 
   return (
     <Card
-      onClick={onClick}
+      onPress={onClick}
       style={{
         cursor: onClick ? 'pointer' : 'default',
         padding: 24,
@@ -268,7 +268,7 @@ export default function ProjectCard({
               {onInviteUser && (
                 <CoreButton
                   variant="outlined"
-                  onClick={(e: React.MouseEvent) => {
+                  onPress={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onInviteUser(project.id);
                   }}
@@ -283,7 +283,7 @@ export default function ProjectCard({
               {onCreateTask && (
                 <CoreButton
                   variant="outlined"
-                  onClick={(e: React.MouseEvent) => {
+                  onPress={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onCreateTask(project.id);
                   }}

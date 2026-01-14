@@ -343,15 +343,15 @@ export default function UserManagementPage() {
                     <Button
                       variant="outlined"
                       size="sm"
-                      onClick={() => handleResendInvitation(invitation.id)}
+                      onPress={() => handleResendInvitation(invitation.id)}
                     >
                       Resend
                     </Button>
                     <Button
                       variant="outlined"
                       size="sm"
-                      style={{ backgroundColor: 'var(--color-red-10)', color: 'white' }}
-                      onClick={() => handleCancelInvitation(invitation.id)}
+                      color="error"
+                      onPress={() => handleCancelInvitation(invitation.id)}
                     >
                       Cancel
                     </Button>
@@ -472,19 +472,17 @@ export default function UserManagementPage() {
                         <Button
                           variant="outlined"
                           size="sm"
-                          onClick={() =>
+                          iconStart={Edit}
+                          iconOnly
+                          onPress={() =>
                             setSelectedUser({
                               id: user.id,
                               name: user.name,
                               email: user.email || '',
                             })
                           }
-                        >
-                          <Edit size={14} />
-                        </Button>
-                        <Button variant="outlined" size="sm">
-                          <Trash2 size={14} />
-                        </Button>
+                        />
+                        <Button variant="outlined" size="sm" iconStart={Trash2} iconOnly />
                       </Row>
                     </td>
                   </tr>

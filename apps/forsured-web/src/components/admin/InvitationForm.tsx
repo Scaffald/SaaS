@@ -63,7 +63,7 @@ function InvitationForm({ onSubmit, onCancel, isLoading = false }: InvitationFor
         <Row style={{ justifyContent: 'flex-end', gap: 8 }}>
           <Button
             variant="secondary"
-            onClick={onCancel}
+            onPress={onCancel}
             disabled={isLoading}
           >
             Cancel

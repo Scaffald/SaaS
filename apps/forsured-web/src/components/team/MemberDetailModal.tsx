@@ -152,7 +152,7 @@ export function MemberDetailModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
-      onClick={handleBackdropClick}
+      onPress={handleBackdropClick}
     >
       <Card
         style={{
@@ -166,7 +166,7 @@ export function MemberDetailModal({
           maxHeight: '90vh',
           overflow: 'hidden',
         }}
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        onPress={(e: React.MouseEvent) => e.stopPropagation()}
       >
         <div style={{ overflow: 'auto' }}>
           {/* Header */}
@@ -232,7 +232,7 @@ export function MemberDetailModal({
 
             {/* Close Button */}
             <Button
-              onClick={onClose}
+              onPress={onClose}
               variant="outline"
               size="sm"
               style={{ padding: 4 }}
@@ -293,7 +293,7 @@ export function MemberDetailModal({
               <Stack style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
                 {!showRemoveConfirm ? (
                   <Button
-                    onClick={() => setShowRemoveConfirm(true)}
+                    onPress={() => setShowRemoveConfirm(true)}
                     variant="outline"
                     size="sm"
                     style={{ color: 'var(--color-red-10)' }}
@@ -316,7 +316,7 @@ export function MemberDetailModal({
                     </Text>
                     <Row style={{ gap: 8 }}>
                       <Button
-                        onClick={handleRemove}
+                        onPress={handleRemove}
                         disabled={removeLoading}
                         style={{
                           backgroundColor: 'var(--color-red-10)',
@@ -328,7 +328,7 @@ export function MemberDetailModal({
                         {removeLoading ? 'Removing...' : 'Yes, Remove'}
                       </Button>
                       <Button
-                        onClick={() => setShowRemoveConfirm(false)}
+                        onPress={() => setShowRemoveConfirm(false)}
                         disabled={removeLoading}
                         variant="outline"
                         size="sm"

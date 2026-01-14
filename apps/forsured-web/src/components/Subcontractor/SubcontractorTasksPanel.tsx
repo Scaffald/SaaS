@@ -226,7 +226,7 @@ export default function SubcontractorTasksPanel({
           </Stack>
           <Row style={{ alignItems: 'center', gap: 8 }}>
             <Button
-              onClick={() => setFilter('all')}
+              onPress={() => setFilter('all')}
               style={{
                 paddingLeft: 12,
                 paddingRight: 12,
@@ -242,7 +242,7 @@ export default function SubcontractorTasksPanel({
               All
             </Button>
             <Button
-              onClick={() => setFilter('broker')}
+              onPress={() => setFilter('broker')}
               style={{
                 paddingLeft: 12,
                 paddingRight: 12,
@@ -258,7 +258,7 @@ export default function SubcontractorTasksPanel({
               From Broker
             </Button>
             <Button
-              onClick={() => setFilter('manager')}
+              onPress={() => setFilter('manager')}
               style={{
                 paddingLeft: 12,
                 paddingRight: 12,
@@ -300,7 +300,7 @@ export default function SubcontractorTasksPanel({
                   backgroundColor: severityColors.backgroundColor,
                   borderColor: severityColors.borderColor,
                 }}
-                onClick={() => onTaskClick?.(task)}
+                onPress={() => onTaskClick?.(task)}
               >
                 <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                   <Stack style={{ flex: 1 }}>
@@ -494,7 +494,7 @@ export default function SubcontractorTasksPanel({
                           color: 'var(--color-blue10)',
                           textDecoration: 'none',
                         }}
-                        onClick={(e) => e.stopPropagation()}
+                        onPress={(e) => e.stopPropagation()}
                       >
                         <FileText size={12} style={{ marginRight: 4 }} />
                         <Text style={{ fontSize: 10 }}>View Doc</Text>
@@ -510,7 +510,7 @@ export default function SubcontractorTasksPanel({
                           <CommonButton
                             size="sm"
                             variant="ghost"
-                            onClick={(e) =>
+                            onPress={(e) =>
                               handleQuickAction('upload_document', task, e)
                             }
                           >
@@ -524,7 +524,7 @@ export default function SubcontractorTasksPanel({
                           <CommonButton
                             size="sm"
                             variant="ghost"
-                            onClick={(e) =>
+                            onPress={(e) =>
                               handleQuickAction('view_requirements', task, e)
                             }
                           >
@@ -538,7 +538,7 @@ export default function SubcontractorTasksPanel({
                           <CommonButton
                             size="sm"
                             variant="ghost"
-                            onClick={(e) =>
+                            onPress={(e) =>
                               handleQuickAction('contact_broker', task, e)
                             }
                           >
@@ -553,7 +553,7 @@ export default function SubcontractorTasksPanel({
                           <CommonButton
                             size="sm"
                             variant="ghost"
-                            onClick={(e) =>
+                            onPress={(e) =>
                               handleQuickAction('request_quote', task, e)
                             }
                           >
@@ -575,7 +575,7 @@ export default function SubcontractorTasksPanel({
                       task.status === 'submitted') && (
                       <CommonButton
                         size="sm"
-                        onClick={(e) => {
+                        onPress={(e) => {
                           e.stopPropagation();
                           onCompleteTask?.(task.id);
                         }}

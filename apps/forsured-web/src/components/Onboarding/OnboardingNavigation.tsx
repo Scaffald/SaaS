@@ -36,7 +36,7 @@ function OnboardingNavigation({
     >
       <Button
         variant="outlined"
-        onClick={onBack}
+        onPress={onBack}
         disabled={currentStep === 1 || isLoading}
       >
         Back
@@ -46,7 +46,7 @@ function OnboardingNavigation({
         {canSkip && onSkip && (
           <Button
             variant="ghost"
-            onClick={onSkip}
+            onPress={onSkip}
             disabled={isLoading}
           >
             Skip
@@ -54,7 +54,7 @@ function OnboardingNavigation({
         )}
         <Button
           variant="primary"
-          onClick={onNext}
+          onPress={onNext}
           disabled={isLoading}
         >
           {isLastStep ? 'Finish' : 'Next'}

@@ -135,7 +135,7 @@ export function PendingInvitationsCard({
           <Button
             size="small"
             variant="outline"
-            onClick={() => navigate('/notifications')}
+            onPress={() => navigate('/notifications')}
           >
             <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
               <Text style={{ fontSize: 'var(--font-size-2)' }}>View All</Text>
@@ -242,7 +242,7 @@ export function PendingInvitationsCard({
                 style={{ flex: 1 }}
                 size="medium"
                 variant="outline"
-                onClick={() => handleDecline(invitation.id)}
+                onPress={() => handleDecline(invitation.id)}
                 disabled={processingId === invitation.id}
               >
                 <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
@@ -253,7 +253,7 @@ export function PendingInvitationsCard({
               <Button
                 style={{ flex: 1 }}
                 size="medium"
-                onClick={() => handleAccept(invitation.id)}
+                onPress={() => handleAccept(invitation.id)}
                 disabled={processingId === invitation.id}
               >
                 <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>

@@ -270,7 +270,7 @@ export function BulkOperationsModal({
           inset: 0,
           backgroundColor: 'rgba(0,0,0,0.5)',
         }}
-        onClick={handleClose}
+        onPress={handleClose}
       />
 
       {/* Modal */}
@@ -314,7 +314,7 @@ export function BulkOperationsModal({
           <Button
             variant="ghost"
             style={{ padding: 8, color: 'var(--color-gray-10)', borderRadius: 6 }}
-            onClick={handleClose}
+            onPress={handleClose}
           >
             <X size={20} />
           </Button>
@@ -375,7 +375,7 @@ export function BulkOperationsModal({
                             backgroundColor: importFormat === format ? 'var(--color-blue-2)' : 'transparent',
                             cursor: 'pointer',
                           }}
-                          onClick={() => setImportFormat(format)}
+                          onPress={() => setImportFormat(format)}
                         >
                           <input
                             type="radio"
@@ -400,7 +400,7 @@ export function BulkOperationsModal({
                       <Button
                         variant="ghost"
                         style={{ textDecoration: 'underline', padding: 0 }}
-                        onClick={handleDownloadTemplate}
+                        onPress={handleDownloadTemplate}
                       >
                         <Text>Download {importFormat.toUpperCase()} template</Text>
                       </Button>
@@ -422,7 +422,7 @@ export function BulkOperationsModal({
                         alignItems: 'center',
                         cursor: 'pointer',
                       }}
-                      onClick={() => fileInputRef.current?.click()}
+                      onPress={() => fileInputRef.current?.click()}
                     >
                       <input
                         ref={fileInputRef}
@@ -581,7 +581,7 @@ export function BulkOperationsModal({
                         backgroundColor: exportFormat === format ? 'var(--color-green-2)' : 'transparent',
                         cursor: 'pointer',
                       }}
-                      onClick={() => setExportFormat(format)}
+                      onPress={() => setExportFormat(format)}
                     >
                       <input
                         type="radio"
@@ -684,13 +684,13 @@ export function BulkOperationsModal({
                 color: 'var(--color-gray-12)',
                 borderRadius: 12,
               }}
-              onClick={handleClose}
+              onPress={handleClose}
             >
               <Text>Cancel</Text>
             </Button>
             {mode === 'import' ? (
               <Button
-                onClick={handleImport}
+                onPress={handleImport}
                 disabled={!importPreview || importPreview.errorRows > 0 || isImporting}
               >
                 {isImporting ? (

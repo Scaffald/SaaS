@@ -184,15 +184,12 @@ function AdminBrokers() {
         <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 700 }}>Broker Invitations</H1>
         <Row style={{ gap: 'var(--space-3)' }}>
           <Button
-            onClick={fetchInvitations}
+            onPress={fetchInvitations}
             disabled={isLoading}
             variant="outline"
-            style={{ paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', borderRadius: 'var(--radius-4)', opacity: isLoading ? 0.5 : 1 }}
+            iconStart={isLoading ? undefined : RefreshCcw}
           >
-            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
-              {isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
-              <span>Refresh</span>
-            </Row>
+            {isLoading ? 'Loading...' : 'Refresh'}
           </Button>
           <Button
             color="primary"
@@ -291,7 +288,7 @@ function AdminBrokers() {
                       <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                         {inv.email && (
                           <Button
-                            onClick={() => handleResendInvitation(inv.id)}
+                            onPress={() => handleResendInvitation(inv.id)}
                             disabled={actionInProgress === inv.id}
                             variant="ghost"
                             style={{ padding: 'var(--space-1)', opacity: actionInProgress === inv.id ? 0.5 : 1 }}
@@ -304,7 +301,7 @@ function AdminBrokers() {
                           </Button>
                         )}
                         <Button
-                          onClick={() => handleRevokeInvitation(inv.id)}
+                          onPress={() => handleRevokeInvitation(inv.id)}
                           disabled={actionInProgress === inv.id}
                           variant="ghost"
                           style={{ padding: 'var(--space-1)', opacity: actionInProgress === inv.id ? 0.5 : 1 }}

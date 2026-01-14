@@ -189,7 +189,7 @@ export function SLANotificationBanner({ onDismiss, compact = false }: SLANotific
         <Button
           size="sm"
           style={{ backgroundColor: 'transparent', ...colors.text }}
-          onClick={handleViewOverdue}
+          onPress={handleViewOverdue}
         >
           View
         </Button>
@@ -241,7 +241,7 @@ export function SLANotificationBanner({ onDismiss, compact = false }: SLANotific
         <Row style={{ gap: 8 }}>
           <Button
             style={{ ...colors.badge, color: 'white' }}
-            onClick={handleViewOverdue}
+            onPress={handleViewOverdue}
           >
             View Requests
           </Button>
@@ -252,7 +252,7 @@ export function SLANotificationBanner({ onDismiss, compact = false }: SLANotific
               borderWidth: 1,
               ...colors.border,
             }}
-            onClick={handleDismiss}
+            onPress={handleDismiss}
           >
             Dismiss
           </Button>

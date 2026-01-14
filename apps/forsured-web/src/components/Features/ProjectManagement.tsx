@@ -150,7 +150,7 @@ export default function ProjectManagement() {
         {/* Header with Back Button */}
         <Row style={{ alignItems: 'center', gap: 16 }}>
           <Button
-            onClick={() => setSelectedProjectId(null)}
+            onPress={() => setSelectedProjectId(null)}
             variant="ghost"
           >
             ← Back to Projects
@@ -361,7 +361,7 @@ export default function ProjectManagement() {
             </Row>
           </Button>
           <Button
-            onClick={() => setShowNewProjectModal(true)}
+            onPress={() => setShowNewProjectModal(true)}
             variant="primary"
           >
             <Row style={{ alignItems: 'center', gap: 8 }}>
@@ -543,14 +543,14 @@ export default function ProjectManagement() {
                 </Stack>
                 <Row style={{ alignItems: 'center', gap: 8 }}>
                   <IconButton
-                    onClick={() => setSelectedProjectId(project.id)}
+                    onPress={() => setSelectedProjectId(project.id)}
                     icon={Eye}
                     size="sm"
                     variant="primary"
                     tooltip="View project"
                   />
                   <IconButton
-                    onClick={() => handleEditProject(project)}
+                    onPress={() => handleEditProject(project)}
                     icon={Edit}
                     size="sm"
                     variant="ghost"
@@ -584,7 +584,7 @@ export default function ProjectManagement() {
           {!searchTerm && statusFilter === 'all' && (
             <Button
               variant="primary"
-              onClick={() => setShowNewProjectModal(true)}
+              onPress={() => setShowNewProjectModal(true)}
             >
               Create First Project
             </Button>
@@ -909,7 +909,7 @@ export default function ProjectManagement() {
             <Row style={{ justifyContent: 'flex-end', gap: 12, paddingTop: 16, borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: 'var(--color-border)' }}>
               <Button
                 type="button"
-                onClick={() => {
+                onPress={() => {
                   setShowNewProjectModal(false);
                   resetForm();
                 }}

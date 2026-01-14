@@ -912,7 +912,7 @@ export default function ProjectDetailPage() {
         <Row style={{ alignItems: 'center', gap: 16 }}>
           <Button
             variant="ghost"
-            onClick={() => navigate(-1)}
+            onPress={() => navigate(-1)}
             leftIcon={ArrowLeft}
             size="$2"
           >

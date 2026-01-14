@@ -163,7 +163,7 @@ export default function TestingPage() {
       <NavigationDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <Stack style={{ marginLeft: 288 }}>
-        <DrawerToggle onClick={() => setDrawerOpen(true)} />
+        <DrawerToggle onPress={() => setDrawerOpen(true)} />
 
         <Stack style={{ maxWidth: 1280, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 16, paddingRight: 16, paddingTop: 32, paddingBottom: 32 }}>
           <Stack style={{ gap: 24 }}>
@@ -225,7 +225,7 @@ export default function TestingPage() {
           alignItems: 'center',
           gap: 8,
         }}
-        onClick={() => setShowFeedbackModal(true)}
+        onPress={() => setShowFeedbackModal(true)}
         aria-label="Share feedback"
       >
         <MessageSquare size={20} />

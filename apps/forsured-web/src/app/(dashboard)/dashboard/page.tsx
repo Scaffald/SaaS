@@ -114,7 +114,7 @@ export default function DashboardPage() {
             </Text>
           </Stack>
           <Button
-            onClick={handleExportCSV}
+            onPress={handleExportCSV}
             style={{
               backgroundColor: 'var(--color-blue-9)',
               color: 'white',
@@ -156,7 +156,7 @@ export default function DashboardPage() {
             </Row>
             {(filters.subcontractor_search || filters.status_filter || filters.project_ids) && (
               <Button
-                onClick={() => setFilters({})}
+                onPress={() => setFilters({})}
                 style={{
                   fontSize: 'var(--font-size-2)',
                   color: 'var(--color-gray-11)',

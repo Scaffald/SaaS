@@ -91,7 +91,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
     <Stack ref={dropdownRef} style={{ position: 'relative' }}>
       <Button
         type="button"
-        onClick={handleToggle}
+        onPress={handleToggle}
         onKeyDown={handleKeyDown}
         disabled={loading}
         variant="outline"
@@ -218,7 +218,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                 <button
                   key={user.id}
                   type="button"
-                  onClick={() => handleUserSelect(user.id)}
+                  onPress={() => handleUserSelect(user.id)}
                   style={{
                     display: 'flex',
                     width: '100%',

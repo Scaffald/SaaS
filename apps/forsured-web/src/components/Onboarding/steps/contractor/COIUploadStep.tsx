@@ -128,7 +128,7 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
 
           <Stack style={{ marginTop: 24 }}>
             <Button
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               variant="primary"
               disabled={isLoading}
             >

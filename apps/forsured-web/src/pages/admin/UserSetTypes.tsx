@@ -221,14 +221,12 @@ function AdminUserSetTypes() {
             </Text>
           </Row>
           <Button
-            onClick={handleRefresh}
+            onPress={handleRefresh}
             disabled={isLoading}
             variant="outline"
+            iconStart={isLoading ? undefined : RefreshCcw}
           >
-            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
-              {isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
-              <span>Refresh</span>
-            </Row>
+            {isLoading ? 'Loading...' : 'Refresh'}
           </Button>
           <Button
             color="primary"
@@ -374,34 +372,34 @@ function AdminUserSetTypes() {
                 </Row>
                 <Row style={{ flex: 0.5, alignItems: 'center', gap: 'var(--space-1)' }}>
                   <Button
-                    onClick={() => openEditModal(ust)}
+                    onPress={() => openEditModal(ust)}
                     disabled={actionInProgress === ust.id}
                     variant="outline"
                     size="sm"
+                    iconStart={Edit}
+                    iconOnly
                     style={{ opacity: actionInProgress === ust.id ? 0.5 : 1 }}
-                  >
-                    <Edit size={16} />
-                  </Button>
+                  />
                   {ust.isActive ? (
                     <Button
-                      onClick={() => handleToggleActive(ust.id, true)}
+                      onPress={() => handleToggleActive(ust.id, true)}
                       disabled={actionInProgress === ust.id || (ust.userCount ?? 0) > 0}
                       variant="outline"
                       size="sm"
+                      iconStart={actionInProgress === ust.id ? undefined : Trash2}
+                      iconOnly
                       style={{ opacity: actionInProgress === ust.id || (ust.userCount ?? 0) > 0 ? 0.5 : 1, color: 'var(--color-red-9)' }}
-                    >
-                      {actionInProgress === ust.id ? <Spinner size="small" /> : <Trash2 size={16} />}
-                    </Button>
+                    />
                   ) : (
                     <Button
-                      onClick={() => handleToggleActive(ust.id, false)}
+                      onPress={() => handleToggleActive(ust.id, false)}
                       disabled={actionInProgress === ust.id}
                       variant="outline"
                       size="sm"
+                      iconStart={actionInProgress === ust.id ? undefined : RotateCcw}
+                      iconOnly
                       style={{ opacity: actionInProgress === ust.id ? 0.5 : 1, color: 'var(--color-green-9)' }}
-                    >
-                      {actionInProgress === ust.id ? <Spinner size="small" /> : <RotateCcw size={16} />}
-                    </Button>
+                    />
                   )}
                 </Row>
               </Row>
@@ -453,13 +451,13 @@ function AdminUserSetTypes() {
                 {modalMode === 'add' ? 'Add Industry Vertical' : 'Edit Industry Vertical'}
               </H3>
               <Button
-                onClick={closeModal}
+                onPress={closeModal}
                 variant="outline"
                 size="sm"
+                iconStart={X}
+                iconOnly
                 style={{ color: 'var(--color-gray-11)' }}
-              >
-                <X size={20} />
-              </Button>
+              />
             </Row>
 
             <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-4)' }}>
@@ -596,23 +594,20 @@ function AdminUserSetTypes() {
 
               <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-4)', borderTopWidth: 1, borderColor: 'var(--color-border)' }}>
                 <Button
-                  onClick={closeModal}
+                  onPress={closeModal}
                   variant="outline"
                 >
                   Cancel
                 </Button>
                 <Button
-                  onClick={(e) => {
+                  onPress={(e) => {
                     e?.preventDefault?.();
-                    handleSubmit(e as any);
+                    handleSubmit(e as unknown as React.FormEvent);
                   }}
                   disabled={isSubmitting}
-                  style={{ backgroundColor: 'var(--color-blue-9)', color: 'white', opacity: isSubmitting ? 0.5 : 1 }}
+                  color="primary"
                 >
-                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
-                    {isSubmitting && <Spinner size="small" />}
-                    <span>{modalMode === 'add' ? 'Create Industry' : 'Save Changes'}</span>
-                  </Row>
+                  {isSubmitting ? 'Saving...' : (modalMode === 'add' ? 'Create Industry' : 'Save Changes')}
                 </Button>
               </Row>
             </Stack>

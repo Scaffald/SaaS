@@ -61,7 +61,7 @@ function ProjectStep({ onComplete, initialData = {}, isLoading = false }: Projec
           </Stack>
           <Stack style={{ marginTop: 24 }}>
             <Button
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               variant="primary"
               disabled={isLoading}
             >

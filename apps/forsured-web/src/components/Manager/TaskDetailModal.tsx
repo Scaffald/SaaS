@@ -139,7 +139,7 @@ export default function TaskDetailModal({
             </Row>
           </Stack>
           <div
-            onClick={onClose}
+            onPress={onClose}
             style={{ cursor: 'pointer' }}
           >
             <X size={20} color="var(--color-text-muted)" />
@@ -198,7 +198,7 @@ export default function TaskDetailModal({
                   ]}
                 />
                 <Button
-                  onClick={handleReassign}
+                  onPress={handleReassign}
                   disabled={
                     !selectedAssignee ||
                     selectedAssignee === task.assigned_to_user_id
@@ -216,7 +216,7 @@ export default function TaskDetailModal({
               </H3>
               {!showCompletionForm ? (
                 <Button
-                  onClick={() => setShowCompletionForm(true)}
+                  onPress={() => setShowCompletionForm(true)}
                   variant="secondary"
                   leftIcon={CheckCircle2}
                   fullWidth
@@ -234,14 +234,14 @@ export default function TaskDetailModal({
                     />
                     <Row gap={8}>
                       <Button
-                        onClick={handleComplete}
+                        onPress={handleComplete}
                         variant="primary"
                         style={{ flex: 1 }}
                       >
                         Confirm Complete
                       </Button>
                       <Button
-                        onClick={() => {
+                        onPress={() => {
                           setShowCompletionForm(false);
                           setCompletionNote('');
                         }}
@@ -304,7 +304,7 @@ export default function TaskDetailModal({
               style={{ flex: 1 }}
             />
             <Button
-              onClick={handleAddComment}
+              onPress={handleAddComment}
               disabled={!comment.trim()}
               size="sm"
             >

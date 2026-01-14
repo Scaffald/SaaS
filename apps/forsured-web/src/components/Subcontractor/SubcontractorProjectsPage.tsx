@@ -357,19 +357,19 @@ export default function SubcontractorProjectsPage() {
       >
         <Row style={{ alignItems: 'center', gap: 8 }}>
           <button
-            onClick={() => setFilter('all')}
+            onPress={() => setFilter('all')}
             style={getFilterButtonStyle(filter === 'all')}
           >
             All ({projects.length})
           </button>
           <button
-            onClick={() => setFilter('active')}
+            onPress={() => setFilter('active')}
             style={getFilterButtonStyle(filter === 'active')}
           >
             Active ({stats.active})
           </button>
           <button
-            onClick={() => setFilter('completed')}
+            onPress={() => setFilter('completed')}
             style={getFilterButtonStyle(filter === 'completed')}
           >
             Completed ({stats.completed})
@@ -384,7 +384,7 @@ export default function SubcontractorProjectsPage() {
               project={project}
               userRole="subcontractor"
               showActions={false}
-              onClick={() => navigate(`/subcontractor/projects/${project.id}`)}
+              onPress={() => navigate(`/subcontractor/projects/${project.id}`)}
             />
           </Stack>
         ))}

@@ -84,7 +84,7 @@ function CompanyStep({ onComplete, initialData = {}, isLoading = false }: Compan
           </Stack>
           <Stack style={{ marginTop: 24 }}>
             <Button
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               variant="primary"
               disabled={isLoading}
             >

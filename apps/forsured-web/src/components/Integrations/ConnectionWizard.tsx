@@ -220,7 +220,7 @@ export default function ConnectionWizard({
                     settings.authMethod === 'api_key' ? 'var(--color-blue-9)' : 'var(--color-border)',
                   cursor: 'pointer',
                 }}
-                onClick={() =>
+                onPress={() =>
                   setSettings({ ...settings, authMethod: 'api_key' })
                 }
               >
@@ -258,7 +258,7 @@ export default function ConnectionWizard({
                     settings.authMethod === 'oauth' ? 'var(--color-blue-9)' : 'var(--color-border)',
                   cursor: 'pointer',
                 }}
-                onClick={() =>
+                onPress={() =>
                   setSettings({ ...settings, authMethod: 'oauth' })
                 }
               >
@@ -298,7 +298,7 @@ export default function ConnectionWizard({
                       : 'var(--color-border)',
                   cursor: 'pointer',
                 }}
-                onClick={() =>
+                onPress={() =>
                   setSettings({ ...settings, authMethod: 'username_password' })
                 }
               >
@@ -375,7 +375,7 @@ export default function ConnectionWizard({
               <Stack style={{ paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
                 <Button
                   variant="primary"
-                  onClick={handleOAuthConnect}
+                  onPress={handleOAuthConnect}
                   disabled={loading}
                   style={{ width: '100%' }}
                 >
@@ -432,7 +432,7 @@ export default function ConnectionWizard({
                           borderColor:
                             isSelected ? 'var(--color-blue-9)' : 'var(--color-border)',
                         }}
-                        onClick={() => {
+                        onPress={() => {
                           if (isSelected) {
                             setSettings({
                               ...settings,
@@ -508,7 +508,7 @@ export default function ConnectionWizard({
                   cursor: 'pointer',
                   backgroundColor: 'transparent',
                 }}
-                onClick={() =>
+                onPress={() =>
                   setSettings({
                     ...settings,
                     initialSync: !settings.initialSync,
@@ -751,7 +751,7 @@ export default function ConnectionWizard({
           >
             <Button
               variant="secondary"
-              onClick={currentStep === 1 ? handleClose : handleBack}
+              onPress={currentStep === 1 ? handleClose : handleBack}
               disabled={loading}
             >
               {currentStep === 1 ? 'Cancel' : 'Back'}
@@ -759,7 +759,7 @@ export default function ConnectionWizard({
             {currentStep === 1 && settings.authMethod !== 'oauth' ? (
               <Button
                 variant="primary"
-                onClick={handleNext}
+                onPress={handleNext}
                 disabled={loading}
               >
                 Next
@@ -767,7 +767,7 @@ export default function ConnectionWizard({
             ) : currentStep === 2 ? (
               <Button
                 variant="primary"
-                onClick={handleConnect}
+                onPress={handleConnect}
                 disabled={loading || settings.syncDataTypes.length === 0}
               >
                 {loading ? 'Connecting...' : 'Connect'}

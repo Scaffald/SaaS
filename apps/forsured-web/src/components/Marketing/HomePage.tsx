@@ -153,7 +153,7 @@ export default function HomePage() {
                 About
               </a>
               <button
-                onClick={() => navigate('/colors')}
+                onPress={() => navigate('/colors')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -187,7 +187,7 @@ export default function HomePage() {
             </Text>
             <Row style={{ flexWrap: 'wrap', gap: 'var(--space-2)' }}>
               <button
-                onClick={() => navigate('/manager/onboarding')}
+                onPress={() => navigate('/manager/onboarding')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -199,7 +199,7 @@ export default function HomePage() {
                 Manager Onboarding
               </button>
               <button
-                onClick={() => navigate('/subcontractor/onboarding')}
+                onPress={() => navigate('/subcontractor/onboarding')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -211,7 +211,7 @@ export default function HomePage() {
                 Subcontractor Onboarding
               </button>
               <button
-                onClick={() => navigate('/broker/onboarding')}
+                onPress={() => navigate('/broker/onboarding')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -223,7 +223,7 @@ export default function HomePage() {
                 Broker Onboarding
               </button>
               <button
-                onClick={() => navigate('/manager/dashboard')}
+                onPress={() => navigate('/manager/dashboard')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -235,7 +235,7 @@ export default function HomePage() {
                 Manager Dashboard
               </button>
               <button
-                onClick={() => navigate('/subcontractor/dashboard')}
+                onPress={() => navigate('/subcontractor/dashboard')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -247,7 +247,7 @@ export default function HomePage() {
                 Subcontractor Dashboard
               </button>
               <button
-                onClick={() => navigate('/broker/dashboard')}
+                onPress={() => navigate('/broker/dashboard')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -259,7 +259,7 @@ export default function HomePage() {
                 Broker Dashboard
               </button>
               <button
-                onClick={() => navigate('/colors')}
+                onPress={() => navigate('/colors')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -354,7 +354,7 @@ export default function HomePage() {
               }}
             >
               <Button
-                onClick={() => handleGetStarted('manager')}
+                onPress={() => handleGetStarted('manager')}
                 variant="primary"
                 size="lg"
                 leftIcon={Users}
@@ -365,7 +365,7 @@ export default function HomePage() {
                 For Managers
               </Button>
               <Button
-                onClick={() => handleGetStarted('subcontractor')}
+                onPress={() => handleGetStarted('subcontractor')}
                 variant="secondary"
                 size="lg"
                 leftIcon={Award}
@@ -376,7 +376,7 @@ export default function HomePage() {
                 For Subcontractors
               </Button>
               <Button
-                onClick={() => handleGetStarted('broker')}
+                onPress={() => handleGetStarted('broker')}
                 size="lg"
                 leftIcon={Handshake}
                 rightIcon={ArrowRight}
@@ -670,7 +670,7 @@ export default function HomePage() {
                 </Row>
               </Stack>
               <Button
-                onClick={() => handleGetStarted('manager')}
+                onPress={() => handleGetStarted('manager')}
                 variant="primary"
                 rightIcon={ArrowRight}
                 iconSize={18}
@@ -720,7 +720,7 @@ export default function HomePage() {
                 </Row>
               </Stack>
               <Button
-                onClick={() => handleGetStarted('subcontractor')}
+                onPress={() => handleGetStarted('subcontractor')}
                 variant="secondary"
                 rightIcon={ArrowRight}
                 iconSize={18}
@@ -772,7 +772,7 @@ export default function HomePage() {
                 </Row>
               </Stack>
               <Button
-                onClick={() => handleGetStarted('broker')}
+                onPress={() => handleGetStarted('broker')}
                 rightIcon={ArrowRight}
                 iconSize={18}
                 fullWidth

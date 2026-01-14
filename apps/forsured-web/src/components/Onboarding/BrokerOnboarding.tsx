@@ -266,7 +266,7 @@ export default function BrokerOnboarding() {
     >
       <Stack style={{ width: '100%', maxWidth: 600, position: 'relative' }}>
         <Button
-          onClick={handleSkip}
+          onPress={handleSkip}
           disabled={isSubmitting}
           variant="ghost"
           style={{
@@ -566,7 +566,7 @@ export default function BrokerOnboarding() {
                       <Button
                         type="button"
                         variant="ghost"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onPress={() => setShowPassword(!showPassword)}
                         style={{
                           position: 'absolute',
                           right: 12,
@@ -617,7 +617,7 @@ export default function BrokerOnboarding() {
                       <Button
                         type="button"
                         variant="ghost"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                         style={{
                           position: 'absolute',
                           right: 12,
@@ -679,7 +679,7 @@ export default function BrokerOnboarding() {
                       />
                       <Button
                         type="button"
-                        onClick={handleAddTeamEmail}
+                        onPress={handleAddTeamEmail}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -729,7 +729,7 @@ export default function BrokerOnboarding() {
                             </Row>
                             <Button
                               type="button"
-                              onClick={() => handleRemoveTeamEmail(email)}
+                              onPress={() => handleRemoveTeamEmail(email)}
                               variant="ghost"
                               style={{ color: 'var(--color-red-9)' }}
                             >
@@ -747,7 +747,7 @@ export default function BrokerOnboarding() {
                 type="submit"
                 disabled={!isValid || isSubmitting}
                 variant="primary"
-                onClick={(e) => {
+                onPress={(e) => {
                   e?.preventDefault?.();
                   handleSubmit(e as any);
                 }}

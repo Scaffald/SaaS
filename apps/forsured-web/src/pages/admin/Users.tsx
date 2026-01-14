@@ -121,7 +121,7 @@ function AdminUsers() {
         <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 700 }}>User Management</H1>
         <Row style={{ gap: 'var(--space-3)' }}>
           <Button
-            onClick={handleRefresh}
+            onPress={handleRefresh}
             disabled={isLoading}
             variant="outline"
             style={{ paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', borderRadius: 'var(--radius-4)', opacity: isLoading ? 0.5 : 1 }}
@@ -266,7 +266,7 @@ function AdminUsers() {
                   </td>
                   <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Button
-                      onClick={() => handleViewActivity(u.id)}
+                      onPress={() => handleViewActivity(u.id)}
                       variant="ghost"
                       style={{ padding: 0 }}
                     >
@@ -286,7 +286,7 @@ function AdminUsers() {
                 Activity Log for {users.find((u) => u.id === showActivityLog)?.name}
               </H3>
               <Button
-                onClick={() => setShowActivityLog(null)}
+                onPress={() => setShowActivityLog(null)}
                 variant="ghost"
                 style={{ padding: 'var(--space-1)' }}
               >

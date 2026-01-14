@@ -177,7 +177,7 @@ export function BrokerCertification({
         {!isSigned && !disabled && (
           <Row style={{ justifyContent: 'flex-end', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
             <Button
-              onClick={handleSave}
+              onPress={handleSave}
               disabled={
                 saving ||
                 !agencyName ||
@@ -426,7 +426,7 @@ export function SubcontractorCertification({
         {!isSigned && !disabled && (
           <Row style={{ justifyContent: 'flex-end', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
             <Button
-              onClick={handleSave}
+              onPress={handleSave}
               disabled={
                 saving ||
                 !companyName ||

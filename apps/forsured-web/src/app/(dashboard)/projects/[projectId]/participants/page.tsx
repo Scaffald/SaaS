@@ -37,7 +37,7 @@ export default function ParticipantsPage() {
         {/* Header */}
         <Stack style={{ marginBottom: 'var(--space-8)' }}>
           <Button
-            onClick={handleBack}
+            onPress={handleBack}
             style={{
               backgroundColor: 'transparent',
               color: 'var(--color-gray-11)',

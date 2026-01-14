@@ -263,7 +263,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
                 <button
                   key={user.id}
                   type="button"
-                  onClick={() => insertMention(user)}
+                  onPress={() => insertMention(user)}
                   style={{
                     display: 'flex',
                     width: '100%',

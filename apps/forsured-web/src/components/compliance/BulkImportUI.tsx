@@ -225,7 +225,7 @@ export function BulkImportUI({
           <Button
             variant="outlined"
             size="sm"
-            onClick={() => handleDownloadTemplate('csv')}
+            onPress={() => handleDownloadTemplate('csv')}
             disabled={!templatesQuery.data}
           >
             CSV Template
@@ -233,7 +233,7 @@ export function BulkImportUI({
           <Button
             variant="outlined"
             size="sm"
-            onClick={() => handleDownloadTemplate('json')}
+            onPress={() => handleDownloadTemplate('json')}
             disabled={!templatesQuery.data}
           >
             JSON Template
@@ -256,7 +256,7 @@ export function BulkImportUI({
             alignItems: 'center',
             cursor: 'pointer',
           }}
-          onClick={() => fileInputRef.current?.click()}
+          onPress={() => fileInputRef.current?.click()}
         >
           <input
             ref={fileInputRef}
@@ -291,7 +291,7 @@ export function BulkImportUI({
                       fontWeight: 500,
                       cursor: 'pointer',
                     }}
-                    onClick={() => fileInputRef.current?.click()}
+                    onPress={() => fileInputRef.current?.click()}
                   >
                     Click to upload
                   </span>{' '}
@@ -500,7 +500,7 @@ export function BulkImportUI({
                       border: 'none',
                       cursor: 'pointer',
                     }}
-                    onClick={() => toggleRowExpansion(row.rowIndex)}
+                    onPress={() => toggleRowExpansion(row.rowIndex)}
                   >
                     <Row style={{ alignItems: 'center', gap: '12px' }}>
                       <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray9)' }}>

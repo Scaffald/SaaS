@@ -250,7 +250,7 @@ export default function ContractorOnboarding() {
                 Upload Your Insurance Documents
               </H2>
               <Button
-                onClick={() => setShowUploadModal(true)}
+                onPress={() => setShowUploadModal(true)}
                 style={{
                   backgroundColor: 'var(--color-blue-10)',
                   color: 'white',
@@ -362,7 +362,7 @@ export default function ContractorOnboarding() {
 
             <Row style={{ marginTop: '24px', justifyContent: 'flex-end' }}>
               <Button
-                onClick={() => setCurrentStep(2)}
+                onPress={() => setCurrentStep(2)}
                 style={{
                   backgroundColor: 'var(--color-blue-10)',
                   color: 'white',
@@ -472,7 +472,7 @@ export default function ContractorOnboarding() {
 
             <Row style={{ marginTop: '24px', justifyContent: 'space-between' }}>
               <Button
-                onClick={() => setCurrentStep(1)}
+                onPress={() => setCurrentStep(1)}
                 style={{
                   paddingLeft: '24px',
                   paddingRight: '24px',
@@ -486,7 +486,7 @@ export default function ContractorOnboarding() {
                 Back
               </Button>
               <Button
-                onClick={() => setCurrentStep(3)}
+                onPress={() => setCurrentStep(3)}
                 style={{
                   backgroundColor: 'var(--color-blue-10)',
                   color: 'white',
@@ -645,7 +645,7 @@ export default function ContractorOnboarding() {
 
           <Row style={{ justifyContent: 'space-between' }}>
             <Button
-              onClick={() => setCurrentStep(2)}
+              onPress={() => setCurrentStep(2)}
               style={{
                 paddingLeft: '24px',
                 paddingRight: '24px',
@@ -659,7 +659,7 @@ export default function ContractorOnboarding() {
               Back
             </Button>
             <Button
-              onClick={() => setCurrentStep(4)}
+              onPress={() => setCurrentStep(4)}
               style={{
                 backgroundColor: 'var(--color-blue-10)',
                 color: 'white',
@@ -793,7 +793,7 @@ export default function ContractorOnboarding() {
 
             <Row style={{ marginTop: '24px', justifyContent: 'space-between' }}>
               <Button
-                onClick={() => setCurrentStep(3)}
+                onPress={() => setCurrentStep(3)}
                 style={{
                   paddingLeft: '24px',
                   paddingRight: '24px',

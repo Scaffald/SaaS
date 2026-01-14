@@ -165,7 +165,7 @@ export default function ClientModal({
           </H2>
           <Button
             variant="ghost"
-            onClick={onClose}
+            onPress={onClose}
             aria-label="Close modal"
             style={{ padding: 8 }}
           >

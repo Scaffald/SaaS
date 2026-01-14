@@ -249,7 +249,7 @@ export default function PrivacySettingsPage() {
         <Card style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-6)', borderRadius: 'var(--radius-4)', gap: 'var(--space-2)' }}>
           <Text style={{ color: 'var(--color-red-11)' }}>{error}</Text>
           <Button
-            onClick={() => window.location.reload()}
+            onPress={() => window.location.reload()}
             style={{ marginTop: 'var(--space-2)', color: 'var(--color-red-10)', backgroundColor: 'transparent', borderWidth: 1, borderColor: 'var(--color-red-6)' }}
           >
             Try again
@@ -279,7 +279,7 @@ export default function PrivacySettingsPage() {
         <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
           <Card
             style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-6)', borderRadius: 'var(--radius-4)', cursor: 'pointer', flex: 1, minWidth: '45%' }}
-            onClick={() => handleRequestClick('export')}
+            onPress={() => handleRequestClick('export')}
           >
             <Stack style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
               <Text style={{ fontSize: 'var(--font-size-8)', marginBottom: 'var(--space-2)' }}>Download</Text>
@@ -290,7 +290,7 @@ export default function PrivacySettingsPage() {
 
           <Card
             style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-6)', borderRadius: 'var(--radius-4)', cursor: 'pointer', flex: 1, minWidth: '45%' }}
-            onClick={() => handleRequestClick('deletion')}
+            onPress={() => handleRequestClick('deletion')}
           >
             <Stack style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
               <Text style={{ fontSize: 'var(--font-size-8)', marginBottom: 'var(--space-2)' }}>Delete</Text>
@@ -301,7 +301,7 @@ export default function PrivacySettingsPage() {
 
           <Card
             style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-purple-2)', borderColor: 'var(--color-purple-6)', borderRadius: 'var(--radius-4)', cursor: 'pointer', flex: 1, minWidth: '45%' }}
-            onClick={handleOptOutClick}
+            onPress={handleOptOutClick}
           >
             <Stack style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
               <Text style={{ fontSize: 'var(--font-size-8)', marginBottom: 'var(--space-2)' }}>Shield</Text>
@@ -361,7 +361,7 @@ export default function PrivacySettingsPage() {
                 <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginBottom: 'var(--space-3)' }}>{right.description}</Text>
                 {right.action && right.type && (
                   <Button
-                    onClick={() => {
+                    onPress={() => {
                       if (right.type === 'opt-out') {
                         handleOptOutClick();
                       } else if (right.type) {
@@ -415,7 +415,7 @@ export default function PrivacySettingsPage() {
             ))}
           </Stack>
           <Button
-            onClick={handleOptOutClick}
+            onPress={handleOptOutClick}
             style={{
               marginTop: 'var(--space-4)',
               paddingLeft: 'var(--space-4)',
@@ -668,7 +668,7 @@ export default function PrivacySettingsPage() {
               </Text>
               <Row style={{ gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
                 <Button
-                  onClick={() => setActiveModal(null)}
+                  onPress={() => setActiveModal(null)}
                   style={{
                     paddingLeft: 'var(--space-4)',
                     paddingRight: 'var(--space-4)',
@@ -681,7 +681,7 @@ export default function PrivacySettingsPage() {
                   Cancel
                 </Button>
                 <Button
-                  onClick={() => {
+                  onPress={() => {
                     // In a real implementation, this would submit the request
                     alert('Request submitted! You will receive an email confirmation.');
                     setActiveModal(null);

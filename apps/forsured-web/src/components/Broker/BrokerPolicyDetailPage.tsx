@@ -38,7 +38,7 @@ export default function BrokerPolicyDetailPage() {
     return (
       <Stack gap={24}>
         <button
-          onClick={() => navigate(-1)}
+          onPress={() => navigate(-1)}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -130,7 +130,7 @@ export default function BrokerPolicyDetailPage() {
         <Row alignItems="center" gap={16}>
           <Button
             variant="ghost"
-            onClick={() => navigate('/broker/insurance?tab=policies')}
+            onPress={() => navigate('/broker/insurance?tab=policies')}
             size="sm"
           >
             <Row alignItems="center" gap={8}>
@@ -337,7 +337,7 @@ export default function BrokerPolicyDetailPage() {
             </H2>
             {client ? (
               <div
-                onClick={() => navigate(`/broker/clients/${client.id}`)}
+                onPress={() => navigate(`/broker/clients/${client.id}`)}
                 style={{ cursor: 'pointer', padding: 12, margin: -12, borderRadius: 8 }}
               >
                 <Row alignItems="center" gap={12} style={{ marginBottom: 12 }}>

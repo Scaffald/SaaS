@@ -335,7 +335,7 @@ export function ComplianceRequirementsPage() {
             border: 'none',
             cursor: 'pointer',
           }}
-          onClick={() => { setView('all'); setPage(1); }}
+          onPress={() => { setView('all'); setPage(1); }}
         >
           <FileText size={18} />
           <Text>All</Text>
@@ -375,7 +375,7 @@ export function ComplianceRequirementsPage() {
             border: 'none',
             cursor: 'pointer',
           }}
-          onClick={() => { setView('templates'); setPage(1); }}
+          onPress={() => { setView('templates'); setPage(1); }}
         >
           <Copy size={18} />
           <Text>Templates</Text>
@@ -400,7 +400,7 @@ export function ComplianceRequirementsPage() {
             border: 'none',
             cursor: 'pointer',
           }}
-          onClick={() => { setView('requirements'); setPage(1); }}
+          onPress={() => { setView('requirements'); setPage(1); }}
         >
           <CheckCircle size={18} />
           <Text>Requirements</Text>
@@ -442,7 +442,7 @@ export function ComplianceRequirementsPage() {
               />
             </Row>
             <button
-              onClick={() => setShowFilters(!showFilters)}
+              onPress={() => setShowFilters(!showFilters)}
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -498,7 +498,7 @@ export function ComplianceRequirementsPage() {
                     {coverageTypes.map((type) => (
                       <button
                         key={type.value}
-                        onClick={() => handleTypeToggle(type.value)}
+                        onPress={() => handleTypeToggle(type.value)}
                         style={{
                           paddingLeft: 8,
                           paddingRight: 8,
@@ -529,7 +529,7 @@ export function ComplianceRequirementsPage() {
                     {requirementStatuses.map((status) => (
                       <button
                         key={status.value}
-                        onClick={() => handleStatusToggle(status.value)}
+                        onPress={() => handleStatusToggle(status.value)}
                         style={{
                           paddingLeft: 8,
                           paddingRight: 8,
@@ -577,7 +577,7 @@ export function ComplianceRequirementsPage() {
 
               {activeFilterCount > 0 && (
                 <button
-                  onClick={clearFilters}
+                  onPress={clearFilters}
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -668,7 +668,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onClick={() => handleSort('code')}
+                    onPress={() => handleSort('code')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Code</Text>
@@ -686,7 +686,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onClick={() => handleSort('name')}
+                    onPress={() => handleSort('name')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Name</Text>
@@ -704,7 +704,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onClick={() => handleSort('type')}
+                    onPress={() => handleSort('type')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Type</Text>
@@ -722,7 +722,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onClick={() => handleSort('status')}
+                    onPress={() => handleSort('status')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Status</Text>
@@ -740,7 +740,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onClick={() => handleSort('effective_date')}
+                    onPress={() => handleSort('effective_date')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Effective Date</Text>
@@ -771,9 +771,9 @@ export function ComplianceRequirementsPage() {
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-gray-2)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                    onClick={() => handleRowClick(requirement.id)}
+                    onPress={() => handleRowClick(requirement.id)}
                   >
-                    <td style={{ padding: '16px' }} onClick={(e) => e.stopPropagation()}>
+                    <td style={{ padding: '16px' }} onPress={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(requirement.id)}
@@ -846,7 +846,7 @@ export function ComplianceRequirementsPage() {
                         v{requirement.current_version}
                       </Text>
                     </td>
-                    <td style={{ padding: '16px' }} onClick={(e) => e.stopPropagation()}>
+                    <td style={{ padding: '16px' }} onPress={(e) => e.stopPropagation()}>
                       <button
                         style={{
                           padding: 4,
@@ -888,7 +888,7 @@ export function ComplianceRequirementsPage() {
                 <Button
                   size="$3"
                   variant="outlined"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  onPress={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
                   Previous
@@ -896,7 +896,7 @@ export function ComplianceRequirementsPage() {
                 <Button
                   size="$3"
                   variant="outlined"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  onPress={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                 >
                   Next

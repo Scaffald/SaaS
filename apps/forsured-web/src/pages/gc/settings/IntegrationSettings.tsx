@@ -131,7 +131,7 @@ function GCIntegrationSettings() {
           </Stack>
           <Row style={{ alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
             <Button
-              onClick={handleManualSync}
+              onPress={handleManualSync}
               disabled={isSyncing}
               variant="outline"
               size="sm"
@@ -204,7 +204,7 @@ function GCIntegrationSettings() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDisconnect(integration.id)}
+                    onPress={() => handleDisconnect(integration.id)}
                   >
                     Disconnect
                   </Button>
@@ -212,7 +212,7 @@ function GCIntegrationSettings() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleConnect(integration.id)}
+                    onPress={() => handleConnect(integration.id)}
                   >
                     Connect
                   </Button>
@@ -265,14 +265,14 @@ function GCIntegrationSettings() {
               <Button
                 style={{ flex: 1 }}
                 variant="primary"
-                onClick={handleConfirmConnection}
+                onPress={handleConfirmConnection}
               >
                 Connect This Company
               </Button>
               <Button
                 style={{ flex: 1 }}
                 variant="outline"
-                onClick={() => setShowConnectionDialog(false)}
+                onPress={() => setShowConnectionDialog(false)}
               >
                 Create New Company Instead
               </Button>

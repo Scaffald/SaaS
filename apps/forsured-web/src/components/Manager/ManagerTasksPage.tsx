@@ -567,7 +567,7 @@ export default function ManagerTasksPage() {
               />
             </Stack>
             <div
-              onClick={() => setShowFilters(!showFilters)}
+              onPress={() => setShowFilters(!showFilters)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -737,7 +737,7 @@ export default function ManagerTasksPage() {
                   {alls.map((tag) => (
                     <div
                       key={tag}
-                      onClick={() => toggle(tag)}
+                      onPress={() => toggle(tag)}
                       style={{
                         paddingLeft: 12,
                         paddingRight: 12,
@@ -761,7 +761,7 @@ export default function ManagerTasksPage() {
 
               {activeFilterCount > 0 && (
                 <div
-                  onClick={clearFilters}
+                  onPress={clearFilters}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -808,7 +808,7 @@ export default function ManagerTasksPage() {
                 <option value="status">Status</option>
               </select>
               <div
-                onClick={() =>
+                onPress={() =>
                   setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
                 }
                 style={{
@@ -852,7 +852,7 @@ export default function ManagerTasksPage() {
           return (
             <Card
               key={task.id}
-              onClick={() => setSelectedTask(task)}
+              onPress={() => setSelectedTask(task)}
               style={{
                 backgroundColor: 'var(--color-background)',
                 borderRadius: 16,
@@ -950,7 +950,7 @@ export default function ManagerTasksPage() {
                     {taskQuickActions.slice(0, 3).map((action) => (
                       <div
                         key={action}
-                        onClick={(e) => {
+                        onPress={(e) => {
                           e.stopPropagation();
                         }}
                         style={{
@@ -1035,7 +1035,7 @@ export default function ManagerTasksPage() {
             justifyContent: 'center',
             zIndex: 9999,
           }}
-          onClick={handleCloseCreateTask}
+          onPress={handleCloseCreateTask}
           role="dialog"
           aria-modal="true"
           aria-labelledby="create-task-modal-title"
@@ -1051,7 +1051,7 @@ export default function ManagerTasksPage() {
               overflow: 'hidden',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            onPress={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {/* Modal Header */}
             <Row
@@ -1066,7 +1066,7 @@ export default function ManagerTasksPage() {
                 Create New Task
               </H2>
               <button
-                onClick={handleCloseCreateTask}
+                onPress={handleCloseCreateTask}
                 style={{
                   background: 'none',
                   border: 'none',

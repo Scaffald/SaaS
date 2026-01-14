@@ -420,7 +420,7 @@ export default function SubcontractorsPage() {
         justifyContent: 'center',
         zIndex: 1000,
       }}
-      onClick={handleCloseModal}
+      onPress={handleCloseModal}
     >
       <Card
         style={{
@@ -431,7 +431,7 @@ export default function SubcontractorsPage() {
           maxHeight: '90vh',
           overflow: 'auto',
         }}
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        onPress={(e: React.MouseEvent) => e.stopPropagation()}
         data-testid="add-subcontractor-modal"
       >
         <Row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -439,7 +439,7 @@ export default function SubcontractorsPage() {
             Add Subcontractor
           </Text>
           <Row
-            onClick={handleCloseModal}
+            onPress={handleCloseModal}
             style={{
               padding: 8,
               borderRadius: 4,
@@ -912,7 +912,7 @@ export default function SubcontractorsPage() {
             />
           </div>
           <Row
-            onClick={() => setShowFilters(!showFilters)}
+            onPress={() => setShowFilters(!showFilters)}
             style={{
               alignItems: 'center',
               gap: 8,
@@ -1010,7 +1010,7 @@ export default function SubcontractorsPage() {
                     <option value="issues">Issues</option>
                   </select>
                   <div
-                    onClick={() =>
+                    onPress={() =>
                       setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
                     }
                     style={{
@@ -1050,7 +1050,7 @@ export default function SubcontractorsPage() {
         {filteredAndSortedSubs.map((sub) => (
           <Card
             key={sub.id}
-            onClick={() => setSelectedSubcontractor(sub.id)}
+            onPress={() => setSelectedSubcontractor(sub.id)}
             style={{
               borderWidth: 2,
               borderStyle: 'solid',

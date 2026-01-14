@@ -110,7 +110,7 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
           </Stack>
           <Stack style={{ marginTop: 24 }}>
             <Button
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               variant="primary"
               disabled={isLoading}
             >

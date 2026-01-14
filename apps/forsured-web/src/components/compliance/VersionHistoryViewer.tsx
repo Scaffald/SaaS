@@ -186,7 +186,7 @@ function VersionListItem({
               <Button
                 variant={isFromSelected ? 'solid' : 'outlined'}
                 size="$2"
-                onClick={() => onSelect(version.version, 'from')}
+                onPress={() => onSelect(version.version, 'from')}
                 disabled={isToSelected}
               >
                 From
@@ -194,7 +194,7 @@ function VersionListItem({
               <Button
                 variant={isToSelected ? 'solid' : 'outlined'}
                 size="$2"
-                onClick={() => onSelect(version.version, 'to')}
+                onPress={() => onSelect(version.version, 'to')}
                 disabled={isFromSelected}
               >
                 To
@@ -207,7 +207,7 @@ function VersionListItem({
             <Button
               variant="outlined"
               size="$2"
-              onClick={() => onRestore(version.version)}
+              onPress={() => onRestore(version.version)}
               disabled={isRestoring}
               title="Restore this version"
             >
@@ -321,7 +321,7 @@ function DiffView({ comparison }: DiffViewProps) {
                   border: 'none',
                   cursor: 'pointer',
                 }}
-                onClick={() => toggleField(change.field)}
+                onPress={() => toggleField(change.field)}
               >
                 <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
                   {/* Change type icon */}
@@ -555,7 +555,7 @@ export function VersionHistoryViewer({
         <Button
           variant={isCompareMode ? 'solid' : 'outlined'}
           size="$3"
-          onClick={toggleCompareMode}
+          onPress={toggleCompareMode}
         >
           <Row style={{ alignItems: 'center', gap: 4 }}>
             <GitCompare size={16} />
@@ -618,7 +618,7 @@ export function VersionHistoryViewer({
           <Button
             variant="outlined"
             size="$3"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onPress={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
             Previous
@@ -629,7 +629,7 @@ export function VersionHistoryViewer({
           <Button
             variant="outlined"
             size="$3"
-            onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+            onPress={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
             disabled={page === pagination.totalPages}
           >
             Next

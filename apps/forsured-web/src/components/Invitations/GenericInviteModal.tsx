@@ -229,7 +229,7 @@ export function GenericInviteModal({
                     alignItems: 'center',
                     gap: 'var(--space-3)',
                   }}
-                  onClick={() => setSelectedRuleId(rule.id)}
+                  onPress={() => setSelectedRuleId(rule.id)}
                 >
                   <input
                     type="radio"

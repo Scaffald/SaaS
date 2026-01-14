@@ -246,7 +246,7 @@ export function RequirementsList({
             <Button
               variant="ghost"
               style={{ padding: 6, color: 'var(--color-gray-11)', borderRadius: 6 }}
-              onClick={() => onEdit(row.original)}
+              onPress={() => onEdit(row.original)}
               title="Edit"
             >
               <Edit size={16} />
@@ -254,7 +254,7 @@ export function RequirementsList({
             <Button
               variant="ghost"
               style={{ padding: 6, color: 'var(--color-gray-11)', borderRadius: 6 }}
-              onClick={() => onViewDependencies(row.original)}
+              onPress={() => onViewDependencies(row.original)}
               title="View Dependencies"
             >
               <Eye size={16} />
@@ -262,7 +262,7 @@ export function RequirementsList({
             <Button
               variant="ghost"
               style={{ padding: 6, color: 'var(--color-gray-11)', borderRadius: 6 }}
-              onClick={() => onViewVersions(row.original)}
+              onPress={() => onViewVersions(row.original)}
               title="Version History"
             >
               <MoreVertical size={16} />
@@ -271,7 +271,7 @@ export function RequirementsList({
               <Button
                 variant="ghost"
                 style={{ padding: 6, color: 'var(--color-gray-11)', borderRadius: 6 }}
-                onClick={() => handleArchive(row.original)}
+                onPress={() => handleArchive(row.original)}
                 title="Archive"
               >
                 <Archive size={16} />
@@ -319,7 +319,7 @@ export function RequirementsList({
           <Button
             variant="ghost"
             style={{ padding: 8, color: 'var(--color-gray-11)', borderRadius: 6 }}
-            onClick={() => refetch()}
+            onPress={() => refetch()}
             title="Refresh"
           >
             <RefreshCcw size={18} />
@@ -384,7 +384,7 @@ export function RequirementsList({
             backgroundColor: hasFilters ? 'var(--color-blue-2)' : 'transparent',
             color: hasFilters ? 'var(--color-blue-11)' : 'var(--color-12)',
           }}
-          onClick={() => setShowFilters(!showFilters)}
+          onPress={() => setShowFilters(!showFilters)}
         >
           <Filter size={18} />
           <Text>Filters</Text>
@@ -416,7 +416,7 @@ export function RequirementsList({
               fontSize: 14,
               color: 'var(--color-gray-11)',
             }}
-            onClick={clearFilters}
+            onPress={clearFilters}
           >
             <X size={14} />
             <Text>Clear</Text>
@@ -501,7 +501,7 @@ export function RequirementsList({
                         cursor: header.column.getCanSort() ? 'pointer' : 'default',
                         userSelect: header.column.getCanSort() ? 'none' : 'auto',
                       }}
-                      onClick={header.column.getToggleSortingHandler()}
+                      onPress={header.column.getToggleSortingHandler()}
                     >
                       <Row style={{ alignItems: 'center', gap: 4 }}>
                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -562,7 +562,7 @@ export function RequirementsList({
                 cursor: page === 1 ? 'not-allowed' : 'pointer',
               }}
               disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              onPress={() => setPage((p) => Math.max(1, p - 1))}
             >
               <ChevronLeft size={18} />
             </Button>
@@ -580,7 +580,7 @@ export function RequirementsList({
                 cursor: page === pagination.totalPages ? 'not-allowed' : 'pointer',
               }}
               disabled={page === pagination.totalPages}
-              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+              onPress={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
             >
               <ChevronRight size={18} />
             </Button>
