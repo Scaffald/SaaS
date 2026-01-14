@@ -46,11 +46,18 @@ export default function BrokerTeamPage() {
             Manage your broker team and client assignments
           </Text>
         </Stack>
-        <Button color="orange" onPress={() => setIsInviteModalOpen(true)}>
-          <Row alignItems="center" gap={8}>
-            <UserPlus size={18} />
-            <span>Invite Team Member</span>
-          </Row>
+        <Button
+          color="primary"
+          onPress={() => setIsInviteModalOpen(true)}
+          style={{
+            backgroundColor: 'var(--color-orange-9)',
+          }}
+          textStyle={{
+            color: 'white',
+          }}
+          iconStart={UserPlus}
+        >
+          Invite Team Member
         </Button>
       </Row>
 
@@ -148,7 +155,7 @@ export default function BrokerTeamPage() {
                         <Mail size={14} style={{ color: 'var(--color-text-muted)' }} />
                         <Text size="sm" muted>{user.email}</Text>
                       </Row>
-                      <span
+                      <Text
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -166,16 +173,36 @@ export default function BrokerTeamPage() {
                         }}
                       >
                         {user.broker_role === 'admin' ? 'Administrator' : 'Worker'}
-                      </span>
+                      </Text>
                     </Row>
                   </Stack>
                 </Row>
 
                 <Row alignItems="center" gap={8}>
-                  <Button variant="ghost" color="orange" size="sm">
+                  <Button
+                    variant="ghost"
+                    color="gray"
+                    size="sm"
+                    style={{
+                      backgroundColor: 'transparent',
+                    }}
+                    textStyle={{
+                      color: 'var(--color-orange-10)',
+                    }}
+                  >
                     Edit Access
                   </Button>
-                  <Button variant="ghost" color="orange" size="sm">
+                  <Button
+                    variant="ghost"
+                    color="gray"
+                    size="sm"
+                    style={{
+                      backgroundColor: 'transparent',
+                    }}
+                    textStyle={{
+                      color: 'var(--color-orange-10)',
+                    }}
+                  >
                     View Activity
                   </Button>
                 </Row>
@@ -194,7 +221,7 @@ export default function BrokerTeamPage() {
                   </Text>
                   <Row gap={8} style={{ flexWrap: 'wrap' }}>
                     {clients.slice(0, 3).map((client) => (
-                      <span
+                      <Text
                         key={client.id}
                         style={{
                           display: 'inline-flex',
@@ -212,10 +239,10 @@ export default function BrokerTeamPage() {
                         }}
                       >
                         {client.company_name}
-                      </span>
+                      </Text>
                     ))}
                     {clients.length > 3 && (
-                      <span
+                      <Text
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -231,7 +258,7 @@ export default function BrokerTeamPage() {
                         }}
                       >
                         +{clients.length - 3} more
-                      </span>
+                      </Text>
                     )}
                   </Row>
                 </Stack>
@@ -258,11 +285,18 @@ export default function BrokerTeamPage() {
             <Text size="sm" muted style={{ marginBottom: 16 }}>
               Invite team members to collaborate
             </Text>
-            <Button color="orange" onPress={() => setIsInviteModalOpen(true)}>
-              <Row alignItems="center" gap={8}>
-                <UserPlus size={18} />
-                <span>Invite Team Member</span>
-              </Row>
+            <Button
+              color="primary"
+              onPress={() => setIsInviteModalOpen(true)}
+              style={{
+                backgroundColor: 'var(--color-orange-9)',
+              }}
+              textStyle={{
+                color: 'white',
+              }}
+              iconStart={UserPlus}
+            >
+              Invite Team Member
             </Button>
           </Stack>
         </Card>
