@@ -11,11 +11,15 @@ import { supabaseServiceRole, forsured as forsuredQuery } from '../lib/supabase'
 
 export function useCompliance(clientId?: string) {
   const [compliance, setCompliance] = useState<ComplianceRecord | null>(null)
-  const [loading, setLoading] = useState(true)
+  // Only start loading if we have a clientId to fetch
+  const [loading, setLoading] = useState(!!clientId)
   const [error, setError] = useState<Error | null>(null)
 
   const fetchCompliance = useCallback(async () => {
-    if (!clientId) return
+    if (!clientId) {
+      setLoading(false)
+      return
+    }
 
     try {
       setLoading(true)
