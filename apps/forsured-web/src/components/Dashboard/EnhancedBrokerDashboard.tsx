@@ -15,7 +15,6 @@ import { useTasks } from '../../hooks/useTasks'
 import { useProjects } from '../../hooks/useProjects'
 import { useUsers } from '../../hooks/useUsers'
 import ComplianceOverviewWidget from '../Broker/ComplianceOverviewWidget'
-import ClientsTable from '../Broker/ClientsTable'
 import TasksInbox from '../Broker/TasksInbox'
 import TaskModal from '../Broker/TaskModal'
 import ClientModal from '../Broker/ClientModal'
@@ -176,12 +175,6 @@ export default function EnhancedBrokerDashboard() {
           onTaskClick={handleTaskClick}
           onCreateTask={handleCreateTask}
           onUpdateTaskStatus={handleUpdateTaskStatus}
-        />
-
-        <ClientsTable
-          clients={filteredClients}
-          policies={policies}
-          onClientClick={(client: BrokerClient) => navigate(`/broker/clients/${client.id}`)}
         />
       </Stack>
 

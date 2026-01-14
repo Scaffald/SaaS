@@ -88,7 +88,7 @@ export default function ComplianceOverviewWidget({
     if (overallScore >= 90)
       return <TrendingUp size={20} style={{ color: 'var(--color-green-10)' }} />;
     if (overallScore >= 70)
-      return <Minus size={20} style={{ color: 'var(--color-yellow-10)' }} />;
+      return <AlertTriangle size={20} style={{ color: 'var(--color-yellow-10)' }} />;
     return <TrendingDown size={20} style={{ color: 'var(--color-red-10)' }} />;
   };
 
