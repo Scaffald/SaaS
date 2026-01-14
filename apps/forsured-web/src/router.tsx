@@ -60,8 +60,6 @@ const BrokerTeamPage = lazy(() => import('./components/Broker/BrokerTeamPage'));
 const BrokerTasksPage = lazy(() => import('./components/Broker/BrokerTasksPage'));
 const BrokerTaskDetailPage = lazy(() => import('./components/Broker/BrokerTaskDetailPage'));
 const BrokerClientProfilePage = lazy(() => import('./components/Broker/BrokerClientProfilePage'));
-const BrokerInsurancePage = lazy(() => import('./components/Broker/BrokerInsurancePage'));
-const BrokerPolicyDetailPage = lazy(() => import('./components/Broker/BrokerPolicyDetailPage'));
 const BrokerAcknowledgementFormPage = lazy(() => import('./components/BrokerAcknowledgement/BrokerAcknowledgementFormPage'));
 const BrokerAcknowledgementList = lazy(() => import('./components/BrokerAcknowledgement/BrokerAcknowledgementList'));
 
@@ -534,22 +532,6 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedTypes={['broker']}>
               <DocumentsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="broker/insurance"
-          element={
-            <ProtectedRoute allowedTypes={['broker']}>
-              <BrokerInsurancePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="broker/insurance/policies/:policyId"
-          element={
-            <ProtectedRoute allowedTypes={['broker']}>
-              <BrokerPolicyDetailPage />
             </ProtectedRoute>
           }
         />
