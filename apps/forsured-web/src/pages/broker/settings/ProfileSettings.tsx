@@ -37,9 +37,7 @@ function BrokerProfileSettings() {
            licensedStates !== originalState.licensedStates;
   }, [phone, licenseNumber, licensedStates, originalState]);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = useCallback(async () => {
     try {
       await updateUserSettings({
         ui_preferences: {
@@ -166,11 +164,12 @@ function BrokerProfileSettings() {
             />
           </Stack>
           <Button
-            type="submit"
+            onPress={handleSubmit}
             disabled={!isDirty || isSaving}
+            loading={isSaving}
             color="primary"
           >
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            Save Changes
           </Button>
         </Stack>
       </form>
