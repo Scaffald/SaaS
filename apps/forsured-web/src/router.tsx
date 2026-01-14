@@ -55,7 +55,6 @@ const ContractorTasks = lazy(() => import('./pages/contractor/ContractorTasks'))
 const SubcontractorMyBrokerPage = lazy(() => import('./pages/subcontractor/MyBrokerPage'));
 
 // Broker components
-const BrokerProjectsPage = lazy(() => import('./components/Broker/BrokerProjectsPage'));
 const BrokerClientsPage = lazy(() => import('./components/Broker/BrokerClientsPage'));
 const BrokerTeamPage = lazy(() => import('./components/Broker/BrokerTeamPage'));
 const BrokerTasksPage = lazy(() => import('./components/Broker/BrokerTasksPage'));
@@ -519,22 +518,6 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedTypes={['broker']}>
               <ClientProfilePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="broker/projects"
-          element={
-            <ProtectedRoute allowedTypes={['broker']}>
-              <BrokerProjectsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="broker/projects/:projectId"
-          element={
-            <ProtectedRoute allowedTypes={['broker']}>
-              <ProjectDetailPage />
             </ProtectedRoute>
           }
         />

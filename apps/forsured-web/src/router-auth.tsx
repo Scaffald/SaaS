@@ -40,7 +40,6 @@ import SubcontractorProjectsPage from './components/Subcontractor/SubcontractorP
 import DocumentsPage from './components/Subcontractor/DocumentsPage';
 
 // Broker Pages
-import BrokerProjectsPage from './components/Broker/BrokerProjectsPage';
 import BrokerClientsPage from './components/Broker/BrokerClientsPage';
 import BrokerTeamPage from './components/Broker/BrokerTeamPage';
 import BrokerAcknowledgementFormPage from './components/BrokerAcknowledgement/BrokerAcknowledgementFormPage';
@@ -193,8 +192,6 @@ const AuthenticatedAppRoutes = () => {
                 <Route path="dashboard" element={<EnhancedBrokerDashboard />} />
                 <Route path="onboarding" element={<BrokerOnboarding />} />
                 <Route path="clients" element={<BrokerClientsPage />} />
-                <Route path="projects" element={<BrokerProjectsPage />} />
-                <Route path="projects/:projectId" element={<ProjectDetailPage />} />
                 <Route path="team" element={<BrokerTeamPage />} />
                 <Route path="documents" element={<DocumentsPage />} />
                 <Route path="acknowledgements" element={<BrokerAcknowledgementList />} />
