@@ -49,6 +49,14 @@ COMMENT ON COLUMN core.oauth_authorization_codes.code_hash IS 'SHA-256 hash of t
 COMMENT ON COLUMN core.oauth_authorization_codes.code_challenge IS 'PKCE code challenge for enhanced security';
 COMMENT ON COLUMN core.oauth_authorization_codes.expires_at IS 'Authorization codes expire after 10 minutes';
 
+-- Add missing columns if table already exists from migration 249
+ALTER TABLE core.oauth_authorization_codes ADD COLUMN IF NOT EXISTS revoked_at TIMESTAMPTZ;
+ALTER TABLE core.oauth_authorization_codes ADD COLUMN IF NOT EXISTS state TEXT;
+ALTER TABLE core.oauth_authorization_codes ADD COLUMN IF NOT EXISTS nonce TEXT;
+-- Make code_challenge optional (migration 249 had it as NOT NULL)
+ALTER TABLE core.oauth_authorization_codes ALTER COLUMN code_challenge DROP NOT NULL;
+ALTER TABLE core.oauth_authorization_codes ALTER COLUMN code_challenge_method DROP NOT NULL;
+
 -- Create indexes for authorization code operations
 CREATE INDEX IF NOT EXISTS oauth_authorization_codes_code_hash_idx ON core.oauth_authorization_codes(code_hash);
 CREATE INDEX IF NOT EXISTS oauth_authorization_codes_app_user_idx ON core.oauth_authorization_codes(oauth_app_id, user_id);
