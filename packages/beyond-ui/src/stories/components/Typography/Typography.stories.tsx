@@ -5,7 +5,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { View, StyleSheet } from 'react-native'
-import { Heading, H1, H2, H3, H4, H5, H6, Paragraph, Label, Text, Caption } from '../../../components/Typography'
+import { H1, H2, H3, H4, H5, H6, Paragraph, Label, Text, Caption } from '../../../components/Typography'
 import { Stack, Row, Separator } from '../../../components/Layout'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'

@@ -29,14 +29,10 @@
  * ```
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import type { EcommerceShippingModalProps } from './EcommerceShippingModal.types'
 import { useThemeContext } from '../../../playground/ThemeProvider'
-import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
-import { borderRadius, borderWidth } from '../../../tokens/borders'
-import { typography } from '../../../tokens/typography'
-import { Radio } from '../../Radio'
 import { SelectionCard } from '../../SelectionCard'
 
 export function EcommerceShippingModal({

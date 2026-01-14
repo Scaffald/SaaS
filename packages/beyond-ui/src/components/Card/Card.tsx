@@ -3,7 +3,8 @@
  * A container for grouping related content with visual separation
  */
 
-import React, { useMemo, useCallback, useState } from 'react'
+import type React from 'react'
+import { useMemo, useCallback, useState } from 'react'
 import { View, Pressable, Image, StyleSheet, Platform, type ViewStyle, type ImageStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'

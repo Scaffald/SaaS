@@ -18,7 +18,9 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "strict": false,
-    "target": "ES2020"
+    "target": "ES2020",
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": false
   },
   "exclude": [
     "node_modules",
@@ -29,6 +31,7 @@
     "**/*.spec.tsx",
     "**/*.stories.ts",
     "**/*.stories.tsx",
+    "**/*.demo.tsx",
     ".storybook",
     "src/CardStack.tsx",
     "src/components/popovers/Popover.tsx",

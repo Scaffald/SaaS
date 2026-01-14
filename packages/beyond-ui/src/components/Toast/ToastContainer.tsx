@@ -3,7 +3,8 @@
  * Renders all active toasts in the specified position
  */
 
-import React, { useMemo } from 'react'
+import type React from 'react'
+import { useMemo } from 'react'
 import { View, StyleSheet, type ViewStyle } from 'react-native'
 import { spacing } from '../../tokens/spacing'
 import { useToast } from './ToastContext'

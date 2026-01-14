@@ -424,7 +424,7 @@ function getHeaderStyles(theme: 'light' | 'dark') {
   })
 }
 
-function getContentStyles(theme: 'light' | 'dark') {
+function getContentStyles(_theme: 'light' | 'dark') {
   return StyleSheet.create({
     content: {
       flex: 1,

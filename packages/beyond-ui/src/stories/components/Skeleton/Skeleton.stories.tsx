@@ -13,8 +13,8 @@ import {
   SkeletonGroup,
 } from '../../../components/Skeleton'
 import { Stack, Row } from '../../../components/Layout'
-import { Text, H4 } from '../../../components/Typography'
-import { Card, CardContent, CardHeader } from '../../../components/Card'
+import { Text, } from '../../../components/Typography'
+import { Card, CardContent, } from '../../../components/Card'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 

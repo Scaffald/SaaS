@@ -24,7 +24,7 @@ const ICON_SIZE = 18
 export function getContainerStyles(
   type: DatePickerHeaderType,
   position: DatePickerHeaderPosition,
-  theme: ThemeMode = 'light'
+  _theme: ThemeMode = 'light'
 ): ViewStyle {
   const baseContainer: ViewStyle = {
     flexDirection: 'row',

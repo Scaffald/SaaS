@@ -3,7 +3,8 @@
  * Loading placeholder components for showing content structure while loading
  */
 
-import React, { useEffect, useRef, useMemo } from 'react'
+import type React from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import { View, Animated, StyleSheet, type ViewStyle, type DimensionValue } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -24,7 +25,7 @@ import type {
 
 const DEFAULT_ANIMATION_DURATION = 1500
 const BASE_COLOR = colors.gray[200]
-const HIGHLIGHT_COLOR = colors.gray[100]
+const _HIGHLIGHT_COLOR = colors.gray[100]
 
 const SHAPE_RADIUS: Record<SkeletonShape, number> = {
   rectangle: radiusTokens.xs,

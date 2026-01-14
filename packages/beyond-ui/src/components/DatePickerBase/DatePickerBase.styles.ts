@@ -4,15 +4,13 @@
  */
 
 import type { ViewStyle } from 'react-native'
-import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
-import { borderRadius } from '../../tokens/borders'
 
 /**
  * Get container styles
  */
-export function getContainerStyles(theme: ThemeMode = 'light'): ViewStyle {
+export function getContainerStyles(_theme: ThemeMode = 'light'): ViewStyle {
   return {
     flex: 1,
     flexDirection: 'column',

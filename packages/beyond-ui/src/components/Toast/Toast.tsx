@@ -3,13 +3,14 @@
  * Individual toast notification element
  */
 
-import React, { useEffect, useRef, useMemo, useCallback } from 'react'
+import type React from 'react'
+import { useEffect, useRef, useMemo, useCallback } from 'react'
 import { View, Pressable, Animated, StyleSheet, type ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
-import { shadows, boxShadows } from '../../tokens/shadows'
-import { Text, Caption } from '../Typography'
+import { shadows, } from '../../tokens/shadows'
+import { Text, } from '../Typography'
 import { Row } from '../Layout'
 import { Button } from '../Button'
 import type { ToastProps, ToastVariant } from './Toast.types'
@@ -104,7 +105,7 @@ export function Toast({
       }, duration)
       return () => clearTimeout(timer)
     }
-  }, [duration])
+  }, [duration, handleDismiss])
 
   const handleDismiss = useCallback(() => {
     Animated.parallel([

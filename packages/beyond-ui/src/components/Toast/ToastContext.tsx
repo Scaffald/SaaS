@@ -3,7 +3,8 @@
  * Provides toast management throughout the app
  */
 
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react'
+import type React from 'react'
+import { createContext, useContext, useState, useCallback, useMemo } from 'react'
 import type {
   ToastContextValue,
   ToastData,

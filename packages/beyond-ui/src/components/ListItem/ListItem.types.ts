@@ -3,9 +3,8 @@
  * Comprehensive type definitions for all list item variants
  */
 
-import type { ViewStyle, TextStyle, ImageSourcePropType } from 'react-native'
+import type { ViewStyle, } from 'react-native'
 import type React from 'react'
-import type { IconComponent } from '../types'
 
 /**
  * List item variant types

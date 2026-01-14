@@ -15,7 +15,7 @@ import {
 import type { PopoverPlacement } from '../../../components/Popover'
 import { Button } from '../../../components/Button'
 import { Stack, Row } from '../../../components/Layout'
-import { Text, H4, Paragraph } from '../../../components/Typography'
+import { Text, H4, } from '../../../components/Typography'
 import { Input } from '../../../components/Input'
 import { spacing } from '../../../tokens/spacing'
 import { colors } from '../../../tokens/colors'

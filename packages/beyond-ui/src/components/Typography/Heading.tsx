@@ -5,7 +5,7 @@
  * Replaces Tamagui's H1, H2, H3, H4, H5, H6 components.
  */
 
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { Text, Platform, type TextStyle, type AccessibilityRole } from 'react-native'
 import type {
   HeadingProps,

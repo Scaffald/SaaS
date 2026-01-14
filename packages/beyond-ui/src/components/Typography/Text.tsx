@@ -5,7 +5,7 @@
  * Replaces Tamagui's SizableText component.
  */
 
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { Text as RNText, type TextStyle } from 'react-native'
 import type { TextProps, TextSize, TextWeight } from './Typography.types'
 import {

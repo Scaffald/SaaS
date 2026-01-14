@@ -44,21 +44,6 @@ import { MinusIcon } from './MinusIcon'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { HelperText } from '../HelperText'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
-import { AnimatedView, useReducedMotion, springConfigs } from '../../animation'
-
-// Try to import Reanimated for animations
-let useSharedValue: any = null
-let useAnimatedStyle: any = null
-let withSpring: any = null
-
-try {
-  const Reanimated = require('react-native-reanimated')
-  useSharedValue = Reanimated.useSharedValue
-  useAnimatedStyle = Reanimated.useAnimatedStyle
-  withSpring = Reanimated.withSpring
-} catch {
-  // Reanimated not installed, will use static rendering
-}
 
 export function Checkbox({
   checked: checkedProp,
@@ -84,35 +69,28 @@ export function Checkbox({
 
   const { theme } = useThemeContext()
   const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
-  const prefersReducedMotion = useReducedMotion()
 
-  // Animated scale + opacity for check/minus icon
-  const iconScale = useSharedValue ? useSharedValue(checked || indeterminate ? 1 : 0) : null
-  const iconOpacity = useSharedValue ? useSharedValue(checked || indeterminate ? 1 : 0) : null
+  // Create a stable initial value for animation
+  const initialValue = checked || indeterminate ? 1 : 0
+
+  // Animation state - always use regular React state for compatibility
+  // This avoids conditional hook calls when Reanimated may or may not be available
+  const [animationScale, setAnimationScale] = useState(initialValue)
+  const [animationOpacity, setAnimationOpacity] = useState(initialValue)
 
   // Animate icon when checked/indeterminate state changes
   useEffect(() => {
     const targetValue = checked || indeterminate ? 1 : 0
-    if (iconScale && iconOpacity && withSpring && !prefersReducedMotion) {
-      iconScale.value = withSpring(targetValue, springConfigs.snappy)
-      iconOpacity.value = withSpring(targetValue, springConfigs.snappy)
-    } else if (iconScale && iconOpacity) {
-      // Instant change when reduced motion is preferred
-      iconScale.value = targetValue
-      iconOpacity.value = targetValue
-    }
-  }, [checked, indeterminate, prefersReducedMotion])
+    // For now, use instant transitions (can be enhanced with CSS transitions on web)
+    setAnimationScale(targetValue)
+    setAnimationOpacity(targetValue)
+  }, [checked, indeterminate])
 
-  // Animated style for the icon
-  const animatedIconStyle = useAnimatedStyle
-    ? useAnimatedStyle(() => {
-        if (!iconScale || !iconOpacity) return {}
-        return {
-          transform: [{ scale: iconScale.value }],
-          opacity: iconOpacity.value,
-        }
-      }, [iconScale, iconOpacity])
-    : null
+  // Computed style for the icon
+  const animatedIconStyle = useMemo(() => ({
+    transform: [{ scale: animationScale }],
+    opacity: animationOpacity,
+  }), [animationScale, animationOpacity])
 
   const handlePress = () => {
     if (disabled) return
@@ -238,22 +216,14 @@ export function Checkbox({
             ]}
           >
             {showCheckIcon && (
-              animatedIconStyle ? (
-                <AnimatedView style={animatedIconStyle}>
-                  <CheckIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
-                </AnimatedView>
-              ) : (
+              <View style={animatedIconStyle}>
                 <CheckIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
-              )
+              </View>
             )}
             {showMinusIcon && (
-              animatedIconStyle ? (
-                <AnimatedView style={animatedIconStyle}>
-                  <MinusIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
-                </AnimatedView>
-              ) : (
+              <View style={animatedIconStyle}>
                 <MinusIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
-              )
+              </View>
             )}
           </View>
         </View>

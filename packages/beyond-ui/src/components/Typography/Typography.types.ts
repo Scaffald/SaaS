@@ -6,7 +6,6 @@
  */
 
 import type { TextProps as RNTextProps, TextStyle } from 'react-native'
-import type { FontWeightToken, FontSizeToken } from '../../tokens/typography'
 
 /**
  * Heading level type - H1 through H6

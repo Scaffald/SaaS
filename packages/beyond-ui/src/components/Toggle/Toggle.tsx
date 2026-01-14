@@ -33,7 +33,7 @@
  * ```
  */
 
-import { useState, useMemo, useEffect, forwardRef } from 'react'
+import { useState, useMemo, useEffect, } from 'react'
 import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -118,7 +118,7 @@ export function Toggle({
       // Instant change when reduced motion is preferred
       thumbPosition.value = checked ? sizeConfig.thumbTranslate : 0
     }
-  }, [checked, sizeConfig.thumbTranslate, prefersReducedMotion])
+  }, [checked, sizeConfig.thumbTranslate, prefersReducedMotion, thumbPosition])
 
   // Animated style for thumb
   const animatedThumbStyle = useAnimatedStyle

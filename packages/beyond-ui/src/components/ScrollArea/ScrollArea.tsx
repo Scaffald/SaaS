@@ -25,7 +25,6 @@
 import { useCallback, useRef } from 'react'
 import {
   ScrollView,
-  View,
   StyleSheet,
   Platform,
 } from 'react-native'
@@ -33,7 +32,6 @@ import type { NativeScrollEvent, NativeSyntheticEvent, ScrollView as RNScrollVie
 import type { ScrollAreaProps } from './ScrollArea.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
 
 export function ScrollArea({
   children,

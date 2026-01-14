@@ -82,7 +82,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
   const isPending = app.status === 'pending'
   const isActive = app.status === 'active' || app.status === 'trusted'
-  const isRevoked = app.status === 'revoked'
+  const _isRevoked = app.status === 'revoked'
 
   const statusColor =
     app.status === 'active' || app.status === 'trusted'

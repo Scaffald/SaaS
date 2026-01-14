@@ -4,7 +4,6 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 import { DatePickerDay } from '../../../components/DatePickerDay'
-import type { DatePickerDayState } from '../../../components/DatePickerDay'
 
 const meta: Meta<typeof DatePickerDay> = {
   title: 'Components/DatePickerDay',

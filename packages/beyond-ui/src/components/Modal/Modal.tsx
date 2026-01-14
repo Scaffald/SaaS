@@ -27,22 +27,7 @@ import { View, Modal as RNModal, Platform } from 'react-native'
 import type { ModalProps } from './Modal.types'
 import { getModalStyles } from './Modal.styles'
 import { useThemeContext } from '../../playground/ThemeProvider'
-import { AnimatedView, useReducedMotion, springConfigs } from '../../animation'
 import { useFocusTrap } from '../../accessibility/useFocusTrap'
-
-// Try to import Reanimated for animations
-let useSharedValue: any = null
-let useAnimatedStyle: any = null
-let withSpring: any = null
-
-try {
-  const Reanimated = require('react-native-reanimated')
-  useSharedValue = Reanimated.useSharedValue
-  useAnimatedStyle = Reanimated.useAnimatedStyle
-  withSpring = Reanimated.withSpring
-} catch {
-  // Reanimated not installed, will use default RNModal animation
-}
 
 export const Modal = forwardRef<View, ModalProps>(function Modal({
   visible: controlledVisible,
@@ -57,7 +42,6 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
 }, ref) {
   const { theme } = useThemeContext()
   const styles = getModalStyles(theme, width)
-  const prefersReducedMotion = useReducedMotion()
   const modalContentRef = useRef<View>(null)
 
   // Controlled/uncontrolled visibility state
@@ -96,36 +80,27 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
     [ref]
   )
 
-  // Animated scale for modal content entry
-  const modalScale = useSharedValue ? useSharedValue(0.95) : null
-  const modalOpacity = useSharedValue ? useSharedValue(0) : null
+  // Animation state - using regular React state for compatibility
+  const [modalScale, setModalScale] = useState(0.95)
+  const [modalOpacity, setModalOpacity] = useState(0)
 
   // Animate modal when visibility changes
   useEffect(() => {
-    if (isVisible && modalScale && modalOpacity && withSpring && !prefersReducedMotion) {
-      modalScale.value = withSpring(1, springConfigs.gentle)
-      modalOpacity.value = withSpring(1, springConfigs.gentle)
-    } else if (isVisible && modalScale && modalOpacity) {
-      // Instant when reduced motion is preferred
-      modalScale.value = 1
-      modalOpacity.value = 1
-    } else if (modalScale && modalOpacity) {
+    if (isVisible) {
+      setModalScale(1)
+      setModalOpacity(1)
+    } else {
       // Reset for next open
-      modalScale.value = 0.95
-      modalOpacity.value = 0
+      setModalScale(0.95)
+      setModalOpacity(0)
     }
-  }, [isVisible, prefersReducedMotion])
+  }, [isVisible])
 
-  // Animated style for modal content
-  const animatedModalStyle = useAnimatedStyle
-    ? useAnimatedStyle(() => {
-        if (!modalScale || !modalOpacity) return {}
-        return {
-          transform: [{ scale: modalScale.value }],
-          opacity: modalOpacity.value,
-        }
-      }, [modalScale, modalOpacity])
-    : null
+  // Computed style for modal content
+  const animatedModalStyle = useMemo(() => ({
+    transform: [{ scale: modalScale }],
+    opacity: modalOpacity,
+  }), [modalScale, modalOpacity])
 
   // Escape key is now handled by useFocusTrap
 
@@ -162,57 +137,31 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
         onTouchEnd={handleBackdropPress}
         {...(Platform.OS === 'web' && {
           onClick: handleBackdropClick,
-        } as any)}
+        } as Record<string, unknown>)}
       >
-        {animatedModalStyle ? (
-          <AnimatedView
-            ref={setRefs}
-            style={[styles.container, style, animatedModalStyle]}
-            onStartShouldSetResponder={() => true}
-            onTouchEnd={(e) => {
-              // Prevent touch events from bubbling to backdrop handler
+        <View
+          ref={setRefs}
+          style={[styles.container, style, animatedModalStyle]}
+          onStartShouldSetResponder={() => true}
+          onTouchEnd={(e) => {
+            // Prevent touch events from bubbling to backdrop handler
+            e.stopPropagation()
+          }}
+          {...(Platform.OS === 'web' && {
+            onClick: (e: React.MouseEvent) => {
+              // Prevent click events from bubbling to backdrop handler
               e.stopPropagation()
-            }}
-            {...(Platform.OS === 'web' && {
-              onClick: (e: React.MouseEvent) => {
-                // Prevent click events from bubbling to backdrop handler
-                e.stopPropagation()
-              },
-              role: 'dialog',
-              'aria-modal': 'true',
-              'aria-labelledby': testID ? `${testID}-title` : undefined,
-            } as any)}
-            accessible={true}
-            accessibilityRole="none"
-            accessibilityViewIsModal={true}
-          >
-            {children}
-          </AnimatedView>
-        ) : (
-          <View
-            ref={setRefs}
-            style={[styles.container, style]}
-            onStartShouldSetResponder={() => true}
-            onTouchEnd={(e) => {
-              // Prevent touch events from bubbling to backdrop handler
-              e.stopPropagation()
-            }}
-            {...(Platform.OS === 'web' && {
-              onClick: (e: React.MouseEvent) => {
-                // Prevent click events from bubbling to backdrop handler
-                e.stopPropagation()
-              },
-              role: 'dialog',
-              'aria-modal': 'true',
-              'aria-labelledby': testID ? `${testID}-title` : undefined,
-            } as any)}
-            accessible={true}
-            accessibilityRole="none"
-            accessibilityViewIsModal={true}
-          >
-            {children}
-          </View>
-        )}
+            },
+            role: 'dialog',
+            'aria-modal': 'true',
+            'aria-labelledby': testID ? `${testID}-title` : undefined,
+          } as Record<string, unknown>)}
+          accessible={true}
+          accessibilityRole="none"
+          accessibilityViewIsModal={true}
+        >
+          {children}
+        </View>
       </View>
     </RNModal>
   )

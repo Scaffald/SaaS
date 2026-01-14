@@ -226,10 +226,10 @@ function getFormStyles(gap: number) {
 }
 
 function getFieldsetStyles(
-  theme: 'light' | 'dark',
+  _theme: 'light' | 'dark',
   gap: number,
   direction: 'row' | 'column',
-  disabled: boolean
+  _disabled: boolean
 ) {
   return StyleSheet.create({
     fieldset: {
@@ -255,10 +255,10 @@ function getFieldsetStyles(
 }
 
 function getFormFieldStyles(
-  theme: 'light' | 'dark',
+  _theme: 'light' | 'dark',
   gap: number,
   disabled: boolean,
-  hasError: boolean
+  _hasError: boolean
 ) {
   return StyleSheet.create({
     formField: {

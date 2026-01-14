@@ -5,7 +5,7 @@
  * Replaces Tamagui's Paragraph component.
  */
 
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { Text, type TextStyle } from 'react-native'
 import type { ParagraphProps, TextSize, TextWeight } from './Typography.types'
 import {

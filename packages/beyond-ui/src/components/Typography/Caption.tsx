@@ -4,9 +4,9 @@
  * Small helper/caption text for labels, timestamps, etc.
  */
 
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { Text, type TextStyle } from 'react-native'
-import type { CaptionProps, TextWeight } from './Typography.types'
+import type { CaptionProps, } from './Typography.types'
 import {
   fontSize,
   lineHeight,

@@ -5,7 +5,7 @@
  * Provides proper semantics for form fields.
  */
 
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { Text, Platform, type TextStyle } from 'react-native'
 import type { LabelProps, TextWeight } from './Typography.types'
 import {
