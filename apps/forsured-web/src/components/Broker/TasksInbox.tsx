@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   Clock,
   Calendar,
@@ -7,7 +7,7 @@ import {
   Building2,
   Plus,
 } from 'lucide-react';
-import { Stack, Row, Text, H2, Card, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Card, Button, useAnnouncer } from '@unicornlove/beyond-ui';
 import { Task } from '../../types';
 import { formatDate, getDaysUntil, isOverdue } from '../../utils/dateHelpers';
 import TaskStatusBadge from '../Common/TaskStatusBadge';
@@ -25,6 +25,21 @@ interface TasksInboxProps {
   onUpdateTaskStatus?: (taskId: string, status: string) => void;
 }
 
+// Map status values to human-readable labels for announcements
+const STATUS_LABELS: Record<string, string> = {
+  pending: 'Pending',
+  in_progress: 'In Progress',
+  submitted: 'Submitted',
+  in_review: 'In Review',
+  approved: 'Approved',
+  rejected: 'Rejected',
+  needs_info: 'Needs Info',
+  awaiting_response: 'Awaiting Response',
+  completed: 'Completed',
+  escalated: 'Escalated',
+  cancelled: 'Cancelled',
+};
+
 export default function TasksInbox({
   tasks,
   allTasks,
@@ -35,6 +50,20 @@ export default function TasksInbox({
 }: TasksInboxProps) {
   const [activeTab, setActiveTab] = useState<'urgent' | 'upcoming'>('urgent');
   const { currentView, setView } = useTaskViewFilter();
+
+  // Screen reader announcements for dynamic content
+  const { announce } = useAnnouncer();
+
+  // Wrap status update to announce changes to screen readers
+  const handleStatusChange = useCallback(
+    (taskId: string, newStatus: string, taskTitle: string) => {
+      onUpdateTaskStatus?.(taskId, newStatus);
+      // Announce the status change to screen readers
+      const statusLabel = STATUS_LABELS[newStatus] || newStatus;
+      announce(`Task "${taskTitle}" status changed to ${statusLabel}`);
+    },
+    [onUpdateTaskStatus, announce]
+  );
 
   // REQ-268: Calculate counts for view toggle
   // Use allTasks if provided (for accurate counts across both views)
@@ -344,9 +373,10 @@ export default function TasksInbox({
                         value={task.status}
                         onChange={(e) => {
                           e.stopPropagation();
-                          onUpdateTaskStatus?.(task.id, e.target.value);
+                          handleStatusChange(task.id, e.target.value, task.title);
                         }}
-                        onPress={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Change status for task: ${task.title}`}
                         style={{
                           fontSize: 12,
                           border: '1px solid var(--color-border)',

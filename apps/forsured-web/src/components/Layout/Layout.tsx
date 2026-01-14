@@ -1,10 +1,15 @@
 /**
  * Layout - Main application layout using Beyond UI
  * Migrated from Tamagui to Beyond UI
+ *
+ * Accessibility features:
+ * - Skip link for keyboard users to bypass navigation
+ * - Proper landmark roles (main, navigation)
+ * - Focus management
  */
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Navigate } from 'react-router-dom';
-import { Row, Stack, Text } from '@unicornlove/beyond-ui';
+import { Row, Stack, Text, SkipLink } from '@unicornlove/beyond-ui';
 import Sidebar from './Sidebar';
 import ClientsDropdown from './ClientsDropdown';
 import { useAuth } from '../../contexts/AuthContext';
@@ -82,15 +87,19 @@ export default function Layout() {
   };
 
   return (
-    <Row
-      style={{
-        height: '100vh',
-        backgroundColor: 'var(--color-background-hover)',
-      }}
-    >
-      {/* Track page views for audit logging */}
-      <PageViewTracker excludePaths={['/api', '/health']} />
-      <Sidebar
+    <>
+      {/* Skip link for keyboard accessibility - allows users to skip navigation */}
+      <SkipLink targetId="main-content">Skip to main content</SkipLink>
+
+      <Row
+        style={{
+          height: '100vh',
+          backgroundColor: 'var(--color-background-hover)',
+        }}
+      >
+        {/* Track page views for audit logging */}
+        <PageViewTracker excludePaths={['/api', '/health']} />
+        <Sidebar
         userRole={uiUserType}
         user={profile}
         onNotificationsClick={() => navigate(getNotificationsPath())}
@@ -131,16 +140,19 @@ export default function Layout() {
         )}
         <Stack
           as="main"
+          id="main-content"
           flex={1}
           style={{
             overflowX: 'hidden',
             overflowY: 'auto',
             padding: 24,
           }}
+          tabIndex={-1}
         >
           <Outlet />
         </Stack>
       </Stack>
-    </Row>
+      </Row>
+    </>
   );
 }
