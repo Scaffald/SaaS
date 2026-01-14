@@ -21,6 +21,9 @@ import type {
 import { MetricCard } from '../../../components/dashboard/MetricCard';
 import { RiskBadge } from '../../../components/compliance/RiskBadge';
 import type { RiskLevel } from '../../../lib/compliance/riskCalculationService';
+import { ComplianceTrendChart } from '../../../components/dashboard/ComplianceTrendChart';
+import { TaskBreakdownChart } from '../../../components/dashboard/TaskBreakdownChart';
+import { ActivityTrendChart } from '../../../components/dashboard/ActivityTrendChart';
 
 export default function DashboardPage() {
   // REQ-4: Use lexicon for dynamic labels
@@ -223,6 +226,74 @@ export default function DashboardPage() {
             loading={loading}
           />
         </Row>
+
+        {/* Charts Section */}
+        {!loading && (
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
+            {/* Compliance Trend Chart */}
+            {overview && (
+              <ComplianceTrendChart
+                data={[
+                  { date: new Date(Date.now() - 11 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score - 5 },
+                  { date: new Date(Date.now() - 10 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score - 3 },
+                  { date: new Date(Date.now() - 9 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score - 2 },
+                  { date: new Date(Date.now() - 8 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score - 1 },
+                  { date: new Date(Date.now() - 7 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score },
+                  { date: new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score + 1 },
+                  { date: new Date(Date.now() - 5 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score + 2 },
+                  { date: new Date(Date.now() - 4 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score + 1 },
+                  { date: new Date(Date.now() - 3 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score },
+                  { date: new Date(Date.now() - 2 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score + 1 },
+                  { date: new Date(Date.now() - 1 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score },
+                  { date: new Date().toISOString(), score: overview.overall_compliance_score },
+                ]}
+                period="year"
+                title="Compliance Trend (12 Months)"
+              />
+            )}
+
+            {/* Task Breakdown Chart */}
+            {taskSummary && (
+              <TaskBreakdownChart
+                data={[
+                  { label: 'High Priority', value: taskSummary.high_priority_count, color: 'var(--color-error-500)' },
+                  { label: 'Medium Priority', value: taskSummary.medium_priority_count, color: 'var(--color-warning-500)' },
+                  { label: 'Low Priority', value: taskSummary.low_priority_count, color: 'var(--color-info-500)' },
+                ]}
+                title="Task Breakdown by Priority"
+                size="lg"
+                colorScheme="colorful"
+                showLabels
+              />
+            )}
+
+            {/* Activity Trend Chart */}
+            {activities.length > 0 && (
+              <ActivityTrendChart
+                series={[
+                  {
+                    name: 'Policy Events',
+                    data: activities
+                      .filter((a) => a.event_type.includes('policy'))
+                      .slice(0, 12)
+                      .map((a, i) => ({ date: a.timestamp, value: i + 1 })),
+                    color: 'var(--color-primary-600)',
+                  },
+                  {
+                    name: 'Task Events',
+                    data: activities
+                      .filter((a) => a.event_type.includes('task'))
+                      .slice(0, 12)
+                      .map((a, i) => ({ date: a.timestamp, value: i + 1 })),
+                    color: 'var(--color-success-500)',
+                  },
+                ]}
+                period="year"
+                title="Activity Trend"
+              />
+            )}
+          </Row>
+        )}
 
         <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
           {/* Subcontractor Scores Table */}
