@@ -4,19 +4,16 @@
  * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
  * Migrated from Tamagui to Beyond UI
  */
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import type React from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stack, Row, Text, Button, Input, Chip } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Input } from '@unicornlove/beyond-ui';
 import { ChevronDown, Search, Building, Users, X } from 'lucide-react';
 import { useClients } from '../../hooks/useClients';
-import { BrokerClient } from '../../types';
+import type { BrokerClient } from '../../types';
 import { useLexicon } from '../../contexts/LexiconContext';
 
-interface ClientsDropdownProps {
-  className?: string;
-}
-
-export default function ClientsDropdown({ className = '' }: ClientsDropdownProps) {
+export default function ClientsDropdown() {
   const navigate = useNavigate();
   const { clients, loading } = useClients();
   const { getManagerLabel, getContractorLabel } = useLexicon();
@@ -73,10 +70,35 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
     navigate(`/broker/clients/${client.id}`);
   };
 
-  const getComplianceVariant = (score: number): 'success' | 'warning' | 'error' => {
-    if (score >= 80) return 'success';
-    if (score >= 50) return 'warning';
-    return 'error';
+  const getComplianceStyle = (score: number): React.CSSProperties => {
+    if (score >= 80) {
+      return {
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        color: 'rgb(22, 163, 74)',
+        border: '1px solid rgba(34, 197, 94, 0.3)',
+      };
+    }
+    if (score >= 50) {
+      return {
+        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+        color: 'rgb(161, 98, 7)',
+        border: '1px solid rgba(234, 179, 8, 0.3)',
+      };
+    }
+    return {
+      backgroundColor: 'rgba(239, 68, 68, 0.1)',
+      color: 'rgb(220, 38, 38)',
+      border: '1px solid rgba(239, 68, 68, 0.3)',
+    };
+  };
+
+  const complianceBadgeStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '2px 8px',
+    borderRadius: 12,
+    fontSize: 12,
+    fontWeight: 500,
   };
 
   const clientItemStyle: React.CSSProperties = {
@@ -170,6 +192,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery('')}
                   style={{
                     position: 'absolute',
@@ -232,6 +255,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                     </Stack>
                     {gcs.map((client) => (
                       <button
+                        type="button"
                         key={client.id}
                         onClick={() => handleClientClick(client)}
                         style={clientItemStyle}
@@ -269,13 +293,15 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                             )}
                           </Stack>
                         </Row>
-                        <Chip
-                          variant={getComplianceVariant(client.compliance_score)}
-                          size="sm"
+                        <span
+                          style={{
+                            ...complianceBadgeStyle,
+                            ...getComplianceStyle(client.compliance_score),
+                          }}
                           data-testid={`compliance-badge-${client.id}`}
                         >
                           {client.compliance_score}%
-                        </Chip>
+                        </span>
                       </button>
                     ))}
                   </Stack>
@@ -306,6 +332,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                     </Stack>
                     {subs.map((client) => (
                       <button
+                        type="button"
                         key={client.id}
                         onClick={() => handleClientClick(client)}
                         style={clientItemStyle}
@@ -343,13 +370,15 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                             )}
                           </Stack>
                         </Row>
-                        <Chip
-                          variant={getComplianceVariant(client.compliance_score)}
-                          size="sm"
+                        <span
+                          style={{
+                            ...complianceBadgeStyle,
+                            ...getComplianceStyle(client.compliance_score),
+                          }}
                           data-testid={`compliance-badge-${client.id}`}
                         >
                           {client.compliance_score}%
-                        </Chip>
+                        </span>
                       </button>
                     ))}
                   </Stack>
