@@ -11,7 +11,6 @@ import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Navigate } from 'react-router-dom';
 import { Row, Stack, Text, SkipLink } from '@unicornlove/beyond-ui';
 import Sidebar from './Sidebar';
-import ClientsDropdown from './ClientsDropdown';
 import { useAuth } from '../../contexts/AuthContext';
 import { useApprovals } from '../../hooks/useApprovals';
 import LoadingSpinner from '../Common/LoadingSpinner';
@@ -117,27 +116,6 @@ export default function Layout() {
           transition: 'margin-left 0.2s ease-in-out',
         }}
       >
-        {/* Header Bar for Broker - shows Clients dropdown */}
-        {uiUserType === 'broker' && (
-          <Row
-            as="header"
-            alignItems="center"
-            justifyContent="space-between"
-            style={{
-              backgroundColor: 'var(--color-background-hover)',
-              borderBottom: '1px solid var(--color-border)',
-              paddingLeft: 24,
-              paddingRight: 24,
-              paddingTop: 12,
-              paddingBottom: 12,
-            }}
-          >
-            <ClientsDropdown />
-            <Text size="sm" muted>
-              Quick Jump to Client
-            </Text>
-          </Row>
-        )}
         <Stack
           as="main"
           id="main-content"
