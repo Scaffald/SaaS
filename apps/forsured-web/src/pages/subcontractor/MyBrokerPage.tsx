@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Stack, Row, Text, Card, Button, Input, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Button, Input, Spinner, H1, H3 } from '@unicornlove/beyond-ui';
 import { Mail, Phone, Building2, Copy, CheckCircle, AlertCircle, Briefcase } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUser } from '../../contexts/UserContext';
@@ -167,18 +167,13 @@ export default function MyBrokerPage() {
   const pendingInvitations = invitations.filter((inv) => inv.status === 'pending');
 
   return (
-    <Stack style={{ gap: 'var(--space-6)', padding: 'var(--space-6)' }}>
-      <Stack style={{ gap: 'var(--space-2)' }}>
-        <Text
-          style={{
-            fontSize: 'var(--font-size-8)',
-            fontWeight: 700,
-            color: 'var(--color-12)',
-          }}
-        >
+    <Stack gap={24} style={{ padding: 24 }}>
+      {/* Header */}
+      <Stack gap={8}>
+        <H1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-gray-12)' }}>
           My Broker
-        </Text>
-        <Text style={{ color: 'var(--color-11)' }}>
+        </H1>
+        <Text size="lg" style={{ color: 'var(--color-gray-11)' }}>
           Invite your insurance broker to Forsured or connect using their code
         </Text>
       </Stack>
@@ -188,78 +183,49 @@ export default function MyBrokerPage() {
         <Card
           style={{
             backgroundColor: 'var(--color-background)',
-            borderRadius: 'var(--radius-4)',
+            borderRadius: 12,
             border: '1px solid var(--color-border)',
-            padding: 'var(--space-6)',
+            padding: 24,
           }}
         >
-          <Text
-            style={{
-              fontSize: 'var(--font-size-6)',
-              fontWeight: 600,
-              color: 'var(--color-12)',
-              marginBottom: 'var(--space-4)',
-            }}
-          >
-            Connected Brokers
-          </Text>
-          <Stack style={{ gap: 'var(--space-3)' }}>
-            {connectedBrokers.map((inv) => (
-              <Card
-                key={inv.id}
-                style={{
-                  backgroundColor: 'var(--color-green-2)',
-                  border: '1px solid var(--color-green-6)',
-                  borderRadius: 'var(--radius-3)',
-                  padding: 'var(--space-4)',
-                }}
-              >
-                <Row
+          <Stack gap={16}>
+            <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Connected Brokers
+            </H3>
+            <Stack gap={12}>
+              {connectedBrokers.map((inv) => (
+                <Card
+                  key={inv.id}
                   style={{
-                    alignItems: 'center',
-                    gap: 'var(--space-2)',
-                    marginBottom: 'var(--space-2)',
+                    backgroundColor: 'var(--color-green-2)',
+                    border: '1px solid var(--color-green-6)',
+                    borderRadius: 8,
+                    padding: 16,
                   }}
                 >
-                  <CheckCircle size={20} color="var(--color-green-10)" />
-                  <Text
-                    style={{
-                      fontSize: 'var(--font-size-4)',
-                      fontWeight: 600,
-                      color: 'var(--color-12)',
-                    }}
-                  >
-                    {inv.inviter_type === 'broker'
-                      ? inv.invitee_name
-                      : inv.invitee_name || inv.invitee_email}
-                  </Text>
-                </Row>
-                {inv.invitee_company && (
-                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
-                    {inv.invitee_company}
-                  </Text>
-                )}
-                {inv.referral_credit_granted && (
-                  <Row
-                    style={{
-                      alignItems: 'center',
-                      gap: 'var(--space-2)',
-                      marginTop: 'var(--space-2)',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 'var(--font-size-2)',
-                        color: 'var(--color-green-11)',
-                        fontWeight: 500,
-                      }}
-                    >
-                      Referral credit earned
+                  <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
+                    <CheckCircle size={20} color="var(--color-green-10)" />
+                    <Text size="md" weight="semibold" style={{ color: 'var(--color-gray-12)' }}>
+                      {inv.inviter_type === 'broker'
+                        ? inv.invitee_name
+                        : inv.invitee_name || inv.invitee_email}
                     </Text>
                   </Row>
-                )}
-              </Card>
-            ))}
+                  {inv.invitee_company && (
+                    <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                      {inv.invitee_company}
+                    </Text>
+                  )}
+                  {inv.referral_credit_granted && (
+                    <Row alignItems="center" gap={8} style={{ marginTop: 8 }}>
+                      <Text size="xs" weight="medium" style={{ color: 'var(--color-green-11)' }}>
+                        Referral credit earned
+                      </Text>
+                    </Row>
+                  )}
+                </Card>
+              ))}
+            </Stack>
           </Stack>
         </Card>
       )}
@@ -268,71 +234,70 @@ export default function MyBrokerPage() {
       <Card
         style={{
           backgroundColor: 'var(--color-background)',
-          borderRadius: 'var(--radius-4)',
+          borderRadius: 12,
           border: '1px solid var(--color-border)',
-          padding: 'var(--space-6)',
+          padding: 24,
         }}
       >
-        <Row
-          style={{
-            alignItems: 'center',
-            gap: 'var(--space-3)',
-            marginBottom: 'var(--space-4)',
-          }}
-        >
-          <Mail size={24} color="var(--color-blue-10)" />
-          <Text
-            style={{
-              fontSize: 'var(--font-size-6)',
-              fontWeight: 600,
-              color: 'var(--color-12)',
-            }}
-          >
-            Invite Your Broker
+        <Stack gap={16}>
+          <Row alignItems="center" gap={12}>
+            <Mail size={24} color="var(--color-blue-10)" />
+            <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Invite Your Broker
+            </H3>
+          </Row>
+          <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+            Enter your broker's information. They can connect using your email or the generated
+            connection code.
           </Text>
-        </Row>
-        <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
-          Enter your broker's information. They can connect using your email or the generated
-          connection code.
-        </Text>
 
-        <Stack style={{ gap: 'var(--space-4)' }}>
-          <Input
-            label="Broker Email *"
-            type="email"
-            value={brokerEmail}
-            onChange={(e) => setBrokerEmail(e.target.value)}
-            placeholder="broker@example.com"
-            disabled={loading}
-          />
-          <Input
-            label="Broker Name *"
-            type="text"
-            value={brokerName}
-            onChange={(e) => setBrokerName(e.target.value)}
-            placeholder="John Doe"
-            disabled={loading}
-          />
-          <Input
-            label="Broker Company"
-            type="text"
-            value={brokerCompany}
-            onChange={(e) => setBrokerCompany(e.target.value)}
-            placeholder="ABC Insurance Agency"
-            disabled={loading}
-          />
-          <Input
-            label="Broker Phone (Optional)"
-            type="tel"
-            value={brokerPhone}
-            onChange={(e) => setBrokerPhone(e.target.value)}
-            placeholder="(555) 123-4567"
-            disabled={loading}
-          />
+          <Stack gap={16}>
+            <Input
+              label="Broker Email"
+              required
+              type="email"
+              value={brokerEmail}
+              onChangeText={setBrokerEmail}
+              placeholder="broker@example.com"
+              disabled={loading}
+            />
+            <Input
+              label="Broker Name"
+              required
+              type="text"
+              value={brokerName}
+              onChangeText={setBrokerName}
+              placeholder="John Doe"
+              disabled={loading}
+            />
+            <Input
+              label="Broker Company"
+              type="text"
+              value={brokerCompany}
+              onChangeText={setBrokerCompany}
+              placeholder="ABC Insurance Agency"
+              disabled={loading}
+            />
+            <Input
+              label="Broker Phone (Optional)"
+              type="tel"
+              value={brokerPhone}
+              onChangeText={setBrokerPhone}
+              placeholder="(555) 123-4567"
+              disabled={loading}
+            />
 
-          <Button onPress={handleInviteBroker} disabled={loading || !brokerEmail || !brokerName}>
-            {loading ? <Spinner size="sm" /> : 'Send Invitation'}
-          </Button>
+            <Button
+              variant="filled"
+              color="primary"
+              onPress={handleInviteBroker}
+              disabled={loading || !brokerEmail || !brokerName}
+              loading={loading}
+              iconStart={Mail}
+            >
+              Send Invitation
+            </Button>
+          </Stack>
         </Stack>
       </Card>
 
@@ -340,46 +305,43 @@ export default function MyBrokerPage() {
       <Card
         style={{
           backgroundColor: 'var(--color-background)',
-          borderRadius: 'var(--radius-4)',
+          borderRadius: 12,
           border: '1px solid var(--color-border)',
-          padding: 'var(--space-6)',
+          padding: 24,
         }}
       >
-        <Row
-          style={{
-            alignItems: 'center',
-            gap: 'var(--space-3)',
-            marginBottom: 'var(--space-4)',
-          }}
-        >
-          <Briefcase size={24} color="var(--color-blue-10)" />
-          <Text
-            style={{
-              fontSize: 'var(--font-size-6)',
-              fontWeight: 600,
-              color: 'var(--color-12)',
-            }}
-          >
-            Connect Using Broker's Code
+        <Stack gap={16}>
+          <Row alignItems="center" gap={12}>
+            <Briefcase size={24} color="var(--color-blue-10)" />
+            <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Connect Using Broker's Code
+            </H3>
+          </Row>
+          <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+            If your broker gave you a connection code, enter it here to connect.
           </Text>
-        </Row>
-        <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
-          If your broker gave you a connection code, enter it here to connect.
-        </Text>
 
-        <Stack style={{ gap: 'var(--space-4)' }}>
-          <Input
-            label="Connection Code"
-            type="text"
-            value={connectionCode}
-            onChange={(e) => setConnectionCode(e.target.value)}
-            placeholder="BKR-XXXXXX"
-            disabled={loading}
-          />
+          <Stack gap={16}>
+            <Input
+              label="Connection Code"
+              type="text"
+              value={connectionCode}
+              onChangeText={(text) => setConnectionCode(text.toUpperCase())}
+              placeholder="BKR-XXXXXX"
+              disabled={loading}
+            />
 
-          <Button onPress={handleConnectByCode} disabled={loading || !connectionCode}>
-            {loading ? <Spinner size="sm" /> : 'Connect'}
-          </Button>
+            <Button
+              variant="filled"
+              color="primary"
+              onPress={handleConnectByCode}
+              disabled={loading || !connectionCode}
+              loading={loading}
+              iconStart={CheckCircle}
+            >
+              Connect
+            </Button>
+          </Stack>
         </Stack>
       </Card>
 
@@ -388,90 +350,75 @@ export default function MyBrokerPage() {
         <Card
           style={{
             backgroundColor: 'var(--color-background)',
-            borderRadius: 'var(--radius-4)',
+            borderRadius: 12,
             border: '1px solid var(--color-border)',
-            padding: 'var(--space-6)',
+            padding: 24,
           }}
         >
-          <Text
-            style={{
-              fontSize: 'var(--font-size-6)',
-              fontWeight: 600,
-              color: 'var(--color-12)',
-              marginBottom: 'var(--space-4)',
-            }}
-          >
-            Pending Invitations
-          </Text>
-          <Stack style={{ gap: 'var(--space-3)' }}>
-            {pendingInvitations.map((inv) => (
-              <Card
-                key={inv.id}
-                style={{
-                  backgroundColor: 'var(--color-yellow-2)',
-                  border: '1px solid var(--color-yellow-6)',
-                  borderRadius: 'var(--radius-3)',
-                  padding: 'var(--space-4)',
-                }}
-              >
-                <Row
+          <Stack gap={16}>
+            <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Pending Invitations
+            </H3>
+            <Stack gap={12}>
+              {pendingInvitations.map((inv) => (
+                <Card
+                  key={inv.id}
                   style={{
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: 'var(--space-2)',
+                    backgroundColor: 'var(--color-yellow-2)',
+                    border: '1px solid var(--color-yellow-6)',
+                    borderRadius: 8,
+                    padding: 16,
                   }}
                 >
-                  <Stack style={{ flex: 1 }}>
+                  <Row
+                    alignItems="center"
+                    justifyContent="space-between"
+                    style={{ marginBottom: 8 }}
+                  >
+                    <Stack style={{ flex: 1 }}>
+                      <Text size="md" weight="semibold" style={{ color: 'var(--color-gray-12)' }}>
+                        {inv.invitee_name || inv.invitee_email}
+                      </Text>
+                      {inv.invitee_company && (
+                        <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                          {inv.invitee_company}
+                        </Text>
+                      )}
+                    </Stack>
+                    <AlertCircle size={20} color="var(--color-yellow-10)" />
+                  </Row>
+
+                  <Row alignItems="center" gap={8} style={{ marginTop: 8 }}>
                     <Text
+                      size="sm"
                       style={{
-                        fontSize: 'var(--font-size-4)',
-                        fontWeight: 600,
-                        color: 'var(--color-12)',
+                        color: 'var(--color-gray-11)',
+                        fontFamily: 'var(--font-mono)',
                       }}
                     >
-                      {inv.invitee_name || inv.invitee_email}
+                      {inv.relationship_code}
                     </Text>
-                    {inv.invitee_company && (
-                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
-                        {inv.invitee_company}
-                      </Text>
-                    )}
-                  </Stack>
-                  <AlertCircle size={20} color="var(--color-yellow-10)" />
-                </Row>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      color="gray"
+                      onPress={() => copyCode(inv.relationship_code)}
+                      iconStart={Copy}
+                    />
+                  </Row>
 
-                <Row
-                  style={{
-                    alignItems: 'center',
-                    gap: 'var(--space-2)',
-                    marginTop: 'var(--space-2)',
-                  }}
-                >
                   <Text
+                    size="xs"
                     style={{
-                      fontSize: 'var(--font-size-3)',
-                      color: 'var(--color-11)',
-                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--color-gray-10)',
+                      marginTop: 8,
                     }}
                   >
-                    {inv.relationship_code}
+                    Invited {new Date(inv.invited_at).toLocaleDateString()}
                   </Text>
-                  <Button size="sm" variant="ghost" onPress={() => copyCode(inv.relationship_code)}>
-                    <Copy size={16} />
-                  </Button>
-                </Row>
-
-                <Text
-                  style={{
-                    fontSize: 'var(--font-size-2)',
-                    color: 'var(--color-10)',
-                    marginTop: 'var(--space-2)',
-                  }}
-                >
-                  Invited {new Date(inv.invited_at).toLocaleDateString()}
-                </Text>
-              </Card>
-            ))}
+                </Card>
+              ))}
+            </Stack>
           </Stack>
         </Card>
       )}
