@@ -8,7 +8,7 @@
 'use client';
 
 import React from 'react';
-import { YStack, XStack, Text, Button, H1, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, H1 } from '@unicornlove/beyond-ui';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ParticipantsComplianceView } from '../../../../../components/participants/ParticipantsComplianceView';
@@ -32,27 +32,28 @@ export default function ParticipantsPage() {
   };
 
   return (
-    <YStack minHeight="100vh" backgroundColor="$gray2">
-      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-gray-2)' }}>
+      <Stack style={{ maxWidth: 1120, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
         {/* Header */}
-        <YStack marginBottom="$8">
+        <Stack style={{ marginBottom: 'var(--space-8)' }}>
           <Button
             onPress={handleBack}
-            backgroundColor="transparent"
-            color="$gray11"
-            hoverStyle={{ color: '$gray12' }}
-            marginBottom="$4"
+            style={{
+              backgroundColor: 'transparent',
+              color: 'var(--color-gray-11)',
+              marginBottom: 'var(--space-4)',
+            }}
           >
-            <XStack alignItems="center" gap="$1">
+            <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
               <ArrowLeft size={16} />
-              <Text fontSize="$2">Back to Project</Text>
-            </XStack>
+              <Text style={{ fontSize: 'var(--font-size-2)' }}>Back to Project</Text>
+            </Row>
           </Button>
           <H1>Participants</H1>
-          <Text marginTop="$2" fontSize="$2" color="$gray11">
+          <Text style={{ marginTop: 'var(--space-2)', fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>
             View and filter project participants by compliance status
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Compliance View */}
         <ParticipantsComplianceView
@@ -60,7 +61,7 @@ export default function ParticipantsPage() {
           projectId={projectId}
           onParticipantClick={handleParticipantClick}
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 }

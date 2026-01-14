@@ -2,7 +2,7 @@
  * WorkspaceMembersModal component type definitions
  */
 
-import type { ViewStyle, TextStyle } from 'react-native'
+import type { ViewStyle, } from 'react-native'
 
 export interface Member {
   /**

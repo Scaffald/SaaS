@@ -32,6 +32,216 @@ export type {
 export { getIconSize, getIconColor, getIconSizeForComponent } from './utils/icon'
 export type { IconSize } from './utils/icon'
 
+// Export error handling utilities
+export { invariant, warning, deprecated } from './utils/invariant'
+
+// Export hooks
+export { useResponsive } from './hooks'
+export type { ResponsiveValue, UseResponsiveReturn } from './hooks'
+
+// Export animation utilities
+export {
+  // Core animated components
+  AnimatedView,
+  AnimatedPressable,
+  isReanimatedAvailable,
+  isAnimatedPressAvailable,
+  // Animation hooks
+  useReducedMotion,
+  useAnimatedSpring,
+  useAnimatedTiming,
+  // Transition components
+  FadeTransition,
+  SlideTransition,
+  ScaleTransition,
+  // Animation presets and configs
+  springConfigs,
+  timingConfigs,
+  animationPresets,
+  bezierCurves,
+} from './animation'
+export type {
+  AnimatedViewProps,
+  AnimatedPressableProps,
+  UseAnimatedSpringOptions,
+  UseAnimatedSpringReturn,
+  UseAnimatedTimingOptions,
+  UseAnimatedTimingReturn,
+  EasingType,
+  FadeTransitionProps,
+  SlideTransitionProps,
+  ScaleTransitionProps,
+  SlideDirection,
+  SlideAnimationType,
+  SpringConfigKey,
+  TimingConfigKey,
+  BezierCurveKey,
+} from './animation'
+
+// Export platform utilities
+export {
+  // Core platform utilities
+  Platform,
+  // Platform detection hook
+  usePlatform,
+  // Haptic feedback
+  useHaptics,
+  // Web-specific hooks
+  useFocusVisible,
+  isFocusVisibleActive,
+  useHoverState,
+  // Native-specific hooks
+  useAccessibilityInfo,
+} from './platform'
+export type {
+  PlatformOS,
+  PlatformSelectOptions,
+  UsePlatformReturn,
+  UseHapticsReturn,
+  HapticImpactStyle,
+  HapticNotificationType,
+  UseFocusVisibleReturn,
+  FocusVisibleProps,
+  UseHoverStateReturn,
+  UseHoverStateOptions,
+  HoverProps,
+  UseAccessibilityInfoReturn,
+} from './platform'
+
+// Export accessibility utilities
+export {
+  // ID generation
+  useId,
+  useIds,
+  // Focus management
+  useFocusTrap,
+  useRovingTabIndex,
+  useFocusRing,
+  getFocusRingStyles,
+  // Announcements
+  useAnnouncer,
+  AnnouncerProvider,
+  // Components
+  VisuallyHidden,
+  LiveRegion,
+  SkipLink,
+  FocusGuard,
+} from './accessibility'
+export type {
+  // Types
+  AriaLive,
+  AriaAtomic,
+  AriaRelevant,
+  FocusableElement,
+  FocusTrapConfig,
+  RovingTabIndexConfig,
+  NavigationKey,
+  AccessibilityRole,
+  AccessibilityState,
+  AccessibilityProps,
+  // Hook returns
+  UseFocusTrapReturn,
+  UseRovingTabIndexOptions,
+  UseRovingTabIndexReturn,
+  RovingItemProps,
+  UseFocusRingOptions,
+  UseFocusRingReturn,
+  FocusRingVariant,
+  FocusRingSize,
+  FocusProps as A11yFocusProps,
+  AnnouncerContextValue,
+  AnnouncerProviderProps,
+  Announcement,
+  // Component props
+  VisuallyHiddenProps,
+  LiveRegionProps,
+  SkipLinkProps,
+  FocusGuardProps,
+} from './accessibility'
+
+// Layout components
+export { Box, Stack, Row, Spacer, Separator } from './components/Layout'
+export type {
+  BoxProps,
+  StackProps,
+  RowProps,
+  SpacerProps,
+  SeparatorProps,
+  SeparatorOrientation,
+  SeparatorThickness,
+  SpacingValue,
+  GapValue,
+  PaddingValue,
+  AlignItems,
+  JustifyContent,
+  FlexDirection,
+  FlexWrap,
+  Position,
+} from './components/Layout'
+
+// Typography components (replaces Tamagui H1-H6, Paragraph, SizableText)
+export { Heading, H1, H2, H3, H4, H5, H6, Paragraph, Label, Text, Caption } from './components/Typography'
+export type {
+  HeadingProps,
+  HeadingLevel,
+  H1Props,
+  H2Props,
+  H3Props,
+  H4Props,
+  H5Props,
+  H6Props,
+  ParagraphProps,
+  TextProps,
+  CaptionProps,
+  TextSize,
+  TextWeight,
+  TextColor,
+  TextAlign,
+  BaseTextProps,
+} from './components/Typography'
+// Note: LabelProps from Typography is exported as FormLabelProps to avoid conflict with shared LabelProps
+export type { LabelProps as FormLabelProps } from './components/Typography'
+
+// Card components
+export { Card, CardHeader, CardContent, CardFooter, CardMedia } from './components/Card'
+export type {
+  CardProps,
+  CardHeaderProps,
+  CardContentProps,
+  CardFooterProps,
+  CardMediaProps,
+  CardVariant,
+  CardPadding,
+  CardRadius,
+  CardElevation,
+} from './components/Card'
+
+// Toast components
+export { Toast, ToastProvider, useToast, ToastContext, ToastContainer } from './components/Toast'
+export type {
+  ToastProps,
+  ToastData,
+  ToastVariant,
+  ToastPosition,
+  ToastAction,
+  ToastProviderProps,
+  ToastContainerProps,
+  ToastContextValue,
+  ShowToastOptions,
+} from './components/Toast'
+
+// Skeleton components
+export { Skeleton, SkeletonText, SkeletonAvatar, SkeletonCard, SkeletonGroup } from './components/Skeleton'
+export type {
+  SkeletonProps,
+  SkeletonTextProps,
+  SkeletonAvatarProps,
+  SkeletonCardProps,
+  SkeletonGroupProps,
+  SkeletonShape,
+  SkeletonAnimation,
+} from './components/Skeleton'
+
 // Components
 export { Button } from './components/Button'
 export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './components/Button'
@@ -162,9 +372,7 @@ export type {
   AddAvatarProps,
   AvatarSize,
   AvatarColor,
-  AvatarType,
   AvatarStatus,
-  AvatarBadge,
 } from './components/Avatar'
 
 export { Alert } from './components/Alert'
@@ -460,6 +668,46 @@ export type {
   Member,
 } from './components/Modal'
 
+// Sheet components (bottom sheet/drawer)
+export { Sheet, SheetHeader, SheetContent, SheetFooter } from './components/Sheet'
+export type {
+  SheetProps,
+  SheetHeaderProps,
+  SheetContentProps,
+  SheetFooterProps,
+  SheetHeight,
+  SheetAnimation,
+} from './components/Sheet'
+
+// Popover components
+export { Popover, PopoverHeader, PopoverContent, PopoverFooter } from './components/Popover'
+export type {
+  PopoverProps,
+  PopoverHeaderProps,
+  PopoverContentProps,
+  PopoverFooterProps,
+  PopoverPlacement,
+  PopoverTrigger,
+} from './components/Popover'
+
+// Form layout components
+export { Form, Fieldset, FormField, FormRow, FormActions } from './components/Form'
+export type {
+  FormProps,
+  FieldsetProps,
+  FormFieldProps,
+  FormRowProps,
+  FormActionsProps,
+} from './components/Form'
+
+// SearchSelect component
+export { SearchSelect } from './components/SearchSelect'
+export type { SearchSelectProps, SearchSelectOption } from './components/SearchSelect'
+
+// ScrollArea component
+export { ScrollArea, scrollTo, scrollToEnd } from './components/ScrollArea'
+export type { ScrollAreaProps } from './components/ScrollArea'
+
 export { List } from './components/List'
 export type { ListProps } from './components/List'
 
@@ -618,10 +866,14 @@ export { CommandMenuFooter } from './components/CommandMenu'
 export type { CommandMenuFooterProps, ShortcutHint } from './components/CommandMenu'
 
 // Note: Additional components will be exported here as they are implemented
-// Phase 1: Layout primitives (Box, Stack, Row, Flex)
+// Phase 1: Layout primitives (Box ✅, Stack ✅, Row ✅, Spacer ✅, Separator ✅)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅
 // Phase 3: Feedback components (Alert ✅, Toast)
 // Phase 4+: Complex components (Dialog, Popover, Select, Tooltip ✅, etc.)
+
+// Theme Provider (temporary location in playground - will be moved to proper location)
+export { ThemeProvider, ThemeContext, useThemeContext } from './playground/ThemeProvider'
+export type { ThemeContextValue } from './playground/ThemeProvider'
 
 /**
  * Package version

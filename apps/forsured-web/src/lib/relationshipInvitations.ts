@@ -185,13 +185,13 @@ export async function connectByRelationshipCode(
 
 /**
  * Connect using email matching (silent, happens during signup/login)
- * 
+ *
  * BUSINESS RULES:
  * - Only triggers for NEW accounts (< 24 hours old)
- * - Respects broker constraint (one broker per user)
+ * - Allows multiple broker relationships for users
  * - Allows multiple manager relationships for contractors
  * - Allows unlimited client relationships for brokers
- * 
+ *
  * @param email - The email to match
  * @param userOrgId - The user's organization ID
  * @param userId - The user's ID
@@ -240,24 +240,6 @@ export async function connectByEmail(
 }
 
 /**
- * Check if user already has a broker
- * Business rule: Users can only have ONE broker
- */
-async function checkExistingBroker(
-  userOrgId: string,
-  userType: 'manager' | 'subcontractor'
-): Promise<boolean> {
-  // Check for existing broker relationships
-  const { data: existingBrokerInvites } = await forsured('relationship_invitations')
-    .select('*')
-    .eq(userType === 'manager' ? 'invitee_org_id' : 'invitee_org_id', userOrgId)
-    .eq('status', 'connected')
-    .or('inviter_type.eq.broker,invitee_type.eq.broker');
-
-  return (existingBrokerInvites && existingBrokerInvites.length > 0) || false;
-}
-
-/**
  * Check if this is a new account (for referral credit eligibility)
  * New accounts are eligible for referral credits, existing accounts are not
  */
@@ -282,7 +264,7 @@ async function isNewAccount(userId: string, createdAtThreshold: number = 24 * 60
  * Creates the relationship record and grants referral credit (only for new accounts)
  * 
  * Business Rules:
- * - Users can only have ONE broker (checked here)
+ * - Users can have MULTIPLE brokers (different policies may be handled by different brokers)
  * - Contractors can have multiple managers (no limit)
  * - Brokers can have unlimited clients (no limit)
  * - Referral credits only for NEW accounts (< 24 hours old)
@@ -300,45 +282,9 @@ async function establishRelationship(
   console.log('[RelationshipInvitations] Establishing relationship:', invitation.id);
 
   try {
-    // BUSINESS RULE: Check broker constraint
-    // If this is a broker relationship, check if user already has a broker
-    const isBrokerRelationship = 
-      invitation.inviter_type === 'broker' || invitation.invitee_type === 'broker';
-    
-    if (isBrokerRelationship) {
-      // Determine which party is NOT the broker
-      const clientType = invitation.inviter_type === 'broker' 
-        ? invitation.invitee_type 
-        : invitation.inviter_type;
-      
-      const clientOrgId = invitation.inviter_type === 'broker'
-        ? inviteeOrgId
-        : invitation.inviter_org_id;
-
-      // Only managers and subcontractors have broker constraints
-      if (clientType === 'manager' || clientType === 'subcontractor') {
-        const hasExistingBroker = await checkExistingBroker(clientOrgId, clientType);
-        
-        if (hasExistingBroker) {
-          console.log('[RelationshipInvitations] User already has a broker');
-          
-          // Update invitation to declined status
-          await forsured('relationship_invitations')
-            .update({
-              status: 'declined',
-              metadata: { 
-                decline_reason: 'User already has an existing broker relationship' 
-              },
-            })
-            .eq('id', invitation.id);
-
-          return {
-            success: false,
-            error: 'You already have an insurance broker. Only one broker relationship is allowed.',
-          };
-        }
-      }
-    }
+    // Note: Multiple broker relationships are now allowed
+    // Different insurance policies may be handled by specialized brokers
+    // (e.g., general liability vs. workers' comp)
 
     // BUSINESS RULE: Check if account is new for referral credit eligibility
     const isEligibleForCredit = await isNewAccount(inviteeUserId);

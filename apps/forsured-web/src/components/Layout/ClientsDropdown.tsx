@@ -1,13 +1,12 @@
 /**
- * Clients Dropdown Component - Using Tamagui
+ * Clients Dropdown Component - Using Beyond UI
  * REQ-278: Clients Dropdown Rename & Quick Jump
  * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
+ * Migrated from Tamagui to Beyond UI
  */
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { YStack, XStack, Text, Button, styled } from '@unicornlove/ui';
-import { Input as TextInput } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Input, Chip } from '@unicornlove/beyond-ui';
 import { ChevronDown, Search, Building, Users, X } from 'lucide-react';
 import { useClients } from '../../hooks/useClients';
 import { BrokerClient } from '../../types';
@@ -16,39 +15,6 @@ import { useLexicon } from '../../contexts/LexiconContext';
 interface ClientsDropdownProps {
   className?: string;
 }
-
-const DropdownMenu = styled(YStack, {
-  name: 'DropdownMenu',
-  position: 'absolute',
-  top: '100%',
-  left: 0,
-  marginTop: '$2',
-  width: 320,
-  backgroundColor: '$backgroundHover',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: '$3',
-  shadowColor: '$shadowColor',
-  shadowRadius: 20,
-  shadowOffset: { width: 0, height: 8 },
-  zIndex: 50,
-  overflow: 'hidden',
-});
-
-const ClientItem = styled(Button, {
-  name: 'ClientItem',
-  width: '100%',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2.5',
-  backgroundColor: 'transparent',
-  hoverStyle: {
-    backgroundColor: '$backgroundHover',
-  },
-  textAlign: 'left',
-});
 
 export default function ClientsDropdown({ className = '' }: ClientsDropdownProps) {
   const navigate = useNavigate();
@@ -113,210 +79,309 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
     return 'error';
   };
 
+  const clientItemStyle: React.CSSProperties = {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    textAlign: 'left',
+  };
+
   return (
-    <YStack position="relative" ref={dropdownRef}>
+    <Stack style={{ position: 'relative' }} ref={dropdownRef}>
       {/* Dropdown Trigger */}
       <Button
         onPress={() => setIsOpen(!isOpen)}
-        flexDirection="row"
-        alignItems="center"
-        gap="$2"
-        paddingHorizontal="$4"
-        paddingVertical="$2"
-        backgroundColor="$backgroundHover"
-        borderWidth={1}
-        borderColor="$borderColor"
-        borderRadius="$3"
-        hoverStyle={{ backgroundColor: '$backgroundPress' }}
+        variant="secondary"
         data-testid="clients-dropdown-trigger"
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+        }}
       >
-        <Users size={18} color="currentColor" />
-        <Text fontWeight="500" color="$color11">Clients</Text>
+        <Users size={18} />
+        <span style={{ fontWeight: 500 }}>Clients</span>
         <ChevronDown
           size={16}
-          color="currentColor"
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          style={{
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.15s ease',
+          }}
         />
       </Button>
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <DropdownMenu data-testid="clients-dropdown-menu">
+        <Stack
+          data-testid="clients-dropdown-menu"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            marginTop: 8,
+            width: 320,
+            backgroundColor: 'var(--color-background-hover)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 8,
+            boxShadow: '0 8px 20px var(--color-shadow)',
+            zIndex: 50,
+            overflow: 'hidden',
+          }}
+        >
           {/* Search Input */}
-          <YStack padding="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
-            <XStack position="relative" alignItems="center">
+          <Stack
+            style={{
+              padding: 12,
+              borderBottom: '1px solid var(--color-border)',
+            }}
+          >
+            <Row style={{ position: 'relative', alignItems: 'center' }}>
               <Search
                 size={16}
-                style={{ position: 'absolute', left: 12, zIndex: 1 }}
-                color="currentColor"
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  zIndex: 1,
+                  color: 'var(--color-text-muted)',
+                }}
               />
-              <TextInput
+              <Input
                 ref={searchInputRef}
                 type="text"
                 placeholder="Search clients..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                paddingLeft="$9"
-                paddingRight={searchQuery ? '$8' : '$3'}
+                style={{
+                  paddingLeft: 36,
+                  paddingRight: searchQuery ? 32 : 12,
+                  width: '100%',
+                }}
                 data-testid="clients-search-input"
               />
               {searchQuery && (
-                <Button
-                  onPress={() => setSearchQuery('')}
-                  position="absolute"
-                  right={8}
-                  padding="$1"
-                  backgroundColor="transparent"
+                <button
+                  onClick={() => setSearchQuery('')}
+                  style={{
+                    position: 'absolute',
+                    right: 8,
+                    padding: 4,
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
-                  <X size={14} color="currentColor" />
-                </Button>
+                  <X size={14} />
+                </button>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {/* Client Lists */}
-          <YStack maxHeight={384} overflow="scroll">
+          <Stack style={{ maxHeight: 384, overflow: 'auto' }}>
             {loading ? (
-              <YStack padding="$4" alignItems="center">
-                <Text color="$color10">Loading clients...</Text>
-              </YStack>
+              <Stack
+                style={{ padding: 16, alignItems: 'center' }}
+              >
+                <Text muted>Loading clients...</Text>
+              </Stack>
             ) : filteredClients.length === 0 ? (
-              <YStack padding="$4" alignItems="center">
-                <Text color="$color10">
+              <Stack
+                style={{ padding: 16, alignItems: 'center' }}
+              >
+                <Text muted>
                   {searchQuery ? 'No clients found' : 'No clients available'}
                 </Text>
-              </YStack>
+              </Stack>
             ) : (
-              <YStack>
+              <Stack>
                 {/* General Contractors */}
                 {gcs.length > 0 && (
-                  <YStack>
-                    <YStack
-                      paddingHorizontal="$3"
-                      paddingVertical="$2"
-                      backgroundColor="$backgroundHover"
+                  <Stack>
+                    <Stack
+                      style={{
+                        paddingLeft: 12,
+                        paddingRight: 12,
+                        paddingTop: 8,
+                        paddingBottom: 8,
+                        backgroundColor: 'var(--color-background-hover)',
+                      }}
                     >
-                      <Text fontSize="$1" fontWeight="600" color="$color9" textTransform="uppercase">
+                      <Text
+                        size="xs"
+                        weight="semibold"
+                        style={{
+                          color: 'var(--color-text-muted)',
+                          textTransform: 'uppercase',
+                        }}
+                      >
                         {getManagerLabel(true)} ({gcs.length})
                       </Text>
-                    </YStack>
+                    </Stack>
                     {gcs.map((client) => (
-                      <ClientItem
+                      <button
                         key={client.id}
-                        onPress={() => handleClientClick(client)}
+                        onClick={() => handleClientClick(client)}
+                        style={clientItemStyle}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor =
+                            'var(--color-background-hover)';
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor =
+                            'transparent';
+                        }}
                         data-testid={`client-item-${client.id}`}
                       >
-                        <XStack alignItems="center" gap="$3" flex={1}>
-                          <YStack
-                            width={32}
-                            height={32}
-                            backgroundColor="$blue3"
-                            borderRadius="$10"
+                        <Row alignItems="center" gap={12} flex={1}>
+                          <Row
                             alignItems="center"
                             justifyContent="center"
+                            style={{
+                              width: 32,
+                              height: 32,
+                              backgroundColor: 'var(--color-blue-3)',
+                              borderRadius: '50%',
+                            }}
                           >
-                            <Building size={16} color="currentColor" />
-                          </YStack>
-                          <YStack flex={1} minWidth={0}>
-                            <Text fontSize="$2" fontWeight="500" color="$color11">
+                            <Building size={16} />
+                          </Row>
+                          <Stack flex={1} style={{ minWidth: 0 }}>
+                            <Text size="sm" weight="medium">
                               {client.company_name}
                             </Text>
                             {client.primary_contact && (
-                              <Text fontSize="$1" color="$color10">
+                              <Text size="xs" muted>
                                 {client.primary_contact}
                               </Text>
                             )}
-                          </YStack>
-                        </XStack>
-                        <Badge
+                          </Stack>
+                        </Row>
+                        <Chip
                           variant={getComplianceVariant(client.compliance_score)}
-                          size="$2"
+                          size="sm"
                           data-testid={`compliance-badge-${client.id}`}
                         >
                           {client.compliance_score}%
-                        </Badge>
-                      </ClientItem>
+                        </Chip>
+                      </button>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
 
                 {/* Contractors/Subcontractors */}
                 {subs.length > 0 && (
-                  <YStack>
-                    <YStack
-                      paddingHorizontal="$3"
-                      paddingVertical="$2"
-                      backgroundColor="$backgroundHover"
+                  <Stack>
+                    <Stack
+                      style={{
+                        paddingLeft: 12,
+                        paddingRight: 12,
+                        paddingTop: 8,
+                        paddingBottom: 8,
+                        backgroundColor: 'var(--color-background-hover)',
+                      }}
                     >
-                      <Text fontSize="$1" fontWeight="600" color="$color9" textTransform="uppercase">
+                      <Text
+                        size="xs"
+                        weight="semibold"
+                        style={{
+                          color: 'var(--color-text-muted)',
+                          textTransform: 'uppercase',
+                        }}
+                      >
                         {getContractorLabel(true)} ({subs.length})
                       </Text>
-                    </YStack>
+                    </Stack>
                     {subs.map((client) => (
-                      <ClientItem
+                      <button
                         key={client.id}
-                        onPress={() => handleClientClick(client)}
+                        onClick={() => handleClientClick(client)}
+                        style={clientItemStyle}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor =
+                            'var(--color-background-hover)';
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor =
+                            'transparent';
+                        }}
                         data-testid={`client-item-${client.id}`}
                       >
-                        <XStack alignItems="center" gap="$3" flex={1}>
-                          <YStack
-                            width={32}
-                            height={32}
-                            backgroundColor="$yellow3"
-                            borderRadius="$10"
+                        <Row alignItems="center" gap={12} flex={1}>
+                          <Row
                             alignItems="center"
                             justifyContent="center"
+                            style={{
+                              width: 32,
+                              height: 32,
+                              backgroundColor: 'var(--color-yellow-3)',
+                              borderRadius: '50%',
+                            }}
                           >
-                            <Users size={16} color="currentColor" />
-                          </YStack>
-                          <YStack flex={1} minWidth={0}>
-                            <Text fontSize="$2" fontWeight="500" color="$color11">
+                            <Users size={16} />
+                          </Row>
+                          <Stack flex={1} style={{ minWidth: 0 }}>
+                            <Text size="sm" weight="medium">
                               {client.company_name}
                             </Text>
                             {client.primary_contact && (
-                              <Text fontSize="$1" color="$color10">
+                              <Text size="xs" muted>
                                 {client.primary_contact}
                               </Text>
                             )}
-                          </YStack>
-                        </XStack>
-                        <Badge
+                          </Stack>
+                        </Row>
+                        <Chip
                           variant={getComplianceVariant(client.compliance_score)}
-                          size="$2"
+                          size="sm"
                           data-testid={`compliance-badge-${client.id}`}
                         >
                           {client.compliance_score}%
-                        </Badge>
-                      </ClientItem>
+                        </Chip>
+                      </button>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           {/* View All Clients Link */}
-          <YStack padding="$2" borderTopWidth={1} borderTopColor="$borderColor">
+          <Stack
+            style={{
+              padding: 8,
+              borderTop: '1px solid var(--color-border)',
+            }}
+          >
             <Button
               onPress={() => {
                 setIsOpen(false);
                 navigate('/broker/clients');
               }}
-              width="100%"
-              paddingHorizontal="$3"
-              paddingVertical="$2"
-              fontSize="$2"
-              fontWeight="500"
-              color="$blue9"
-              hoverStyle={{ backgroundColor: '$blue3' }}
-              borderRadius="$3"
-              backgroundColor="transparent"
+              variant="ghost"
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                color: 'var(--color-blue-9)',
+              }}
             >
               View All Clients
             </Button>
-          </YStack>
-        </DropdownMenu>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }

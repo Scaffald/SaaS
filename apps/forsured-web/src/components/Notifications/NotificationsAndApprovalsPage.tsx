@@ -17,8 +17,8 @@ import {
   CheckSquare,
   Square,
 } from 'lucide-react';
-import { XStack, YStack, Text, H1, SizableText, Card, Spinner } from '@unicornlove/ui';
-import { TabsCustom } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, Spinner } from '@unicornlove/beyond-ui';
+import { Tabs as TabsCustom } from '../../ui/Tabs';
 import Button from '../Common/Button';
 import Input from '../Common/Input';
 import Select from '../Common/Select';
@@ -268,51 +268,53 @@ export default function NotificationsAndApprovalsPage() {
       icon: Bell,
       badge: notifications.length,
       content: (
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {notifications.length === 0 ? (
-            <YStack alignItems="center" paddingVertical="$12">
-              <Bell color="$color10" mb="$4" size={48} />
-              <Text fontWeight="500" color="$color12" mb="$2">
+            <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
+              <Bell color="var(--color-text-secondary)" style={{ marginBottom: 'var(--space-4)' }} size={48} />
+              <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)' }}>
                 No notifications
               </Text>
-              <SizableText size="$3" color="$color11">
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                 You're all caught up!
-              </SizableText>
-            </YStack>
+              </Text>
+            </Stack>
           ) : (
-            <YStack gap="$3">
+            <Stack style={{ gap: 'var(--space-3)' }}>
               {notifications.map((notification) => (
                 <Card
                   key={notification.id}
-                  padding="$4"
-                  backgroundColor="$color2"
-                  borderRadius="$4"
-                  borderWidth={1}
-                  borderColor="$borderColor"
+                  style={{
+                    padding: 'var(--space-4)',
+                    backgroundColor: 'var(--color-background-secondary)',
+                    borderRadius: 'var(--radius-4)',
+                    borderWidth: 1,
+                    borderColor: 'var(--color-border)',
+                  }}
                 >
-                  <XStack alignItems="flex-start" gap="$3">
-                    <YStack mt={2}>
+                  <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                    <Stack style={{ marginTop: 2 }}>
                       {getTypeIcon(notification.type)}
-                    </YStack>
-                    <YStack flex={1}>
-                      <XStack alignItems="center" justifyContent="space-between" mb="$1">
-                        <SizableText size="$3" fontWeight="500" color="$color12">
+                    </Stack>
+                    <Stack style={{ flex: 1 }}>
+                      <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-1)' }}>
+                        <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-primary)' }}>
                           {notification.title}
-                        </SizableText>
-                        <SizableText size="$1" color="$color10">
+                        </Text>
+                        <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-secondary)' }}>
                           {formatDate(notification.requested_at)}
-                        </SizableText>
-                      </XStack>
-                      <SizableText size="$3" color="$color11">
+                        </Text>
+                      </Row>
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                         {notification.description}
-                      </SizableText>
-                    </YStack>
-                  </XStack>
+                      </Text>
+                    </Stack>
+                  </Row>
                 </Card>
               ))}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
     {
@@ -321,10 +323,10 @@ export default function NotificationsAndApprovalsPage() {
       icon: UserCheck,
       badge: approvalItems.length,
       content: (
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {/* Filters and Sort */}
-          <Card backgroundColor="$color2" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$borderColor">
-            <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
+          <Card style={{ backgroundColor: 'var(--color-background-secondary)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-border)' }}>
+            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
               <Select
                 label="Type"
                 value={filter.type || 'all'}
@@ -404,271 +406,287 @@ export default function NotificationsAndApprovalsPage() {
                 ]}
                 fullWidth
               />
-            </XStack>
-            <XStack mt="$4" alignItems="center" gap="$2">
+            </Row>
+            <Row style={{ marginTop: 'var(--space-4)', alignItems: 'center', gap: 'var(--space-2)' }}>
               <Button
                 variant="ghost"
-                size="$3"
+                size="sm"
                 onPress={() =>
                   setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
                 }
               >
-                {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
+                {sortOrder === 'asc' ? '^ Ascending' : 'v Descending'}
               </Button>
-            </XStack>
+            </Row>
           </Card>
 
           {/* Bulk Actions */}
           {selectedItems.length > 0 && (
-            <XStack
-              backgroundColor="$blue2"
-              borderWidth={1}
-              borderColor="$blue5"
-              borderRadius="$4"
-              padding="$4"
-              alignItems="center"
-              justifyContent="space-between"
+            <Row
+              style={{
+                backgroundColor: 'var(--color-blue-2)',
+                borderWidth: 1,
+                borderColor: 'var(--color-blue-5)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-4)',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
             >
-              <SizableText size="$3" fontWeight="500" color="$blue11">
+              <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-blue-11)' }}>
                 {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''}{' '}
                 selected
-              </SizableText>
-              <XStack alignItems="center" gap="$2">
+              </Text>
+              <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                 <Button
                   variant="primary"
-                  size="$3"
+                  size="sm"
                   onPress={() => handleBulkAction('approve')}
                 >
-                  <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <CheckCircle size={16} />
                     <Text>Bulk Approve</Text>
-                  </XStack>
+                  </Row>
                 </Button>
                 <Button
                   variant="danger"
-                  size="$3"
+                  size="sm"
                   onPress={() => handleBulkAction('reject')}
                 >
-                  <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <XCircle size={16} />
                     <Text>Bulk Reject</Text>
-                  </XStack>
+                  </Row>
                 </Button>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           )}
 
           {/* Approvals List */}
           {loading ? (
-            <YStack alignItems="center" paddingVertical="$12">
-              <Spinner size="large" color="$blue9" mb="$2" />
-              <SizableText color="$color11">Loading approvals...</SizableText>
-            </YStack>
+            <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
+              <Spinner size="large" style={{ color: 'var(--color-blue-9)', marginBottom: 'var(--space-2)' }} />
+              <Text style={{ color: 'var(--color-text-tertiary)' }}>Loading approvals...</Text>
+            </Stack>
           ) : filteredApprovals.length === 0 ? (
-            <YStack alignItems="center" paddingVertical="$12">
-              <UserCheck color="$color10" mb="$4" size={48} />
-              <Text fontWeight="500" color="$color12" mb="$2">
+            <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
+              <UserCheck color="var(--color-text-secondary)" style={{ marginBottom: 'var(--space-4)' }} size={48} />
+              <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)' }}>
                 No approvals found
               </Text>
-              <SizableText size="$3" color="$color11">
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                 Try adjusting your filters
-              </SizableText>
-            </YStack>
+              </Text>
+            </Stack>
           ) : (
-            <YStack gap="$3">
+            <Stack style={{ gap: 'var(--space-3)' }}>
               {filteredApprovals.map((approval) => (
                 <Card
                   key={approval.id}
-                  padding="$4"
-                  backgroundColor="$color2"
-                  borderRadius="$4"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  hoverStyle={{
-                    borderColor: '$blue7',
+                  style={{
+                    padding: 'var(--space-4)',
+                    backgroundColor: 'var(--color-background-secondary)',
+                    borderRadius: 'var(--radius-4)',
+                    borderWidth: 1,
+                    borderColor: 'var(--color-border)',
                   }}
                 >
-                  <XStack alignItems="flex-start" gap="$3">
-                    <Button
-                      unstyled
-                      mt="$1"
-                      color="$color10"
-                      hoverStyle={{ color: '$blue9' }}
-                      onPress={() => toggleSelectItem(approval.id)}
+                  <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                    <button
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        marginTop: 'var(--space-1)',
+                        color: 'var(--color-text-secondary)',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => toggleSelectItem(approval.id)}
                     >
                       {selectedItems.includes(approval.id) ? (
-                        <CheckSquare size={20} color="$blue9" />
+                        <CheckSquare size={20} color="var(--color-blue-9)" />
                       ) : (
                         <Square size={20} />
                       )}
-                    </Button>
-                    <YStack flex={1}>
-                      <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
-                        <XStack alignItems="center" gap="$2">
+                    </button>
+                    <Stack style={{ flex: 1 }}>
+                      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
+                        <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                           {getTypeIcon(approval.type)}
-                          <XStack
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
-                            backgroundColor="$color4"
-                            borderRadius="$2"
+                          <span
+                            style={{
+                              paddingLeft: 'var(--space-2)',
+                              paddingRight: 'var(--space-2)',
+                              paddingTop: 'var(--space-1)',
+                              paddingBottom: 'var(--space-1)',
+                              backgroundColor: 'var(--color-background-tertiary)',
+                              borderRadius: 'var(--radius-2)',
+                            }}
                           >
-                            <SizableText size="$1" color="$color11">
+                            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-tertiary)' }}>
                               {getTypeLabel(approval.type)}
-                            </SizableText>
-                          </XStack>
-                          <XStack
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
-                            borderRadius="$2"
-                            borderWidth={1}
-                            borderColor={
-                              approval.priority === 'urgent'
-                                ? '$red5'
-                                : approval.priority === 'high'
-                                  ? '$orange5'
-                                  : approval.priority === 'normal'
-                                    ? '$blue5'
-                                    : '$color5'
-                            }
-                            backgroundColor={
-                              approval.priority === 'urgent'
-                                ? '$red2'
-                                : approval.priority === 'high'
-                                  ? '$orange2'
-                                  : approval.priority === 'normal'
-                                    ? '$blue2'
-                                    : '$color2'
-                            }
-                          >
-                            <SizableText
-                              size="$1"
-                              fontWeight="500"
-                              color={
+                            </Text>
+                          </span>
+                          <span
+                            style={{
+                              paddingLeft: 'var(--space-2)',
+                              paddingRight: 'var(--space-2)',
+                              paddingTop: 'var(--space-1)',
+                              paddingBottom: 'var(--space-1)',
+                              borderRadius: 'var(--radius-2)',
+                              borderWidth: 1,
+                              borderStyle: 'solid',
+                              borderColor:
                                 approval.priority === 'urgent'
-                                  ? '$red11'
+                                  ? 'var(--color-red-5)'
                                   : approval.priority === 'high'
-                                    ? '$orange11'
+                                    ? 'var(--color-orange-5)'
                                     : approval.priority === 'normal'
-                                      ? '$blue11'
-                                      : '$color11'
-                              }
+                                      ? 'var(--color-blue-5)'
+                                      : 'var(--color-gray-5)',
+                              backgroundColor:
+                                approval.priority === 'urgent'
+                                  ? 'var(--color-red-2)'
+                                  : approval.priority === 'high'
+                                    ? 'var(--color-orange-2)'
+                                    : approval.priority === 'normal'
+                                      ? 'var(--color-blue-2)'
+                                      : 'var(--color-gray-2)',
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 'var(--font-size-1)',
+                                fontWeight: '500',
+                                color:
+                                  approval.priority === 'urgent'
+                                    ? 'var(--color-red-11)'
+                                    : approval.priority === 'high'
+                                      ? 'var(--color-orange-11)'
+                                      : approval.priority === 'normal'
+                                        ? 'var(--color-blue-11)'
+                                        : 'var(--color-gray-11)',
+                              }}
                             >
                               {approval.priority.toUpperCase()}
-                            </SizableText>
-                          </XStack>
-                        </XStack>
-                        <XStack
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
-                          backgroundColor={
-                            approval.status === 'pending'
-                              ? '$orange2'
-                              : approval.status === 'approved'
-                                ? '$green2'
-                                : approval.status === 'rejected'
-                                  ? '$red2'
-                                  : '$color2'
-                          }
-                        >
-                          <SizableText
-                            size="$1"
-                            fontWeight="500"
-                            color={
+                            </Text>
+                          </span>
+                        </Row>
+                        <span
+                          style={{
+                            paddingLeft: 'var(--space-2)',
+                            paddingRight: 'var(--space-2)',
+                            paddingTop: 'var(--space-1)',
+                            paddingBottom: 'var(--space-1)',
+                            borderRadius: 'var(--radius-2)',
+                            backgroundColor:
                               approval.status === 'pending'
-                                ? '$orange11'
+                                ? 'var(--color-orange-2)'
                                 : approval.status === 'approved'
-                                  ? '$green11'
+                                  ? 'var(--color-green-2)'
                                   : approval.status === 'rejected'
-                                    ? '$red11'
-                                    : '$color11'
-                            }
+                                    ? 'var(--color-red-2)'
+                                    : 'var(--color-gray-2)',
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 'var(--font-size-1)',
+                              fontWeight: '500',
+                              color:
+                                approval.status === 'pending'
+                                  ? 'var(--color-orange-11)'
+                                  : approval.status === 'approved'
+                                    ? 'var(--color-green-11)'
+                                    : approval.status === 'rejected'
+                                      ? 'var(--color-red-11)'
+                                      : 'var(--color-gray-11)',
+                            }}
                           >
                             {approval.status.toUpperCase()}
-                          </SizableText>
-                        </XStack>
-                      </XStack>
-                      <SizableText size="$3" fontWeight="600" color="$color12" mb="$1">
+                          </Text>
+                        </span>
+                      </Row>
+                      <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-1)' }}>
                         {approval.title}
-                      </SizableText>
-                      <SizableText size="$3" color="$color11" mb="$2">
+                      </Text>
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)', marginBottom: 'var(--space-2)' }}>
                         {approval.description}
-                      </SizableText>
-                      <XStack alignItems="center" gap="$4" mb="$3">
-                        <SizableText size="$1" color="$color10">
+                      </Text>
+                      <Row style={{ alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-3)' }}>
+                        <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-secondary)' }}>
                           Requested {formatDate(approval.requested_at)}
-                        </SizableText>
+                        </Text>
                         {approval.due_date && (
-                          <SizableText size="$1" color="$color10">
+                          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-secondary)' }}>
                             Due {formatDate(approval.due_date)}
-                          </SizableText>
+                          </Text>
                         )}
-                      </XStack>
+                      </Row>
                       {approval.status === 'pending' && (
-                        <XStack alignItems="center" gap="$2" flexWrap="wrap">
+                        <Row style={{ alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
                           <Button
                             variant="primary"
-                            size="$3"
+                            size="sm"
                             onPress={() => handleApprove(approval.id)}
                           >
-                            <XStack alignItems="center" gap="$2">
+                            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                               <CheckCircle size={16} />
                               <Text>Approve</Text>
-                            </XStack>
+                            </Row>
                           </Button>
                           <Button
                             variant="danger"
-                            size="$3"
+                            size="sm"
                             onPress={() => handleReject(approval.id, 'Rejected')}
                           >
-                            <XStack alignItems="center" gap="$2">
+                            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                               <XCircle size={16} />
                               <Text>Reject</Text>
-                            </XStack>
+                            </Row>
                           </Button>
                           <Button
                             variant="secondary"
-                            size="$3"
+                            size="sm"
                             onPress={() => setShowRequestMoreInfoModal(approval.id)}
                           >
-                            <XStack alignItems="center" gap="$2">
+                            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                               <MessageSquare size={16} />
                               <Text>Request More Info</Text>
-                            </XStack>
+                            </Row>
                           </Button>
                           <Button
-                            variant="outlined"
-                            size="$3"
+                            variant="outline"
+                            size="sm"
                             onPress={() => setShowDeferModal(approval.id)}
                           >
-                            <XStack alignItems="center" gap="$2">
+                            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                               <Clock size={16} />
                               <Text>Defer</Text>
-                            </XStack>
+                            </Row>
                           </Button>
-                        </XStack>
+                        </Row>
                       )}
-                    </YStack>
-                  </XStack>
+                    </Stack>
+                  </Row>
                 </Card>
               ))}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
   ];
 
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1>Notifications & Approvals</H1>
-          <SizableText color="$color11">
+    <Stack style={{ gap: 'var(--space-6)' }}>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack>
+          <h1 style={{ margin: 0, fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>Notifications & Approvals</h1>
+          <Text style={{ color: 'var(--color-text-tertiary)' }}>
             Manage your notifications and pending approvals
-          </SizableText>
-        </YStack>
-      </XStack>
+          </Text>
+        </Stack>
+      </Row>
 
       <TabsCustom
         tabs={tabs}
@@ -678,27 +696,31 @@ export default function NotificationsAndApprovalsPage() {
 
       {/* Request More Info Modal */}
       {showRequestMoreInfoModal && (
-        <XStack
-          position="fixed"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          zIndex={50}
-          padding="$4"
+        <Row
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+            padding: 'var(--space-4)',
+          }}
         >
           <Card
-            backgroundColor="$background"
-            borderRadius="$4"
-            elevation={10}
-            maxWidth={448}
-            width="100%"
-            padding="$6"
+            style={{
+              backgroundColor: 'var(--color-background)',
+              borderRadius: 'var(--radius-4)',
+              boxShadow: 'var(--shadow-lg)',
+              maxWidth: 448,
+              width: '100%',
+              padding: 'var(--space-6)',
+            }}
           >
-            <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+            <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-4)' }}>
               Request More Information
             </Text>
             <Textarea
@@ -710,14 +732,14 @@ export default function NotificationsAndApprovalsPage() {
               fullWidth
               required
             />
-            <XStack gap="$3" mt="$4">
+            <Row style={{ gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
               <Button
                 variant="secondary"
                 onPress={() => {
                   setShowRequestMoreInfoModal(null);
                   setRequestInfoComment('');
                 }}
-                flex={1}
+                style={{ flex: 1 }}
               >
                 Cancel
               </Button>
@@ -725,38 +747,42 @@ export default function NotificationsAndApprovalsPage() {
                 variant="primary"
                 onPress={() => handleRequestMoreInfo(showRequestMoreInfoModal)}
                 disabled={!requestInfoComment.trim()}
-                flex={1}
+                style={{ flex: 1 }}
               >
                 Send Request
               </Button>
-            </XStack>
+            </Row>
           </Card>
-        </XStack>
+        </Row>
       )}
 
       {/* Defer Modal */}
       {showDeferModal && (
-        <XStack
-          position="fixed"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          zIndex={50}
-          padding="$4"
+        <Row
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+            padding: 'var(--space-4)',
+          }}
         >
           <Card
-            backgroundColor="$background"
-            borderRadius="$4"
-            elevation={10}
-            maxWidth={448}
-            width="100%"
-            padding="$6"
+            style={{
+              backgroundColor: 'var(--color-background)',
+              borderRadius: 'var(--radius-4)',
+              boxShadow: 'var(--shadow-lg)',
+              maxWidth: 448,
+              width: '100%',
+              padding: 'var(--space-6)',
+            }}
           >
-            <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+            <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-4)' }}>
               Defer Approval
             </Text>
             <Input
@@ -767,14 +793,14 @@ export default function NotificationsAndApprovalsPage() {
               fullWidth
               required
             />
-            <XStack gap="$3" mt="$4">
+            <Row style={{ gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
               <Button
                 variant="secondary"
                 onPress={() => {
                   setShowDeferModal(null);
                   setDeferAssignee('');
                 }}
-                flex={1}
+                style={{ flex: 1 }}
               >
                 Cancel
               </Button>
@@ -782,14 +808,14 @@ export default function NotificationsAndApprovalsPage() {
                 variant="primary"
                 onPress={() => handleDefer(showDeferModal)}
                 disabled={!deferAssignee.trim()}
-                flex={1}
+                style={{ flex: 1 }}
               >
                 Defer
               </Button>
-            </XStack>
+            </Row>
           </Card>
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   );
 }

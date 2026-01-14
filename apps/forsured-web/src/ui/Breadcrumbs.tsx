@@ -1,6 +1,13 @@
+/**
+ * Breadcrumbs wrapper - migrated from Tamagui to Beyond UI
+ * Provides backwards-compatible API for existing code
+ */
 import React from 'react';
-import { ChevronRight, Home } from 'lucide-react';
-import { XStack, Text, Button, styled, useTheme } from '@unicornlove/ui';
+import { Home } from 'lucide-react';
+import {
+  Breadcrumb as BeyondBreadcrumb,
+  type BreadcrumbItemData,
+} from '@unicornlove/beyond-ui';
 
 export interface BreadcrumbItem {
   label: string;
@@ -16,87 +23,39 @@ export interface BreadcrumbsProps {
   className?: string;
 }
 
-const BreadcrumbsNav = styled(XStack, {
-  name: 'BreadcrumbsNav',
-  alignItems: 'center',
-  gap: '$2',
-  fontSize: '$2',
-});
-
-const BreadcrumbList = styled(XStack, {
-  name: 'BreadcrumbList',
-  alignItems: 'center',
-  gap: '$2',
-});
-
-const BreadcrumbItemContainer = styled(XStack, {
-  name: 'BreadcrumbItemContainer',
-  alignItems: 'center',
-  gap: '$2',
-});
-
-const BreadcrumbButton = styled(Button, {
-  name: 'BreadcrumbButton',
-  alignItems: 'center',
-  gap: '$1',
-  color: '$color10',
-  backgroundColor: 'transparent',
-  hoverStyle: {
-    color: '$color11',
-  },
-  transition: 'color 0.2s ease-in-out',
-});
-
-const BreadcrumbText = styled(Text, {
-  name: 'BreadcrumbText',
-  alignItems: 'center',
-  gap: '$1',
-  color: '$color11',
-  fontWeight: '500',
-});
-
 export default function Breadcrumbs({
   items,
   showHome = false,
-  separator: Separator = ChevronRight,
+  separator,
   className = '',
 }: BreadcrumbsProps) {
-  const theme = useTheme();
-  const allItems = showHome
-    ? [{ label: 'Home', icon: Home, href: '/' }, ...items]
-    : items;
+  // Build items array for Beyond UI
+  const allItems: BreadcrumbItemData[] = showHome
+    ? [
+        { label: 'Home', icon: <Home size={16} />, onPress: () => window.location.href = '/' },
+        ...items.map((item) => ({
+          label: item.label,
+          icon: item.icon ? <item.icon size={16} /> : undefined,
+          onPress: item.onClick || (item.href ? () => window.location.href = item.href! : undefined),
+          href: item.href,
+        })),
+      ]
+    : items.map((item) => ({
+        label: item.label,
+        icon: item.icon ? <item.icon size={16} /> : undefined,
+        onPress: item.onClick || (item.href ? () => window.location.href = item.href! : undefined),
+        href: item.href,
+      }));
+
+  // Current index is the last item
+  const currentIndex = allItems.length - 1;
 
   return (
-    <BreadcrumbsNav as="nav" className={className} aria-label="Breadcrumb">
-      <BreadcrumbList as="ol">
-        {allItems.map((item, index) => {
-          const Icon = item.icon;
-          const isLast = index === allItems.length - 1;
-
-          return (
-            <BreadcrumbItemContainer as="li" key={index}>
-              {index > 0 && (
-                <Separator size={16} color={theme.color9.val} />
-              )}
-              {isLast ? (
-                <BreadcrumbText>
-                  {Icon && <Icon size={16} color={theme.color11.val} />}
-                  <Text>{item.label}</Text>
-                </BreadcrumbText>
-              ) : (
-                <BreadcrumbButton
-                  onPress={item.onClick}
-                  as={item.href ? 'a' : 'button'}
-                  href={item.href}
-                >
-                  {Icon && <Icon size={16} />}
-                  <Text>{item.label}</Text>
-                </BreadcrumbButton>
-              )}
-            </BreadcrumbItemContainer>
-          );
-        })}
-      </BreadcrumbList>
-    </BreadcrumbsNav>
+    <BeyondBreadcrumb
+      items={allItems}
+      currentIndex={currentIndex}
+      showHomeIcon={showHome}
+      separator={separator ? <separator size={16} /> : undefined}
+    />
   );
 }

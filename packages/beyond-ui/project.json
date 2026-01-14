@@ -24,15 +24,15 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "biome lint .",
-        "cwd": "packages/beyond-ui"
+        "command": "biome lint packages/beyond-ui/src",
+        "cwd": "."
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "biome lint --write .",
-        "cwd": "packages/beyond-ui"
+        "command": "biome lint --write packages/beyond-ui/src",
+        "cwd": "."
       }
     },
     "typecheck": {

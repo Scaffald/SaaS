@@ -24,7 +24,6 @@ import {
   Bell,
   MessageCircle,
   ArrowUpRight,
-  ArrowDownRight,
 } from 'lucide-react-native'
 
 const meta: Meta = {
@@ -138,7 +137,7 @@ function DashboardView() {
           {/* Balance Widgets */}
           <View style={styles.widgetsGrid}>
             {portfolio.balances.slice(0, 4).map((balance) => {
-              const asset = cryptoAssets.find((a) => a.symbol === balance.symbol)
+              const _asset = cryptoAssets.find((a) => a.symbol === balance.symbol)
               return (
                 <CryptoBalanceWidget
                   key={balance.symbol}

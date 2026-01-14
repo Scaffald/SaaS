@@ -1,7 +1,6 @@
 // src/pages/contractor/settings/NotificationSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2, Input } from '@unicornlove/ui';
-import Checkbox from '../../../ui/Checkbox';
+import { Stack, Text, Button, H2, Input, Checkbox } from '@unicornlove/beyond-ui';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -69,60 +68,65 @@ function ContractorNotificationSettings() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Notification Settings</H2>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {[1, 2, 3, 4].map(i => (
-            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
+            <Stack
+              key={i}
+              style={{
+                height: 40,
+                backgroundColor: 'var(--color-3)',
+                borderRadius: 'var(--radius-4)',
+              }}
+            />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Notification Settings</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-6)' }}>
         Configure how and when you receive notifications about your projects and insurance.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Checkbox
             checked={preferences.emailOnNewTask}
-            onChange={(e) => updatePreference('emailOnNewTask', e.target.checked)}
+            onChange={(checked) => updatePreference('emailOnNewTask', checked)}
             label="Email me on new task assignments"
           />
           <Checkbox
             checked={preferences.emailOnExpiringPolicy}
-            onChange={(e) => updatePreference('emailOnExpiringPolicy', e.target.checked)}
+            onChange={(checked) => updatePreference('emailOnExpiringPolicy', checked)}
             label="Email me on expiring insurance policies"
           />
           <Checkbox
             checked={preferences.emailOnProjectInvite}
-            onChange={(e) => updatePreference('emailOnProjectInvite', e.target.checked)}
+            onChange={(checked) => updatePreference('emailOnProjectInvite', checked)}
             label="Email me on new project invitations"
           />
           <Input
             label="Remind me (days before expiration)"
             type="number"
             value={preferences.reminderDaysBefore.toString()}
-            onChangeText={(value) => updatePreference('reminderDaysBefore', parseInt(value) || 7)}
-            width={128}
-            min={1}
-            max={90}
+            onChange={(e) => updatePreference('reminderDaysBefore', parseInt(e.target.value) || 7)}
+            style={{ width: 128 }}
           />
           <Button
             type="submit"
             disabled={!isDirty || isSaving}
             variant="primary"
-            marginTop="$6"
+            style={{ marginTop: 'var(--space-6)' }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

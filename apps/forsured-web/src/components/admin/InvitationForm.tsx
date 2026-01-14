@@ -1,11 +1,8 @@
 /**
- * InvitationForm - Invitation form using Tamagui
+ * InvitationForm - Invitation form using Beyond UI
  */
 import React, { useState } from 'react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
-import { Input as TextInput } from '@unicornlove/ui';
-import { Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Input, Card } from '@unicornlove/beyond-ui';
 
 interface InvitationFormProps {
   onSubmit: (data: { email: string; expiresAt: string; maxUses: number }) => void;
@@ -24,62 +21,62 @@ function InvitationForm({ onSubmit, onCancel, isLoading = false }: InvitationFor
   };
 
   return (
-    <Card padding="$4" gap="$4">
-      <Text fontSize="$5" fontWeight="600" mb="$4">
+    <Card style={{ padding: 16, gap: 16 }}>
+      <Text style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>
         Create New Broker Invitation
       </Text>
-      <YStack as="form" onSubmit={handleSubmit} gap="$4">
-        <YStack gap="$1.5">
-          <Text fontSize="$2" fontWeight="500" color="$color11">
+      <Stack as="form" onSubmit={handleSubmit} style={{ gap: 16 }}>
+        <Stack style={{ gap: 6 }}>
+          <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>
             Email (Optional)
           </Text>
-          <TextInput
+          <Input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="broker@example.com"
           />
-        </YStack>
-        <YStack gap="$1.5">
-          <Text fontSize="$2" fontWeight="500" color="$color11">
+        </Stack>
+        <Stack style={{ gap: 6 }}>
+          <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>
             Expires At
           </Text>
-          <TextInput
+          <Input
             type="date"
             value={expiresAt}
             onChange={(e) => setExpiresAt(e.target.value)}
             required
           />
-        </YStack>
-        <YStack gap="$1.5">
-          <Text fontSize="$2" fontWeight="500" color="$color11">
+        </Stack>
+        <Stack style={{ gap: 6 }}>
+          <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>
             Max Uses
           </Text>
-          <TextInput
+          <Input
             type="number"
             value={maxUses.toString()}
             onChange={(e) => setMaxUses(parseInt(e.target.value) || 1)}
             min="1"
             required
           />
-        </YStack>
-        <XStack justifyContent="flex-end" gap="$2">
-          <CoreButton
+        </Stack>
+        <Row style={{ justifyContent: 'flex-end', gap: 8 }}>
+          <Button
             variant="secondary"
             onPress={onCancel}
             disabled={isLoading}
           >
             Cancel
-          </CoreButton>
-          <CoreButton
+          </Button>
+          <Button
             type="submit"
             variant="primary"
             disabled={isLoading}
           >
             Create
-          </CoreButton>
-        </XStack>
-      </YStack>
+          </Button>
+        </Row>
+      </Stack>
     </Card>
   );
 }

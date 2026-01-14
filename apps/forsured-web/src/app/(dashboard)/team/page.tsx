@@ -14,7 +14,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { YStack, XStack, Text, Button, Card, H1, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, H1 } from '@unicornlove/beyond-ui';
 import { Plus } from 'lucide-react';
 import {
   TeamMembersList,
@@ -207,64 +207,59 @@ export default function TeamPage() {
     : [];
 
   return (
-    <YStack minHeight="100vh" backgroundColor="$gray2">
-      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-gray-2)' }}>
+      <Stack style={{ maxWidth: 1120, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
         {/* Header */}
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$8" flexWrap="wrap" gap="$4">
-          <YStack>
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-8)', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+          <Stack>
             <H1>Team Members</H1>
-            <Text marginTop="$2" fontSize="$2" color="$gray11">
+            <Text style={{ marginTop: 'var(--space-2)', fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>
               Manage your organization's team members and their roles
             </Text>
-          </YStack>
+          </Stack>
           <Button
             onPress={handleAddMember}
-            backgroundColor="$blue9"
-            color="white"
-            fontSize="$2"
-            fontWeight="500"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            style={{ backgroundColor: 'var(--color-blue-9)', color: 'white', fontSize: 'var(--font-size-2)', fontWeight: 500, borderRadius: 'var(--radius-4)' }}
           >
-            <XStack alignItems="center" gap="$2">
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
               <Plus size={20} />
               <Text>Invite Member</Text>
-            </XStack>
+            </Row>
           </Button>
-        </XStack>
+        </Row>
 
         {/* Summary Cards */}
         {summaryData && (
-          <XStack flexWrap="wrap" gap="$4" marginBottom="$8">
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$gray6">
-              <Text fontSize="$2" color="$gray11">Total Members</Text>
-              <Text fontSize="$8" fontWeight="700" color="$gray12">{summaryData.total}</Text>
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-gray-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>Total Members</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-gray-12)' }}>{summaryData.total}</Text>
             </Card>
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$purple6">
-              <Text fontSize="$2" color="$purple11">Admins</Text>
-              <Text fontSize="$8" fontWeight="700" color="$purple12">
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-purple-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-purple-11)' }}>Admins</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-purple-12)' }}>
                 {summaryData.byRole.admin}
               </Text>
             </Card>
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$blue6">
-              <Text fontSize="$2" color="$blue11">Managers</Text>
-              <Text fontSize="$8" fontWeight="700" color="$blue12">
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-blue-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue-11)' }}>Managers</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-blue-12)' }}>
                 {summaryData.byRole.manager}
               </Text>
             </Card>
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$green6">
-              <Text fontSize="$2" color="$green11">Brokers</Text>
-              <Text fontSize="$8" fontWeight="700" color="$green12">
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-green-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-11)' }}>Brokers</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-green-12)' }}>
                 {summaryData.byRole.broker}
               </Text>
             </Card>
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$orange6">
-              <Text fontSize="$2" color="$orange11">Subcontractors</Text>
-              <Text fontSize="$8" fontWeight="700" color="$orange12">
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-orange-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange-11)' }}>Subcontractors</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-orange-12)' }}>
                 {summaryData.byRole.subcontractor}
               </Text>
             </Card>
-          </XStack>
+          </Row>
         )}
 
         {/* Team Members List */}
@@ -277,7 +272,7 @@ export default function TeamPage() {
           onSearch={handleSearch}
           onRoleFilter={handleRoleFilter}
         />
-      </YStack>
+      </Stack>
 
       {/* Member Detail Modal */}
       <MemberDetailModal
@@ -298,6 +293,6 @@ export default function TeamPage() {
         loading={inviteMemberMutation.isPending}
         existingEmails={existingEmails}
       />
-    </YStack>
+    </Stack>
   );
 }

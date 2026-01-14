@@ -4,8 +4,8 @@
  *
  * Displays available industries for user selection during signup
  */
-import { YStack, XStack, Text, styled, Spinner } from '@unicornlove/ui'
-import { Factory, Home, Briefcase } from 'lucide-react'
+import { Stack, Row, Text } from '@unicornlove/beyond-ui'
+import { Factory, Home, Briefcase, Loader2 } from 'lucide-react'
 
 /** REQ-4: User set type data from API */
 export interface UserSetType {
@@ -28,39 +28,41 @@ export interface IndustrySelectionProps {
   disabled?: boolean
 }
 
-const IndustryCard = styled(YStack, {
-  name: 'IndustryCard',
-  position: 'relative',
-  backgroundColor: '$background',
-  borderRadius: '$3',
-  shadowColor: '$shadowColor',
-  shadowRadius: 4,
-  shadowOffset: { width: 0, height: 2 },
-  padding: '$6',
-  borderWidth: 2,
-  borderColor: 'transparent',
-  cursor: 'pointer',
+interface IndustryCardProps {
+  selected: boolean
+  disabled: boolean
+  onClick: () => void
+  children: React.ReactNode
+  'data-testid'?: string
+}
 
-  hoverStyle: {
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    borderColor: '$blue9',
-  },
+function IndustryCard({ selected, disabled, onClick, children, 'data-testid': testId }: IndustryCardProps) {
+  const baseStyle: React.CSSProperties = {
+    position: 'relative',
+    backgroundColor: 'var(--color-background)',
+    borderRadius: '8px',
+    boxShadow: '0 2px 4px var(--color-shadow)',
+    padding: '24px',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: selected ? 'var(--color-blue9)' : 'transparent',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.5 : 1,
+    flex: 1,
+    minWidth: '280px',
+  }
 
-  variants: {
-    selected: {
-      true: {
-        borderColor: '$blue9',
-      },
-    },
-    disabled: {
-      true: {
-        opacity: 0.5,
-        cursor: 'not-allowed',
-      },
-    },
-  } as const,
-})
+  return (
+    <Stack
+      as="button"
+      onClick={disabled ? undefined : onClick}
+      style={baseStyle}
+      data-testid={testId}
+    >
+      {children}
+    </Stack>
+  )
+}
 
 /** Helper to get icon for user set type */
 function getIndustryIcon(slug: string) {
@@ -75,14 +77,14 @@ function getIndustryIcon(slug: string) {
 }
 
 /** Helper to get icon background color */
-function getIndustryColor(slug: string) {
+function getIndustryColor(slug: string): React.CSSProperties {
   switch (slug) {
     case 'construction':
-      return '$orange3'
+      return { backgroundColor: 'var(--color-orange3)' }
     case 'property-management':
-      return '$green3'
+      return { backgroundColor: 'var(--color-green3)' }
     default:
-      return '$blue3'
+      return { backgroundColor: 'var(--color-blue3)' }
   }
 }
 
@@ -96,102 +98,107 @@ export function IndustrySelection({
 }: IndustrySelectionProps) {
   if (isLoading) {
     return (
-      <YStack alignItems="center" padding="$8">
-        <Spinner size="large" />
-        <Text color="$color10" mt="$4">
+      <Stack style={{ alignItems: 'center', padding: '32px' }}>
+        <Loader2 className="animate-spin" size={32} />
+        <Text style={{ color: 'var(--color-color10)', marginTop: '16px' }}>
           Loading industries...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <YStack
+      <Stack
         data-testid="user-set-types-error"
-        backgroundColor="$red2"
-        borderWidth={1}
-        borderColor="$red6"
-        borderRadius="$3"
-        padding="$4"
-        gap="$2"
+        style={{
+          backgroundColor: 'var(--color-red2)',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: 'var(--color-red6)',
+          borderRadius: '8px',
+          padding: '16px',
+          gap: '8px',
+        }}
       >
-        <Text fontSize="$3" fontWeight="600" color="$red11">
+        <Text style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-red11)' }}>
           Failed to load industries
         </Text>
-        <Text fontSize="$2" color="$red10">
+        <Text style={{ fontSize: '12px', color: 'var(--color-red10)' }}>
           Please refresh the page or contact support if the problem persists.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // Ensure userSetTypes is an array before using .map()
   if (!userSetTypes || !Array.isArray(userSetTypes) || userSetTypes.length === 0) {
     return (
-      <YStack
+      <Stack
         data-testid="no-user-set-types"
-        backgroundColor="$yellow2"
-        borderWidth={1}
-        borderColor="$yellow6"
-        borderRadius="$3"
-        padding="$4"
-        gap="$2"
+        style={{
+          backgroundColor: 'var(--color-yellow2)',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: 'var(--color-yellow6)',
+          borderRadius: '8px',
+          padding: '16px',
+          gap: '8px',
+        }}
       >
-        <Text fontSize="$3" fontWeight="600" color="$yellow11">
+        <Text style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-yellow11)' }}>
           No industries available
         </Text>
-        <Text fontSize="$2" color="$yellow10">
+        <Text style={{ fontSize: '12px', color: 'var(--color-yellow10)' }}>
           Please contact support to set up your account.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
     <>
-      <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+      <Text style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-color12)', marginBottom: '16px' }}>
         What industry are you in?
       </Text>
 
-      <XStack flexDirection="row" flexWrap="wrap" gap="$4" mb="$8">
+      <Row style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
         {userSetTypes.map((ust) => (
           <IndustryCard
             key={ust.id}
-            as="button"
             onClick={() => onSelect(ust)}
             disabled={disabled}
             selected={selectedId === ust.id}
             data-testid={`industry-${ust.slug}`}
-            flex={1}
-            minWidth={280}
           >
-            <XStack alignItems="flex-start" gap="$4">
-              <XStack
-                width={48}
-                height={48}
-                backgroundColor={getIndustryColor(ust.slug)}
-                borderRadius="$3"
-                alignItems="center"
-                justifyContent="center"
-                flexShrink={0}
+            <Row style={{ alignItems: 'flex-start', gap: '16px' }}>
+              <Row
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  ...getIndustryColor(ust.slug),
+                  borderRadius: '8px',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
               >
                 {getIndustryIcon(ust.slug)}
-              </XStack>
-              <YStack gap="$1">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
+              </Row>
+              <Stack style={{ gap: '4px' }}>
+                <Text style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-color12)' }}>
                   {ust.name}
                 </Text>
                 {ust.description && (
-                  <Text fontSize="$2" color="$color10" mt="$1">
+                  <Text style={{ fontSize: '12px', color: 'var(--color-color10)', marginTop: '4px' }}>
                     {ust.description}
                   </Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           </IndustryCard>
         ))}
-      </XStack>
+      </Row>
     </>
   )
 }

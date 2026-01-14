@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { YStack, XStack, Text, Button, Card, H1, H2, H3, Input } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, H1, H3, Input } from '@unicornlove/beyond-ui';
 import { Search } from 'lucide-react';
 import { dashboardService } from '../../../lib/api/dashboard/dashboardService';
 import { useLexicon } from '../../../contexts/LexiconContext';
@@ -100,74 +100,80 @@ export default function DashboardPage() {
   };
 
   return (
-    <YStack minHeight="100vh" backgroundColor="$gray2">
-      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-gray-2)' }}>
+      <Stack style={{ maxWidth: 1120, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
         {/* Header */}
-        <XStack marginBottom="$8" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$4">
-          <YStack>
+        <Row style={{ marginBottom: 'var(--space-8)', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+          <Stack>
             <H1>{t('nav.dashboard')}</H1>
-            <Text marginTop="$2" fontSize="$2" color="$gray11">
+            <Text style={{ marginTop: 'var(--space-2)', fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>
               Real-time compliance metrics across all projects and {getContractorLabel(true).toLowerCase()}
             </Text>
-            <Text marginTop="$1" fontSize="$1" color="$gray10">
+            <Text style={{ marginTop: 'var(--space-1)', fontSize: 'var(--font-size-1)', color: 'var(--color-gray-10)' }}>
               Last updated: {new Date(lastUpdated).toLocaleTimeString()}
             </Text>
-          </YStack>
+          </Stack>
           <Button
             onPress={handleExportCSV}
-            backgroundColor="$blue9"
-            color="white"
-            fontSize="$2"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            style={{
+              backgroundColor: 'var(--color-blue-9)',
+              color: 'white',
+              fontSize: 'var(--font-size-2)',
+              borderRadius: 'var(--radius-4)',
+            }}
           >
             Export to CSV
           </Button>
-        </XStack>
+        </Row>
 
         {/* Search and Filters */}
-        <Card padding="$6" marginBottom="$6">
-          <XStack gap="$4" alignItems="center" flexWrap="wrap">
-            <XStack flex={1} position="relative" minWidth={200}>
-              <XStack
-                position="absolute"
-                left="$3"
-                top="50%"
-                transform="translateY(-50%)"
-                zIndex={1}
+        <Card style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+          <Row style={{ gap: 'var(--space-4)', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Row style={{ flex: 1, position: 'relative', minWidth: 200 }}>
+              <Row
+                style={{
+                  position: 'absolute',
+                  left: 'var(--space-3)',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 1,
+                }}
               >
-                <Search size={20} color="$gray10" />
-              </XStack>
+                <Search size={20} color="var(--color-gray-10)" />
+              </Row>
               <Input
                 type="text"
                 placeholder={`Search ${getContractorLabel(true).toLowerCase()}...`}
-                onChange={(value) => handleSearchChange(value)}
-                paddingLeft="$10"
-                flex={1}
-                borderWidth={1}
-                borderColor="$gray6"
-                borderRadius="$4"
+                onChange={(e) => handleSearchChange(e.target.value)}
+                style={{
+                  paddingLeft: 'var(--space-10)',
+                  flex: 1,
+                  borderWidth: 1,
+                  borderColor: 'var(--color-gray-6)',
+                  borderRadius: 'var(--radius-4)',
+                }}
               />
-            </XStack>
+            </Row>
             {(filters.subcontractor_search || filters.status_filter || filters.project_ids) && (
               <Button
                 onPress={() => setFilters({})}
-                fontSize="$2"
-                color="$gray11"
-                borderWidth={1}
-                borderColor="$gray6"
-                borderRadius="$4"
-                backgroundColor="transparent"
-                hoverStyle={{ backgroundColor: '$gray3', color: '$gray12' }}
+                style={{
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-gray-11)',
+                  borderWidth: 1,
+                  borderColor: 'var(--color-gray-6)',
+                  borderRadius: 'var(--radius-4)',
+                  backgroundColor: 'transparent',
+                }}
               >
                 Clear Filters
               </Button>
             )}
-          </XStack>
+          </Row>
         </Card>
 
         {/* Overall Metrics */}
-        <XStack flexWrap="wrap" gap="$6" marginBottom="$8">
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
           <MetricCard
             title="Overall Compliance Score"
             value={overview?.overall_compliance_score || 0}
@@ -196,10 +202,10 @@ export default function DashboardPage() {
             loading={loading}
             subtitle="Immediate action required"
           />
-        </XStack>
+        </Row>
 
         {/* Task Summary */}
-        <XStack flexWrap="wrap" gap="$6" marginBottom="$8">
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
           <MetricCard
             title="Open Tasks"
             value={taskSummary?.total_open_tasks || 0}
@@ -224,226 +230,241 @@ export default function DashboardPage() {
             status="warning"
             loading={loading}
           />
-        </XStack>
+        </Row>
 
-        <XStack flexWrap="wrap" gap="$6" marginBottom="$8">
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
           {/* Subcontractor Scores Table */}
-          <Card flex={1} minWidth={400} overflow="hidden">
-            <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray6">
+          <Card style={{ flex: 1, minWidth: 400, overflow: 'hidden' }}>
+            <Stack style={{ paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', borderBottomWidth: 1, borderColor: 'var(--color-gray-6)' }}>
               <H3>{getContractorLabel()} Compliance</H3>
-            </YStack>
-            <YStack>
+            </Stack>
+            <Stack>
               {loading ? (
-                <YStack padding="$6">
-                  <YStack gap="$3">
+                <Stack style={{ padding: 'var(--space-6)' }}>
+                  <Stack style={{ gap: 'var(--space-3)' }}>
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <YStack key={i} height={48} backgroundColor="$gray4" borderRadius="$2" />
+                      <Stack key={i} style={{ height: 48, backgroundColor: 'var(--color-gray-4)', borderRadius: 'var(--radius-2)' }} />
                     ))}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               ) : (
-                <YStack>
-                  <XStack backgroundColor="$gray2" paddingHorizontal="$6" paddingVertical="$3">
-                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                <Stack>
+                  <Row style={{ backgroundColor: 'var(--color-gray-2)', paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }}>
+                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                       Company
                     </Text>
-                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                       Score
                     </Text>
-                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                       Risk Level
                     </Text>
-                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                       Open Tasks
                     </Text>
-                  </XStack>
-                  <YStack>
+                  </Row>
+                  <Stack>
                     {subcontractorScores.slice(0, 10).map((score) => (
-                      <XStack
+                      <Row
                         key={score.id}
-                        paddingHorizontal="$6"
-                        paddingVertical="$4"
-                        borderBottomWidth={1}
-                        borderColor="$gray6"
-                        hoverStyle={{ backgroundColor: '$gray2' }}
+                        style={{
+                          paddingLeft: 'var(--space-6)',
+                          paddingRight: 'var(--space-6)',
+                          paddingTop: 'var(--space-4)',
+                          paddingBottom: 'var(--space-4)',
+                          borderBottomWidth: 1,
+                          borderColor: 'var(--color-gray-6)',
+                        }}
                         data-testid="subcontractor-row"
                       >
-                        <Text flex={1} fontSize="$2" fontWeight="500" color="$gray12" whiteSpace="nowrap">
+                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', whiteSpace: 'nowrap' }}>
                           {score.company_name}
                         </Text>
-                        <Text flex={1} fontSize="$2" color="$gray12" whiteSpace="nowrap" data-testid="compliance-score">
+                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)', whiteSpace: 'nowrap' }} data-testid="compliance-score">
                           {score.compliance_score}%
                         </Text>
-                        <YStack flex={1} alignItems="flex-start" data-testid="risk-badge-container">
+                        <Stack style={{ flex: 1, alignItems: 'flex-start' }} data-testid="risk-badge-container">
                           <RiskBadge
                             level={score.risk_level as RiskLevel}
                             score={score.compliance_score}
                             size="sm"
                           />
-                        </YStack>
-                        <Text flex={1} fontSize="$2" color="$gray11" whiteSpace="nowrap">
+                        </Stack>
+                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)', whiteSpace: 'nowrap' }}>
                           {score.open_tasks_count}
                         </Text>
-                      </XStack>
+                      </Row>
                     ))}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           </Card>
 
           {/* Expiring Policies */}
-          <Card flex={1} minWidth={400} overflow="hidden">
-            <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray6">
+          <Card style={{ flex: 1, minWidth: 400, overflow: 'hidden' }}>
+            <Stack style={{ paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', borderBottomWidth: 1, borderColor: 'var(--color-gray-6)' }}>
               <H3>
                 Policies Expiring Soon (30 days)
               </H3>
-            </YStack>
-            <YStack>
+            </Stack>
+            <Stack>
               {loading ? (
-                <YStack padding="$6">
-                  <YStack gap="$3">
+                <Stack style={{ padding: 'var(--space-6)' }}>
+                  <Stack style={{ gap: 'var(--space-3)' }}>
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <YStack key={i} height={48} backgroundColor="$gray4" borderRadius="$2" />
+                      <Stack key={i} style={{ height: 48, backgroundColor: 'var(--color-gray-4)', borderRadius: 'var(--radius-2)' }} />
                     ))}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               ) : (
-                <YStack>
-                  <XStack backgroundColor="$gray2" paddingHorizontal="$6" paddingVertical="$3">
-                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                <Stack>
+                  <Row style={{ backgroundColor: 'var(--color-gray-2)', paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }}>
+                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                       {getContractorLabel()}
                     </Text>
-                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                       Policy Type
                     </Text>
-                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                       Days Left
                     </Text>
-                  </XStack>
-                  <YStack>
+                  </Row>
+                  <Stack>
                     {expiringPolicies.slice(0, 10).map((policy) => (
-                      <XStack
+                      <Row
                         key={policy.id}
-                        paddingHorizontal="$6"
-                        paddingVertical="$4"
-                        borderBottomWidth={1}
-                        borderColor="$gray6"
-                        hoverStyle={{ backgroundColor: '$gray2' }}
+                        style={{
+                          paddingLeft: 'var(--space-6)',
+                          paddingRight: 'var(--space-6)',
+                          paddingTop: 'var(--space-4)',
+                          paddingBottom: 'var(--space-4)',
+                          borderBottomWidth: 1,
+                          borderColor: 'var(--color-gray-6)',
+                        }}
                       >
-                        <Text flex={1} fontSize="$2" fontWeight="500" color="$gray12" whiteSpace="nowrap">
+                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', whiteSpace: 'nowrap' }}>
                           {policy.subcontractor_name}
                         </Text>
-                        <Text flex={1} fontSize="$2" color="$gray12" whiteSpace="nowrap">
+                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)', whiteSpace: 'nowrap' }}>
                           {policy.policy_type.replace(/_/g, ' ')}
                         </Text>
-                        <YStack flex={1} alignItems="flex-start">
-                          <XStack
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
-                            borderRadius={9999}
-                            backgroundColor={
-                              policy.days_remaining <= 7
-                                ? '$red2'
-                                : policy.days_remaining <= 14
-                                  ? '$yellow2'
-                                  : '$blue2'
-                            }
+                        <Stack style={{ flex: 1, alignItems: 'flex-start' }}>
+                          <Row
+                            style={{
+                              paddingLeft: 'var(--space-2)',
+                              paddingRight: 'var(--space-2)',
+                              paddingTop: 'var(--space-1)',
+                              paddingBottom: 'var(--space-1)',
+                              borderRadius: 9999,
+                              backgroundColor:
+                                policy.days_remaining <= 7
+                                  ? 'var(--color-red-2)'
+                                  : policy.days_remaining <= 14
+                                    ? 'var(--color-yellow-2)'
+                                    : 'var(--color-blue-2)',
+                            }}
                           >
                             <Text
-                              fontSize="$1"
-                              fontWeight="600"
-                              color={
-                                policy.days_remaining <= 7
-                                  ? '$red11'
-                                  : policy.days_remaining <= 14
-                                    ? '$yellow11'
-                                    : '$blue11'
-                              }
+                              style={{
+                                fontSize: 'var(--font-size-1)',
+                                fontWeight: 600,
+                                color:
+                                  policy.days_remaining <= 7
+                                    ? 'var(--color-red-11)'
+                                    : policy.days_remaining <= 14
+                                      ? 'var(--color-yellow-11)'
+                                      : 'var(--color-blue-11)',
+                              }}
                             >
                               {policy.days_remaining} days
                             </Text>
-                          </XStack>
-                        </YStack>
-                      </XStack>
+                          </Row>
+                        </Stack>
+                      </Row>
                     ))}
                     {expiringPolicies.length === 0 && (
-                      <YStack padding="$6" alignItems="center">
-                        <Text fontSize="$2" color="$gray11">
+                      <Stack style={{ padding: 'var(--space-6)', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>
                           No policies expiring in the next 30 days
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           </Card>
-        </XStack>
+        </Row>
 
         {/* Activity Feed */}
-        <Card overflow="hidden">
-          <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray6">
+        <Card style={{ overflow: 'hidden' }}>
+          <Stack style={{ paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', borderBottomWidth: 1, borderColor: 'var(--color-gray-6)' }}>
             <H3>Recent Activity</H3>
-          </YStack>
-          <YStack>
+          </Stack>
+          <Stack>
             {loading ? (
-              <YStack padding="$6">
-                <YStack gap="$4">
+              <Stack style={{ padding: 'var(--space-6)' }}>
+                <Stack style={{ gap: 'var(--space-4)' }}>
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <XStack key={i} alignItems="flex-start" gap="$3">
-                      <YStack width={32} height={32} backgroundColor="$gray4" borderRadius={9999} />
-                      <YStack flex={1} gap="$2">
-                        <YStack height={16} backgroundColor="$gray4" borderRadius="$2" width="75%" />
-                        <YStack height={12} backgroundColor="$gray4" borderRadius="$2" width="25%" />
-                      </YStack>
-                    </XStack>
+                    <Row key={i} style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                      <Stack style={{ width: 32, height: 32, backgroundColor: 'var(--color-gray-4)', borderRadius: 9999 }} />
+                      <Stack style={{ flex: 1, gap: 'var(--space-2)' }}>
+                        <Stack style={{ height: 16, backgroundColor: 'var(--color-gray-4)', borderRadius: 'var(--radius-2)', width: '75%' }} />
+                        <Stack style={{ height: 12, backgroundColor: 'var(--color-gray-4)', borderRadius: 'var(--radius-2)', width: '25%' }} />
+                      </Stack>
+                    </Row>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             ) : (
-              <YStack>
+              <Stack>
                 {activities.map((activity) => (
-                  <XStack
+                  <Row
                     key={activity.id}
-                    paddingHorizontal="$6"
-                    paddingVertical="$4"
-                    borderBottomWidth={1}
-                    borderColor="$gray6"
-                    hoverStyle={{ backgroundColor: '$gray2' }}
+                    style={{
+                      paddingLeft: 'var(--space-6)',
+                      paddingRight: 'var(--space-6)',
+                      paddingTop: 'var(--space-4)',
+                      paddingBottom: 'var(--space-4)',
+                      borderBottomWidth: 1,
+                      borderColor: 'var(--color-gray-6)',
+                    }}
                   >
-                    <XStack alignItems="flex-start" gap="$3" flex={1} minWidth={0}>
-                      <YStack
-                        flexShrink={0}
-                        width={8}
-                        height={8}
-                        marginTop="$2"
-                        backgroundColor="$blue9"
-                        borderRadius={9999}
+                    <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)', flex: 1, minWidth: 0 }}>
+                      <Stack
+                        style={{
+                          flexShrink: 0,
+                          width: 8,
+                          height: 8,
+                          marginTop: 'var(--space-2)',
+                          backgroundColor: 'var(--color-blue-9)',
+                          borderRadius: 9999,
+                        }}
                       />
-                      <YStack flex={1} minWidth={0}>
-                        <Text fontSize="$2" color="$gray12">{activity.description}</Text>
-                        <XStack marginTop="$1" alignItems="center" gap="$2">
-                          {activity.subcontractor_name && <Text fontSize="$1" color="$gray11">{activity.subcontractor_name}</Text>}
-                          {activity.subcontractor_name && <Text fontSize="$1" color="$gray11">•</Text>}
-                          <Text fontSize="$1" color="$gray11">{new Date(activity.timestamp).toLocaleString()}</Text>
-                        </XStack>
-                      </YStack>
-                    </XStack>
-                  </XStack>
+                      <Stack style={{ flex: 1, minWidth: 0 }}>
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)' }}>{activity.description}</Text>
+                        <Row style={{ marginTop: 'var(--space-1)', alignItems: 'center', gap: 'var(--space-2)' }}>
+                          {activity.subcontractor_name && <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)' }}>{activity.subcontractor_name}</Text>}
+                          {activity.subcontractor_name && <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)' }}>-</Text>}
+                          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)' }}>{new Date(activity.timestamp).toLocaleString()}</Text>
+                        </Row>
+                      </Stack>
+                    </Row>
+                  </Row>
                 ))}
                 {activities.length === 0 && (
-                  <YStack padding="$8" alignItems="center">
-                    <Text fontSize="$2" color="$gray11">
+                  <Stack style={{ padding: 'var(--space-8)', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>
                       No recent activity
                     </Text>
-                  </YStack>
+                  </Stack>
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 }

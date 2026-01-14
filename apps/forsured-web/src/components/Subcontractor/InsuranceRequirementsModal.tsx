@@ -1,5 +1,9 @@
+/**
+ * InsuranceRequirementsModal - Insurance requirements modal using Beyond UI
+ * Migrated from Tamagui to Beyond UI
+ */
 import { Shield, FileText, Users, AlertCircle } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import Modal from '../Common/Modal';
 import { Project, Task } from '../../types';
 import { useProjects } from '../../hooks/useProjects';
@@ -111,198 +115,232 @@ export default function InsuranceRequirementsModal({
       title="Insurance Requirements"
       size="large"
     >
-      <YStack gap="$6">
+      <Stack gap={24}>
         {/* Project Header */}
-        <Card backgroundColor="$blue3" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
-          <Text fontWeight="600" color="$color12" mb="$1">
+        <Card
+          variant="filled"
+          style={{
+            backgroundColor: 'var(--color-blue-3)',
+            borderRadius: 8,
+            padding: 16,
+            border: '1px solid var(--color-blue-6)',
+          }}
+        >
+          <Text weight="semibold" style={{ marginBottom: 4 }}>
             {project.name}
           </Text>
-          <Text fontSize="$2" color="$color11">
+          <Text size="sm" color="secondary">
             {task.gc_company_name || 'General Contractor'}
           </Text>
           {project.location && (
-            <Text fontSize="$1" color="$color11" mt="$1">
+            <Text size="xs" color="secondary" style={{ marginTop: 4 }}>
               {project.location}
             </Text>
           )}
         </Card>
 
         {/* Coverage Requirements */}
-        <YStack>
-          <XStack alignItems="center" gap="$2" mb="$4">
-            <Shield color="$blue10" size={20} />
-            <Text fontSize="$6" fontWeight="600" color="$color12">
+        <Stack>
+          <Row align="center" gap={8} style={{ marginBottom: 16 }}>
+            <Shield color="var(--color-blue-10)" size={20} />
+            <Text size="lg" weight="semibold">
               Required Coverage Limits
             </Text>
-          </XStack>
-          <YStack gap="$3">
+          </Row>
+          <Stack gap={12}>
             {coverageRequirements.map((req, index) => (
               <Card
                 key={index}
-                backgroundColor="$gray3"
-                borderRadius="$4"
-                padding="$3"
-                borderWidth={1}
-                borderColor="$borderColor"
+                variant="filled"
+                style={{
+                  backgroundColor: 'var(--color-gray-3)',
+                  borderRadius: 8,
+                  padding: 12,
+                  border: '1px solid var(--color-border)',
+                }}
               >
-                <XStack alignItems="flex-start" justifyContent="space-between">
-                  <YStack flex={1}>
-                    <Text fontWeight="500" color="$color12">
+                <Row align="flex-start" justify="space-between">
+                  <Stack flex={1}>
+                    <Text weight="medium">
                       {req.label}
                     </Text>
-                    <Text fontSize="$2" color="$color11">
+                    <Text size="sm" color="secondary">
                       {req.description}
                     </Text>
-                  </YStack>
-                  <YStack alignItems="flex-end">
-                    <Text fontWeight="600" color="$blue10">
+                  </Stack>
+                  <Stack align="flex-end">
+                    <Text weight="semibold" style={{ color: 'var(--color-blue-10)' }}>
                       {formatCurrency(req.limit)}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               </Card>
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         {/* Required Endorsements */}
-        <YStack>
-          <XStack alignItems="center" gap="$2" mb="$4">
-            <FileText color="$blue10" size={20} />
-            <Text fontSize="$6" fontWeight="600" color="$color12">
+        <Stack>
+          <Row align="center" gap={8} style={{ marginBottom: 16 }}>
+            <FileText color="var(--color-blue-10)" size={20} />
+            <Text size="lg" weight="semibold">
               Required Endorsements
             </Text>
-          </XStack>
-          <YStack gap="$3">
+          </Row>
+          <Stack gap={12}>
             {requiredEndorsements.map((endorsement, index) => (
               <Card
                 key={index}
-                padding="$3"
-                backgroundColor="$gray3"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$borderColor"
+                variant="filled"
+                style={{
+                  padding: 12,
+                  backgroundColor: 'var(--color-gray-3)',
+                  borderRadius: 8,
+                  border: '1px solid var(--color-border)',
+                }}
               >
-                <Text fontWeight="500" color="$color12" mb="$1">
+                <Text weight="medium" style={{ marginBottom: 4 }}>
                   {endorsement.form} - {endorsement.name}
                 </Text>
-                <Text fontSize="$2" color="$color11">
+                <Text size="sm" color="secondary">
                   {endorsement.description}
                 </Text>
               </Card>
             ))}
             {requiredEndorsements.length === 0 && (
               <Card
-                padding="$3"
-                backgroundColor="$gray3"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$borderColor"
+                variant="filled"
+                style={{
+                  padding: 12,
+                  backgroundColor: 'var(--color-gray-3)',
+                  borderRadius: 8,
+                  border: '1px solid var(--color-border)',
+                }}
               >
-                <Text fontSize="$2" color="$color11">
+                <Text size="sm" color="secondary">
                   No specific endorsements required beyond standard Additional
                   Insured coverage.
                 </Text>
               </Card>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         {/* Additional Insureds */}
         {project.additional_insureds &&
           project.additional_insureds.length > 0 && (
-            <YStack>
-              <XStack alignItems="center" gap="$2" mb="$4">
-                <Users color="$blue10" size={20} />
-                <Text fontSize="$6" fontWeight="600" color="$color12">
+            <Stack>
+              <Row align="center" gap={8} style={{ marginBottom: 16 }}>
+                <Users color="var(--color-blue-10)" size={20} />
+                <Text size="lg" weight="semibold">
                   Additional Insureds
                 </Text>
-              </XStack>
-              <YStack gap="$2">
+              </Row>
+              <Stack gap={8}>
                 {project.additional_insureds.map((insured, index) => (
                   <Card
                     key={index}
-                    padding="$3"
-                    backgroundColor="$gray3"
-                    borderRadius="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
+                    variant="filled"
+                    style={{
+                      padding: 12,
+                      backgroundColor: 'var(--color-gray-3)',
+                      borderRadius: 8,
+                      border: '1px solid var(--color-border)',
+                    }}
                   >
-                    <Text color="$color12">{insured}</Text>
+                    <Text>{insured}</Text>
                   </Card>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
 
         {/* Certificate Holder */}
         {project.certificate_holder && (
-          <YStack>
-            <XStack alignItems="center" gap="$2" mb="$4">
-              <FileText color="$blue10" size={20} />
-              <Text fontSize="$6" fontWeight="600" color="$color12">
+          <Stack>
+            <Row align="center" gap={8} style={{ marginBottom: 16 }}>
+              <FileText color="var(--color-blue-10)" size={20} />
+              <Text size="lg" weight="semibold">
                 Certificate Holder
               </Text>
-            </XStack>
+            </Row>
             <Card
-              padding="$3"
-              backgroundColor="$gray3"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
+              variant="filled"
+              style={{
+                padding: 12,
+                backgroundColor: 'var(--color-gray-3)',
+                borderRadius: 8,
+                border: '1px solid var(--color-border)',
+              }}
             >
-              <Text color="$color12">
+              <Text>
                 {project.certificate_holder}
               </Text>
             </Card>
-          </YStack>
+          </Stack>
         )}
 
         {/* Special Provisions */}
         {project.special_provisions && (
-          <YStack>
-            <XStack alignItems="center" gap="$2" mb="$4">
-              <AlertCircle color="$orange10" size={20} />
-              <Text fontSize="$6" fontWeight="600" color="$color12">
+          <Stack>
+            <Row align="center" gap={8} style={{ marginBottom: 16 }}>
+              <AlertCircle color="var(--color-orange-10)" size={20} />
+              <Text size="lg" weight="semibold">
                 Special Provisions
               </Text>
-            </XStack>
+            </Row>
             <Card
-              padding="$4"
-              backgroundColor="$orange3"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$orange6"
+              variant="filled"
+              style={{
+                padding: 16,
+                backgroundColor: 'var(--color-orange-3)',
+                borderRadius: 8,
+                border: '1px solid var(--color-orange-6)',
+              }}
             >
-              <Text fontSize="$2" color="$color12" whiteSpace="pre-wrap">
+              <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
                 {project.special_provisions}
               </Text>
             </Card>
-          </YStack>
+          </Stack>
         )}
 
         {/* Additional Requirements */}
-        <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
-          <YStack gap="$2">
+        <Stack style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
+          <Stack gap={8}>
             {project.waiver_of_subrogation_required && (
-              <XStack alignItems="center" gap="$2">
-                <YStack width={8} height={8} backgroundColor="$blue9" borderRadius={9999} />
-                <Text fontSize="$2" color="$color11">
+              <Row align="center" gap={8}>
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    backgroundColor: 'var(--color-blue-9)',
+                    borderRadius: '50%',
+                  }}
+                />
+                <Text size="sm" color="secondary">
                   Waiver of Subrogation required
                 </Text>
-              </XStack>
+              </Row>
             )}
             {project.primary_non_contributory_required && (
-              <XStack alignItems="center" gap="$2">
-                <YStack width={8} height={8} backgroundColor="$blue9" borderRadius={9999} />
-                <Text fontSize="$2" color="$color11">
+              <Row align="center" gap={8}>
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    backgroundColor: 'var(--color-blue-9)',
+                    borderRadius: '50%',
+                  }}
+                />
+                <Text size="sm" color="secondary">
                   Primary and Non-Contributory endorsement required
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
-        </YStack>
-      </YStack>
+          </Stack>
+        </Stack>
+      </Stack>
     </Modal>
   );
 }

@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react'
-import { YStack, XStack, Text, Button, H1, H2, H3, Card } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Heading, Card, colors, spacing } from '@unicornlove/beyond-ui'
 import { useUser } from '../../contexts/UserContext'
 import { RequirementsList } from '../../components/Admin/Compliance/RequirementsList'
 import { RequirementEditor } from '../../components/Admin/Compliance/RequirementEditor'
@@ -104,93 +104,79 @@ export function ComplianceRequirements() {
   // No organization check
   if (!organizationId) {
     return (
-      <YStack padding="$8">
-        <XStack alignItems="center" gap="$3" padding="$4" backgroundColor="$yellow4" borderWidth={1} borderColor="$yellow8" borderRadius="$4">
-          <AlertCircle size={20} color="$yellow11" />
-          <YStack>
-            <Text fontWeight="600" color="$yellow11">Organization Required</Text>
-            <Text fontSize="$3" color="$yellow11">
+      <Stack style={{ padding: spacing[32] }}>
+        <Row alignItems="center" gap={spacing[12]} style={{ padding: spacing[16], backgroundColor: colors.warning[200], borderWidth: 1, borderColor: colors.warning[400], borderRadius: spacing[16] }}>
+          <AlertCircle size={20} color={colors.warning[600]} />
+          <Stack>
+            <Text weight="semibold" color={colors.warning[600]}>Organization Required</Text>
+            <Text size="sm" color={colors.warning[600]}>
               Please select an organization to manage compliance requirements.
             </Text>
-          </YStack>
-        </XStack>
-      </YStack>
+          </Stack>
+        </Row>
+      </Stack>
     )
   }
 
   return (
-    <YStack minHeight="100vh" backgroundColor="$backgroundHover">
+    <Stack style={{ minHeight: '100vh', backgroundColor: colors.bg.light.subtle }}>
       {/* Header */}
-      <XStack backgroundColor="$background" borderBottomWidth={1} borderColor="$borderColor">
-        <YStack maxWidth={1280} width="100%" marginHorizontal="auto" paddingHorizontal="$6" paddingVertical="$4">
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <H1 fontSize="$8" fontWeight="700" color="$color12">Compliance Requirements</H1>
-              <Text fontSize="$3" color="$color11" marginTop="$1">
+      <Row style={{ backgroundColor: colors.bg.light.default, borderBottomWidth: 1, borderBottomColor: colors.border.light.default }}>
+        <Stack style={{ maxWidth: 1280, width: '100%', marginHorizontal: 'auto', paddingHorizontal: spacing[24], paddingVertical: spacing[16] }}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Heading level={1} weight="bold" style={{ fontSize: 32, color: colors.text.light.primary }}>Compliance Requirements</Heading>
+              <Text size="sm" color={colors.text.light.secondary} style={{ marginTop: spacing[4] }}>
                 Manage insurance coverage requirements and dependencies
               </Text>
-            </YStack>
-            <XStack alignItems="center" gap="$2">
+            </Stack>
+            <Row alignItems="center" gap={spacing[8]}>
               <Button
                 onPress={handleBulkImport}
-                icon={<Upload size={16} />}
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                fontSize="$3"
-                color="$color12"
-                backgroundColor="transparent"
-                hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                borderRadius="$4"
+                iconStart={Upload}
+                variant="text"
+                color="gray"
+                size="sm"
               >
                 Import
               </Button>
               <Button
                 onPress={handleBulkExport}
-                icon={<Download size={16} />}
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                fontSize="$3"
-                color="$color12"
-                backgroundColor="transparent"
-                hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                borderRadius="$4"
+                iconStart={Download}
+                variant="text"
+                color="gray"
+                size="sm"
               >
                 Export
               </Button>
-            </XStack>
-          </XStack>
+            </Row>
+          </Row>
 
           {/* Tabs */}
-          <XStack alignItems="center" gap="$1" marginTop="$4" marginBottom={-1}>
+          <Row alignItems="center" gap={spacing[4]} style={{ marginTop: spacing[16], marginBottom: -1 }}>
             {TABS.map((tab) => (
               <Button
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                icon={tab.icon}
-                paddingHorizontal="$4"
-                paddingVertical="$2.5"
-                fontSize="$3"
-                fontWeight="600"
-                backgroundColor="transparent"
-                borderBottomWidth={2}
-                borderBottomColor={activeTab === tab.id ? '$blue10' : 'transparent'}
-                color={activeTab === tab.id ? '$blue11' : '$color11'}
-                hoverStyle={{
-                  backgroundColor: 'transparent',
-                  color: activeTab === tab.id ? '$blue11' : '$color12',
-                  borderBottomColor: activeTab === tab.id ? '$blue10' : '$borderColor',
+                iconStart={tab.icon as any}
+                variant="text"
+                color={activeTab === tab.id ? 'primary' : 'gray'}
+                size="sm"
+                style={{
+                  borderBottomWidth: 2,
+                  borderBottomColor: activeTab === tab.id ? colors.primary[500] : 'transparent',
+                  borderRadius: 0,
                 }}
-                borderRadius={0}
               >
                 {tab.label}
               </Button>
             ))}
-          </XStack>
-        </YStack>
-      </XStack>
+          </Row>
+        </Stack>
+      </Row>
 
       {/* Content */}
-      <YStack maxWidth={1280} width="100%" marginHorizontal="auto" paddingHorizontal="$6" paddingVertical="$6">
+      <Stack style={{ maxWidth: 1280, width: '100%', marginHorizontal: 'auto', paddingHorizontal: spacing[24], paddingVertical: spacing[24] }}>
         {activeTab === 'list' && (
           <RequirementsList
             organizationId={organizationId}
@@ -218,51 +204,53 @@ export function ComplianceRequirements() {
         )}
 
         {activeTab === 'bulk' && (
-          <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} padding="$6">
-            <H2 fontSize="$6" fontWeight="600" marginBottom="$4">Bulk Operations</H2>
-            <XStack flexWrap="wrap" gap="$6">
+          <Card style={{ borderWidth: 1, padding: spacing[24] }}>
+            <Heading level={2} weight="semibold" style={{ fontSize: 20, marginBottom: spacing[16] }}>Bulk Operations</Heading>
+            <Row style={{ flexWrap: 'wrap', gap: spacing[24] }}>
               <Card
-                padding="$6"
-                borderWidth={1}
-                borderRadius="$4"
-                backgroundColor="$background"
-                hoverStyle={{ borderColor: "$blue10" }}
-                cursor="pointer"
+                style={{
+                  padding: spacing[24],
+                  borderWidth: 1,
+                  borderRadius: spacing[16],
+                  backgroundColor: colors.bg.light.default,
+                  cursor: 'pointer',
+                  flex: 1,
+                  minWidth: 300,
+                }}
                 onPress={handleBulkImport}
-                flex={1}
-                minWidth={300}
               >
-                <YStack alignItems="flex-start" gap="$3">
-                  <Upload size={32} color="$blue10" />
-                  <H3 fontWeight="600">Import Requirements</H3>
-                  <Text fontSize="$3" color="$color11">
+                <Stack alignItems="flex-start" gap={spacing[12]}>
+                  <Upload size={32} color={colors.primary[500]} />
+                  <Heading level={3} weight="semibold">Import Requirements</Heading>
+                  <Text size="sm" color={colors.text.light.secondary}>
                     Upload CSV or JSON file to bulk import compliance requirements
                   </Text>
-                </YStack>
+                </Stack>
               </Card>
               <Card
-                padding="$6"
-                borderWidth={1}
-                borderRadius="$4"
-                backgroundColor="$background"
-                hoverStyle={{ borderColor: "$green10" }}
-                cursor="pointer"
+                style={{
+                  padding: spacing[24],
+                  borderWidth: 1,
+                  borderRadius: spacing[16],
+                  backgroundColor: colors.bg.light.default,
+                  cursor: 'pointer',
+                  flex: 1,
+                  minWidth: 300,
+                }}
                 onPress={handleBulkExport}
-                flex={1}
-                minWidth={300}
               >
-                <YStack alignItems="flex-start" gap="$3">
-                  <Download size={32} color="$green10" />
-                  <H3 fontWeight="600">Export Requirements</H3>
-                  <Text fontSize="$3" color="$color11">
+                <Stack alignItems="flex-start" gap={spacing[12]}>
+                  <Download size={32} color={colors.success[500]} />
+                  <Heading level={3} weight="semibold">Export Requirements</Heading>
+                  <Text size="sm" color={colors.text.light.secondary}>
                     Download requirements as CSV, JSON, or Excel file
                   </Text>
-                </YStack>
+                </Stack>
               </Card>
-            </XStack>
+            </Row>
           </Card>
         )}
-      </YStack>
+      </Stack>
 
       {/* Modals */}
       <RequirementEditor
@@ -278,7 +266,7 @@ export function ComplianceRequirements() {
         mode={bulkMode}
         onClose={() => setIsBulkModalOpen(false)}
       />
-    </YStack>
+    </Stack>
   )
 }
 

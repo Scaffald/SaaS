@@ -9,8 +9,9 @@
 
 'use client';
 
+import React from 'react';
 import { LogIn, LogOut, Edit, Plus, Trash2, Info } from 'lucide-react';
-import { YStack, XStack, Text, SizableText } from '@unicornlove/ui';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 
 export interface ActivityEntry {
   id: string;
@@ -62,20 +63,20 @@ function getActivityIcon(action: string): React.ReactNode {
 
   switch (action.toLowerCase()) {
     case 'login':
-      return <LogIn size={iconSize} color="var(--blue10)" />;
+      return <LogIn size={iconSize} color="var(--color-blue-10)" />;
     case 'logout':
-      return <LogOut size={iconSize} color="var(--blue10)" />;
+      return <LogOut size={iconSize} color="var(--color-blue-10)" />;
     case 'update':
     case 'edit':
-      return <Edit size={iconSize} color="var(--yellow10)" />;
+      return <Edit size={iconSize} color="var(--color-yellow-10)" />;
     case 'create':
     case 'add':
-      return <Plus size={iconSize} color="var(--green10)" />;
+      return <Plus size={iconSize} color="var(--color-green-10)" />;
     case 'delete':
     case 'remove':
-      return <Trash2 size={iconSize} color="var(--red10)" />;
+      return <Trash2 size={iconSize} color="var(--color-red-10)" />;
     default:
-      return <Info size={iconSize} color="var(--color10)" />;
+      return <Info size={iconSize} color="var(--color-gray-10)" />;
   }
 }
 
@@ -87,87 +88,94 @@ export function ActivityLog({
   // Loading state
   if (loading) {
     return (
-      <YStack gap="$3">
-        <SizableText fontSize="$3" fontWeight="500" color="$color11">
+      <Stack style={{ gap: 12 }}>
+        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-11)' }}>
           Recent Activity
-        </SizableText>
-        <YStack gap="$2">
+        </Text>
+        <Stack style={{ gap: 8 }}>
           {[1, 2, 3, 4, 5].map((i) => (
-            <XStack key={i} alignItems="flex-start" gap="$3">
-              <YStack
-                width={32}
-                height={32}
-                borderRadius={9999}
-                backgroundColor="$color3"
+            <Row key={i} style={{ alignItems: 'flex-start', gap: 12 }}>
+              <div
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-gray-3)',
+                }}
               />
-              <YStack flex={1} gap="$1">
-                <YStack height={16} backgroundColor="$color3" borderRadius="$2" width="75%" />
-                <YStack height={12} backgroundColor="$color3" borderRadius="$2" width="25%" />
-              </YStack>
-            </XStack>
+              <Stack style={{ flex: 1, gap: 4 }}>
+                <div style={{ height: 16, backgroundColor: 'var(--color-gray-3)', borderRadius: 4, width: '75%' }} />
+                <div style={{ height: 12, backgroundColor: 'var(--color-gray-3)', borderRadius: 4, width: '25%' }} />
+              </Stack>
+            </Row>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   // Empty state
   if (activities.length === 0) {
     return (
-      <YStack gap="$3">
-        <SizableText fontSize="$3" fontWeight="500" color="$color11">
+      <Stack style={{ gap: 12 }}>
+        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-11)' }}>
           Recent Activity
-        </SizableText>
-        <YStack alignItems="center" paddingVertical="$6">
-          <SizableText fontSize="$3" color="$color10" style={{ textAlign: 'center' }}>
+        </Text>
+        <Stack style={{ alignItems: 'center', paddingTop: 24, paddingBottom: 24 }}>
+          <Text style={{ fontSize: 14, color: 'var(--color-gray-10)', textAlign: 'center' }}>
             {emptyMessage}
-          </SizableText>
-        </YStack>
-      </YStack>
+          </Text>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$3">
-      <SizableText fontSize="$3" fontWeight="500" color="$color11">
+    <Stack style={{ gap: 12 }}>
+      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-11)' }}>
         Recent Activity
-      </SizableText>
-      <YStack gap={0} maxHeight={256} overflow="scroll">
+      </Text>
+      <Stack style={{ gap: 0, maxHeight: 256, overflow: 'auto' }}>
         {activities.map((activity, index) => (
-          <XStack
+          <Row
             key={activity.id}
-            alignItems="flex-start"
-            gap="$3"
-            paddingVertical="$2"
-            borderBottomWidth={index !== activities.length - 1 ? 1 : 0}
-            borderColor="$borderColor"
+            style={{
+              alignItems: 'flex-start',
+              gap: 12,
+              paddingTop: 8,
+              paddingBottom: 8,
+              borderBottom: index !== activities.length - 1 ? '1px solid var(--color-border)' : 'none',
+            }}
           >
             {/* Icon */}
-            <YStack
-              flexShrink={0}
-              width={32}
-              height={32}
-              borderRadius={9999}
-              backgroundColor="$color2"
-              alignItems="center"
-              justifyContent="center"
+            <div
+              style={{
+                flexShrink: 0,
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                backgroundColor: 'var(--color-gray-2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
               {getActivityIcon(activity.action)}
-            </YStack>
+            </div>
 
             {/* Content */}
-            <YStack flex={1} minWidth={0}>
-              <SizableText fontSize="$3" color="$color12">
+            <Stack style={{ flex: 1, minWidth: 0 }}>
+              <Text style={{ fontSize: 14, color: 'var(--color-gray-12)' }}>
                 {activity.description}
-              </SizableText>
-              <SizableText fontSize="$1" color="$color10">
+              </Text>
+              <Text style={{ fontSize: 12, color: 'var(--color-gray-10)' }}>
                 {formatTimestamp(activity.timestamp)}
-              </SizableText>
-            </YStack>
-          </XStack>
+              </Text>
+            </Stack>
+          </Row>
         ))}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 }
 

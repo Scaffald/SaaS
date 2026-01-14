@@ -23,8 +23,9 @@ import {
   Plus,
   Minus,
   Edit3,
+  Loader2,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H3, H4, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
 import { trpc } from '../../lib/trpc';
 
 // =============================================================================
@@ -131,49 +132,54 @@ function VersionListItem({
 
   return (
     <Card
-      padding="$4"
-      borderColor={isSelected ? '$blue9' : '$borderColor'}
-      backgroundColor={isSelected ? '$blue2' : '$background'}
-      borderRadius="$4"
-      hoverStyle={{ borderColor: '$blue7' }}
+      style={{
+        padding: 'var(--space-4)',
+        borderColor: isSelected ? 'var(--color-blue-9)' : 'var(--color-border)',
+        backgroundColor: isSelected ? 'var(--color-blue-2)' : 'var(--color-background)',
+        borderRadius: 'var(--radius-4)',
+      }}
     >
-      <XStack alignItems="flex-start" justifyContent="space-between">
-        <YStack flex={1}>
-          <XStack alignItems="center" gap="$2">
-            <Text fontWeight="500" color="$color12">
+      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <Stack style={{ flex: 1 }}>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
               Version {version.version}
             </Text>
             {version.version === 1 && (
               <Text
-                paddingHorizontal="$1.5"
-                paddingVertical="$1"
-                fontSize="$2"
-                backgroundColor="$green3"
-                color="$green10"
-                borderRadius="$2"
+                style={{
+                  paddingLeft: 6,
+                  paddingRight: 6,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  fontSize: 'var(--font-size-2)',
+                  backgroundColor: 'var(--color-green-3)',
+                  color: 'var(--color-green-10)',
+                  borderRadius: 'var(--radius-2)',
+                }}
               >
                 Initial
               </Text>
             )}
-          </XStack>
+          </Row>
           {version.change_summary && (
-            <Text fontSize="$3" color="$color11" mt="$1">{version.change_summary}</Text>
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginTop: 4 }}>{version.change_summary}</Text>
           )}
-          <XStack alignItems="center" gap="$4" mt="$2">
-            <XStack alignItems="center" gap="$1">
+          <Row style={{ alignItems: 'center', gap: 'var(--space-4)', marginTop: 8 }}>
+            <Row style={{ alignItems: 'center', gap: 4 }}>
               <Clock size={12} />
-              <Text fontSize="$2" color="$color10">{formatDate(version.changed_at)}</Text>
-            </XStack>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>{formatDate(version.changed_at)}</Text>
+            </Row>
             {version.changed_by && (
-              <XStack alignItems="center" gap="$1">
+              <Row style={{ alignItems: 'center', gap: 4 }}>
                 <User size={12} />
-                <Text fontSize="$2" color="$color10">{version.changed_by}</Text>
-              </XStack>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>{version.changed_by}</Text>
+              </Row>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
-        <XStack alignItems="center" gap="$2">
+        <Row style={{ alignItems: 'center', gap: 8 }}>
           {/* Compare selection buttons */}
           {selectionMode && (
             <>
@@ -208,8 +214,8 @@ function VersionListItem({
               <RotateCcw size={14} />
             </Button>
           )}
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
     </Card>
   );
 }
@@ -251,49 +257,49 @@ function DiffView({ comparison }: DiffViewProps) {
   }, [comparison.changes]);
 
   return (
-    <Card borderColor="$borderColor" borderRadius="$4" overflow="hidden">
+    <Card style={{ borderColor: 'var(--color-border)', borderRadius: 'var(--radius-4)', overflow: 'hidden' }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between" padding="$4" backgroundColor="$gray2" borderBottomWidth={1} borderColor="$borderColor">
-        <XStack alignItems="center" gap="$4">
-          <XStack alignItems="center" gap="$2">
-            <GitCompare size={18} color="var(--color10)" />
-            <Text fontWeight="500" color="$color12">
-              Version {comparison.from_version.version} → Version{' '}
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-4)', backgroundColor: 'var(--color-gray-2)', borderBottomWidth: 1, borderBottomStyle: 'solid', borderColor: 'var(--color-border)' }}>
+        <Row style={{ alignItems: 'center', gap: 'var(--space-4)' }}>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
+            <GitCompare size={18} style={{ color: 'var(--color-10)' }} />
+            <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
+              Version {comparison.from_version.version} to Version{' '}
               {comparison.to_version.version}
             </Text>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
-        <XStack alignItems="center" gap="$3">
+        <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
           {changeStats.added > 0 && (
-            <XStack alignItems="center" gap="$1">
-              <Plus size={12} color="var(--green9)" />
-              <Text fontSize="$2" color="$green9">
+            <Row style={{ alignItems: 'center', gap: 4 }}>
+              <Plus size={12} style={{ color: 'var(--color-green-9)' }} />
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-9)' }}>
                 {changeStats.added} added
               </Text>
-            </XStack>
+            </Row>
           )}
           {changeStats.removed > 0 && (
-            <XStack alignItems="center" gap="$1">
-              <Minus size={12} color="var(--red9)" />
-              <Text fontSize="$2" color="$red9">
+            <Row style={{ alignItems: 'center', gap: 4 }}>
+              <Minus size={12} style={{ color: 'var(--color-red-9)' }} />
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-red-9)' }}>
                 {changeStats.removed} removed
               </Text>
-            </XStack>
+            </Row>
           )}
           {changeStats.modified > 0 && (
-            <XStack alignItems="center" gap="$1">
-              <Edit3 size={12} color="var(--yellow9)" />
-              <Text fontSize="$2" color="$yellow9">
+            <Row style={{ alignItems: 'center', gap: 4 }}>
+              <Edit3 size={12} style={{ color: 'var(--color-yellow-9)' }} />
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow-9)' }}>
                 {changeStats.modified} modified
               </Text>
-            </XStack>
+            </Row>
           )}
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Changes list */}
-      <YStack>
+      <Stack>
         {sortedChanges.map((change, idx) => {
           const isExpanded = expandedFields.has(change.field);
           const hasLongValue =
@@ -301,56 +307,62 @@ function DiffView({ comparison }: DiffViewProps) {
             formatValue(change.newValue).length > 50;
 
           return (
-            <YStack key={change.field} backgroundColor="$background" borderTopWidth={idx > 0 ? 1 : 0} borderColor="$borderColor">
+            <Stack key={change.field} style={{ backgroundColor: 'var(--color-background)', borderTopWidth: idx > 0 ? 1 : 0, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
               {/* Field header */}
-              <Button
-                unstyled
-                width="100%"
-                flexDirection="row"
-                alignItems="center"
-                justifyContent="space-between"
-                padding="$3"
-                hoverStyle={{ backgroundColor: '$gray2' }}
-                onPress={() => toggleField(change.field)}
+              <button
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: 'var(--space-3)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onClick={() => toggleField(change.field)}
               >
-                <XStack alignItems="center" gap="$3">
+                <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
                   {/* Change type icon */}
                   {change.type === 'added' && (
-                    <Plus size={16} color="var(--green9)" />
+                    <Plus size={16} style={{ color: 'var(--color-green-9)' }} />
                   )}
                   {change.type === 'removed' && (
-                    <Minus size={16} color="var(--red9)" />
+                    <Minus size={16} style={{ color: 'var(--color-red-9)' }} />
                   )}
                   {change.type === 'modified' && (
-                    <Edit3 size={16} color="var(--yellow9)" />
+                    <Edit3 size={16} style={{ color: 'var(--color-yellow-9)' }} />
                   )}
                   {change.type === 'unchanged' && (
-                    <Text width={16} height={16} color="$color10">—</Text>
+                    <Text style={{ width: 16, height: 16, color: 'var(--color-10)' }}>-</Text>
                   )}
 
                   <Text
-                    fontWeight="500"
-                    color={change.type === 'unchanged' ? '$color10' : '$color12'}
+                    style={{
+                      fontWeight: 500,
+                      color: change.type === 'unchanged' ? 'var(--color-10)' : 'var(--color-12)',
+                    }}
                   >
                     {formatFieldName(change.field)}
                   </Text>
-                </XStack>
+                </Row>
 
                 {(hasLongValue || change.type !== 'unchanged') && (
                   isExpanded ? (
-                    <ChevronUp size={16} color="var(--color10)" />
+                    <ChevronUp size={16} style={{ color: 'var(--color-10)' }} />
                   ) : (
-                    <ChevronDown size={16} color="var(--color10)" />
+                    <ChevronDown size={16} style={{ color: 'var(--color-10)' }} />
                   )
                 )}
-              </Button>
+              </button>
 
               {/* Expanded diff content */}
               {isExpanded && change.type !== 'unchanged' && (
-                <XStack borderTopWidth={1} borderColor="$borderColor">
+                <Row style={{ borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
                   {/* Old value */}
-                  <YStack flex={1} padding="$3" backgroundColor="rgba(239, 68, 68, 0.1)" borderRightWidth={1} borderColor="$borderColor">
-                    <Text fontSize="$2" fontWeight="500" color="$red10" mb="$2">
+                  <Stack style={{ flex: 1, padding: 'var(--space-3)', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRightWidth: 1, borderRightStyle: 'solid', borderColor: 'var(--color-border)' }}>
+                    <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-red-10)', marginBottom: 8 }}>
                       Version {comparison.from_version.version}
                     </Text>
                     <pre style={{
@@ -364,11 +376,11 @@ function DiffView({ comparison }: DiffViewProps) {
                         ? '(not present)'
                         : formatValue(change.oldValue)}
                     </pre>
-                  </YStack>
+                  </Stack>
 
                   {/* New value */}
-                  <YStack flex={1} padding="$3" backgroundColor="rgba(16, 185, 129, 0.1)">
-                    <Text fontSize="$2" fontWeight="500" color="$green10" mb="$2">
+                  <Stack style={{ flex: 1, padding: 'var(--space-3)', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
+                    <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-green-10)', marginBottom: 8 }}>
                       Version {comparison.to_version.version}
                     </Text>
                     <pre style={{
@@ -382,19 +394,19 @@ function DiffView({ comparison }: DiffViewProps) {
                         ? '(removed)'
                         : formatValue(change.newValue)}
                     </pre>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               )}
-            </YStack>
+            </Stack>
           );
         })}
-      </YStack>
+      </Stack>
 
       {/* No changes message */}
       {sortedChanges.every((c) => c.type === 'unchanged') && (
-        <YStack padding="$8" alignItems="center">
-          <Text color="$color11">No differences between these versions</Text>
-        </YStack>
+        <Stack style={{ padding: 'var(--space-8)', alignItems: 'center' }}>
+          <Text style={{ color: 'var(--color-11)' }}>No differences between these versions</Text>
+        </Stack>
       )}
     </Card>
   );
@@ -495,28 +507,31 @@ export function VersionHistoryViewer({
   // Loading state
   if (isLoadingHistory) {
     return (
-      <YStack alignItems="center" justifyContent="center" height={256}>
-        <Spinner size="large" color="$blue9" />
-      </YStack>
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Loader2 className="animate-spin" style={{ width: 32, height: 32, color: 'var(--color-blue-9)' }} />
+      </Stack>
     );
   }
 
   // Error state
   if (historyError) {
     return (
-      <YStack
-        alignItems="center"
-        justifyContent="center"
-        height={256}
-        backgroundColor="$red2"
-        borderRadius="$4"
-        borderColor="$red5"
-        borderWidth={1}
+      <Stack
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 256,
+          backgroundColor: 'var(--color-red-2)',
+          borderRadius: 'var(--radius-4)',
+          borderColor: 'var(--color-red-5)',
+          borderWidth: 1,
+          borderStyle: 'solid',
+        }}
       >
-        <AlertCircle color="var(--red9)" mb="$2" size={32} />
-        <Text color="$red10" fontWeight="500">Failed to load version history</Text>
-        <Text color="$red9" fontSize="$3" mt="$1">{historyError.message}</Text>
-      </YStack>
+        <AlertCircle style={{ color: 'var(--color-red-9)', marginBottom: 8 }} size={32} />
+        <Text style={{ color: 'var(--color-red-10)', fontWeight: 500 }}>Failed to load version history</Text>
+        <Text style={{ color: 'var(--color-red-9)', fontSize: 'var(--font-size-3)', marginTop: 4 }}>{historyError.message}</Text>
+      </Stack>
     );
   }
 
@@ -524,34 +539,36 @@ export function VersionHistoryViewer({
   const pagination = historyData?.pagination;
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap="$2">
-          <History size={20} color="var(--color10)" />
-          <H3 fontWeight="500" color="$color12">Version History</H3>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Row style={{ alignItems: 'center', gap: 8 }}>
+          <History size={20} style={{ color: 'var(--color-10)' }} />
+          <h3 style={{ fontWeight: 500, color: 'var(--color-12)', margin: 0 }}>Version History</h3>
           {pagination && (
-            <Text fontSize="$3" color="$color10">
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
               ({pagination.total} version{pagination.total !== 1 ? 's' : ''})
             </Text>
           )}
-        </XStack>
+        </Row>
 
         <Button
           variant={isCompareMode ? 'solid' : 'outlined'}
           size="$3"
           onPress={toggleCompareMode}
         >
-          <GitCompare size={16} style={{ marginRight: '4px' }} />
-          {isCompareMode ? 'Exit Compare' : 'Compare'}
+          <Row style={{ alignItems: 'center', gap: 4 }}>
+            <GitCompare size={16} />
+            {isCompareMode ? 'Exit Compare' : 'Compare'}
+          </Row>
         </Button>
-      </XStack>
+      </Row>
 
       {/* Compare mode instructions */}
       {isCompareMode && (
-        <Card padding="$3" backgroundColor="$blue2" borderColor="$blue5" borderRadius="$4">
-          <Text fontSize="$3" color="$blue10">
-            Select a &quot;From&quot; and &quot;To&quot; version to compare changes
+        <Card style={{ padding: 'var(--space-3)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-5)', borderRadius: 'var(--radius-4)' }}>
+          <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-10)' }}>
+            Select a "From" and "To" version to compare changes
             {selectedFrom && selectedTo && ' - viewing comparison below'}
           </Text>
         </Card>
@@ -559,23 +576,23 @@ export function VersionHistoryViewer({
 
       {/* Comparison view */}
       {isCompareMode && selectedFrom && selectedTo && (
-        <YStack mb="$4">
+        <Stack style={{ marginBottom: 'var(--space-4)' }}>
           {isLoadingComparison ? (
-            <YStack alignItems="center" justifyContent="center" height={128} backgroundColor="$gray2" borderRadius="$4">
-              <Spinner size="small" color="$blue9" />
-            </YStack>
+            <Stack style={{ alignItems: 'center', justifyContent: 'center', height: 128, backgroundColor: 'var(--color-gray-2)', borderRadius: 'var(--radius-4)' }}>
+              <Loader2 className="animate-spin" style={{ width: 20, height: 20, color: 'var(--color-blue-9)' }} />
+            </Stack>
           ) : comparisonData ? (
             <DiffView comparison={comparisonData as VersionComparison} />
           ) : null}
-        </YStack>
+        </Stack>
       )}
 
       {/* Version list */}
-      <YStack gap="$2">
+      <Stack style={{ gap: 8 }}>
         {versions.length === 0 ? (
-          <YStack padding="$8" alignItems="center" backgroundColor="$gray2" borderRadius="$4">
-            <Text color="$color11">No version history available</Text>
-          </YStack>
+          <Stack style={{ padding: 'var(--space-8)', alignItems: 'center', backgroundColor: 'var(--color-gray-2)', borderRadius: 'var(--radius-4)' }}>
+            <Text style={{ color: 'var(--color-11)' }}>No version history available</Text>
+          </Stack>
         ) : (
           versions.map((version) => (
             <VersionListItem
@@ -593,11 +610,11 @@ export function VersionHistoryViewer({
             />
           ))
         )}
-      </YStack>
+      </Stack>
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <XStack alignItems="center" justifyContent="center" gap="$2" paddingTop="$4">
+        <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 8, paddingTop: 'var(--space-4)' }}>
           <Button
             variant="outlined"
             size="$3"
@@ -606,7 +623,7 @@ export function VersionHistoryViewer({
           >
             Previous
           </Button>
-          <Text fontSize="$3" color="$color11">
+          <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
             Page {page} of {pagination.totalPages}
           </Text>
           <Button
@@ -617,9 +634,9 @@ export function VersionHistoryViewer({
           >
             Next
           </Button>
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

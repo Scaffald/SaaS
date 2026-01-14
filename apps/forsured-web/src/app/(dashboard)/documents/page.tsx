@@ -13,7 +13,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { YStack, XStack, Text, Card, H1, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, H1 } from '@unicornlove/beyond-ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   DocumentList,
@@ -99,10 +99,10 @@ export default function DocumentsPage() {
   );
 
   return (
-    <YStack minHeight="100vh" backgroundColor="$gray2">
-      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-gray-2)' }}>
+      <Stack style={{ maxWidth: 1120, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
         {/* Header */}
-        <YStack marginBottom="$8">
+        <Stack style={{ marginBottom: 'var(--space-8)' }}>
           <DocumentBreadcrumb
             clientId={clientIdFromUrl}
             clientName={selectedClientName}
@@ -111,44 +111,44 @@ export default function DocumentsPage() {
             basePath="/dashboard"
             onNavigate={handleBreadcrumbNavigate}
           />
-          <H1 marginTop="$4">Documents</H1>
-          <Text marginTop="$2" fontSize="$2" color="$gray11">
+          <H1 style={{ marginTop: 'var(--space-4)' }}>Documents</H1>
+          <Text style={{ marginTop: 'var(--space-2)', fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>
             Browse and manage your organization's documents by client, project, type, and status
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Summary Cards */}
         {summaryData && (
-          <XStack flexWrap="wrap" gap="$4" marginBottom="$8">
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$gray6">
-              <Text fontSize="$2" color="$gray11">Total Documents</Text>
-              <Text fontSize="$8" fontWeight="700" color="$gray12">{summaryData.total}</Text>
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-gray-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>Total Documents</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-gray-12)' }}>{summaryData.total}</Text>
             </Card>
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$green6">
-              <Text fontSize="$2" color="$green11">Verified</Text>
-              <Text fontSize="$8" fontWeight="700" color="$green12">
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-green-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-11)' }}>Verified</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-green-12)' }}>
                 {summaryData.byStatus.verified}
               </Text>
             </Card>
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$yellow6">
-              <Text fontSize="$2" color="$yellow11">Pending</Text>
-              <Text fontSize="$8" fontWeight="700" color="$yellow12">
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-yellow-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow-11)' }}>Pending</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-yellow-12)' }}>
                 {summaryData.byStatus.pending}
               </Text>
             </Card>
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$orange6">
-              <Text fontSize="$2" color="$orange11">Expiring Soon</Text>
-              <Text fontSize="$8" fontWeight="700" color="$orange12">
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-orange-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange-11)' }}>Expiring Soon</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-orange-12)' }}>
                 {summaryData.byStatus.expiring}
               </Text>
             </Card>
-            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$red6">
-              <Text fontSize="$2" color="$red11">Expired</Text>
-              <Text fontSize="$8" fontWeight="700" color="$red12">
+            <Card style={{ flex: 1, minWidth: 150, padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-red-6)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-red-11)' }}>Expired</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, color: 'var(--color-red-12)' }}>
                 {summaryData.byStatus.expired}
               </Text>
             </Card>
-          </XStack>
+          </Row>
         )}
 
         {/* Document List (includes filter panel and search) */}
@@ -156,7 +156,7 @@ export default function DocumentsPage() {
           organizationId={MOCK_ORG_ID}
           onDocumentClick={handleDocumentClick}
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 }

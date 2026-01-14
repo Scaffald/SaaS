@@ -1,11 +1,8 @@
 /**
- * ConnectionDialog - Scaffald connection dialog using Tamagui
+ * ConnectionDialog - Scaffald connection dialog using Beyond UI
  */
 import React from 'react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
-import { Modal } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
-import { X } from 'lucide-react';
+import { Stack, Row, Text, Modal, Button } from '@unicornlove/beyond-ui';
 
 interface ConnectionDialogProps {
   isOpen: boolean;
@@ -38,58 +35,61 @@ function ConnectionDialog({
       title="Connect Your Scaffald Company"
       size="medium"
     >
-      <YStack gap="$4">
+      <Stack style={{ gap: '16px' }}>
         {scaffaldCompany && (
-          <YStack
-            backgroundColor="$blue2"
-            padding="$4"
-            borderRadius="$3"
-            borderWidth={1}
-            borderColor="$blue6"
-            gap="$2"
+          <Stack
+            style={{
+              backgroundColor: 'var(--color-blue-2)',
+              padding: '16px',
+              borderRadius: '8px',
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: 'var(--color-blue-6)',
+              gap: '8px',
+            }}
           >
-            <Text fontSize="$2" color="$blue11" mb="$2">
+            <Text style={{ fontSize: '14px', color: 'var(--color-blue-11)', marginBottom: '8px' }}>
               We found a company associated with your Scaffald account:
             </Text>
-            <XStack alignItems="center" gap="$2">
-              <Text role="img" aria-label="company" fontSize="$6">🏢</Text>
-              <YStack>
-                <Text fontWeight="600">{scaffaldCompany.name}</Text>
-                <Text fontSize="$1" color="$color10">
+            <Row style={{ alignItems: 'center', gap: '8px' }}>
+              <Text role="img" aria-label="company" style={{ fontSize: '24px' }}>🏢</Text>
+              <Stack>
+                <Text style={{ fontWeight: 600 }}>{scaffaldCompany.name}</Text>
+                <Text style={{ fontSize: '12px', color: 'var(--color-10)' }}>
                   {scaffaldCompany.address}
                 </Text>
-                <Text fontSize="$1" color="$color10">
+                <Text style={{ fontSize: '12px', color: 'var(--color-10)' }}>
                   Member since: {scaffaldCompany.memberSince}
                 </Text>
-              </YStack>
-            </XStack>
-          </YStack>
+              </Stack>
+            </Row>
+          </Stack>
         )}
 
-        <Text mb="$4">Connecting this company will:</Text>
-        <YStack gap="$2" mb="$6" paddingLeft="$4">
-          <Text fontSize="$2" color="$color11">• Import your existing projects</Text>
-          <Text fontSize="$2" color="$color11">• Sync contractor relationships</Text>
-          <Text fontSize="$2" color="$color11">• Share compliance data</Text>
-        </YStack>
+        <Text style={{ marginBottom: '16px' }}>Connecting this company will:</Text>
+        <Stack style={{ gap: '8px', marginBottom: '24px', paddingLeft: '16px' }}>
+          <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>• Import your existing projects</Text>
+          <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>• Sync contractor relationships</Text>
+          <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>• Share compliance data</Text>
+        </Stack>
 
-        <XStack justifyContent="flex-end" gap="$3">
-          <CoreButton
+        <Row style={{ justifyContent: 'flex-end', gap: '12px' }}>
+          <Button
             variant="secondary"
             onPress={onCreateNew}
             disabled={isLoading}
           >
             Create New Company Instead
-          </CoreButton>
-          <CoreButton
+          </Button>
+          <Button
             variant="primary"
             onPress={() => scaffaldCompany && onConnect(scaffaldCompany.id)}
             disabled={isLoading || !scaffaldCompany}
           >
             Connect This Company
-          </CoreButton>
-        </XStack>
-      </YStack>
+          </Button>
+        </Row>
+      </Stack>
     </Modal>
   );
 }

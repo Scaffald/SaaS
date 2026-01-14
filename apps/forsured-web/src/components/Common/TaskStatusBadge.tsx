@@ -1,10 +1,11 @@
 /**
- * Task Status Badge Component - Using Tamagui
+ * Task Status Badge Component - Using Beyond UI
  * REQ-282: Project Tasks Display
+ * Migrated from Tamagui to Beyond UI
  */
-import React, { useState } from 'react';
-import { XStack, YStack, Text, styled } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { useState } from 'react';
+import type { CSSProperties } from 'react';
+import { Row, Stack, Text } from '@unicornlove/beyond-ui';
 import {
   CheckCircle,
   Clock,
@@ -13,7 +14,7 @@ import {
   HelpCircle,
   Send,
 } from 'lucide-react';
-import { ProjectTaskStatus } from '../../types';
+import type { ProjectTaskStatus } from '../../types';
 
 // Status definitions as per REQ-282
 const STATUS_DEFINITIONS: Record<ProjectTaskStatus, string> = {
@@ -24,11 +25,13 @@ const STATUS_DEFINITIONS: Record<ProjectTaskStatus, string> = {
   needs_info: 'More information required',
 };
 
+type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
+
 // Status configuration mapping to Badge variants
 const STATUS_CONFIG: Record<
   ProjectTaskStatus,
   {
-    variant: 'default' | 'success' | 'warning' | 'error' | 'info';
+    variant: BadgeVariant;
     icon: React.ComponentType<{ size?: number; className?: string }>;
     label: string;
   }
@@ -68,31 +71,39 @@ const LEGACY_STATUS_MAP: Record<string, ProjectTaskStatus | null> = {
   cancelled: null,
 };
 
-const Tooltip = styled(YStack, {
-  name: 'Tooltip',
-  position: 'absolute',
-  zIndex: 50,
-  bottom: '100%',
-  left: '50%',
-  transform: [{ translateX: '-50%' }],
-  marginBottom: '$2',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  fontSize: '$1',
-  color: '$color1',
-  backgroundColor: '$color12',
-  borderRadius: '$3',
-  shadowColor: '$shadowColor',
-  shadowRadius: 8,
-  shadowOffset: { width: 0, height: 4 },
-  whiteSpace: 'pre-line',
-  maxWidth: 320,
-});
+// Variant color styles
+const VARIANT_STYLES: Record<BadgeVariant, { bg: string; text: string; border: string }> = {
+  default: {
+    bg: 'var(--color-3)',
+    text: 'var(--color-11)',
+    border: 'var(--color-6)',
+  },
+  success: {
+    bg: 'rgba(34, 197, 94, 0.1)',
+    text: 'rgb(22, 163, 74)',
+    border: 'rgba(34, 197, 94, 0.3)',
+  },
+  warning: {
+    bg: 'rgba(234, 179, 8, 0.1)',
+    text: 'rgb(161, 98, 7)',
+    border: 'rgba(234, 179, 8, 0.3)',
+  },
+  error: {
+    bg: 'rgba(239, 68, 68, 0.1)',
+    text: 'rgb(220, 38, 38)',
+    border: 'rgba(239, 68, 68, 0.3)',
+  },
+  info: {
+    bg: 'rgba(59, 130, 246, 0.1)',
+    text: 'rgb(37, 99, 235)',
+    border: 'rgba(59, 130, 246, 0.3)',
+  },
+};
 
 interface TaskStatusBadgeProps {
   status: string;
   rejectionReason?: string;
-  size?: 'xs' | 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg';
   showIcon?: boolean;
   className?: string;
 }
@@ -102,9 +113,11 @@ export default function TaskStatusBadge({
   rejectionReason,
   size = 'sm',
   showIcon = true,
-  className = '',
 }: TaskStatusBadgeProps) {
   const [showTooltip, setShowTooltip] = useState(false);
+
+  // Normalize size - ensure it's a valid size
+  const validSize = ['sm', 'md', 'lg'].includes(size) ? size : 'sm';
 
   // Normalize status to ProjectTaskStatus if possible
   const normalizedStatus: ProjectTaskStatus | null =
@@ -122,12 +135,24 @@ export default function TaskStatusBadge({
       };
 
   const Icon = config.icon;
+  const variantStyle = VARIANT_STYLES[config.variant];
 
-  const iconSizes = {
-    xs: 10,
+  const iconSizes: Record<string, number> = {
     sm: 12,
     md: 14,
     lg: 16,
+  };
+
+  const paddingSizes: Record<string, { x: number; y: number }> = {
+    sm: { x: 8, y: 4 },
+    md: { x: 10, y: 5 },
+    lg: { x: 12, y: 6 },
+  };
+
+  const fontSizes: Record<string, number> = {
+    sm: 12,
+    md: 13,
+    lg: 14,
   };
 
   // Build tooltip content
@@ -146,32 +171,65 @@ export default function TaskStatusBadge({
     return definition;
   };
 
+  const badgeStyle: CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 4,
+    paddingLeft: paddingSizes[validSize].x,
+    paddingRight: paddingSizes[validSize].x,
+    paddingTop: paddingSizes[validSize].y,
+    paddingBottom: paddingSizes[validSize].y,
+    backgroundColor: variantStyle.bg,
+    color: variantStyle.text,
+    borderRadius: 12,
+    border: `1px solid ${variantStyle.border}`,
+    fontSize: fontSizes[validSize],
+    fontWeight: 500,
+    cursor: 'default',
+  };
+
   return (
-    <YStack position="relative" display="inline-block">
-      <Badge
-        variant={config.variant}
-        size={size}
+    <Stack style={{ position: 'relative', display: 'inline-block' }}>
+      <output
+        style={badgeStyle}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
-        onFocus={() => setShowTooltip(true)}
-        onBlur={() => setShowTooltip(false)}
-        tabIndex={0}
-        role="status"
         aria-label={`Status: ${config.label}. ${getTooltipContent()}`}
       >
-        <XStack gap="$1" alignItems="center">
-          {showIcon && <Icon size={iconSizes[size]} />}
-          <Text>{config.label}</Text>
-        </XStack>
-      </Badge>
+        <Row gap={4} alignItems="center">
+          {showIcon && <Icon size={iconSizes[validSize]} />}
+          <span>{config.label}</span>
+        </Row>
+      </output>
 
       {/* Tooltip */}
       {showTooltip && (
-        <Tooltip role="tooltip">
-          <Text>{getTooltipContent()}</Text>
-        </Tooltip>
+        <Stack
+          role="tooltip"
+          style={{
+            position: 'absolute',
+            zIndex: 50,
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginBottom: 8,
+            paddingLeft: 12,
+            paddingRight: 12,
+            paddingTop: 8,
+            paddingBottom: 8,
+            fontSize: 12,
+            color: 'var(--color-background)',
+            backgroundColor: 'var(--color-text)',
+            borderRadius: 12,
+            boxShadow: '0 4px 8px var(--color-shadow)',
+            whiteSpace: 'pre-line',
+            maxWidth: 320,
+          }}
+        >
+          <Text size="xs">{getTooltipContent()}</Text>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

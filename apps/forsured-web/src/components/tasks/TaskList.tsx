@@ -4,8 +4,8 @@
  */
 
 import { useState, useMemo } from 'react';
-import { ChevronUp, ChevronDown, FileText } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, SizableText, Spinner } from '@unicornlove/ui';
+import { ChevronUp, ChevronDown, FileText, Loader2 } from 'lucide-react';
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
 import { Task } from '../../types';
 import { TaskStatusBadge } from './TaskStatusBadge';
 
@@ -19,6 +19,19 @@ interface TaskListProps {
 
 type SortField = 'title' | 'status' | 'priority' | 'due_date' | 'created_at';
 type SortOrder = 'asc' | 'desc';
+
+const getPriorityBadgeColor = (priority: string): React.CSSProperties => {
+  switch (priority) {
+    case 'urgent':
+      return { backgroundColor: 'var(--color-red2)', color: 'var(--color-red11)' };
+    case 'high':
+      return { backgroundColor: 'var(--color-orange2)', color: 'var(--color-orange11)' };
+    case 'medium':
+      return { backgroundColor: 'var(--color-yellow2)', color: 'var(--color-yellow11)' };
+    default:
+      return { backgroundColor: 'var(--color-color2)', color: 'var(--color-color11)' };
+  }
+};
 
 export const TaskList: React.FC<TaskListProps> = ({
   tasks,
@@ -80,56 +93,44 @@ export const TaskList: React.FC<TaskListProps> = ({
     );
   };
 
-  const getPriorityBadgeColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent':
-        return { bg: '$red2', text: '$red11' };
-      case 'high':
-        return { bg: '$orange2', text: '$orange11' };
-      case 'medium':
-        return { bg: '$yellow2', text: '$yellow11' };
-      default:
-        return { bg: '$color2', text: '$color11' };
-    }
-  };
-
   if (loading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <Spinner size="large" color="$blue10" />
-      </YStack>
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: '48px', paddingBottom: '48px' }}>
+        <Loader2 size={32} className="animate-spin" style={{ color: 'var(--color-blue10)' }} />
+      </Stack>
     );
   }
 
   if (tasks.length === 0) {
     return (
-      <YStack alignItems="center" paddingVertical="$12">
-        <FileText size={48} color="var(--color10)" />
-        <Text fontSize="$3" fontWeight="500" color="$color12" mt="$2">
+      <Stack style={{ alignItems: 'center', paddingTop: '48px', paddingBottom: '48px' }}>
+        <FileText size={48} color="var(--color-color10)" />
+        <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)', marginTop: '8px' }}>
           No tasks found
         </Text>
-        <SizableText fontSize="$3" color="$color10" mt="$1">
+        <Text style={{ fontSize: '14px', color: 'var(--color-color10)', marginTop: '4px' }}>
           Try adjusting your filters or search query.
-        </SizableText>
-      </YStack>
+        </Text>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: '16px' }}>
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={1}
-        overflow="hidden"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: '12px',
+          overflow: 'hidden',
+        }}
       >
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ backgroundColor: 'var(--color2)' }}>
+            <thead style={{ backgroundColor: 'var(--color-color2)' }}>
               <tr>
                 {onSelectTask && (
                   <th style={{ padding: '12px 24px', textAlign: 'left' }}>
-                    <input type="checkbox" style={{ borderRadius: '4px', border: '1px solid var(--borderColor)' }} />
+                    <input type="checkbox" style={{ borderRadius: '4px', border: '1px solid var(--color-border)' }} />
                   </th>
                 )}
                 <th
@@ -138,19 +139,19 @@ export const TaskList: React.FC<TaskListProps> = ({
                     textAlign: 'left',
                     fontSize: '12px',
                     fontWeight: 500,
-                    color: 'var(--color10)',
+                    color: 'var(--color-color10)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
                   onClick={() => handleSort('title')}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color3)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color2)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
-                  <XStack alignItems="center" gap="$1">
+                  <Row style={{ alignItems: 'center', gap: '4px' }}>
                     <Text>Title</Text>
                     <SortIcon field="title" />
-                  </XStack>
+                  </Row>
                 </th>
                 <th
                   style={{
@@ -158,19 +159,19 @@ export const TaskList: React.FC<TaskListProps> = ({
                     textAlign: 'left',
                     fontSize: '12px',
                     fontWeight: 500,
-                    color: 'var(--color10)',
+                    color: 'var(--color-color10)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
                   onClick={() => handleSort('status')}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color3)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color2)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
-                  <XStack alignItems="center" gap="$1">
+                  <Row style={{ alignItems: 'center', gap: '4px' }}>
                     <Text>Status</Text>
                     <SortIcon field="status" />
-                  </XStack>
+                  </Row>
                 </th>
                 <th
                   style={{
@@ -178,19 +179,19 @@ export const TaskList: React.FC<TaskListProps> = ({
                     textAlign: 'left',
                     fontSize: '12px',
                     fontWeight: 500,
-                    color: 'var(--color10)',
+                    color: 'var(--color-color10)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
                   onClick={() => handleSort('priority')}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color3)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color2)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
-                  <XStack alignItems="center" gap="$1">
+                  <Row style={{ alignItems: 'center', gap: '4px' }}>
                     <Text>Priority</Text>
                     <SortIcon field="priority" />
-                  </XStack>
+                  </Row>
                 </th>
                 <th
                   style={{
@@ -198,7 +199,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     textAlign: 'left',
                     fontSize: '12px',
                     fontWeight: 500,
-                    color: 'var(--color10)',
+                    color: 'var(--color-color10)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                   }}
@@ -211,19 +212,19 @@ export const TaskList: React.FC<TaskListProps> = ({
                     textAlign: 'left',
                     fontSize: '12px',
                     fontWeight: 500,
-                    color: 'var(--color10)',
+                    color: 'var(--color-color10)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
                   onClick={() => handleSort('due_date')}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color3)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color2)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
-                  <XStack alignItems="center" gap="$1">
+                  <Row style={{ alignItems: 'center', gap: '4px' }}>
                     <Text>Due Date</Text>
                     <SortIcon field="due_date" />
-                  </XStack>
+                  </Row>
                 </th>
               </tr>
             </thead>
@@ -236,18 +237,18 @@ export const TaskList: React.FC<TaskListProps> = ({
                     key={task.id}
                     style={{
                       cursor: 'pointer',
-                      backgroundColor: overdue ? 'var(--red2)' : 'var(--background)',
-                      borderTop: index > 0 ? '1px solid var(--borderColor)' : 'none',
+                      backgroundColor: overdue ? 'var(--color-red2)' : 'var(--color-background)',
+                      borderTop: index > 0 ? '1px solid var(--color-border)' : 'none',
                     }}
-                    onClick={() => onTaskClick?.(task)}
+                    onPress={() => onTaskClick?.(task)}
                     onMouseEnter={(e) => {
                       if (!overdue) {
-                        e.currentTarget.style.backgroundColor = 'var(--color2)';
+                        e.currentTarget.style.backgroundColor = 'var(--color-color2)';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!overdue) {
-                        e.currentTarget.style.backgroundColor = 'var(--background)';
+                        e.currentTarget.style.backgroundColor = 'var(--color-background)';
                       }
                     }}
                   >
@@ -255,7 +256,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                       <td style={{ padding: '16px 24px' }}>
                         <input
                           type="checkbox"
-                          style={{ borderRadius: '4px', border: '1px solid var(--borderColor)' }}
+                          style={{ borderRadius: '4px', border: '1px solid var(--color-border)' }}
                           checked={selectedTaskIds.includes(task.id)}
                           onChange={(e) => {
                             e.stopPropagation();
@@ -265,43 +266,56 @@ export const TaskList: React.FC<TaskListProps> = ({
                       </td>
                     )}
                     <td style={{ padding: '16px 24px' }}>
-                      <YStack gap="$1">
-                        <SizableText fontSize="$3" fontWeight="500" color="$color12">
+                      <Stack style={{ gap: '4px' }}>
+                        <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)' }}>
                           {task.title}
-                        </SizableText>
+                        </Text>
                         {task.description && (
-                          <SizableText fontSize="$3" color="$color10" numberOfLines={1} maxWidth={384}>
+                          <Text
+                            style={{
+                              fontSize: '14px',
+                              color: 'var(--color-color10)',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              maxWidth: '384px',
+                            }}
+                          >
                             {task.description}
-                          </SizableText>
+                          </Text>
                         )}
-                      </YStack>
+                      </Stack>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
                       <TaskStatusBadge status={task.status as 'pending' | 'in_progress' | 'completed' | 'cancelled'} size="sm" />
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <YStack
-                        alignItems="center"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius={9999}
-                        backgroundColor={priorityColors.bg as any}
-                        alignSelf="flex-start"
+                      <Stack
+                        style={{
+                          alignItems: 'center',
+                          paddingLeft: '8px',
+                          paddingRight: '8px',
+                          paddingTop: '4px',
+                          paddingBottom: '4px',
+                          borderRadius: '9999px',
+                          alignSelf: 'flex-start',
+                          ...priorityColors,
+                        }}
                       >
-                        <SizableText fontSize="$1" fontWeight="500" color={priorityColors.text as any}>
+                        <Text style={{ fontSize: '12px', fontWeight: 500 }}>
                           {task.priority}
-                        </SizableText>
-                      </YStack>
+                        </Text>
+                      </Stack>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <SizableText fontSize="$3" color="$color10">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
                         {task.assigned_to_user_id || 'Unassigned'}
-                      </SizableText>
+                      </Text>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <SizableText fontSize="$3" color="$color10">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
                         {task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}
-                      </SizableText>
+                      </Text>
                     </td>
                   </tr>
                 );
@@ -314,42 +328,45 @@ export const TaskList: React.FC<TaskListProps> = ({
       {/* Pagination */}
       {totalPages > 1 && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          paddingHorizontal="$4"
-          paddingVertical="$3"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '12px',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+            paddingTop: '12px',
+            paddingBottom: '12px',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <SizableText fontSize="$3" color="$color11">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: '14px', color: 'var(--color-color11)' }}>
               Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, sortedTasks.length)} of {sortedTasks.length} tasks
-            </SizableText>
-            <XStack gap="$2" alignItems="center">
+            </Text>
+            <Row style={{ gap: '8px', alignItems: 'center' }}>
               <Button
                 onPress={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                variant="outlined"
-                size="$2"
-                opacity={page === 1 ? 0.5 : 1}
+                variant="outline"
+                size="sm"
+                style={{ opacity: page === 1 ? 0.5 : 1 }}
               >
                 Previous
               </Button>
-              <SizableText fontSize="$3" paddingHorizontal="$3" paddingVertical="$1">
+              <Text style={{ fontSize: '14px', paddingLeft: '12px', paddingRight: '12px', paddingTop: '4px', paddingBottom: '4px' }}>
                 Page {page} of {totalPages}
-              </SizableText>
+              </Text>
               <Button
                 onPress={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                variant="outlined"
-                size="$2"
-                opacity={page === totalPages ? 0.5 : 1}
+                variant="outline"
+                size="sm"
+                style={{ opacity: page === totalPages ? 0.5 : 1 }}
               >
                 Next
               </Button>
-            </XStack>
-          </XStack>
+            </Row>
+          </Row>
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 };

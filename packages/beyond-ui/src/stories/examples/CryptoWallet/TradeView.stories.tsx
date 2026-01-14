@@ -15,7 +15,7 @@ import { typographyVariants } from '../../../tokens/typography'
 import { useThemeContext } from '../../../playground/ThemeProvider'
 import { getMarketData, getChartData } from './mockData'
 import { cryptoAssets } from './mockData'
-import { TrendingUp, ArrowLeft } from 'lucide-react-native'
+import { TrendingUp, } from 'lucide-react-native'
 
 const meta: Meta = {
   title: 'Examples/CryptoWallet/TradeView',

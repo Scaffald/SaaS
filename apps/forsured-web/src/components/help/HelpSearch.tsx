@@ -1,9 +1,8 @@
 /**
- * HelpSearch - Help search component using Tamagui
+ * HelpSearch - Help search component using Beyond UI
  */
 import React, { useState } from 'react';
-import { YStack, XStack } from '@unicornlove/ui';
-import { Input as TextInput } from '@unicornlove/ui';
+import { Stack, Row, Input } from '@unicornlove/beyond-ui';
 import { Search } from 'lucide-react';
 
 function HelpSearch() {
@@ -16,26 +15,24 @@ function HelpSearch() {
   };
 
   return (
-    <YStack mb="$6">
-      <YStack as="form" onSubmit={handleSearch} position="relative">
-        <XStack position="relative" alignItems="center">
+    <Stack marginBottom={24}>
+      <form onSubmit={handleSearch} style={{ position: 'relative' }}>
+        <Row style={{ position: 'relative' }} align="center">
           <Search
             size={20}
             style={{ position: 'absolute', left: 12, zIndex: 1 }}
             color="currentColor"
           />
-          <TextInput
-            type="text"
+          <Input
             placeholder="Search help articles..."
-            paddingLeft="$10"
-            paddingRight="$4"
-            paddingVertical="$2"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChangeText={setSearchQuery}
+            containerStyle={{ flex: 1 }}
+            inputStyle={{ paddingLeft: 40, paddingRight: 16 }}
           />
-        </XStack>
-      </YStack>
-    </YStack>
+        </Row>
+      </form>
+    </Stack>
   );
 }
 

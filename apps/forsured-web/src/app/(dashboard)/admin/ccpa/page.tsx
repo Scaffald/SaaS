@@ -11,7 +11,7 @@
 
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { YStack, XStack, Text, Button, Card, H2, H3 } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Card, Heading, colors, spacing } from '@unicornlove/beyond-ui'
 import { trpc } from '../../../../lib/trpc'
 import { SLANotificationBanner } from '../../../../components/admin/CCPA/SLANotificationBanner'
 
@@ -33,29 +33,29 @@ type CCPARequest = {
   is_overdue: boolean
 }
 
-// Status badge colors - using Tamagui color tokens
+// Status badge colors - using Beyond UI color tokens
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  pending: { bg: '$yellow2', text: '$yellow11' },
-  in_progress: { bg: '$blue2', text: '$blue11' },
-  completed: { bg: '$green2', text: '$green11' },
-  denied: { bg: '$red2', text: '$red11' },
-  cancelled: { bg: '$gray2', text: '$gray11' },
+  pending: { bg: colors.warning[200], text: colors.warning[600] },
+  in_progress: { bg: colors.primary[200], text: colors.primary[600] },
+  completed: { bg: colors.success[200], text: colors.success[600] },
+  denied: { bg: colors.error[200], text: colors.error[600] },
+  cancelled: { bg: colors.gray[100], text: colors.text.light.secondary },
 }
 
 const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
-  low: { bg: '$gray2', text: '$gray11' },
-  medium: { bg: '$blue2', text: '$blue11' },
-  high: { bg: '$orange2', text: '$orange11' },
-  urgent: { bg: '$red2', text: '$red11' },
+  low: { bg: colors.gray[100], text: colors.text.light.secondary },
+  medium: { bg: colors.primary[200], text: colors.primary[600] },
+  high: { bg: colors.warning[200], text: colors.warning[600] },
+  urgent: { bg: colors.error[200], text: colors.error[600] },
 }
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  access: { bg: '$blue2', text: '$blue11' },
-  deletion: { bg: '$red2', text: '$red11' },
-  correction: { bg: '$purple2', text: '$purple11' },
-  portability: { bg: '$cyan2', text: '$cyan11' },
-  opt_out: { bg: '$green2', text: '$green11' },
-  opt_in: { bg: '$teal2', text: '$teal11' },
+  access: { bg: colors.primary[200], text: colors.primary[600] },
+  deletion: { bg: colors.error[200], text: colors.error[600] },
+  correction: { bg: colors.purple[200], text: colors.purple[600] },
+  portability: { bg: colors.info[200], text: colors.info[600] },
+  opt_out: { bg: colors.success[200], text: colors.success[600] },
+  opt_in: { bg: colors.success[200], text: colors.success[600] },
 }
 
 // Map request types for display
@@ -145,453 +145,458 @@ export default function CCPAAdminDashboard() {
 
   if (loading) {
     return (
-      <YStack padding="$6" maxWidth={1120} marginHorizontal="auto">
-        <YStack opacity={0.5}>
-          <YStack
-            height={32}
-            backgroundColor="$gray4"
-            borderRadius="$2"
-            width="33%"
-            marginBottom="$4"
+      <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
+        <Stack style={{ opacity: 0.5 }}>
+          <Stack
+            style={{
+              height: 32,
+              backgroundColor: colors.gray[200],
+              borderRadius: 8,
+              width: '33%',
+              marginBottom: spacing[16],
+            }}
           />
-          <XStack flexWrap="wrap" gap="$4" marginBottom="$8">
+          <Row style={{ flexWrap: 'wrap', gap: spacing[16], marginBottom: spacing[32] }}>
             {[1, 2, 3, 4].map((i) => (
-              <YStack
+              <Stack
                 key={i}
-                height={96}
-                backgroundColor="$gray4"
-                borderRadius="$2"
-                flex={1}
-                minWidth={200}
+                style={{
+                  height: 96,
+                  backgroundColor: colors.gray[200],
+                  borderRadius: 8,
+                  flex: 1,
+                  minWidth: 200,
+                }}
               />
             ))}
-          </XStack>
-          <XStack flexWrap="wrap" gap="$4">
+          </Row>
+          <Row style={{ flexWrap: 'wrap', gap: spacing[16] }}>
             {[1, 2, 3].map((i) => (
-              <YStack
+              <Stack
                 key={i}
-                height={96}
-                backgroundColor="$gray4"
-                borderRadius="$2"
-                flex={1}
-                minWidth={200}
+                style={{
+                  height: 96,
+                  backgroundColor: colors.gray[200],
+                  borderRadius: 8,
+                  flex: 1,
+                  minWidth: 200,
+                }}
               />
             ))}
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <YStack padding="$6" maxWidth={1120} marginHorizontal="auto">
-        <YStack
-          padding="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
+      <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
+        <Stack
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
         >
-          <Text fontWeight="600" color="$red11">
+          <Text weight="semibold" color={colors.error[600]}>
             Error loading CCPA dashboard
           </Text>
-          <Text color="$red10" fontSize="$2" marginTop="$2">
+          <Text color={colors.error[500]} size="xs" style={{ marginTop: spacing[8] }}>
             {error.message || 'Failed to load data. Please try again.'}
           </Text>
           <Button
-            marginTop="$3"
-            size="$3"
-            backgroundColor="$red9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$red10' }}
+            style={{ marginTop: spacing[12] }}
+            size="sm"
+            color="error"
+            variant="filled"
             onPress={() => window.location.reload()}
           >
             Retry
           </Button>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack padding="$6" maxWidth={1120} marginHorizontal="auto">
+    <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
       {/* Header */}
-      <YStack marginBottom="$8">
-        <H2 marginBottom="$2">CCPA Compliance Dashboard</H2>
-        <Text color="$gray11">Monitor and manage CCPA data requests across your organization.</Text>
-      </YStack>
+      <Stack style={{ marginBottom: spacing[32] }}>
+        <Heading level={2} style={{ marginBottom: spacing[8] }}>CCPA Compliance Dashboard</Heading>
+        <Text color={colors.text.light.secondary}>Monitor and manage CCPA data requests across your organization.</Text>
+      </Stack>
 
       {/* SLA Notification Banner */}
       <SLANotificationBanner />
 
       {/* Compliance Metrics */}
-      <YStack marginBottom="$8">
-        <H3 marginBottom="$4">Compliance Metrics</H3>
-        <XStack flexWrap="wrap" gap="$4">
-          <Card padding="$4" flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+      <Stack style={{ marginBottom: spacing[32] }}>
+        <Heading level={3} style={{ marginBottom: spacing[16] }}>Compliance Metrics</Heading>
+        <Row style={{ flexWrap: 'wrap', gap: spacing[16] }}>
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Total Requests
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$gray12">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.text.light.primary}>
               {metrics?.total_requests ?? 0}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Pending
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$yellow11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.warning[600]}>
               {metrics?.pending_requests ?? 0}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Processing
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$blue11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.primary[600]}>
               {metrics?.processing_requests ?? 0}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Completed
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$green11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.success[600]}>
               {metrics?.completed_requests ?? 0}
             </Text>
           </Card>
-        </XStack>
+        </Row>
 
-        <XStack flexWrap="wrap" gap="$4" marginTop="$4">
-          <Card padding="$4" flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+        <Row style={{ flexWrap: 'wrap', gap: spacing[16], marginTop: spacing[16] }}>
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Avg Processing Days
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$gray12">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.text.light.primary}>
               {metrics?.average_processing_days ?? 0}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Compliance Rate
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$green11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.success[600]}>
               {((metrics?.compliance_rate ?? 1) * 100).toFixed(0)}%
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Overdue Requests
             </Text>
             <Text
-              fontSize="$8"
-              fontWeight="700"
-              color={(metrics?.overdue_count ?? 0) > 0 ? '$red11' : '$green11'}
+              style={{ fontSize: 32, fontWeight: '700' }}
+              color={(metrics?.overdue_count ?? 0) > 0 ? colors.error[600] : colors.success[600]}
             >
               {metrics?.overdue_count ?? 0}
             </Text>
           </Card>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Request Management */}
-      <YStack marginBottom="$8">
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-          <H3>Request Management</H3>
-        </XStack>
+      <Stack style={{ marginBottom: spacing[32] }}>
+        <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[16] }}>
+          <Heading level={3}>Request Management</Heading>
+        </Row>
 
         {/* Filters */}
-        <XStack flexWrap="wrap" gap="$4" marginBottom="$4">
-          <YStack>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1" display="block">
+        <Row style={{ flexWrap: 'wrap', gap: spacing[16], marginBottom: spacing[16] }}>
+          <Stack>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Status
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               {['all', 'pending', 'in_progress', 'completed'].map((status) => (
                 <Button
                   key={status}
                   onPress={() => setStatusFilter(status)}
-                  size="$3"
-                  backgroundColor={statusFilter === status ? '$blue9' : '$gray3'}
-                  color={statusFilter === status ? 'white' : '$gray11'}
-                  hoverStyle={{ backgroundColor: statusFilter === status ? '$blue10' : '$gray4' }}
+                  size="sm"
+                  color={statusFilter === status ? 'primary' : 'gray'}
+                  variant={statusFilter === status ? 'filled' : 'outline'}
                 >
                   {status === 'in_progress'
                     ? 'Processing'
                     : status.charAt(0).toUpperCase() + status.slice(1)}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
-          <YStack>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1" display="block">
+          <Stack>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Type
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               {['all', 'access', 'deletion', 'correction'].map((type) => (
                 <Button
                   key={type}
                   onPress={() => setTypeFilter(type)}
-                  size="$3"
-                  backgroundColor={typeFilter === type ? '$blue9' : '$gray3'}
-                  color={typeFilter === type ? 'white' : '$gray11'}
-                  hoverStyle={{ backgroundColor: typeFilter === type ? '$blue10' : '$gray4' }}
+                  size="sm"
+                  color={typeFilter === type ? 'primary' : 'gray'}
+                  variant={typeFilter === type ? 'filled' : 'outline'}
                 >
                   {type === 'all'
                     ? 'All'
                     : (TYPE_LABELS[type] ?? type.charAt(0).toUpperCase() + type.slice(1))}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
-          <YStack>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1" display="block">
+          <Stack>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Priority
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               {['all', 'urgent', 'high', 'medium', 'low'].map((priority) => (
                 <Button
                   key={priority}
                   onPress={() => setPriorityFilter(priority)}
-                  size="$3"
-                  backgroundColor={priorityFilter === priority ? '$blue9' : '$gray3'}
-                  color={priorityFilter === priority ? 'white' : '$gray11'}
-                  hoverStyle={{
-                    backgroundColor: priorityFilter === priority ? '$blue10' : '$gray4',
-                  }}
+                  size="sm"
+                  color={priorityFilter === priority ? 'primary' : 'gray'}
+                  variant={priorityFilter === priority ? 'filled' : 'outline'}
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
-        </XStack>
+            </Row>
+          </Stack>
+        </Row>
 
         {/* Requests Table */}
-        <Card overflow="hidden">
-          <YStack>
-            <XStack backgroundColor="$gray2" paddingHorizontal="$4" paddingVertical="$3">
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+        <Card style={{ overflow: 'hidden' }}>
+          <Stack>
+            <Row style={{ backgroundColor: colors.gray[100], paddingHorizontal: spacing[16], paddingVertical: spacing[12] }}>
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 User
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Type
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Status
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Priority
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Days
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Submitted
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Actions
               </Text>
-            </XStack>
+            </Row>
             {filteredRequests.length === 0 ? (
-              <YStack padding="$8" alignItems="center">
-                <Text color="$gray11">No requests match your filters.</Text>
-              </YStack>
+              <Stack style={{ padding: spacing[32], alignItems: 'center' }}>
+                <Text color={colors.text.light.secondary}>No requests match your filters.</Text>
+              </Stack>
             ) : (
-              <YStack>
+              <Stack>
                 {filteredRequests.map((req) => (
-                  <XStack
+                  <Row
                     key={req.id}
-                    backgroundColor={req.is_overdue ? '$red2' : 'transparent'}
-                    paddingHorizontal="$4"
-                    paddingVertical="$3"
-                    borderBottomWidth={1}
-                    borderColor="$borderColor"
+                    style={{
+                      backgroundColor: req.is_overdue ? colors.error[200] : 'transparent',
+                      paddingHorizontal: spacing[16],
+                      paddingVertical: spacing[12],
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.border.light.default,
+                    }}
                   >
-                    <YStack flex={1}>
-                      <Text fontWeight="500" color="$gray12">
+                    <Stack style={{ flex: 1 }}>
+                      <Text weight="medium" color={colors.text.light.primary}>
                         {req.user_name}
                       </Text>
-                      <Text fontSize="$2" color="$gray11">
+                      <Text size="xs" color={colors.text.light.secondary}>
                         {req.user_email}
                       </Text>
-                    </YStack>
-                    <YStack flex={1} alignItems="flex-start">
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={TYPE_COLORS[req.type]?.bg ?? '$gray2'}
+                    </Stack>
+                    <Stack style={{ flex: 1, alignItems: 'flex-start' }}>
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor: TYPE_COLORS[req.type]?.bg ?? colors.gray[100],
+                        }}
                       >
-                        <Text fontSize="$2" color={TYPE_COLORS[req.type]?.text ?? '$gray11'}>
+                        <Text size="xs" color={TYPE_COLORS[req.type]?.text ?? colors.text.light.secondary}>
                           {TYPE_LABELS[req.type] ?? req.type}
                         </Text>
-                      </XStack>
-                    </YStack>
-                    <YStack flex={1} alignItems="flex-start" gap="$2">
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={STATUS_COLORS[req.status]?.bg ?? '$gray2'}
+                      </Row>
+                    </Stack>
+                    <Stack style={{ flex: 1, alignItems: 'flex-start' }} gap={spacing[8]}>
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor: STATUS_COLORS[req.status]?.bg ?? colors.gray[100],
+                        }}
                       >
-                        <Text fontSize="$2" color={STATUS_COLORS[req.status]?.text ?? '$gray11'}>
+                        <Text size="xs" color={STATUS_COLORS[req.status]?.text ?? colors.text.light.secondary}>
                           {req.status === 'in_progress' ? 'processing' : req.status}
                         </Text>
-                      </XStack>
+                      </Row>
                       {req.is_overdue && (
-                        <XStack
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          backgroundColor="$red9"
-                          borderRadius="$2"
+                        <Row
+                          style={{
+                            paddingHorizontal: spacing[8],
+                            paddingVertical: spacing[4],
+                            backgroundColor: colors.error[500],
+                            borderRadius: 8,
+                          }}
                         >
-                          <Text fontSize="$1" color="white">
+                          <Text size="xs" color="white">
                             OVERDUE
                           </Text>
-                        </XStack>
+                        </Row>
                       )}
-                    </YStack>
-                    <YStack flex={1} alignItems="flex-start">
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={PRIORITY_COLORS[req.priority]?.bg ?? '$gray2'}
+                    </Stack>
+                    <Stack style={{ flex: 1, alignItems: 'flex-start' }}>
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor: PRIORITY_COLORS[req.priority]?.bg ?? colors.gray[100],
+                        }}
                       >
                         <Text
-                          fontSize="$2"
-                          color={PRIORITY_COLORS[req.priority]?.text ?? '$gray11'}
+                          size="xs"
+                          color={PRIORITY_COLORS[req.priority]?.text ?? colors.text.light.secondary}
                         >
                           {req.priority}
                         </Text>
-                      </XStack>
-                    </YStack>
-                    <YStack flex={1} justifyContent="center">
-                      <Text color="$gray11">{req.days_elapsed}</Text>
-                    </YStack>
-                    <YStack flex={1} justifyContent="center">
-                      <Text color="$gray11">{formatDate(req.created_at)}</Text>
-                    </YStack>
-                    <XStack flex={1} gap="$2">
+                      </Row>
+                    </Stack>
+                    <Stack style={{ flex: 1, justifyContent: 'center' }}>
+                      <Text color={colors.text.light.secondary}>{req.days_elapsed}</Text>
+                    </Stack>
+                    <Stack style={{ flex: 1, justifyContent: 'center' }}>
+                      <Text color={colors.text.light.secondary}>{formatDate(req.created_at)}</Text>
+                    </Stack>
+                    <Row style={{ flex: 1, gap: spacing[8] }}>
                       <Button
-                        size="$2"
-                        backgroundColor="transparent"
-                        color="$blue11"
-                        hoverStyle={{ backgroundColor: '$blue3' }}
+                        size="sm"
+                        variant="text"
+                        color="primary"
                         onPress={() => handleViewRequest(req.id)}
                       >
-                        <Text fontSize="$2">View</Text>
+                        View
                       </Button>
                       {req.status === 'pending' && (
                         <>
                           <Button
-                            size="$2"
-                            backgroundColor="transparent"
-                            color="$green11"
-                            hoverStyle={{ backgroundColor: '$green3' }}
+                            size="sm"
+                            variant="text"
+                            color="success"
                             onPress={() => handleProcessRequest(req.id)}
                             disabled={approveRequest.isPending}
                           >
-                            <Text fontSize="$2">Process</Text>
+                            Process
                           </Button>
                           <Button
-                            size="$2"
-                            backgroundColor="transparent"
-                            color="$purple11"
-                            hoverStyle={{ backgroundColor: '$purple3' }}
+                            size="sm"
+                            variant="text"
+                            color="gray"
                             onPress={() => handleAssignRequest(req.id)}
                           >
-                            <Text fontSize="$2">Assign</Text>
+                            Assign
                           </Button>
                         </>
                       )}
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
 
       {/* Quick Actions */}
-      <YStack marginBottom="$8">
-        <H3 marginBottom="$4">Quick Actions</H3>
-        <XStack flexWrap="wrap" gap="$3">
+      <Stack style={{ marginBottom: spacing[32] }}>
+        <Heading level={3} style={{ marginBottom: spacing[16] }}>Quick Actions</Heading>
+        <Row style={{ flexWrap: 'wrap', gap: spacing[12] }}>
           <Button
-            backgroundColor="$blue9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            color="primary"
+            variant="filled"
             onPress={() => navigate('/admin/ccpa/reports')}
           >
             Generate Compliance Report
           </Button>
           <Button
-            backgroundColor="$gray3"
-            color="$gray11"
-            hoverStyle={{ backgroundColor: '$gray4' }}
+            variant="outline"
+            color="gray"
             onPress={() => navigate('/admin/ccpa/requests')}
           >
             View All Requests
           </Button>
           <Button
-            backgroundColor="$gray3"
-            color="$gray11"
-            hoverStyle={{ backgroundColor: '$gray4' }}
+            variant="outline"
+            color="gray"
             onPress={() => navigate('/admin/ccpa/breach')}
           >
             View Breach Notifications
           </Button>
           <Button
-            backgroundColor="$gray3"
-            color="$gray11"
-            hoverStyle={{ backgroundColor: '$gray4' }}
+            variant="outline"
+            color="gray"
             onPress={() => navigate('/admin/ccpa/audit-log')}
           >
             Audit Log
           </Button>
           <Button
-            backgroundColor="$gray3"
-            color="$gray11"
-            hoverStyle={{ backgroundColor: '$gray4' }}
+            variant="outline"
+            color="gray"
             onPress={() => navigate('/admin/ccpa/apps')}
           >
             OAuth App Configuration
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* CCPA Timeline Requirements */}
-      <YStack
-        padding="$4"
-        backgroundColor="$blue2"
-        borderWidth={1}
-        borderColor="$blue6"
-        borderRadius="$4"
+      <Stack
+        style={{
+          padding: spacing[16],
+          backgroundColor: colors.info[200],
+          borderWidth: 1,
+          borderColor: colors.info[400],
+          borderRadius: spacing[16],
+        }}
       >
-        <Text fontWeight="600" color="$blue11" marginBottom="$2">
+        <Text weight="semibold" color={colors.info[600]} style={{ marginBottom: spacing[8] }}>
           CCPA Timeline Requirements
         </Text>
-        <YStack gap="$1">
-          <Text fontSize="$2" color="$blue11">
-            <Text fontWeight="600">10 days</Text> - Acknowledge receipt of request
+        <Stack gap={spacing[4]}>
+          <Text size="xs" color={colors.info[600]}>
+            <Text weight="semibold">10 days</Text> - Acknowledge receipt of request
           </Text>
-          <Text fontSize="$2" color="$blue11">
-            <Text fontWeight="600">45 days</Text> - Complete request (extendable by 45 days with
+          <Text size="xs" color={colors.info[600]}>
+            <Text weight="semibold">45 days</Text> - Complete request (extendable by 45 days with
             notice)
           </Text>
-          <Text fontSize="$2" color="$blue11">
-            <Text fontWeight="600">12 months</Text> - Retain records of requests and responses
+          <Text size="xs" color={colors.info[600]}>
+            <Text weight="semibold">12 months</Text> - Retain records of requests and responses
           </Text>
-          <Text fontSize="$2" color="$blue11">
-            <Text fontWeight="600">72 hours</Text> - Notify affected parties in case of data breach
+          <Text size="xs" color={colors.info[600]}>
+            <Text weight="semibold">72 hours</Text> - Notify affected parties in case of data breach
           </Text>
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

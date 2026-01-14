@@ -1,6 +1,6 @@
 // src/pages/gc/settings/InsuranceSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2, H3, Input } from '@unicornlove/ui';
+import { Stack, Text, Button, H2, H3, Input, Separator } from '@unicornlove/beyond-ui';
 import Checkbox from '../../../ui/Checkbox';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
@@ -94,37 +94,37 @@ function GCInsuranceSettings() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Default Insurance Requirements</H2>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {[1, 2, 3, 4, 5, 6, 7].map(i => (
-            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
+            <Stack key={i} style={{ height: 40, backgroundColor: 'var(--color-3)', borderRadius: 'var(--radius-4)' }} />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Default Insurance Requirements</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-6)' }}>
         Set the default insurance requirements for subcontractors on your projects.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Input
             label="General Liability Per Occurrence Limit ($)"
             type="number"
             value={requirements.glPerOccurrence}
-            onChangeText={(value) => updateRequirement('glPerOccurrence', value)}
+            onChange={(e) => updateRequirement('glPerOccurrence', e.target.value)}
             required
           />
           <Input
             label="General Liability Aggregate Limit ($)"
             type="number"
             value={requirements.glAggregate}
-            onChangeText={(value) => updateRequirement('glAggregate', value)}
+            onChange={(e) => updateRequirement('glAggregate', e.target.value)}
             required
           />
           <Checkbox
@@ -142,8 +142,8 @@ function GCInsuranceSettings() {
             onChange={(e) => updateRequirement('umbrellaRequired', e.target.checked)}
             label="Umbrella/Excess Liability Required"
           />
-          <YStack borderTopWidth={1} borderTopColor="$borderColor" marginVertical="$6" />
-          <H3 marginBottom="$4">Endorsement Requirements</H3>
+          <Separator style={{ marginTop: 'var(--space-6)', marginBottom: 'var(--space-6)' }} />
+          <H3 style={{ marginBottom: 'var(--space-4)' }}>Endorsement Requirements</H3>
           <Checkbox
             checked={additionalInsured}
             onChange={(e) => setAdditionalInsured(e.target.checked)}
@@ -158,13 +158,13 @@ function GCInsuranceSettings() {
             type="submit"
             disabled={!isDirty || isSaving}
             variant="primary"
-            marginTop="$6"
+            style={{ marginTop: 'var(--space-6)' }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

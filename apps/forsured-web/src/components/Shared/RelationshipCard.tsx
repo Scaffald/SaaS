@@ -1,10 +1,9 @@
 /**
- * RelationshipCard - Relationship card using Tamagui
+ * RelationshipCard - Relationship card using Beyond UI
  */
 import React from 'react';
-import { XStack, YStack, Text } from '@unicornlove/ui';
-import { Card } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Row, Stack, Text, Card } from '@unicornlove/beyond-ui';
+import { Chip as Badge } from '@unicornlove/beyond-ui';
 import {
   Building,
   TrendingUp,
@@ -77,40 +76,43 @@ export default function RelationshipCard({
 
   return (
     <Card
-      padding="$6"
-      onPress={onClick}
-      cursor={onClick ? 'pointer' : 'default'}
-      hoverStyle={onClick ? { shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, borderColor: '$blue9' } : undefined}
+      style={{
+        padding: 24,
+        cursor: onClick ? 'pointer' : 'default',
+      }}
+      onClick={onClick}
     >
-      <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
-        <XStack alignItems="flex-start" gap="$3">
-          <YStack
-            width={48}
-            height={48}
-            backgroundColor="$blue3"
-            borderRadius="$3"
-            alignItems="center"
-            justifyContent="center"
-            flexShrink={0}
+      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+        <Row style={{ alignItems: 'flex-start', gap: 12 }}>
+          <Stack
+            style={{
+              width: 48,
+              height: 48,
+              backgroundColor: 'var(--color-blue3)',
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
           >
             <Building size={24} color="currentColor" />
-          </YStack>
-          <YStack gap="$1">
-            <Text fontSize="$5" fontWeight="600" color="$color11">
+          </Stack>
+          <Stack style={{ gap: 4 }}>
+            <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-color11)' }}>
               {organizationName}
             </Text>
-            <Badge variant={getTypeBadgeVariant()} size="$2">
+            <Badge variant={getTypeBadgeVariant()} size="sm">
               {getTypeLabel()}
             </Badge>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
         <StatusBadge status={status} size="sm" />
-      </XStack>
+      </Row>
 
-      <XStack flexWrap="wrap" gap="$4">
+      <Row style={{ flexWrap: 'wrap', gap: 16 }}>
         {complianceScore !== undefined && (
-          <YStack gap="$1">
-            <Text fontSize="$1" color="$color10" mb="$1">
+          <Stack style={{ gap: 4 }}>
+            <Text style={{ fontSize: 12, color: 'var(--color-color10)', marginBottom: 4 }}>
               Compliance
             </Text>
             <ComplianceScore
@@ -118,44 +120,44 @@ export default function RelationshipCard({
               size="sm"
               showTrend={false}
             />
-          </YStack>
+          </Stack>
         )}
 
         {relationshipHealth && (
-          <YStack gap="$1">
-            <Text fontSize="$1" color="$color10" mb="$1">
+          <Stack style={{ gap: 4 }}>
+            <Text style={{ fontSize: 12, color: 'var(--color-color10)', marginBottom: 4 }}>
               Relationship Health
             </Text>
-            <XStack alignItems="center" gap="$1">
+            <Row style={{ alignItems: 'center', gap: 4 }}>
               {getHealthIcon()}
-              <Text fontSize="$2" fontWeight="500" color="$color11" textTransform="capitalize">
+              <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-color11)', textTransform: 'capitalize' }}>
                 {relationshipHealth}
               </Text>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {activeProjects !== undefined && (
-          <YStack gap="$1">
-            <Text fontSize="$1" color="$color10" mb="$1">
+          <Stack style={{ gap: 4 }}>
+            <Text style={{ fontSize: 12, color: 'var(--color-color10)', marginBottom: 4 }}>
               Active Projects
             </Text>
-            <Text fontSize="$2" fontWeight="600" color="$color11">
+            <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>
               {activeProjects}
             </Text>
-          </YStack>
+          </Stack>
         )}
 
-        <YStack gap="$1">
-          <Text fontSize="$1" color="$color10" mb="$1">
+        <Stack style={{ gap: 4 }}>
+          <Text style={{ fontSize: 12, color: 'var(--color-color10)', marginBottom: 4 }}>
             Last Activity
           </Text>
-          <XStack alignItems="center" gap="$1" color="$color10">
+          <Row style={{ alignItems: 'center', gap: 4, color: 'var(--color-color10)' }}>
             <Clock size={12} />
-            <Text fontSize="$2">{formatDistanceToNow(lastActivity)}</Text>
-          </XStack>
-        </YStack>
-      </XStack>
+            <Text style={{ fontSize: 14 }}>{formatDistanceToNow(lastActivity)}</Text>
+          </Row>
+        </Stack>
+      </Row>
     </Card>
   );
 }

@@ -12,8 +12,8 @@
 
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { YStack, XStack, Text, Button, Card, H2, SizableText } from '@unicornlove/ui';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Stack, Row, Text, Button, Card, H2 } from '@unicornlove/beyond-ui';
 import { X } from 'lucide-react';
 import { AccessLevelSelector, type AccessLevel } from './AccessLevelSelector';
 import { ActivityLog, type ActivityEntry } from './ActivityLog';
@@ -136,115 +136,128 @@ export function MemberDetailModal({
   if (!isOpen || !member) return null;
 
   return (
-    <YStack
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      zIndex={50}
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="rgba(0,0,0,0.5)"
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
       onClick={handleBackdropClick}
     >
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={4}
-        width="100%"
-        maxWidth={448}
-        marginHorizontal="$4"
-        maxHeight="90vh"
-        overflow="hidden"
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 8,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          width: '100%',
+          maxWidth: 448,
+          marginLeft: 16,
+          marginRight: 16,
+          maxHeight: '90vh',
+          overflow: 'hidden',
+        }}
+        onPress={(e: React.MouseEvent) => e.stopPropagation()}
       >
-        <YStack overflow="scroll">
+        <div style={{ overflow: 'auto' }}>
           {/* Header */}
-          <XStack
-            alignItems="flex-start"
-            justifyContent="space-between"
-            padding="$4"
-            borderBottomWidth={1}
-            borderColor="$borderColor"
+          <Row
+            style={{
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              padding: 16,
+              borderBottom: '1px solid var(--color-border)',
+            }}
           >
-            <XStack alignItems="center" gap="$4">
+            <Row style={{ alignItems: 'center', gap: 16 }}>
               {/* Avatar */}
               {member.avatar ? (
-                <YStack
-                  width={56}
-                  height={56}
-                  borderRadius={9999}
-                  overflow="hidden"
-                  backgroundColor="$color3"
+                <div
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    backgroundColor: 'var(--color-gray-3)',
+                  }}
                 >
                   <img
                     src={member.avatar}
                     alt={member.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
-                </YStack>
+                </div>
               ) : (
-                <YStack
-                  width={56}
-                  height={56}
-                  borderRadius={9999}
-                  backgroundColor="$color3"
-                  alignItems="center"
-                  justifyContent="center"
+                <div
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--color-gray-3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
-                  <Text fontSize="$6" fontWeight="500" color="$color11">
+                  <Text style={{ fontSize: 18, fontWeight: 500, color: 'var(--color-gray-11)' }}>
                     {getInitials(member.name)}
                   </Text>
-                </YStack>
+                </div>
               )}
 
               {/* Name and Email */}
-              <YStack>
-                <H2 id="modal-title" fontSize="$6" fontWeight="600" color="$color12">
+              <Stack>
+                <H2 id="modal-title" style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
                   {member.name}
                 </H2>
-                <SizableText fontSize="$3" color="$color11">
+                <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
                   {member.email}
-                </SizableText>
+                </Text>
                 {member.company && (
-                  <SizableText fontSize="$1" color="$color10" mt="$0.5">
+                  <Text style={{ fontSize: 12, color: 'var(--color-gray-10)', marginTop: 2 }}>
                     {member.company}
-                  </SizableText>
+                  </Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
             {/* Close Button */}
             <Button
               onPress={onClose}
-              variant="outlined"
-              size="$2"
-              padding="$1"
+              variant="outline"
+              size="sm"
+              style={{ padding: 4 }}
               aria-label="Close modal"
             >
               <X size={20} />
             </Button>
-          </XStack>
+          </Row>
 
           {/* Content */}
-          <YStack padding="$4" gap="$6">
+          <Stack style={{ padding: 16, gap: 24 }}>
             {/* Error Message */}
             {error && (
-              <YStack
-                padding="$3"
-                backgroundColor="$red2"
-                borderWidth={1}
-                borderColor="$red6"
-                borderRadius="$4"
+              <div
+                style={{
+                  padding: 12,
+                  backgroundColor: 'var(--color-red-2)',
+                  border: '1px solid var(--color-red-6)',
+                  borderRadius: 8,
+                }}
               >
-                <SizableText fontSize="$3" color="$red11">
+                <Text style={{ fontSize: 14, color: 'var(--color-red-11)' }}>
                   {error}
-                </SizableText>
-              </YStack>
+                </Text>
+              </div>
             )}
 
             {/* Access Level Section */}
@@ -258,18 +271,18 @@ export function MemberDetailModal({
 
             {/* Member Since */}
             {member.createdAt && (
-              <YStack gap="$1">
-                <SizableText fontSize="$3" fontWeight="500" color="$color11">
+              <Stack style={{ gap: 4 }}>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-11)' }}>
                   Member Since
-                </SizableText>
-                <SizableText fontSize="$3" color="$color10">
+                </Text>
+                <Text style={{ fontSize: 14, color: 'var(--color-gray-10)' }}>
                   {new Date(member.createdAt).toLocaleDateString('en-US', {
                     month: 'long',
                     day: 'numeric',
                     year: 'numeric',
                   })}
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
             )}
 
             {/* Activity Log */}
@@ -277,58 +290,61 @@ export function MemberDetailModal({
 
             {/* Remove Member Section */}
             {onRemove && (
-              <YStack paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <Stack style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
                 {!showRemoveConfirm ? (
                   <Button
                     onPress={() => setShowRemoveConfirm(true)}
-                    variant="outlined"
-                    size="$2"
-                    color="$red10"
+                    variant="outline"
+                    size="sm"
+                    style={{ color: 'var(--color-red-10)' }}
                   >
                     Remove from team
                   </Button>
                 ) : (
-                  <YStack
-                    gap="$3"
-                    padding="$3"
-                    backgroundColor="$red2"
-                    borderWidth={1}
-                    borderColor="$red6"
-                    borderRadius="$4"
+                  <Stack
+                    style={{
+                      gap: 12,
+                      padding: 12,
+                      backgroundColor: 'var(--color-red-2)',
+                      border: '1px solid var(--color-red-6)',
+                      borderRadius: 8,
+                    }}
                   >
-                    <SizableText fontSize="$3" color="$red11">
-                      Are you sure you want to remove <Text fontWeight="600">{member.name}</Text> from the
+                    <Text style={{ fontSize: 14, color: 'var(--color-red-11)' }}>
+                      Are you sure you want to remove <Text style={{ fontWeight: 600 }}>{member.name}</Text> from the
                       team? This action cannot be undone.
-                    </SizableText>
-                    <XStack gap="$2">
+                    </Text>
+                    <Row style={{ gap: 8 }}>
                       <Button
                         onPress={handleRemove}
                         disabled={removeLoading}
-                        backgroundColor="$red10"
-                        color="white"
-                        size="$2"
-                        opacity={removeLoading ? 0.5 : 1}
+                        style={{
+                          backgroundColor: 'var(--color-red-10)',
+                          color: 'white',
+                          opacity: removeLoading ? 0.5 : 1,
+                        }}
+                        size="sm"
                       >
                         {removeLoading ? 'Removing...' : 'Yes, Remove'}
                       </Button>
                       <Button
                         onPress={() => setShowRemoveConfirm(false)}
                         disabled={removeLoading}
-                        variant="outlined"
-                        size="$2"
-                        opacity={removeLoading ? 0.5 : 1}
+                        variant="outline"
+                        size="sm"
+                        style={{ opacity: removeLoading ? 0.5 : 1 }}
                       >
                         Cancel
                       </Button>
-                    </XStack>
-                  </YStack>
+                    </Row>
+                  </Stack>
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </div>
       </Card>
-    </YStack>
+    </div>
   );
 }
 

@@ -18,17 +18,21 @@
  *
  * // Icon-only button
  * <Button iconStart={MyIcon} iconOnly />
+ *
+ * // With ref
+ * const buttonRef = useRef<View>(null)
+ * <Button ref={buttonRef}>Click me</Button>
  * ```
  */
 
-import { useMemo } from 'react'
+import { forwardRef, useMemo } from 'react'
 import { Pressable, Text, View, ActivityIndicator, Platform } from 'react-native'
 import type { ButtonProps } from './Button.types'
 import { getButtonStyles } from './Button.styles'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 
-export function Button({
+export const Button = forwardRef<View, ButtonProps>(function Button({
   children,
   color = 'gray',
   variant = 'filled',
@@ -43,7 +47,7 @@ export function Button({
   textStyle,
   onPress,
   ...pressableProps
-}: ButtonProps) {
+}, ref) {
   const isDisabled = disabled || loading
   const { theme } = useThemeContext()
   const { isHovered, interactiveProps } = useInteractiveState(isDisabled)
@@ -59,6 +63,7 @@ export function Button({
 
   return (
     <Pressable
+      ref={ref}
       disabled={isDisabled}
       onPress={onPress}
       accessibilityRole="button"
@@ -102,7 +107,9 @@ export function Button({
       )}
     </Pressable>
   )
-}
+})
+
+Button.displayName = 'Button'
 
 // Export types
 export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './Button.types'

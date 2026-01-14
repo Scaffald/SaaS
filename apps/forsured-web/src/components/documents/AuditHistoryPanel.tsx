@@ -3,8 +3,8 @@
  * Displays audit trail of field changes
  */
 
-import { useState } from 'react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import React, { useState } from 'react';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { AuditEntry } from '../../types/ocr.types';
 import { History, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -30,94 +30,113 @@ export const AuditHistoryPanel: React.FC<AuditHistoryPanelProps> = ({ auditHisto
   if (auditHistory.length === 0) {
     return (
       <Card
-        backgroundColor="$gray2"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding="$4"
+        style={{
+          backgroundColor: 'var(--color-gray-2)',
+          borderRadius: '8px',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'var(--color-border)',
+          padding: '16px',
+        }}
       >
-        <XStack alignItems="center" color="$color10">
-          <History size={20} mr="$2" />
-          <Text fontSize="$3">No audit history</Text>
-        </XStack>
+        <Row style={{ alignItems: 'center', color: 'var(--color-gray-10)' }}>
+          <History size={20} style={{ marginRight: '8px' }} />
+          <Text style={{ fontSize: '14px' }}>No audit history</Text>
+        </Row>
       </Card>
     );
   }
 
   return (
-    <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
-      <XStack
-        as="button"
-        width="100%"
-        alignItems="center"
-        justifyContent="space-between"
-        padding="$4"
-        hoverStyle={{ backgroundColor: '$backgroundHover' }}
+    <Card
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: '8px',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: 'var(--color-border)',
+      }}
+    >
+      <button
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px',
+          cursor: 'pointer',
+          background: 'none',
+          border: 'none',
+        }}
         onClick={() => setIsExpanded(!isExpanded)}
         aria-expanded={isExpanded}
         aria-controls="audit-history-content"
-        cursor="pointer"
       >
-        <XStack alignItems="center">
-          <History size={20} color="$color10" mr="$2" />
-          <Text fontSize="$3" fontWeight="500" color="$color12">
+        <Row style={{ alignItems: 'center' }}>
+          <History size={20} color="var(--color-gray-10)" style={{ marginRight: '8px' }} />
+          <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray-12)' }}>
             Audit History ({auditHistory.length} {auditHistory.length === 1 ? 'entry' : 'entries'})
           </Text>
-        </XStack>
+        </Row>
         {isExpanded ? (
-          <ChevronUp size={20} color="$color10" />
+          <ChevronUp size={20} color="var(--color-gray-10)" />
         ) : (
-          <ChevronDown size={20} color="$color10" />
+          <ChevronDown size={20} color="var(--color-gray-10)" />
         )}
-      </XStack>
+      </button>
 
       {isExpanded && (
-        <YStack
+        <Stack
           id="audit-history-content"
-          borderTopWidth={1}
-          borderTopColor="$borderColor"
-          maxHeight={384}
-          overflowY="auto"
+          style={{
+            borderTopWidth: 1,
+            borderTopStyle: 'solid',
+            borderTopColor: 'var(--color-border)',
+            maxHeight: '384px',
+            overflowY: 'auto',
+          }}
         >
           {auditHistory.map((entry, index) => (
-            <YStack
+            <Stack
               key={entry.id}
-              padding="$4"
-              borderBottomWidth={index < auditHistory.length - 1 ? 1 : 0}
-              borderBottomColor="$borderColor"
-              hoverStyle={{ backgroundColor: '$backgroundHover' }}
+              style={{
+                padding: '16px',
+                borderBottomWidth: index < auditHistory.length - 1 ? 1 : 0,
+                borderBottomStyle: 'solid',
+                borderBottomColor: 'var(--color-border)',
+              }}
             >
-              <XStack alignItems="flex-start" justifyContent="space-between">
-                <YStack flex={1}>
-                  <Text fontSize="$3" fontWeight="500" color="$color12">
+              <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <Stack style={{ flex: 1 }}>
+                  <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray-12)' }}>
                     {entry.fieldName}
                   </Text>
-                  <YStack mt="$1" fontSize="$3" color="$color11" gap="$1">
+                  <Stack style={{ marginTop: '4px', fontSize: '14px', color: 'var(--color-gray-11)', gap: '4px' }}>
                     <Text>
-                      <Text fontWeight="500">From:</Text>{' '}
-                      <Text color="$red10">{formatValue(entry.oldValue)}</Text>
+                      <Text style={{ fontWeight: 500 }}>From:</Text>{' '}
+                      <Text style={{ color: 'var(--color-red-10)' }}>{formatValue(entry.oldValue)}</Text>
                     </Text>
                     <Text>
-                      <Text fontWeight="500">To:</Text>{' '}
-                      <Text color="$green10">{formatValue(entry.newValue)}</Text>
+                      <Text style={{ fontWeight: 500 }}>To:</Text>{' '}
+                      <Text style={{ color: 'var(--color-green-10)' }}>{formatValue(entry.newValue)}</Text>
                     </Text>
-                  </YStack>
-                  <XStack mt="$2" alignItems="center" gap="$3" fontSize="$1" color="$color10">
+                  </Stack>
+                  <Row style={{ marginTop: '8px', alignItems: 'center', gap: '12px', fontSize: '11px', color: 'var(--color-gray-10)' }}>
                     <Text>
-                      <Text fontWeight="500">Changed by:</Text> {entry.changedBy}
+                      <Text style={{ fontWeight: 500 }}>Changed by:</Text> {entry.changedBy}
                     </Text>
                     <Text>
-                      <Text fontWeight="500">Confidence:</Text> {entry.confidenceAtEdit}%
+                      <Text style={{ fontWeight: 500 }}>Confidence:</Text> {entry.confidenceAtEdit}%
                     </Text>
-                  </XStack>
-                </YStack>
-              </XStack>
-              <Text mt="$2" fontSize="$1" color="$color9">
+                  </Row>
+                </Stack>
+              </Row>
+              <Text style={{ marginTop: '8px', fontSize: '11px', color: 'var(--color-gray-9)' }}>
                 {formatDate(entry.changedAt)}
               </Text>
-            </YStack>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       )}
     </Card>
   );

@@ -12,7 +12,7 @@ import {
   Paperclip,
   MoreHorizontal,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2, H3, Card } from '@unicornlove/beyond-ui';
 import { useTasks } from '../../hooks/useTasks';
 import { useProjects } from '../../hooks/useProjects';
 import { useUsers } from '../../hooks/useUsers';
@@ -39,65 +39,72 @@ export default function BrokerTaskDetailPage() {
 
   if (!task) {
     return (
-      <YStack gap="$6">
-        <XStack
-          alignItems="center"
-          gap="$2"
-          cursor="pointer"
+      <Stack gap={24}>
+        <button
           onClick={() => navigate(-1)}
-          hoverStyle={{ opacity: 0.7 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            backgroundColor: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--color-text-muted)',
+          }}
         >
-          <ArrowLeft size={20} color="$color11" />
-          <Text color="$color11">Back</Text>
-        </XStack>
+          <ArrowLeft size={20} />
+          <span>Back</span>
+        </button>
         <Card
-          paddingVertical="$12"
-          paddingHorizontal="$6"
-          backgroundColor="$background"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          alignItems="center"
+          style={{
+            padding: '48px 24px',
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 12,
+            border: '1px solid var(--color-border)',
+            textAlign: 'center',
+          }}
         >
-          <AlertCircle color="$red10" size={64} mb="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
-            Task Not Found
-          </H3>
-          <Text color="$color11">
-            The task you're looking for doesn't exist or has been deleted.
-          </Text>
+          <Stack alignItems="center">
+            <AlertCircle color="var(--color-red-10)" size={64} style={{ marginBottom: 16 }} />
+            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
+              Task Not Found
+            </H3>
+            <Text muted>
+              The task you're looking for doesn't exist or has been deleted.
+            </Text>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
     );
   }
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityStyle = (priority: string): React.CSSProperties => {
     switch (priority) {
       case 'critical':
-        return { color: '$red10', backgroundColor: '$red2', borderColor: '$red6' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-6)' };
       case 'high':
-        return { color: '$yellow10', backgroundColor: '$yellow2', borderColor: '$yellow6' };
+        return { color: 'var(--color-yellow-10)', backgroundColor: 'var(--color-yellow-2)', borderColor: 'var(--color-yellow-6)' };
       case 'medium':
-        return { color: '$blue10', backgroundColor: '$blue2', borderColor: '$blue6' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-6)' };
       case 'low':
-        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray6' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-6)' };
       default:
-        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray6' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-6)' };
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string): React.CSSProperties => {
     switch (status) {
       case 'pending':
-        return { color: '$blue10', backgroundColor: '$blue2' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
       case 'in_progress':
-        return { color: '$blue10', backgroundColor: '$blue2' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
       case 'overdue':
-        return { color: '$red10', backgroundColor: '$red2' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)' };
       case 'completed':
-        return { color: '$green10', backgroundColor: '$green2' };
+        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' };
       default:
-        return { color: '$color10', backgroundColor: '$gray2' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)' };
     }
   };
 
@@ -110,218 +117,212 @@ export default function BrokerTaskDetailPage() {
     }
   };
 
-  const priorityColors = getPriorityColor(task.priority);
-  const statusColors = getStatusColor(task.status);
+  const priorityStyle = getPriorityStyle(task.priority);
+  const statusStyle = getStatusStyle(task.status);
+
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: 'var(--color-background)',
+    borderRadius: 12,
+    border: '1px solid var(--color-border)',
+    padding: 24,
+  };
 
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <XStack
-          alignItems="center"
-          gap="$2"
-          cursor="pointer"
+    <Stack gap={24}>
+      <Row alignItems="center" justifyContent="space-between">
+        <button
           onClick={() => navigate(-1)}
-          hoverStyle={{ opacity: 0.7 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            backgroundColor: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--color-text-muted)',
+          }}
         >
-          <ArrowLeft size={20} color="$color11" />
-          <Text color="$color11">Back to Tasks</Text>
-        </XStack>
-        <XStack alignItems="center" gap="$3">
-          <Button variant="outline" size="$2">
-            <Paperclip size={16} mr="$2" />
-            Attachments
+          <ArrowLeft size={20} />
+          <span>Back to Tasks</span>
+        </button>
+        <Row alignItems="center" gap={12}>
+          <Button variant="outlined" size="sm">
+            <Row alignItems="center" gap={8}>
+              <Paperclip size={16} />
+              <span>Attachments</span>
+            </Row>
           </Button>
-          <Button variant="outline" size="$2">
-            <MessageSquare size={16} mr="$2" />
-            Comments
+          <Button variant="outlined" size="sm">
+            <Row alignItems="center" gap={8}>
+              <MessageSquare size={16} />
+              <span>Comments</span>
+            </Row>
           </Button>
-          <Button variant="ghost" size="$2">
+          <Button variant="ghost" size="sm">
             <MoreHorizontal size={16} />
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
-      <XStack
-        flexDirection="column"
-        $gtLg={{ flexDirection: 'row' }}
-        gap="$6"
-      >
-        <YStack flex={1} $gtLg={{ flex: 2 }} gap="$6">
-          <Card
-            backgroundColor="$background"
-            borderRadius="$4"
-            elevation={1}
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$6"
-          >
-            <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
-              <YStack flex={1}>
-                <XStack alignItems="center" gap="$3" mb="$3">
-                  <XStack
-                    paddingHorizontal="$3"
-                    paddingVertical="$1"
-                    fontSize="$3"
-                    fontWeight="500"
-                    borderRadius="$2"
-                    borderWidth={1}
-                    {...priorityColors}
+      <Row gap={24} style={{ flexWrap: 'wrap' }}>
+        <Stack style={{ flex: 2, minWidth: '60%' }} gap={24}>
+          <Card style={cardStyle}>
+            <Row alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: 16 }}>
+              <Stack style={{ flex: 1 }}>
+                <Row alignItems="center" gap={12} style={{ marginBottom: 12 }}>
+                  <span
+                    style={{
+                      paddingLeft: 12,
+                      paddingRight: 12,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      fontSize: 14,
+                      fontWeight: 500,
+                      borderRadius: 4,
+                      border: `1px solid ${priorityStyle.borderColor}`,
+                      backgroundColor: priorityStyle.backgroundColor,
+                      color: priorityStyle.color,
+                    }}
                   >
-                    <Text fontSize="$3" fontWeight="500" color={priorityColors.color}>
-                      {task.priority?.toUpperCase()}
-                    </Text>
-                  </XStack>
-                  <XStack
-                    paddingHorizontal="$3"
-                    paddingVertical="$1"
-                    fontSize="$3"
-                    fontWeight="500"
-                    borderRadius="$2"
-                    {...statusColors}
+                    {task.priority?.toUpperCase()}
+                  </span>
+                  <span
+                    style={{
+                      paddingLeft: 12,
+                      paddingRight: 12,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      fontSize: 14,
+                      fontWeight: 500,
+                      borderRadius: 4,
+                      backgroundColor: statusStyle.backgroundColor,
+                      color: statusStyle.color,
+                    }}
                   >
-                    <Text fontSize="$3" fontWeight="500" color={statusColors.color}>
-                      {task.status?.replace('_', ' ').toUpperCase()}
-                    </Text>
-                  </XStack>
-                </XStack>
-                <H1 fontSize="$8" fontWeight="bold" color="$color12" mb="$2">
+                    {task.status?.replace('_', ' ').toUpperCase()}
+                  </span>
+                </Row>
+                <H1 style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 8 }}>
                   {task.title}
                 </H1>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
-            <Text fontSize="$3" color="$color11" maxWidth="none">
+            <Text size="sm" muted>
               {task.description || 'No description provided.'}
             </Text>
           </Card>
 
-          <Card
-            backgroundColor="$background"
-            borderRadius="$4"
-            elevation={1}
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$6"
-          >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+          <Card style={cardStyle}>
+            <H2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
               Activity
             </H2>
-            <YStack alignItems="center" paddingVertical="$8">
-              <Clock size={32} color="$color11" mb="$2" opacity={0.5} />
-              <Text color="$color11">No activity recorded yet</Text>
-            </YStack>
+            <Stack alignItems="center" style={{ padding: '32px 0' }}>
+              <Clock size={32} color="var(--color-text-muted)" style={{ marginBottom: 8, opacity: 0.5 }} />
+              <Text muted>No activity recorded yet</Text>
+            </Stack>
           </Card>
-        </YStack>
+        </Stack>
 
-        <YStack gap="$6" flex={1}>
-          <Card
-            backgroundColor="$background"
-            borderRadius="$4"
-            elevation={1}
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$6"
-          >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+        <Stack gap={24} style={{ flex: 1, minWidth: '30%' }}>
+          <Card style={cardStyle}>
+            <H2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
               Details
             </H2>
-            <YStack gap="$4">
-              <YStack>
-                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" mb="$1">
+            <Stack gap={16}>
+              <Stack>
+                <Text size="xs" weight="medium" muted style={{ textTransform: 'uppercase', marginBottom: 4 }}>
                   Project
                 </Text>
-                <XStack alignItems="center" gap="$2" color="$color12">
-                  <Building size={16} color="$color10" />
-                  <Text color="$color12">{project?.name ?? 'Not assigned'}</Text>
-                </XStack>
-              </YStack>
+                <Row alignItems="center" gap={8}>
+                  <Building size={16} color="var(--color-text-muted)" />
+                  <Text>{project?.name ?? 'Not assigned'}</Text>
+                </Row>
+              </Stack>
 
-              <YStack>
-                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" mb="$1">
+              <Stack>
+                <Text size="xs" weight="medium" muted style={{ textTransform: 'uppercase', marginBottom: 4 }}>
                   Assigned To
                 </Text>
-                <XStack alignItems="center" gap="$2" color="$color12">
-                  <User size={16} color="$color10" />
-                  <Text color="$color12">{assignee?.name ?? 'Unassigned'}</Text>
-                </XStack>
-              </YStack>
+                <Row alignItems="center" gap={8}>
+                  <User size={16} color="var(--color-text-muted)" />
+                  <Text>{assignee?.name ?? 'Unassigned'}</Text>
+                </Row>
+              </Stack>
 
-              <YStack>
-                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" mb="$1">
+              <Stack>
+                <Text size="xs" weight="medium" muted style={{ textTransform: 'uppercase', marginBottom: 4 }}>
                   Due Date
                 </Text>
-                <XStack alignItems="center" gap="$2" color="$color12">
-                  <Calendar size={16} color="$color10" />
-                  <Text color="$color12">
+                <Row alignItems="center" gap={8}>
+                  <Calendar size={16} color="var(--color-text-muted)" />
+                  <Text>
                     {task.due_date
                       ? new Date(task.due_date).toLocaleDateString()
                       : 'No due date'}
                   </Text>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
 
-              <YStack>
-                <Text fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" mb="$1">
+              <Stack>
+                <Text size="xs" weight="medium" muted style={{ textTransform: 'uppercase', marginBottom: 4 }}>
                   Created
                 </Text>
-                <Text color="$color12">
+                <Text>
                   {task.created_at
                     ? new Date(task.created_at).toLocaleDateString()
                     : 'Unknown'}
                 </Text>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           </Card>
 
-          <Card
-            backgroundColor="$background"
-            borderRadius="$4"
-            elevation={1}
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$6"
-          >
-            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+          <Card style={cardStyle}>
+            <H2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
               Actions
             </H2>
-            <YStack gap="$2">
+            <Stack gap={8}>
               {task.status !== 'completed' && (
                 <Button
                   variant="primary"
-                  width="100%"
-                  onClick={() => handleStatusChange('completed')}
+                  onPress={() => handleStatusChange('completed')}
                   disabled={isUpdating}
+                  style={{ width: '100%' }}
                 >
-                  <CheckCircle size={16} mr="$2" />
-                  Mark Complete
+                  <Row alignItems="center" gap={8}>
+                    <CheckCircle size={16} />
+                    <span>Mark Complete</span>
+                  </Row>
                 </Button>
               )}
               {task.status === 'pending' && (
                 <Button
-                  variant="outline"
-                  width="100%"
-                  onClick={() => handleStatusChange('in_progress')}
+                  variant="outlined"
+                  onPress={() => handleStatusChange('in_progress')}
                   disabled={isUpdating}
+                  style={{ width: '100%' }}
                 >
-                  <Clock size={16} mr="$2" />
-                  Start Task
+                  <Row alignItems="center" gap={8}>
+                    <Clock size={16} />
+                    <span>Start Task</span>
+                  </Row>
                 </Button>
               )}
               {task.status === 'completed' && (
                 <Button
-                  variant="outline"
-                  width="100%"
-                  onClick={() => handleStatusChange('pending')}
+                  variant="outlined"
+                  onPress={() => handleStatusChange('pending')}
                   disabled={isUpdating}
+                  style={{ width: '100%' }}
                 >
                   Reopen Task
                 </Button>
               )}
-            </YStack>
+            </Stack>
           </Card>
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   );
 }
 

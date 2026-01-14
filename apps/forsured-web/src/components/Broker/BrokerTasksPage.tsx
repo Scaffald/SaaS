@@ -12,8 +12,9 @@ import {
   Inbox,
   Send,
   List,
+  Plus,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H3, Card, Input, Label, Button as TamaguiButton } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H3, Card, Input } from '@unicornlove/beyond-ui';
 import { useTasks } from '../../hooks/useTasks';
 import { useProjects } from '../../hooks/useProjects';
 import { useClients } from '../../hooks/useClients';
@@ -354,24 +355,24 @@ export default function BrokerTasksPage() {
     currentUser?.id,
   ]);
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityStyle = (priority: string): React.CSSProperties => {
     switch (priority) {
       case 'critical':
-        return { color: '$red10', backgroundColor: '$red2', borderColor: '$red6' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-6)' };
       case 'high':
-        return { color: '$yellow10', backgroundColor: '$yellow2', borderColor: '$yellow6' };
+        return { color: 'var(--color-yellow-10)', backgroundColor: 'var(--color-yellow-2)', borderColor: 'var(--color-yellow-6)' };
       case 'medium':
-        return { color: '$blue10', backgroundColor: '$blue2', borderColor: '$blue6' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-6)' };
       case 'low':
-        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray6' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-6)' };
       default:
-        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray6' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-6)' };
     }
   };
 
 
   const formatDueDate = (dueAt: string | undefined) => {
-    if (!dueAt) return { text: 'No due date', color: '$color11' };
+    if (!dueAt) return { text: 'No due date', color: 'var(--color-text-muted)' };
     const date = new Date(dueAt);
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
@@ -380,14 +381,14 @@ export default function BrokerTasksPage() {
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)}d overdue`,
-        color: '$red10',
+        color: 'var(--color-red-10)',
       };
-    if (diffDays === 0) return { text: 'Due today', color: '$yellow10' };
+    if (diffDays === 0) return { text: 'Due today', color: 'var(--color-yellow-10)' };
     if (diffDays === 1)
-      return { text: 'Due tomorrow', color: '$yellow10' };
+      return { text: 'Due tomorrow', color: 'var(--color-yellow-10)' };
     if (diffDays <= 3)
-      return { text: `Due in ${diffDays}d`, color: '$yellow10' };
-    return { text: date.toLocaleDateString(), color: '$color11' };
+      return { text: `Due in ${diffDays}d`, color: 'var(--color-yellow-10)' };
+    return { text: date.toLocaleDateString(), color: 'var(--color-text-muted)' };
   };
 
   const clearFilters = () => {
@@ -485,246 +486,199 @@ export default function BrokerTasksPage() {
     navigate(`/broker/clients/${clientId}`);
   };
 
+  const tabButtonStyle = (isSelected: boolean): React.CSSProperties => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
+    fontSize: 14,
+    fontWeight: 500,
+    borderBottom: `2px solid ${isSelected ? 'var(--color-blue-9)' : 'transparent'}`,
+    color: isSelected ? 'var(--color-blue-10)' : 'var(--color-text-muted)',
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    border: 'none',
+  });
+
+  const tabBadgeStyle = (isSelected: boolean): React.CSSProperties => ({
+    marginLeft: 4,
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 2,
+    paddingBottom: 2,
+    fontSize: 12,
+    borderRadius: 9999,
+    backgroundColor: isSelected ? 'var(--color-blue-2)' : 'var(--color-gray-2)',
+    color: isSelected ? 'var(--color-blue-11)' : 'var(--color-text-muted)',
+  });
+
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1 fontSize="$9" fontWeight="bold" color="$color12">
+    <Stack gap={24}>
+      <Row alignItems="center" justifyContent="space-between">
+        <Stack>
+          <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>
             Tasks
           </H1>
-          <Text color="$color11" fontSize="$6" mt="$1">
+          <Text muted style={{ marginTop: 4 }}>
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
-        </YStack>
-        <Button variant="primary" onClick={handleCreateTask}>
+        </Stack>
+        <Button color="primary" iconStart={Plus} onPress={handleCreateTask}>
           Create Task
         </Button>
-      </XStack>
+      </Row>
 
       {/* REQ-260: View navigation tabs */}
-      <XStack alignItems="center" borderBottomWidth={1} borderColor="$borderColor">
-        <TamaguiButton
-          onPress={() => setSelectedView('inbox')}
-          alignItems="center"
-          gap="$2"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
-          fontSize="$3"
-          fontWeight="500"
-          borderBottomWidth={2}
-          borderColor={selectedView === 'inbox' ? '$blue9' : 'transparent'}
-          color={selectedView === 'inbox' ? '$blue10' : '$color11'}
-          hoverStyle={{
-            color: selectedView === 'inbox' ? '$blue10' : '$color12',
-            borderColor: selectedView === 'inbox' ? '$blue9' : '$borderColor',
-          }}
-          backgroundColor="transparent"
+      <Row alignItems="center" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <button
+          onClick={() => setSelectedView('inbox')}
+          style={tabButtonStyle(selectedView === 'inbox')}
         >
           <Inbox size={18} />
           <Text>Inbox</Text>
-          <XStack
-            ml="$1"
-            paddingHorizontal="$2"
-            paddingVertical="$0.5"
-            fontSize="$1"
-            borderRadius={9999}
-            backgroundColor={selectedView === 'inbox' ? '$blue2' : '$gray2'}
-            color={selectedView === 'inbox' ? '$blue11' : '$color11'}
-          >
-            <Text fontSize="$1" color={selectedView === 'inbox' ? '$blue11' : '$color11'}>
-              {viewCounts.inbox}
-            </Text>
-          </XStack>
-        </TamaguiButton>
-        <TamaguiButton
-          onPress={() => setSelectedView('assigned_by_me')}
-          alignItems="center"
-          gap="$2"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
-          fontSize="$3"
-          fontWeight="500"
-          borderBottomWidth={2}
-          borderColor={selectedView === 'assigned_by_me' ? '$blue9' : 'transparent'}
-          color={selectedView === 'assigned_by_me' ? '$blue10' : '$color11'}
-          hoverStyle={{
-            color: selectedView === 'assigned_by_me' ? '$blue10' : '$color12',
-            borderColor: selectedView === 'assigned_by_me' ? '$blue9' : '$borderColor',
-          }}
-          backgroundColor="transparent"
+          <span style={tabBadgeStyle(selectedView === 'inbox')}>
+            {viewCounts.inbox}
+          </span>
+        </button>
+        <button
+          onClick={() => setSelectedView('assigned_by_me')}
+          style={tabButtonStyle(selectedView === 'assigned_by_me')}
         >
           <Send size={18} />
           <Text>Assigned by Me</Text>
-          <XStack
-            ml="$1"
-            paddingHorizontal="$2"
-            paddingVertical="$0.5"
-            fontSize="$1"
-            borderRadius={9999}
-            backgroundColor={selectedView === 'assigned_by_me' ? '$blue2' : '$gray2'}
-            color={selectedView === 'assigned_by_me' ? '$blue11' : '$color11'}
-          >
-            <Text fontSize="$1" color={selectedView === 'assigned_by_me' ? '$blue11' : '$color11'}>
-              {viewCounts.assigned_by_me}
-            </Text>
-          </XStack>
-        </TamaguiButton>
-        <TamaguiButton
-          onPress={() => setSelectedView('all')}
-          alignItems="center"
-          gap="$2"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
-          fontSize="$3"
-          fontWeight="500"
-          borderBottomWidth={2}
-          borderColor={selectedView === 'all' ? '$blue9' : 'transparent'}
-          color={selectedView === 'all' ? '$blue10' : '$color11'}
-          hoverStyle={{
-            color: selectedView === 'all' ? '$blue10' : '$color12',
-            borderColor: selectedView === 'all' ? '$blue9' : '$borderColor',
-          }}
-          backgroundColor="transparent"
+          <span style={tabBadgeStyle(selectedView === 'assigned_by_me')}>
+            {viewCounts.assigned_by_me}
+          </span>
+        </button>
+        <button
+          onClick={() => setSelectedView('all')}
+          style={tabButtonStyle(selectedView === 'all')}
         >
           <List size={18} />
           <Text>All Tasks</Text>
-          <XStack
-            ml="$1"
-            paddingHorizontal="$2"
-            paddingVertical="$0.5"
-            fontSize="$1"
-            borderRadius={9999}
-            backgroundColor={selectedView === 'all' ? '$blue2' : '$gray2'}
-            color={selectedView === 'all' ? '$blue11' : '$color11'}
-          >
-            <Text fontSize="$1" color={selectedView === 'all' ? '$blue11' : '$color11'}>
-              {viewCounts.all}
-            </Text>
-          </XStack>
-        </TamaguiButton>
-      </XStack>
+          <span style={tabBadgeStyle(selectedView === 'all')}>
+            {viewCounts.all}
+          </span>
+        </button>
+      </Row>
 
-      <XStack alignItems="center" gap="$4" fontSize="$3">
-        <XStack alignItems="center" gap="$2">
-          <YStack width={12} height={12} borderRadius={9999} backgroundColor="$blue9" />
-          <Text fontWeight="600" color="$color12">
-            {statusCounts.pending}
-          </Text>
-          <Text color="$color11">Pending</Text>
-        </XStack>
-        <YStack height={16} width={1} backgroundColor="$borderColor" />
-        <XStack alignItems="center" gap="$2">
-          <YStack width={12} height={12} borderRadius={9999} backgroundColor="$blue9" />
-          <Text fontWeight="600" color="$color12">
-            {statusCounts.in_progress}
-          </Text>
-          <Text color="$color11">In Progress</Text>
-        </XStack>
-        <YStack height={16} width={1} backgroundColor="$borderColor" />
-        <XStack alignItems="center" gap="$2">
-          <YStack width={12} height={12} borderRadius={9999} backgroundColor="$red9" />
-          <Text fontWeight="600" color="$color12">
-            {statusCounts.overdue}
-          </Text>
-          <Text color="$color11">Overdue</Text>
-        </XStack>
-        <YStack height={16} width={1} backgroundColor="$borderColor" />
-        <XStack alignItems="center" gap="$2">
-          <YStack width={12} height={12} borderRadius={9999} backgroundColor="$green9" />
-          <Text fontWeight="600" color="$color12">
-            {statusCounts.completed}
-          </Text>
-          <Text color="$color11">Completed</Text>
-        </XStack>
-      </XStack>
+      <Row alignItems="center" gap={16} style={{ fontSize: 14 }}>
+        <Row alignItems="center" gap={8}>
+          <div style={{ width: 12, height: 12, borderRadius: 9999, backgroundColor: 'var(--color-blue-9)' }} />
+          <Text weight="semibold">{statusCounts.pending}</Text>
+          <Text muted>Pending</Text>
+        </Row>
+        <div style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
+        <Row alignItems="center" gap={8}>
+          <div style={{ width: 12, height: 12, borderRadius: 9999, backgroundColor: 'var(--color-blue-9)' }} />
+          <Text weight="semibold">{statusCounts.in_progress}</Text>
+          <Text muted>In Progress</Text>
+        </Row>
+        <div style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
+        <Row alignItems="center" gap={8}>
+          <div style={{ width: 12, height: 12, borderRadius: 9999, backgroundColor: 'var(--color-red-9)' }} />
+          <Text weight="semibold">{statusCounts.overdue}</Text>
+          <Text muted>Overdue</Text>
+        </Row>
+        <div style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
+        <Row alignItems="center" gap={8}>
+          <div style={{ width: 12, height: 12, borderRadius: 9999, backgroundColor: 'var(--color-green-9)' }} />
+          <Text weight="semibold">{statusCounts.completed}</Text>
+          <Text muted>Completed</Text>
+        </Row>
+      </Row>
 
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={1}
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding="$4"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          border: '1px solid var(--color-border)',
+          padding: 16,
+        }}
       >
-        <YStack gap="$4">
-          <XStack alignItems="center" gap="$3">
-            <YStack flex={1} position="relative">
-              <YStack
-                position="absolute"
-                left="$3"
-                top="50%"
-                transform="translateY(-50%)"
-                zIndex={1}
+        <Stack gap={16}>
+          <Row alignItems="center" gap={12}>
+            <Stack style={{ flex: 1, position: 'relative' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  zIndex: 1,
+                }}
               >
-                <Search color="$color10" size={20} />
-              </YStack>
+                <Search color="var(--color-text-muted)" size={20} />
+              </div>
               <Input
                 type="text"
                 placeholder="Search tasks by title or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                width="100%"
-                paddingLeft="$10"
-                paddingRight="$4"
-                paddingVertical="$2.5"
-                backgroundColor="$background"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                fontSize="$3"
-                color="$color12"
+                style={{
+                  width: '100%',
+                  paddingLeft: 40,
+                  paddingRight: 16,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  backgroundColor: 'var(--color-background)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 8,
+                  fontSize: 14,
+                }}
               />
-            </YStack>
-            <TamaguiButton
-              onPress={() => setShowFilters(!showFilters)}
-              alignItems="center"
-              gap="$2"
-              paddingHorizontal="$4"
-              paddingVertical="$2.5"
-              borderWidth={1}
-              borderRadius="$4"
-              fontSize="$3"
-              fontWeight="500"
-              backgroundColor={showFilters ? '$blue2' : '$background'}
-              borderColor={showFilters ? '$blue9' : '$borderColor'}
-              color={showFilters ? '$blue11' : '$color11'}
-              hoverStyle={{
-                backgroundColor: showFilters ? '$blue2' : '$gray2',
+            </Stack>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                paddingLeft: 16,
+                paddingRight: 16,
+                paddingTop: 10,
+                paddingBottom: 10,
+                border: `1px solid ${showFilters ? 'var(--color-blue-9)' : 'var(--color-border)'}`,
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 500,
+                backgroundColor: showFilters ? 'var(--color-blue-2)' : 'var(--color-background)',
+                color: showFilters ? 'var(--color-blue-11)' : 'var(--color-text-muted)',
+                cursor: 'pointer',
               }}
             >
               <Filter size={18} />
-              <Text>Filters</Text>
+              <span>Filters</span>
               {activeFilterCount > 0 && (
-                <XStack
-                  ml="$1"
-                  paddingHorizontal="$2"
-                  paddingVertical="$0.5"
-                  backgroundColor="$blue9"
-                  color="white"
-                  fontSize="$1"
-                  borderRadius={9999}
+                <span
+                  style={{
+                    marginLeft: 4,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 2,
+                    paddingBottom: 2,
+                    backgroundColor: 'var(--color-blue-9)',
+                    color: 'white',
+                    fontSize: 12,
+                    borderRadius: 9999,
+                  }}
                 >
-                  <Text fontSize="$1" color="white">
-                    {activeFilterCount}
-                  </Text>
-                </XStack>
+                  {activeFilterCount}
+                </span>
               )}
-            </TamaguiButton>
-          </XStack>
+            </button>
+          </Row>
 
           {showFilters && (
-            <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" gap="$4">
-              <XStack
-                flexDirection="column"
-                $gtMd={{ flexDirection: 'row' }}
-                $gtLg={{ flexDirection: 'row' }}
-                gap="$4"
-                flexWrap="wrap"
-              >
-                <YStack flex={1} minWidth="20%">
-                  <Label fontSize="$1" fontWeight="500" color="$color11" mb="$2">
+            <Stack style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }} gap={16}>
+              <Row gap={16} style={{ flexWrap: 'wrap' }}>
+                <Stack style={{ flex: 1, minWidth: '20%' }}>
+                  <Text size="xs" weight="medium" muted style={{ marginBottom: 8 }}>
                     Priority
-                  </Label>
+                  </Text>
                   <select
                     value={selectedPriority}
                     onChange={(e) =>
@@ -733,11 +687,11 @@ export default function BrokerTasksPage() {
                     style={{
                       width: '100%',
                       padding: '8px 12px',
-                      backgroundColor: 'var(--background)',
-                      border: '1px solid var(--borderColor)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color12)',
+                      backgroundColor: 'var(--color-background)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 8,
+                      fontSize: 14,
+                      color: 'var(--color-text)',
                     }}
                   >
                     <option value="all">All Priorities ({tasks.length})</option>
@@ -746,12 +700,12 @@ export default function BrokerTasksPage() {
                     <option value="medium">Medium ({filterCounts.priority.medium})</option>
                     <option value="low">Low ({filterCounts.priority.low})</option>
                   </select>
-                </YStack>
+                </Stack>
 
-                <YStack flex={1} minWidth="20%">
-                  <Label fontSize="$1" fontWeight="500" color="$color11" mb="$2">
+                <Stack style={{ flex: 1, minWidth: '20%' }}>
+                  <Text size="xs" weight="medium" muted style={{ marginBottom: 8 }}>
                     Status
-                  </Label>
+                  </Text>
                   <select
                     value={selectedStatus}
                     onChange={(e) =>
@@ -760,11 +714,11 @@ export default function BrokerTasksPage() {
                     style={{
                       width: '100%',
                       padding: '8px 12px',
-                      backgroundColor: 'var(--background)',
-                      border: '1px solid var(--borderColor)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color12)',
+                      backgroundColor: 'var(--color-background)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 8,
+                      fontSize: 14,
+                      color: 'var(--color-text)',
                     }}
                   >
                     <option value="all">All Statuses ({tasks.length})</option>
@@ -773,23 +727,23 @@ export default function BrokerTasksPage() {
                     <option value="overdue">Overdue ({filterCounts.status.overdue})</option>
                     <option value="completed">Completed ({filterCounts.status.completed})</option>
                   </select>
-                </YStack>
+                </Stack>
 
-                <YStack flex={1} minWidth="20%">
-                  <Label fontSize="$1" fontWeight="500" color="$color11" mb="$2">
+                <Stack style={{ flex: 1, minWidth: '20%' }}>
+                  <Text size="xs" weight="medium" muted style={{ marginBottom: 8 }}>
                     Client
-                  </Label>
+                  </Text>
                   <select
                     value={selectedClient}
                     onChange={(e) => setSelectedClient(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '8px 12px',
-                      backgroundColor: 'var(--background)',
-                      border: '1px solid var(--borderColor)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color12)',
+                      backgroundColor: 'var(--color-background)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 8,
+                      fontSize: 14,
+                      color: 'var(--color-text)',
                     }}
                   >
                     <option value="all">All Clients ({tasks.length})</option>
@@ -799,23 +753,23 @@ export default function BrokerTasksPage() {
                       </option>
                     ))}
                   </select>
-                </YStack>
+                </Stack>
 
-                <YStack flex={1} minWidth="20%">
-                  <Label fontSize="$1" fontWeight="500" color="$color11" mb="$2">
+                <Stack style={{ flex: 1, minWidth: '20%' }}>
+                  <Text size="xs" weight="medium" muted style={{ marginBottom: 8 }}>
                     Project
-                  </Label>
+                  </Text>
                   <select
                     value={selectedProject}
                     onChange={(e) => setSelectedProject(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '8px 12px',
-                      backgroundColor: 'var(--background)',
-                      border: '1px solid var(--borderColor)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color12)',
+                      backgroundColor: 'var(--color-background)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 8,
+                      fontSize: 14,
+                      color: 'var(--color-text)',
                     }}
                   >
                     <option value="all">All Projects</option>
@@ -825,42 +779,44 @@ export default function BrokerTasksPage() {
                       </option>
                     ))}
                   </select>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
 
               {activeFilterCount > 0 && (
-                <XStack
-                  as="button"
-                  alignItems="center"
-                  gap="$2"
-                  fontSize="$3"
-                  color="$color11"
-                  hoverStyle={{ color: '$color12' }}
+                <button
                   onClick={clearFilters}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 14,
+                    color: 'var(--color-text-muted)',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
-                  <X size={16} color="$color11" />
-                  <Text fontSize="$3" color="$color11">Clear all filters</Text>
-                </XStack>
+                  <X size={16} />
+                  <span>Clear all filters</span>
+                </button>
               )}
-            </YStack>
+            </Stack>
           )}
 
-          <XStack
+          <Row
             alignItems="center"
             justifyContent="space-between"
-            borderTopWidth={1}
-            borderColor="$borderColor"
-            paddingTop="$4"
+            style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}
           >
-            <Text fontSize="$3" color="$color11">
+            <Text size="sm" muted>
               Showing{' '}
-              <Text fontSize="$3" fontWeight="600" color="$color12">
+              <Text size="sm" weight="semibold">
                 {filteredAndSortedTasks.length}
               </Text>{' '}
               of {tasks.length} tasks
             </Text>
-            <XStack alignItems="center" gap="$3">
-              <Text fontSize="$1" color="$color11">Sort by:</Text>
+            <Row alignItems="center" gap={12}>
+              <Text size="xs" muted>Sort by:</Text>
               <select
                 value={sortBy}
                 onChange={(e) =>
@@ -868,163 +824,165 @@ export default function BrokerTasksPage() {
                 }
                 style={{
                   padding: '6px 12px',
-                  backgroundColor: 'var(--background)',
-                  border: '1px solid var(--borderColor)',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  color: 'var(--color12)',
+                  backgroundColor: 'var(--color-background)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 4,
+                  fontSize: 14,
+                  color: 'var(--color-text)',
                 }}
               >
                 <option value="due_date">Due Date</option>
                 <option value="priority">Priority</option>
                 <option value="status">Status</option>
               </select>
-              <XStack
-                as="button"
-                padding="$1.5"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$2"
-                hoverStyle={{ backgroundColor: '$gray2' }}
+              <button
                 onClick={() =>
                   setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
                 }
+                style={{
+                  padding: 6,
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 4,
+                  backgroundColor: 'transparent',
+                  cursor: 'pointer',
+                }}
               >
                 <ChevronDown
                   size={16}
-                  color="$color11"
+                  color="var(--color-text-muted)"
                   style={{
                     transform: sortOrder === 'desc' ? 'rotate(180deg)' : 'none',
                     transition: 'transform 0.2s',
                   }}
                 />
-              </XStack>
-            </XStack>
-          </XStack>
-        </YStack>
+              </button>
+            </Row>
+          </Row>
+        </Stack>
       </Card>
 
-      <YStack gap="$3">
+      <Stack gap={12}>
         {filteredAndSortedTasks.map((task) => {
           const dueDate = formatDueDate(task.due_date);
           const projectName =
             projects.find((p) => p.id === task.project_id)?.name ?? 'Unknown';
           const clientName = getClientName(task.client_id);
-          const priorityColors = getPriorityColor(task.priority);
+          const priorityStyle = getPriorityStyle(task.priority);
           return (
             <Card
               key={task.id}
-              backgroundColor="$background"
-              borderRadius="$4"
-              elevation={1}
-              borderWidth={1}
-              borderColor="$borderColor"
-              hoverStyle={{ borderColor: '$blue8' }}
-              cursor="pointer"
-              onClick={() => handleTaskClick(task)}
+              onPress={() => handleTaskClick(task)}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderRadius: 12,
+                border: '1px solid var(--color-border)',
+                cursor: 'pointer',
+              }}
             >
-              <YStack padding="$5">
-                <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
-                  <YStack flex={1}>
-                    <XStack alignItems="center" gap="$3" mb="$2">
-                      <Text
-                        fontSize="$4"
-                        fontWeight="600"
-                        color="$color12"
-                        hoverStyle={{ color: '$blue10' }}
-                      >
+              <Stack padding={20}>
+                <Row alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: 12 }}>
+                  <Stack style={{ flex: 1 }}>
+                    <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
+                      <Text size="md" weight="semibold">
                         {task.title}
                       </Text>
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        fontSize="$1"
-                        fontWeight="500"
-                        borderRadius="$2"
-                        borderWidth={1}
-                        {...priorityColors}
+                      <span
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 2,
+                          paddingBottom: 2,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          borderRadius: 4,
+                          border: `1px solid ${priorityStyle.borderColor}`,
+                          backgroundColor: priorityStyle.backgroundColor,
+                          color: priorityStyle.color,
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color={priorityColors.color}>
-                          {task.priority?.toUpperCase()}
-                        </Text>
-                      </XStack>
+                        {task.priority?.toUpperCase()}
+                      </span>
                       {/* REQ-282: Use TaskStatusBadge with tooltip and rejection reason */}
                       <TaskStatusBadge
                         status={task.status}
                         rejectionReason={task.rejection_reason}
                         size="xs"
                       />
-                    </XStack>
-                    <Text fontSize="$3" color="$color11" mb="$3">
+                    </Row>
+                    <Text size="sm" muted style={{ marginBottom: 12 }}>
                       {task.description}
                     </Text>
-                    <XStack
+                    <Row
                       alignItems="center"
-                      flexWrap="wrap"
-                      gapHorizontal="$4"
-                      gapVertical="$1"
-                      fontSize="$1"
-                      color="$color10"
+                      style={{ flexWrap: 'wrap', gap: '4px 16px', fontSize: 12 }}
                     >
-                      <XStack alignItems="center" gap="$1">
-                        <Calendar size={14} color="$color10" />
-                        <Text fontSize="$1" color={dueDate.color}>
+                      <Row alignItems="center" gap={4}>
+                        <Calendar size={14} color="var(--color-text-muted)" />
+                        <Text size="xs" style={{ color: dueDate.color }}>
                           {dueDate.text}
                         </Text>
-                      </XStack>
-                      <Text fontSize="$1" color="$color10">•</Text>
-                      <Text fontSize="$1" color="$color10">{projectName}</Text>
+                      </Row>
+                      <Text size="xs" muted>•</Text>
+                      <Text size="xs" muted>{projectName}</Text>
                       {clientName && task.client_id && (
                         <>
-                          <Text fontSize="$1" color="$color10">•</Text>
-                          <XStack
-                            as="button"
-                            alignItems="center"
-                            gap="$1"
-                            color="$blue10"
-                            hoverStyle={{ color: '$blue11', textDecoration: 'underline' }}
+                          <Text size="xs" muted>•</Text>
+                          <button
                             onClick={(e) => handleClientClick(e, task.client_id!)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              color: 'var(--color-blue-10)',
+                              backgroundColor: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: 12,
+                            }}
                           >
-                            <Building2 size={14} color="$blue10" />
-                            <Text fontSize="$1" color="$blue10">{clientName}</Text>
-                          </XStack>
+                            <Building2 size={14} />
+                            <span>{clientName}</span>
+                          </button>
                         </>
                       )}
                       {/* REQ-282 TASK-4: Display sub company context */}
                       {task.sub_company_name && (
                         <>
-                          <Text fontSize="$1" color="$color10">•</Text>
-                          <XStack alignItems="center" gap="$1" color="$purple10">
-                            <HardHat size={14} color="$purple10" />
-                            <Text fontSize="$1" color="$purple10">{task.sub_company_name}</Text>
-                          </XStack>
+                          <Text size="xs" muted>•</Text>
+                          <Row alignItems="center" gap={4} style={{ color: 'var(--color-purple-10)' }}>
+                            <HardHat size={14} />
+                            <Text size="xs" style={{ color: 'var(--color-purple-10)' }}>{task.sub_company_name}</Text>
+                          </Row>
                         </>
                       )}
-                    </XStack>
-                  </YStack>
-                </XStack>
-              </YStack>
+                    </Row>
+                  </Stack>
+                </Row>
+              </Stack>
             </Card>
           );
         })}
-      </YStack>
+      </Stack>
 
       {filteredAndSortedTasks.length === 0 && (
         <Card
-          alignItems="center"
-          paddingVertical="$12"
-          backgroundColor="$background"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 12,
+            border: '1px solid var(--color-border)',
+            padding: 48,
+            textAlign: 'center',
+          }}
         >
-          <CheckCircle color="$color10" size={64} mb="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
-            No tasks found
-          </H3>
-          <Text color="$color11">
-            Try adjusting your filters or search criteria
-          </Text>
+          <Stack alignItems="center">
+            <CheckCircle color="var(--color-text-muted)" size={64} style={{ marginBottom: 16 }} />
+            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
+              No tasks found
+            </H3>
+            <Text muted>
+              Try adjusting your filters or search criteria
+            </Text>
+          </Stack>
         </Card>
       )}
 
@@ -1038,6 +996,6 @@ export default function BrokerTasksPage() {
         onSave={handleSaveTask}
         projects={projects}
       />
-    </YStack>
+    </Stack>
   );
 }

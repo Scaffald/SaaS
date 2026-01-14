@@ -10,8 +10,8 @@ import {
   X,
   RotateCcw,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label, Spinner } from '@unicornlove/ui';
-import { EmptyState } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Heading, Card, Input, Label, Spinner, colors, spacing } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState'
 import Tooltip from '../../ui/Tooltip';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEnumsAdmin, EnumValue, invalidateAllEnumCaches } from '../../hooks/useEnums';
@@ -212,29 +212,29 @@ function AdminEnums() {
 
   if (isLoadingTypes) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <XStack alignItems="center" gap="$2">
-          <Spinner size="large" color="$blue10" />
+      <Stack alignItems="center" justifyContent="center" paddingVertical={spacing[48]}>
+        <Row alignItems="center" gap={spacing[8]}>
+          <Spinner size="lg" color={colors.primary[500]} />
           <Text>Loading enum types...</Text>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     );
   }
 
   return (
-    <YStack>
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <H1 fontSize="$8" fontWeight="700">Enum Management</H1>
-        <XStack alignItems="center" gap="$3">
-          <XStack alignItems="center" gap="$2">
+    <Stack>
+      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[24] }}>
+        <Heading level={1} weight="bold" style={{ fontSize: 32, fontWeight: '700' }}>Enum Management</Heading>
+        <Row alignItems="center" gap={spacing[12]}>
+          <Row alignItems="center" gap={spacing[8]}>
             <input
               type="checkbox"
               checked={showDeleted}
               onChange={(e) => setShowDeleted(e.target.checked)}
               style={{ marginRight: 8 }}
             />
-            <Label fontSize="$3" color="$color11">Show inactive</Label>
-          </XStack>
+            <Label size="sm" color={colors.text.light.secondary}>Show inactive</Label>
+          </Row>
           <select
             value={selectedEnumType}
             onChange={(e) => setSelectedEnumType(e.target.value)}
@@ -256,63 +256,59 @@ function AdminEnums() {
           <Button
             onPress={handleRefresh}
             disabled={isLoadingValues}
-            icon={isLoadingValues ? <Spinner size="small" /> : <RefreshCcw size={16} />}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            borderWidth={1}
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-            opacity={isLoadingValues ? 0.5 : 1}
+            iconStart={isLoadingValues ? undefined : RefreshCcw}
+            loading={isLoadingValues}
+            variant="outline"
+            color="gray"
+            style={{ opacity: isLoadingValues ? 0.5 : 1 }}
             aria-label="Refresh enum values"
           >
             Refresh
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {valuesError && (
-        <XStack
-          padding="$4"
-          marginBottom="$4"
-          backgroundColor="$red4"
-          borderWidth={1}
-          borderColor="$red8"
-          borderRadius="$4"
+        <Row
+          style={{
+            padding: spacing[16],
+            marginBottom: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
         >
-          <Text color="$red11">Error: {valuesError.message}</Text>
-        </XStack>
+          <Text color={colors.error[600]}>Error: {valuesError.message}</Text>
+        </Row>
       )}
 
-      <Card padding="$6" borderRadius="$4" elevation={1} backgroundColor="$background" marginBottom="$6">
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-          <H2 fontSize="$7" fontWeight="600">
+      <Card style={{ padding: spacing[24], marginBottom: spacing[24] }}>
+        <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[16] }}>
+          <Heading level={2} weight="semibold" style={{ fontSize: 24 }}>
             {ENUM_TYPE_LABELS[selectedEnumType] || selectedEnumType} Values
-          </H2>
+          </Heading>
           <Button
             onPress={openAddModal}
-            icon={<PlusCircle size={16} />}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            backgroundColor="$blue10"
-            color="white"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: "$blue11" }}
+            iconStart={PlusCircle}
+            color="primary"
+            variant="filled"
           >
             Add Value
           </Button>
-        </XStack>
+        </Row>
 
         {isLoadingValues ? (
-          <YStack alignItems="center" justifyContent="center" paddingVertical="$8">
-            <XStack alignItems="center" gap="$2">
-              <Spinner size="small" color="$blue10" />
+          <Stack alignItems="center" justifyContent="center" paddingVertical={spacing[32]}>
+            <Row alignItems="center" gap={spacing[8]}>
+              <Spinner size="sm" color={colors.primary[500]} />
               <Text>Loading values...</Text>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         ) : displayedValues.length === 0 ? (
-          <YStack alignItems="center" paddingVertical="$8">
-            <Text color="$color11">No enum values found for this type.</Text>
-          </YStack>
+          <Stack alignItems="center" paddingVertical={spacing[32]}>
+            <Text color={colors.text.light.secondary}>No enum values found for this type.</Text>
+          </Stack>
         ) : (
           <table style={{ width: '100%', minWidth: '100%' }}>
             <thead>
@@ -335,7 +331,7 @@ function AdminEnums() {
                   }}
                 >
                   <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
-                    <Text fontFamily="$mono" fontSize="$3">
+                    <Text style={{ fontFamily: 'monospace' }} size="sm">
                       {enumItem.value}
                     </Text>
                   </td>
@@ -343,7 +339,7 @@ function AdminEnums() {
                     <Text>{enumItem.display_name}</Text>
                   </td>
                   <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
-                    <Text fontSize="$3" color="$color11">
+                    <Text size="sm" color={colors.text.light.secondary}>
                       {enumItem.description || '—'}
                     </Text>
                   </td>
@@ -351,76 +347,69 @@ function AdminEnums() {
                     <Text>{enumItem.sort_order}</Text>
                   </td>
                   <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={enumItem.is_active ? '$green4' : '$backgroundHover'}
+                    <Row
+                      style={{
+                        paddingHorizontal: spacing[8],
+                        paddingVertical: spacing[4],
+                        borderRadius: 8,
+                        backgroundColor: enumItem.is_active ? colors.success[200] : colors.bg.light.subtle,
+                      }}
                     >
-                      <Text fontSize="$1" color={enumItem.is_active ? '$green11' : '$color11'}>
+                      <Text size="xs" color={enumItem.is_active ? colors.success[600] : colors.text.light.secondary}>
                         {enumItem.is_active ? 'Active' : 'Inactive'}
                       </Text>
-                    </XStack>
+                    </Row>
                   </td>
                   <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
-                    <XStack alignItems="center" gap="$1">
+                    <Row alignItems="center" gap={spacing[4]}>
                       {enumItem.is_active ? (
                         <>
                           <Tooltip content="Edit enum value">
                             <Button
                               onPress={() => openEditModal(enumItem)}
                               disabled={actionInProgress === enumItem.id}
-                              padding="$1"
-                              backgroundColor="transparent"
-                              hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                              opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                              iconStart={Edit}
+                              variant="text"
+                              color="gray"
+                              iconOnly
+                              style={{ opacity: actionInProgress === enumItem.id ? 0.5 : 1 }}
                               aria-label={`Edit ${enumItem.display_name}`}
-                            >
-                              <Edit size={16} color="$blue10" />
-                            </Button>
+                            />
                           </Tooltip>
                           <Tooltip content="Delete enum value">
                             <Button
                               onPress={() => handleDelete(enumItem.id)}
                               disabled={actionInProgress === enumItem.id}
-                              padding="$1"
-                              backgroundColor="transparent"
-                              hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                              opacity={actionInProgress === enumItem.id ? 0.5 : 1}
-                              aria-label={`Delete ${enumItem.display_name}`}
-                            >
-                              {actionInProgress === enumItem.id ? (
-                                <Spinner size="small" color="$red10" />
-                              ) : (
-                                <Trash2 size={16} color="$red10" />
-                              )}
-                            </Button>
+                              iconStart={actionInProgress === enumItem.id ? undefined : Trash2}
+                              loading={actionInProgress === enumItem.id}
+                              variant="text"
+                              color="error"
+                              iconOnly
+                            />
                           </Tooltip>
                           <Tooltip content="Move up">
                             <Button
                               onPress={() => handleReorder(enumItem.id, 'up')}
                               disabled={actionInProgress === enumItem.id}
-                              padding="$1"
-                              backgroundColor="transparent"
-                              hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                              opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                              iconStart={ArrowUp}
+                              variant="text"
+                              color="gray"
+                              iconOnly
+                              style={{ opacity: actionInProgress === enumItem.id ? 0.5 : 1 }}
                               aria-label={`Move ${enumItem.display_name} up`}
-                            >
-                              <ArrowUp size={16} color="$color11" />
-                            </Button>
+                            />
                           </Tooltip>
                           <Tooltip content="Move down">
                             <Button
                               onPress={() => handleReorder(enumItem.id, 'down')}
                               disabled={actionInProgress === enumItem.id}
-                              padding="$1"
-                              backgroundColor="transparent"
-                              hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                              opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                              iconStart={ArrowDown}
+                              variant="text"
+                              color="gray"
+                              iconOnly
+                              style={{ opacity: actionInProgress === enumItem.id ? 0.5 : 1 }}
                               aria-label={`Move ${enumItem.display_name} down`}
-                            >
-                              <ArrowDown size={16} color="$color11" />
-                            </Button>
+                            />
                           </Tooltip>
                         </>
                       ) : (
@@ -428,21 +417,16 @@ function AdminEnums() {
                           <Button
                             onPress={() => handleRestore(enumItem.id)}
                             disabled={actionInProgress === enumItem.id}
-                            padding="$1"
-                            backgroundColor="transparent"
-                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                            opacity={actionInProgress === enumItem.id ? 0.5 : 1}
+                            iconStart={actionInProgress === enumItem.id ? undefined : RotateCcw}
+                            loading={actionInProgress === enumItem.id}
+                            variant="text"
+                            color="gray"
+                            iconOnly
                             aria-label={`Restore ${enumItem.display_name}`}
-                          >
-                            {actionInProgress === enumItem.id ? (
-                              <Spinner size="small" color="$green10" />
-                            ) : (
-                              <RotateCcw size={16} color="$green10" />
-                            )}
-                          </Button>
+                          />
                         </Tooltip>
                       )}
-                    </XStack>
+                    </Row>
                   </td>
                 </tr>
               ))}
@@ -453,95 +437,94 @@ function AdminEnums() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <YStack
-          position="fixed"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          zIndex={50}
+        <Stack
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
         >
           <Card
-            backgroundColor="$background"
-            borderRadius="$4"
-            elevation={4}
-            width="100%"
-            maxWidth={448}
-            marginHorizontal="$4"
+            style={{
+              width: '100%',
+              maxWidth: 448,
+              marginHorizontal: spacing[16],
+            }}
           >
-            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderBottomWidth={1} borderColor="$borderColor">
-              <H3 fontSize="$6" fontWeight="600">
+            <Row alignItems="center" justifyContent="space-between" style={{ padding: spacing[16], borderBottomWidth: 1, borderBottomColor: colors.border.light.default }}>
+              <Heading level={3} weight="semibold" style={{ fontSize: 20 }}>
                 {modalMode === 'add' ? 'Add Enum Value' : 'Edit Enum Value'}
-              </H3>
+              </Heading>
               <Button
                 onPress={closeModal}
-                backgroundColor="transparent"
-                padding="$1"
-                hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                iconStart={X}
+                variant="text"
+                color="gray"
+                iconOnly
                 aria-label="Close modal"
-              >
-                <X size={20} color="$color11" />
-              </Button>
-            </XStack>
+              />
+            </Row>
 
             <form onSubmit={handleSubmit}>
-              <YStack padding="$4" gap="$4">
+              <Stack style={{ padding: spacing[16], gap: spacing[16] }}>
                 {formError && (
-                  <XStack
-                    padding="$3"
-                    backgroundColor="$red4"
-                    borderWidth={1}
-                    borderColor="$red8"
-                    borderRadius="$2"
+                  <Row
+                    style={{
+                      padding: spacing[12],
+                      backgroundColor: colors.error[200],
+                      borderWidth: 1,
+                      borderColor: colors.error[400],
+                      borderRadius: 8,
+                    }}
                   >
-                    <Text fontSize="$3" color="$red11">{formError}</Text>
-                  </XStack>
+                    <Text size="sm" color={colors.error[600]}>{formError}</Text>
+                  </Row>
                 )}
 
-                <YStack gap="$1">
-                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                <Stack gap={spacing[4]}>
+                  <Label size="sm" weight="semibold" color={colors.text.light.primary} style={{ marginBottom: spacing[4] }}>
                     Value (code)
                   </Label>
                   <Input
                     value={formData.value}
                     onChangeText={(value) => setFormData((prev) => ({ ...prev, value }))}
                     disabled={modalMode === 'edit'}
-                    width="100%"
-                    padding="$2"
-                    borderWidth={1}
-                    borderRadius="$4"
-                    backgroundColor={modalMode === 'edit' ? '$backgroundHover' : '$background'}
+                    containerStyle={{
+                      width: '100%',
+                      backgroundColor: modalMode === 'edit' ? colors.bg.light.subtle : colors.bg.light.default,
+                    }}
+                    style={{ fontFamily: 'monospace' }}
                     placeholder="e.g., pending, approved"
                     required
                   />
                   {modalMode === 'edit' && (
-                    <Text fontSize="$1" color="$color11" marginTop="$1">
+                    <Text size="xs" color={colors.text.light.secondary} style={{ marginTop: spacing[4] }}>
                       Value cannot be changed after creation
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
-                <YStack gap="$1">
-                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                <Stack gap={spacing[4]}>
+                  <Label size="sm" weight="semibold" color={colors.text.light.primary} style={{ marginBottom: spacing[4] }}>
                     Display Name
                   </Label>
                   <Input
                     value={formData.display_name}
                     onChangeText={(value) => setFormData((prev) => ({ ...prev, display_name: value }))}
-                    width="100%"
-                    padding="$2"
-                    borderWidth={1}
-                    borderRadius="$4"
+                    containerStyle={{ width: '100%' }}
                     placeholder="e.g., Pending Approval"
                     required
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$1">
-                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                <Stack gap={spacing[4]}>
+                  <Label size="sm" weight="semibold" color={colors.text.light.primary} style={{ marginBottom: spacing[4] }}>
                     Description (optional)
                   </Label>
                   <textarea
@@ -552,50 +535,44 @@ function AdminEnums() {
                       padding: '8px',
                       borderWidth: 1,
                       borderStyle: 'solid',
-                      borderColor: 'var(--borderColor)',
-                      borderRadius: '12px',
+                      borderColor: colors.border.light.default,
+                      borderRadius: spacing[12],
                       fontSize: 14,
                       fontFamily: 'inherit',
                     }}
                     placeholder="Brief description of this value"
                     rows={2}
                   />
-                </YStack>
+                </Stack>
 
-                <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+                <Row justifyContent="flex-end" gap={spacing[12]} style={{ paddingTop: spacing[16] }}>
                   <Button
-                    type="button"
                     onPress={closeModal}
-                    paddingHorizontal="$4"
-                    paddingVertical="$2"
-                    borderWidth={1}
-                    borderRadius="$4"
-                    backgroundColor="transparent"
-                    hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                    variant="outline"
+                    color="gray"
                   >
                     Cancel
                   </Button>
                   <Button
-                    type="submit"
+                    onPress={() => {
+                      const syntheticEvent = new Event('submit') as any;
+                      syntheticEvent.preventDefault = () => {};
+                      handleSubmit(syntheticEvent);
+                    }}
                     disabled={isSubmitting}
-                    paddingHorizontal="$4"
-                    paddingVertical="$2"
-                    backgroundColor="$blue10"
-                    color="white"
-                    borderRadius="$4"
-                    hoverStyle={{ backgroundColor: "$blue11" }}
-                    opacity={isSubmitting ? 0.5 : 1}
-                    icon={isSubmitting ? <Spinner size="small" /> : undefined}
+                    loading={isSubmitting}
+                    color="primary"
+                    variant="filled"
                   >
                     {modalMode === 'add' ? 'Add Value' : 'Save Changes'}
                   </Button>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             </form>
           </Card>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

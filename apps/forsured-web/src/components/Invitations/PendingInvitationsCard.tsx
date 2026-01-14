@@ -8,7 +8,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { YStack, XStack, Text, Button, Card, H3, SizableText, Spinner } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Card, H3, Spinner } from '@unicornlove/beyond-ui'
 import { Mail, UserPlus, Check, X, ChevronRight, AlertTriangle } from 'lucide-react'
 import { trpc } from '../../lib/trpc'
 
@@ -92,174 +92,183 @@ export function PendingInvitationsCard({
 
   return (
     <Card
-      backgroundColor="$background"
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="$borderColor"
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: 'var(--radius-4)',
+        border: '1px solid var(--color-border)',
+      }}
     >
       {/* Header */}
-      <XStack
-        padding="$4"
-        borderBottomWidth={1}
-        borderColor="$borderColor"
-        alignItems="center"
-        justifyContent="space-between"
+      <Row
+        style={{
+          padding: 'var(--space-4)',
+          borderBottom: '1px solid var(--color-border)',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
       >
-        <XStack alignItems="center" gap="$3">
-          <YStack
-            width={36}
-            height={36}
-            backgroundColor="$blue3"
-            borderRadius="$3"
-            alignItems="center"
-            justifyContent="center"
+        <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+          <Stack
+            style={{
+              width: 36,
+              height: 36,
+              backgroundColor: 'var(--color-blue3)',
+              borderRadius: 'var(--radius-3)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <Mail size={18} color="var(--blue10)" />
-          </YStack>
-          <YStack>
-            <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <Mail size={18} color="var(--color-blue10)" />
+          </Stack>
+          <Stack>
+            <H3 style={{ fontSize: 'var(--font-size-4)', fontWeight: 600, color: 'var(--color-color12)' }}>
               {title}
             </H3>
             {invitations && invitations.length > 0 && (
-              <Text fontSize="$2" color="$color11">
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
                 {invitations.length} pending
               </Text>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
         {hasMore && (
           <Button
-            size="$2"
-            variant="outlined"
+            size="small"
+            variant="outline"
             onPress={() => navigate('/notifications')}
           >
-            <XStack alignItems="center" gap="$1">
-              <Text fontSize="$2">View All</Text>
+            <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)' }}>View All</Text>
               <ChevronRight size={14} />
-            </XStack>
+            </Row>
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {/* Content */}
-      <YStack padding="$4" gap="$3">
+      <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-3)' }}>
         {/* Success Message */}
         {successMessage && (
-          <YStack
-            backgroundColor="$green2"
-            borderWidth={1}
-            borderColor="$green6"
-            borderRadius="$3"
-            padding="$3"
+          <Stack
+            style={{
+              backgroundColor: 'var(--color-green2)',
+              border: '1px solid var(--color-green6)',
+              borderRadius: 'var(--radius-3)',
+              padding: 'var(--space-3)',
+            }}
           >
-            <XStack alignItems="center" gap="$2">
-              <Check size={16} color="var(--green11)" />
-              <SizableText fontSize="$3" color="$green11">
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+              <Check size={16} color="var(--color-green11)" />
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-green11)' }}>
                 {successMessage}
-              </SizableText>
-            </XStack>
-          </YStack>
+              </Text>
+            </Row>
+          </Stack>
         )}
 
         {/* Loading State */}
         {isLoading && (
-          <YStack alignItems="center" padding="$4">
-            <Spinner size="small" color="$blue10" />
-          </YStack>
+          <Stack style={{ alignItems: 'center', padding: 'var(--space-4)' }}>
+            <Spinner size="small" color="primary" />
+          </Stack>
         )}
 
         {/* Invitations List */}
         {visibleInvitations.map((invitation) => (
-          <YStack
+          <Stack
             key={invitation.id}
-            padding="$4"
-            backgroundColor="$gray2"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$gray4"
-            gap="$3"
+            style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-gray2)',
+              borderRadius: 'var(--radius-4)',
+              border: '1px solid var(--color-gray4)',
+              gap: 'var(--space-3)',
+            }}
           >
             {/* Invitation Header */}
-            <XStack alignItems="flex-start" justifyContent="space-between">
-              <YStack flex={1}>
-                <XStack alignItems="center" gap="$2">
-                  <UserPlus size={16} color="var(--blue10)" />
-                  <SizableText fontSize="$3" fontWeight="600" color="$color12">
+            <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <Stack style={{ flex: 1 }}>
+                <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+                  <UserPlus size={16} color="var(--color-blue10)" />
+                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 600, color: 'var(--color-color12)' }}>
                     {invitation.rule?.name || 'Invitation'}
-                  </SizableText>
-                </XStack>
+                  </Text>
+                </Row>
                 {invitation.inviter?.full_name && (
-                  <SizableText fontSize="$2" color="$color11" marginTop="$1">
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)', marginTop: 'var(--space-1)' }}>
                     From {invitation.inviter.full_name}
-                  </SizableText>
+                  </Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
             {/* Personal Message */}
             {invitation.personal_message && (
-              <YStack
-                backgroundColor="$blue2"
-                borderRadius="$3"
-                padding="$3"
-                borderLeftWidth={3}
-                borderColor="$blue8"
+              <Stack
+                style={{
+                  backgroundColor: 'var(--color-blue2)',
+                  borderRadius: 'var(--radius-3)',
+                  padding: 'var(--space-3)',
+                  borderLeft: '3px solid var(--color-blue8)',
+                }}
               >
-                <SizableText fontSize="$2" fontStyle="italic" color="$color12">
+                <Text style={{ fontSize: 'var(--font-size-2)', fontStyle: 'italic', color: 'var(--color-color12)' }}>
                   "{invitation.personal_message}"
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
             )}
 
             {/* Constraint Warning */}
             {invitation.constraint_blocked && (
-              <XStack
-                backgroundColor="$yellow2"
-                borderRadius="$3"
-                padding="$3"
-                alignItems="center"
-                gap="$2"
+              <Row
+                style={{
+                  backgroundColor: 'var(--color-yellow2)',
+                  borderRadius: 'var(--radius-3)',
+                  padding: 'var(--space-3)',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)',
+                }}
               >
-                <AlertTriangle size={14} color="var(--yellow11)" />
-                <SizableText fontSize="$2" color="$yellow11" flex={1}>
+                <AlertTriangle size={14} color="var(--color-yellow11)" />
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow11)', flex: 1 }}>
                   {invitation.constraint_reason || 'Relationship constraint applies'}
-                </SizableText>
-              </XStack>
+                </Text>
+              </Row>
             )}
 
             {/* Action Buttons */}
-            <XStack gap="$2">
+            <Row style={{ gap: 'var(--space-2)' }}>
               <Button
-                flex={1}
-                size="$3"
-                variant="outlined"
+                style={{ flex: 1 }}
+                size="medium"
+                variant="outline"
                 onPress={() => handleDecline(invitation.id)}
                 disabled={processingId === invitation.id}
               >
-                <XStack alignItems="center" gap="$1">
+                <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
                   <X size={14} />
-                  <Text fontSize="$2">Decline</Text>
-                </XStack>
+                  <Text style={{ fontSize: 'var(--font-size-2)' }}>Decline</Text>
+                </Row>
               </Button>
               <Button
-                flex={1}
-                size="$3"
+                style={{ flex: 1 }}
+                size="medium"
                 onPress={() => handleAccept(invitation.id)}
                 disabled={processingId === invitation.id}
               >
-                <XStack alignItems="center" gap="$1">
+                <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
                   {processingId === invitation.id ? (
                     <Spinner size="small" />
                   ) : (
                     <Check size={14} />
                   )}
-                  <Text fontSize="$2">Accept</Text>
-                </XStack>
+                  <Text style={{ fontSize: 'var(--font-size-2)' }}>Accept</Text>
+                </Row>
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         ))}
-      </YStack>
+      </Stack>
     </Card>
   )
 }

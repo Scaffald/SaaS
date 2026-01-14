@@ -1,7 +1,7 @@
 // src/components/onboarding/steps/broker/BrokerInfoStep.tsx
 // REQ-126: Broker Onboarding - Broker Information Step
 import { useState } from 'react';
-import { YStack, Text, H2, Input, Button } from '@unicornlove/ui';
+import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
 
 interface BrokerInfoStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -39,51 +39,53 @@ function BrokerInfoStep({ onComplete, initialData = {}, isLoading = false }: Bro
   };
 
   return (
-    <YStack>
-      <H2 mb="$2">Your Information</H2>
-      <Text mb="$6" color="$color10">
+    <Stack>
+      <H2 style={{ marginBottom: 8 }}>Your Information</H2>
+      <Text style={{ marginBottom: 24, color: 'var(--color-text-secondary)' }}>
         Tell us about your insurance broker credentials
       </Text>
-      <YStack tag="form" onSubmit={handleSubmit} gap="$4">
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">Your Name</Text>
-          <Input
-            value={name}
-            onChangeText={setName}
-            placeholder="Enter your full name"
-          />
-          {errors.name && <Text color="$red10" fontSize="$2">{errors.name}</Text>}
-        </YStack>
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">License Number</Text>
-          <Input
-            value={licenseNumber}
-            onChangeText={setLicenseNumber}
-            placeholder="Enter your insurance license number"
-          />
-          {errors.licenseNumber && <Text color="$red10" fontSize="$2">{errors.licenseNumber}</Text>}
-        </YStack>
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">States Licensed</Text>
-          <Input
-            value={statesLicensed}
-            onChangeText={setStatesLicensed}
-            placeholder="e.g., TX, CA, NY (comma-separated)"
-          />
-          <Text fontSize="$2" color="$color10">Enter states where you're licensed, separated by commas</Text>
-          {errors.statesLicensed && <Text color="$red10" fontSize="$2">{errors.statesLicensed}</Text>}
-        </YStack>
-        <YStack mt="$6">
-          <Button
-            onPress={handleSubmit}
-            variant="primary"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Saving...' : 'Continue'}
-          </Button>
-        </YStack>
-      </YStack>
-    </YStack>
+      <form onSubmit={handleSubmit}>
+        <Stack style={{ gap: 16 }}>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>Your Name</Text>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your full name"
+            />
+            {errors.name && <Text style={{ color: 'var(--color-red-10)', fontSize: 12 }}>{errors.name}</Text>}
+          </Stack>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>License Number</Text>
+            <Input
+              value={licenseNumber}
+              onChange={(e) => setLicenseNumber(e.target.value)}
+              placeholder="Enter your insurance license number"
+            />
+            {errors.licenseNumber && <Text style={{ color: 'var(--color-red-10)', fontSize: 12 }}>{errors.licenseNumber}</Text>}
+          </Stack>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>States Licensed</Text>
+            <Input
+              value={statesLicensed}
+              onChange={(e) => setStatesLicensed(e.target.value)}
+              placeholder="e.g., TX, CA, NY (comma-separated)"
+            />
+            <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>Enter states where you're licensed, separated by commas</Text>
+            {errors.statesLicensed && <Text style={{ color: 'var(--color-red-10)', fontSize: 12 }}>{errors.statesLicensed}</Text>}
+          </Stack>
+          <Stack style={{ marginTop: 24 }}>
+            <Button
+              onPress={handleSubmit}
+              variant="primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Continue'}
+            </Button>
+          </Stack>
+        </Stack>
+      </form>
+    </Stack>
   );
 }
 

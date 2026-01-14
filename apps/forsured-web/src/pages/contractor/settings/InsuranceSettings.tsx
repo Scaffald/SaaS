@@ -1,6 +1,6 @@
 // src/pages/contractor/settings/InsuranceSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2, Input } from '@unicornlove/ui';
+import { Stack, Text, Button, H2, Input } from '@unicornlove/beyond-ui';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -68,61 +68,68 @@ function ContractorInsuranceSettings() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Insurance Agent Information</H2>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {[1, 2, 3, 4].map(i => (
-            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
+            <Stack
+              key={i}
+              style={{
+                height: 40,
+                backgroundColor: 'var(--color-3)',
+                borderRadius: 'var(--radius-4)',
+              }}
+            />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Insurance Agent Information</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-6)' }}>
         Keep your insurance agent's contact information up to date for easy communication.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Input
             label="Insurance Carrier"
             type="text"
             value={agentInfo.carrier}
-            onChangeText={(value) => updateField('carrier', value)}
+            onChange={(e) => updateField('carrier', e.target.value)}
             required
           />
           <Input
             label="Agent Name"
             type="text"
             value={agentInfo.agentName}
-            onChangeText={(value) => updateField('agentName', value)}
+            onChange={(e) => updateField('agentName', e.target.value)}
           />
           <Input
             label="Agent Email"
             type="email"
             value={agentInfo.agentEmail}
-            onChangeText={(value) => updateField('agentEmail', value)}
+            onChange={(e) => updateField('agentEmail', e.target.value)}
           />
           <Input
             label="Agent Phone"
             type="tel"
             value={agentInfo.agentPhone}
-            onChangeText={(value) => updateField('agentPhone', value)}
+            onChange={(e) => updateField('agentPhone', e.target.value)}
           />
           <Button
             type="submit"
             disabled={!isDirty || isSaving}
             variant="primary"
-            marginTop="$6"
+            style={{ marginTop: 'var(--space-6)' }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

@@ -1,90 +1,76 @@
 // src/pages/admin/Dashboard.tsx
-import { YStack, XStack, Text, H1, H2, Card, styled } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2, Card } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui';
+import PageTransition from '../../components/Common/PageTransition';
+import AnimatedList from '../../components/Common/AnimatedList';
 
-const StatCard = styled(Card, {
-  name: 'StatCard',
-  backgroundColor: '$background',
-  padding: '$6',
-  borderRadius: '$4',
-  elevation: 1,
-});
+// Stats data for AnimatedList
+const statsData = [
+  { id: 'users', title: 'Total Users', value: '142' },
+  { id: 'brokers', title: 'Active Brokers', value: '23' },
+  { id: 'projects', title: 'Projects', value: '89' },
+  { id: 'tasks', title: 'Tasks Created', value: '1,234' },
+];
 
-const ActivityList = styled(YStack, {
-  name: 'ActivityList',
-  backgroundColor: '$background',
-  padding: '$6',
-  borderRadius: '$4',
-  elevation: 1,
-});
-
-const ActivityItem = styled(XStack, {
-  name: 'ActivityItem',
-  paddingVertical: '$2',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  variants: {
-    last: {
-      true: {
-        borderBottomWidth: 0,
-      },
-    },
-  },
-});
+// Activity data for AnimatedList
+const activityData = [
+  { id: '1', text: 'New GC signup: Acme Construction' },
+  { id: '2', text: 'Broker invitation sent to jane@insurance.com' },
+  { id: '3', text: 'New project created: Downtown Tower' },
+];
 
 function AdminDashboard() {
   return (
-    <YStack>
-      <H1 fontSize="$8" fontWeight="bold" marginBottom="$6">Admin Dashboard</H1>
-      <XStack flexWrap="wrap" gap="$6">
-        <StatCard
-          width="100%"
-          $gtMd={{ width: 'calc(50% - 12px)' }}
-          $gtLg={{ width: 'calc(25% - 18px)' }}
+    <PageTransition>
+      <Stack>
+        <H1 style={{ fontSize: fontSize.h4, fontWeight: 'bold', marginBottom: spacing[24] }}>Admin Dashboard</H1>
+        <AnimatedList
+          items={statsData}
+          keyExtractor={(stat) => stat.id}
+          gap={24}
+          style={{ display: 'flex', flexWrap: 'wrap' }}
         >
-          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Total Users</H2>
-          <Text fontSize="$9" fontWeight="bold">142</Text>
-        </StatCard>
-        <StatCard
-          width="100%"
-          $gtMd={{ width: 'calc(50% - 12px)' }}
-          $gtLg={{ width: 'calc(25% - 18px)' }}
-        >
-          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Active Brokers</H2>
-          <Text fontSize="$9" fontWeight="bold">23</Text>
-        </StatCard>
-        <StatCard
-          width="100%"
-          $gtMd={{ width: 'calc(50% - 12px)' }}
-          $gtLg={{ width: 'calc(25% - 18px)' }}
-        >
-          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Projects</H2>
-          <Text fontSize="$9" fontWeight="bold">89</Text>
-        </StatCard>
-        <StatCard
-          width="100%"
-          $gtMd={{ width: 'calc(50% - 12px)' }}
-          $gtLg={{ width: 'calc(25% - 18px)' }}
-        >
-          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Tasks Created</H2>
-          <Text fontSize="$9" fontWeight="bold">1,234</Text>
-        </StatCard>
-      </XStack>
+          {(stat) => (
+            <Card
+              style={{
+                width: '100%',
+                padding: spacing[24],
+                borderRadius: borderRadius.s,
+                backgroundColor: colors.bg.light.default
+              }}
+            >
+              <H2 style={{ fontSize: fontSize.h5, fontWeight: 600, marginBottom: spacing[8] }}>{stat.title}</H2>
+              <Text style={{ fontSize: fontSize.h3, fontWeight: 'bold' }}>{stat.value}</Text>
+            </Card>
+          )}
+        </AnimatedList>
 
-      <YStack marginTop="$8">
-        <H2 fontSize="$7" fontWeight="600" marginBottom="$4">Recent Activity</H2>
-        <ActivityList>
-          <ActivityItem>
-            <Text>New GC signup: Acme Construction</Text>
-          </ActivityItem>
-          <ActivityItem>
-            <Text>Broker invitation sent to jane@insurance.com</Text>
-          </ActivityItem>
-          <ActivityItem last>
-            <Text>New project created: Downtown Tower</Text>
-          </ActivityItem>
-        </ActivityList>
-      </YStack>
-    </YStack>
+        <Stack style={{ marginTop: spacing[32] }}>
+          <H2 style={{ fontSize: fontSize.h4, fontWeight: 600, marginBottom: spacing[16] }}>Recent Activity</H2>
+          <Card style={{ backgroundColor: colors.bg.light.default, padding: spacing[24], borderRadius: borderRadius.s }}>
+            <AnimatedList
+              items={activityData}
+              keyExtractor={(activity) => activity.id}
+              gap={0}
+              staggerDelay={75}
+            >
+              {(activity, index) => (
+                <Row
+                  style={{
+                    paddingTop: spacing[8],
+                    paddingBottom: spacing[8],
+                    borderBottomWidth: index < activityData.length - 1 ? 1 : 0,
+                    borderBottomColor: colors.border.light.default,
+                  }}
+                >
+                  <Text>{activity.text}</Text>
+                </Row>
+              )}
+            </AnimatedList>
+          </Card>
+        </Stack>
+      </Stack>
+    </PageTransition>
   );
 }
 

@@ -1,29 +1,31 @@
 /**
- * NotFoundPage - 404 page using Tamagui
+ * NotFoundPage - 404 page using Beyond UI
  */
 import { Link } from 'react-router-dom';
-import { YStack, Text } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
+import { Stack, Text, Button, H1 } from '@unicornlove/beyond-ui';
+import { spacing, fontSize } from '@unicornlove/beyond-ui';
 
 function NotFoundPage() {
   return (
-    <YStack
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      height="100vh"
-      gap="$4"
+    <Stack
+      style={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        gap: spacing[16],
+      }}
     >
-      <Text fontSize="$10" fontWeight="700">
+      <H1 style={{ fontSize: fontSize.h1, fontWeight: 700 }}>
         404 - Not Found
-      </Text>
-      <Text fontSize="$5">
+      </H1>
+      <Text style={{ fontSize: fontSize.h5 }}>
         The page you are looking for does not exist.
       </Text>
-      <CoreButton asChild variant="primary">
+      <Button asChild variant="default">
         <Link to="/">Go to Home</Link>
-      </CoreButton>
-    </YStack>
+      </Button>
+    </Stack>
   );
 }
 

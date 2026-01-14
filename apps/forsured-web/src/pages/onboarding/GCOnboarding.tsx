@@ -1,7 +1,7 @@
 // src/pages/onboarding/GCOnboarding.tsx
 // REQ-126: General Contractor Onboarding Page
 import React from 'react';
-import { View } from '@unicornlove/ui';
+import { Stack } from '@unicornlove/beyond-ui';
 import { useOnboarding } from '../../hooks/useOnboarding';
 import OnboardingWizard from '../../components/Onboarding/OnboardingWizard';
 import CompanyStep from '../../components/Onboarding/steps/gc/CompanyStep';
@@ -67,7 +67,7 @@ function GCOnboarding() {
   };
 
   return (
-    <View flex={1}>
+    <Stack style={{ flex: 1 }}>
       <OnboardingWizard
         userType="gc"
         currentStep={currentStep}
@@ -80,7 +80,7 @@ function GCOnboarding() {
       >
         {renderStepContent()}
       </OnboardingWizard>
-    </View>
+    </Stack>
   );
 }
 

@@ -4,13 +4,12 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
-import { View, StyleSheet, Text, ScrollView, Pressable } from 'react-native'
+import { View, StyleSheet, Text, ScrollView, } from 'react-native'
 import { spacing } from '../../../tokens/spacing'
 import { colors } from '../../../tokens/colors'
 import { typographyVariants } from '../../../tokens/typography'
 import { useThemeContext } from '../../../playground/ThemeProvider'
-import { Button } from '../../../components/Button'
-import { Wallet, TrendingUp, UserPlus, ArrowRight } from 'lucide-react-native'
+import { Wallet, TrendingUp, UserPlus, } from 'lucide-react-native'
 
 const meta: Meta = {
   title: 'Examples/CryptoWallet',

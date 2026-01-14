@@ -3,9 +3,9 @@
  * Complete document management page with upload, table, and RBAC
  */
 
-import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
-import { YStack, XStack, Text, H1, Card, Spinner } from '@unicornlove/ui';
+import React, { useState, useEffect } from 'react';
+import { X, Loader2 } from 'lucide-react';
+import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui';
 import { FileUploadZone } from './FileUploadZone';
 import { DocumentTable } from './DocumentTable';
 import { DocumentService } from '../../lib/documents/documentService';
@@ -124,70 +124,81 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
   };
 
   return (
-    <YStack
-      maxWidth={1280}
-      marginHorizontal="auto"
-      paddingHorizontal={{ sm: '$4', md: '$6', lg: '$8' }}
-      paddingVertical="$8"
+    <Stack
+      style={{
+        maxWidth: '1280px',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        paddingLeft: '32px',
+        paddingRight: '32px',
+        paddingTop: '32px',
+        paddingBottom: '32px',
+      }}
     >
-      <YStack mb="$8">
-        <H1 fontSize="$9" fontWeight="bold" color="$color12">
+      <Stack style={{ marginBottom: '32px' }}>
+        <H1 style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
           Documents
         </H1>
-        <Text mt="$2" fontSize="$3" color="$color11">
+        <Text style={{ marginTop: '8px', fontSize: '14px', color: 'var(--color-gray-11)' }}>
           Upload and manage insurance certificates for this project.
         </Text>
-      </YStack>
+      </Stack>
 
       {error && (
         <Card
-          mb="$6"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
-          padding="$4"
+          style={{
+            marginBottom: '24px',
+            backgroundColor: 'var(--color-red-2)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-red-6)',
+            borderRadius: '8px',
+            padding: '16px',
+          }}
         >
-          <XStack alignItems="flex-start">
-            <XStack flexShrink={0}>
-              <X size={20} color="$red10" />
-            </XStack>
-            <XStack flex={1} ml="$3">
-              <Text fontSize="$3" fontWeight="500" color="$red12">
+          <Row style={{ alignItems: 'flex-start' }}>
+            <Row style={{ flexShrink: 0 }}>
+              <X size={20} color="var(--color-red-10)" />
+            </Row>
+            <Row style={{ flex: 1, marginLeft: '12px' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-red-12)' }}>
                 {error}
               </Text>
-            </XStack>
-            <XStack ml="auto" paddingLeft="$3">
-              <XStack
-                as="button"
-                display="inline-flex"
-                color="$red10"
-                hoverStyle={{ color: '$red11' }}
+            </Row>
+            <Row style={{ marginLeft: 'auto', paddingLeft: '12px' }}>
+              <button
+                style={{
+                  display: 'inline-flex',
+                  color: 'var(--color-red-10)',
+                  cursor: 'pointer',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                }}
                 onClick={() => setError(null)}
-                cursor="pointer"
               >
                 <X size={20} />
-              </XStack>
-            </XStack>
-          </XStack>
+              </button>
+            </Row>
+          </Row>
         </Card>
       )}
 
       {canUpload() && (
-        <YStack mb="$8">
+        <Stack style={{ marginBottom: '32px' }}>
           <FileUploadZone
             projectId={projectId}
             uploaderId={currentUser.id}
             onUpload={handleUpload}
             onError={handleUploadError}
           />
-        </YStack>
+        </Stack>
       )}
 
       {loading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
-          <Spinner size="large" color="$teal9" />
-        </YStack>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: '48px', paddingBottom: '48px' }}>
+          <Loader2 size={32} color="var(--color-teal-9)" className="animate-spin" />
+        </Stack>
       ) : (
         <DocumentTable
           documents={documents}
@@ -197,6 +208,6 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
           canReprocess={canReprocess}
         />
       )}
-    </YStack>
+    </Stack>
   );
 };

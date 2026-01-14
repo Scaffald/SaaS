@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { YStack, XStack, View, Text, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Box, Text, H2, H3, Alert } from '@unicornlove/beyond-ui';
 import ComponentShowcase from '../../../components/DesignSystem/ComponentShowcase';
 import Input from '../../../components/Common/Input';
 import Select from '../../../components/Common/Select';
 import Textarea from '../../../components/Common/Textarea';
 import Button from '../../../components/Common/Button';
 import Checkbox from '../../../ui/Checkbox';
-import { Alert } from '@unicornlove/ui';
 import { LayoutGrid } from 'lucide-react';
 
 export default function PatternsSection() {
@@ -42,27 +41,27 @@ export default function PatternsSection() {
   };
 
   return (
-    <YStack gap="$8" marginBottom="$12">
-      <XStack alignItems="center" gap="$3" marginBottom="$6">
-        <LayoutGrid color="var(--blue10)" size={32} />
-        <H2 fontSize="$9" fontWeight="bold" color="$color12">
+    <Stack style={{ gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
+      <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
+        <LayoutGrid color="var(--color-blue-10)" size={32} />
+        <H2 style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>
           Patterns
         </H2>
-      </XStack>
+      </Row>
 
-      <View id="form-patterns">
+      <Box id="form-patterns">
         <ComponentShowcase
           title="Form Validation Pattern"
           description="Complete form with validation, error states, and success feedback"
         >
-          <View width="100%" maxWidth={672}>
-            <YStack tag="form" onSubmit={handleSubmit} gap="$4">
+          <Box style={{ width: '100%', maxWidth: 672 }}>
+            <Stack as="form" onSubmit={handleSubmit} style={{ gap: 'var(--space-4)' }}>
               {showSuccess && (
                 <Alert
-                  variant="success"
+                  type="success"
                   title="Success!"
-                  closable
-                  onClose={() => setShowSuccess(false)}
+                  dismissible
+                  onDismiss={() => setShowSuccess(false)}
                 >
                   Your form has been submitted successfully.
                 </Alert>
@@ -130,104 +129,106 @@ export default function PatternsSection() {
                 required
               />
 
-              <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+              <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-4)' }}>
                 <Button variant="ghost" type="button">
                   Cancel
                 </Button>
                 <Button variant="primary" type="submit">
                   Submit Form
                 </Button>
-              </XStack>
-            </YStack>
-          </View>
+              </Row>
+            </Stack>
+          </Box>
         </ComponentShowcase>
-      </View>
+      </Box>
 
-      <View id="layout-patterns">
+      <Box id="layout-patterns">
         <ComponentShowcase
           title="Dashboard Layout Pattern"
           description="Typical dashboard layout with stats, charts, and lists"
         >
-          <View width="100%">
-            <XStack flexWrap="wrap" gap="$4" marginBottom="$6">
-              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" marginBottom="$1">
+          <Box style={{ width: '100%' }}>
+            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+              <Box style={{ flex: 1, minWidth: 200, backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginBottom: 'var(--space-1)' }}>
                   Total Projects
                 </Text>
-                <Text fontSize="$9" fontWeight="bold" color="$color12">24</Text>
-                <Text fontSize="$2" color="$green11" marginTop="$1">
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>24</Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-11)', marginTop: 'var(--space-1)' }}>
                   +12% from last month
                 </Text>
-              </View>
-              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" marginBottom="$1">Active Tasks</Text>
-                <Text fontSize="$9" fontWeight="bold" color="$color12">156</Text>
-                <Text fontSize="$2" color="$yellow11" marginTop="$1">8 overdue</Text>
-              </View>
-              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" marginBottom="$1">
+              </Box>
+              <Box style={{ flex: 1, minWidth: 200, backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginBottom: 'var(--space-1)' }}>Active Tasks</Text>
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>156</Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow-11)', marginTop: 'var(--space-1)' }}>8 overdue</Text>
+              </Box>
+              <Box style={{ flex: 1, minWidth: 200, backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginBottom: 'var(--space-1)' }}>
                   Compliance Score
                 </Text>
-                <Text fontSize="$9" fontWeight="bold" color="$color12">94%</Text>
-                <Text fontSize="$2" color="$green11" marginTop="$1">+2% improvement</Text>
-              </View>
-            </XStack>
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>94%</Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-11)', marginTop: 'var(--space-1)' }}>+2% improvement</Text>
+              </Box>
+            </Row>
 
-            <View backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
-              <Text fontWeight="600" color="$color12" marginBottom="$4">
+            <Box style={{ backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-6)' }}>
+              <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>
                 Recent Activity
               </Text>
-              <YStack gap="$3">
+              <Stack style={{ gap: 'var(--space-3)' }}>
                 {[1, 2, 3].map((i) => (
-                  <XStack
+                  <Row
                     key={i}
-                    alignItems="center"
-                    gap="$3"
-                    paddingVertical="$2"
-                    borderBottomWidth={i < 3 ? 1 : 0}
-                    borderBottomColor="$borderColor"
+                    style={{
+                      alignItems: 'center',
+                      gap: 'var(--space-3)',
+                      paddingTop: 'var(--space-2)',
+                      paddingBottom: 'var(--space-2)',
+                      borderBottom: i < 3 ? '1px solid var(--color-border)' : 'none',
+                    }}
                   >
-                    <View width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
-                    <View flex={1}>
-                      <Text fontSize="$3" color="$color12">
+                    <Box style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: 'var(--color-blue-10)' }} />
+                    <Box style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>
                         Activity item {i}
                       </Text>
-                      <Text fontSize="$2" color="$color10">2 hours ago</Text>
-                    </View>
-                  </XStack>
+                      <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>2 hours ago</Text>
+                    </Box>
+                  </Row>
                 ))}
-              </YStack>
-            </View>
-          </View>
+              </Stack>
+            </Box>
+          </Box>
         </ComponentShowcase>
-      </View>
+      </Box>
 
-      <View id="feedback-patterns">
+      <Box id="feedback-patterns">
         <ComponentShowcase
           title="Feedback Patterns"
           description="Different ways to provide user feedback"
         >
-          <YStack width="100%" gap="$4">
-            <Alert variant="info" title="Pro Tip">
+          <Stack style={{ width: '100%', gap: 'var(--space-4)' }}>
+            <Alert type="info" title="Pro Tip">
               Use keyboard shortcuts to navigate faster through the application.
             </Alert>
-            <Alert variant="success" title="Saved!" closable onClose={() => {}}>
+            <Alert type="success" title="Saved!" dismissible onDismiss={() => {}}>
               Your changes have been saved automatically.
             </Alert>
-            <Alert variant="warning" title="Review Required">
+            <Alert type="warning" title="Review Required">
               Please review your compliance documents before the deadline.
             </Alert>
             <Alert
-              variant="error"
+              type="error"
               title="Action Required"
-              closable
-              onClose={() => {}}
+              dismissible
+              onDismiss={() => {}}
             >
               Your session is about to expire. Please save your work.
             </Alert>
-          </YStack>
+          </Stack>
         </ComponentShowcase>
-      </View>
-    </YStack>
+      </Box>
+    </Stack>
   );
 }

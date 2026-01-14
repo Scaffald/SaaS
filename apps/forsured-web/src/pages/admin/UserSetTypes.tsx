@@ -16,7 +16,6 @@ import {
   Edit,
   Trash2,
   RefreshCcw,
-  Loader2,
   X,
   RotateCcw,
   Building2,
@@ -24,8 +23,9 @@ import {
   Check,
   AlertTriangle,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H1, H2, H3, Spinner, Input, TextArea } from '@unicornlove/ui';
-import { EmptyState } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, H1, H3, Spinner, Input } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
+import Textarea from '../../components/Common/Textarea';
 import { trpc } from '../../lib/trpc';
 
 interface UserSetTypeFormData {
@@ -193,99 +193,98 @@ function AdminUserSetTypes() {
 
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6">
-        <Spinner size="large" color="$blue9" />
-        <Text marginLeft="$2">Loading user set types...</Text>
-      </YStack>
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 'var(--space-6)', paddingBottom: 'var(--space-6)' }}>
+        <Spinner size="large" />
+        <Text style={{ marginLeft: 'var(--space-2)' }}>Loading user set types...</Text>
+      </Stack>
     );
   }
 
   return (
-    <YStack>
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <YStack>
-          <H1 fontSize="$8" fontWeight="bold">Industry Verticals</H1>
-          <Text color="$gray11" fontSize="$3" marginTop="$1">
+    <Stack>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
+        <Stack>
+          <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>Industry Verticals</H1>
+          <Text style={{ color: 'var(--color-gray-11)', fontSize: 'var(--font-size-3)', marginTop: 'var(--space-1)' }}>
             Manage user set types for different industry verticals (Construction, Property Management, etc.)
           </Text>
-        </YStack>
-        <XStack alignItems="center" gap="$3">
-          <XStack alignItems="center" gap="$2">
+        </Stack>
+        <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+          <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
             <input
               type="checkbox"
               checked={showInactive}
               onChange={(e) => setShowInactive(e.target.checked)}
             />
-            <Text fontSize="$3" color="$gray11">
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>
               Show inactive ({totalCount - activeCount})
             </Text>
-          </XStack>
+          </Row>
           <Button
             onPress={handleRefresh}
             disabled={isLoading}
-            icon={isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
-            variant="outlined"
+            variant="outline"
+            iconStart={isLoading ? undefined : RefreshCcw}
           >
-            Refresh
+            {isLoading ? 'Loading...' : 'Refresh'}
           </Button>
           <Button
+            color="primary"
+            iconStart={PlusCircle}
             onPress={openAddModal}
-            backgroundColor="$blue9"
-            color="white"
-            icon={<PlusCircle size={16} />}
           >
             Add Industry
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {error && (
-        <YStack padding="$4" marginBottom="$4" backgroundColor="$red2" borderWidth={1} borderColor="$red6" borderRadius="$4">
-          <Text color="$red10">Error: {error.message}</Text>
-        </YStack>
+        <Stack style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)', backgroundColor: 'var(--color-red-2)', borderWidth: 1, borderColor: 'var(--color-red-6)', borderRadius: 'var(--radius-4)' }}>
+          <Text style={{ color: 'var(--color-red-10)' }}>Error: {error.message}</Text>
+        </Stack>
       )}
 
       {/* Summary Cards */}
-      <XStack gap="$4" marginBottom="$6" flexWrap="wrap">
-        <Card flex={1} minWidth={200} padding="$4" elevation={1}>
-          <XStack alignItems="center" gap="$3">
-            <YStack padding="$2" backgroundColor="$blue3" borderRadius="$4">
-              <Building2 size={20} color="$blue9" />
-            </YStack>
-            <YStack>
-              <Text fontSize="$3" color="$gray11">Total Industries</Text>
-              <Text fontSize="$8" fontWeight="bold">{totalCount}</Text>
-            </YStack>
-          </XStack>
+      <Row style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-6)', flexWrap: 'wrap' }}>
+        <Card style={{ flex: 1, minWidth: 200, padding: 'var(--space-4)' }}>
+          <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+            <Stack style={{ padding: 'var(--space-2)', backgroundColor: 'var(--color-blue-3)', borderRadius: 'var(--radius-4)' }}>
+              <Building2 size={20} color="var(--color-blue-9)" />
+            </Stack>
+            <Stack>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>Total Industries</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>{totalCount}</Text>
+            </Stack>
+          </Row>
         </Card>
-        <Card flex={1} minWidth={200} padding="$4" elevation={1}>
-          <XStack alignItems="center" gap="$3">
-            <YStack padding="$2" backgroundColor="$green3" borderRadius="$4">
-              <Check size={20} color="$green9" />
-            </YStack>
-            <YStack>
-              <Text fontSize="$3" color="$gray11">Active</Text>
-              <Text fontSize="$8" fontWeight="bold">{activeCount}</Text>
-            </YStack>
-          </XStack>
+        <Card style={{ flex: 1, minWidth: 200, padding: 'var(--space-4)' }}>
+          <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+            <Stack style={{ padding: 'var(--space-2)', backgroundColor: 'var(--color-green-3)', borderRadius: 'var(--radius-4)' }}>
+              <Check size={20} color="var(--color-green-9)" />
+            </Stack>
+            <Stack>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>Active</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>{activeCount}</Text>
+            </Stack>
+          </Row>
         </Card>
-        <Card flex={1} minWidth={200} padding="$4" elevation={1}>
-          <XStack alignItems="center" gap="$3">
-            <YStack padding="$2" backgroundColor="$gray3" borderRadius="$4">
-              <Users size={20} color="$gray11" />
-            </YStack>
-            <YStack>
-              <Text fontSize="$3" color="$gray11">Users Assigned</Text>
-              <Text fontSize="$8" fontWeight="bold">
+        <Card style={{ flex: 1, minWidth: 200, padding: 'var(--space-4)' }}>
+          <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+            <Stack style={{ padding: 'var(--space-2)', backgroundColor: 'var(--color-gray-3)', borderRadius: 'var(--radius-4)' }}>
+              <Users size={20} color="var(--color-gray-11)" />
+            </Stack>
+            <Stack>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>Users Assigned</Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>
                 {userSetTypes?.reduce((sum, ust) => sum + (ust.userCount ?? 0), 0) ?? 0}
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
         </Card>
-      </XStack>
+      </Row>
 
       {/* User Set Types Table */}
-      <Card padding="$6" elevation={1}>
+      <Card style={{ padding: 'var(--space-6)' }}>
         {displayedTypes.length === 0 ? (
           <EmptyState
             icon={Building2}
@@ -299,354 +298,323 @@ function AdminUserSetTypes() {
             } : undefined}
           />
         ) : (
-          <YStack>
-            <XStack borderBottomWidth={1} borderColor="$borderColor" paddingVertical="$2" paddingHorizontal="$4">
-              <Text flex={2} fontWeight="600">Industry</Text>
-              <Text flex={1} fontWeight="600">Slug</Text>
-              <Text flex={1} fontWeight="600">Manager Label</Text>
-              <Text flex={1} fontWeight="600">Contractor Label</Text>
-              <Text flex={0.5} fontWeight="600" textAlign="center">Users</Text>
-              <Text flex={0.5} fontWeight="600">Status</Text>
-              <Text flex={0.5} fontWeight="600">Actions</Text>
-            </XStack>
+          <Stack>
+            <Row style={{ borderBottomWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)' }}>
+              <Text style={{ flex: 2, fontWeight: 600 }}>Industry</Text>
+              <Text style={{ flex: 1, fontWeight: 600 }}>Slug</Text>
+              <Text style={{ flex: 1, fontWeight: 600 }}>Manager Label</Text>
+              <Text style={{ flex: 1, fontWeight: 600 }}>Contractor Label</Text>
+              <Text style={{ flex: 0.5, fontWeight: 600, textAlign: 'center' }}>Users</Text>
+              <Text style={{ flex: 0.5, fontWeight: 600 }}>Status</Text>
+              <Text style={{ flex: 0.5, fontWeight: 600 }}>Actions</Text>
+            </Row>
             {displayedTypes.map((ust) => (
-              <XStack
+              <Row
                 key={ust.id}
-                borderBottomWidth={1}
-                borderColor="$borderColor"
-                paddingVertical="$3"
-                paddingHorizontal="$4"
-                opacity={!ust.isActive ? 0.6 : 1}
-                backgroundColor={!ust.isActive ? "$gray2" : "transparent"}
+                style={{
+                  borderBottomWidth: 1,
+                  borderColor: 'var(--color-border)',
+                  paddingTop: 'var(--space-3)',
+                  paddingBottom: 'var(--space-3)',
+                  paddingLeft: 'var(--space-4)',
+                  paddingRight: 'var(--space-4)',
+                  opacity: !ust.isActive ? 0.6 : 1,
+                  backgroundColor: !ust.isActive ? 'var(--color-gray-2)' : 'transparent'
+                }}
               >
-                <YStack flex={2}>
-                  <Text fontWeight="500">{ust.name}</Text>
+                <Stack style={{ flex: 2 }}>
+                  <Text style={{ fontWeight: 500 }}>{ust.name}</Text>
                   {ust.description && (
-                    <Text fontSize="$1" color="$gray11" marginTop="$1">{ust.description}</Text>
+                    <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)', marginTop: 'var(--space-1)' }}>{ust.description}</Text>
                   )}
-                </YStack>
-                <Text flex={1} fontFamily="$mono" fontSize="$3" color="$gray11">
+                </Stack>
+                <Text style={{ flex: 1, fontFamily: 'monospace', fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>
                   {ust.slug}
                 </Text>
-                <YStack flex={1}>
-                  <Text fontSize="$3">{ust.managerLabelSingular}</Text>
-                  <Text fontSize="$3" color="$gray11">({ust.managerLabelPlural})</Text>
-                </YStack>
-                <YStack flex={1}>
-                  <Text fontSize="$3">{ust.contractorLabelSingular}</Text>
-                  <Text fontSize="$3" color="$gray11">({ust.contractorLabelPlural})</Text>
-                </YStack>
-                <XStack flex={0.5} justifyContent="center">
+                <Stack style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)' }}>{ust.managerLabelSingular}</Text>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>({ust.managerLabelPlural})</Text>
+                </Stack>
+                <Stack style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)' }}>{ust.contractorLabelSingular}</Text>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>({ust.contractorLabelPlural})</Text>
+                </Stack>
+                <Row style={{ flex: 0.5, justifyContent: 'center' }}>
                   <Text
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    backgroundColor="$gray3"
-                    borderRadius="$2"
-                    fontSize="$3"
+                    style={{
+                      paddingLeft: 'var(--space-2)',
+                      paddingRight: 'var(--space-2)',
+                      paddingTop: 'var(--space-1)',
+                      paddingBottom: 'var(--space-1)',
+                      backgroundColor: 'var(--color-gray-3)',
+                      borderRadius: 'var(--radius-2)',
+                      fontSize: 'var(--font-size-3)'
+                    }}
                   >
                     {ust.userCount ?? 0}
                   </Text>
-                </XStack>
-                <XStack flex={0.5}>
+                </Row>
+                <Row style={{ flex: 0.5 }}>
                   <Text
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$2"
-                    fontSize="$1"
-                    backgroundColor={ust.isActive ? "$green3" : "$gray3"}
-                    color={ust.isActive ? "$green10" : "$gray11"}
+                    style={{
+                      paddingLeft: 'var(--space-2)',
+                      paddingRight: 'var(--space-2)',
+                      paddingTop: 'var(--space-1)',
+                      paddingBottom: 'var(--space-1)',
+                      borderRadius: 'var(--radius-2)',
+                      fontSize: 'var(--font-size-1)',
+                      backgroundColor: ust.isActive ? 'var(--color-green-3)' : 'var(--color-gray-3)',
+                      color: ust.isActive ? 'var(--color-green-10)' : 'var(--color-gray-11)'
+                    }}
                   >
                     {ust.isActive ? 'Active' : 'Inactive'}
                   </Text>
-                </XStack>
-                <XStack flex={0.5} alignItems="center" gap="$1">
+                </Row>
+                <Row style={{ flex: 0.5, alignItems: 'center', gap: 'var(--space-1)' }}>
                   <Button
                     onPress={() => openEditModal(ust)}
                     disabled={actionInProgress === ust.id}
-                    size="$2"
-                    variant="outlined"
-                    icon={<Edit size={16} />}
-                    opacity={actionInProgress === ust.id ? 0.5 : 1}
+                    variant="outline"
+                    size="sm"
+                    iconStart={Edit}
+                    iconOnly
+                    style={{ opacity: actionInProgress === ust.id ? 0.5 : 1 }}
                   />
                   {ust.isActive ? (
                     <Button
                       onPress={() => handleToggleActive(ust.id, true)}
                       disabled={actionInProgress === ust.id || (ust.userCount ?? 0) > 0}
-                      size="$2"
-                      variant="outlined"
-                      icon={actionInProgress === ust.id ? <Spinner size="small" /> : <Trash2 size={16} />}
-                      color="$red9"
-                      opacity={actionInProgress === ust.id || (ust.userCount ?? 0) > 0 ? 0.5 : 1}
+                      variant="outline"
+                      size="sm"
+                      iconStart={actionInProgress === ust.id ? undefined : Trash2}
+                      iconOnly
+                      style={{ opacity: actionInProgress === ust.id || (ust.userCount ?? 0) > 0 ? 0.5 : 1, color: 'var(--color-red-9)' }}
                     />
                   ) : (
                     <Button
                       onPress={() => handleToggleActive(ust.id, false)}
                       disabled={actionInProgress === ust.id}
-                      size="$2"
-                      variant="outlined"
-                      icon={actionInProgress === ust.id ? <Spinner size="small" /> : <RotateCcw size={16} />}
-                      color="$green9"
-                      opacity={actionInProgress === ust.id ? 0.5 : 1}
+                      variant="outline"
+                      size="sm"
+                      iconStart={actionInProgress === ust.id ? undefined : RotateCcw}
+                      iconOnly
+                      style={{ opacity: actionInProgress === ust.id ? 0.5 : 1, color: 'var(--color-green-9)' }}
                     />
                   )}
-                </XStack>
-              </XStack>
+                </Row>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
         )}
       </Card>
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <YStack
-          position="fixed"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          zIndex={50}
+        <Stack
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50
+          }}
         >
           <Card
-            backgroundColor="white"
-            borderRadius="$4"
-            shadowColor="$shadowColor"
-            shadowRadius="$4"
-            width="100%"
-            maxWidth={600}
-            marginHorizontal="$4"
-            maxHeight="90vh"
+            style={{
+              backgroundColor: 'white',
+              borderRadius: 'var(--radius-4)',
+              width: '100%',
+              maxWidth: 600,
+              marginLeft: 'var(--space-4)',
+              marginRight: 'var(--space-4)',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}
           >
-            <XStack
-              alignItems="center"
-              justifyContent="space-between"
-              padding="$4"
-              borderBottomWidth={1}
-              borderColor="$borderColor"
-              position="sticky"
-              top={0}
-              backgroundColor="white"
+            <Row
+              style={{
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: 'var(--space-4)',
+                borderBottomWidth: 1,
+                borderColor: 'var(--color-border)',
+                position: 'sticky',
+                top: 0,
+                backgroundColor: 'white'
+              }}
             >
-              <H3 fontSize="$5" fontWeight="600">
+              <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600 }}>
                 {modalMode === 'add' ? 'Add Industry Vertical' : 'Edit Industry Vertical'}
               </H3>
               <Button
                 onPress={closeModal}
-                size="$2"
-                variant="outlined"
-                icon={<X size={20} />}
-                color="$gray11"
+                variant="outline"
+                size="sm"
+                iconStart={X}
+                iconOnly
+                style={{ color: 'var(--color-gray-11)' }}
               />
-            </XStack>
+            </Row>
 
-            <YStack padding="$4" gap="$4">
+            <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-4)' }}>
               {formError && (
-                <XStack
-                  padding="$3"
-                  backgroundColor="$red2"
-                  borderWidth={1}
-                  borderColor="$red6"
-                  borderRadius="$2"
-                  color="$red10"
-                  fontSize="$3"
-                  alignItems="flex-start"
-                  gap="$2"
+                <Row
+                  style={{
+                    padding: 'var(--space-3)',
+                    backgroundColor: 'var(--color-red-2)',
+                    borderWidth: 1,
+                    borderColor: 'var(--color-red-6)',
+                    borderRadius: 'var(--radius-2)',
+                    color: 'var(--color-red-10)',
+                    fontSize: 'var(--font-size-3)',
+                    alignItems: 'flex-start',
+                    gap: 'var(--space-2)'
+                  }}
                 >
-                  <AlertTriangle size={16} flexShrink={0} marginTop={2} />
-                  <Text color="$red10" fontSize="$3">{formError}</Text>
-                </XStack>
+                  <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <Text style={{ color: 'var(--color-red-10)', fontSize: 'var(--font-size-3)' }}>{formError}</Text>
+                </Row>
               )}
 
-              <YStack gap="$4">
-                <YStack>
-                  <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$1">
+              <Stack style={{ gap: 'var(--space-4)' }}>
+                <Stack>
+                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-1)' }}>
                     Industry Name *
                   </Text>
                   <Input
                     value={formData.name}
-                    onChangeText={handleNameChange}
+                    onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="e.g., Construction, Property Management"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    borderRadius="$2"
-                    padding="$2"
-                    width="100%"
+                    style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
                   />
-                </YStack>
+                </Stack>
 
-                <YStack>
-                  <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$1">
+                <Stack>
+                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-1)' }}>
                     Slug *
                   </Text>
                   <Input
                     value={formData.slug}
-                    onChangeText={(value) =>
-                      setFormData((prev) => ({ ...prev, slug: value }))
-                    }
+                    onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
                     disabled={modalMode === 'edit'}
                     placeholder="e.g., construction"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    borderRadius="$2"
-                    padding="$2"
-                    width="100%"
-                    fontFamily="$mono"
-                    backgroundColor={modalMode === 'edit' ? "$gray3" : "white"}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: 'var(--color-border)',
+                      borderRadius: 'var(--radius-2)',
+                      padding: 'var(--space-2)',
+                      width: '100%',
+                      fontFamily: 'monospace',
+                      backgroundColor: modalMode === 'edit' ? 'var(--color-gray-3)' : 'white'
+                    }}
                   />
                   {modalMode === 'edit' && (
-                    <Text marginTop="$1" fontSize="$1" color="$gray11">
+                    <Text style={{ marginTop: 'var(--space-1)', fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)' }}>
                       Slug cannot be changed after creation
                     </Text>
                   )}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
 
-              <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-                <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$3">
+              <Stack style={{ borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-3)' }}>
                   Manager Role Labels
                 </Text>
-                <XStack gap="$4">
-                  <YStack flex={1}>
-                    <Text fontSize="$3" color="$gray11" marginBottom="$1">
+                <Row style={{ gap: 'var(--space-4)' }}>
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-1)' }}>
                       Singular *
                     </Text>
                     <Input
                       value={formData.managerLabelSingular}
-                      onChangeText={(value) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          managerLabelSingular: value,
-                        }))
-                      }
+                      onChange={(e) => setFormData((prev) => ({ ...prev, managerLabelSingular: e.target.value }))}
                       placeholder="e.g., General Contractor"
-                      borderWidth={1}
-                      borderColor="$borderColor"
-                      borderRadius="$2"
-                      padding="$2"
-                      width="100%"
+                      style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
                     />
-                  </YStack>
-                  <YStack flex={1}>
-                    <Text fontSize="$3" color="$gray11" marginBottom="$1">
+                  </Stack>
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-1)' }}>
                       Plural *
                     </Text>
                     <Input
                       value={formData.managerLabelPlural}
-                      onChangeText={(value) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          managerLabelPlural: value,
-                        }))
-                      }
+                      onChange={(e) => setFormData((prev) => ({ ...prev, managerLabelPlural: e.target.value }))}
                       placeholder="e.g., General Contractors"
-                      borderWidth={1}
-                      borderColor="$borderColor"
-                      borderRadius="$2"
-                      padding="$2"
-                      width="100%"
+                      style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
                     />
-                  </YStack>
-                </XStack>
-              </YStack>
+                  </Stack>
+                </Row>
+              </Stack>
 
-              <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-                <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$3">
+              <Stack style={{ borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-3)' }}>
                   Contractor Role Labels
                 </Text>
-                <XStack gap="$4">
-                  <YStack flex={1}>
-                    <Text fontSize="$3" color="$gray11" marginBottom="$1">
+                <Row style={{ gap: 'var(--space-4)' }}>
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-1)' }}>
                       Singular *
                     </Text>
                     <Input
                       value={formData.contractorLabelSingular}
-                      onChangeText={(value) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          contractorLabelSingular: value,
-                        }))
-                      }
+                      onChange={(e) => setFormData((prev) => ({ ...prev, contractorLabelSingular: e.target.value }))}
                       placeholder="e.g., Subcontractor"
-                      borderWidth={1}
-                      borderColor="$borderColor"
-                      borderRadius="$2"
-                      padding="$2"
-                      width="100%"
+                      style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
                     />
-                  </YStack>
-                  <YStack flex={1}>
-                    <Text fontSize="$3" color="$gray11" marginBottom="$1">
+                  </Stack>
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-1)' }}>
                       Plural *
                     </Text>
                     <Input
                       value={formData.contractorLabelPlural}
-                      onChangeText={(value) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          contractorLabelPlural: value,
-                        }))
-                      }
+                      onChange={(e) => setFormData((prev) => ({ ...prev, contractorLabelPlural: e.target.value }))}
                       placeholder="e.g., Subcontractors"
-                      borderWidth={1}
-                      borderColor="$borderColor"
-                      borderRadius="$2"
-                      padding="$2"
-                      width="100%"
+                      style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
                     />
-                  </YStack>
-                </XStack>
-              </YStack>
+                  </Stack>
+                </Row>
+              </Stack>
 
-              <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-                <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$1">
+              <Stack style={{ borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-1)' }}>
                   Description (optional)
                 </Text>
                 <TextArea
                   value={formData.description}
-                  onChangeText={(value) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      description: value,
-                    }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                   placeholder="Brief description of this industry vertical"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$2"
-                  padding="$2"
-                  width="100%"
-                  minHeight={60}
+                  style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%', minHeight: 60 }}
                 />
-              </YStack>
+              </Stack>
 
-              <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-4)', borderTopWidth: 1, borderColor: 'var(--color-border)' }}>
                 <Button
                   onPress={closeModal}
-                  variant="outlined"
+                  variant="outline"
                 >
                   Cancel
                 </Button>
                 <Button
                   onPress={(e) => {
                     e?.preventDefault?.();
-                    handleSubmit(e as any);
+                    handleSubmit(e as unknown as React.FormEvent);
                   }}
                   disabled={isSubmitting}
-                  backgroundColor="$blue9"
-                  color="white"
-                  icon={isSubmitting ? <Spinner size="small" /> : undefined}
-                  opacity={isSubmitting ? 0.5 : 1}
+                  color="primary"
                 >
-                  {modalMode === 'add' ? 'Create Industry' : 'Save Changes'}
+                  {isSubmitting ? 'Saving...' : (modalMode === 'add' ? 'Create Industry' : 'Save Changes')}
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           </Card>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

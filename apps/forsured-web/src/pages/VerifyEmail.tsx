@@ -3,77 +3,112 @@
  * Similar to Scaffald's MagicLinkPending but simpler for web
  */
 import { useSearchParams } from 'react-router-dom';
-import { YStack, Text, XStack } from '@unicornlove/ui';
-import { Mail } from '@tamagui/lucide-icons';
+import { Stack, Row, Text, H1 } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize, borderRadius, shadows } from '@unicornlove/beyond-ui';
+import { Mail } from 'lucide-react';
 
 function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email') || 'your email address';
 
   return (
-    <YStack
-      minHeight="100vh"
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="$blue2"
-      padding="$4"
+    <Stack
+      style={{
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.primary[50],
+        padding: spacing[16],
+      }}
     >
-      <YStack
-        maxWidth={448}
-        width="100%"
-        gap="$8"
-        padding="$10"
-        backgroundColor="$background"
-        borderRadius="$5"
-        shadowColor="$shadowColor"
-        shadowRadius={20}
-        shadowOffset={{ width: 0, height: 8 }}
-        alignItems="center"
+      <Stack
+        style={{
+          maxWidth: 448,
+          width: '100%',
+          gap: spacing[32],
+          padding: spacing[40],
+          backgroundColor: colors.bg.light.default,
+          borderRadius: borderRadius.m,
+          boxShadow: shadows.l.boxShadow,
+          alignItems: 'center',
+        }}
       >
         {/* Success Icon */}
-        <YStack
-          width={80}
-          height={80}
-          borderRadius="$12"
-          backgroundColor="$green2"
-          borderWidth={2}
-          borderColor="$green9"
-          alignItems="center"
-          justifyContent="center"
+        <Stack
+          style={{
+            width: 80,
+            height: 80,
+            borderRadius: borderRadius.max,
+            backgroundColor: colors.success[50],
+            border: `2px solid ${colors.success[500]}`,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
-          <Mail size={48} color="$green10" />
-        </YStack>
+          <Mail size={48} color={colors.success[600]} />
+        </Stack>
 
         {/* Header */}
-        <YStack gap="$4" alignItems="center">
-          <Text fontSize="$9" fontWeight="700" color="$color12" textAlign="center">
+        <Stack style={{ gap: spacing[16], alignItems: 'center' }}>
+          <H1
+            style={{
+              fontSize: fontSize.h3,
+              fontWeight: 700,
+              color: colors.text.light.primary,
+              textAlign: 'center',
+            }}
+          >
             Check Your Email
-          </Text>
+          </H1>
 
-          <XStack gap="$2" alignItems="center" justifyContent="center">
-            <Text fontSize="$4" color="$color11" textAlign="center">
+          <Row style={{ gap: spacing[8], alignItems: 'center', justifyContent: 'center' }}>
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                color: colors.text.light.secondary,
+                textAlign: 'center',
+              }}
+            >
               We sent a magic link to
             </Text>
-            <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                fontWeight: 600,
+                color: colors.text.light.primary,
+              }}
+            >
               {email}
             </Text>
-          </XStack>
+          </Row>
 
-          <Text fontSize="$3" color="$color10" textAlign="center" marginTop="$2">
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              color: colors.text.light.tertiary,
+              textAlign: 'center',
+              marginTop: spacing[8],
+            }}
+          >
             Open the link in your email to sign in. The link will expire in 1 hour.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Instructions */}
-        <YStack gap="$2" alignItems="center" marginTop="$4">
-          <Text fontSize="$2" color="$color10" textAlign="center">
+        <Stack style={{ gap: spacing[8], alignItems: 'center', marginTop: spacing[16] }}>
+          <Text
+            style={{
+              fontSize: fontSize.xs,
+              color: colors.text.light.tertiary,
+              textAlign: 'center',
+            }}
+          >
             Didn't receive the email? Check your spam folder or try again.
           </Text>
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }
 
 export default VerifyEmailPage;
-

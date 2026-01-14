@@ -1,9 +1,8 @@
 /**
- * CompanyCard - Company card component using Tamagui
+ * CompanyCard - Company card component using Beyond UI
  */
 import React from 'react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
-import { Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, CardContent } from '@unicornlove/beyond-ui';
 
 interface Address {
   street: string;
@@ -25,17 +24,19 @@ interface CompanyCardProps {
 
 function CompanyCard({ company, children }: CompanyCardProps) {
   return (
-    <Card padding="$4" gap="$2">
-      <XStack alignItems="center" gap="$2" mb="$2">
-        <Text role="img" aria-label="company" fontSize="$6">🏢</Text>
-        <Text fontSize="$5" fontWeight="600">
-          {company.name}
+    <Card padding="md">
+      <CardContent style={{ gap: 8 }}>
+        <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+          <Text role="img" aria-label="company" size="xl">🏢</Text>
+          <Text size="lg" weight="semibold">
+            {company.name}
+          </Text>
+        </Row>
+        <Text size="sm" color="secondary">
+          {company.address.street}, {company.address.city}, {company.address.state} {company.address.zip}
         </Text>
-      </XStack>
-      <Text fontSize="$2" color="$color10">
-        {company.address.street}, {company.address.city}, {company.address.state} {company.address.zip}
-      </Text>
-      {children && <YStack mt="$3">{children}</YStack>}
+        {children && <Stack style={{ marginTop: 12 }}>{children}</Stack>}
+      </CardContent>
     </Card>
   );
 }

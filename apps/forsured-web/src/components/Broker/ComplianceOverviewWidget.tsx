@@ -9,7 +9,7 @@ import {
   Briefcase,
   ClipboardList,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
 import { BrokerClient, PolicyData, Project, Task } from '../../types';
 
 interface ComplianceOverviewWidgetProps {
@@ -77,25 +77,19 @@ export default function ComplianceOverviewWidget({
   const handleRiskCategoryClick = (clientList: BrokerClient[]) => {
     if (clientList.length === 0) return;
 
-    // If single client, filter by that client
-    // If multiple clients, we need a different approach - navigate to tasks page
-    // For now, navigate to tasks page where user can further filter
     if (clientList.length === 1) {
       navigate(`/broker/tasks?client=${clientList[0].id}`);
     } else {
-      // For multiple clients, we could encode multiple client IDs but that's complex
-      // Instead, navigate to tasks page - users can see all tasks there
-      // Future enhancement could support multi-client filtering
       navigate('/broker/tasks');
     }
   };
 
   const getTrendIcon = () => {
     if (overallScore >= 90)
-      return <TrendingUp color="$green10" size={20} />;
+      return <TrendingUp size={20} style={{ color: 'var(--color-green-10)' }} />;
     if (overallScore >= 70)
-      return <Minus color="$yellow10" size={20} />;
-    return <TrendingDown color="$red10" size={20} />;
+      return <Minus size={20} style={{ color: 'var(--color-yellow-10)' }} />;
+    return <TrendingDown size={20} style={{ color: 'var(--color-red-10)' }} />;
   };
 
   const getTrendText = () => {
@@ -104,249 +98,241 @@ export default function ComplianceOverviewWidget({
     return 'Critical issues';
   };
 
+  const metricCardStyle = (color: string): React.CSSProperties => ({
+    backgroundColor: `var(--color-${color}-2)`,
+    borderRadius: 12,
+    padding: 16,
+    border: `1px solid var(--color-${color}-6)`,
+    flex: 1,
+    minWidth: '20%',
+  });
+
+  const iconBoxStyle = (color: string): React.CSSProperties => ({
+    width: 40,
+    height: 40,
+    backgroundColor: `var(--color-${color}-9)`,
+    borderRadius: 8,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  });
+
+  const riskCardStyle = (color: string, disabled: boolean): React.CSSProperties => ({
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: `var(--color-${color}-2)`,
+    borderRadius: 8,
+    border: `1px solid var(--color-${color}-6)`,
+    cursor: disabled ? 'default' : 'pointer',
+    opacity: disabled ? 0.5 : 1,
+  });
+
   return (
     <Card
-      backgroundColor="$background"
-      borderRadius="$4"
-      elevation={1}
-      borderWidth={1}
-      borderColor="$borderColor"
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: 12,
+        border: '1px solid var(--color-border)',
+      }}
     >
-      <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-        <XStack alignItems="center" justifyContent="space-between">
-          <YStack>
-            <H2 fontSize="$6" fontWeight="600" color="$color12">
+      <Stack padding={24} style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <Row alignItems="center" justifyContent="space-between">
+          <Stack>
+            <H2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}>
               Compliance Overview
             </H2>
-            <Text fontSize="$3" color="$color11">
+            <Text size="sm" muted>
               Real-time snapshot of your portfolio
             </Text>
-          </YStack>
-          <XStack alignItems="center" gap="$2">
+          </Stack>
+          <Row alignItems="center" gap={8}>
             {getTrendIcon()}
-            <Text fontSize="$3" fontWeight="500" color="$color12">
+            <Text size="sm" weight="medium">
               {getTrendText()}
             </Text>
-          </XStack>
-        </XStack>
-      </YStack>
+          </Row>
+        </Row>
+      </Stack>
 
-      <YStack padding="$6">
-        <XStack
-          flexDirection="column"
-          $gtMd={{ flexDirection: 'row' }}
-          gap="$6"
-          flexWrap="wrap"
-        >
-          <Card
-            backgroundColor="$blue2"
-            borderRadius="$4"
-            padding="$4"
-            borderWidth={1}
-            borderColor="$blue6"
-            flex={1}
-            minWidth="20%"
-          >
-            <XStack alignItems="center" justifyContent="space-between" mb="$3">
-              <YStack width={40} height={40} backgroundColor="$blue9" borderRadius="$4" alignItems="center" justifyContent="center">
-                <CheckCircle color="white" size={20} />
-              </YStack>
-              <YStack alignItems="flex-end">
-                <Text fontSize="$9" fontWeight="bold" color="$blue11">
+      <Stack padding={24}>
+        <Row gap={24} style={{ flexWrap: 'wrap' }}>
+          <Card style={metricCardStyle('blue')}>
+            <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
+              <div style={iconBoxStyle('blue')}>
+                <CheckCircle size={20} color="white" />
+              </div>
+              <Stack alignItems="flex-end">
+                <Text size="2xl" weight="bold" style={{ color: 'var(--color-blue-11)' }}>
                   {percentCompliant}%
                 </Text>
-              </YStack>
-            </XStack>
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$blue12">
+              </Stack>
+            </Row>
+            <Stack>
+              <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-12)' }}>
                 Compliant Clients
               </Text>
-              <Text fontSize="$1" color="$blue11" mt="$1">
+              <Text size="xs" style={{ color: 'var(--color-blue-11)', marginTop: 4 }}>
                 {compliantClients} of {totalClients} clients at 90%+
               </Text>
-            </YStack>
+            </Stack>
           </Card>
 
-          <Card
-            backgroundColor="$yellow2"
-            borderRadius="$4"
-            padding="$4"
-            borderWidth={1}
-            borderColor="$yellow6"
-            flex={1}
-            minWidth="20%"
-          >
-            <XStack alignItems="center" justifyContent="space-between" mb="$3">
-              <YStack width={40} height={40} backgroundColor="$yellow9" borderRadius="$4" alignItems="center" justifyContent="center">
-                <AlertTriangle color="white" size={20} />
-              </YStack>
-              <YStack alignItems="flex-end">
-                <Text fontSize="$9" fontWeight="bold" color="$yellow11">
+          <Card style={metricCardStyle('yellow')}>
+            <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
+              <div style={iconBoxStyle('yellow')}>
+                <AlertTriangle size={20} color="white" />
+              </div>
+              <Stack alignItems="flex-end">
+                <Text size="2xl" weight="bold" style={{ color: 'var(--color-yellow-11)' }}>
                   {expiringThisMonth}
                 </Text>
-              </YStack>
-            </XStack>
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$yellow12">
+              </Stack>
+            </Row>
+            <Stack>
+              <Text size="sm" weight="medium" style={{ color: 'var(--color-yellow-12)' }}>
                 Expiring This Month
               </Text>
-              <Text fontSize="$1" color="$yellow11" mt="$1">
+              <Text size="xs" style={{ color: 'var(--color-yellow-11)', marginTop: 4 }}>
                 Policies requiring renewal
               </Text>
-            </YStack>
+            </Stack>
           </Card>
 
-          <Card
-            backgroundColor="$green2"
-            borderRadius="$4"
-            padding="$4"
-            borderWidth={1}
-            borderColor="$green6"
-            flex={1}
-            minWidth="20%"
-          >
-            <XStack alignItems="center" justifyContent="space-between" mb="$3">
-              <YStack width={40} height={40} backgroundColor="$green9" borderRadius="$4" alignItems="center" justifyContent="center">
-                <Briefcase color="white" size={20} />
-              </YStack>
-              <YStack alignItems="flex-end">
-                <Text fontSize="$9" fontWeight="bold" color="$green11">
+          <Card style={metricCardStyle('green')}>
+            <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
+              <div style={iconBoxStyle('green')}>
+                <Briefcase size={20} color="white" />
+              </div>
+              <Stack alignItems="flex-end">
+                <Text size="2xl" weight="bold" style={{ color: 'var(--color-green-11)' }}>
                   {activeProjects}
                 </Text>
-              </YStack>
-            </XStack>
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$green12">
+              </Stack>
+            </Row>
+            <Stack>
+              <Text size="sm" weight="medium" style={{ color: 'var(--color-green-12)' }}>
                 Active Projects
               </Text>
-              <Text fontSize="$1" color="$green11" mt="$1">
+              <Text size="xs" style={{ color: 'var(--color-green-11)', marginTop: 4 }}>
                 Currently in progress
               </Text>
-            </YStack>
+            </Stack>
           </Card>
 
-          <Card
-            backgroundColor="$purple2"
-            borderRadius="$4"
-            padding="$4"
-            borderWidth={1}
-            borderColor="$purple6"
-            flex={1}
-            minWidth="20%"
-          >
-            <XStack alignItems="center" justifyContent="space-between" mb="$3">
-              <YStack width={40} height={40} backgroundColor="$purple9" borderRadius="$4" alignItems="center" justifyContent="center">
-                <AlertCircle color="white" size={20} />
-              </YStack>
-              <YStack alignItems="flex-end">
-                <Text fontSize="$9" fontWeight="bold" color="$purple11">
+          <Card style={metricCardStyle('purple')}>
+            <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
+              <div style={iconBoxStyle('purple')}>
+                <AlertCircle size={20} color="white" />
+              </div>
+              <Stack alignItems="flex-end">
+                <Text size="2xl" weight="bold" style={{ color: 'var(--color-purple-11)' }}>
                   {overallScore}
                 </Text>
-              </YStack>
-            </XStack>
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$purple12">
+              </Stack>
+            </Row>
+            <Stack>
+              <Text size="sm" weight="medium" style={{ color: 'var(--color-purple-12)' }}>
                 Overall Score
               </Text>
-              <Text fontSize="$1" color="$purple11" mt="$1">
+              <Text size="xs" style={{ color: 'var(--color-purple-11)', marginTop: 4 }}>
                 Portfolio average
               </Text>
-            </YStack>
+            </Stack>
           </Card>
-        </XStack>
+        </Row>
 
-        <YStack mt="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
-          <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+        <Stack style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}>
+          <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 16 }}>
             Risk Distribution
           </H3>
-          <XStack gap="$4" flexWrap="wrap">
-            <Card
-              as="button"
-              alignItems="center"
-              padding="$4"
-              backgroundColor="$green2"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$green6"
-              hoverStyle={{ borderColor: '$green8', elevation: 2 }}
-              cursor="pointer"
-              disabled={compliantClients === 0}
-              opacity={compliantClients === 0 ? 0.5 : 1}
+          <Row gap={16} style={{ flexWrap: 'wrap' }}>
+            <button
               onClick={() => handleRiskCategoryClick(compliantClientsList)}
+              disabled={compliantClients === 0}
+              style={{
+                ...riskCardStyle('green', compliantClients === 0),
+                background: 'none',
+                textAlign: 'center',
+              }}
             >
-              <Text fontSize="$8" fontWeight="bold" color="$green11">
+              <Text size="xl" weight="bold" style={{ color: 'var(--color-green-11)' }}>
                 {compliantClients}
               </Text>
-              <Text fontSize="$1" color="$green10" mt="$1">Compliant</Text>
-              <Text fontSize="$1" color="$color11">&ge; 90%</Text>
+              <Text size="xs" style={{ color: 'var(--color-green-10)', marginTop: 4 }}>Compliant</Text>
+              <Text size="xs" muted>&ge; 90%</Text>
               {tasks.length > 0 && (
-                <XStack mt="$2" paddingTop="$2" borderTopWidth={1} borderColor="$green6" alignItems="center" justifyContent="center" gap="$1">
-                  <ClipboardList size={12} color="$green10" />
-                  <Text fontSize="$1" fontWeight="500" color="$green11">
+                <Row
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={4}
+                  style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--color-green-6)' }}
+                >
+                  <ClipboardList size={12} style={{ color: 'var(--color-green-10)' }} />
+                  <Text size="xs" weight="medium" style={{ color: 'var(--color-green-11)' }}>
                     {compliantTasks} tasks
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </Card>
-            <Card
-              as="button"
-              alignItems="center"
-              padding="$4"
-              backgroundColor="$yellow2"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$yellow6"
-              hoverStyle={{ borderColor: '$yellow8', elevation: 2 }}
-              cursor="pointer"
-              disabled={warningClients === 0}
-              opacity={warningClients === 0 ? 0.5 : 1}
+            </button>
+            <button
               onClick={() => handleRiskCategoryClick(warningClientsList)}
+              disabled={warningClients === 0}
+              style={{
+                ...riskCardStyle('yellow', warningClients === 0),
+                background: 'none',
+                textAlign: 'center',
+              }}
             >
-              <Text fontSize="$8" fontWeight="bold" color="$yellow11">
+              <Text size="xl" weight="bold" style={{ color: 'var(--color-yellow-11)' }}>
                 {warningClients}
               </Text>
-              <Text fontSize="$1" color="$yellow10" mt="$1">Warning</Text>
-              <Text fontSize="$1" color="$color11">70-89%</Text>
+              <Text size="xs" style={{ color: 'var(--color-yellow-10)', marginTop: 4 }}>Warning</Text>
+              <Text size="xs" muted>70-89%</Text>
               {tasks.length > 0 && (
-                <XStack mt="$2" paddingTop="$2" borderTopWidth={1} borderColor="$yellow6" alignItems="center" justifyContent="center" gap="$1">
-                  <ClipboardList size={12} color="$yellow10" />
-                  <Text fontSize="$1" fontWeight="500" color="$yellow11">
+                <Row
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={4}
+                  style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--color-yellow-6)' }}
+                >
+                  <ClipboardList size={12} style={{ color: 'var(--color-yellow-10)' }} />
+                  <Text size="xs" weight="medium" style={{ color: 'var(--color-yellow-11)' }}>
                     {warningTasks} tasks
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </Card>
-            <Card
-              as="button"
-              alignItems="center"
-              padding="$4"
-              backgroundColor="$red2"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$red6"
-              hoverStyle={{ borderColor: '$red8', elevation: 2 }}
-              cursor="pointer"
-              disabled={criticalClients === 0}
-              opacity={criticalClients === 0 ? 0.5 : 1}
+            </button>
+            <button
               onClick={() => handleRiskCategoryClick(criticalClientsList)}
+              disabled={criticalClients === 0}
+              style={{
+                ...riskCardStyle('red', criticalClients === 0),
+                background: 'none',
+                textAlign: 'center',
+              }}
             >
-              <Text fontSize="$8" fontWeight="bold" color="$red11">
+              <Text size="xl" weight="bold" style={{ color: 'var(--color-red-11)' }}>
                 {criticalClients}
               </Text>
-              <Text fontSize="$1" color="$red10" mt="$1">Critical</Text>
-              <Text fontSize="$1" color="$color11">&lt; 70%</Text>
+              <Text size="xs" style={{ color: 'var(--color-red-10)', marginTop: 4 }}>Critical</Text>
+              <Text size="xs" muted>&lt; 70%</Text>
               {tasks.length > 0 && (
-                <XStack mt="$2" paddingTop="$2" borderTopWidth={1} borderColor="$red6" alignItems="center" justifyContent="center" gap="$1">
-                  <ClipboardList size={12} color="$red10" />
-                  <Text fontSize="$1" fontWeight="500" color="$red11">
+                <Row
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={4}
+                  style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--color-red-6)' }}
+                >
+                  <ClipboardList size={12} style={{ color: 'var(--color-red-10)' }} />
+                  <Text size="xs" weight="medium" style={{ color: 'var(--color-red-11)' }}>
                     {criticalTasks} tasks
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </Card>
-          </XStack>
-        </YStack>
-      </YStack>
+            </button>
+          </Row>
+        </Stack>
+      </Stack>
     </Card>
   );
 }

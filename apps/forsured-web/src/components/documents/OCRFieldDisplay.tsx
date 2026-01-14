@@ -3,7 +3,8 @@
  * Displays OCR extracted field with confidence indicator and edit capability
  */
 
-import { YStack, XStack, Text } from '@unicornlove/ui';
+import React from 'react';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 import Input from '../Common/Input';
 import { OCRField } from '../../types/ocr.types';
 
@@ -17,6 +18,25 @@ interface OCRFieldDisplayProps {
   type?: 'text' | 'date' | 'number';
 }
 
+const getConfidenceProps = (level: string): React.CSSProperties => {
+  if (level === 'high') {
+    return {
+      backgroundColor: 'var(--color-green-2)',
+      color: 'var(--color-green-11)',
+    };
+  }
+  if (level === 'medium') {
+    return {
+      backgroundColor: 'var(--color-yellow-2)',
+      color: 'var(--color-yellow-11)',
+    };
+  }
+  return {
+    backgroundColor: 'var(--color-red-2)',
+    color: 'var(--color-red-11)',
+  };
+};
+
 export const OCRFieldDisplay: React.FC<OCRFieldDisplayProps> = ({
   label,
   field,
@@ -26,69 +46,80 @@ export const OCRFieldDisplay: React.FC<OCRFieldDisplayProps> = ({
   disabled = false,
   type = 'text',
 }) => {
-  const getConfidenceProps = () => {
-    if (field.confidence.level === 'high')
-      return { bg: '$green2', text: '$green11', border: '$green6' };
-    if (field.confidence.level === 'medium')
-      return { bg: '$yellow2', text: '$yellow11', border: '$yellow6' };
-    return { bg: '$red2', text: '$red11', border: '$red6' };
-  };
-
-  const confidenceProps = getConfidenceProps();
+  const confidenceProps = getConfidenceProps(field.confidence.level);
 
   return (
-    <YStack gap="$2">
-      <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap="$2">
-          <Text as="label" display="block" fontSize="$3" fontWeight="500" color="$color11">
+    <Stack gap="xs">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Row style={{ alignItems: 'center', gap: '8px' }}>
+          <Text
+            as="label"
+            style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'var(--color-gray-11)',
+            }}
+          >
             {label}
           </Text>
           {field.reviewRequired && (
             <Text
-              display="inline-flex"
-              alignItems="center"
-              paddingHorizontal="$2"
-              paddingVertical="$0.5"
-              borderRadius="$2"
-              fontSize="$1"
-              fontWeight="500"
-              backgroundColor="$red2"
-              color="$red11"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                paddingLeft: '8px',
+                paddingRight: '8px',
+                paddingTop: '2px',
+                paddingBottom: '2px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                fontWeight: 500,
+                backgroundColor: 'var(--color-red-2)',
+                color: 'var(--color-red-11)',
+              }}
             >
               Review Required
             </Text>
           )}
           {field.edited && (
             <Text
-              display="inline-flex"
-              alignItems="center"
-              paddingHorizontal="$2"
-              paddingVertical="$0.5"
-              borderRadius="$2"
-              fontSize="$1"
-              fontWeight="500"
-              backgroundColor="$blue2"
-              color="$blue11"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                paddingLeft: '8px',
+                paddingRight: '8px',
+                paddingTop: '2px',
+                paddingBottom: '2px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                fontWeight: 500,
+                backgroundColor: 'var(--color-blue-2)',
+                color: 'var(--color-blue-11)',
+              }}
             >
               Edited
             </Text>
           )}
-        </XStack>
+        </Row>
         <Text
           data-testid="confidence-indicator"
-          display="inline-flex"
-          alignItems="center"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
-          fontSize="$1"
-          fontWeight="500"
-          backgroundColor={confidenceProps.bg}
-          color={confidenceProps.text}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            paddingLeft: '8px',
+            paddingRight: '8px',
+            paddingTop: '4px',
+            paddingBottom: '4px',
+            borderRadius: '4px',
+            fontSize: '11px',
+            fontWeight: 500,
+            ...confidenceProps,
+          }}
         >
           {field.confidence.score}%
         </Text>
-      </XStack>
+      </Row>
 
       <Input
         type={type}
@@ -108,27 +139,30 @@ export const OCRFieldDisplay: React.FC<OCRFieldDisplayProps> = ({
       />
 
       {error && (
-        <Text id={`${label}-error`} fontSize="$3" color="$red10">
+        <Text id={`${label}-error`} style={{ fontSize: '14px', color: 'var(--color-red-10)' }}>
           {error}
         </Text>
       )}
 
       {field.edited && onRevert && (
-        <Text
-          as="button"
+        <button
           type="button"
           onClick={onRevert}
-          fontSize="$3"
-          color="$teal9"
-          hoverStyle={{ color: '$teal11' }}
-          textDecorationLine="underline"
           disabled={disabled}
-          disabledStyle={{ opacity: 0.5, cursor: 'not-allowed' }}
-          cursor="pointer"
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            fontSize: '14px',
+            color: 'var(--color-teal-9)',
+            textDecoration: 'underline',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            opacity: disabled ? 0.5 : 1,
+          }}
         >
           Revert to Original
-        </Text>
+        </button>
       )}
-    </YStack>
+    </Stack>
   );
 };

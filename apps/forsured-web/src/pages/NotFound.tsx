@@ -1,31 +1,45 @@
 /**
- * NotFound Page - 404 page using Tamagui
+ * NotFound Page - 404 page using Beyond UI
  */
 import React from "react";
 import { Link } from "react-router-dom";
-import { YStack, Text } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
+import { Stack, Text, Button, H1 } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize } from '@unicornlove/beyond-ui';
 
 const NotFound: React.FC = () => {
   return (
-    <YStack
-      minHeight="100vh"
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="$backgroundHover"
+    <Stack
+      style={{
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.bg.light.hover,
+      }}
     >
-      <YStack alignItems="center" gap="$4">
-        <Text fontSize="$12" fontWeight="700" color="$color11">
+      <Stack style={{ alignItems: 'center', gap: spacing[16] }}>
+        <H1
+          style={{
+            fontSize: fontSize.h1,
+            fontWeight: 700,
+            color: colors.text.light.primary,
+          }}
+        >
           404
-        </Text>
-        <Text fontSize="$6" color="$color10" marginBottom="$8">
+        </H1>
+        <Text
+          style={{
+            fontSize: fontSize.h6,
+            color: colors.text.light.secondary,
+            marginBottom: spacing[32],
+          }}
+        >
           Page not found
         </Text>
-        <CoreButton asChild variant="primary">
+        <Button asChild variant="default">
           <Link to="/">Go Home</Link>
-        </CoreButton>
-      </YStack>
-    </YStack>
+        </Button>
+      </Stack>
+    </Stack>
   );
 };
 

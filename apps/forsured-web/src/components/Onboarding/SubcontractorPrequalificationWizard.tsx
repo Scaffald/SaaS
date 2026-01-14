@@ -14,7 +14,10 @@ import {
   Info,
   Search,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Button, Card, Input, TextArea, Select, Checkbox, Spinner } from '@unicornlove/ui';
+import { Loader2 } from 'lucide-react';
+import { Stack, Row, Text, H1, H2, H3, Button, Card, Input, Checkbox } from '@unicornlove/beyond-ui';
+import Select from '../Common/Select';
+import Textarea from '../Common/Textarea';
 import ForsuredLogo from '../Common/ForsuredLogo';
 
 interface PrequalificationWizardProps {
@@ -243,111 +246,113 @@ export default function SubcontractorPrequalificationWizard({
   };
 
   return (
-    <YStack minHeight="100vh" backgroundColor="$background" paddingVertical="$8">
-      <YStack maxWidth={1280} width="100%" marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)', paddingTop: 32, paddingBottom: 32 }}>
+      <Stack style={{ maxWidth: 1280, width: '100%', marginLeft: 'auto', marginRight: 'auto', paddingLeft: 16, paddingRight: 16 }}>
         {onSkip && (
           <Button
-            position="absolute"
-            top="$6"
-            right="$6"
-            variant="ghost"
             onPress={onSkip}
-            color="$color11"
-            hoverStyle={{ color: '$color12' }}
+            variant="ghost"
+            style={{
+              position: 'absolute',
+              top: 24,
+              right: 24,
+            }}
           >
-            <XStack gap="$2" alignItems="center">
+            <Row style={{ gap: 8, alignItems: 'center' }}>
               <Text>Skip for now</Text>
-            <X size={18} />
-            </XStack>
+              <X size={18} />
+            </Row>
           </Button>
         )}
 
-        <YStack alignItems="center" mb="$8">
-          <YStack justifyContent="center" mb="$6">
+        <Stack style={{ alignItems: 'center', marginBottom: 32 }}>
+          <Stack style={{ justifyContent: 'center', marginBottom: 24 }}>
             <ForsuredLogo />
-          </YStack>
+          </Stack>
           {invitationData ? (
-            <YStack alignItems="center">
-              <H1 fontSize="$9" fontWeight="700" color="$color12" mb="$2">
+            <Stack style={{ alignItems: 'center' }}>
+              <H1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
                 Subcontractor Prequalification
               </H1>
-              <Text fontSize="$6" color="$color11" mb="$4">
+              <Text style={{ fontSize: 20, color: 'var(--color-text-secondary)', marginBottom: 16 }}>
                 Complete your prequalification for {invitationData.gcName}
               </Text>
               {invitationData.customMessage && (
-                <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4" maxWidth={672} width="100%" marginHorizontal="auto">
-                  <Text fontSize="$3" color="$blue11">
+                <Card style={{ backgroundColor: 'var(--color-blue-2)', border: '1px solid var(--color-blue-6)', borderRadius: 16, padding: 16, maxWidth: 672, width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
+                  <Text style={{ fontSize: 14, color: 'var(--color-blue-11)' }}>
                     {invitationData.customMessage}
                   </Text>
                 </Card>
               )}
-            </YStack>
+            </Stack>
           ) : (
-            <YStack alignItems="center">
-              <H1 fontSize="$9" fontWeight="700" color="$color12" mb="$2">
+            <Stack style={{ alignItems: 'center' }}>
+              <H1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
                 Complete Your Profile
               </H1>
-              <Text fontSize="$6" color="$color11">
+              <Text style={{ fontSize: 20, color: 'var(--color-text-secondary)' }}>
                 Provide your company information to get prequalified
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
-        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" mb="$8">
-          <XStack alignItems="center" justifyContent="space-between" overflowX="auto">
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)', padding: 24, marginBottom: 32 }}>
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between', overflowX: 'auto' }}>
             {STEPS.map((step, index) => {
               const Icon = step.icon;
               const isActive = currentStep === step.id;
               const isCompleted = currentStep > step.id;
-              const isValid = isStepValid(step.id);
 
               return (
-                <XStack key={step.id} alignItems="center" minWidth={0}>
-                  <YStack alignItems="center">
-                    <YStack
-                      width={48}
-                      height={48}
-                      borderRadius={9999}
-                      alignItems="center"
-                      justifyContent="center"
-                      backgroundColor={
-                        isCompleted
-                          ? '$green10'
+                <Row key={step.id} style={{ alignItems: 'center', minWidth: 0 }}>
+                  <Stack style={{ alignItems: 'center' }}>
+                    <div
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: isCompleted
+                          ? 'var(--color-green-10)'
                           : isActive
-                            ? '$blue10'
-                            : '$backgroundHover'
-                      }
-                      color={isCompleted || isActive ? 'white' : '$color11'}
+                            ? 'var(--color-blue-10)'
+                            : 'var(--color-background-hover)',
+                        color: isCompleted || isActive ? 'white' : 'var(--color-text-secondary)',
+                      }}
                     >
                       {isCompleted ? (
                         <CheckCircle size={20} />
                       ) : (
                         <Icon size={20} />
                       )}
-                    </YStack>
-                    <YStack mt="$2" alignItems="center" minWidth={0}>
+                    </div>
+                    <Stack style={{ marginTop: 8, alignItems: 'center', minWidth: 0 }}>
                       <Text
-                        fontSize="$1"
-                        fontWeight="500"
-                        numberOfLines={1}
-                        color={isActive ? '$color12' : '$color11'}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 500,
+                          whiteSpace: 'nowrap',
+                          color: isActive ? 'var(--color-text)' : 'var(--color-text-secondary)',
+                        }}
                       >
                         {step.title}
                       </Text>
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
                   {index < STEPS.length - 1 && (
-                    <YStack width={32} height={2} backgroundColor="$borderColor" marginHorizontal="$2" flexShrink={0} />
+                    <div style={{ width: 32, height: 2, backgroundColor: 'var(--color-border)', marginLeft: 8, marginRight: 8, flexShrink: 0 }} />
                   )}
-                </XStack>
+                </Row>
               );
             })}
-          </XStack>
+          </Row>
         </Card>
 
-        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor">
-          <YStack padding="$8">
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' }}>
+          <Stack style={{ padding: 32 }}>
             {currentStep === 1 && (
               <CompanyInfoStep
                 data={formData.companyInfo}
@@ -405,68 +410,73 @@ export default function SubcontractorPrequalificationWizard({
                 }
               />
             )}
-          </YStack>
+          </Stack>
 
-          <XStack paddingHorizontal="$8" paddingVertical="$6" backgroundColor="$backgroundHover" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="space-between">
+          <Row style={{ paddingLeft: 32, paddingRight: 32, paddingTop: 24, paddingBottom: 24, backgroundColor: 'var(--color-background-hover)', borderTop: '1px solid var(--color-border)', alignItems: 'center', justifyContent: 'space-between' }}>
             <Button
               onPress={handlePrevious}
               disabled={currentStep === 1}
               variant="ghost"
-              color={currentStep === 1 ? '$color10' : '$color12'}
-              disabledStyle={{ color: '$color10', cursor: 'not-allowed' }}
-              hoverStyle={currentStep === 1 ? undefined : { backgroundColor: '$backgroundHover' }}
+              style={{
+                color: currentStep === 1 ? 'var(--color-text-tertiary)' : 'var(--color-text)',
+                cursor: currentStep === 1 ? 'not-allowed' : 'pointer',
+              }}
             >
-              <XStack gap="$2" alignItems="center">
-              <ArrowLeft size={16} />
+              <Row style={{ gap: 8, alignItems: 'center' }}>
+                <ArrowLeft size={16} />
                 <Text>Previous</Text>
-              </XStack>
+              </Row>
             </Button>
 
-            <XStack gap="$2" alignItems="center">
+            <Row style={{ gap: 8, alignItems: 'center' }}>
               {STEPS.map((step) => (
-                <YStack
+                <div
                   key={step.id}
-                  width={8}
-                  height={8}
-                  borderRadius={9999}
-                  backgroundColor={currentStep >= step.id ? '$blue10' : '$gray8'}
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    backgroundColor: currentStep >= step.id ? 'var(--color-blue-10)' : 'var(--color-gray-8)',
+                  }}
                 />
               ))}
-            </XStack>
+            </Row>
 
             {currentStep < STEPS.length ? (
               <Button
                 onPress={handleNext}
                 disabled={!isStepValid(currentStep)}
-                backgroundColor="$blue10"
-                color="white"
-                hoverStyle={{ backgroundColor: '$blue11' }}
-                disabledStyle={{ backgroundColor: '$gray8', cursor: 'not-allowed' }}
+                variant="primary"
+                style={{
+                  backgroundColor: 'var(--color-blue-10)',
+                  color: 'white',
+                }}
               >
-                <XStack gap="$2" alignItems="center">
+                <Row style={{ gap: 8, alignItems: 'center' }}>
                   <Text>Next</Text>
-                <ArrowRight size={16} />
-                </XStack>
+                  <ArrowRight size={16} />
+                </Row>
               </Button>
             ) : (
               <Button
                 onPress={handleSubmit}
                 disabled={!isStepValid(currentStep)}
-                backgroundColor="$green10"
-                color="white"
-                hoverStyle={{ backgroundColor: '$green11' }}
-                disabledStyle={{ backgroundColor: '$gray8', cursor: 'not-allowed' }}
+                variant="primary"
+                style={{
+                  backgroundColor: 'var(--color-green-10)',
+                  color: 'white',
+                }}
               >
-                <XStack gap="$2" alignItems="center">
-                <CheckCircle size={16} />
+                <Row style={{ gap: 8, alignItems: 'center' }}>
+                  <CheckCircle size={16} />
                   <Text>Submit</Text>
-                </XStack>
+                </Row>
               </Button>
             )}
-          </XStack>
+          </Row>
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 }
 
@@ -546,42 +556,50 @@ function CertificationSearchSelect({
   };
 
   return (
-    <YStack position="relative" ref={dropdownRef}>
-      <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$3" minHeight={100}>
-        <XStack flexWrap="wrap" gap="$2" mb="$2">
+    <Stack style={{ position: 'relative' }} ref={dropdownRef}>
+      <Card style={{ border: '1px solid var(--color-border)', borderRadius: 16, padding: 12, minHeight: 100 }}>
+        <Row style={{ flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
           {selectedCertifications.map((cert) => (
-            <XStack
+            <Row
               key={cert}
-              alignItems="center"
-              gap="$1"
-              backgroundColor="$blue2"
-              color="$blue11"
-              paddingHorizontal="$3"
-              paddingVertical="$1"
-              borderRadius={9999}
+              style={{
+                alignItems: 'center',
+                gap: 4,
+                backgroundColor: 'var(--color-blue-2)',
+                color: 'var(--color-blue-11)',
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 4,
+                paddingBottom: 4,
+                borderRadius: 9999,
+              }}
             >
-              <Text fontSize="$3">{cert}</Text>
+              <Text style={{ fontSize: 14 }}>{cert}</Text>
               <Button
                 type="button"
                 onPress={() => handleRemoveCertification(cert)}
                 variant="ghost"
-                size="$1"
-                hoverStyle={{ color: '$blue12' }}
+                style={{ padding: 2 }}
               >
                 <X size={14} />
               </Button>
-            </XStack>
+            </Row>
           ))}
-        </XStack>
+        </Row>
 
-        <YStack position="relative">
-          <XStack alignItems="center" gap="$2" borderWidth={1} borderColor="$borderColor" borderRadius="$4" paddingHorizontal="$3" paddingVertical="$2" backgroundColor="$background">
-            <Search size={16} color="$color11" />
-            <Input
+        <Stack style={{ position: 'relative' }}>
+          <Row style={{ alignItems: 'center', gap: 8, border: '1px solid var(--color-border)', borderRadius: 16, paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8, backgroundColor: 'var(--color-background)' }}>
+            <Search size={16} color="var(--color-text-secondary)" />
+            <input
               type="text"
               placeholder="Search certifications..."
-              flex={1}
-              fontSize="$3"
+              style={{
+                flex: 1,
+                fontSize: 14,
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+              }}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -589,49 +607,53 @@ function CertificationSearchSelect({
               }}
               onFocus={() => setIsOpen(true)}
             />
-          </XStack>
+          </Row>
 
           {isOpen && filteredCertifications.length > 0 && (
             <Card
-              position="absolute"
-              zIndex={10}
-              width="100%"
-              mt="$1"
-              backgroundColor="$background"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              elevation={4}
-              maxHeight={240}
-              overflow="hidden"
+              style={{
+                position: 'absolute',
+                zIndex: 10,
+                width: '100%',
+                marginTop: 4,
+                backgroundColor: 'var(--color-background)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 16,
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                maxHeight: 240,
+                overflow: 'hidden',
+              }}
             >
-              <YStack maxHeight={240} overflowY="auto">
-              {filteredCertifications.map((cert) => (
+              <Stack style={{ maxHeight: 240, overflowY: 'auto' }}>
+                {filteredCertifications.map((cert) => (
                   <Button
-                  key={cert}
-                  type="button"
+                    key={cert}
+                    type="button"
                     onPress={() => handleAddCertification(cert)}
                     variant="ghost"
-                    width="100%"
-                    alignItems="flex-start"
-                    paddingHorizontal="$4"
-                    paddingVertical="$2"
-                    hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      paddingLeft: 16,
+                      paddingRight: 16,
+                      paddingTop: 8,
+                      paddingBottom: 8,
+                    }}
                   >
-                    <Text fontSize="$3" color="$color12">
-                  {cert}
+                    <Text style={{ fontSize: 14, color: 'var(--color-text)' }}>
+                      {cert}
                     </Text>
                   </Button>
                 ))}
-              </YStack>
+              </Stack>
             </Card>
           )}
-        </YStack>
+        </Stack>
       </Card>
-      <Text fontSize="$1" color="$color11" mt="$1">
+      <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginTop: 4 }}>
         Search and select your certifications. Click the X to remove.
       </Text>
-    </YStack>
+    </Stack>
   );
 }
 
@@ -643,135 +665,153 @@ function CompanyInfoStep({
   onChange: (data: CompanyInfo) => void;
 }) {
   return (
-    <YStack gap="$6">
-      <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
+    <Stack style={{ gap: 24 }}>
+      <Stack>
+        <H2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
           Company Information
         </H2>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-text-secondary)' }}>
           Tell us about your construction business
         </Text>
-      </YStack>
+      </Stack>
 
-      <XStack flexWrap="wrap" gap="$6">
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Company Name <Text color="$red10">*</Text>
+      <Row style={{ flexWrap: 'wrap', gap: 24 }}>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Company Name <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Legal company name"
             value={data.companyName}
-            onChange={(e) => onChange({ ...data, companyName: e.target.value as string })}
+            onChange={(e) => onChange({ ...data, companyName: e.target.value })}
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             DBA (if applicable)
           </Text>
           <Input
             type="text"
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Doing business as"
             value={data.dba || ''}
             onChange={(e) => onChange({ ...data, dba: e.target.value })}
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Federal Tax ID / EIN <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Federal Tax ID / EIN <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="XX-XXXXXXX"
             value={data.federalTaxId}
             onChange={(e) =>
               onChange({ ...data, federalTaxId: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Primary Address <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Primary Address <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Street address, city, state, zip"
             value={data.primaryAddress}
             onChange={(e) =>
               onChange({ ...data, primaryAddress: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Mailing Address (if different)
           </Text>
           <Input
             type="text"
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Street address, city, state, zip"
             value={data.mailingAddress || ''}
             onChange={(e) =>
               onChange({ ...data, mailingAddress: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Website URL
           </Text>
           <Input
             type="url"
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="https://example.com"
             value={data.websiteUrl || ''}
             onChange={(e) => onChange({ ...data, websiteUrl: e.target.value })}
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
+        <Stack style={{ width: '100%' }}>
           <Select
             required
             label="Business Type"
@@ -787,22 +827,25 @@ function CompanyInfoStep({
               { value: 'partnership', label: 'Partnership' },
             ]}
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Years in Business <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Years in Business <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="number"
             required
             min={0}
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="0"
             value={data.yearsInBusiness?.toString() || ''}
             onChange={(e) =>
@@ -812,93 +855,105 @@ function CompanyInfoStep({
               })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Primary Contact Name <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Primary Contact Name <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Full name"
             value={data.primaryContactName}
             onChange={(e) =>
               onChange({ ...data, primaryContactName: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Primary Contact Title <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Primary Contact Title <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Job title"
             value={data.primaryContactTitle}
             onChange={(e) =>
               onChange({ ...data, primaryContactTitle: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Primary Contact Email <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Primary Contact Email <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="email"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="email@example.com"
             value={data.primaryContactEmail}
             onChange={(e) =>
               onChange({ ...data, primaryContactEmail: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Primary Contact Phone <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Primary Contact Phone <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="tel"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="(555) 123-4567"
             value={data.primaryContactPhone}
             onChange={(e) =>
               onChange({ ...data, primaryContactPhone: e.target.value })
             }
           />
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   );
 }
 
@@ -910,62 +965,68 @@ function LicensingInfoStep({
   onChange: (data: LicensingInfo) => void;
 }) {
   return (
-    <YStack gap="$6">
-      <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
+    <Stack style={{ gap: 24 }}>
+      <Stack>
+        <H2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
           Licensing and Registration
         </H2>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-text-secondary)' }}>
           Provide your license and certification details
         </Text>
-      </YStack>
+      </Stack>
 
-      <XStack flexWrap="wrap" gap="$6">
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+      <Row style={{ flexWrap: 'wrap', gap: 24 }}>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             State Contractor License Number{' '}
-            <Text color="$red10">*</Text>
+            <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="License number"
             value={data.licenseNumber}
             onChange={(e) =>
               onChange({ ...data, licenseNumber: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             License Classification / Trade{' '}
-            <Text color="$red10">*</Text>
+            <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="e.g., C-10 Electrical"
             value={data.licenseClassification}
             onChange={(e) =>
               onChange({ ...data, licenseClassification: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
+        <Stack style={{ width: '100%' }}>
           <Select
             required
             label="Issuing State"
@@ -981,54 +1042,57 @@ function LicensingInfoStep({
               { value: 'NY', label: 'New York' },
             ]}
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            License Expiration Date <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            License Expiration Date <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="date"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             value={data.licenseExpiration}
             onChange={(e) =>
               onChange({ ...data, licenseExpiration: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Business License File
           </Text>
-          <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
-            <Upload color="$color11" mb="$2" size={32} />
-            <Text fontSize="$3" color="$color11" mb="$2">
+          <Card style={{ border: '2px dashed var(--color-border)', borderRadius: 16, padding: 24, textAlign: 'center' }}>
+            <Upload color="var(--color-text-secondary)" size={32} style={{ marginBottom: 8 }} />
+            <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
               Drag and drop or click to upload
             </Text>
-            <Button variant="outline" size="$2">
+            <Button variant="outlined">
               Choose File
             </Button>
           </Card>
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Professional / Trade Certifications
           </Text>
           <CertificationSearchSelect
             selectedCertifications={data.certifications}
             onChange={(certs) => onChange({ ...data, certifications: certs })}
           />
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   );
 }
 
@@ -1042,84 +1106,86 @@ function InsuranceInfoStep({
   requirements?: Record<string, unknown>;
 }) {
   return (
-    <YStack gap="$6">
-      <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
+    <Stack style={{ gap: 24 }}>
+      <Stack>
+        <H2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
           Insurance and Compliance
         </H2>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-text-secondary)' }}>
           Upload insurance documents and coverage details
         </Text>
-      </YStack>
+      </Stack>
 
       {requirements && (
-        <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
-          <XStack alignItems="flex-start" gap="$2">
-            <Info color="$blue10" mt={2} flexShrink={0} size={16} />
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$blue11">
+        <Card style={{ backgroundColor: 'var(--color-blue-2)', border: '1px solid var(--color-blue-6)', borderRadius: 16, padding: 16 }}>
+          <Row style={{ alignItems: 'flex-start', gap: 8 }}>
+            <Info color="var(--color-blue-10)" size={16} style={{ marginTop: 2, flexShrink: 0 }} />
+            <Stack>
+              <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-blue-11)' }}>
                 Required Coverage
               </Text>
-              <Text fontSize="$3" color="$blue11">
+              <Text style={{ fontSize: 14, color: 'var(--color-blue-11)' }}>
                 Your GC requires minimum coverage amounts. Make sure your
                 policies meet these requirements.
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
         </Card>
       )}
 
-      <XStack flexWrap="wrap" gap="$6">
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            W-9 Form <Text color="$red10">*</Text>
+      <Row style={{ flexWrap: 'wrap', gap: 24 }}>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            W-9 Form <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
-          <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
-            <Upload color="$color11" mb="$2" size={32} />
-            <Text fontSize="$3" color="$color11" mb="$2">
+          <Card style={{ border: '2px dashed var(--color-border)', borderRadius: 16, padding: 24, textAlign: 'center' }}>
+            <Upload color="var(--color-text-secondary)" size={32} style={{ marginBottom: 8 }} />
+            <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
               Upload current W-9 form
             </Text>
-            <Button variant="outline" size="$2">
+            <Button variant="outlined">
               Choose File
             </Button>
           </Card>
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Certificate of Insurance (COI){' '}
-            <Text color="$red10">*</Text>
+            <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
-          <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
-            <Upload color="$color11" mb="$2" size={32} />
-            <Text fontSize="$3" color="$color11" mb="$2">
+          <Card style={{ border: '2px dashed var(--color-border)', borderRadius: 16, padding: 24, textAlign: 'center' }}>
+            <Upload color="var(--color-text-secondary)" size={32} style={{ marginBottom: 8 }} />
+            <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
               Upload current COI
             </Text>
-            <Button variant="outline" size="$2">
+            <Button variant="outlined">
               Choose File
             </Button>
           </Card>
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }} position="relative">
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            General Liability Coverage <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%', position: 'relative' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            General Liability Coverage <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
-          <XStack position="relative" width="100%">
-            <Text position="absolute" left="$3" top="50%" transform="translateY(-50%)" color="$color10" zIndex={1}>
+          <Row style={{ position: 'relative', width: '100%' }}>
+            <Text style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)', zIndex: 1 }}>
               $
             </Text>
             <Input
               type="number"
               required
               min={0}
-              width="100%"
-              paddingLeft="$8"
-              paddingRight="$4"
-              paddingVertical="$3"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
+              style={{
+                width: '100%',
+                paddingLeft: 32,
+                paddingRight: 16,
+                paddingTop: 12,
+                paddingBottom: 12,
+                border: '1px solid var(--color-border)',
+                borderRadius: 16,
+              }}
               placeholder="0"
               value={data.generalLiabilityCoverage?.toString() || ''}
               onChange={(e) =>
@@ -1129,28 +1195,30 @@ function InsuranceInfoStep({
                 })
               }
             />
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }} position="relative">
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Auto Liability Coverage <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%', position: 'relative' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Auto Liability Coverage <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
-          <XStack position="relative" width="100%">
-            <Text position="absolute" left="$3" top="50%" transform="translateY(-50%)" color="$color10" zIndex={1}>
+          <Row style={{ position: 'relative', width: '100%' }}>
+            <Text style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)', zIndex: 1 }}>
               $
             </Text>
             <Input
               type="number"
               required
               min={0}
-              width="100%"
-              paddingLeft="$8"
-              paddingRight="$4"
-              paddingVertical="$3"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
+              style={{
+                width: '100%',
+                paddingLeft: 32,
+                paddingRight: 16,
+                paddingTop: 12,
+                paddingBottom: 12,
+                border: '1px solid var(--color-border)',
+                borderRadius: 16,
+              }}
               placeholder="0"
               value={data.autoLiabilityCoverage?.toString() || ''}
               onChange={(e) =>
@@ -1160,52 +1228,58 @@ function InsuranceInfoStep({
                 })
               }
             />
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Insurance Carrier <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Insurance Carrier <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Carrier name"
             value={data.insuranceCarrier}
             onChange={(e) =>
               onChange({ ...data, insuranceCarrier: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Policy Expiration Date <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Policy Expiration Date <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="date"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             value={data.policyExpiration}
             onChange={(e) =>
               onChange({ ...data, policyExpiration: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             EMR Rating (Experience Modification Rate)
           </Text>
           <Input
@@ -1213,12 +1287,15 @@ function InsuranceInfoStep({
             step={0.01}
             min={0}
             max={2}
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="1.00"
             value={data.emrRating?.toString() || ''}
             onChange={(e) =>
@@ -1228,9 +1305,9 @@ function InsuranceInfoStep({
               })
             }
           />
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   );
 }
 
@@ -1242,62 +1319,68 @@ function SafetyInfoStep({
   onChange: (data: SafetyInfo) => void;
 }) {
   return (
-    <YStack gap="$6">
-      <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
+    <Stack style={{ gap: 24 }}>
+      <Stack>
+        <H2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
           Safety and Risk Management
         </H2>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-text-secondary)' }}>
           Provide safety program and contact information
         </Text>
-      </YStack>
+      </Stack>
 
-      <XStack flexWrap="wrap" gap="$6">
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Safety Manager Name <Text color="$red10">*</Text>
+      <Row style={{ flexWrap: 'wrap', gap: 24 }}>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Safety Manager Name <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Full name"
             value={data.safetyManagerName}
             onChange={(e) =>
               onChange({ ...data, safetyManagerName: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Safety Manager Email <Text color="$red10">*</Text>
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Safety Manager Email <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="email"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="email@example.com"
             value={data.safetyManagerEmail}
             onChange={(e) =>
               onChange({ ...data, safetyManagerEmail: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <YStack gap="$3">
-            <XStack alignItems="center" gap="$3">
+        <Stack style={{ width: '100%' }}>
+          <Stack style={{ gap: 12 }}>
+            <Row style={{ alignItems: 'center', gap: 12 }}>
               <Checkbox
                 checked={data.hasWrittenSafetyProgram}
                 onCheckedChange={(checked) =>
@@ -1307,58 +1390,61 @@ function SafetyInfoStep({
                   })
                 }
               />
-              <Text fontSize="$3" color="$color12">
+              <Text style={{ fontSize: 14, color: 'var(--color-text)' }}>
                 We have a written safety program
               </Text>
-            </XStack>
+            </Row>
 
-            <XStack alignItems="center" gap="$3">
+            <Row style={{ alignItems: 'center', gap: 12 }}>
               <Checkbox
                 checked={data.hasJobsiteOrientation}
                 onCheckedChange={(checked) =>
                   onChange({ ...data, hasJobsiteOrientation: checked === true })
                 }
               />
-              <Text fontSize="$3" color="$color12">
+              <Text style={{ fontSize: 14, color: 'var(--color-text)' }}>
                 We conduct jobsite orientation programs
               </Text>
-            </XStack>
+            </Row>
 
-            <XStack alignItems="center" gap="$3">
+            <Row style={{ alignItems: 'center', gap: 12 }}>
               <Checkbox
                 checked={data.hasDrugFreePolicy}
                 onCheckedChange={(checked) =>
                   onChange({ ...data, hasDrugFreePolicy: checked === true })
                 }
               />
-              <Text fontSize="$3" color="$color12">
+              <Text style={{ fontSize: 14, color: 'var(--color-text)' }}>
                 We maintain a drug-free workplace policy
               </Text>
-            </XStack>
-          </YStack>
-        </YStack>
+            </Row>
+          </Stack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             OSHA Violations (if any)
           </Text>
-          <TextArea
+          <Textarea
             rows={4}
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Describe any OSHA violations in the last 3 years"
             value={data.oshaViolations || ''}
             onChange={(e) =>
               onChange({ ...data, oshaViolations: e.target.value })
             }
           />
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   );
 }
 
@@ -1370,25 +1456,25 @@ function FinancialInfoStep({
   onChange: (data: FinancialInfo) => void;
 }) {
   return (
-    <YStack gap="$6">
-      <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
+    <Stack style={{ gap: 24 }}>
+      <Stack>
+        <H2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
           Financial and Capacity Information
         </H2>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-text-secondary)' }}>
           Optional financial details (helps with prequalification)
         </Text>
-      </YStack>
+      </Stack>
 
-      <Card backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" borderRadius="$4" padding="$4">
-        <Text fontSize="$3" color="$yellow11">
+      <Card style={{ backgroundColor: 'var(--color-yellow-2)', border: '1px solid var(--color-yellow-6)', borderRadius: 16, padding: 16 }}>
+        <Text style={{ fontSize: 14, color: 'var(--color-yellow-11)' }}>
           All fields on this page are optional but providing this information
           can improve your prequalification score.
         </Text>
       </Card>
 
-      <XStack flexWrap="wrap" gap="$6">
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
+      <Row style={{ flexWrap: 'wrap', gap: 24 }}>
+        <Stack style={{ width: '100%' }}>
           <Select
             label="Annual Revenue Range"
             value={data.annualRevenueRange || ''}
@@ -1404,21 +1490,24 @@ function FinancialInfoStep({
               { value: '10m+', label: '$10M+' },
             ]}
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Number of Full-Time Employees
           </Text>
           <Input
             type="number"
             min={0}
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="0"
             value={data.fullTimeEmployees?.toString() || ''}
             onChange={(e) =>
@@ -1428,69 +1517,78 @@ function FinancialInfoStep({
               })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Bonding Capacity
           </Text>
           <Input
             type="text"
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Single project and aggregate limits"
             value={data.bondingCapacity || ''}
             onChange={(e) =>
               onChange({ ...data, bondingCapacity: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '50%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Bonding Company
           </Text>
           <Input
             type="text"
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Surety company name"
             value={data.bondingCompany || ''}
             onChange={(e) =>
               onChange({ ...data, bondingCompany: e.target.value })
             }
           />
-        </YStack>
+        </Stack>
 
-        <YStack width="100%" $gtMd={{ width: '100%' }}>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack style={{ width: '100%' }}>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Bank Reference
           </Text>
           <Input
             type="text"
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Institution name and contact"
             value={data.bankReference || ''}
             onChange={(e) =>
               onChange({ ...data, bankReference: e.target.value })
             }
           />
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   );
 }
 
@@ -1515,25 +1613,25 @@ function TradeCapabilitiesStep({
   ];
 
   return (
-    <YStack gap="$6">
-      <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
+    <Stack style={{ gap: 24 }}>
+      <Stack>
+        <H2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
           Trade Capabilities and Experience
         </H2>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-text-secondary)' }}>
           Describe your trades and project experience
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$6">
-        <YStack>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Primary Trades / Scopes <Text color="$red10">*</Text>
+      <Stack style={{ gap: 24 }}>
+        <Stack>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Primary Trades / Scopes <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
-          <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-            <XStack flexWrap="wrap" gap="$3" $gtMd={{ flexDirection: 'row' }}>
+          <Card style={{ border: '1px solid var(--color-border)', borderRadius: 16, padding: 16 }}>
+            <Row style={{ flexWrap: 'wrap', gap: 12 }}>
               {trades.map((trade) => (
-                <XStack key={trade} alignItems="center" gap="$2" width="100%" $gtMd={{ width: '33%' }}>
+                <Row key={trade} style={{ alignItems: 'center', gap: 8, width: '30%', minWidth: 120 }}>
                   <Checkbox
                     checked={data.primaryTrades.includes(trade)}
                     onCheckedChange={(checked) => {
@@ -1552,25 +1650,28 @@ function TradeCapabilitiesStep({
                       }
                     }}
                   />
-                  <Text fontSize="$3" color="$color12">{trade}</Text>
-                </XStack>
+                  <Text style={{ fontSize: 14, color: 'var(--color-text)' }}>{trade}</Text>
+                </Row>
               ))}
-            </XStack>
+            </Row>
           </Card>
-        </YStack>
+        </Stack>
 
-        <YStack>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Geographic Coverage Area
           </Text>
           <Input
             type="text"
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Counties or states (e.g., Los Angeles County, Orange County)"
             value={data.geographicCoverage.join(', ')}
             onChange={(e) =>
@@ -1582,10 +1683,10 @@ function TradeCapabilitiesStep({
               })
             }
           />
-        </YStack>
+        </Stack>
 
-        <XStack flexWrap="wrap" gap="$6">
-          <YStack width="100%" $gtMd={{ width: '50%' }}>
+        <Row style={{ flexWrap: 'wrap', gap: 24 }}>
+          <Stack style={{ width: '100%' }}>
             <Select
               label="Typical Project Size"
               value={data.typicalProjectSize || ''}
@@ -1600,9 +1701,9 @@ function TradeCapabilitiesStep({
                 { value: '1m+', label: '$1M+' },
               ]}
             />
-          </YStack>
+          </Stack>
 
-          <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Stack style={{ width: '100%' }}>
             <Select
               label="Labor Classification"
               value={data.laborClassification || ''}
@@ -1615,11 +1716,11 @@ function TradeCapabilitiesStep({
                 { value: 'non-union', label: 'Non-Union' },
               ]}
             />
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
-        <YStack>
-          <XStack alignItems="center" gap="$3">
+        <Stack>
+          <Row style={{ alignItems: 'center', gap: 12 }}>
             <Checkbox
               checked={data.prevailingWageExperience}
               onCheckedChange={(checked) =>
@@ -1629,33 +1730,36 @@ function TradeCapabilitiesStep({
                 })
               }
             />
-            <Text fontSize="$3" color="$color12">
+            <Text style={{ fontSize: 14, color: 'var(--color-text)' }}>
               We have prevailing wage experience
             </Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
-        <YStack>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
+        <Stack>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
             Special Equipment or Certifications
           </Text>
-          <TextArea
+          <Textarea
             rows={3}
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Describe any special equipment, cranes, welding certifications, etc."
             value={data.specialEquipment || ''}
             onChange={(e) =>
               onChange({ ...data, specialEquipment: e.target.value })
             }
           />
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }
 
@@ -1667,53 +1771,53 @@ function ReviewStep({
   onChange: (acknowledgments: Acknowledgments) => void;
 }) {
   return (
-    <YStack gap="$6">
-      <YStack>
-        <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$2">
+    <Stack style={{ gap: 24 }}>
+      <Stack>
+        <H2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>
           Review and Submit
         </H2>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-text-secondary)' }}>
           Review your information and acknowledge compliance
         </Text>
-      </YStack>
+      </Stack>
 
-      <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$6" gap="$4">
-        <H3 fontSize="$6" fontWeight="600" color="$color12">
+      <Card style={{ backgroundColor: 'var(--color-background-hover)', borderRadius: 16, padding: 24, gap: 16 }}>
+        <H3 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}>
           Application Summary
         </H3>
 
-        <XStack flexWrap="wrap" gap="$4">
-          <YStack width="100%" $gtMd={{ width: '50%' }}>
-            <Text fontSize="$3" color="$color11">Company Name</Text>
-            <Text fontWeight="500" color="$color12">
+        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+          <Stack style={{ width: '48%' }}>
+            <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>Company Name</Text>
+            <Text style={{ fontWeight: 500, color: 'var(--color-text)' }}>
               {data.companyInfo.companyName}
             </Text>
-          </YStack>
-          <YStack width="100%" $gtMd={{ width: '50%' }}>
-            <Text fontSize="$3" color="$color11">Primary Trade</Text>
-            <Text fontWeight="500" color="$color12">
+          </Stack>
+          <Stack style={{ width: '48%' }}>
+            <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>Primary Trade</Text>
+            <Text style={{ fontWeight: 500, color: 'var(--color-text)' }}>
               {data.tradeCapabilities.primaryTrades.join(', ') ||
                 'None selected'}
             </Text>
-          </YStack>
-          <YStack width="100%" $gtMd={{ width: '50%' }}>
-            <Text fontSize="$3" color="$color11">License Number</Text>
-            <Text fontWeight="500" color="$color12">
+          </Stack>
+          <Stack style={{ width: '48%' }}>
+            <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>License Number</Text>
+            <Text style={{ fontWeight: 500, color: 'var(--color-text)' }}>
               {data.licensingInfo.licenseNumber}
             </Text>
-          </YStack>
-          <YStack width="100%" $gtMd={{ width: '50%' }}>
-            <Text fontSize="$3" color="$color11">Years in Business</Text>
-            <Text fontWeight="500" color="$color12">
+          </Stack>
+          <Stack style={{ width: '48%' }}>
+            <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>Years in Business</Text>
+            <Text style={{ fontWeight: 500, color: 'var(--color-text)' }}>
               {data.companyInfo.yearsInBusiness} years
             </Text>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
       </Card>
 
-      <YStack gap="$4">
-        <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-          <XStack alignItems="flex-start" gap="$3">
+      <Stack style={{ gap: 16 }}>
+        <Card style={{ border: '1px solid var(--color-border)', borderRadius: 16, padding: 16 }}>
+          <Row style={{ alignItems: 'flex-start', gap: 12 }}>
             <Checkbox
               checked={data.acknowledgments.accuracyAffirmation}
               onCheckedChange={(checked) =>
@@ -1722,23 +1826,23 @@ function ReviewStep({
                   accuracyAffirmation: checked === true,
                 })
               }
-              mt="$1"
+              style={{ marginTop: 4 }}
             />
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$color12">
+            <Stack>
+              <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)' }}>
                 Affirmation of Accuracy{' '}
-                <Text color="$red10">*</Text>
+                <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
               </Text>
-              <Text fontSize="$1" color="$color11" mt="$1">
+              <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginTop: 4 }}>
                 I certify that all information provided in this application is
                 true and accurate to the best of my knowledge.
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
         </Card>
 
-        <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-          <XStack alignItems="flex-start" gap="$3">
+        <Card style={{ border: '1px solid var(--color-border)', borderRadius: 16, padding: 16 }}>
+          <Row style={{ alignItems: 'flex-start', gap: 12 }}>
             <Checkbox
               checked={data.acknowledgments.complianceAgreement}
               onCheckedChange={(checked) =>
@@ -1747,34 +1851,37 @@ function ReviewStep({
                   complianceAgreement: checked === true,
                 })
               }
-              mt="$1"
+              style={{ marginTop: 4 }}
             />
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$color12">
+            <Stack>
+              <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)' }}>
                 Agreement to Compliance Requirements{' '}
-                <Text color="$red10">*</Text>
+                <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
               </Text>
-              <Text fontSize="$1" color="$color11" mt="$1">
+              <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginTop: 4 }}>
                 I agree to comply with all insurance, safety, and policy
                 requirements established by the General Contractor.
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
         </Card>
 
-        <YStack>
-          <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2" display="block">
-            Digital Signature <Text color="$red10">*</Text>
+        <Stack>
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 8, display: 'block' }}>
+            Digital Signature <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
           </Text>
           <Input
             type="text"
             required
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            style={{
+              width: '100%',
+              border: '1px solid var(--color-border)',
+              borderRadius: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
             placeholder="Type your full name to sign"
             value={data.acknowledgments.digitalSignature}
             onChange={(e) =>
@@ -1784,11 +1891,11 @@ function ReviewStep({
               })
             }
           />
-          <Text fontSize="$1" color="$color11" mt="$1">
+          <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginTop: 4 }}>
             By typing your name, you are providing a legal digital signature
           </Text>
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }

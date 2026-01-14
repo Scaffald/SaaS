@@ -13,7 +13,7 @@ import {
   BarChart3,
   Handshake,
 } from 'lucide-react'
-import { YStack, XStack, Text, H1, H2, H3, Card, Button as TamaguiButton } from '@unicornlove/ui'
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui'
 import ForsuredLogo from '../Common/ForsuredLogo'
 import Button from '../Common/Button'
 import { useUser } from '../../contexts/UserContext'
@@ -93,533 +93,584 @@ export default function HomePage() {
   ]
 
   return (
-    <YStack minHeight="100vh" backgroundColor="$backgroundHover">
+    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-background-hover)' }}>
       {/* Header */}
-      <YStack
-        as="header"
-        backgroundColor="$background"
-        borderBottomWidth={1}
-        borderColor="$borderColor"
-        elevation={1}
-        opacity={0.9}
+      <header
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderBottom: '1px solid var(--color-border)',
+          boxShadow: 'var(--shadow-sm)',
+          opacity: 0.9,
+        }}
       >
-        <XStack
-          maxWidth={1280}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
+        <Row
+          style={{
+            maxWidth: 1280,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between" height={80}>
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between', height: 80 }}>
             <ForsuredLogo height={28} />
-            <XStack
-              as="nav"
-              display="none"
-              $gtMd={{ display: 'flex' }}
-              alignItems="center"
-              gap="$8"
+            <nav
+              style={{
+                display: 'none',
+                alignItems: 'center',
+                gap: 'var(--space-8)',
+              }}
+              className="nav-desktop"
             >
-              <TamaguiButton
-                unstyled
+              <a
                 href="#features"
-                color="$color11"
-                hoverStyle={{ color: '$blue10' }}
-                fontWeight="500"
+                style={{
+                  color: 'var(--color-text-tertiary)',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                }}
               >
                 Features
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
+              </a>
+              <a
                 href="#pricing"
-                color="$color11"
-                hoverStyle={{ color: '$blue10' }}
-                fontWeight="500"
+                style={{
+                  color: 'var(--color-text-tertiary)',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                }}
               >
                 Pricing
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
+              </a>
+              <a
                 href="#about"
-                color="$color11"
-                hoverStyle={{ color: '$blue10' }}
-                fontWeight="500"
+                style={{
+                  color: 'var(--color-text-tertiary)',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                }}
               >
                 About
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
-                onPress={() => navigate('/colors')}
-                color="$blue10"
-                hoverStyle={{ color: '$blue11' }}
+              </a>
+              <button
+                onClick={() => navigate('/colors')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-blue-10)',
+                  cursor: 'pointer',
+                }}
               >
                 Design System
-              </TamaguiButton>
-            </XStack>
-          </XStack>
-        </XStack>
-      </YStack>
+              </button>
+            </nav>
+          </Row>
+        </Row>
+      </header>
 
       {/* Quick Testing Links - Development Helper */}
-      <YStack backgroundColor="$yellow2" borderBottomWidth={1} borderColor="$yellow6">
-        <XStack
-          maxWidth={1280}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
-          paddingVertical="$3"
+      <Stack style={{ backgroundColor: 'var(--color-yellow-2)', borderBottom: '1px solid var(--color-yellow-6)' }}>
+        <Row
+          style={{
+            maxWidth: 1280,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+            paddingTop: 'var(--space-3)',
+            paddingBottom: 'var(--space-3)',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$2">
-            <Text fontSize="$3" fontWeight="500" color="$yellow12">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-yellow-12)' }}>
               Quick Links:
             </Text>
-            <XStack flexWrap="wrap" gap="$2">
-              <TamaguiButton
-                unstyled
-                size="$2"
-                onPress={() => navigate('/manager/onboarding')}
-                fontSize="$2"
-                color="$yellow12"
-                hoverStyle={{ color: '$yellow11' }}
+            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+              <button
+                onClick={() => navigate('/manager/onboarding')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-yellow-12)',
+                  cursor: 'pointer',
+                }}
               >
                 Manager Onboarding
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
-                size="$2"
-                onPress={() => navigate('/subcontractor/onboarding')}
-                fontSize="$2"
-                color="$yellow12"
-                hoverStyle={{ color: '$yellow11' }}
+              </button>
+              <button
+                onClick={() => navigate('/subcontractor/onboarding')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-yellow-12)',
+                  cursor: 'pointer',
+                }}
               >
                 Subcontractor Onboarding
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
-                size="$2"
-                onPress={() => navigate('/broker/onboarding')}
-                fontSize="$2"
-                color="$yellow12"
-                hoverStyle={{ color: '$yellow11' }}
+              </button>
+              <button
+                onClick={() => navigate('/broker/onboarding')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-yellow-12)',
+                  cursor: 'pointer',
+                }}
               >
                 Broker Onboarding
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
-                size="$2"
-                onPress={() => navigate('/manager/dashboard')}
-                fontSize="$2"
-                color="$yellow12"
-                hoverStyle={{ color: '$yellow11' }}
+              </button>
+              <button
+                onClick={() => navigate('/manager/dashboard')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-yellow-12)',
+                  cursor: 'pointer',
+                }}
               >
                 Manager Dashboard
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
-                size="$2"
-                onPress={() => navigate('/subcontractor/dashboard')}
-                fontSize="$2"
-                color="$yellow12"
-                hoverStyle={{ color: '$yellow11' }}
+              </button>
+              <button
+                onClick={() => navigate('/subcontractor/dashboard')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-yellow-12)',
+                  cursor: 'pointer',
+                }}
               >
                 Subcontractor Dashboard
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
-                size="$2"
-                onPress={() => navigate('/broker/dashboard')}
-                fontSize="$2"
-                color="$yellow12"
-                hoverStyle={{ color: '$yellow11' }}
+              </button>
+              <button
+                onClick={() => navigate('/broker/dashboard')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-yellow-12)',
+                  cursor: 'pointer',
+                }}
               >
                 Broker Dashboard
-              </TamaguiButton>
-              <TamaguiButton
-                unstyled
-                size="$2"
-                onPress={() => navigate('/colors')}
-                fontSize="$2"
-                color="$yellow12"
-                hoverStyle={{ color: '$yellow11' }}
+              </button>
+              <button
+                onClick={() => navigate('/colors')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-yellow-12)',
+                  cursor: 'pointer',
+                }}
               >
                 Colors/UI Kit
-              </TamaguiButton>
-            </XStack>
-          </XStack>
-        </XStack>
-      </YStack>
+              </button>
+            </Row>
+          </Row>
+        </Row>
+      </Stack>
 
       {/* Hero Section - Dynamic theme-aware backgrounds */}
-      <YStack as="section" position="relative" paddingVertical="$12" backgroundColor="$blue12">
-        <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
-          <YStack
-            position="absolute"
-            top={0}
-            right={0}
-            width="33%"
-            height="33%"
-            backgroundColor="$blue9"
-            opacity={0.5}
+      <section style={{ position: 'relative', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)', backgroundColor: 'var(--color-blue-12)' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1 }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '33%',
+              height: '33%',
+              backgroundColor: 'var(--color-blue-9)',
+              opacity: 0.5,
+            }}
           />
-          <YStack
-            position="absolute"
-            bottom={0}
-            left={0}
-            width="33%"
-            height="33%"
-            backgroundColor="$blue10"
-            opacity={0.5}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '33%',
+              height: '33%',
+              backgroundColor: 'var(--color-blue-10)',
+              opacity: 0.5,
+            }}
           />
-        </YStack>
-        <YStack
-          maxWidth={1280}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
-          position="relative"
+        </div>
+        <Stack
+          style={{
+            maxWidth: 1280,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+            position: 'relative',
+          }}
         >
-          <YStack alignItems="center">
-            <H1
-              fontSize="$10"
-              $gtMd={{ fontSize: '$12' }}
-              fontWeight="700"
-              color="white"
-              mb="$6"
-              letterSpacing="-0.02em"
+          <Stack style={{ alignItems: 'center' }}>
+            <h1
+              style={{
+                fontSize: 'var(--font-size-10)',
+                fontWeight: '700',
+                color: 'white',
+                marginBottom: 'var(--space-6)',
+                letterSpacing: '-0.02em',
+                textAlign: 'center',
+              }}
             >
               Construction Compliance
-              <Text display="block" color="$blue4">
+              <span style={{ display: 'block', color: 'var(--color-blue-4)' }}>
                 Built for the Field
-              </Text>
-            </H1>
+              </span>
+            </h1>
             <Text
-              fontSize="$6"
-              $gtMd={{ fontSize: '$8' }}
-              color="rgba(255,255,255,0.9)"
-              mb="$12"
-              maxWidth={768}
-              marginHorizontal="auto"
-              lineHeight={1.6}
+              style={{
+                fontSize: 'var(--font-size-6)',
+                color: 'rgba(255,255,255,0.9)',
+                marginBottom: 'var(--space-12)',
+                maxWidth: 768,
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                lineHeight: 1.6,
+                textAlign: 'center',
+              }}
             >
               AI-powered contractor vetting, real-time risk monitoring, and instant insurance
               coverage. From the job site to the back office.
             </Text>
 
             {/* Primary CTAs */}
-            <XStack
-              flexDirection="column"
-              $gtSm={{ flexDirection: 'row' }}
-              gap="$4"
-              justifyContent="center"
-              alignItems="center"
-              mb="$10"
+            <Row
+              style={{
+                flexDirection: 'column',
+                gap: 'var(--space-4)',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 'var(--space-10)',
+              }}
             >
               <Button
-                onClick={() => handleGetStarted('manager')}
+                onPress={() => handleGetStarted('manager')}
                 variant="primary"
                 size="lg"
                 leftIcon={Users}
                 rightIcon={ArrowRight}
                 iconSize={24}
-                minWidth={256}
-                hoverStyle={{ scale: 1.05, y: -4 }}
-                animation="quick"
+                style={{ minWidth: 256 }}
               >
                 For Managers
               </Button>
               <Button
-                onClick={() => handleGetStarted('subcontractor')}
+                onPress={() => handleGetStarted('subcontractor')}
                 variant="secondary"
                 size="lg"
                 leftIcon={Award}
                 rightIcon={ArrowRight}
                 iconSize={24}
-                minWidth={256}
-                hoverStyle={{ scale: 1.05, y: -4 }}
-                animation="quick"
+                style={{ minWidth: 256 }}
               >
                 For Subcontractors
               </Button>
               <Button
-                onClick={() => handleGetStarted('broker')}
+                onPress={() => handleGetStarted('broker')}
                 size="lg"
                 leftIcon={Handshake}
                 rightIcon={ArrowRight}
                 iconSize={24}
-                minWidth={256}
-                backgroundColor="$color12"
-                hoverStyle={{ scale: 1.05, y: -4, backgroundColor: '$color12' }}
-                animation="quick"
+                style={{ minWidth: 256, backgroundColor: 'var(--color-gray-12)' }}
               >
                 For Brokers
               </Button>
-            </XStack>
+            </Row>
 
             {/* Value Props */}
-            <XStack flexWrap="wrap" gap="$6" maxWidth={1024} marginHorizontal="auto">
+            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', maxWidth: 1024, marginLeft: 'auto', marginRight: 'auto' }}>
               <Card
-                backgroundColor="$background"
-                padding="$8"
-                borderRadius="$4"
-                elevation={2}
-                borderWidth={1}
-                borderColor="$borderColor"
-                hoverStyle={{ elevation: 4, borderColor: '$blue6' }}
-                flex={1}
-                minWidth="45%"
-                $gtMd={{ minWidth: '30%' }}
+                style={{
+                  backgroundColor: 'var(--color-background)',
+                  padding: 'var(--space-8)',
+                  borderRadius: 'var(--radius-4)',
+                  boxShadow: 'var(--shadow-md)',
+                  borderWidth: 1,
+                  borderColor: 'var(--color-border)',
+                  flex: 1,
+                  minWidth: '45%',
+                }}
               >
-                <Shield size={40} color="$blue10" mb="$4" />
-                <H3 fontWeight="600" color="$color12" mb="$2" fontSize="$6">
+                <Shield size={40} color="var(--color-blue-10)" style={{ marginBottom: 'var(--space-4)' }} />
+                <h3 style={{ fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)', fontSize: 'var(--font-size-6)' }}>
                   Automated Verification
-                </H3>
-                <Text color="$color11">AI-powered document verification with 99.8% accuracy</Text>
+                </h3>
+                <Text style={{ color: 'var(--color-text-tertiary)' }}>AI-powered document verification with 99.8% accuracy</Text>
               </Card>
               <Card
-                backgroundColor="$background"
-                padding="$8"
-                borderRadius="$4"
-                elevation={2}
-                borderWidth={1}
-                borderColor="$borderColor"
-                hoverStyle={{ elevation: 4, borderColor: '$gray6' }}
-                flex={1}
-                minWidth="45%"
-                $gtMd={{ minWidth: '30%' }}
+                style={{
+                  backgroundColor: 'var(--color-background)',
+                  padding: 'var(--space-8)',
+                  borderRadius: 'var(--radius-4)',
+                  boxShadow: 'var(--shadow-md)',
+                  borderWidth: 1,
+                  borderColor: 'var(--color-border)',
+                  flex: 1,
+                  minWidth: '45%',
+                }}
               >
-                <Clock size={40} color="$gray10" mb="$4" />
-                <H3 fontWeight="600" color="$color12" mb="$2" fontSize="$6">
+                <Clock size={40} color="var(--color-gray-10)" style={{ marginBottom: 'var(--space-4)' }} />
+                <h3 style={{ fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)', fontSize: 'var(--font-size-6)' }}>
                   Save 60% Time
-                </H3>
-                <Text color="$color11">Reduce compliance management from hours to minutes</Text>
+                </h3>
+                <Text style={{ color: 'var(--color-text-tertiary)' }}>Reduce compliance management from hours to minutes</Text>
               </Card>
               <Card
-                backgroundColor="$background"
-                padding="$8"
-                borderRadius="$4"
-                elevation={2}
-                borderWidth={1}
-                borderColor="$borderColor"
-                hoverStyle={{ elevation: 4, borderColor: '$yellow6' }}
-                flex={1}
-                minWidth="45%"
-                $gtMd={{ minWidth: '30%' }}
+                style={{
+                  backgroundColor: 'var(--color-background)',
+                  padding: 'var(--space-8)',
+                  borderRadius: 'var(--radius-4)',
+                  boxShadow: 'var(--shadow-md)',
+                  borderWidth: 1,
+                  borderColor: 'var(--color-border)',
+                  flex: 1,
+                  minWidth: '45%',
+                }}
               >
-                <DollarSign size={40} color="$yellow10" mb="$4" />
-                <H3 fontWeight="600" color="$color12" mb="$2" fontSize="$6">
+                <DollarSign size={40} color="var(--color-yellow-10)" style={{ marginBottom: 'var(--space-4)' }} />
+                <h3 style={{ fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)', fontSize: 'var(--font-size-6)' }}>
                   Instant Coverage
-                </H3>
-                <Text color="$color11">Purchase insurance and get COIs issued immediately</Text>
+                </h3>
+                <Text style={{ color: 'var(--color-text-tertiary)' }}>Purchase insurance and get COIs issued immediately</Text>
               </Card>
-            </XStack>
-          </YStack>
-        </YStack>
-      </YStack>
+            </Row>
+          </Stack>
+        </Stack>
+      </section>
 
       {/* Stats Section - Theme-aware dark backgrounds */}
-      <YStack
-        as="section"
-        paddingVertical="$10"
-        backgroundColor="$gray12"
-        color="white"
-        position="relative"
-        overflow="hidden"
+      <section
+        style={{
+          paddingTop: 'var(--space-10)',
+          paddingBottom: 'var(--space-10)',
+          backgroundColor: 'var(--color-gray-12)',
+          color: 'white',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
-          <YStack
-            position="absolute"
-            top={0}
-            left="25%"
-            width={384}
-            height={384}
-            backgroundColor="$blue10"
-            borderRadius={9999}
-            opacity={0.5}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1 }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: '25%',
+              width: 384,
+              height: 384,
+              backgroundColor: 'var(--color-blue-10)',
+              borderRadius: 9999,
+              opacity: 0.5,
+            }}
           />
-          <YStack
-            position="absolute"
-            bottom={0}
-            right="25%"
-            width={384}
-            height={384}
-            backgroundColor="$gray10"
-            borderRadius={9999}
-            opacity={0.5}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: '25%',
+              width: 384,
+              height: 384,
+              backgroundColor: 'var(--color-gray-10)',
+              borderRadius: 9999,
+              opacity: 0.5,
+            }}
           />
-        </YStack>
-        <YStack
-          maxWidth={1280}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
-          position="relative"
+        </div>
+        <Stack
+          style={{
+            maxWidth: 1280,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+            position: 'relative',
+          }}
         >
-          <YStack alignItems="center" mb="$10">
-            <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" mb="$4">
+          <Stack style={{ alignItems: 'center', marginBottom: 'var(--space-10)' }}>
+            <h2 style={{ fontSize: 'var(--font-size-9)', fontWeight: '700', marginBottom: 'var(--space-4)', color: 'white' }}>
               Trusted by Construction Leaders
-            </H2>
-            <Text fontSize="$6" color="rgba(255,255,255,0.7)">
+            </h2>
+            <Text style={{ fontSize: 'var(--font-size-6)', color: 'rgba(255,255,255,0.7)' }}>
               Join thousands of construction professionals building with confidence
             </Text>
-          </YStack>
-          <XStack flexWrap="wrap" gap="$8">
+          </Stack>
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-8)' }}>
             {stats.map((stat, index) => (
-              <YStack
+              <Stack
                 key={index}
-                alignItems="center"
-                flex={1}
-                minWidth="45%"
-                $gtMd={{ minWidth: '22%' }}
+                style={{
+                  alignItems: 'center',
+                  flex: 1,
+                  minWidth: '45%',
+                }}
               >
                 <Text
-                  fontSize="$10"
-                  $gtMd={{ fontSize: '$11' }}
-                  fontWeight="700"
-                  color="$blue9"
-                  mb="$2"
+                  style={{
+                    fontSize: 'var(--font-size-10)',
+                    fontWeight: '700',
+                    color: 'var(--color-blue-9)',
+                    marginBottom: 'var(--space-2)',
+                  }}
                 >
                   {stat.value}
                 </Text>
-                <Text fontSize="$6" color="rgba(255,255,255,0.6)">
+                <Text style={{ fontSize: 'var(--font-size-6)', color: 'rgba(255,255,255,0.6)' }}>
                   {stat.label}
                 </Text>
-              </YStack>
+              </Stack>
             ))}
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </section>
 
       {/* Features Section */}
-      <YStack as="section" id="features" paddingVertical="$12" backgroundColor="$background">
-        <YStack
-          maxWidth={1280}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
+      <section id="features" style={{ paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)', backgroundColor: 'var(--color-background)' }}>
+        <Stack
+          style={{
+            maxWidth: 1280,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+          }}
         >
-          <YStack alignItems="center" mb="$10">
-            <H2
-              fontSize="$9"
-              $gtMd={{ fontSize: '$10' }}
-              fontWeight="700"
-              color="$color12"
-              mb="$6"
+          <Stack style={{ alignItems: 'center', marginBottom: 'var(--space-10)' }}>
+            <h2
+              style={{
+                fontSize: 'var(--font-size-9)',
+                fontWeight: '700',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-6)',
+              }}
             >
               Built for Construction
-            </H2>
+            </h2>
             <Text
-              fontSize="$6"
-              color="$color11"
-              maxWidth={768}
-              marginHorizontal="auto"
-              lineHeight={1.6}
+              style={{
+                fontSize: 'var(--font-size-6)',
+                color: 'var(--color-text-tertiary)',
+                maxWidth: 768,
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                lineHeight: 1.6,
+                textAlign: 'center',
+              }}
             >
               From automated document verification to predictive risk monitoring, Forsured delivers
               comprehensive compliance management designed for the field.
             </Text>
-          </YStack>
+          </Stack>
 
-          <XStack flexWrap="wrap" gap="$8">
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-8)' }}>
             {features.map((feature, index) => {
               const Icon = feature.icon
               return (
                 <Card
                   key={index}
-                  backgroundColor="$background"
-                  padding="$8"
-                  borderRadius="$4"
-                  borderWidth={2}
-                  borderColor="$borderColor"
-                  hoverStyle={{ borderColor: '$blue10', elevation: 4 }}
-                  flex={1}
-                  minWidth="45%"
-                  $gtMd={{ minWidth: '30%' }}
+                  style={{
+                    backgroundColor: 'var(--color-background)',
+                    padding: 'var(--space-8)',
+                    borderRadius: 'var(--radius-4)',
+                    borderWidth: 2,
+                    borderColor: 'var(--color-border)',
+                    flex: 1,
+                    minWidth: '45%',
+                  }}
                 >
-                  <XStack
-                    backgroundColor="$blue2"
-                    width={56}
-                    height={56}
-                    borderRadius="$4"
-                    alignItems="center"
-                    justifyContent="center"
-                    mb="$5"
-                    hoverStyle={{ backgroundColor: '$blue10' }}
+                  <Row
+                    style={{
+                      backgroundColor: 'var(--color-blue-2)',
+                      width: 56,
+                      height: 56,
+                      borderRadius: 'var(--radius-4)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 'var(--space-5)',
+                    }}
                   >
-                    <Icon size={28} color="$blue11" />
-                  </XStack>
-                  <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$3">
+                    <Icon size={28} color="var(--color-blue-11)" />
+                  </Row>
+                  <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-3)' }}>
                     {feature.title}
-                  </H3>
-                  <Text color="$color11" lineHeight={1.6}>
+                  </h3>
+                  <Text style={{ color: 'var(--color-text-tertiary)', lineHeight: 1.6 }}>
                     {feature.description}
                   </Text>
                 </Card>
               )
             })}
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </section>
 
       {/* Use Cases Section */}
-      <YStack as="section" paddingVertical="$12" backgroundColor="$backgroundHover">
-        <YStack
-          maxWidth={1280}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
+      <section style={{ paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)', backgroundColor: 'var(--color-background-hover)' }}>
+        <Stack
+          style={{
+            maxWidth: 1280,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+          }}
         >
-          <XStack flexWrap="wrap" gap="$8">
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-8)' }}>
             {/* Construction Managers */}
             <Card
-              backgroundColor="$background"
-              padding="$8"
-              borderRadius="$4"
-              elevation={3}
-              borderWidth={2}
-              borderColor="$borderColor"
-              hoverStyle={{ borderColor: '$blue10' }}
-              flex={1}
-              minWidth="45%"
-              $gtLg={{ minWidth: '30%' }}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                padding: 'var(--space-8)',
+                borderRadius: 'var(--radius-4)',
+                boxShadow: 'var(--shadow-md)',
+                borderWidth: 2,
+                borderColor: 'var(--color-border)',
+                flex: 1,
+                minWidth: '45%',
+              }}
             >
-              <XStack alignItems="center" gap="$3" mb="$6">
-                <XStack backgroundColor="$blue2" padding="$3" borderRadius="$4">
-                  <Users size={28} color="$blue11" />
-                </XStack>
-                <H3 fontSize="$8" fontWeight="700" color="$color12">
+              <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
+                <Row style={{ backgroundColor: 'var(--color-blue-2)', padding: 'var(--space-3)', borderRadius: 'var(--radius-4)' }}>
+                  <Users size={28} color="var(--color-blue-11)" />
+                </Row>
+                <h3 style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-text-primary)' }}>
                   For Managers
-                </H3>
-              </XStack>
-              <YStack gap="$4" mb="$8">
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$blue10" mt="$1" flexShrink={0} />
-                  <Text color="$color11">
+                </h3>
+              </Row>
+              <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-blue-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
                     Automatically verify subcontractor compliance across all projects
                   </Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$blue10" mt="$1" flexShrink={0} />
-                  <Text color="$color11">Real-time risk monitoring with predictive alerts</Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$blue10" mt="$1" flexShrink={0} />
-                  <Text color="$color11">
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-blue-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Real-time risk monitoring with predictive alerts</Text>
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-blue-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
                     Generate compliance reports for audits and stakeholders
                   </Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$blue10" mt="$1" flexShrink={0} />
-                  <Text color="$color11">
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-blue-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
                     Integrate with existing construction management tools
                   </Text>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
               <Button
-                onClick={() => handleGetStarted('manager')}
+                onPress={() => handleGetStarted('manager')}
                 variant="primary"
                 rightIcon={ArrowRight}
                 iconSize={18}
@@ -631,45 +682,45 @@ export default function HomePage() {
 
             {/* Subcontractors */}
             <Card
-              backgroundColor="$background"
-              padding="$8"
-              borderRadius="$4"
-              elevation={3}
-              borderWidth={2}
-              borderColor="$borderColor"
-              hoverStyle={{ borderColor: '$gray10' }}
-              flex={1}
-              minWidth="45%"
-              $gtLg={{ minWidth: '30%' }}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                padding: 'var(--space-8)',
+                borderRadius: 'var(--radius-4)',
+                boxShadow: 'var(--shadow-md)',
+                borderWidth: 2,
+                borderColor: 'var(--color-border)',
+                flex: 1,
+                minWidth: '45%',
+              }}
             >
-              <XStack alignItems="center" gap="$3" mb="$6">
-                <XStack backgroundColor="$gray2" padding="$3" borderRadius="$4">
-                  <Award size={28} color="$gray11" />
-                </XStack>
-                <H3 fontSize="$8" fontWeight="700" color="$color12">
+              <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
+                <Row style={{ backgroundColor: 'var(--color-gray-2)', padding: 'var(--space-3)', borderRadius: 'var(--radius-4)' }}>
+                  <Award size={28} color="var(--color-gray-11)" />
+                </Row>
+                <h3 style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-text-primary)' }}>
                   For Subcontractors
-                </H3>
-              </XStack>
-              <YStack gap="$4" mb="$8">
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$gray10" mt="$1" flexShrink={0} />
-                  <Text color="$color11">Upload documents and get instant compliance scoring</Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$gray10" mt="$1" flexShrink={0} />
-                  <Text color="$color11">Receive personalized insurance recommendations</Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$gray10" mt="$1" flexShrink={0} />
-                  <Text color="$color11">Purchase coverage and get COIs issued instantly</Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$gray10" mt="$1" flexShrink={0} />
-                  <Text color="$color11">Track renewal dates and maintain compliance status</Text>
-                </XStack>
-              </YStack>
+                </h3>
+              </Row>
+              <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-gray-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Upload documents and get instant compliance scoring</Text>
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-gray-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Receive personalized insurance recommendations</Text>
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-gray-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Purchase coverage and get COIs issued instantly</Text>
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-gray-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Track renewal dates and maintain compliance status</Text>
+                </Row>
+              </Stack>
               <Button
-                onClick={() => handleGetStarted('subcontractor')}
+                onPress={() => handleGetStarted('subcontractor')}
                 variant="secondary"
                 rightIcon={ArrowRight}
                 iconSize={18}
@@ -681,265 +732,195 @@ export default function HomePage() {
 
             {/* Insurance Brokers */}
             <Card
-              backgroundColor="$background"
-              padding="$8"
-              borderRadius="$4"
-              elevation={3}
-              borderWidth={2}
-              borderColor="$borderColor"
-              hoverStyle={{ borderColor: '$gray11' }}
-              flex={1}
-              minWidth="45%"
-              $gtLg={{ minWidth: '30%' }}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                padding: 'var(--space-8)',
+                borderRadius: 'var(--radius-4)',
+                boxShadow: 'var(--shadow-md)',
+                borderWidth: 2,
+                borderColor: 'var(--color-border)',
+                flex: 1,
+                minWidth: '45%',
+              }}
             >
-              <XStack alignItems="center" gap="$3" mb="$6">
-                <XStack backgroundColor="$gray2" padding="$3" borderRadius="$4">
-                  <Handshake size={28} color="$gray11" />
-                </XStack>
-                <H3 fontSize="$8" fontWeight="700" color="$color12">
+              <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
+                <Row style={{ backgroundColor: 'var(--color-gray-2)', padding: 'var(--space-3)', borderRadius: 'var(--radius-4)' }}>
+                  <Handshake size={28} color="var(--color-gray-11)" />
+                </Row>
+                <h3 style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-text-primary)' }}>
                   For Brokers
-                </H3>
-              </XStack>
-              <YStack gap="$4" mb="$8">
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$color11" mt="$1" flexShrink={0} />
-                  <Text color="$color11">
+                </h3>
+              </Row>
+              <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-text-tertiary)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
                     Access qualified construction leads with verified needs
                   </Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$color11" mt="$1" flexShrink={0} />
-                  <Text color="$color11">Streamline quote generation and policy management</Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$color11" mt="$1" flexShrink={0} />
-                  <Text color="$color11">Automated COI generation and compliance tracking</Text>
-                </XStack>
-                <XStack alignItems="flex-start" gap="$3">
-                  <CheckCircle size={20} color="$color11" mt="$1" flexShrink={0} />
-                  <Text color="$color11">Expand your construction industry client base</Text>
-                </XStack>
-              </YStack>
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-text-tertiary)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Streamline quote generation and policy management</Text>
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-text-tertiary)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Automated COI generation and compliance tracking</Text>
+                </Row>
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <CheckCircle size={20} color="var(--color-text-tertiary)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Expand your construction industry client base</Text>
+                </Row>
+              </Stack>
               <Button
-                onClick={() => handleGetStarted('broker')}
+                onPress={() => handleGetStarted('broker')}
                 rightIcon={ArrowRight}
                 iconSize={18}
                 fullWidth
-                backgroundColor="$color12"
-                hoverStyle={{ backgroundColor: '$color12' }}
+                style={{ backgroundColor: 'var(--color-gray-12)' }}
               >
                 Get Started
               </Button>
             </Card>
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </section>
 
       {/* CTA Section - Theme-aware vibrant gradients */}
-      <YStack
-        as="section"
-        paddingVertical="$12"
-        backgroundColor="$blue11"
-        position="relative"
-        overflow="hidden"
+      <section
+        style={{
+          paddingTop: 'var(--space-12)',
+          paddingBottom: 'var(--space-12)',
+          backgroundColor: 'var(--color-blue-11)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
-          <YStack
-            position="absolute"
-            top={0}
-            right={0}
-            width={384}
-            height={384}
-            backgroundColor="$gray10"
-            borderRadius={9999}
-            opacity={0.5}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1 }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: 384,
+              height: 384,
+              backgroundColor: 'var(--color-gray-10)',
+              borderRadius: 9999,
+              opacity: 0.5,
+            }}
           />
-          <YStack
-            position="absolute"
-            bottom={0}
-            left={0}
-            width={384}
-            height={384}
-            backgroundColor="$yellow10"
-            borderRadius={9999}
-            opacity={0.5}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: 384,
+              height: 384,
+              backgroundColor: 'var(--color-yellow-10)',
+              borderRadius: 9999,
+              opacity: 0.5,
+            }}
           />
-        </YStack>
-        <YStack
-          maxWidth={896}
-          marginHorizontal="auto"
-          alignItems="center"
-          paddingHorizontal="$4"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
-          position="relative"
+        </div>
+        <Stack
+          style={{
+            maxWidth: 896,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            alignItems: 'center',
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+            position: 'relative',
+          }}
         >
-          <H2
-            fontSize="$9"
-            $gtMd={{ fontSize: '$10' }}
-            fontWeight="700"
-            color="white"
-            mb="$6"
+          <h2
+            style={{
+              fontSize: 'var(--font-size-9)',
+              fontWeight: '700',
+              color: 'white',
+              marginBottom: 'var(--space-6)',
+              textAlign: 'center',
+            }}
           >
             Ready to Build with Confidence?
-          </H2>
+          </h2>
           <Text
-            fontSize="$6"
-            $gtMd={{ fontSize: '$8' }}
-            color="rgba(255,255,255,0.9)"
-            mb="$12"
-            lineHeight={1.6}
+            style={{
+              fontSize: 'var(--font-size-6)',
+              color: 'rgba(255,255,255,0.9)',
+              marginBottom: 'var(--space-12)',
+              lineHeight: 1.6,
+              textAlign: 'center',
+            }}
           >
             Join thousands of construction professionals managing compliance the modern way.
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </section>
 
       {/* Footer - Theme-aware dark backgrounds */}
-      <YStack as="footer" backgroundColor="$gray12" color="white" paddingVertical="$8">
-        <YStack
-          maxWidth={1280}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
+      <footer style={{ backgroundColor: 'var(--color-gray-12)', color: 'white', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
+        <Stack
+          style={{
+            maxWidth: 1280,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+          }}
         >
-          <XStack flexWrap="wrap" gap="$12">
-            <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <ForsuredLogo height={32} mb="$6" color="white" />
-              <Text color="rgba(255,255,255,0.6)" lineHeight={1.6}>
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-12)' }}>
+            <Stack style={{ flex: 1, minWidth: '45%' }}>
+              <ForsuredLogo height={32} style={{ marginBottom: 'var(--space-6)' }} color="white" />
+              <Text style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
                 AI-powered compliance and insurance management for the construction industry.
               </Text>
-            </YStack>
-            <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <H3 fontWeight="600" mb="$4" color="white">
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: '45%' }}>
+              <h3 style={{ fontWeight: '600', marginBottom: 'var(--space-4)', color: 'white' }}>
                 Product
-              </H3>
-              <YStack gap="$3">
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Features
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Pricing
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Integrations
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  API
-                </TamaguiButton>
-              </YStack>
-            </YStack>
-            <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <H3 fontWeight="600" mb="$4" color="white">
+              </h3>
+              <Stack style={{ gap: 'var(--space-3)' }}>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Features</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Pricing</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Integrations</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>API</a>
+              </Stack>
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: '45%' }}>
+              <h3 style={{ fontWeight: '600', marginBottom: 'var(--space-4)', color: 'white' }}>
                 Company
-              </H3>
-              <YStack gap="$3">
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  About
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Careers
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Contact
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Blog
-                </TamaguiButton>
-              </YStack>
-            </YStack>
-            <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-              <H3 fontWeight="600" mb="$4" color="white">
+              </h3>
+              <Stack style={{ gap: 'var(--space-3)' }}>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>About</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Careers</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Contact</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Blog</a>
+              </Stack>
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: '45%' }}>
+              <h3 style={{ fontWeight: '600', marginBottom: 'var(--space-4)', color: 'white' }}>
                 Support
-              </H3>
-              <YStack gap="$3">
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Help Center
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Documentation
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Status
-                </TamaguiButton>
-                <TamaguiButton
-                  unstyled
-                  href="#"
-                  color="rgba(255,255,255,0.6)"
-                  hoverStyle={{ color: '$blue9' }}
-                >
-                  Security
-                </TamaguiButton>
-              </YStack>
-            </YStack>
-          </XStack>
-          <YStack
-            borderTopWidth={1}
-            borderColor="$gray11"
-            mt="$12"
-            paddingTop="$8"
-            alignItems="center"
+              </h3>
+              <Stack style={{ gap: 'var(--space-3)' }}>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Help Center</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Documentation</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Status</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Security</a>
+              </Stack>
+            </Stack>
+          </Row>
+          <Stack
+            style={{
+              borderTop: '1px solid var(--color-gray-11)',
+              marginTop: 'var(--space-12)',
+              paddingTop: 'var(--space-8)',
+              alignItems: 'center',
+            }}
           >
-            <Text color="rgba(255,255,255,0.6)">&copy; 2024 Forsured. All rights reserved.</Text>
-          </YStack>
-        </YStack>
-      </YStack>
-    </YStack>
+            <Text style={{ color: 'rgba(255,255,255,0.6)' }}>&copy; 2024 Forsured. All rights reserved.</Text>
+          </Stack>
+        </Stack>
+      </footer>
+    </Stack>
   )
 }

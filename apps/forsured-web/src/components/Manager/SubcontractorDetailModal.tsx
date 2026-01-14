@@ -9,8 +9,9 @@ import {
   Download,
   Eye,
   TrendingUp,
+  Loader2,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Spinner, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import Button from '../Common/Button';
 import StatusBadge from '../Common/StatusBadge';
@@ -223,15 +224,17 @@ export default function SubcontractorDetailModal({
       onClick={onClose}
     >
       <Card
-        backgroundColor="$background"
-        padding="$6"
-        borderRadius="$4"
-        width={900}
-        maxWidth="95vw"
-        maxHeight="90vh"
-        overflow="auto"
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        onPress={(e: React.MouseEvent) => e.stopPropagation()}
         data-testid="subcontractor-detail-modal"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          padding: 24,
+          borderRadius: 12,
+          width: 900,
+          maxWidth: '95vw',
+          maxHeight: '90vh',
+          overflow: 'auto',
+        }}
       >
         {children}
       </Card>
@@ -244,12 +247,12 @@ export default function SubcontractorDetailModal({
   if (loadingData) {
     return (
       <ModalOverlay>
-        <YStack alignItems="center" justifyContent="center" minHeight={400}>
-          <YStack alignItems="center" gap="$4">
-            <Spinner size="large" color="$blue10" />
-            <Text color="$color11" fontSize="$4">Loading subcontractor details...</Text>
-          </YStack>
-        </YStack>
+        <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
+          <Stack alignItems="center" gap={16}>
+            <Loader2 size={32} color="var(--color-blue-10)" className="animate-spin" />
+            <Text muted>Loading subcontractor details...</Text>
+          </Stack>
+        </Stack>
       </ModalOverlay>
     );
   }
@@ -257,17 +260,17 @@ export default function SubcontractorDetailModal({
   if (!subcontractor) {
     return (
       <ModalOverlay>
-        <YStack alignItems="center" justifyContent="center" minHeight={400}>
-          <YStack alignItems="center">
-            <YStack alignItems="center" mb="$4">
-              <AlertTriangle color="$red10" size={48} />
-            </YStack>
-            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
+        <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
+          <Stack alignItems="center">
+            <div style={{ marginBottom: 16 }}>
+              <AlertTriangle color="var(--color-red-10)" size={48} />
+            </div>
+            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
               Subcontractor not found
             </H3>
-            <Text color="$color11">The requested subcontractor could not be loaded.</Text>
-          </YStack>
-        </YStack>
+            <Text muted>The requested subcontractor could not be loaded.</Text>
+          </Stack>
+        </Stack>
       </ModalOverlay>
     );
   }
@@ -320,296 +323,308 @@ export default function SubcontractorDetailModal({
   return (
     <>
       <ModalOverlay>
-        <YStack gap="$6">
-          <XStack alignItems="flex-start" justifyContent="space-between">
-            <YStack flex={1}>
-              <XStack alignItems="center" gap="$3" mb="$2">
-                <H2 fontSize="$9" fontWeight="700" color="$color12">
+        <Stack gap={24}>
+          <Row alignItems="flex-start" justifyContent="space-between">
+            <Stack style={{ flex: 1 }}>
+              <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
+                <H2 style={{ fontSize: 28, fontWeight: 700 }}>
                   {subcontractor.company_name}
                 </H2>
                 {hasActiveCoverage ? (
-                  <Text
-                    paddingHorizontal="$2.5"
-                    paddingVertical="$1"
-                    fontSize="$1"
-                    fontWeight="500"
-                    borderRadius="$2"
-                    backgroundColor="$green2"
-                    color="$green10"
+                  <span
+                    style={{
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      borderRadius: 8,
+                      backgroundColor: 'var(--color-green-2)',
+                      color: 'var(--color-green-10)',
+                    }}
                   >
                     Active Coverage
-                  </Text>
+                  </span>
                 ) : (
-                  <Text
-                    paddingHorizontal="$2.5"
-                    paddingVertical="$1"
-                    fontSize="$1"
-                    fontWeight="500"
-                    borderRadius="$2"
-                    backgroundColor="$red2"
-                    color="$red10"
+                  <span
+                    style={{
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      borderRadius: 8,
+                      backgroundColor: 'var(--color-red-2)',
+                      color: 'var(--color-red-10)',
+                    }}
                   >
                     No Coverage
-                  </Text>
+                  </span>
                 )}
-              </XStack>
-              <Text color="$color11" fontSize="$4">
+              </Row>
+              <Text muted>
                 {subcontractor.trade_type} · {subcontractor.status}
               </Text>
-            </YStack>
-            <YStack alignItems="flex-end" gap="$2" data-testid="compliance-header">
-              <Text fontSize="$10" fontWeight="700" color="$color12">
+            </Stack>
+            <Stack alignItems="flex-end" gap={8} data-testid="compliance-header">
+              <Text size="2xl" weight="bold">
                 {complianceScore != null && !isNaN(complianceScore) ? `${complianceScore}%` : 'No data yet'}
               </Text>
-              <Text fontSize="$1" color="$color10">Compliance Score</Text>
+              <Text size="xs" muted>Compliance Score</Text>
               {subcontractor.risk_level && (
                 <RiskBadge
                   level={(subcontractor.risk_level as RiskLevel)}
                   size="sm"
                 />
               )}
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
-          <XStack borderBottomWidth={1} borderColor="$borderColor">
-            <XStack
-              onPress={() => setActiveTab('overview')}
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              cursor="pointer"
-              borderBottomWidth={activeTab === 'overview' ? 2 : 0}
-              borderBottomColor={activeTab === 'overview' ? '$blue10' : 'transparent'}
-              hoverStyle={{ opacity: 0.8 }}
+          <Row style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <div
+              onClick={() => setActiveTab('overview')}
+              style={{
+                paddingLeft: 16,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+                cursor: 'pointer',
+                borderBottom: activeTab === 'overview' ? '2px solid var(--color-blue-10)' : '2px solid transparent',
+              }}
             >
               <Text
-                fontSize="$3"
-                fontWeight="500"
-                color={activeTab === 'overview' ? '$blue10' : '$color11'}
+                size="sm"
+                weight="medium"
+                style={{ color: activeTab === 'overview' ? 'var(--color-blue-10)' : 'var(--color-text-muted)' }}
               >
                 Overview
               </Text>
-            </XStack>
-            <XStack
-              onPress={() => setActiveTab('policies')}
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              cursor="pointer"
-              borderBottomWidth={activeTab === 'policies' ? 2 : 0}
-              borderBottomColor={activeTab === 'policies' ? '$blue10' : 'transparent'}
-              hoverStyle={{ opacity: 0.8 }}
+            </div>
+            <div
+              onClick={() => setActiveTab('policies')}
+              style={{
+                paddingLeft: 16,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+                cursor: 'pointer',
+                borderBottom: activeTab === 'policies' ? '2px solid var(--color-blue-10)' : '2px solid transparent',
+              }}
             >
               <Text
-                fontSize="$3"
-                fontWeight="500"
-                color={activeTab === 'policies' ? '$blue10' : '$color11'}
+                size="sm"
+                weight="medium"
+                style={{ color: activeTab === 'policies' ? 'var(--color-blue-10)' : 'var(--color-text-muted)' }}
               >
                 Policies ({activePolicies.length})
               </Text>
-            </XStack>
-            <XStack
-              onPress={() => setActiveTab('documents')}
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              cursor="pointer"
-              borderBottomWidth={activeTab === 'documents' ? 2 : 0}
-              borderBottomColor={activeTab === 'documents' ? '$blue10' : 'transparent'}
-              hoverStyle={{ opacity: 0.8 }}
+            </div>
+            <div
+              onClick={() => setActiveTab('documents')}
+              style={{
+                paddingLeft: 16,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+                cursor: 'pointer',
+                borderBottom: activeTab === 'documents' ? '2px solid var(--color-blue-10)' : '2px solid transparent',
+              }}
             >
               <Text
-                fontSize="$3"
-                fontWeight="500"
-                color={activeTab === 'documents' ? '$blue10' : '$color11'}
+                size="sm"
+                weight="medium"
+                style={{ color: activeTab === 'documents' ? 'var(--color-blue-10)' : 'var(--color-text-muted)' }}
               >
                 Documents ({documents.length})
               </Text>
-            </XStack>
-            <XStack
-              onPress={() => setActiveTab('issues')}
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              cursor="pointer"
-              borderBottomWidth={activeTab === 'issues' ? 2 : 0}
-              borderBottomColor={activeTab === 'issues' ? '$blue10' : 'transparent'}
-              hoverStyle={{ opacity: 0.8 }}
-              position="relative"
+            </div>
+            <div
+              onClick={() => setActiveTab('issues')}
+              style={{
+                paddingLeft: 16,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+                cursor: 'pointer',
+                borderBottom: activeTab === 'issues' ? '2px solid var(--color-blue-10)' : '2px solid transparent',
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
             >
               <Text
-                fontSize="$3"
-                fontWeight="500"
-                color={activeTab === 'issues' ? '$blue10' : '$color11'}
+                size="sm"
+                weight="medium"
+                style={{ color: activeTab === 'issues' ? 'var(--color-blue-10)' : 'var(--color-text-muted)' }}
               >
                 Issues
               </Text>
               {allIssues.length > 0 && (
-                <Text
-                  ml="$2"
-                  paddingHorizontal="$1.5"
-                  paddingVertical="$0.5"
-                  backgroundColor="$red10"
-                  color="white"
-                  fontSize="$1"
-                  borderRadius={9999}
+                <span
+                  style={{
+                    paddingLeft: 6,
+                    paddingRight: 6,
+                    paddingTop: 2,
+                    paddingBottom: 2,
+                    backgroundColor: 'var(--color-red-10)',
+                    color: 'white',
+                    fontSize: 12,
+                    borderRadius: 9999,
+                  }}
                 >
                   {allIssues.length}
-                </Text>
+                </span>
               )}
-            </XStack>
-          </XStack>
+            </div>
+          </Row>
 
           {activeTab === 'overview' && (
-            <YStack gap="$6">
-              <XStack flexWrap="wrap" gap="$4">
-                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" mb="$2">
-                    <Building color="$color10" size={20} />
-                    <Text fontSize="$3" color="$color10">
+            <Stack gap={24}>
+              <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+                <Card style={{ padding: 16, backgroundColor: 'var(--color-gray-2)', borderRadius: 12, flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                  <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
+                    <Building color="var(--color-text-muted)" size={20} />
+                    <Text size="sm" muted>
                       Trade Type
                     </Text>
-                  </XStack>
-                  <Text fontSize="$5" fontWeight="500" color="$color12">
+                  </Row>
+                  <Text size="lg" weight="medium">
                     {subcontractor.trade_type}
                   </Text>
                 </Card>
 
-                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" mb="$2">
-                    <Shield color="$color10" size={20} />
-                    <Text fontSize="$3" color="$color10">
+                <Card style={{ padding: 16, backgroundColor: 'var(--color-gray-2)', borderRadius: 12, flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                  <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
+                    <Shield color="var(--color-text-muted)" size={20} />
+                    <Text size="sm" muted>
                       Active Policies
                     </Text>
-                  </XStack>
-                  <Text fontSize="$5" fontWeight="500" color="$color12">
+                  </Row>
+                  <Text size="lg" weight="medium">
                     {activePolicies.length}
                   </Text>
                 </Card>
 
-                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
-                  <XStack alignItems="center" gap="$3" mb="$2">
-                    <AlertTriangle color="$color10" size={20} />
-                    <Text fontSize="$3" color="$color10">
+                <Card style={{ padding: 16, backgroundColor: 'var(--color-gray-2)', borderRadius: 12, flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                  <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
+                    <AlertTriangle color="var(--color-text-muted)" size={20} />
+                    <Text size="sm" muted>
                       Open Issues
                     </Text>
-                  </XStack>
-                  <Text fontSize="$5" fontWeight="500" color="$color12">
+                  </Row>
+                  <Text size="lg" weight="medium">
                     {issues.length}
                   </Text>
                 </Card>
 
-                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)" data-testid="risk-level-card">
-                  <XStack alignItems="center" gap="$3" mb="$2">
-                    <TrendingUp color="$color10" size={20} />
-                    <Text fontSize="$3" color="$color10">Risk Level</Text>
-                  </XStack>
-                  <YStack alignItems="flex-start">
+                <Card style={{ padding: 16, backgroundColor: 'var(--color-gray-2)', borderRadius: 12, flex: 1, minWidth: 'calc(50% - 8px)' }} data-testid="risk-level-card">
+                  <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
+                    <TrendingUp color="var(--color-text-muted)" size={20} />
+                    <Text size="sm" muted>Risk Level</Text>
+                  </Row>
+                  <Stack alignItems="flex-start">
                     <RiskBadge
                       level={(subcontractor.risk_level as RiskLevel) || 'medium'}
                       score={complianceScore}
                       showScore
                       size="md"
                     />
-                  </YStack>
+                  </Stack>
                 </Card>
-              </XStack>
+              </Row>
 
               {people.length > 0 && (
-                <YStack>
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$3">
+                <Stack>
+                  <H3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>
                     Team Members
                   </H3>
-                  <YStack gap="$2">
+                  <Stack gap={8}>
                     {people.map((person) => (
-                      <XStack
+                      <Row
                         key={person.id}
                         alignItems="center"
                         justifyContent="space-between"
-                        padding="$3"
-                        backgroundColor="$backgroundHover"
-                        borderRadius="$4"
+                        style={{ padding: 12, backgroundColor: 'var(--color-gray-2)', borderRadius: 12 }}
                       >
-                        <XStack alignItems="center" gap="$3">
-                          <YStack
-                            width={40}
-                            height={40}
-                            backgroundColor="$blue10"
-                            borderRadius={9999}
-                            alignItems="center"
-                            justifyContent="center"
+                        <Row alignItems="center" gap={12}>
+                          <div
+                            style={{
+                              width: 40,
+                              height: 40,
+                              backgroundColor: 'var(--color-blue-10)',
+                              borderRadius: 9999,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
                           >
-                            <Text fontSize="$3" fontWeight="600" color="white">
+                            <span style={{ fontSize: 14, fontWeight: 600, color: 'white' }}>
                               {person.name
                                 .split(' ')
                                 .map((n) => n[0])
                                 .join('')}
-                            </Text>
-                          </YStack>
-                          <YStack>
-                            <Text fontSize="$3" fontWeight="500" color="$color12">
+                            </span>
+                          </div>
+                          <Stack>
+                            <Text size="sm" weight="medium">
                               {person.name}
                             </Text>
-                            <Text fontSize="$1" color="$color10">
+                            <Text size="xs" muted>
                               {person.email}
                             </Text>
-                          </YStack>
-                        </XStack>
-                        <XStack
-                          onPress={() => {}}
-                          cursor="pointer"
-                          hoverStyle={{ opacity: 0.8 }}
-                        >
-                          <Text
-                            fontSize="$1"
-                            color="$blue10"
-                            fontWeight="500"
-                          >
+                          </Stack>
+                        </Row>
+                        <div style={{ cursor: 'pointer' }}>
+                          <Text size="xs" weight="medium" style={{ color: 'var(--color-blue-10)' }}>
                             Contact
                           </Text>
-                        </XStack>
-                      </XStack>
+                        </div>
+                      </Row>
                     ))}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               )}
 
               {projects.length > 0 && (
-                <YStack>
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$3">
+                <Stack>
+                  <H3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>
                     Projects
                   </H3>
-                  <YStack gap="$2">
+                  <Stack gap={8}>
                     {projects.slice(0, 5).map((project) => (
-                      <XStack
+                      <Row
                         key={project.id}
                         alignItems="center"
                         justifyContent="space-between"
-                        padding="$3"
-                        borderWidth={1}
-                        borderColor="$borderColor"
-                        borderRadius="$4"
+                        style={{ padding: 12, border: '1px solid var(--color-border)', borderRadius: 12 }}
                       >
-                        <YStack>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                        <Stack>
+                          <Text size="sm" weight="medium">
                             {project.name}
                           </Text>
-                          <Text fontSize="$1" color="$color10" textTransform="capitalize">
+                          <Text size="xs" muted style={{ textTransform: 'capitalize' }}>
                             Status: {project.compliance_status}
                           </Text>
-                        </YStack>
+                        </Stack>
                         <StatusBadge
                           status={
                             project.compliance_status === 'compliant' ? 'compliant' : 'warning'
                           }
                           size="sm"
                         />
-                      </XStack>
+                      </Row>
                     ))}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {activeTab === 'policies' && (
-            <YStack gap="$3">
+            <Stack gap={12}>
               {activePolicies.length > 0 ? (
                 activePolicies.map((policy) => {
                   const expiryDate = new Date(policy.expiration_date);
@@ -620,123 +635,128 @@ export default function SubcontractorDetailModal({
                   return (
                     <Card
                       key={policy.id}
-                      padding="$4"
-                      borderWidth={1}
-                      borderColor="$borderColor"
-                      borderRadius="$4"
-                      gap="$3"
+                      style={{ padding: 16, border: '1px solid var(--color-border)', borderRadius: 12 }}
                     >
-                      <XStack alignItems="center" justifyContent="space-between">
-                        <Text fontSize="$4" fontWeight="600" color="$color12" textTransform="capitalize">
-                          {policy.policy_type.replace(/_/g, ' ')}
-                        </Text>
-                        {isExpiringSoon ? (
-                          <Text
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
-                            fontSize="$1"
-                            fontWeight="500"
-                            borderRadius="$2"
-                            backgroundColor="$orange2"
-                            color="$orange10"
-                          >
-                            Expiring Soon
+                      <Stack gap={12}>
+                        <Row alignItems="center" justifyContent="space-between">
+                          <Text weight="semibold" style={{ textTransform: 'capitalize' }}>
+                            {policy.policy_type.replace(/_/g, ' ')}
                           </Text>
-                        ) : (
-                          <Text
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
-                            fontSize="$1"
-                            fontWeight="500"
-                            borderRadius="$2"
-                            backgroundColor="$green2"
-                            color="$green10"
-                          >
-                            Active
-                          </Text>
+                          {isExpiringSoon ? (
+                            <span
+                              style={{
+                                paddingLeft: 8,
+                                paddingRight: 8,
+                                paddingTop: 4,
+                                paddingBottom: 4,
+                                fontSize: 12,
+                                fontWeight: 500,
+                                borderRadius: 8,
+                                backgroundColor: 'var(--color-orange-2)',
+                                color: 'var(--color-orange-10)',
+                              }}
+                            >
+                              Expiring Soon
+                            </span>
+                          ) : (
+                            <span
+                              style={{
+                                paddingLeft: 8,
+                                paddingRight: 8,
+                                paddingTop: 4,
+                                paddingBottom: 4,
+                                fontSize: 12,
+                                fontWeight: 500,
+                                borderRadius: 8,
+                                backgroundColor: 'var(--color-green-2)',
+                                color: 'var(--color-green-10)',
+                              }}
+                            >
+                              Active
+                            </span>
+                          )}
+                        </Row>
+                        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+                          <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                            <Text size="sm" muted>Carrier</Text>
+                            <Text size="sm" weight="medium">
+                              {policy.carrier}
+                            </Text>
+                          </Stack>
+                          <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                            <Text size="sm" muted>
+                              Policy Number
+                            </Text>
+                            <Text size="sm" weight="medium">
+                              {policy.policy_number}
+                            </Text>
+                          </Stack>
+                          <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                            <Text size="sm" muted>
+                              Effective Date
+                            </Text>
+                            <Text size="sm" weight="medium">
+                              {new Date(policy.effective_date).toLocaleDateString()}
+                            </Text>
+                          </Stack>
+                          <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                            <Text size="sm" muted>
+                              Expiry Date
+                            </Text>
+                            <Text
+                              size="sm"
+                              weight="medium"
+                              style={{ color: isExpiringSoon ? 'var(--color-orange-10)' : undefined }}
+                            >
+                              {expiryDate.toLocaleDateString()}
+                            </Text>
+                          </Stack>
+                        </Row>
+                        {policy.limits && Object.keys(policy.limits).length > 0 && (
+                          <Stack>
+                            <Text size="sm" muted style={{ marginBottom: 4 }}>
+                              Coverage Limits
+                            </Text>
+                            <Stack gap={4}>
+                              {Object.entries(policy.limits).map(
+                                ([key, value]) => (
+                                  <Row
+                                    key={key}
+                                    justifyContent="space-between"
+                                  >
+                                    <Text size="sm" muted style={{ textTransform: 'capitalize' }}>
+                                      {key.replace(/_/g, ' ')}
+                                    </Text>
+                                    <Text size="sm" weight="medium">
+                                      ${(value as number).toLocaleString()}
+                                    </Text>
+                                  </Row>
+                                )
+                              )}
+                            </Stack>
+                          </Stack>
                         )}
-                      </XStack>
-                      <XStack flexWrap="wrap" gap="$4">
-                        <YStack flex={1} minWidth="calc(50% - 8px)">
-                          <Text fontSize="$3" color="$color10">Carrier</Text>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
-                            {policy.carrier}
-                          </Text>
-                        </YStack>
-                        <YStack flex={1} minWidth="calc(50% - 8px)">
-                          <Text fontSize="$3" color="$color10">
-                            Policy Number
-                          </Text>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
-                            {policy.policy_number}
-                          </Text>
-                        </YStack>
-                        <YStack flex={1} minWidth="calc(50% - 8px)">
-                          <Text fontSize="$3" color="$color10">
-                            Effective Date
-                          </Text>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
-                            {new Date(policy.effective_date).toLocaleDateString()}
-                          </Text>
-                        </YStack>
-                        <YStack flex={1} minWidth="calc(50% - 8px)">
-                          <Text fontSize="$3" color="$color10">
-                            Expiry Date
-                          </Text>
-                          <Text
-                            fontSize="$3"
-                            fontWeight="500"
-                            color={isExpiringSoon ? '$orange10' : '$color12'}
-                          >
-                            {expiryDate.toLocaleDateString()}
-                          </Text>
-                        </YStack>
-                      </XStack>
-                      {policy.limits && Object.keys(policy.limits).length > 0 && (
-                        <YStack>
-                          <Text fontSize="$3" color="$color10" mb="$1">
-                            Coverage Limits
-                          </Text>
-                          <YStack gap="$1">
-                            {Object.entries(policy.limits).map(
-                              ([key, value]) => (
-                                <XStack
-                                  key={key}
-                                  justifyContent="space-between"
-                                  fontSize="$3"
-                                >
-                                  <Text fontSize="$3" color="$color11" textTransform="capitalize">
-                                    {key.replace(/_/g, ' ')}
-                                  </Text>
-                                  <Text fontSize="$3" fontWeight="500" color="$color12">
-                                    ${(value as number).toLocaleString()}
-                                  </Text>
-                                </XStack>
-                              )
-                            )}
-                          </YStack>
-                        </YStack>
-                      )}
+                      </Stack>
                     </Card>
                   );
                 })
               ) : (
-                <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" mb="$3">
-                    <Shield color="$color10" size={48} />
-                  </YStack>
-                  <Text color="$color11">
+                <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+                  <div style={{ marginBottom: 12 }}>
+                    <Shield color="var(--color-text-muted)" size={48} />
+                  </div>
+                  <Text muted>
                     No active insurance policies
                   </Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {activeTab === 'documents' && (
-            <YStack gap="$4">
+            <Stack gap={16}>
               {/* Filters */}
-              <XStack alignItems="center" gap="$3">
+              <Row alignItems="center" gap={12}>
                 <Select
                   value={documentFilter}
                   onChange={(e) => setDocumentFilter(e.target.value)}
@@ -758,140 +778,119 @@ export default function SubcontractorDetailModal({
                     { value: 'expired', label: 'Expired' },
                   ]}
                 />
-              </XStack>
+              </Row>
 
               {documentsLoading ? (
-                <YStack alignItems="center" paddingVertical="$12">
-                  <Spinner size="large" color="$blue10" mb="$2" />
-                  <Text color="$color11">Loading documents...</Text>
-                </YStack>
+                <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+                  <Loader2 size={32} color="var(--color-blue-10)" className="animate-spin" style={{ marginBottom: 8 }} />
+                  <Text muted>Loading documents...</Text>
+                </Stack>
               ) : filteredDocuments.length === 0 ? (
-                <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" mb="$3">
-                    <FileText color="$color10" size={48} />
-                  </YStack>
-                  <Text color="$color11" mb="$4">
+                <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+                  <div style={{ marginBottom: 12 }}>
+                    <FileText color="var(--color-text-muted)" size={48} />
+                  </div>
+                  <Text muted style={{ marginBottom: 16 }}>
                     No documents uploaded yet
                   </Text>
                   <Button variant="primary" leftIcon={Upload}>
                     Request Document Upload
                   </Button>
-                </YStack>
+                </Stack>
               ) : (
-                <YStack gap="$3">
+                <Stack gap={12}>
                   {filteredDocuments.map((doc) => {
                     const status = getDocumentStatus(doc);
                     const daysUntilExpiry = getDaysUntilExpiry(doc.expiry_date);
-                    const statusBorderColors = {
-                      verified: '$green8',
-                      pending: '$orange8',
-                      expiring: '$orange8',
-                      expired: '$red8',
+                    const statusBorderColors: Record<string, string> = {
+                      verified: 'var(--color-green-8)',
+                      pending: 'var(--color-orange-8)',
+                      expiring: 'var(--color-orange-8)',
+                      expired: 'var(--color-red-8)',
                     };
-                    const statusBgColors = {
-                      verified: '$green2',
-                      pending: '$orange2',
-                      expiring: '$orange2',
-                      expired: '$red2',
+                    const statusBgColors: Record<string, string> = {
+                      verified: 'var(--color-green-2)',
+                      pending: 'var(--color-orange-2)',
+                      expiring: 'var(--color-orange-2)',
+                      expired: 'var(--color-red-2)',
                     };
-                    const statusTextColors = {
-                      verified: '$green10',
-                      pending: '$orange10',
-                      expiring: '$orange10',
-                      expired: '$red10',
+                    const statusTextColors: Record<string, string> = {
+                      verified: 'var(--color-green-10)',
+                      pending: 'var(--color-orange-10)',
+                      expiring: 'var(--color-orange-10)',
+                      expired: 'var(--color-red-10)',
                     };
 
                     return (
                       <Card
                         key={doc.id}
-                        padding="$4"
-                        borderLeftWidth={4}
-                        borderLeftColor={statusBorderColors[status] || '$borderColor'}
-                        borderRadius="$4"
-                        backgroundColor={statusBgColors[status] || '$backgroundHover'}
+                        style={{
+                          padding: 16,
+                          borderLeft: `4px solid ${statusBorderColors[status] || 'var(--color-border)'}`,
+                          borderRadius: 12,
+                          backgroundColor: statusBgColors[status] || 'var(--color-gray-2)',
+                        }}
                       >
-                        <XStack alignItems="flex-start" justifyContent="space-between">
-                          <YStack flex={1}>
-                            <XStack alignItems="center" gap="$3" mb="$2">
-                              <FileText
-                                color="$blue10"
-                                size={20}
-                              />
-                              <Text fontSize="$4" fontWeight="600" color="$color12">
+                        <Row alignItems="flex-start" justifyContent="space-between">
+                          <Stack style={{ flex: 1 }}>
+                            <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
+                              <FileText color="var(--color-blue-10)" size={20} />
+                              <Text weight="semibold">
                                 {doc.file_name}
                               </Text>
-                              <Text
-                                paddingHorizontal="$2"
-                                paddingVertical="$0.5"
-                                fontSize="$1"
-                                fontWeight="500"
-                                borderRadius="$2"
-                                backgroundColor={
-                                  status === 'verified'
-                                    ? '$green2'
-                                    : status === 'pending'
-                                      ? '$orange2'
-                                      : status === 'expiring'
-                                        ? '$orange2'
-                                        : '$red2'
-                                }
-                                color={
-                                  status === 'verified'
-                                    ? '$green10'
-                                    : status === 'pending'
-                                      ? '$orange10'
-                                      : status === 'expiring'
-                                        ? '$orange10'
-                                        : '$red10'
-                                }
+                              <span
+                                style={{
+                                  paddingLeft: 8,
+                                  paddingRight: 8,
+                                  paddingTop: 2,
+                                  paddingBottom: 2,
+                                  fontSize: 12,
+                                  fontWeight: 500,
+                                  borderRadius: 8,
+                                  backgroundColor: statusBgColors[status],
+                                  color: statusTextColors[status],
+                                }}
                               >
-                                {status.charAt(0).toUpperCase() +
-                                  status.slice(1)}
-                              </Text>
-                            </XStack>
-                            <XStack flexWrap="wrap" gap="$4" ml="$8">
-                              <YStack flex={1} minWidth="calc(50% - 8px)">
-                                <Text fontSize="$3" color="$color10">
-                                  Uploaded:
-                                </Text>
-                                <Text fontSize="$3" fontWeight="500" color="$color12">
+                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                              </span>
+                            </Row>
+                            <Row style={{ flexWrap: 'wrap', gap: 16, marginLeft: 32 }}>
+                              <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                                <Text size="sm" muted>Uploaded:</Text>
+                                <Text size="sm" weight="medium">
                                   {formatDate(doc.created_at)}
                                 </Text>
-                              </YStack>
-                              <YStack flex={1} minWidth="calc(50% - 8px)">
-                                <Text fontSize="$3" color="$color10">
-                                  Size:
-                                </Text>
-                                <Text fontSize="$3" fontWeight="500" color="$color12">
+                              </Stack>
+                              <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                                <Text size="sm" muted>Size:</Text>
+                                <Text size="sm" weight="medium">
                                   {doc.file_size
                                     ? `${(doc.file_size / 1024 / 1024).toFixed(2)} MB`
                                     : 'N/A'}
                                 </Text>
-                              </YStack>
+                              </Stack>
                               {doc.expiry_date && (
-                                <YStack flex={1} minWidth="calc(50% - 8px)">
-                                  <Text fontSize="$3" color="$color10">
-                                    Expiry:
-                                  </Text>
+                                <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+                                  <Text size="sm" muted>Expiry:</Text>
                                   <Text
-                                    fontSize="$3"
-                                    fontWeight="500"
-                                    color={daysUntilExpiry !== null && daysUntilExpiry <= 30 ? '$orange10' : '$color12'}
+                                    size="sm"
+                                    weight="medium"
+                                    style={{ color: daysUntilExpiry !== null && daysUntilExpiry <= 30 ? 'var(--color-orange-10)' : undefined }}
                                   >
                                     {formatDate(doc.expiry_date)}
                                     {daysUntilExpiry !== null &&
                                       daysUntilExpiry <= 30 &&
                                       ` (${daysUntilExpiry} days)`}
                                   </Text>
-                                </YStack>
+                                </Stack>
                               )}
-                            </XStack>
-                          </YStack>
-                          <XStack alignItems="center" gap="$2">
+                            </Row>
+                          </Stack>
+                          <Row alignItems="center" gap={8}>
                             <Button
                               variant="ghost"
-                              size="$2"
-                              onClick={() =>
+                              size="sm"
+                              onPress={() =>
                                 setSelectedDocument({
                                   id: doc.id,
                                   name: doc.file_name,
@@ -912,8 +911,8 @@ export default function SubcontractorDetailModal({
                             {doc.file_url && (
                               <Button
                                 variant="ghost"
-                                size="$2"
-                                onClick={() =>
+                                size="sm"
+                                onPress={() =>
                                   window.open(doc.file_url, '_blank')
                                 }
                                 leftIcon={Download}
@@ -921,20 +920,20 @@ export default function SubcontractorDetailModal({
                                 Download
                               </Button>
                             )}
-                          </XStack>
-                        </XStack>
+                          </Row>
+                        </Row>
                       </Card>
                     );
                   })}
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {activeTab === 'issues' && (
-            <YStack gap="$4">
+            <Stack gap={16}>
               {/* Filters */}
-              <XStack alignItems="center" gap="$3">
+              <Row alignItems="center" gap={12}>
                 <Select
                   value={issueStatusFilter}
                   onChange={(e) => setIssueStatusFilter(e.target.value)}
@@ -956,42 +955,42 @@ export default function SubcontractorDetailModal({
                     { value: 'low', label: 'Low' },
                   ]}
                 />
-              </XStack>
+              </Row>
 
               {issuesLoading ? (
-                <YStack alignItems="center" paddingVertical="$12">
-                  <Spinner size="large" color="$blue10" mb="$2" />
-                  <Text color="$color11">Loading issues...</Text>
-                </YStack>
+                <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+                  <Loader2 size={32} color="var(--color-blue-10)" className="animate-spin" style={{ marginBottom: 8 }} />
+                  <Text muted>Loading issues...</Text>
+                </Stack>
               ) : filteredIssues.length === 0 ? (
-                <YStack alignItems="center" paddingVertical="$12">
-                  <YStack alignItems="center" mb="$3">
-                    <CheckCircle color="$green10" size={48} />
-                  </YStack>
-                  <Text color="$green10" fontWeight="500">
+                <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+                  <div style={{ marginBottom: 12 }}>
+                    <CheckCircle color="var(--color-green-10)" size={48} />
+                  </div>
+                  <Text weight="medium" style={{ color: 'var(--color-green-10)' }}>
                     No compliance issues
                   </Text>
-                  <Text color="$color11" fontSize="$3">
+                  <Text size="sm" muted>
                     This subcontractor is fully compliant
                   </Text>
-                </YStack>
+                </Stack>
               ) : (
-                <YStack gap="$3">
+                <Stack gap={12}>
                   {filteredIssues.map((issue) => {
-                    const severityBorderColors = {
-                      critical: '$red10',
-                      high: '$red9',
-                      medium: '$orange10',
-                      low: '$orange8',
+                    const severityBorderColors: Record<string, string> = {
+                      critical: 'var(--color-red-10)',
+                      high: 'var(--color-red-9)',
+                      medium: 'var(--color-orange-10)',
+                      low: 'var(--color-orange-8)',
                     };
-                    const severityBgColors = {
-                      critical: '$red2',
-                      high: '$red2',
-                      medium: '$orange2',
-                      low: '$orange2',
+                    const severityBgColors: Record<string, string> = {
+                      critical: 'var(--color-red-2)',
+                      high: 'var(--color-red-2)',
+                      medium: 'var(--color-orange-2)',
+                      low: 'var(--color-orange-2)',
                     };
 
-                    const severityLabels = {
+                    const severityLabels: Record<string, string> = {
                       critical: 'CRITICAL',
                       high: 'HIGH',
                       medium: 'MEDIUM',
@@ -1001,108 +1000,113 @@ export default function SubcontractorDetailModal({
                     return (
                       <Card
                         key={issue.id}
-                        padding="$4"
-                        borderLeftWidth={4}
-                        borderLeftColor={severityBorderColors[issue.severity] || '$borderColor'}
-                        borderRadius="$4"
-                        backgroundColor={severityBgColors[issue.severity] || '$backgroundHover'}
+                        style={{
+                          padding: 16,
+                          borderLeft: `4px solid ${severityBorderColors[issue.severity] || 'var(--color-border)'}`,
+                          borderRadius: 12,
+                          backgroundColor: severityBgColors[issue.severity] || 'var(--color-gray-2)',
+                        }}
                       >
-                        <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
-                          <XStack alignItems="center" gap="$2">
+                        <Row alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: 8 }}>
+                          <Row alignItems="center" gap={8}>
                             <AlertTriangle
                               color={
                                 issue.severity === 'critical' ||
                                 issue.severity === 'high'
-                                  ? '$red10'
-                                  : '$orange10'
+                                  ? 'var(--color-red-10)'
+                                  : 'var(--color-orange-10)'
                               }
                               size={18}
                             />
-                            <Text fontSize="$4" fontWeight="600" color="$color12">
+                            <Text weight="semibold">
                               {issue.title}
                             </Text>
-                          </XStack>
-                          <XStack alignItems="center" gap="$2">
-                            <Text
-                              paddingHorizontal="$2"
-                              paddingVertical="$1"
-                              fontSize="$1"
-                              fontWeight="500"
-                              borderRadius="$2"
-                              backgroundColor={
-                                issue.severity === 'critical' || issue.severity === 'high'
-                                  ? '$red3'
-                                  : issue.severity === 'medium'
-                                    ? '$orange3'
-                                    : '$orange2'
-                              }
-                              color={
-                                issue.severity === 'critical' || issue.severity === 'high'
-                                  ? '$red12'
-                                  : issue.severity === 'medium'
-                                    ? '$orange12'
-                                    : '$orange11'
-                              }
+                          </Row>
+                          <Row alignItems="center" gap={8}>
+                            <span
+                              style={{
+                                paddingLeft: 8,
+                                paddingRight: 8,
+                                paddingTop: 4,
+                                paddingBottom: 4,
+                                fontSize: 12,
+                                fontWeight: 500,
+                                borderRadius: 8,
+                                backgroundColor:
+                                  issue.severity === 'critical' || issue.severity === 'high'
+                                    ? 'var(--color-red-3)'
+                                    : issue.severity === 'medium'
+                                      ? 'var(--color-orange-3)'
+                                      : 'var(--color-orange-2)',
+                                color:
+                                  issue.severity === 'critical' || issue.severity === 'high'
+                                    ? 'var(--color-red-12)'
+                                    : issue.severity === 'medium'
+                                      ? 'var(--color-orange-12)'
+                                      : 'var(--color-orange-11)',
+                              }}
                             >
                               {severityLabels[issue.severity]}
-                            </Text>
-                            <Text
-                              paddingHorizontal="$2"
-                              paddingVertical="$1"
-                              fontSize="$1"
-                              fontWeight="500"
-                              borderRadius="$2"
-                              backgroundColor={
-                                issue.status === 'open'
-                                  ? '$blue2'
-                                  : issue.status === 'in_progress'
-                                    ? '$orange2'
-                                    : '$green2'
-                              }
-                              color={
-                                issue.status === 'open'
-                                  ? '$blue10'
-                                  : issue.status === 'in_progress'
-                                    ? '$orange10'
-                                    : '$green10'
-                              }
+                            </span>
+                            <span
+                              style={{
+                                paddingLeft: 8,
+                                paddingRight: 8,
+                                paddingTop: 4,
+                                paddingBottom: 4,
+                                fontSize: 12,
+                                fontWeight: 500,
+                                borderRadius: 8,
+                                backgroundColor:
+                                  issue.status === 'open'
+                                    ? 'var(--color-blue-2)'
+                                    : issue.status === 'in_progress'
+                                      ? 'var(--color-orange-2)'
+                                      : 'var(--color-green-2)',
+                                color:
+                                  issue.status === 'open'
+                                    ? 'var(--color-blue-10)'
+                                    : issue.status === 'in_progress'
+                                      ? 'var(--color-orange-10)'
+                                      : 'var(--color-green-10)',
+                              }}
                             >
                               {issue.status.charAt(0).toUpperCase() +
                                 issue.status.slice(1).replace('_', ' ')}
-                            </Text>
-                          </XStack>
-                        </XStack>
-                        <Text fontSize="$3" color="$color11" mb="$3" ml="$6">
+                            </span>
+                          </Row>
+                        </Row>
+                        <Text size="sm" muted style={{ marginBottom: 12, marginLeft: 24 }}>
                           {issue.description}
                         </Text>
-                        <XStack alignItems="center" justifyContent="space-between" ml="$6">
-                          <XStack gap="$3" fontSize="$1" color="$color10">
-                            <Text fontSize="$1" color="$color10">
+                        <Row alignItems="center" justifyContent="space-between" style={{ marginLeft: 24 }}>
+                          <Row gap={12}>
+                            <Text size="xs" muted>
                               Type: {issue.issue_type.replace('_', ' ')}
                             </Text>
-                            <Text fontSize="$1" color="$color10">
+                            <Text size="xs" muted>
                               Created: {formatDate(issue.created_at)}
                             </Text>
-                          </XStack>
+                          </Row>
                           {issue.status === 'open' && (
                             <Button
-                              variant="outline"
-                              size="$2"
-                              onClick={() => handleMarkIssueResolved(issue.id)}
+                              variant="outlined"
+                              size="sm"
+                              onPress={() => handleMarkIssueResolved(issue.id)}
                             >
                               Mark Resolved
                             </Button>
                           )}
-                        </XStack>
+                        </Row>
                       </Card>
                     );
                   })}
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
 
-        </YStack>
+        </Stack>
       </ModalOverlay>
 
       {/* Document Detail Modal */}

@@ -19,7 +19,7 @@ import {
   AlertCircle,
   Building2,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, Card, Button } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2, Card, Button } from '@unicornlove/beyond-ui';
 import ButtonCommon from '../Common/Button';
 import CardCommon from '../Common/Card';
 import Modal from '../Common/Modal';
@@ -260,91 +260,97 @@ export default function ProjectCoverageRequirementsPage({
   // Access denied view
   if (!canManage) {
     return (
-      <YStack alignItems="center" justifyContent="center" padding="$8" style={{ textAlign: 'center' }}>
-        <AlertCircle size={48} color="$yellow10" mb="$4" />
-        <Text fontSize="$6" fontWeight="600" color="$color12" mb="$2">Access Denied</Text>
-        <Text color="$color11">
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', padding: 32, textAlign: 'center' }}>
+        <AlertCircle size={48} color="var(--color-yellow10)" style={{ marginBottom: 16 }} />
+        <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-color12)', marginBottom: 8 }}>Access Denied</Text>
+        <Text style={{ color: 'var(--color-color11)' }}>
           You don't have permission to manage coverage requirements for this project.
         </Text>
-      </YStack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 24 }}>
       {/* Toast notifications */}
-      <YStack position="fixed" top="$4" right="$4" zIndex={50} gap="$2">
+      <Stack style={{ position: 'fixed', top: 16, right: 16, zIndex: 50, gap: 8 }}>
         {toasts.map((toast) => (
           <Card
             key={toast.id}
-            padding="$4"
-            paddingVertical="$3"
-            borderRadius="$4"
-            elevation={4}
-            fontSize="$3"
-            fontWeight="500"
-            backgroundColor={toast.type === 'success' ? '$green2' : '$red2'}
-            color={toast.type === 'success' ? '$green11' : '$red11'}
-            borderColor={toast.type === 'success' ? '$green6' : '$red6'}
-            borderWidth={1}
+            style={{
+              padding: '12px 16px',
+              borderRadius: 8,
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              fontSize: 14,
+              fontWeight: 500,
+              backgroundColor: toast.type === 'success' ? 'var(--color-green2)' : 'var(--color-red2)',
+              color: toast.type === 'success' ? 'var(--color-green11)' : 'var(--color-red11)',
+              borderColor: toast.type === 'success' ? 'var(--color-green6)' : 'var(--color-red6)',
+              borderWidth: 1,
+              borderStyle: 'solid',
+            }}
           >
             {toast.message}
           </Card>
         ))}
-      </YStack>
+      </Stack>
 
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <XStack alignItems="center" gap="$3">
-            <H1 fontSize="$9" fontWeight="bold" color="$color12">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack>
+          <Row style={{ alignItems: 'center', gap: 12 }}>
+            <H1 style={{ fontSize: 32, fontWeight: 'bold', color: 'var(--color-color12)' }}>
               Coverage Requirements
             </H1>
-            <XStack
-              paddingHorizontal="$3"
-              paddingVertical="$1"
-              borderRadius={9999}
-              fontSize="$3"
-              fontWeight="600"
-              backgroundColor="$purple2"
-              color="$purple11"
-              alignItems="center"
-              gap="$1"
+            <Row
+              style={{
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 4,
+                paddingBottom: 4,
+                borderRadius: 9999,
+                fontSize: 14,
+                fontWeight: 600,
+                backgroundColor: 'var(--color-purple2)',
+                color: 'var(--color-purple11)',
+                alignItems: 'center',
+                gap: 4,
+              }}
             >
               <FolderKanban size={14} />
               <Text>PROJECT</Text>
-            </XStack>
-          </XStack>
-          <Text color="$color11" fontSize="$6" mt="$1">
-            Set project-specific coverage requirements for <Text fontWeight="600">{projectName}</Text>
+            </Row>
+          </Row>
+          <Text style={{ color: 'var(--color-color11)', fontSize: 18, marginTop: 4 }}>
+            Set project-specific coverage requirements for <Text style={{ fontWeight: 600 }}>{projectName}</Text>
           </Text>
-        </YStack>
-        <ButtonCommon variant="primary" leftIcon={Plus} onClick={() => setShowForm(true)}>
+        </Stack>
+        <ButtonCommon variant="primary" leftIcon={Plus} onPress={() => setShowForm(true)}>
           Add Project Requirement
         </ButtonCommon>
-      </XStack>
+      </Row>
 
       {/* Info Banner */}
-      <CardCommon padding="$4" backgroundColor="$purple2" borderColor="$purple6">
-        <XStack alignItems="flex-start" gap="$3">
-          <Shield color="$purple10" mt="$0.5" size={20} />
-          <YStack>
-            <Text color="$purple11" fontWeight="500">Project-Level Requirements</Text>
-            <Text color="$purple10" fontSize="$3" mt="$1">
+      <CardCommon style={{ padding: 16, backgroundColor: 'var(--color-purple2)', borderColor: 'var(--color-purple6)' }}>
+        <Row style={{ alignItems: 'flex-start', gap: 12 }}>
+          <Shield color="var(--color-purple10)" style={{ marginTop: 2 }} size={20} />
+          <Stack>
+            <Text style={{ color: 'var(--color-purple11)', fontWeight: 500 }}>Project-Level Requirements</Text>
+            <Text style={{ color: 'var(--color-purple10)', fontSize: 14, marginTop: 4 }}>
               These requirements are specific to this project and supplement the organization-wide
               requirements. Subcontractors must meet both org-level and project-level requirements.
             </Text>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
       </CardCommon>
 
       {/* Filters */}
-      <CardCommon padding="$4">
-        <XStack flexDirection="column" gap="$4" $gtSm={{ flexDirection: 'row' }}>
-          <XStack flex={1} position="relative">
-            <YStack position="absolute" left="$3" top="50%" style={{ transform: 'translateY(-50%)' }} zIndex={1} pointerEvents="none">
-              <Search size={20} color="$color10" />
-            </YStack>
+      <CardCommon style={{ padding: 16 }}>
+        <Row style={{ flexDirection: 'column', gap: 16 }}>
+          <Row style={{ flex: 1, position: 'relative' }}>
+            <Stack style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 1, pointerEvents: 'none' }}>
+              <Search size={20} color="var(--color-color10)" />
+            </Stack>
             <input
               type="text"
               placeholder="Search requirements..."
@@ -356,16 +362,16 @@ export default function ProjectCoverageRequirementsPage({
                 paddingRight: 16,
                 paddingTop: 8,
                 paddingBottom: 8,
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--borderColor)',
+                backgroundColor: 'var(--color-background)',
+                border: '1px solid var(--color-border)',
                 borderRadius: 8,
-                color: 'var(--color12)',
+                color: 'var(--color-color12)',
                 flex: 1,
               }}
             />
-          </XStack>
-          <XStack alignItems="center" gap="$2">
-            <DollarSign size={20} color="$color10" />
+          </Row>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
+            <DollarSign size={20} color="var(--color-color10)" />
             <Select
               options={coverageTypeOptions}
               value={selectedCoverageType}
@@ -374,257 +380,287 @@ export default function ProjectCoverageRequirementsPage({
               }
               style={{ width: 224 }}
             />
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       </CardCommon>
 
       {/* Project Requirements Table */}
       <CardCommon>
-        <YStack paddingHorizontal="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor" backgroundColor="$purple2" opacity={0.5}>
-          <XStack alignItems="center" gap="$2">
-            <FolderKanban size={18} color="$purple10" />
-            <H2 fontSize="$5" fontWeight="600" color="$color12">Project-Specific Requirements</H2>
-            <Text fontSize="$3" color="$color11">
+        <Stack style={{ paddingLeft: 16, paddingRight: 16, paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-purple2)', opacity: 0.5 }}>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
+            <FolderKanban size={18} color="var(--color-purple10)" />
+            <H2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-color12)' }}>Project-Specific Requirements</H2>
+            <Text style={{ fontSize: 14, color: 'var(--color-color11)' }}>
               ({filteredProjectRequirements.length})
             </Text>
-          </XStack>
-        </YStack>
-        <YStack overflowX="auto">
-          <YStack>
-            <XStack padding="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
-              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
-              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
-              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
-              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
-              <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
-              <Text flex={1} style={{ textAlign: 'right' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
-            </XStack>
-            <YStack>
+          </Row>
+        </Stack>
+        <Stack style={{ overflowX: 'auto' }}>
+          <Stack>
+            <Row style={{ padding: 16, paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid var(--color-border)' }}>
+              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Name</Text>
+              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Coverage Type</Text>
+              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Minimum Limit</Text>
+              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Level</Text>
+              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Status</Text>
+              <Text style={{ flex: 1, textAlign: 'right', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Actions</Text>
+            </Row>
+            <Stack>
               {isLoading ? (
-                <XStack padding="$4" paddingVertical="$8" justifyContent="center" alignItems="center">
-                  <Text color="$color10">Loading project requirements...</Text>
-                </XStack>
+                <Row style={{ padding: 16, paddingTop: 32, paddingBottom: 32, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ color: 'var(--color-color10)' }}>Loading project requirements...</Text>
+                </Row>
               ) : filteredProjectRequirements.length === 0 ? (
-                <XStack padding="$4" paddingVertical="$8" justifyContent="center" alignItems="center">
-                  <Text color="$color10">
+                <Row style={{ padding: 16, paddingTop: 32, paddingBottom: 32, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ color: 'var(--color-color10)' }}>
                     {searchQuery
                       ? 'No project requirements match your search'
                       : 'No project-specific requirements. Add one above!'}
                   </Text>
-                </XStack>
+                </Row>
               ) : (
-                filteredProjectRequirements.map((requirement, idx) => (
-                  <XStack
+                filteredProjectRequirements.map((requirement) => (
+                  <Row
                     key={requirement.id}
-                    borderBottomWidth={1}
-                    borderBottomColor="$borderColor"
-                    hoverStyle={{ backgroundColor: '$backgroundHover' }}
-                    padding="$3"
-                    alignItems="center"
+                    style={{
+                      borderBottom: '1px solid var(--color-border)',
+                      padding: 12,
+                      alignItems: 'center',
+                    }}
                   >
-                    <Text flex={1} paddingHorizontal="$4" fontWeight="500" color="$color12">{requirement.name}</Text>
-                    <XStack flex={1} paddingHorizontal="$4" alignItems="center" gap="$2">
+                    <Text style={{ flex: 1, paddingLeft: 16, paddingRight: 16, fontWeight: 500, color: 'var(--color-color12)' }}>{requirement.name}</Text>
+                    <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16, alignItems: 'center', gap: 8 }}>
                       <Text
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor="$gray2"
-                        color="$gray11"
-                        fontSize="$2"
-                        fontWeight="500"
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 4,
+                          backgroundColor: 'var(--color-gray2)',
+                          color: 'var(--color-gray11)',
+                          fontSize: 12,
+                          fontWeight: 500,
+                        }}
                       >
                           {COVERAGE_TYPE_CONFIG[requirement.coverage_type].shortLabel}
                       </Text>
-                      <Text color="$color11">
+                      <Text style={{ color: 'var(--color-color11)' }}>
                           {COVERAGE_TYPE_CONFIG[requirement.coverage_type].label}
                       </Text>
-                    </XStack>
-                    <Text flex={1} paddingHorizontal="$4" fontFamily="$mono" color="$color12">
+                    </Row>
+                    <Text style={{ flex: 1, paddingLeft: 16, paddingRight: 16, fontFamily: 'monospace', color: 'var(--color-color12)' }}>
                         {formatCurrency(requirement.minimum_limit)}
                     </Text>
-                    <XStack flex={1} paddingHorizontal="$4">
+                    <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16 }}>
                       <Text
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius={9999}
-                        fontSize="$2"
-                        fontWeight="600"
-                        backgroundColor="$purple2"
-                        color="$purple11"
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 9999,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          backgroundColor: 'var(--color-purple2)',
+                          color: 'var(--color-purple11)',
+                        }}
                       >
                         PROJECT
                       </Text>
-                    </XStack>
-                    <XStack flex={1} paddingHorizontal="$4">
+                    </Row>
+                    <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16 }}>
                       <Text
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius={9999}
-                        fontSize="$2"
-                        fontWeight="500"
-                        backgroundColor={requirement.required ? '$green2' : '$gray2'}
-                        color={requirement.required ? '$green11' : '$gray11'}
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 9999,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          backgroundColor: requirement.required ? 'var(--color-green2)' : 'var(--color-gray2)',
+                          color: requirement.required ? 'var(--color-green11)' : 'var(--color-gray11)',
+                        }}
                       >
                         {requirement.required ? 'Required' : 'Optional'}
                       </Text>
-                    </XStack>
-                    <XStack flex={1} paddingHorizontal="$4" alignItems="center" justifyContent="flex-end" gap="$2">
+                    </Row>
+                    <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16, alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
                       <Button
                         variant="ghost"
                         onPress={() => setEditingRequirement(requirement)}
-                        padding="$2"
-                        color="$color10"
-                        hoverStyle={{ color: '$blue10', backgroundColor: '$blue2' }}
-                        borderRadius="$4"
-                          title="Edit"
-                        >
-                          <Edit2 size={16} />
+                        style={{
+                          padding: 8,
+                          color: 'var(--color-color10)',
+                          borderRadius: 8,
+                        }}
+                        title="Edit"
+                      >
+                        <Edit2 size={16} />
                       </Button>
                       <Button
                         variant="ghost"
                         onPress={() => setDeleteConfirm(requirement)}
-                        padding="$2"
-                        color="$color10"
-                        hoverStyle={{ color: '$red10', backgroundColor: '$red2' }}
-                        borderRadius="$4"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
+                        style={{
+                          padding: 8,
+                          color: 'var(--color-color10)',
+                          borderRadius: 8,
+                        }}
+                        title="Delete"
+                      >
+                        <Trash2 size={16} />
                       </Button>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 ))
               )}
-            </YStack>
-          </YStack>
-        </YStack>
+            </Stack>
+          </Stack>
+        </Stack>
       </CardCommon>
 
       {/* Inherited Org Requirements (Read-only) */}
       <CardCommon>
-        <YStack
-          paddingHorizontal="$4"
-          paddingVertical="$3"
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
-          backgroundColor="$blue2"
-          opacity={0.5}
-          cursor="pointer"
+        <Stack
           onPress={() => setShowOrgRequirements(!showOrgRequirements)}
+          style={{
+            paddingLeft: 16,
+            paddingRight: 16,
+            paddingTop: 12,
+            paddingBottom: 12,
+            borderBottom: '1px solid var(--color-border)',
+            backgroundColor: 'var(--color-blue2)',
+            opacity: 0.5,
+            cursor: 'pointer',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <XStack alignItems="center" gap="$2">
-              <Building2 size={18} color="$blue10" />
-              <H2 fontSize="$5" fontWeight="600" color="$color12">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Row style={{ alignItems: 'center', gap: 8 }}>
+              <Building2 size={18} color="var(--color-blue10)" />
+              <H2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-color12)' }}>
                 Inherited Organization Requirements
               </H2>
-              <Text fontSize="$3" color="$color11">
+              <Text style={{ fontSize: 14, color: 'var(--color-color11)' }}>
                 ({filteredOrgRequirements.length})
               </Text>
-            </XStack>
-            <Text fontSize="$3" color="$color10">
+            </Row>
+            <Text style={{ fontSize: 14, color: 'var(--color-color10)' }}>
               {showOrgRequirements ? 'Hide' : 'Show'}
             </Text>
-          </XStack>
-          <Text fontSize="$3" color="$color10" mt="$1">
+          </Row>
+          <Text style={{ fontSize: 14, color: 'var(--color-color10)', marginTop: 4 }}>
             These org-level requirements also apply to this project (read-only)
           </Text>
-        </YStack>
+        </Stack>
         {showOrgRequirements && (
-          <YStack overflowX="auto">
-            <YStack>
-              <XStack padding="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
-                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
-                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
-                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
-                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
-                <Text flex={1} style={{ textAlign: 'left' }} paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
-              </XStack>
-              <YStack>
+          <Stack style={{ overflowX: 'auto' }}>
+            <Stack>
+              <Row style={{ padding: 16, paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid var(--color-border)' }}>
+                <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Name</Text>
+                <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Coverage Type</Text>
+                <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Minimum Limit</Text>
+                <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Level</Text>
+                <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Status</Text>
+              </Row>
+              <Stack>
                 {filteredOrgRequirements.length === 0 ? (
-                  <XStack padding="$4" paddingVertical="$6" justifyContent="center" alignItems="center">
-                    <Text color="$color10">No org-level requirements found</Text>
-                  </XStack>
+                  <Row style={{ padding: 16, paddingTop: 24, paddingBottom: 24, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: 'var(--color-color10)' }}>No org-level requirements found</Text>
+                  </Row>
                 ) : (
-                  filteredOrgRequirements.map((requirement, idx) => (
-                    <XStack
+                  filteredOrgRequirements.map((requirement) => (
+                    <Row
                       key={requirement.id}
-                      borderBottomWidth={1}
-                      borderBottomColor="$borderColor"
-                      backgroundColor="$gray2"
-                      opacity={0.3}
-                      padding="$3"
-                      alignItems="center"
+                      style={{
+                        borderBottom: '1px solid var(--color-border)',
+                        backgroundColor: 'var(--color-gray2)',
+                        opacity: 0.3,
+                        padding: 12,
+                        alignItems: 'center',
+                      }}
                     >
-                      <Text flex={1} paddingHorizontal="$4" color="$color11">{requirement.name}</Text>
-                      <XStack flex={1} paddingHorizontal="$4" alignItems="center" gap="$2">
+                      <Text style={{ flex: 1, paddingLeft: 16, paddingRight: 16, color: 'var(--color-color11)' }}>{requirement.name}</Text>
+                      <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16, alignItems: 'center', gap: 8 }}>
                         <Text
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
-                          backgroundColor="$gray2"
-                          color="$gray11"
-                          fontSize="$2"
-                          fontWeight="500"
+                          style={{
+                            paddingLeft: 8,
+                            paddingRight: 8,
+                            paddingTop: 4,
+                            paddingBottom: 4,
+                            borderRadius: 4,
+                            backgroundColor: 'var(--color-gray2)',
+                            color: 'var(--color-gray11)',
+                            fontSize: 12,
+                            fontWeight: 500,
+                          }}
                         >
                             {COVERAGE_TYPE_CONFIG[requirement.coverage_type].shortLabel}
                         </Text>
-                        <Text color="$color10">
+                        <Text style={{ color: 'var(--color-color10)' }}>
                             {COVERAGE_TYPE_CONFIG[requirement.coverage_type].label}
                         </Text>
-                      </XStack>
-                      <Text flex={1} paddingHorizontal="$4" fontFamily="$mono" color="$color11">
+                      </Row>
+                      <Text style={{ flex: 1, paddingLeft: 16, paddingRight: 16, fontFamily: 'monospace', color: 'var(--color-color11)' }}>
                           {formatCurrency(requirement.minimum_limit)}
                       </Text>
-                      <XStack flex={1} paddingHorizontal="$4">
+                      <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16 }}>
                         <Text
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius={9999}
-                          fontSize="$2"
-                          fontWeight="600"
-                          backgroundColor="$blue2"
-                          color="$blue11"
+                          style={{
+                            paddingLeft: 8,
+                            paddingRight: 8,
+                            paddingTop: 4,
+                            paddingBottom: 4,
+                            borderRadius: 9999,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            backgroundColor: 'var(--color-blue2)',
+                            color: 'var(--color-blue11)',
+                          }}
                         >
                           ORG
                         </Text>
-                      </XStack>
-                      <XStack flex={1} paddingHorizontal="$4">
+                      </Row>
+                      <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16 }}>
                         <Text
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius={9999}
-                          fontSize="$2"
-                          fontWeight="500"
-                          backgroundColor={requirement.required ? '$green2' : '$gray2'}
-                          color={requirement.required ? '$green11' : '$gray11'}
+                          style={{
+                            paddingLeft: 8,
+                            paddingRight: 8,
+                            paddingTop: 4,
+                            paddingBottom: 4,
+                            borderRadius: 9999,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            backgroundColor: requirement.required ? 'var(--color-green2)' : 'var(--color-gray2)',
+                            color: requirement.required ? 'var(--color-green11)' : 'var(--color-gray11)',
+                          }}
                         >
                           {requirement.required ? 'Required' : 'Optional'}
                         </Text>
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
                   ))
                 )}
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         )}
       </CardCommon>
 
       {/* Summary Card */}
-      <CardCommon padding="$4">
-        <XStack alignItems="center" justifyContent="space-between" fontSize="$3">
-          <Text color="$color11">
+      <CardCommon style={{ padding: 16 }}>
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between', fontSize: 14 }}>
+          <Text style={{ color: 'var(--color-color11)' }}>
             Total requirements for this project:{' '}
-            <Text fontWeight="600" color="$color12">
+            <Text style={{ fontWeight: 600, color: 'var(--color-color12)' }}>
               {filteredProjectRequirements.length + filteredOrgRequirements.length}
             </Text>{' '}
             ({filteredProjectRequirements.length} project + {filteredOrgRequirements.length} org)
           </Text>
-          <XStack alignItems="center" gap="$4">
-            <Text color="$color11">
+          <Row style={{ alignItems: 'center', gap: 16 }}>
+            <Text style={{ color: 'var(--color-color11)' }}>
               Required:{' '}
-              <Text fontWeight="600" color="$color12">
+              <Text style={{ fontWeight: 600, color: 'var(--color-color12)' }}>
                 {
                   [...filteredProjectRequirements, ...filteredOrgRequirements].filter(
                     (r) => r.required
@@ -632,9 +668,9 @@ export default function ProjectCoverageRequirementsPage({
                 }
               </Text>
             </Text>
-            <Text color="$color11">
+            <Text style={{ color: 'var(--color-color11)' }}>
               Optional:{' '}
-              <Text fontWeight="600" color="$color12">
+              <Text style={{ fontWeight: 600, color: 'var(--color-color12)' }}>
                 {
                   [...filteredProjectRequirements, ...filteredOrgRequirements].filter(
                     (r) => !r.required
@@ -642,8 +678,8 @@ export default function ProjectCoverageRequirementsPage({
                 }
               </Text>
             </Text>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       </CardCommon>
 
       {/* Create Modal */}
@@ -686,26 +722,26 @@ export default function ProjectCoverageRequirementsPage({
         title="Delete Project Requirement"
         size="sm"
       >
-        <YStack gap="$4">
-          <Text color="$color11">
+        <Stack style={{ gap: 16 }}>
+          <Text style={{ color: 'var(--color-color11)' }}>
             Are you sure you want to delete{' '}
-            <Text fontWeight="600" color="$color12">{deleteConfirm?.name}</Text>? This
+            <Text style={{ fontWeight: 600, color: 'var(--color-color12)' }}>{deleteConfirm?.name}</Text>? This
             action cannot be undone and may affect compliance calculations for this project.
           </Text>
-          <XStack justifyContent="flex-end" gap="$3">
+          <Row style={{ justifyContent: 'flex-end', gap: 12 }}>
             <ButtonCommon
               variant="ghost"
-              onClick={() => setDeleteConfirm(null)}
+              onPress={() => setDeleteConfirm(null)}
               disabled={isSubmitting}
             >
               Cancel
             </ButtonCommon>
-            <ButtonCommon variant="danger" onClick={handleDelete} disabled={isSubmitting}>
+            <ButtonCommon variant="danger" onPress={handleDelete} disabled={isSubmitting}>
               {isSubmitting ? 'Deleting...' : 'Delete'}
             </ButtonCommon>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Modal>
-    </YStack>
+    </Stack>
   );
 }

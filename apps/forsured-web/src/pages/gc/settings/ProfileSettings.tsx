@@ -1,7 +1,7 @@
 // src/pages/gc/settings/ProfileSettings.tsx
 // REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2, Input } from '@unicornlove/ui';
+import { Stack, Text, Button, H2, Input } from '@unicornlove/beyond-ui';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSettings } from '../../../hooks/useSettings';
 import { useLexicon } from '../../../contexts/LexiconContext';
@@ -49,22 +49,22 @@ function GCProfileSettings() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Profile Settings</H2>
-        <YStack gap="$4">
-          <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
-          <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
-          <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
-        </YStack>
-      </YStack>
+        <Stack style={{ gap: 'var(--space-4)' }}>
+          <Stack style={{ height: 40, backgroundColor: 'var(--color-3)', borderRadius: 'var(--radius-4)' }} />
+          <Stack style={{ height: 40, backgroundColor: 'var(--color-3)', borderRadius: 'var(--radius-4)' }} />
+          <Stack style={{ height: 40, backgroundColor: 'var(--color-3)', borderRadius: 'var(--radius-4)' }} />
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Profile Settings</H2>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Input
             label="Name"
             type="text"
@@ -83,7 +83,7 @@ function GCProfileSettings() {
             label="Phone"
             type="tel"
             value={phone}
-            onChangeText={setPhone}
+            onChange={(e) => setPhone(e.target.value)}
             placeholder="Enter phone number"
           />
           <Input
@@ -102,12 +102,13 @@ function GCProfileSettings() {
             type="submit"
             disabled={!isDirty || isSaving}
             variant="primary"
+            style={{ marginTop: 'var(--space-6)' }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

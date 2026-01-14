@@ -126,8 +126,31 @@
     },
     {
       "includes": [
-        "**/packages/beyond-ui/src/components/**/*.ts",
-        "**/packages/beyond-ui/src/components/**/*.tsx"
+        "packages/beyond-ui/src/**/*.ts",
+        "packages/beyond-ui/src/**/*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noSvgWithoutTitle": "warn"
+          },
+          "correctness": {
+            "noUnusedFunctionParameters": "warn",
+            "noUnusedVariables": "warn",
+            "noInvalidUseBeforeDeclaration": "warn",
+            "useHookAtTopLevel": "warn"
+          },
+          "suspicious": {
+            "noExplicitAny": "warn",
+            "noArrayIndexKey": "warn",
+            "useIterableCallbackReturn": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "packages/scaffald-cli/src/**/*.ts"
       ],
       "linter": {
         "rules": {

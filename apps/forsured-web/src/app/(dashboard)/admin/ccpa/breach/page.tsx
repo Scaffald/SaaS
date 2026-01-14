@@ -12,23 +12,23 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { YStack, XStack, Text, Button, Card, H2, H3, Spinner } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Card, Heading, Spinner, colors, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'
 
 // Color mappings
 const SEVERITY_COLORS: Record<string, { bg: string; text: string }> = {
-  critical: { bg: '$red2', text: '$red11' },
-  high: { bg: '$orange2', text: '$orange11' },
-  medium: { bg: '$yellow2', text: '$yellow11' },
-  low: { bg: '$gray2', text: '$gray11' },
+  critical: { bg: colors.error[200], text: colors.error[600] },
+  high: { bg: colors.warning[200], text: colors.warning[600] },
+  medium: { bg: colors.warning[200], text: colors.warning[600] },
+  low: { bg: colors.gray[100], text: colors.text.light.secondary },
 }
 
 const REMEDIATION_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  not_started: { bg: '$gray2', text: '$gray11' },
-  in_progress: { bg: '$blue2', text: '$blue11' },
-  completed: { bg: '$green2', text: '$green11' },
-  ongoing_monitoring: { bg: '$purple2', text: '$purple11' },
+  not_started: { bg: colors.gray[100], text: colors.text.light.secondary },
+  in_progress: { bg: colors.primary[200], text: colors.primary[600] },
+  completed: { bg: colors.success[200], text: colors.success[600] },
+  ongoing_monitoring: { bg: colors.purple[200], text: colors.purple[600] },
 }
 
 const BREACH_TYPE_LABELS: Record<string, string> = {
@@ -79,57 +79,58 @@ export default function CCPABreachListPage() {
   }, [])
 
   const getDeadlineStatus = useCallback((hoursToDeadline: number | null, notificationSent: boolean) => {
-    if (notificationSent) return { color: '$green11', text: 'Notified' }
-    if (hoursToDeadline === null) return { color: '$gray11', text: 'N/A' }
-    if (hoursToDeadline < 0) return { color: '$red11', text: `${Math.abs(hoursToDeadline)}h overdue` }
-    if (hoursToDeadline <= 24) return { color: '$red11', text: `${hoursToDeadline}h remaining` }
-    if (hoursToDeadline <= 48) return { color: '$orange11', text: `${hoursToDeadline}h remaining` }
-    return { color: '$green11', text: `${hoursToDeadline}h remaining` }
+    if (notificationSent) return { color: colors.success[600], text: 'Notified' }
+    if (hoursToDeadline === null) return { color: colors.text.light.secondary, text: 'N/A' }
+    if (hoursToDeadline < 0) return { color: colors.error[600], text: `${Math.abs(hoursToDeadline)}h overdue` }
+    if (hoursToDeadline <= 24) return { color: colors.error[600], text: `${hoursToDeadline}h remaining` }
+    if (hoursToDeadline <= 48) return { color: colors.warning[600], text: `${hoursToDeadline}h remaining` }
+    return { color: colors.success[600], text: `${hoursToDeadline}h remaining` }
   }, [])
 
   // Loading state
   if (isLoading) {
     return (
-      <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
-        <YStack alignItems="center" justifyContent="center" minHeight={400}>
-          <Spinner size="large" />
-          <Text color="$gray11" marginTop="$4">
+      <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+          <Spinner size="lg" />
+          <Text color={colors.text.light.secondary} style={{ marginTop: spacing[16] }}>
             Loading breach incidents...
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
-        <YStack
-          padding="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
+      <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
+        <Stack
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
         >
-          <Text fontWeight="600" color="$red11">
+          <Text weight="semibold" color={colors.error[600]}>
             Error loading breach incidents
           </Text>
-          <Text color="$red10" fontSize="$2" marginTop="$2">
+          <Text color={colors.error[500]} size="xs" style={{ marginTop: spacing[8] }}>
             {error.message || 'Failed to load data. Please try again.'}
           </Text>
           <Button
-            marginTop="$3"
-            size="$3"
-            backgroundColor="$red9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$red10' }}
+            style={{ marginTop: spacing[12] }}
+            size="sm"
+            color="error"
+            variant="filled"
             onPress={() => refetch()}
           >
             Retry
           </Button>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
@@ -146,320 +147,319 @@ export default function CCPABreachListPage() {
   ).length
 
   return (
-    <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
+    <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <YStack>
-          <H2 marginBottom="$2">Breach Notifications</H2>
-          <Text color="$gray11">
+      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[24] }}>
+        <Stack>
+          <Heading level={2} style={{ marginBottom: spacing[8] }}>Breach Notifications</Heading>
+          <Text color={colors.text.light.secondary}>
             {totalCount} total incident{totalCount !== 1 ? 's' : ''} tracked
           </Text>
-        </YStack>
-        <XStack gap="$2">
+        </Stack>
+        <Row gap={spacing[8]}>
           <Button
-            backgroundColor="$gray3"
-            color="$gray11"
-            hoverStyle={{ backgroundColor: '$gray4' }}
+            variant="outline"
+            color="gray"
             onPress={() => router.push('/admin/ccpa')}
           >
             Back to Dashboard
           </Button>
           <Button
-            backgroundColor="$red9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$red10' }}
+            color="error"
+            variant="filled"
             onPress={() => router.push('/admin/ccpa/breach/new')}
           >
             Report New Breach
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Summary Stats */}
-      <XStack gap="$4" marginBottom="$6" flexWrap="wrap">
-        <Card padding="$4" flex={1} minWidth={180}>
-          <Text color="$gray11" fontSize="$2" marginBottom="$1">
+      <Row gap={spacing[16]} style={{ marginBottom: spacing[24], flexWrap: 'wrap' }}>
+        <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
+          <Text color={colors.text.light.secondary} size="xs" style={{ marginBottom: spacing[4] }}>
             Total Incidents
           </Text>
-          <Text fontSize="$8" fontWeight="700" color="$gray12">
+          <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.text.light.primary}>
             {totalCount}
           </Text>
         </Card>
-        <Card padding="$4" flex={1} minWidth={180} backgroundColor="$red2">
-          <Text color="$red11" fontSize="$2" marginBottom="$1">
+        <Card style={{ padding: spacing[16], flex: 1, minWidth: 180, backgroundColor: colors.error[200] }}>
+          <Text color={colors.error[600]} size="xs" style={{ marginBottom: spacing[4] }}>
             Critical Severity
           </Text>
-          <Text fontSize="$8" fontWeight="700" color="$red11">
+          <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.error[600]}>
             {criticalCount}
           </Text>
         </Card>
-        <Card padding="$4" flex={1} minWidth={180} backgroundColor="$orange2">
-          <Text color="$orange11" fontSize="$2" marginBottom="$1">
+        <Card style={{ padding: spacing[16], flex: 1, minWidth: 180, backgroundColor: colors.warning[200] }}>
+          <Text color={colors.warning[600]} size="xs" style={{ marginBottom: spacing[4] }}>
             Pending Notification
           </Text>
-          <Text fontSize="$8" fontWeight="700" color="$orange11">
+          <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.warning[600]}>
             {pendingNotificationCount}
           </Text>
         </Card>
-        <Card padding="$4" flex={1} minWidth={180} backgroundColor="$red2">
-          <Text color="$red11" fontSize="$2" marginBottom="$1">
+        <Card style={{ padding: spacing[16], flex: 1, minWidth: 180, backgroundColor: colors.error[200] }}>
+          <Text color={colors.error[600]} size="xs" style={{ marginBottom: spacing[4] }}>
             Overdue (72h)
           </Text>
-          <Text fontSize="$8" fontWeight="700" color="$red11">
+          <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.error[600]}>
             {overdueCount}
           </Text>
         </Card>
-      </XStack>
+      </Row>
 
       {/* Filters */}
-      <Card padding="$4" marginBottom="$4">
-        <XStack flexWrap="wrap" gap="$4" alignItems="flex-end">
-          <YStack>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+      <Card style={{ padding: spacing[16], marginBottom: spacing[16] }}>
+        <Row style={{ flexWrap: 'wrap', gap: spacing[16], alignItems: 'flex-end' }}>
+          <Stack>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Severity
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               {['all', 'critical', 'high', 'medium', 'low'].map((severity) => (
                 <Button
                   key={severity}
                   onPress={() => setSeverityFilter(severity)}
-                  size="$2"
-                  backgroundColor={severityFilter === severity ? '$blue9' : '$gray3'}
-                  color={severityFilter === severity ? 'white' : '$gray11'}
-                  hoverStyle={{ backgroundColor: severityFilter === severity ? '$blue10' : '$gray4' }}
+                  size="xs"
+                  color={severityFilter === severity ? 'primary' : 'gray'}
+                  variant={severityFilter === severity ? 'filled' : 'outline'}
                 >
                   {severity.charAt(0).toUpperCase() + severity.slice(1)}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
-          <YStack>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Stack>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Notification Status
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               <Button
                 onPress={() => setNotificationFilter('all')}
-                size="$2"
-                backgroundColor={notificationFilter === 'all' ? '$blue9' : '$gray3'}
-                color={notificationFilter === 'all' ? 'white' : '$gray11'}
-                hoverStyle={{ backgroundColor: notificationFilter === 'all' ? '$blue10' : '$gray4' }}
+                size="xs"
+                color={notificationFilter === 'all' ? 'primary' : 'gray'}
+                variant={notificationFilter === 'all' ? 'filled' : 'outline'}
               >
                 All
               </Button>
               <Button
                 onPress={() => setNotificationFilter('required')}
-                size="$2"
-                backgroundColor={notificationFilter === 'required' ? '$blue9' : '$gray3'}
-                color={notificationFilter === 'required' ? 'white' : '$gray11'}
-                hoverStyle={{ backgroundColor: notificationFilter === 'required' ? '$blue10' : '$gray4' }}
+                size="xs"
+                color={notificationFilter === 'required' ? 'primary' : 'gray'}
+                variant={notificationFilter === 'required' ? 'filled' : 'outline'}
               >
                 Notification Required
               </Button>
-            </XStack>
-          </YStack>
-        </XStack>
+            </Row>
+          </Stack>
+        </Row>
       </Card>
 
       {/* Breaches Table */}
-      <Card overflow="hidden">
-        <YStack>
+      <Card style={{ overflow: 'hidden' }}>
+        <Stack>
           {/* Table Header */}
-          <XStack backgroundColor="$gray2" paddingHorizontal="$4" paddingVertical="$3">
-            <Text width={120} fontSize="$2" fontWeight="500" color="$gray11">
+          <Row style={{ backgroundColor: colors.gray[100], paddingHorizontal: spacing[16], paddingVertical: spacing[12] }}>
+            <Text style={{ width: 120 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               ID
             </Text>
-            <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Type
             </Text>
-            <Text width={100} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 100 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Severity
             </Text>
-            <Text width={100} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 100 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Affected
             </Text>
-            <Text width={150} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 150 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               72h Deadline
             </Text>
-            <Text width={120} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 120 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Remediation
             </Text>
-            <Text width={150} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 150 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Discovered
             </Text>
-            <Text width={100} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 100 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Actions
             </Text>
-          </XStack>
+          </Row>
 
           {/* Table Body */}
           {breaches.length === 0 ? (
-            <YStack padding="$8" alignItems="center">
-              <Text fontSize="$6" color="$gray8" marginBottom="$2">
+            <Stack style={{ padding: spacing[32], alignItems: 'center' }}>
+              <Text style={{ fontSize: 24 }} color={colors.gray[300]} style={{ marginBottom: spacing[8] }}>
                 No breach incidents found
               </Text>
-              <Text color="$gray11" textAlign="center">
+              <Text color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
                 No breach incidents match your current filters.
               </Text>
-            </YStack>
+            </Stack>
           ) : (
-            <YStack>
+            <Stack>
               {breaches.map((breach) => {
                 const deadlineStatus = getDeadlineStatus(
                   breach.hoursToDeadline,
                   breach.userNotificationSent
                 )
                 return (
-                  <XStack
+                  <Row
                     key={breach.id}
-                    backgroundColor={
-                      breach.hoursToDeadline !== null &&
-                      breach.hoursToDeadline < 0 &&
-                      !breach.userNotificationSent
-                        ? '$red2'
-                        : 'transparent'
-                    }
-                    paddingHorizontal="$4"
-                    paddingVertical="$3"
-                    borderBottomWidth={1}
-                    borderColor="$borderColor"
-                    hoverStyle={{ backgroundColor: '$gray2' }}
-                    alignItems="center"
+                    style={{
+                      backgroundColor:
+                        breach.hoursToDeadline !== null &&
+                        breach.hoursToDeadline < 0 &&
+                        !breach.userNotificationSent
+                          ? colors.error[200]
+                          : 'transparent',
+                      paddingHorizontal: spacing[16],
+                      paddingVertical: spacing[12],
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.border.light.default,
+                      alignItems: 'center',
+                    }}
                   >
                     {/* ID */}
-                    <Text width={120} fontSize="$2" fontWeight="500" color="$blue11">
+                    <Text style={{ width: 120 }} size="xs" weight="medium" color={colors.primary[600]}>
                       {breach.breachNumber}
                     </Text>
 
                     {/* Type */}
-                    <YStack flex={1}>
-                      <Text fontWeight="500" color="$gray12">
+                    <Stack style={{ flex: 1 }}>
+                      <Text weight="medium" color={colors.text.light.primary}>
                         {BREACH_TYPE_LABELS[breach.breachType] ?? breach.breachType}
                       </Text>
-                      <Text fontSize="$1" color="$gray11">
+                      <Text size="xs" color={colors.text.light.secondary}>
                         {breach.dataTypesExposed?.slice(0, 3).join(', ')}
                         {(breach.dataTypesExposed?.length ?? 0) > 3 ? '...' : ''}
                       </Text>
-                    </YStack>
+                    </Stack>
 
                     {/* Severity */}
-                    <XStack width={100} alignItems="center">
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={SEVERITY_COLORS[breach.severity]?.bg ?? '$gray2'}
+                    <Row style={{ width: 100, alignItems: 'center' }}>
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor: SEVERITY_COLORS[breach.severity]?.bg ?? colors.gray[100],
+                        }}
                       >
                         <Text
-                          fontSize="$2"
-                          fontWeight="500"
-                          color={SEVERITY_COLORS[breach.severity]?.text ?? '$gray11'}
+                          size="xs"
+                          weight="medium"
+                          color={SEVERITY_COLORS[breach.severity]?.text ?? colors.text.light.secondary}
                         >
                           {breach.severity.toUpperCase()}
                         </Text>
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
 
                     {/* Affected */}
-                    <YStack width={100}>
-                      <Text fontSize="$2" fontWeight="500" color="$gray12">
+                    <Stack style={{ width: 100 }}>
+                      <Text size="xs" weight="medium" color={colors.text.light.primary}>
                         {breach.affectedUserCount} users
                       </Text>
-                      <Text fontSize="$1" color="$gray11">
+                      <Text size="xs" color={colors.text.light.secondary}>
                         {breach.affectedCaliforniaResidents} CA
                       </Text>
-                    </YStack>
+                    </Stack>
 
                     {/* 72h Deadline */}
-                    <XStack width={150} alignItems="center">
+                    <Row style={{ width: 150, alignItems: 'center' }}>
                       {breach.notificationRequired ? (
-                        <Text fontSize="$2" fontWeight="500" color={deadlineStatus.color}>
+                        <Text size="xs" weight="medium" color={deadlineStatus.color}>
                           {deadlineStatus.text}
                         </Text>
                       ) : (
-                        <Text fontSize="$2" color="$gray11">
+                        <Text size="xs" color={colors.text.light.secondary}>
                           Not required
                         </Text>
                       )}
-                    </XStack>
+                    </Row>
 
                     {/* Remediation */}
-                    <XStack width={120} alignItems="center">
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={
-                          REMEDIATION_STATUS_COLORS[breach.remediationStatus ?? 'not_started']?.bg ??
-                          '$gray2'
-                        }
+                    <Row style={{ width: 120, alignItems: 'center' }}>
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor:
+                            REMEDIATION_STATUS_COLORS[breach.remediationStatus ?? 'not_started']?.bg ??
+                            colors.gray[100],
+                        }}
                       >
                         <Text
-                          fontSize="$2"
+                          size="xs"
                           color={
                             REMEDIATION_STATUS_COLORS[breach.remediationStatus ?? 'not_started']
-                              ?.text ?? '$gray11'
+                              ?.text ?? colors.text.light.secondary
                           }
                         >
                           {(breach.remediationStatus ?? 'not_started').replace(/_/g, ' ')}
                         </Text>
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
 
                     {/* Discovered */}
-                    <XStack width={150} alignItems="center">
-                      <Text fontSize="$2" color="$gray11">
+                    <Row style={{ width: 150, alignItems: 'center' }}>
+                      <Text size="xs" color={colors.text.light.secondary}>
                         {formatDate(breach.discoveredAt)}
                       </Text>
-                    </XStack>
+                    </Row>
 
                     {/* Actions */}
-                    <XStack width={100} alignItems="center">
+                    <Row style={{ width: 100, alignItems: 'center' }}>
                       <Button
-                        size="$2"
-                        backgroundColor="$blue9"
-                        color="white"
-                        hoverStyle={{ backgroundColor: '$blue10' }}
+                        size="xs"
+                        color="primary"
+                        variant="filled"
                         onPress={() => router.push(`/admin/ccpa/breach/${breach.id}`)}
                       >
                         View
                       </Button>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 )
               })}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Help Text */}
       <Card
-        padding="$4"
-        marginTop="$6"
-        backgroundColor="$orange2"
-        borderWidth={1}
-        borderColor="$orange6"
+        style={{
+          padding: spacing[16],
+          marginTop: spacing[24],
+          backgroundColor: colors.warning[200],
+          borderWidth: 1,
+          borderColor: colors.warning[400],
+        }}
       >
-        <H3 marginBottom="$2" color="$orange11">
+        <Heading level={3} style={{ marginBottom: spacing[8] }} color={colors.warning[600]}>
           CCPA 72-Hour Notification Requirement
-        </H3>
-        <Text color="$orange10" fontSize="$2">
+        </Heading>
+        <Text color={colors.warning[500]} size="xs">
           Under CCPA, if a data breach affects more than 500 California residents, you must notify:
         </Text>
-        <YStack marginTop="$2" gap="$1">
-          <Text color="$orange10" fontSize="$2">
+        <Stack style={{ marginTop: spacing[8] }} gap={spacing[4]}>
+          <Text color={colors.warning[500]} size="xs">
             - Affected users within 72 hours of discovery
           </Text>
-          <Text color="$orange10" fontSize="$2">
+          <Text color={colors.warning[500]} size="xs">
             - California Attorney General if &gt;500 CA residents affected
           </Text>
-          <Text color="$orange10" fontSize="$2">
+          <Text color={colors.warning[500]} size="xs">
             - Law enforcement if criminal activity suspected
           </Text>
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

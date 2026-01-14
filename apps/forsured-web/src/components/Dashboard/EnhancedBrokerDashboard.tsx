@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * EnhancedBrokerDashboard - Broker dashboard using Beyond UI
+ * Migrated from Tamagui to Beyond UI
+ */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RefreshCw, Filter, Users } from 'lucide-react'
-import { EmptyState, YStack, XStack, Text } from '@unicornlove/ui'
+import { Stack, Row, Text } from '@unicornlove/beyond-ui'
+import { EmptyState } from '../../ui/EmptyState'
 import { useLexicon } from '../../contexts/LexiconContext'
 import { useClients } from '../../hooks/useClients'
 import { usePolicies } from '../../hooks/usePolicies'
@@ -80,13 +85,13 @@ export default function EnhancedBrokerDashboard() {
   if (clients.length === 0) {
     return (
       <>
-        <YStack gap="$6">
-          <YStack>
-            <Text fontSize="$8" fontWeight="700" color="$color12">
+        <Stack gap={24}>
+          <Stack>
+            <Text size="2xl" weight="bold">
               {t('nav.dashboard')}
             </Text>
-            <Text color="$color11">Comprehensive compliance and task management</Text>
-          </YStack>
+            <Text muted>Comprehensive compliance and task management</Text>
+          </Stack>
           <EmptyState
             icon={Users}
             title="No Clients Yet"
@@ -96,7 +101,7 @@ export default function EnhancedBrokerDashboard() {
               onClick: () => setIsClientModalOpen(true),
             }}
           />
-        </YStack>
+        </Stack>
         <ClientModal
           isOpen={isClientModalOpen}
           onClose={() => setIsClientModalOpen(false)}
@@ -108,26 +113,29 @@ export default function EnhancedBrokerDashboard() {
 
   return (
     <>
-      <YStack gap="$6">
-        <XStack alignItems="center" justifyContent="space-between">
-          <YStack>
-            <Text fontSize="$8" fontWeight="700" color="$color12">
+      <Stack gap={24}>
+        <Row alignItems="center" justifyContent="space-between">
+          <Stack>
+            <Text size="2xl" weight="bold">
               {t('nav.dashboard')}
             </Text>
-            <Text color="$color11">Comprehensive compliance and task management</Text>
-          </YStack>
-          <XStack alignItems="center" gap="$3">
-            <XStack
+            <Text muted>Comprehensive compliance and task management</Text>
+          </Stack>
+          <Row alignItems="center" gap={12}>
+            <Row
               alignItems="center"
-              gap="$2"
-              backgroundColor="$background"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              paddingHorizontal="$4"
-              paddingVertical="$2"
+              gap={8}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 8,
+                paddingLeft: 16,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+              }}
             >
-              <Filter size={18} color="var(--color11)" />
+              <Filter size={18} />
               <select
                 value={projectFilter}
                 onChange={(e) => setProjectFilter(e.target.value)}
@@ -135,7 +143,7 @@ export default function EnhancedBrokerDashboard() {
                   background: 'transparent',
                   outline: 'none',
                   fontSize: '14px',
-                  color: 'var(--color12)',
+                  color: 'var(--color-text)',
                   border: 'none',
                 }}
               >
@@ -146,15 +154,15 @@ export default function EnhancedBrokerDashboard() {
                   </option>
                 ))}
               </select>
-            </XStack>
-            <Button variant="ghost" onClick={fetchClients}>
-              <XStack alignItems="center" gap="$2">
+            </Row>
+            <Button variant="ghost" onPress={fetchClients}>
+              <Row alignItems="center" gap={8}>
                 <RefreshCw size={18} />
                 <Text>Refresh</Text>
-              </XStack>
+              </Row>
             </Button>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
         <ComplianceOverviewWidget
           clients={filteredClients}
@@ -175,7 +183,7 @@ export default function EnhancedBrokerDashboard() {
           policies={policies}
           onClientClick={(client: BrokerClient) => navigate(`/broker/clients/${client.id}`)}
         />
-      </YStack>
+      </Stack>
 
       <TaskModal
         isOpen={isTaskModalOpen}

@@ -12,9 +12,9 @@
 
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Search, Users as UsersIcon } from 'lucide-react';
-import { YStack, XStack, Text, Input, Button, Card, SizableText } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, Button, Input } from '@unicornlove/beyond-ui';
 import { TeamMemberCard, type TeamMember } from './TeamMemberCard';
 
 type RoleFilter = 'all' | TeamMember['role'];
@@ -99,96 +99,80 @@ export function TeamMembersList({
   // Loading skeleton
   if (loading) {
     return (
-      <YStack gap="$4">
+      <Stack gap="md">
         {/* Search and Filter Bar */}
-        <XStack
-          flexDirection="column"
-          $gtSm={{ flexDirection: 'row' }}
-          gap="$4"
-        >
-          <YStack flex={1}>
-            <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
-          </YStack>
-          <YStack width={160} $gtSm={{ width: 160 }}>
-            <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
-          </YStack>
-        </XStack>
+        <Row style={{ flexDirection: 'column', flexWrap: 'wrap', gap: 16 }}>
+          <Stack style={{ flex: 1 }}>
+            <div style={{ height: 40, backgroundColor: 'var(--color-gray-3)', borderRadius: 8 }} />
+          </Stack>
+          <Stack style={{ width: 160 }}>
+            <div style={{ height: 40, backgroundColor: 'var(--color-gray-3)', borderRadius: 8 }} />
+          </Stack>
+        </Row>
 
         {/* Skeleton Cards */}
-        <XStack flexWrap="wrap" gap="$4">
+        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Card
               key={i}
-              backgroundColor="$background"
-              borderRadius="$4"
-              elevation={1}
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$4"
-              width="100%"
-              $gtMd={{ width: 'calc(50% - 8px)' }}
-              $gtLg={{ width: 'calc(33.333% - 11px)' }}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderRadius: 8,
+                border: '1px solid var(--color-border)',
+                padding: 16,
+                width: '100%',
+                flexWrap: 'wrap',
+              }}
             >
-              <XStack alignItems="flex-start" gap="$3">
-                <YStack width={48} height={48} borderRadius={9999} backgroundColor="$color3" />
-                <YStack flex={1} gap="$2">
-                  <YStack height={16} backgroundColor="$color3" borderRadius="$2" width="75%" />
-                  <YStack height={12} backgroundColor="$color3" borderRadius="$2" width="50%" />
-                </YStack>
-              </XStack>
+              <Row style={{ alignItems: 'flex-start', gap: 12 }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: 'var(--color-gray-3)' }} />
+                <Stack style={{ flex: 1, gap: 8 }}>
+                  <div style={{ height: 16, backgroundColor: 'var(--color-gray-3)', borderRadius: 4, width: '75%' }} />
+                  <div style={{ height: 12, backgroundColor: 'var(--color-gray-3)', borderRadius: 4, width: '50%' }} />
+                </Stack>
+              </Row>
             </Card>
           ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap="md">
       {/* Search and Filter Bar */}
-      <XStack
-        flexDirection="column"
-        $gtSm={{ flexDirection: 'row' }}
-        gap="$4"
-      >
+      <Row style={{ flexDirection: 'column', flexWrap: 'wrap', gap: 16 }}>
         {/* Search Input */}
-        <XStack flex={1} position="relative" alignItems="center">
+        <Row style={{ flex: 1, position: 'relative', alignItems: 'center' }}>
           <Search
             size={20}
             style={{ position: 'absolute', left: 12, zIndex: 1 }}
-            color="var(--color10)"
+            color="var(--color-gray-10)"
           />
           <Input
             type="text"
             placeholder="Search by name, email, or company..."
             value={searchQuery}
             onChange={handleSearchChange}
-            width="100%"
-            paddingLeft="$10"
-            paddingRight="$4"
-            paddingVertical="$2"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            focusStyle={{
-              borderColor: '$blue10',
-              outlineWidth: 2,
-              outlineColor: '$blue10',
+            style={{
+              width: '100%',
+              paddingLeft: 40,
+              paddingRight: 16,
             }}
           />
-        </XStack>
+        </Row>
 
         {/* Role Filter */}
-        <XStack width="100%" $gtSm={{ width: 160 }}>
+        <Row style={{ width: '100%', flexWrap: 'wrap' }}>
           <select
             value={activeRole}
             onChange={(e) => handleRoleChange(e.target.value as RoleFilter)}
             style={{
-              width: '100%',
+              width: 160,
               padding: '8px 12px',
-              border: '1px solid var(--borderColor)',
-              borderRadius: '8px',
-              backgroundColor: 'var(--background)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 8,
+              backgroundColor: 'var(--color-background)',
             }}
             aria-label="Filter by role"
           >
@@ -198,14 +182,14 @@ export function TeamMembersList({
               </option>
             ))}
           </select>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Results Count */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <SizableText fontSize="$3" color="$color10">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 14, color: 'var(--color-gray-10)' }}>
           {filteredMembers.length} member{filteredMembers.length !== 1 ? 's' : ''} found
-        </SizableText>
+        </Text>
         {(searchQuery || activeRole !== 'all') && (
           <Button
             onPress={() => {
@@ -214,54 +198,58 @@ export function TeamMembersList({
               onSearch?.('');
               onRoleFilter?.('all');
             }}
-            variant="outlined"
-            size="$2"
+            variant="outline"
+            size="sm"
           >
             Clear filters
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {/* Member Cards Grid */}
       {filteredMembers.length > 0 ? (
-        <XStack flexWrap="wrap" gap="$4">
+        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
           {filteredMembers.map((member) => (
-            <YStack
+            <Stack
               key={member.id}
-              width="100%"
-              $gtMd={{ width: 'calc(50% - 8px)' }}
-              $gtLg={{ width: 'calc(33.333% - 11px)' }}
+              style={{
+                width: '100%',
+                flexWrap: 'wrap',
+              }}
             >
               <TeamMemberCard
                 member={member}
-                onClick={onMemberClick}
+                onPress={onMemberClick}
                 onEdit={onMemberEdit}
                 onRemove={onMemberRemove}
               />
-            </YStack>
+            </Stack>
           ))}
-        </XStack>
+        </Row>
       ) : (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$12"
-          alignItems="center"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 8,
+            border: '1px solid var(--color-border)',
+            padding: 48,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
         >
-          <UsersIcon size={48} color="var(--color10)" />
-          <Text fontSize="$6" fontWeight="500" color="$color12" mt="$4">
+          <UsersIcon size={48} color="var(--color-gray-10)" />
+          <Text style={{ fontSize: 18, fontWeight: 500, color: 'var(--color-gray-12)', marginTop: 16 }}>
             No team members found
           </Text>
-          <SizableText fontSize="$3" color="$color10" mt="$2" style={{ textAlign: 'center' }}>
+          <Text style={{ fontSize: 14, color: 'var(--color-gray-10)', marginTop: 8, textAlign: 'center' }}>
             {searchQuery || activeRole !== 'all'
               ? 'Try adjusting your search or filters'
               : 'Get started by inviting team members'}
-          </SizableText>
+          </Text>
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

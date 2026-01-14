@@ -22,7 +22,7 @@ import {
   StickyNote,
   Clock
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Card, Input } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { useClients } from '../../hooks/useClients';
 import { useCompliance } from '../../hooks/useCompliance';
 import { useProjects } from '../../hooks/useProjects';
@@ -190,24 +190,24 @@ export default function GCProfilePage() {
 
   if (!gc) {
     return (
-      <YStack gap="$6">
+      <Stack style={{ gap: 'var(--space-6)' }}>
         <Button
           onPress={() => navigate(-1)}
           variant="ghost"
-          icon={<ArrowLeft size={20} />}
+          leftIcon={ArrowLeft}
         >
           Back
         </Button>
-        <YStack alignItems="center" paddingVertical="$12" backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
-          <Building color="$red9" size={64} mb="$4" />
-          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
+        <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)' }}>
+          <Building color="var(--color-red-9)" size={64} style={{ marginBottom: 'var(--space-4)' }} />
+          <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)' }}>
             GC Not Found
-          </H3>
-          <Text color="$color11">
+          </h3>
+          <Text style={{ color: 'var(--color-text-secondary)' }}>
             The General Contractor you're looking for doesn't exist or has been deleted.
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
@@ -235,10 +235,10 @@ export default function GCProfilePage() {
   };
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap="$4">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Row style={{ alignItems: 'center', gap: 'var(--space-4)' }}>
           <Button
             variant="ghost"
             onPress={() => navigate('/broker/clients')}
@@ -247,134 +247,143 @@ export default function GCProfilePage() {
           >
             Back to Clients
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* GC Profile Header */}
-      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" overflow="hidden">
-        <YStack padding="$6">
-          <XStack alignItems="flex-start" gap="$4">
-            <XStack
-              width={64}
-              height={64}
-              backgroundColor="$blue3"
-              borderRadius="$4"
-              alignItems="center"
-              justifyContent="center"
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', overflow: 'hidden' }}>
+        <Stack style={{ padding: 'var(--space-6)' }}>
+          <Row style={{ alignItems: 'flex-start', gap: 'var(--space-4)' }}>
+            <Row
+              style={{
+                width: 64,
+                height: 64,
+                backgroundColor: 'var(--color-blue-3)',
+                borderRadius: 'var(--radius-4)',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <Building color="$blue9" size={32} />
-            </XStack>
-            <YStack flex={1}>
-              <XStack alignItems="center" gap="$3">
-                <H1 fontSize="$8" fontWeight="bold" color="$color12">
+              <Building color="var(--color-blue-9)" size={32} />
+            </Row>
+            <Stack style={{ flex: 1 }}>
+              <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+                <h1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>
                   {gc.company_name}
-                </H1>
+                </h1>
                 <Text
-                  paddingHorizontal="$3"
-                  paddingVertical="$1"
-                  borderRadius={9999}
-                  fontSize="$3"
-                  fontWeight="500"
-                  backgroundColor={
-                    stats.avgScore >= 80
-                      ? "$green3"
-                      : stats.avgScore >= 50
-                      ? "$yellow3"
-                      : "$red3"
-                  }
-                  color={
-                    stats.avgScore >= 80
-                      ? "$green10"
-                      : stats.avgScore >= 50
-                      ? "$yellow10"
-                      : "$red10"
-                  }
+                  style={{
+                    paddingLeft: 'var(--space-3)',
+                    paddingRight: 'var(--space-3)',
+                    paddingTop: 'var(--space-1)',
+                    paddingBottom: 'var(--space-1)',
+                    borderRadius: 9999,
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: '500',
+                    backgroundColor:
+                      stats.avgScore >= 80
+                        ? 'var(--color-green-3)'
+                        : stats.avgScore >= 50
+                        ? 'var(--color-yellow-3)'
+                        : 'var(--color-red-3)',
+                    color:
+                      stats.avgScore >= 80
+                        ? 'var(--color-green-10)'
+                        : stats.avgScore >= 50
+                        ? 'var(--color-yellow-10)'
+                        : 'var(--color-red-10)',
+                  }}
                 >
                   {stats.avgScore}% Compliant
                 </Text>
-              </XStack>
-              <Text color="$color11" mt="$1">{gc.address}</Text>
-              <XStack alignItems="center" gap="$4" mt="$2" fontSize="$3" color="$color11">
-                {gc.phone && <Text fontSize="$3" color="$color11">{gc.phone}</Text>}
-                {gc.email && <Text fontSize="$3" color="$color11">{gc.email}</Text>}
-              </XStack>
-            </YStack>
-          </XStack>
-        </YStack>
+              </Row>
+              <Text style={{ color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>{gc.address}</Text>
+              <Row style={{ alignItems: 'center', gap: 'var(--space-4)', marginTop: 'var(--space-2)', fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)' }}>
+                {gc.phone && <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)' }}>{gc.phone}</Text>}
+                {gc.email && <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)' }}>{gc.email}</Text>}
+              </Row>
+            </Stack>
+          </Row>
+        </Stack>
 
         {/* Stats Bar */}
-        <XStack borderTopWidth={1} borderColor="$borderColor">
-          <YStack flex={1} padding="$4" alignItems="center" borderRightWidth={1} borderColor="$borderColor">
-            <XStack alignItems="center" justifyContent="center" gap="$2" color="$blue9">
-              <Users size={18} color="$blue9" />
-              <Text fontSize="$8" fontWeight="bold" color="$blue9">{stats.total}</Text>
-            </XStack>
-            <Text fontSize="$3" color="$color11" mt="$1">Total Subcontractors</Text>
-          </YStack>
-          <YStack flex={1} padding="$4" alignItems="center" borderRightWidth={1} borderColor="$borderColor">
-            <XStack alignItems="center" justifyContent="center" gap="$2">
-              <Shield size={18} color="$green9" />
-              <Text fontSize="$8" fontWeight="bold" color="$green9">{stats.compliant}</Text>
-            </XStack>
-            <Text fontSize="$3" color="$color11" mt="$1">Compliant</Text>
-          </YStack>
-          <YStack flex={1} padding="$4" alignItems="center" borderRightWidth={1} borderColor="$borderColor">
-            <XStack alignItems="center" justifyContent="center" gap="$2">
-              <Shield size={18} color="$yellow9" />
-              <Text fontSize="$8" fontWeight="bold" color="$yellow9">{stats.atRisk}</Text>
-            </XStack>
-            <Text fontSize="$3" color="$color11" mt="$1">At Risk</Text>
-          </YStack>
-          <YStack flex={1} padding="$4" alignItems="center">
-            <XStack alignItems="center" justifyContent="center" gap="$2">
-              <FileText size={18} color="$color12" />
-              <Text fontSize="$8" fontWeight="bold" color="$color12">{stats.active}</Text>
-            </XStack>
-            <Text fontSize="$3" color="$color11" mt="$1">Active</Text>
-          </YStack>
-        </XStack>
+        <Row style={{ borderTop: '1px solid var(--color-border)' }}>
+          <Stack style={{ flex: 1, padding: 'var(--space-4)', alignItems: 'center', borderRight: '1px solid var(--color-border)' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)', color: 'var(--color-blue-9)' }}>
+              <Users size={18} color="var(--color-blue-9)" />
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold', color: 'var(--color-blue-9)' }}>{stats.total}</Text>
+            </Row>
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>Total Subcontractors</Text>
+          </Stack>
+          <Stack style={{ flex: 1, padding: 'var(--space-4)', alignItems: 'center', borderRight: '1px solid var(--color-border)' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+              <Shield size={18} color="var(--color-green-9)" />
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold', color: 'var(--color-green-9)' }}>{stats.compliant}</Text>
+            </Row>
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>Compliant</Text>
+          </Stack>
+          <Stack style={{ flex: 1, padding: 'var(--space-4)', alignItems: 'center', borderRight: '1px solid var(--color-border)' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+              <Shield size={18} color="var(--color-yellow-9)" />
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold', color: 'var(--color-yellow-9)' }}>{stats.atRisk}</Text>
+            </Row>
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>At Risk</Text>
+          </Stack>
+          <Stack style={{ flex: 1, padding: 'var(--space-4)', alignItems: 'center' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+              <FileText size={18} color="var(--color-text-primary)" />
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>{stats.active}</Text>
+            </Row>
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>Active</Text>
+          </Stack>
+        </Row>
       </Card>
 
       {/* Filters */}
-      <XStack flexWrap="wrap" alignItems="center" gap="$4">
-        <XStack position="relative" flex={1} minWidth={256}>
+      <Row style={{ flexWrap: 'wrap', alignItems: 'center', gap: 'var(--space-4)' }}>
+        <Row style={{ position: 'relative', flex: 1, minWidth: 256 }}>
           <Search
-            position="absolute"
-            left="$3"
-            top="50%"
-            transform={[{ translateY: -9 }]}
-            color="$color10"
+            style={{
+              position: 'absolute',
+              left: 'var(--space-3)',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'var(--color-text-tertiary)',
+            }}
             size={18}
           />
-          <Input
+          <input
             type="text"
             placeholder="Search subcontractors..."
             value={searchQuery}
-            onChangeText={setSearchQuery}
-            width="100%"
-            paddingLeft="$10"
-            paddingRight="$4"
-            paddingVertical="$2"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
-            backgroundColor="$background"
-            color="$color12"
-            placeholderTextColor="$color10"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              paddingLeft: 'var(--space-10)',
+              paddingRight: 'var(--space-4)',
+              paddingTop: 'var(--space-2)',
+              paddingBottom: 'var(--space-2)',
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'var(--color-border)',
+              borderRadius: 'var(--radius-4)',
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-text-primary)',
+            }}
           />
-        </XStack>
+        </Row>
 
-        <XStack alignItems="center" gap="$2">
-          <Filter size={18} color="$color10" />
+        <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+          <Filter size={18} color="var(--color-text-tertiary)" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
             style={{
               padding: '8px 12px',
-              border: '1px solid var(--borderColor)',
+              border: '1px solid var(--color-border)',
               borderRadius: '8px',
-              backgroundColor: 'var(--background)',
-              color: 'var(--color12)',
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-text-primary)',
             }}
           >
             <option value="all">All Status</option>
@@ -386,10 +395,10 @@ export default function GCProfilePage() {
             onChange={(e) => setComplianceFilter(e.target.value as ComplianceFilter)}
             style={{
               padding: '8px 12px',
-              border: '1px solid var(--borderColor)',
+              border: '1px solid var(--color-border)',
               borderRadius: '8px',
-              backgroundColor: 'var(--background)',
-              color: 'var(--color12)',
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-text-primary)',
             }}
           >
             <option value="all">All Compliance</option>
@@ -397,132 +406,145 @@ export default function GCProfilePage() {
             <option value="at-risk">At Risk</option>
             <option value="non-compliant">Non-Compliant</option>
           </select>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Subcontractors Table */}
-      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" overflow="hidden">
-        <XStack
-          paddingHorizontal="$6"
-          paddingVertical="$4"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
-          alignItems="center"
-          justifyContent="space-between"
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', overflow: 'hidden' }}>
+        <Row
+          style={{
+            paddingLeft: 'var(--space-6)',
+            paddingRight: 'var(--space-6)',
+            paddingTop: 'var(--space-4)',
+            paddingBottom: 'var(--space-4)',
+            borderBottom: '1px solid var(--color-border)',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
-          <H2 fontSize="$6" fontWeight="600" color="$color12">
+          <h2 style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)' }}>
             Subcontractors ({filteredSubcontractors.length})
-          </H2>
-        </XStack>
+          </h2>
+        </Row>
 
         {filteredSubcontractors.length === 0 ? (
-          <YStack alignItems="center" paddingVertical="$12">
-            <Users color="$color10" size={48} mb="$4" />
-            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
+          <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
+            <Users color="var(--color-text-tertiary)" size={48} style={{ marginBottom: 'var(--space-4)' }} />
+            <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)' }}>
               No Subcontractors Found
-            </H3>
-            <Text color="$color11">
+            </h3>
+            <Text style={{ color: 'var(--color-text-secondary)' }}>
               {searchQuery || statusFilter !== 'all' || complianceFilter !== 'all'
                 ? 'Try adjusting your filters.'
                 : 'This GC has no assigned subcontractors yet.'}
             </Text>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack overflowX="auto">
-            <YStack>
-              <XStack
-                backgroundColor="$backgroundHover"
-                paddingHorizontal="$3"
-                paddingVertical="$3"
-                borderBottomWidth={1}
-                borderColor="$borderColor"
+          <Stack style={{ overflowX: 'auto' }}>
+            <Stack>
+              <Row
+                style={{
+                  backgroundColor: 'var(--color-background-hover)',
+                  paddingLeft: 'var(--space-3)',
+                  paddingRight: 'var(--space-3)',
+                  paddingTop: 'var(--space-3)',
+                  paddingBottom: 'var(--space-3)',
+                  borderBottom: '1px solid var(--color-border)',
+                }}
               >
-                <Text width={40} fontSize="$3" fontWeight="500" color="$color11"></Text>
-                <Text flex={2} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Subcontractor</Text>
-                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Score</Text>
-                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Status</Text>
-                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Pending Items</Text>
-                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Projects</Text>
-                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Last Activity</Text>
-              </XStack>
-              <YStack>
+                <Text style={{ width: 40, fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-secondary)' }}></Text>
+                <Text style={{ flex: 2, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-secondary)' }}>Subcontractor</Text>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-secondary)' }}>Score</Text>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-secondary)' }}>Status</Text>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-secondary)' }}>Pending Items</Text>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-secondary)' }}>Projects</Text>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-secondary)' }}>Last Activity</Text>
+              </Row>
+              <Stack>
                 {filteredSubcontractors.map((sub) => {
                   const isExpanded = expandedRowId === sub.id;
                   return (
                     <React.Fragment key={sub.id}>
                       {/* Main Row */}
-                      <XStack
-                        borderBottomWidth={1}
-                        borderColor="$borderColor"
-                        paddingHorizontal="$3"
-                        paddingVertical="$4"
-                        cursor="pointer"
-                        backgroundColor={isExpanded ? "$backgroundHover" : "transparent"}
-                        hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                      <Row
+                        style={{
+                          borderBottom: '1px solid var(--color-border)',
+                          paddingLeft: 'var(--space-3)',
+                          paddingRight: 'var(--space-3)',
+                          paddingTop: 'var(--space-4)',
+                          paddingBottom: 'var(--space-4)',
+                          cursor: 'pointer',
+                          backgroundColor: isExpanded ? 'var(--color-background-hover)' : 'transparent',
+                        }}
                         onPress={() => handleRowClick(sub.id)}
                         data-testid="subcontractor-row"
                       >
                         {/* Expand Indicator */}
-                        <XStack width={40} alignItems="center" justifyContent="center">
+                        <Row style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
                           <ChevronDown
                             size={18}
-                            color="$color10"
-                            transform={[{ rotate: isExpanded ? '180deg' : '0deg' }]}
+                            color="var(--color-text-tertiary)"
+                            style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
                             data-testid="expand-icon"
                           />
-                        </XStack>
-                        <XStack flex={2} paddingHorizontal="$6" alignItems="center" gap="$3">
-                          <XStack
-                            width={40}
-                            height={40}
-                            backgroundColor="$blue3"
-                            borderRadius={9999}
-                            alignItems="center"
-                            justifyContent="center"
+                        </Row>
+                        <Row style={{ flex: 2, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', alignItems: 'center', gap: 'var(--space-3)' }}>
+                          <Row
+                            style={{
+                              width: 40,
+                              height: 40,
+                              backgroundColor: 'var(--color-blue-3)',
+                              borderRadius: 9999,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
                           >
-                            <Building color="$blue9" size={20} />
-                          </XStack>
-                          <YStack>
-                            <Text fontWeight="500" color="$color12">{sub.name}</Text>
-                            <Text fontSize="$3" color="$color11">{sub.company}</Text>
-                          </YStack>
-                        </XStack>
-                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
+                            <Building color="var(--color-blue-9)" size={20} />
+                          </Row>
+                          <Stack>
+                            <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)' }}>{sub.name}</Text>
+                            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)' }}>{sub.company}</Text>
+                          </Stack>
+                        </Row>
+                        <Row style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', alignItems: 'center' }}>
                           <Text
-                            fontSize="$6"
-                            fontWeight="bold"
-                            color={
-                              sub.complianceScore >= 80
-                                ? "$green9"
-                                : sub.complianceScore >= 50
-                                ? "$yellow9"
-                                : "$red9"
-                            }
+                            style={{
+                              fontSize: 'var(--font-size-6)',
+                              fontWeight: 'bold',
+                              color:
+                                sub.complianceScore >= 80
+                                  ? 'var(--color-green-9)'
+                                  : sub.complianceScore >= 50
+                                  ? 'var(--color-yellow-9)'
+                                  : 'var(--color-red-9)',
+                            }}
                           >
                             {sub.complianceScore}%
                           </Text>
-                        </XStack>
-                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
+                        </Row>
+                        <Row style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', alignItems: 'center' }}>
                           <Text
-                            paddingHorizontal="$2.5"
-                            paddingVertical="$0.5"
-                            borderRadius={9999}
-                            fontSize="$1"
-                            fontWeight="500"
-                            backgroundColor={
-                              sub.complianceStatus === 'compliant'
-                                ? "$green3"
-                                : sub.complianceStatus === 'at-risk'
-                                ? "$yellow3"
-                                : "$red3"
-                            }
-                            color={
-                              sub.complianceStatus === 'compliant'
-                                ? "$green10"
-                                : sub.complianceStatus === 'at-risk'
-                                ? "$yellow10"
-                                : "$red10"
-                            }
+                            style={{
+                              paddingLeft: 'var(--space-2)',
+                              paddingRight: 'var(--space-2)',
+                              paddingTop: 2,
+                              paddingBottom: 2,
+                              borderRadius: 9999,
+                              fontSize: 'var(--font-size-1)',
+                              fontWeight: '500',
+                              backgroundColor:
+                                sub.complianceStatus === 'compliant'
+                                  ? 'var(--color-green-3)'
+                                  : sub.complianceStatus === 'at-risk'
+                                  ? 'var(--color-yellow-3)'
+                                  : 'var(--color-red-3)',
+                              color:
+                                sub.complianceStatus === 'compliant'
+                                  ? 'var(--color-green-10)'
+                                  : sub.complianceStatus === 'at-risk'
+                                  ? 'var(--color-yellow-10)'
+                                  : 'var(--color-red-10)',
+                            }}
                           >
                             {sub.complianceStatus === 'compliant'
                               ? 'Compliant'
@@ -530,133 +552,153 @@ export default function GCProfilePage() {
                               ? 'At Risk'
                               : 'Non-Compliant'}
                           </Text>
-                        </XStack>
-                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
+                        </Row>
+                        <Row style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', alignItems: 'center' }}>
                           {sub.pendingItems > 0 ? (
                             <Text
-                              paddingHorizontal="$2"
-                              paddingVertical="$1"
-                              borderRadius="$2"
-                              backgroundColor="$yellow3"
-                              color="$yellow10"
-                              fontSize="$3"
+                              style={{
+                                paddingLeft: 'var(--space-2)',
+                                paddingRight: 'var(--space-2)',
+                                paddingTop: 'var(--space-1)',
+                                paddingBottom: 'var(--space-1)',
+                                borderRadius: 'var(--radius-2)',
+                                backgroundColor: 'var(--color-yellow-3)',
+                                color: 'var(--color-yellow-10)',
+                                fontSize: 'var(--font-size-3)',
+                              }}
                             >
                               {sub.pendingItems} pending
                             </Text>
                           ) : (
-                            <Text color="$color10">-</Text>
+                            <Text style={{ color: 'var(--color-text-tertiary)' }}>-</Text>
                           )}
-                        </XStack>
-                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
-                          <Text color="$color11">{sub.projects.length}</Text>
-                        </XStack>
-                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
-                          <Text color="$color11" fontSize="$3">
+                        </Row>
+                        <Row style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', alignItems: 'center' }}>
+                          <Text style={{ color: 'var(--color-text-secondary)' }}>{sub.projects.length}</Text>
+                        </Row>
+                        <Row style={{ flex: 1, paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', alignItems: 'center' }}>
+                          <Text style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-3)' }}>
                             {sub.lastActivity
                               ? new Date(sub.lastActivity).toLocaleDateString()
                               : '-'}
                           </Text>
-                        </XStack>
-                      </XStack>
+                        </Row>
+                      </Row>
 
                       {/* Expanded Card Row */}
                       {isExpanded && (
-                        <XStack
-                          width="100%"
-                          paddingHorizontal="$6"
-                          paddingVertical={0}
+                        <Row
+                          style={{
+                            width: '100%',
+                            paddingLeft: 'var(--space-6)',
+                            paddingRight: 'var(--space-6)',
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                          }}
                           data-testid="expanded-card"
                         >
-                          <YStack
-                            width="100%"
-                            overflow="hidden"
-                            maxHeight={isExpanded ? 384 : 0}
-                            paddingVertical={isExpanded ? "$4" : 0}
+                          <Stack
+                            style={{
+                              width: '100%',
+                              overflow: 'hidden',
+                              maxHeight: isExpanded ? 384 : 0,
+                              paddingTop: isExpanded ? 'var(--space-4)' : 0,
+                              paddingBottom: isExpanded ? 'var(--space-4)' : 0,
+                            }}
                           >
                             <Card
-                              backgroundColor="$backgroundHover"
-                              borderRadius="$4"
-                              padding="$6"
-                              borderWidth={1}
-                              borderColor="$borderColor"
+                              style={{
+                                backgroundColor: 'var(--color-background-hover)',
+                                borderRadius: 'var(--radius-4)',
+                                padding: 'var(--space-6)',
+                                borderWidth: 1,
+                                borderColor: 'var(--color-border)',
+                              }}
                             >
-                              <XStack gap="$6" flexWrap="wrap">
+                              <Row style={{ gap: 'var(--space-6)', flexWrap: 'wrap' }}>
                                 {/* Compliance Score */}
-                                <YStack flex={1} minWidth={200}>
-                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" mb="$2">
-                                    <Shield size={16} color="$color11" />
-                                    <Text fontSize="$3" color="$color11">Compliance Score</Text>
-                                  </XStack>
+                                <Stack style={{ flex: 1, minWidth: 200 }}>
+                                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-3)', marginBottom: 'var(--space-2)' }}>
+                                    <Shield size={16} color="var(--color-text-secondary)" />
+                                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)' }}>Compliance Score</Text>
+                                  </Row>
                                   <Text
-                                    fontSize="$10"
-                                    fontWeight="bold"
-                                    color={
-                                      sub.complianceScore >= 80
-                                        ? "$green9"
-                                        : sub.complianceScore >= 50
-                                        ? "$yellow9"
-                                        : "$red9"
-                                    }
+                                    style={{
+                                      fontSize: 'var(--font-size-10)',
+                                      fontWeight: 'bold',
+                                      color:
+                                        sub.complianceScore >= 80
+                                          ? 'var(--color-green-9)'
+                                          : sub.complianceScore >= 50
+                                          ? 'var(--color-yellow-9)'
+                                          : 'var(--color-red-9)',
+                                    }}
                                   >
                                     {sub.complianceScore}%
                                   </Text>
-                                </YStack>
+                                </Stack>
 
                                 {/* Recent Documents */}
-                                <YStack flex={1} minWidth={200}>
-                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" mb="$2">
-                                    <FileText size={16} color="$color11" />
-                                    <Text fontSize="$3" color="$color11">Recent Documents</Text>
-                                  </XStack>
+                                <Stack style={{ flex: 1, minWidth: 200 }}>
+                                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-3)', marginBottom: 'var(--space-2)' }}>
+                                    <FileText size={16} color="var(--color-text-secondary)" />
+                                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)' }}>Recent Documents</Text>
+                                  </Row>
                                   {sub.recentDocuments.length > 0 ? (
-                                    <YStack gap="$1">
+                                    <Stack style={{ gap: 'var(--space-1)' }}>
                                       {sub.recentDocuments.slice(0, 3).map((doc) => (
-                                        <Text key={doc.id} fontSize="$3" color="$color12">
+                                        <Text key={doc.id} style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-primary)' }}>
                                           {doc.name}
                                         </Text>
                                       ))}
-                                    </YStack>
+                                    </Stack>
                                   ) : (
-                                    <Text fontSize="$3" color="$color10">No recent documents</Text>
+                                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>No recent documents</Text>
                                   )}
-                                </YStack>
+                                </Stack>
 
                                 {/* Active Status */}
-                                <YStack flex={1} minWidth={200}>
-                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" mb="$2">
-                                    <Clock size={16} color="$color11" />
-                                    <Text fontSize="$3" color="$color11">Active Status</Text>
-                                  </XStack>
+                                <Stack style={{ flex: 1, minWidth: 200 }}>
+                                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-3)', marginBottom: 'var(--space-2)' }}>
+                                    <Clock size={16} color="var(--color-text-secondary)" />
+                                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)' }}>Active Status</Text>
+                                  </Row>
                                   <Text
-                                    paddingHorizontal="$2.5"
-                                    paddingVertical="$1"
-                                    borderRadius={9999}
-                                    fontSize="$3"
-                                    fontWeight="500"
-                                    backgroundColor={sub.status === 'active' ? "$green3" : "$gray3"}
-                                    color={sub.status === 'active' ? "$green10" : "$gray11"}
+                                    style={{
+                                      paddingLeft: 'var(--space-2)',
+                                      paddingRight: 'var(--space-2)',
+                                      paddingTop: 'var(--space-1)',
+                                      paddingBottom: 'var(--space-1)',
+                                      borderRadius: 9999,
+                                      fontSize: 'var(--font-size-3)',
+                                      fontWeight: '500',
+                                      backgroundColor: sub.status === 'active' ? 'var(--color-green-3)' : 'var(--color-gray-3)',
+                                      color: sub.status === 'active' ? 'var(--color-green-10)' : 'var(--color-gray-11)',
+                                      display: 'inline-block',
+                                      width: 'fit-content',
+                                    }}
                                   >
                                     {sub.status === 'active' ? 'Active' : 'Inactive'}
                                   </Text>
-                                </YStack>
+                                </Stack>
 
                                 {/* Notes */}
-                                <YStack flex={1} minWidth={200}>
-                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" mb="$2">
-                                    <StickyNote size={16} color="$color11" />
-                                    <Text fontSize="$3" color="$color11">Notes</Text>
-                                  </XStack>
-                                  <Text fontSize="$3" color="$color12">
+                                <Stack style={{ flex: 1, minWidth: 200 }}>
+                                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-3)', marginBottom: 'var(--space-2)' }}>
+                                    <StickyNote size={16} color="var(--color-text-secondary)" />
+                                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-secondary)' }}>Notes</Text>
+                                  </Row>
+                                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-primary)' }}>
                                     {sub.notes || 'No notes available'}
                                   </Text>
-                                </YStack>
-                              </XStack>
+                                </Stack>
+                              </Row>
 
                               {/* Action Buttons */}
-                              <XStack alignItems="center" gap="$3" mt="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                              <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-6)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
                                 <Button
                                   variant="primary"
-                                  size="$2"
+                                  size="sm"
                                   leftIcon={Eye}
                                   onPress={(e) => handleViewFullProfile(e, sub.id)}
                                   data-testid="view-profile-btn"
@@ -665,7 +707,7 @@ export default function GCProfilePage() {
                                 </Button>
                                 <Button
                                   variant="outline"
-                                  size="$2"
+                                  size="sm"
                                   leftIcon={StickyNote}
                                   onPress={(e) => handleAddNote(e, sub.id)}
                                   data-testid="add-note-btn"
@@ -674,27 +716,26 @@ export default function GCProfilePage() {
                                 </Button>
                                 <Button
                                   variant="outline"
-                                  size="$2"
+                                  size="sm"
                                   leftIcon={MessageSquare}
                                   onPress={(e) => handleSendMessage(e, sub.id)}
                                   data-testid="send-message-btn"
                                 >
                                   Send Message
                                 </Button>
-                              </XStack>
+                              </Row>
                             </Card>
-                          </YStack>
-                        </XStack>
+                          </Stack>
+                        </Row>
                       )}
                     </React.Fragment>
                   );
                 })}
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         )}
-        </Card>
-      </YStack>
-    </YStack>
+      </Card>
+    </Stack>
   );
 }

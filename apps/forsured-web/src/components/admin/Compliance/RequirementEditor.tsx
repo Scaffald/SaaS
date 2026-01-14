@@ -9,17 +9,17 @@
  * - Validation
  */
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { X, Save, AlertCircle } from 'lucide-react'
 import {
-  YStack,
-  XStack,
+  Stack,
+  Row,
   Text,
   Input,
-  TextArea,
   Button,
   H2,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
+import Textarea from '../../Common/Textarea'
 import {
   useCreateComplianceRequirement,
   useUpdateComplianceRequirement,
@@ -271,109 +271,121 @@ export function RequirementEditor({
   if (!isOpen) return null
 
   return (
-    <YStack
-      position="fixed"
-      inset={0}
-      zIndex={50}
-      alignItems="center"
-      justifyContent="center"
+    <Stack
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
     >
       {/* Backdrop */}
-      <YStack
-        position="absolute"
-        inset={0}
-        backgroundColor="rgba(0,0,0,0.5)"
+      <Stack
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        }}
         onPress={onClose}
       />
 
       {/* Modal */}
-      <YStack
-        position="relative"
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={4}
-        width="100%"
-        maxWidth="42rem"
-        maxHeight="90vh"
-        overflow="scroll"
+      <Stack
+        style={{
+          position: 'relative',
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          width: '100%',
+          maxWidth: '42rem',
+          maxHeight: '90vh',
+          overflow: 'auto',
+        }}
       >
         {/* Header */}
-        <XStack
-          position="sticky"
-          top={0}
-          backgroundColor="$background"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
-          paddingHorizontal="$6"
-          paddingVertical="$4"
-          alignItems="center"
-          justifyContent="space-between"
+        <Row
+          style={{
+            position: 'sticky',
+            top: 0,
+            backgroundColor: 'var(--color-background)',
+            borderBottom: '1px solid var(--color-border)',
+            paddingLeft: 24,
+            paddingRight: 24,
+            paddingTop: 16,
+            paddingBottom: 16,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
-          <H2 fontWeight="600">
+          <H2 style={{ fontWeight: 600 }}>
             {isEditing ? 'Edit Requirement' : 'New Compliance Requirement'}
           </H2>
           <Button
-            unstyled
-            padding="$2"
-            color="$gray10"
-            hoverStyle={{ color: '$gray12', backgroundColor: '$gray2' }}
-            borderRadius="$2"
+            variant="ghost"
+            style={{ padding: 8, color: 'var(--color-gray-10)', borderRadius: 6 }}
             onPress={onClose}
           >
             <X size={20} />
           </Button>
-        </XStack>
+        </Row>
 
         {/* Form */}
-        <YStack as="form" onSubmit={handleSubmit} padding="$6" gap="$6">
+        <Stack as="form" onSubmit={handleSubmit} style={{ padding: 24, gap: 24 }}>
           {/* Error Alert */}
           {(createMutation.error || updateMutation.error) && (
-            <XStack
-              alignItems="flex-start"
-              gap="$3"
-              padding="$4"
-              backgroundColor="$red2"
-              borderWidth={1}
-              borderColor="$red6"
-              borderRadius="$4"
-              color="$red10"
+            <Row
+              style={{
+                alignItems: 'flex-start',
+                gap: 12,
+                padding: 16,
+                backgroundColor: 'var(--color-red-2)',
+                borderWidth: 1,
+                borderColor: 'var(--color-red-6)',
+                borderRadius: 12,
+                color: 'var(--color-red-10)',
+              }}
             >
-              <YStack flexShrink={0} mt="$0.5">
+              <Stack style={{ flexShrink: 0, marginTop: 2 }}>
                 <AlertCircle size={20} style={{ color: 'var(--color-red-10)' }} />
-              </YStack>
-              <YStack>
-                <Text fontWeight="600">Error saving requirement</Text>
-                <Text fontSize="$3">{(createMutation.error || updateMutation.error)?.message}</Text>
-              </YStack>
-            </XStack>
+              </Stack>
+              <Stack>
+                <Text style={{ fontWeight: 600 }}>Error saving requirement</Text>
+                <Text style={{ fontSize: 14 }}>{(createMutation.error || updateMutation.error)?.message}</Text>
+              </Stack>
+            </Row>
           )}
 
           {/* Basic Info */}
-          <XStack gap="$4" flexWrap="wrap">
-            <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
-                Code <Text color="$red10">*</Text>
+          <Row style={{ gap: 16, flexWrap: 'wrap' }}>
+            <Stack style={{ flex: 1, minWidth: 200 }}>
+              <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>
+                Code <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
               </Text>
               <Input
-                width="100%"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderRadius="$4"
-                borderColor={errors.code ? '$red8' : '$gray8'}
+                style={{
+                  width: '100%',
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 8,
+                  paddingBottom: 8,
+                  borderWidth: 1,
+                  borderRadius: 12,
+                  borderColor: errors.code ? 'var(--color-red-8)' : 'var(--color-gray-8)',
+                }}
                 value={formData.code}
                 onChange={(e) => handleChange('code', e.target.value.toUpperCase())}
                 placeholder="GL-REQ-001"
                 disabled={isEditing}
               />
               {errors.code && (
-                <Text mt="$1" fontSize="$3" color="$red10">{errors.code}</Text>
+                <Text style={{ marginTop: 4, fontSize: 14, color: 'var(--color-red-10)' }}>{errors.code}</Text>
               )}
-            </YStack>
+            </Stack>
 
-            <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
-                Type <Text color="$red10">*</Text>
+            <Stack style={{ flex: 1, minWidth: 200 }}>
+              <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>
+                Type <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
               </Text>
               <select
                 value={formData.type}
@@ -382,8 +394,8 @@ export function RequirementEditor({
                   width: '100%',
                   padding: '8px 12px',
                   border: '1px solid var(--color-gray-8)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
+                  borderRadius: 8,
+                  fontSize: 14,
                 }}
               >
                 {COVERAGE_TYPE_OPTIONS.map((opt) => (
@@ -392,141 +404,169 @@ export function RequirementEditor({
                   </option>
                 ))}
               </select>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
-          <YStack>
-            <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
-              Name <Text color="$red10">*</Text>
+          <Stack>
+            <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>
+              Name <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
             </Text>
             <Input
-              width="100%"
-              paddingHorizontal="$3"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderRadius="$4"
-              borderColor={errors.name ? '$red8' : '$gray8'}
+              style={{
+                width: '100%',
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 8,
+                paddingBottom: 8,
+                borderWidth: 1,
+                borderRadius: 12,
+                borderColor: errors.name ? 'var(--color-red-8)' : 'var(--color-gray-8)',
+              }}
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="General Liability - Standard Construction"
             />
             {errors.name && (
-              <Text mt="$1" fontSize="$3" color="$red10">{errors.name}</Text>
+              <Text style={{ marginTop: 4, fontSize: 14, color: 'var(--color-red-10)' }}>{errors.name}</Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack>
-            <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">Description</Text>
-            <TextArea
-              width="100%"
-              paddingHorizontal="$3"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderColor="$gray8"
-              borderRadius="$4"
+          <Stack>
+            <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>Description</Text>
+            <Textarea
+              style={{
+                width: '100%',
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 8,
+                paddingBottom: 8,
+                borderWidth: 1,
+                borderColor: 'var(--color-gray-8)',
+                borderRadius: 12,
+              }}
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               placeholder="Describe the requirement..."
               rows={3}
             />
-          </YStack>
+          </Stack>
 
           {/* Coverage Limits */}
-          <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-            <Text fontSize="$3" fontWeight="600" color="$color12" mb="$3">Coverage Limits</Text>
-            <XStack gap="$4" flexWrap="wrap">
-              <YStack flex={1} minWidth="150px">
-                <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
+          <Stack style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+            <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 12 }}>Coverage Limits</Text>
+            <Row style={{ gap: 16, flexWrap: 'wrap' }}>
+              <Stack style={{ flex: 1, minWidth: 150 }}>
+                <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>
                   Per Occurrence
                 </Text>
                 <Input
-                  width="100%"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  borderWidth={1}
-                  borderColor="$gray8"
-                  borderRadius="$4"
+                  style={{
+                    width: '100%',
+                    paddingLeft: 12,
+                    paddingRight: 12,
+                    paddingTop: 8,
+                    paddingBottom: 8,
+                    borderWidth: 1,
+                    borderColor: 'var(--color-gray-8)',
+                    borderRadius: 12,
+                  }}
                   value={formData.per_occurrence}
                   onChange={(e) => handleCurrencyChange('per_occurrence', e.target.value)}
                   placeholder="$1,000,000"
                 />
-              </YStack>
-              <YStack flex={1} minWidth="150px">
-                <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">Aggregate</Text>
+              </Stack>
+              <Stack style={{ flex: 1, minWidth: 150 }}>
+                <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>Aggregate</Text>
                 <Input
-                  width="100%"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  borderWidth={1}
-                  borderColor="$gray8"
-                  borderRadius="$4"
+                  style={{
+                    width: '100%',
+                    paddingLeft: 12,
+                    paddingRight: 12,
+                    paddingTop: 8,
+                    paddingBottom: 8,
+                    borderWidth: 1,
+                    borderColor: 'var(--color-gray-8)',
+                    borderRadius: 12,
+                  }}
                   value={formData.aggregate}
                   onChange={(e) => handleCurrencyChange('aggregate', e.target.value)}
                   placeholder="$2,000,000"
                 />
-              </YStack>
-              <YStack flex={1} minWidth="150px">
-                <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
+              </Stack>
+              <Stack style={{ flex: 1, minWidth: 150 }}>
+                <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>
                   Max Deductible
                 </Text>
                 <Input
-                  width="100%"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  borderWidth={1}
-                  borderColor="$gray8"
-                  borderRadius="$4"
+                  style={{
+                    width: '100%',
+                    paddingLeft: 12,
+                    paddingRight: 12,
+                    paddingTop: 8,
+                    paddingBottom: 8,
+                    borderWidth: 1,
+                    borderColor: 'var(--color-gray-8)',
+                    borderRadius: 12,
+                  }}
                   value={formData.deductible_max}
                   onChange={(e) => handleCurrencyChange('deductible_max', e.target.value)}
                   placeholder="$10,000"
                 />
-              </YStack>
-            </XStack>
-          </YStack>
+              </Stack>
+            </Row>
+          </Stack>
 
           {/* Dates */}
-          <XStack gap="$4" flexWrap="wrap">
-            <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
-                Effective Date <Text color="$red10">*</Text>
+          <Row style={{ gap: 16, flexWrap: 'wrap' }}>
+            <Stack style={{ flex: 1, minWidth: 200 }}>
+              <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>
+                Effective Date <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
               </Text>
               <Input
                 type="date"
-                width="100%"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderRadius="$4"
-                borderColor={errors.effective_date ? '$red8' : '$gray8'}
+                style={{
+                  width: '100%',
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 8,
+                  paddingBottom: 8,
+                  borderWidth: 1,
+                  borderRadius: 12,
+                  borderColor: errors.effective_date ? 'var(--color-red-8)' : 'var(--color-gray-8)',
+                }}
                 value={formData.effective_date}
                 onChange={(e) => handleChange('effective_date', e.target.value)}
               />
               {errors.effective_date && (
-                <Text mt="$1" fontSize="$3" color="$red10">{errors.effective_date}</Text>
+                <Text style={{ marginTop: 4, fontSize: 14, color: 'var(--color-red-10)' }}>{errors.effective_date}</Text>
               )}
-            </YStack>
-            <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: 200 }}>
+              <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>
                 Expiration Date
               </Text>
               <Input
                 type="date"
-                width="100%"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderColor="$gray8"
-                borderRadius="$4"
+                style={{
+                  width: '100%',
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 8,
+                  paddingBottom: 8,
+                  borderWidth: 1,
+                  borderColor: 'var(--color-gray-8)',
+                  borderRadius: 12,
+                }}
                 value={formData.expiration_date}
                 onChange={(e) => handleChange('expiration_date', e.target.value)}
               />
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           {/* Status and Template */}
-          <XStack gap="$4" flexWrap="wrap">
-            <YStack flex={1} minWidth="200px">
-              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">Status</Text>
+          <Row style={{ gap: 16, flexWrap: 'wrap' }}>
+            <Stack style={{ flex: 1, minWidth: 200 }}>
+              <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>Status</Text>
               <select
                 value={formData.status}
                 onChange={(e) => handleChange('status', e.target.value as RequirementStatus)}
@@ -534,8 +574,8 @@ export function RequirementEditor({
                   width: '100%',
                   padding: '8px 12px',
                   border: '1px solid var(--color-gray-8)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
+                  borderRadius: 8,
+                  fontSize: 14,
                 }}
               >
                 {STATUS_OPTIONS.map((opt) => (
@@ -544,89 +584,99 @@ export function RequirementEditor({
                   </option>
                 ))}
               </select>
-            </YStack>
-            <YStack flex={1} alignItems="center" paddingTop="$6">
-              <XStack alignItems="center" gap="$2" cursor="pointer">
+            </Stack>
+            <Stack style={{ flex: 1, alignItems: 'center', paddingTop: 24 }}>
+              <Row style={{ alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                 <input
                   type="checkbox"
                   checked={formData.is_template}
                   onChange={(e) => handleChange('is_template', e.target.checked)}
                   style={{
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '4px',
+                    width: 16,
+                    height: 16,
+                    borderRadius: 4,
                     border: '1px solid var(--color-gray-8)',
                   }}
                 />
-                <Text fontSize="$3" color="$color11">Save as template</Text>
-              </XStack>
-            </YStack>
-          </XStack>
+                <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>Save as template</Text>
+              </Row>
+            </Stack>
+          </Row>
 
           {/* Change Summary (for updates) */}
           {isEditing && (
-            <YStack>
-              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$1">
-                Change Summary <Text color="$red10">*</Text>
+            <Stack>
+              <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 4 }}>
+                Change Summary <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
               </Text>
               <Input
-                width="100%"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderColor="$gray8"
-                borderRadius="$4"
+                style={{
+                  width: '100%',
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 8,
+                  paddingBottom: 8,
+                  borderWidth: 1,
+                  borderColor: 'var(--color-gray-8)',
+                  borderRadius: 12,
+                }}
                 value={changeSummary}
                 onChange={(e) => setChangeSummary(e.target.value)}
                 placeholder="Brief description of changes..."
               />
-              <Text mt="$1" fontSize="$1" color="$gray11">
+              <Text style={{ marginTop: 4, fontSize: 11, color: 'var(--color-gray-11)' }}>
                 This will be recorded in the version history
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Footer */}
-        <XStack
-          position="sticky"
-          bottom={0}
-          backgroundColor="$background"
-          borderTopWidth={1}
-          borderColor="$borderColor"
-          paddingHorizontal="$6"
-          paddingVertical="$4"
-          alignItems="center"
-          justifyContent="flex-end"
-          gap="$3"
+        <Row
+          style={{
+            position: 'sticky',
+            bottom: 0,
+            backgroundColor: 'var(--color-background)',
+            borderTop: '1px solid var(--color-border)',
+            paddingLeft: 24,
+            paddingRight: 24,
+            paddingTop: 16,
+            paddingBottom: 16,
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            gap: 12,
+          }}
         >
           <Button
-            unstyled
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            color="$gray12"
-            hoverStyle={{ backgroundColor: '$gray2' }}
-            borderRadius="$4"
+            variant="ghost"
+            style={{
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 8,
+              paddingBottom: 8,
+              color: 'var(--color-gray-12)',
+              borderRadius: 12,
+            }}
             onPress={onClose}
           >
             <Text>Cancel</Text>
           </Button>
           <Button onPress={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? (
-              <XStack alignItems="center" gap="$2">
+              <Row style={{ alignItems: 'center', gap: 8 }}>
                 <LoadingSpinner size="sm" />
                 <Text>Saving...</Text>
-              </XStack>
+              </Row>
             ) : (
-              <XStack alignItems="center" gap="$1">
+              <Row style={{ alignItems: 'center', gap: 4 }}>
                 <Save size={16} />
                 <Text>{isEditing ? 'Update' : 'Create'} Requirement</Text>
-              </XStack>
+              </Row>
             )}
           </Button>
-        </XStack>
-      </YStack>
-    </YStack>
+        </Row>
+      </Stack>
+    </Stack>
   )
 }
 

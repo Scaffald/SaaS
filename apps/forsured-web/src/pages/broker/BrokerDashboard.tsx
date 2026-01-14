@@ -1,10 +1,11 @@
 /**
- * BrokerDashboard - Broker dashboard page using Tamagui
+ * BrokerDashboard - Broker dashboard page using Beyond UI
  */
 import React from 'react';
-import { YStack, Text } from '@unicornlove/ui';
+import { Stack, Text } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
 import { LayoutDashboard } from 'lucide-react';
-import { EmptyState } from '@unicornlove/ui';
+import PageTransition from '../../components/Common/PageTransition';
 
 function BrokerDashboard() {
   const handleInviteClient = () => {
@@ -15,24 +16,27 @@ function BrokerDashboard() {
   const hasClients = false;
 
   return (
-    <YStack gap="$6">
-      <Text fontSize="$8" fontWeight="700" marginBottom="$6">
-        Broker Dashboard
-      </Text>
-      {!hasClients ? (
-        <EmptyState
-          icon={<LayoutDashboard size={48} />}
-          title="No Clients Assigned"
-          description="Invite clients to manage their insurance needs and compliance."
-          primaryAction={{ label: 'Invite Client', onClick: handleInviteClient }}
-          helpLinks={[
-            { label: 'How to Invite Clients', href: '#' },
-          ]}
-        />
-      ) : (
-        <YStack>Broker Dashboard Content</YStack>
-      )}
-    </YStack>
+    <PageTransition>
+      <Stack style={{ gap: 'var(--space-6)' }}>
+        <Text
+          size="2xl"
+          weight="bold"
+          style={{ marginBottom: 'var(--space-6)' }}
+        >
+          Broker Dashboard
+        </Text>
+        {!hasClients ? (
+          <EmptyState
+            icon={LayoutDashboard}
+            title="No Clients Assigned"
+            description="Invite clients to manage their insurance needs and compliance."
+            action={{ label: 'Invite Client', onClick: handleInviteClient }}
+          />
+        ) : (
+          <Stack>Broker Dashboard Content</Stack>
+        )}
+      </Stack>
+    </PageTransition>
   );
 }
 

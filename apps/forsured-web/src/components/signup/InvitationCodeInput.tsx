@@ -1,9 +1,8 @@
 /**
- * InvitationCodeInput - Invitation code input using Tamagui
+ * InvitationCodeInput - Invitation code input using Beyond UI
  */
 import React from 'react';
-import { YStack, Text } from '@unicornlove/ui';
-import { Input as TextInput } from '@unicornlove/ui';
+import { Stack, Text, Input } from '@unicornlove/beyond-ui';
 
 interface InvitationCodeInputProps {
   value: string;
@@ -23,22 +22,21 @@ function InvitationCodeInput({
   error,
 }: InvitationCodeInputProps) {
   return (
-    <YStack gap="$1">
-      <TextInput
-        type="text"
+    <Stack style={{ gap: 4 }}>
+      <Input
         value={value}
-        onChange={(e) => onChange(e.target.value.toUpperCase())}
+        onChangeText={(text) => onChange(text.toUpperCase())}
         placeholder={placeholder}
         maxLength={maxLength}
         disabled={disabled}
         error={error}
       />
       {error && (
-        <Text fontSize="$2" color="$red9" mt="$1">
+        <Text size="sm" color="error" style={{ marginTop: 4 }}>
           {error}
         </Text>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

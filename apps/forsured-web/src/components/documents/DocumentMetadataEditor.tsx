@@ -3,8 +3,8 @@
  * Main component for reviewing and correcting OCR extraction results
  */
 
-import { useState, useEffect } from 'react';
-import { YStack, XStack, Text, H1, Card, Button, Spinner, Checkbox } from '@unicornlove/ui';
+import React, { useState, useEffect } from 'react';
+import { Stack, Row, Text, H1, Card, Button, Checkbox } from '@unicornlove/beyond-ui';
 import { OCRFieldDisplay } from './OCRFieldDisplay';
 import { ValidationFeedback } from './ValidationFeedback';
 import { DocumentPreview } from './DocumentPreview';
@@ -123,7 +123,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
       : (Object.keys(fields) as Array<keyof FieldValidators>);
 
     return (
-      <YStack gap="$6">
+      <Stack gap="lg">
         {fieldsToRender.map((fieldName) => {
           const field = fields[fieldName];
           if (fieldName === 'coverageLimits') return null; // Handle separately
@@ -133,7 +133,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
           );
 
           return (
-            <YStack key={fieldName}>
+            <Stack key={fieldName}>
               <OCRFieldDisplay
                 label={fieldName.replace(/([A-Z])/g, ' $1').trim()}
                 field={field as OCRField<string>}
@@ -143,105 +143,120 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
                 type={fieldName.includes('Date') ? 'date' : 'text'}
               />
               {field.reviewRequired && !field.reviewed && (
-                <Text
-                  as="button"
-                  mt="$2"
-                  fontSize="$3"
-                  color="$teal9"
-                  hoverStyle={{ color: '$teal11' }}
-                  textDecorationLine="underline"
+                <button
+                  style={{
+                    marginTop: '8px',
+                    fontSize: '14px',
+                    color: 'var(--color-teal-9)',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                  }}
                   onClick={() => handleMarkAsReviewed(fieldName)}
-                  cursor="pointer"
                 >
                   Mark as Reviewed
-                </Text>
+                </button>
               )}
-            </YStack>
+            </Stack>
           );
         })}
-      </YStack>
+      </Stack>
     );
   };
 
   return (
-    <YStack height="100vh" flexDirection="column" backgroundColor="$gray2">
+    <Stack style={{ height: '100vh', flexDirection: 'column', backgroundColor: 'var(--color-gray-2)' }}>
       {/* Header */}
-      <YStack
-        backgroundColor="$background"
-        borderBottomWidth={1}
-        borderBottomColor="$borderColor"
-        paddingHorizontal="$6"
-        paddingVertical="$4"
+      <Stack
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderBottomWidth: 1,
+          borderBottomStyle: 'solid',
+          borderBottomColor: 'var(--color-border)',
+          paddingLeft: '24px',
+          paddingRight: '24px',
+          paddingTop: '16px',
+          paddingBottom: '16px',
+        }}
       >
-        <XStack alignItems="center" justifyContent="space-between">
-          <YStack>
-            <H1 fontSize="$7" fontWeight="600" color="$color12">
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Stack>
+            <H1 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-gray-12)' }}>
               Document Metadata Editor
             </H1>
-            <Text fontSize="$3" color="$color10" mt="$1">
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray-10)', marginTop: '4px' }}>
               Extracted:{' '}
               {new Date(document.extractionResult?.extractedAt || '').toLocaleString()}
             </Text>
-          </YStack>
-          <XStack alignItems="center" gap="$4">
+          </Stack>
+          <Row style={{ alignItems: 'center', gap: '16px' }}>
             {unreviewedFieldsCount > 0 && (
-              <XStack
-                alignItems="center"
-                paddingHorizontal="$3"
-                paddingVertical="$1"
-                backgroundColor="$red2"
-                color="$red11"
-                borderRadius={9999}
-                fontSize="$3"
+              <Row
+                style={{
+                  alignItems: 'center',
+                  paddingLeft: '12px',
+                  paddingRight: '12px',
+                  paddingTop: '4px',
+                  paddingBottom: '4px',
+                  backgroundColor: 'var(--color-red-2)',
+                  color: 'var(--color-red-11)',
+                  borderRadius: '9999px',
+                  fontSize: '14px',
+                }}
               >
-                <AlertCircle size={16} mr="$1" />
+                <AlertCircle size={16} style={{ marginRight: '4px' }} />
                 {unreviewedFieldsCount} field{unreviewedFieldsCount !== 1 ? 's' : ''} need review
-              </XStack>
+              </Row>
             )}
             {isEvaluating && (
-              <XStack alignItems="center" color="$teal9" gap="$2">
-                <Spinner size="small" color="$teal9" />
-                <Text fontSize="$3">Evaluating compliance...</Text>
-              </XStack>
+              <Row style={{ alignItems: 'center', color: 'var(--color-teal-9)', gap: '8px' }}>
+                <Loader2 size={16} className="animate-spin" />
+                <Text style={{ fontSize: '14px' }}>Evaluating compliance...</Text>
+              </Row>
             )}
             {document.complianceStatus && !isEvaluating && (
-              <XStack
-                alignItems="center"
-                paddingHorizontal="$3"
-                paddingVertical="$1"
-                backgroundColor="$green2"
-                color="$green11"
-                borderRadius={9999}
-                fontSize="$3"
+              <Row
+                style={{
+                  alignItems: 'center',
+                  paddingLeft: '12px',
+                  paddingRight: '12px',
+                  paddingTop: '4px',
+                  paddingBottom: '4px',
+                  backgroundColor: 'var(--color-green-2)',
+                  color: 'var(--color-green-11)',
+                  borderRadius: '9999px',
+                  fontSize: '14px',
+                }}
               >
-                <CheckCircle size={16} mr="$1" />
+                <CheckCircle size={16} style={{ marginRight: '4px' }} />
                 {document.complianceStatus.status}
-              </XStack>
+              </Row>
             )}
             <Button
-              onClick={handleSave}
+              onPress={handleSave}
               disabled={!validationResult.isValid || isSaving}
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              borderRadius="$4"
-              fontSize="$3"
-              fontWeight="500"
-              backgroundColor={
-                validationResult.isValid && !isSaving ? '$teal9' : '$gray6'
-              }
-              color={validationResult.isValid && !isSaving ? 'white' : '$color10'}
-              hoverStyle={{
+              style={{
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                paddingTop: '8px',
+                paddingBottom: '8px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 500,
                 backgroundColor:
-                  validationResult.isValid && !isSaving ? '$teal10' : '$gray6',
+                  validationResult.isValid && !isSaving ? 'var(--color-teal-9)' : 'var(--color-gray-6)',
+                color: validationResult.isValid && !isSaving ? 'white' : 'var(--color-gray-10)',
+                cursor: validationResult.isValid && !isSaving ? 'pointer' : 'not-allowed',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
               }}
-              disabledStyle={{
-                cursor: 'not-allowed',
-              }}
-              gap="$2"
             >
               {isSaving ? (
                 <>
-                  <Spinner size="small" color="white" />
+                  <Loader2 size={16} className="animate-spin" />
                   <Text>Saving...</Text>
                 </>
               ) : (
@@ -251,47 +266,51 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
                 </>
               )}
             </Button>
-          </XStack>
-        </XStack>
-      </YStack>
+          </Row>
+        </Row>
+      </Stack>
 
       {/* Main Content */}
-      <YStack flex={1} overflow="hidden">
-        <XStack
-          height="100%"
-          flexWrap="wrap"
-          $lg={{ flexWrap: 'nowrap' }}
-          gap="$6"
-          padding="$6"
+      <Stack style={{ flex: 1, overflow: 'hidden' }}>
+        <Row
+          style={{
+            height: '100%',
+            flexWrap: 'wrap',
+            gap: '24px',
+            padding: '24px',
+          }}
         >
           {/* Left Panel: Document Preview */}
-          <YStack flex={1} height="100%" overflow="auto" $lg={{ minWidth: '50%' }}>
+          <Stack style={{ flex: 1, height: '100%', overflow: 'auto', minWidth: '50%' }}>
             <DocumentPreview
               documentUrl={document.fileUrl}
               fileName={document.fileName}
               fileType={document.fileType}
             />
-          </YStack>
+          </Stack>
 
           {/* Right Panel: Fields and Validation */}
-          <YStack flex={1} height="100%" overflow="auto" gap="$6" $lg={{ minWidth: '50%' }}>
+          <Stack style={{ flex: 1, height: '100%', overflow: 'auto', gap: '24px', minWidth: '50%' }}>
             {/* Filter Controls */}
             <Card
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$4"
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderRadius: '8px',
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'var(--color-border)',
+                padding: '16px',
+              }}
             >
-              <XStack alignItems="center" cursor="pointer">
+              <Row style={{ alignItems: 'center', cursor: 'pointer' }}>
                 <Checkbox
                   checked={showOnlyFlagged}
                   onCheckedChange={(checked) => setShowOnlyFlagged(checked === true)}
                 />
-                <Text ml="$2" fontSize="$3" color="$color11">
+                <Text style={{ marginLeft: '8px', fontSize: '14px', color: 'var(--color-gray-11)' }}>
                   Show only flagged fields ({flaggedFields.length})
                 </Text>
-              </XStack>
+              </Row>
             </Card>
 
             {/* Validation Feedback */}
@@ -299,20 +318,23 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
 
             {/* Fields */}
             <Card
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$6"
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderRadius: '8px',
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'var(--color-border)',
+                padding: '24px',
+              }}
             >
               {renderFieldSection()}
             </Card>
 
             {/* Audit History */}
             <AuditHistoryPanel auditHistory={document.auditHistory} />
-          </YStack>
-        </XStack>
-      </YStack>
-    </YStack>
+          </Stack>
+        </Row>
+      </Stack>
+    </Stack>
   );
 };

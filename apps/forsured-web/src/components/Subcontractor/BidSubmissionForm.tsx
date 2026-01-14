@@ -5,10 +5,9 @@ import {
   FileText,
   DollarSign,
   Calendar,
-  MessageSquare,
   CheckCircle,
 } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button as TamaguiButton } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import Input from '../Common/Input';
@@ -159,45 +158,62 @@ export default function BidSubmissionForm({
       size="large"
     >
       {submitted ? (
-        <YStack alignItems="center" paddingVertical="$12">
-          <Card
-            width={64}
-            height={64}
-            backgroundColor="$green3"
-            borderRadius={9999}
-            alignItems="center"
-            justifyContent="center"
-            mb="$4"
+        <Stack align="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              backgroundColor: 'var(--color-green-3)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 16,
+            }}
           >
-            <CheckCircle color="$green10" size={32} />
-          </Card>
-          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$2">
+            <CheckCircle color="var(--color-green-10)" size={32} />
+          </div>
+          <Text size="lg" weight="semibold" style={{ marginBottom: 8 }}>
             Bid Submitted Successfully!
           </Text>
-          <Text color="$color11">
+          <Text muted>
             Your bid has been submitted and will be reviewed by the project
             manager.
           </Text>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$6">
+        <Stack gap={24}>
           {project && (
-            <Card backgroundColor="$blue3" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
-              <Text fontWeight="600" color="$blue11" mb="$1">
+            <Card
+              style={{
+                backgroundColor: 'var(--color-blue-3)',
+                border: '1px solid var(--color-blue-6)',
+                borderRadius: 12,
+                padding: 16,
+              }}
+            >
+              <Text weight="semibold" style={{ color: 'var(--color-blue-11)', marginBottom: 4 }}>
                 Project: {project.name}
               </Text>
-              <Text fontSize="$2" color="$blue10">{project.description}</Text>
+              <Text size="sm" style={{ color: 'var(--color-blue-10)' }}>{project.description}</Text>
             </Card>
           )}
 
           {error && (
-            <Card backgroundColor="$red3" borderWidth={1} borderColor="$red6" borderRadius="$4" padding="$4">
-              <Text fontSize="$2" color="$red10">{error}</Text>
+            <Card
+              style={{
+                backgroundColor: 'var(--color-red-3)',
+                border: '1px solid var(--color-red-6)',
+                borderRadius: 12,
+                padding: 16,
+              }}
+            >
+              <Text size="sm" style={{ color: 'var(--color-red-10)' }}>{error}</Text>
             </Card>
           )}
 
-          <XStack gap="$4" flexWrap="wrap">
-            <YStack flex={1} minWidth="200px">
+          <Row gap={16} style={{ flexWrap: 'wrap' }}>
+            <Stack style={{ flex: 1, minWidth: 200 }}>
               <Input
                 label="Bid Amount"
                 type="text"
@@ -211,9 +227,9 @@ export default function BidSubmissionForm({
                 required
                 leftIcon={DollarSign}
               />
-            </YStack>
+            </Stack>
 
-            <YStack flex={1} minWidth="200px">
+            <Stack style={{ flex: 1, minWidth: 200 }}>
               <Input
                 label="Timeline Start"
                 type="date"
@@ -223,11 +239,11 @@ export default function BidSubmissionForm({
                 required
                 leftIcon={Calendar}
               />
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
-          <XStack gap="$4" flexWrap="wrap">
-            <YStack flex={1} minWidth="200px">
+          <Row gap={16} style={{ flexWrap: 'wrap' }}>
+            <Stack style={{ flex: 1, minWidth: 200 }}>
               <Input
                 label="Timeline End"
                 type="date"
@@ -237,8 +253,8 @@ export default function BidSubmissionForm({
                 required
                 leftIcon={Calendar}
               />
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           <Textarea
             label="Scope of Work"
@@ -259,17 +275,19 @@ export default function BidSubmissionForm({
             fullWidth
           />
 
-          <YStack>
-            <Text fontSize="$2" fontWeight="500" color="$color12" mb="$2" display="block">
+          <Stack>
+            <Text size="sm" weight="medium" style={{ marginBottom: 8, display: 'block' }}>
               Upload Documents
             </Text>
-            <Card
-              borderWidth={2}
-              borderStyle="dashed"
-              borderColor="$borderColor"
-              borderRadius="$4"
-              padding="$6"
-              alignItems="center"
+            <div
+              style={{
+                border: '2px dashed var(--color-border)',
+                borderRadius: 12,
+                padding: 24,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
             >
               <input
                 type="file"
@@ -279,71 +297,77 @@ export default function BidSubmissionForm({
                 id="file-upload"
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
               />
-              <YStack
-                as="label"
+              <label
                 htmlFor="file-upload"
-                cursor="pointer"
-                alignItems="center"
+                style={{
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
               >
-                <Upload color="$blue10" size={32} mb="$2" />
-                <Text fontSize="$2" fontWeight="500" color="$blue10" mb="$1">
+                <Upload color="var(--color-blue-10)" size={32} style={{ marginBottom: 8 }} />
+                <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-10)', marginBottom: 4 }}>
                   Click to upload or drag and drop
                 </Text>
-                <Text fontSize="$1" color="$color10">
+                <Text size="xs" muted>
                   PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max 10MB each)
                 </Text>
-              </YStack>
-            </Card>
+              </label>
+            </div>
 
             {uploadedFiles.length > 0 && (
-              <YStack mt="$4" gap="$2">
+              <Stack gap={8} style={{ marginTop: 16 }}>
                 {uploadedFiles.map((file, index) => (
                   <Card
                     key={index}
-                    padding="$3"
-                    backgroundColor="$gray3"
-                    borderRadius="$4"
+                    style={{
+                      padding: 12,
+                      backgroundColor: 'var(--color-gray-3)',
+                      borderRadius: 12,
+                    }}
                   >
-                    <XStack alignItems="center" justifyContent="space-between">
-                      <XStack alignItems="center" gap="$3">
-                        <FileText color="$blue10" size={20} />
-                        <YStack>
-                          <Text fontSize="$2" fontWeight="500" color="$color12">
+                    <Row align="center" justify="space-between">
+                      <Row align="center" gap={12}>
+                        <FileText color="var(--color-blue-10)" size={20} />
+                        <Stack>
+                          <Text size="sm" weight="medium">
                             {file.name}
                           </Text>
-                          <Text fontSize="$1" color="$color10">
+                          <Text size="xs" muted>
                             {(file.size / 1024 / 1024).toFixed(2)} MB
                           </Text>
-                        </YStack>
-                      </XStack>
-                      <TamaguiButton
-                        onPress={() => removeFile(index)}
-                        padding="$1"
-                        backgroundColor="transparent"
-                        color="$red10"
-                        hoverStyle={{
-                          color: '$red12',
+                        </Stack>
+                      </Row>
+                      <button
+                        onClick={() => removeFile(index)}
+                        style={{
+                          padding: 4,
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: 'var(--color-red-10)',
                         }}
                       >
                         <X size={18} />
-                      </TamaguiButton>
-                    </XStack>
+                      </button>
+                    </Row>
                   </Card>
                 ))}
-              </YStack>
+              </Stack>
             )}
 
-            <YStack mt="$3">
-              <Text fontSize="$1" color="$color10">
+            <Stack style={{ marginTop: 12 }}>
+              <Text size="xs" muted>
                 Required documents: Proposal, COI, Endorsements (if applicable)
               </Text>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
 
-          <XStack gap="$3" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <Row gap={12} style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
             <Button
               variant="secondary"
-              onClick={handleClose}
+              onPress={handleClose}
               fullWidth
               disabled={loading}
             >
@@ -351,7 +375,7 @@ export default function BidSubmissionForm({
             </Button>
             <Button
               variant="primary"
-              onClick={handleSubmit}
+              onPress={handleSubmit}
               fullWidth
               disabled={
                 loading ||
@@ -365,8 +389,8 @@ export default function BidSubmissionForm({
             >
               {loading ? 'Submitting...' : 'Submit Bid'}
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
     </Modal>
   );

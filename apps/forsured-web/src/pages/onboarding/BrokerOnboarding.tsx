@@ -1,7 +1,7 @@
 // src/pages/onboarding/BrokerOnboarding.tsx
 // REQ-126: Broker Onboarding Page
 import React from 'react';
-import { View } from '@unicornlove/ui';
+import { Stack } from '@unicornlove/beyond-ui';
 import { useOnboarding } from '../../hooks/useOnboarding';
 import OnboardingWizard from '../../components/Onboarding/OnboardingWizard';
 import BrokerInfoStep from '../../components/Onboarding/steps/broker/BrokerInfoStep';
@@ -67,7 +67,7 @@ function BrokerOnboarding() {
   };
 
   return (
-    <View flex={1}>
+    <Stack style={{ flex: 1 }}>
       <OnboardingWizard
         userType="broker"
         currentStep={currentStep}
@@ -80,7 +80,7 @@ function BrokerOnboarding() {
       >
         {renderStepContent()}
       </OnboardingWizard>
-    </View>
+    </Stack>
   );
 }
 

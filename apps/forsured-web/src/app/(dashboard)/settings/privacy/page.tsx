@@ -9,8 +9,10 @@
  * - View connected apps and revoke access
  */
 
+'use client';
+
 import { useState, useEffect } from 'react';
-import { YStack, XStack, Text, H1, H2, H3, H4, Card, Button, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2, H3, Card, Button } from '@unicornlove/beyond-ui';
 
 // Types for CCPA data
 interface DataCategory {
@@ -51,32 +53,32 @@ const CATEGORY_INFO: Record<string, { name: string; description: string; icon: s
   identifiers: {
     name: 'Personal Identifiers',
     description: 'Name, email, phone, company information',
-    icon: '👤',
+    icon: '',
   },
   financial: {
     name: 'Financial Information',
     description: 'Insurance policies, payment records, coverage details',
-    icon: '💰',
+    icon: '',
   },
   professional: {
     name: 'Professional Information',
     description: 'Certifications, compliance records, documents',
-    icon: '📋',
+    icon: '',
   },
   commercial: {
     name: 'Commercial Information',
     description: 'Projects, business relationships, transactions',
-    icon: '🏢',
+    icon: '',
   },
   usage: {
     name: 'Usage Data',
     description: 'Login history, feature usage, activity logs',
-    icon: '📊',
+    icon: '',
   },
   inferences: {
     name: 'Inferences',
     description: 'Compliance scores, risk assessments',
-    icon: '🔍',
+    icon: '',
   },
 };
 
@@ -210,48 +212,45 @@ export default function PrivacySettingsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return { backgroundColor: '$green2', color: '$green11' };
-      case 'processing': return { backgroundColor: '$blue2', color: '$blue11' };
-      case 'pending': return { backgroundColor: '$yellow2', color: '$yellow11' };
-      case 'failed': return { backgroundColor: '$red2', color: '$red11' };
-      case 'cancelled': return { backgroundColor: '$gray2', color: '$gray11' };
-      default: return { backgroundColor: '$gray2', color: '$gray11' };
+      case 'completed': return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-11)' };
+      case 'processing': return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-11)' };
+      case 'pending': return { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)' };
+      case 'failed': return { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)' };
+      case 'cancelled': return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)' };
+      default: return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)' };
     }
   };
 
   if (loading) {
     return (
-      <YStack padding="$6" maxWidth={1152} marginHorizontal="auto" gap="$4">
-        <YStack height={32} backgroundColor="$gray3" borderRadius="$4" width="33%" />
-        <YStack height={16} backgroundColor="$gray3" borderRadius="$4" width="66%" />
-        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
+      <Stack style={{ padding: 'var(--space-6)', maxWidth: 1152, marginLeft: 'auto', marginRight: 'auto', gap: 'var(--space-4)' }}>
+        <Stack style={{ height: 32, backgroundColor: 'var(--color-gray-3)', borderRadius: 'var(--radius-4)', width: '33%' }} />
+        <Stack style={{ height: 16, backgroundColor: 'var(--color-gray-3)', borderRadius: 'var(--radius-4)', width: '66%' }} />
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
           {[1, 2, 3, 4].map(i => (
-            <YStack key={i} height={128} backgroundColor="$gray3" borderRadius="$4" flex={1} minWidth="45%" />
+            <Stack key={i} style={{ height: 128, backgroundColor: 'var(--color-gray-3)', borderRadius: 'var(--radius-4)', flex: 1, minWidth: '45%' }} />
           ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     );
   }
 
   return (
-    <YStack padding="$6" maxWidth={1152} marginHorizontal="auto" gap="$8">
+    <Stack style={{ padding: 'var(--space-6)', maxWidth: 1152, marginLeft: 'auto', marginRight: 'auto', gap: 'var(--space-8)' }}>
       {/* Header */}
-      <YStack gap="$2">
-        <H1 fontSize="$8" fontWeight="bold" color="$color12">Privacy Settings</H1>
-        <Text color="$color11">
+      <Stack style={{ gap: 'var(--space-2)' }}>
+        <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold', color: 'var(--color-12)' }}>Privacy Settings</H1>
+        <Text style={{ color: 'var(--color-11)' }}>
           Manage your privacy preferences and exercise your rights under the California Consumer Privacy Act (CCPA).
         </Text>
-      </YStack>
+      </Stack>
 
       {error && (
-        <Card padding="$4" backgroundColor="$red2" borderColor="$red6" borderRadius="$4" gap="$2">
-          <Text color="$red11">{error}</Text>
+        <Card style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-6)', borderRadius: 'var(--radius-4)', gap: 'var(--space-2)' }}>
+          <Text style={{ color: 'var(--color-red-11)' }}>{error}</Text>
           <Button
-            variant="outlined"
             onPress={() => window.location.reload()}
-            marginTop="$2"
-            color="$red10"
-            hoverStyle={{ color: '$red11' }}
+            style={{ marginTop: 'var(--space-2)', color: 'var(--color-red-10)', backgroundColor: 'transparent', borderWidth: 1, borderColor: 'var(--color-red-6)' }}
           >
             Try again
           </Button>
@@ -260,137 +259,108 @@ export default function PrivacySettingsPage() {
 
       {/* GPC Banner */}
       {hasGPC && (
-        <Card padding="$4" backgroundColor="$green2" borderColor="$green6" borderRadius="$4" marginBottom="$6">
-          <XStack alignItems="flex-start" gap="$3">
-            <Text fontSize="$6" color="$green10">✓</Text>
-            <YStack flex={1}>
-              <H3 fontSize="$5" fontWeight="600" color="$green11">Global Privacy Control Detected</H3>
-              <Text fontSize="$3" color="$green10" marginTop="$1">
+        <Card style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-green-2)', borderColor: 'var(--color-green-6)', borderRadius: 'var(--radius-4)', marginBottom: 'var(--space-6)' }}>
+          <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+            <Text style={{ fontSize: 'var(--font-size-6)', color: 'var(--color-green-10)' }}>Check</Text>
+            <Stack style={{ flex: 1 }}>
+              <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-green-11)' }}>Global Privacy Control Detected</H3>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-green-10)', marginTop: 'var(--space-1)' }}>
                 Your browser has sent a Global Privacy Control (GPC) signal. We honor this signal
                 and have automatically opted you out of data sale and sharing.
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
         </Card>
       )}
 
       {/* Quick Actions */}
-      <YStack gap="$4" marginBottom="$8">
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Quick Actions</H2>
-        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
+      <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+        <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>Quick Actions</H2>
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
           <Card
-            padding="$4"
-            backgroundColor="$blue2"
-            borderColor="$blue6"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: '$blue3' }}
-            cursor="pointer"
+            style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-6)', borderRadius: 'var(--radius-4)', cursor: 'pointer', flex: 1, minWidth: '45%' }}
             onPress={() => handleRequestClick('export')}
-            flex={1}
-            minWidth="45%"
-            $gtMd={{ minWidth: '30%' }}
           >
-            <YStack alignItems="flex-start" gap="$2">
-              <Text fontSize="$8" marginBottom="$2">📥</Text>
-              <H3 fontSize="$5" fontWeight="600" color="$blue11">Request My Data</H3>
-              <Text fontSize="$3" color="$blue10">Download a copy of your personal data</Text>
-            </YStack>
+            <Stack style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
+              <Text style={{ fontSize: 'var(--font-size-8)', marginBottom: 'var(--space-2)' }}>Download</Text>
+              <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-blue-11)' }}>Request My Data</H3>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-10)' }}>Download a copy of your personal data</Text>
+            </Stack>
           </Card>
 
           <Card
-            padding="$4"
-            backgroundColor="$red2"
-            borderColor="$red6"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: '$red3' }}
-            cursor="pointer"
+            style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-6)', borderRadius: 'var(--radius-4)', cursor: 'pointer', flex: 1, minWidth: '45%' }}
             onPress={() => handleRequestClick('deletion')}
-            flex={1}
-            minWidth="45%"
-            $gtMd={{ minWidth: '30%' }}
           >
-            <YStack alignItems="flex-start" gap="$2">
-              <Text fontSize="$8" marginBottom="$2">🗑️</Text>
-              <H3 fontSize="$5" fontWeight="600" color="$red11">Delete My Data</H3>
-              <Text fontSize="$3" color="$red10">Request deletion of your personal data</Text>
-            </YStack>
+            <Stack style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
+              <Text style={{ fontSize: 'var(--font-size-8)', marginBottom: 'var(--space-2)' }}>Delete</Text>
+              <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-red-11)' }}>Delete My Data</H3>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-red-10)' }}>Request deletion of your personal data</Text>
+            </Stack>
           </Card>
 
           <Card
-            padding="$4"
-            backgroundColor="$purple2"
-            borderColor="$purple6"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: '$purple3' }}
-            cursor="pointer"
+            style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-purple-2)', borderColor: 'var(--color-purple-6)', borderRadius: 'var(--radius-4)', cursor: 'pointer', flex: 1, minWidth: '45%' }}
             onPress={handleOptOutClick}
-            flex={1}
-            minWidth="45%"
-            $gtMd={{ minWidth: '30%' }}
           >
-            <YStack alignItems="flex-start" gap="$2">
-              <Text fontSize="$8" marginBottom="$2">🛡️</Text>
-              <H3 fontSize="$5" fontWeight="600" color="$purple11">Manage Opt-Outs</H3>
-              <Text fontSize="$3" color="$purple10">Control how your data is used and shared</Text>
-            </YStack>
+            <Stack style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
+              <Text style={{ fontSize: 'var(--font-size-8)', marginBottom: 'var(--space-2)' }}>Shield</Text>
+              <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-purple-11)' }}>Manage Opt-Outs</H3>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-purple-10)' }}>Control how your data is used and shared</Text>
+            </Stack>
           </Card>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Data Categories */}
-      <YStack gap="$4" marginBottom="$8">
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Your Data Categories</H2>
-        <Text color="$color11" marginBottom="$4">
+      <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+        <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>Your Data Categories</H2>
+        <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
           Below are the categories of personal information we collect about you.
         </Text>
-        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" overflow="hidden">
-          <YStack padding="$4" backgroundColor="$gray2" borderBottomWidth={1} borderBottomColor="$borderColor">
-            <Text fontSize="$3" color="$color11">
+        <Card style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)', borderRadius: 'var(--radius-4)', overflow: 'hidden' }}>
+          <Stack style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-gray-2)', borderBottomWidth: 1, borderBottomColor: 'var(--color-border)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
               We collect and process the following categories of personal information:
             </Text>
-          </YStack>
-          <YStack>
+          </Stack>
+          <Stack>
             {categories.map((cat, idx) => {
               const info = CATEGORY_INFO[cat.category];
               return (
-                <XStack
+                <Row
                   key={cat.category}
-                  padding="$4"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  borderTopWidth={idx > 0 ? 1 : 0}
-                  borderTopColor="$borderColor"
+                  style={{ padding: 'var(--space-4)', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: idx > 0 ? 1 : 0, borderTopColor: 'var(--color-border)' }}
                 >
-                  <XStack alignItems="center" gap="$3">
-                    <Text fontSize="$8">{info?.icon || '📁'}</Text>
-                    <YStack>
-                      <H3 fontSize="$4" fontWeight="500" color="$color12">{info?.name || cat.category}</H3>
-                      <Text fontSize="$3" color="$color10">{info?.description}</Text>
-                    </YStack>
-                  </XStack>
-                  <YStack alignItems="flex-end">
-                    <Text fontSize="$6" fontWeight="600" color="$color12">{cat.record_count}</Text>
-                    <Text fontSize="$3" color="$color10">records</Text>
-                  </YStack>
-                </XStack>
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+                    <Text style={{ fontSize: 'var(--font-size-8)' }}>{info?.icon || 'Folder'}</Text>
+                    <Stack>
+                      <H3 style={{ fontSize: 'var(--font-size-4)', fontWeight: 500, color: 'var(--color-12)' }}>{info?.name || cat.category}</H3>
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>{info?.description}</Text>
+                    </Stack>
+                  </Row>
+                  <Stack style={{ alignItems: 'flex-end' }}>
+                    <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)' }}>{cat.record_count}</Text>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>records</Text>
+                  </Stack>
+                </Row>
               );
             })}
-          </YStack>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
 
       {/* Privacy Rights */}
-      <YStack gap="$4" marginBottom="$8">
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Your Privacy Rights</H2>
-        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
+      <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+        <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>Your Privacy Rights</H2>
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
           {PRIVACY_RIGHTS.map((right, idx) => (
-            <Card key={idx} padding="$4" backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '47%' }}>
-              <YStack gap="$1">
-                <H3 fontSize="$5" fontWeight="600" color="$color12" marginBottom="$1">{right.title}</H3>
-                <Text fontSize="$3" color="$color11" marginBottom="$3">{right.description}</Text>
+            <Card key={idx} style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)', borderRadius: 'var(--radius-4)', flex: 1, minWidth: '45%' }}>
+              <Stack style={{ gap: 'var(--space-1)' }}>
+                <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-1)' }}>{right.title}</H3>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginBottom: 'var(--space-3)' }}>{right.description}</Text>
                 {right.action && right.type && (
                   <Button
-                    variant="ghost"
                     onPress={() => {
                       if (right.type === 'opt-out') {
                         handleOptOutClick();
@@ -398,301 +368,315 @@ export default function PrivacySettingsPage() {
                         handleRequestClick(right.type);
                       }
                     }}
-                    fontSize="$3"
-                    color="$blue10"
-                    hoverStyle={{ color: '$blue11' }}
-                    fontWeight="500"
+                    style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-10)', backgroundColor: 'transparent', fontWeight: 500 }}
                   >
-                    {right.action} →
+                    {right.action} -&gt;
                   </Button>
                 )}
-              </YStack>
+              </Stack>
             </Card>
           ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Right to Opt-Out Section */}
-      <YStack gap="$4" marginBottom="$8">
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Right to Opt-Out</H2>
-        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" padding="$4">
-          <Text color="$color11" marginBottom="$4">
+      <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+        <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>Right to Opt-Out</H2>
+        <Card style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+          <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
             Under CCPA, you have the right to opt-out of the sale or sharing of your personal information.
           </Text>
-          <YStack gap="$3">
+          <Stack style={{ gap: 'var(--space-3)' }}>
             {optOuts.map(opt => (
-              <XStack key={opt.category} alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$gray2" borderRadius="$4">
-                <YStack>
-                  <H4 fontSize="$4" fontWeight="500" color="$color12" textTransform="capitalize">
+              <Row key={opt.category} style={{ alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-3)', backgroundColor: 'var(--color-gray-2)', borderRadius: 'var(--radius-4)' }}>
+                <Stack>
+                  <Text style={{ fontSize: 'var(--font-size-4)', fontWeight: 500, color: 'var(--color-12)', textTransform: 'capitalize' }}>
                     {opt.category.replace(/_/g, ' ')}
-                  </H4>
-                  <Text fontSize="$3" color="$color10">
+                  </Text>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
                     {opt.opted_out ? 'You have opted out' : 'Currently opted in'}
                   </Text>
-                </YStack>
+                </Stack>
                 <Text
-                  paddingHorizontal="$3"
-                  paddingVertical="$1"
-                  borderRadius={9999}
-                  fontSize="$3"
-                  backgroundColor={opt.opted_out ? '$green2' : '$gray2'}
-                  color={opt.opted_out ? '$green11' : '$gray11'}
+                  style={{
+                    paddingLeft: 'var(--space-3)',
+                    paddingRight: 'var(--space-3)',
+                    paddingTop: 'var(--space-1)',
+                    paddingBottom: 'var(--space-1)',
+                    borderRadius: 9999,
+                    fontSize: 'var(--font-size-3)',
+                    backgroundColor: opt.opted_out ? 'var(--color-green-2)' : 'var(--color-gray-2)',
+                    color: opt.opted_out ? 'var(--color-green-11)' : 'var(--color-gray-11)',
+                  }}
                 >
                   {opt.opted_out ? 'Opted Out' : 'Opted In'}
                 </Text>
-              </XStack>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
           <Button
             onPress={handleOptOutClick}
-            marginTop="$4"
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            backgroundColor="$blue9"
-            color="white"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            style={{
+              marginTop: 'var(--space-4)',
+              paddingLeft: 'var(--space-4)',
+              paddingRight: 'var(--space-4)',
+              paddingTop: 'var(--space-2)',
+              paddingBottom: 'var(--space-2)',
+              backgroundColor: 'var(--color-blue-9)',
+              color: 'white',
+              borderRadius: 'var(--radius-4)',
+            }}
           >
             Manage Opt-Out Preferences
           </Button>
         </Card>
-      </YStack>
+      </Stack>
 
       {/* Request History */}
-      <YStack gap="$4" marginBottom="$8">
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Request History</H2>
-        <Text color="$color11" marginBottom="$4">
+      <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+        <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>Request History</H2>
+        <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
           View your privacy request history below. Requests are processed within 45 days as required by CCPA.
         </Text>
-        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" overflow="hidden">
+        <Card style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)', borderRadius: 'var(--radius-4)', overflow: 'hidden' }}>
           {requests.length === 0 ? (
-            <YStack padding="$8" alignItems="center">
-              <Text color="$color10">No privacy requests yet</Text>
-              <Text fontSize="$3" color="$color9" marginTop="$1">
+            <Stack style={{ padding: 'var(--space-8)', alignItems: 'center' }}>
+              <Text style={{ color: 'var(--color-10)' }}>No privacy requests yet</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-9)', marginTop: 'var(--space-1)' }}>
                 Your data export, deletion, and correction requests will appear here.
               </Text>
-            </YStack>
+            </Stack>
           ) : (
-            <YStack>
-              <XStack padding="$4" backgroundColor="$gray2" borderBottomWidth={1} borderBottomColor="$borderColor">
-                <Text flex={1} paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$color10">Type</Text>
-                <Text flex={1} paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$color10">Status</Text>
-                <Text flex={1} paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$color10">Submitted</Text>
-                <Text flex={1} paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$color10">Actions</Text>
-              </XStack>
-              <YStack>
+            <Stack>
+              <Row style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-gray-2)', borderBottomWidth: 1, borderBottomColor: 'var(--color-border)' }}>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-10)' }}>Type</Text>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-10)' }}>Status</Text>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-10)' }}>Submitted</Text>
+                <Text style={{ flex: 1, paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-10)' }}>Actions</Text>
+              </Row>
+              <Stack>
                 {requests.map((req, idx) => (
-                  <XStack
+                  <Row
                     key={req.id}
-                    padding="$3"
-                    borderTopWidth={idx > 0 ? 1 : 0}
-                    borderTopColor="$borderColor"
-                    alignItems="center"
+                    style={{ padding: 'var(--space-3)', borderTopWidth: idx > 0 ? 1 : 0, borderTopColor: 'var(--color-border)', alignItems: 'center' }}
                   >
-                    <Text flex={1} paddingHorizontal="$4" textTransform="capitalize">
+                    <Text style={{ flex: 1, paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', textTransform: 'capitalize' }}>
                       {req.type === 'export' ? 'Data Export' : req.type === 'deletion' ? 'Data Deletion' : 'Data Correction'}
                     </Text>
-                    <XStack flex={1} paddingHorizontal="$4">
+                    <Row style={{ flex: 1, paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)' }}>
                       <Text
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        fontSize="$3"
-                        {...getStatusColor(req.status)}
+                        style={{
+                          paddingLeft: 'var(--space-2)',
+                          paddingRight: 'var(--space-2)',
+                          paddingTop: 'var(--space-1)',
+                          paddingBottom: 'var(--space-1)',
+                          borderRadius: 'var(--radius-2)',
+                          fontSize: 'var(--font-size-3)',
+                          ...getStatusColor(req.status),
+                        }}
                       >
                         {req.status}
                       </Text>
-                    </XStack>
-                    <Text flex={1} paddingHorizontal="$4" color="$color11">{formatDate(req.created_at)}</Text>
-                    <XStack flex={1} paddingHorizontal="$4">
+                    </Row>
+                    <Text style={{ flex: 1, paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', color: 'var(--color-11)' }}>{formatDate(req.created_at)}</Text>
+                    <Row style={{ flex: 1, paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)' }}>
                       {req.status === 'completed' && req.download_url && (
                         <Button
-                          variant="ghost"
-                          fontSize="$3"
-                          color="$blue10"
-                          hoverStyle={{ color: '$blue11' }}
+                          style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-10)', backgroundColor: 'transparent' }}
                         >
                           Download
                         </Button>
                       )}
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
         </Card>
-      </YStack>
+      </Stack>
 
       {/* Connected Apps */}
-      <YStack gap="$4" marginBottom="$8">
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Connected Applications</H2>
-        <Text color="$color11" marginBottom="$4">
+      <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+        <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>Connected Applications</H2>
+        <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
           Manage third-party applications that have access to your data.
         </Text>
-        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4">
+        <Card style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)', borderRadius: 'var(--radius-4)' }}>
           {connectedApps.length === 0 ? (
-            <YStack padding="$8" alignItems="center">
-              <Text color="$color10">No connected applications</Text>
-              <Text fontSize="$3" color="$color9" marginTop="$1">
+            <Stack style={{ padding: 'var(--space-8)', alignItems: 'center' }}>
+              <Text style={{ color: 'var(--color-10)' }}>No connected applications</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-9)', marginTop: 'var(--space-1)' }}>
                 Third-party apps with access to your data will appear here.
               </Text>
-            </YStack>
+            </Stack>
           ) : (
-            <YStack>
+            <Stack>
               {connectedApps.map((app, idx) => (
-                <YStack
+                <Stack
                   key={app.id}
-                  padding="$4"
-                  borderTopWidth={idx > 0 ? 1 : 0}
-                  borderTopColor="$borderColor"
+                  style={{ padding: 'var(--space-4)', borderTopWidth: idx > 0 ? 1 : 0, borderTopColor: 'var(--color-border)' }}
                 >
-                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
-                    <H3 fontSize="$4" fontWeight="500" color="$color12">{app.app_name}</H3>
-                    <XStack gap="$2">
-                      <Button variant="ghost" fontSize="$3" color="$blue10" hoverStyle={{ color: '$blue11' }}>
+                  <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
+                    <H3 style={{ fontSize: 'var(--font-size-4)', fontWeight: 500, color: 'var(--color-12)' }}>{app.app_name}</H3>
+                    <Row style={{ gap: 'var(--space-2)' }}>
+                      <Button style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-10)', backgroundColor: 'transparent' }}>
                         View Details
                       </Button>
-                      <Button variant="ghost" fontSize="$3" color="$red10" hoverStyle={{ color: '$red11' }}>
+                      <Button style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-red-10)', backgroundColor: 'transparent' }}>
                         Revoke Access
                       </Button>
-                    </XStack>
-                  </XStack>
-                  <Text fontSize="$3" color="$color10" marginBottom="$2">
+                    </Row>
+                  </Row>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)', marginBottom: 'var(--space-2)' }}>
                     Connected {formatDate(app.connected_at)}
                   </Text>
-                  <YStack marginTop="$2">
-                    <H4 fontSize="$3" fontWeight="500" color="$color11">Permissions</H4>
-                    <XStack flexWrap="wrap" gap="$1" marginTop="$1">
+                  <Stack style={{ marginTop: 'var(--space-2)' }}>
+                    <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-11)' }}>Permissions</Text>
+                    <Row style={{ flexWrap: 'wrap', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
                       {app.permissions.map(perm => (
                         <Text
                           key={perm}
-                          paddingHorizontal="$2"
-                          paddingVertical="$0.5"
-                          backgroundColor="$gray2"
-                          color="$color11"
-                          fontSize="$2"
-                          borderRadius="$2"
+                          style={{
+                            paddingLeft: 'var(--space-2)',
+                            paddingRight: 'var(--space-2)',
+                            paddingTop: 2,
+                            paddingBottom: 2,
+                            backgroundColor: 'var(--color-gray-2)',
+                            color: 'var(--color-11)',
+                            fontSize: 'var(--font-size-2)',
+                            borderRadius: 'var(--radius-2)',
+                          }}
                         >
                           {perm}
                         </Text>
                       ))}
-                    </XStack>
-                  </YStack>
-                  <YStack marginTop="$2">
-                    <H4 fontSize="$3" fontWeight="500" color="$color11">Data Categories Accessed</H4>
-                    <XStack flexWrap="wrap" gap="$1" marginTop="$1">
+                    </Row>
+                  </Stack>
+                  <Stack style={{ marginTop: 'var(--space-2)' }}>
+                    <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-11)' }}>Data Categories Accessed</Text>
+                    <Row style={{ flexWrap: 'wrap', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
                       {app.data_categories.map(cat => (
                         <Text
                           key={cat}
-                          paddingHorizontal="$2"
-                          paddingVertical="$0.5"
-                          backgroundColor="$blue2"
-                          color="$blue10"
-                          fontSize="$2"
-                          borderRadius="$2"
-                          textTransform="capitalize"
+                          style={{
+                            paddingLeft: 'var(--space-2)',
+                            paddingRight: 'var(--space-2)',
+                            paddingTop: 2,
+                            paddingBottom: 2,
+                            backgroundColor: 'var(--color-blue-2)',
+                            color: 'var(--color-blue-10)',
+                            fontSize: 'var(--font-size-2)',
+                            borderRadius: 'var(--radius-2)',
+                            textTransform: 'capitalize',
+                          }}
                         >
                           {cat}
                         </Text>
                       ))}
-                    </XStack>
-                  </YStack>
-                </YStack>
+                    </Row>
+                  </Stack>
+                </Stack>
               ))}
-            </YStack>
+            </Stack>
           )}
         </Card>
-      </YStack>
+      </Stack>
 
       {/* Non-Discrimination Notice */}
-      <Card marginBottom="$8" padding="$4" backgroundColor="$gray2" borderColor="$borderColor" borderRadius="$4">
-        <H3 fontSize="$5" fontWeight="600" color="$color12" marginBottom="$2">Non-Discrimination Notice</H3>
-        <Text fontSize="$3" color="$color11">
+      <Card style={{ marginBottom: 'var(--space-8)', padding: 'var(--space-4)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-border)', borderRadius: 'var(--radius-4)' }}>
+        <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-2)' }}>Non-Discrimination Notice</H3>
+        <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
           We will not discriminate against you for exercising any of your privacy rights.
           You will receive the same service and pricing regardless of your privacy choices.
         </Text>
       </Card>
 
       {/* Processing Time Info */}
-      <Card marginBottom="$8" padding="$4" backgroundColor="$blue2" borderColor="$blue6" borderRadius="$4">
-        <Text fontSize="$3" color="$blue11" marginBottom="$2">
-          <Text fontWeight="600">Processing Time:</Text> Under CCPA, we will respond to your request within 45 days.
+      <Card style={{ marginBottom: 'var(--space-8)', padding: 'var(--space-4)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-6)', borderRadius: 'var(--radius-4)' }}>
+        <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-11)', marginBottom: 'var(--space-2)' }}>
+          <Text style={{ fontWeight: 600 }}>Processing Time:</Text> Under CCPA, we will respond to your request within 45 days.
           In some cases, we may extend this period by an additional 45 days if necessary.
         </Text>
-        <Text fontSize="$3" color="$blue11">
-          <Text fontWeight="600">Download Availability:</Text> Data exports will be available for download for 30 days after completion.
+        <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-11)' }}>
+          <Text style={{ fontWeight: 600 }}>Download Availability:</Text> Data exports will be available for download for 30 days after completion.
         </Text>
       </Card>
 
       {/* Additional Resources */}
-      <YStack gap="$4" marginBottom="$8">
-        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Additional Resources</H2>
-        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" padding="$4">
-          <YStack gap="$3">
-            <YStack>
-              <Text as="a" href="/privacy-policy" color="$blue10" hoverStyle={{ color: '$blue11', textDecorationLine: 'underline' }}>
+      <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+        <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>Additional Resources</H2>
+        <Card style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+          <Stack style={{ gap: 'var(--space-3)' }}>
+            <Stack>
+              <a href="/privacy-policy" style={{ color: 'var(--color-blue-10)' }}>
                 Privacy Policy
-              </Text>
-              <Text fontSize="$3" color="$color10">Learn how we collect, use, and protect your information</Text>
-            </YStack>
-            <YStack>
-              <Text as="a" href="/terms" color="$blue10" hoverStyle={{ color: '$blue11', textDecorationLine: 'underline' }}>
+              </a>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>Learn how we collect, use, and protect your information</Text>
+            </Stack>
+            <Stack>
+              <a href="/terms" style={{ color: 'var(--color-blue-10)' }}>
                 Terms of Service
-              </Text>
-              <Text fontSize="$3" color="$color10">Review our terms and conditions</Text>
-            </YStack>
-            <YStack>
-              <Text as="a" href="https://oag.ca.gov/privacy/ccpa" target="_blank" rel="noopener noreferrer" color="$blue10" hoverStyle={{ color: '$blue11', textDecorationLine: 'underline' }}>
+              </a>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>Review our terms and conditions</Text>
+            </Stack>
+            <Stack>
+              <a href="https://oag.ca.gov/privacy/ccpa" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-blue-10)' }}>
                 Learn more about CCPA
-              </Text>
-              <Text fontSize="$3" color="$color10">Official information from the California Attorney General</Text>
-            </YStack>
-          </YStack>
-          <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
-            <Text fontSize="$3" color="$color11">
+              </a>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>Official information from the California Attorney General</Text>
+            </Stack>
+          </Stack>
+          <Stack style={{ marginTop: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTopWidth: 1, borderTopColor: 'var(--color-border)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
               Have questions about your privacy rights? Contact our privacy team at{' '}
-              <Text as="a" href="mailto:privacy@scaffald.com" color="$blue10" hoverStyle={{ color: '$blue11' }}>
+              <a href="mailto:privacy@scaffald.com" style={{ color: 'var(--color-blue-10)' }}>
                 privacy@scaffald.com
-              </Text>
+              </a>
             </Text>
-          </YStack>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
 
       {/* Modals would go here - simplified for now */}
       {activeModal && (
-        <YStack
-          position="fixed"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          zIndex={50}
+        <Stack
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+            display: 'flex',
+          }}
         >
-          <Card backgroundColor="$background" borderRadius="$4" padding="$6" maxWidth={448} width="100%" marginHorizontal="$4">
-            <YStack gap="$4">
-              <H2 fontSize="$7" fontWeight="600" marginBottom="$4">
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', padding: 'var(--space-6)', maxWidth: 448, width: '100%', marginLeft: 'var(--space-4)', marginRight: 'var(--space-4)' }}>
+            <Stack style={{ gap: 'var(--space-4)' }}>
+              <H2 style={{ fontSize: 'var(--font-size-7)', fontWeight: 600, marginBottom: 'var(--space-4)' }}>
                 {activeModal === 'opt-out' ? 'Manage Opt-Out Preferences' :
                  requestType === 'export' ? 'Request Data Export' :
                  requestType === 'deletion' ? 'Request Data Deletion' : 'Request Data Correction'}
               </H2>
-              <Text color="$color11" marginBottom="$4">
+              <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
                 {activeModal === 'opt-out'
                   ? 'Control how your personal information is used and shared.'
                   : 'Your request will be processed within 45 days as required by CCPA.'}
               </Text>
-              <XStack gap="$3" justifyContent="flex-end">
+              <Row style={{ gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
                 <Button
-                  variant="ghost"
                   onPress={() => setActiveModal(null)}
-                  paddingHorizontal="$4"
-                  paddingVertical="$2"
-                  color="$color11"
-                  hoverStyle={{ color: '$color12' }}
+                  style={{
+                    paddingLeft: 'var(--space-4)',
+                    paddingRight: 'var(--space-4)',
+                    paddingTop: 'var(--space-2)',
+                    paddingBottom: 'var(--space-2)',
+                    color: 'var(--color-11)',
+                    backgroundColor: 'transparent',
+                  }}
                 >
                   Cancel
                 </Button>
@@ -702,20 +686,23 @@ export default function PrivacySettingsPage() {
                     alert('Request submitted! You will receive an email confirmation.');
                     setActiveModal(null);
                   }}
-                  paddingHorizontal="$4"
-                  paddingVertical="$2"
-                  backgroundColor="$blue9"
-                  color="white"
-                  borderRadius="$4"
-                  hoverStyle={{ backgroundColor: '$blue10' }}
+                  style={{
+                    paddingLeft: 'var(--space-4)',
+                    paddingRight: 'var(--space-4)',
+                    paddingTop: 'var(--space-2)',
+                    paddingBottom: 'var(--space-2)',
+                    backgroundColor: 'var(--color-blue-9)',
+                    color: 'white',
+                    borderRadius: 'var(--radius-4)',
+                  }}
                 >
                   {activeModal === 'opt-out' ? 'Save Preferences' : 'Submit Request'}
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           </Card>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }

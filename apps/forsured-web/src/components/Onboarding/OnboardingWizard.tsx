@@ -1,9 +1,9 @@
 /**
- * OnboardingWizard - Onboarding wizard using Tamagui
+ * OnboardingWizard - Onboarding wizard using Beyond UI
  * REQ-126: Onboarding Wizard Base Component
  */
 import React from 'react';
-import { YStack } from '@unicornlove/ui';
+import { Stack } from '@unicornlove/beyond-ui';
 import OnboardingProgress from './OnboardingProgress';
 import OnboardingNavigation from './OnboardingNavigation';
 
@@ -43,12 +43,22 @@ function OnboardingWizard({
   };
 
   return (
-    <YStack maxWidth={672} width="100%" alignSelf="center" paddingHorizontal="$4" paddingVertical="$8">
+    <Stack
+      style={{
+        maxWidth: 672,
+        width: '100%',
+        alignSelf: 'center',
+        paddingLeft: 16,
+        paddingRight: 16,
+        paddingTop: 32,
+        paddingBottom: 32,
+      }}
+    >
       <OnboardingProgress current={currentStep} total={totalSteps} />
 
-      <YStack mt="$8">
+      <Stack style={{ marginTop: 32 }}>
         {children}
-      </YStack>
+      </Stack>
 
       <OnboardingNavigation
         currentStep={currentStep}
@@ -60,7 +70,7 @@ function OnboardingWizard({
         canSkip={canSkip}
         isLoading={isLoading}
       />
-    </YStack>
+    </Stack>
   );
 }
 

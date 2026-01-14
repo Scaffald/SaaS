@@ -5,7 +5,8 @@ import type { Plugin as EsbuildPlugin } from 'esbuild';
 import dotenv from 'dotenv';
 
 // Load .env file for server-side code (tRPC middleware)
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Use monorepo root .env file (same as envDir setting below)
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // Path to shim files for missing modules
 const shimPath = path.resolve(__dirname, './src/shims/react-native-shims.ts');
@@ -151,7 +152,6 @@ export default defineConfig({
       // Note: react-native-gifted-charts needs to be included for gradient shim to work
     ],
     include: [
-      'tamagui',
       'react-native-web',
       // CJS modules that need ESM conversion
       'hoist-non-react-statics',
@@ -242,11 +242,7 @@ export default defineConfig({
     // Dependencies that need to be transformed for tests
     deps: {
       inline: [
-        'tamagui',
-        '@tamagui/core',
-        '@tamagui/web',
-        '@tamagui/animations-moti',
-        'moti',
+        '@unicornlove/beyond-ui',
         'react-native-reanimated',
       ],
     },

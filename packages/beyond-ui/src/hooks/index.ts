@@ -6,3 +6,5 @@
 export { useControlledState } from './useControlledState'
 export { useInteractiveState } from './useInteractiveState'
 export type { InteractiveState } from './useInteractiveState'
+export { useResponsive } from './useResponsive'
+export type { ResponsiveValue, UseResponsiveReturn } from './useResponsive'

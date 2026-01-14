@@ -11,7 +11,5 @@ export type {
   AddAvatarProps,
   AvatarSize,
   AvatarColor,
-  AvatarType,
   AvatarStatus,
-  AvatarBadge,
 } from './Avatar.types'

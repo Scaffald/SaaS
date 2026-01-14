@@ -1,6 +1,6 @@
 import React from 'react';
 import { Palette } from 'lucide-react';
-import { YStack, XStack, Text, styled, useTheme } from '@unicornlove/ui';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 
 interface ColorSwatchProps {
   name: string;
@@ -8,57 +8,38 @@ interface ColorSwatchProps {
   weight: number;
 }
 
-const SwatchContainer = styled(XStack, {
-  name: 'ColorSwatchContainer',
-  alignItems: 'center',
-  gap: '$3',
-});
-
-const SwatchBox = styled(XStack, {
-  name: 'ColorSwatchBox',
-  width: 80, // w-20
-  height: 80, // h-20
-  borderRadius: '$4',
-  shadowColor: '$shadowColor',
-  shadowRadius: 5,
-  shadowOffset: { width: 0, height: 2 },
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontWeight: '500',
-  fontSize: '$2',
-  transition: 'transform 0.2s ease-in-out',
-  hoverStyle: {
-    scale: 1.05,
-  },
-});
-
-const SwatchInfo = styled(YStack, {
-  name: 'SwatchInfo',
-  flex: 1,
-});
-
 function ColorSwatch({ name, colorVar, weight }: ColorSwatchProps) {
-  const theme = useTheme();
-  const textColor = weight >= 600 ? theme.color1.val : theme.color12.val;
+  const textColor = weight >= 600 ? 'var(--color-1)' : 'var(--color-12)';
 
   return (
-    <SwatchContainer>
-      <SwatchBox
-        style={{ backgroundColor: `rgb(var(${colorVar}))`, color: textColor }}
+    <Row style={{ alignItems: 'center', gap: '12px' }}>
+      <Row
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: '8px',
+          boxShadow: '0 2px 5px var(--color-shadow)',
+          border: '1px solid var(--color-border)',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 500,
+          fontSize: '14px',
+          transition: 'transform 0.2s ease-in-out',
+          backgroundColor: `rgb(var(${colorVar}))`,
+          color: textColor,
+        }}
       >
         {weight}
-      </SwatchBox>
-      <SwatchInfo>
-        <Text fontSize="$2" fontFamily="$mono" color="$color11">
+      </Row>
+      <Stack style={{ flex: 1 }}>
+        <Text style={{ fontSize: '14px', fontFamily: 'monospace', color: 'var(--color-11)' }}>
           {colorVar}
         </Text>
-        <Text fontSize="$1" fontFamily="$mono" color="$color10" mt="$1">
+        <Text style={{ fontSize: '12px', fontFamily: 'monospace', color: 'var(--color-10)', marginTop: '4px' }}>
           rgb(var({colorVar}))
         </Text>
-      </SwatchInfo>
-    </SwatchContainer>
+      </Stack>
+    </Row>
   );
 }
 
@@ -68,56 +49,48 @@ interface ColorPaletteProps {
   baseColor: string;
 }
 
-const PaletteCard = styled(YStack, {
-  name: 'ColorPaletteCard',
-  backgroundColor: '$background',
-  borderRadius: '$5',
-  shadowColor: '$shadowColor',
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 5 },
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  padding: '$6',
-});
-
-const PaletteHeader = styled(XStack, {
-  name: 'PaletteHeader',
-  alignItems: 'center',
-  gap: '$3',
-  marginBottom: '$6',
-  paddingBottom: '$4',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-});
-
-const BaseColorBox = styled(XStack, {
-  name: 'BaseColorBox',
-  width: 48, // w-12
-  height: 48, // h-12
-  borderRadius: '$4',
-  shadowColor: '$shadowColor',
-  shadowRadius: 5,
-  shadowOffset: { width: 0, height: 2 },
-});
-
 function ColorPalette({ name, displayName, baseColor }: ColorPaletteProps) {
   const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
 
   return (
-    <PaletteCard>
-      <PaletteHeader>
-        <BaseColorBox style={{ backgroundColor: baseColor }} />
-        <YStack>
-          <Text fontSize="$5" fontWeight="bold" color="$color11">
+    <Stack
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: '12px',
+        boxShadow: '0 5px 10px var(--color-shadow)',
+        border: '1px solid var(--color-border)',
+        padding: '24px',
+      }}
+    >
+      <Row
+        style={{
+          alignItems: 'center',
+          gap: '12px',
+          marginBottom: '24px',
+          paddingBottom: '16px',
+          borderBottom: '1px solid var(--color-border)',
+        }}
+      >
+        <Row
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: '8px',
+            boxShadow: '0 2px 5px var(--color-shadow)',
+            backgroundColor: baseColor,
+          }}
+        />
+        <Stack>
+          <Text style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--color-11)' }}>
             {displayName}
           </Text>
-          <Text fontSize="$2" color="$color10" fontFamily="$mono">
+          <Text style={{ fontSize: '14px', color: 'var(--color-10)', fontFamily: 'monospace' }}>
             {baseColor}
           </Text>
-        </YStack>
-      </PaletteHeader>
+        </Stack>
+      </Row>
 
-      <YStack gap="$4">
+      <Stack style={{ gap: '16px' }}>
         {weights.map((weight) => (
           <ColorSwatch
             key={weight}
@@ -126,52 +99,10 @@ function ColorPalette({ name, displayName, baseColor }: ColorPaletteProps) {
             weight={weight}
           />
         ))}
-      </YStack>
-    </PaletteCard>
+      </Stack>
+    </Stack>
   );
 }
-
-const HeroSection = styled(YStack, {
-  name: 'ColorsHeroSection',
-  background: 'linear-gradient(to right, $blue9, $teal9)',
-  borderRadius: '$5',
-  padding: '$8',
-  color: '$color1',
-  shadowColor: '$shadowColor',
-  shadowRadius: 20,
-  shadowOffset: { width: 0, height: 10 },
-});
-
-const HeroIconContainer = styled(XStack, {
-  name: 'HeroIconContainer',
-  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  padding: '$4',
-  borderRadius: '$5',
-  backdropFilter: 'blur(10px)',
-});
-
-const InfoCard = styled(YStack, {
-  name: 'InfoCard',
-  backgroundColor: '$background',
-  borderRadius: '$5',
-  shadowColor: '$shadowColor',
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 5 },
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  padding: '$6',
-});
-
-const CodeBlock = styled(YStack, {
-  name: 'CodeBlock',
-  backgroundColor: '$backgroundSecondary',
-  borderRadius: '$4',
-  padding: '$4',
-  fontFamily: '$mono',
-  fontSize: '$2',
-  color: '$color10',
-  gap: '$1',
-});
 
 export default function Colors() {
   const colorPalettes = [
@@ -183,86 +114,137 @@ export default function Colors() {
   ];
 
   return (
-    <YStack gap="$6" padding="$4">
-      <HeroSection>
-        <XStack alignItems="center" gap="$4">
-          <HeroIconContainer>
+    <Stack style={{ gap: '24px', padding: '16px' }}>
+      <Stack
+        style={{
+          background: 'linear-gradient(to right, var(--color-blue-9), var(--color-teal-9))',
+          borderRadius: '12px',
+          padding: '32px',
+          color: 'var(--color-1)',
+          boxShadow: '0 10px 20px var(--color-shadow)',
+        }}
+      >
+        <Row style={{ alignItems: 'center', gap: '16px' }}>
+          <Row
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              padding: '16px',
+              borderRadius: '12px',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
             <Palette size={32} color="white" />
-          </HeroIconContainer>
-          <YStack>
-            <Text fontSize="$7" fontWeight="bold" color="$color1">
+          </Row>
+          <Stack>
+            <Text style={{ fontSize: '28px', fontWeight: 'bold', color: 'var(--color-1)' }}>
               Color System
             </Text>
-            <Text fontSize="$4" color="rgba(255, 255, 255, 0.9)" mt="$1">
+            <Text style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.9)', marginTop: '4px' }}>
               Complete 100-900 weight color scales for all brand colors
             </Text>
-          </YStack>
-        </XStack>
-      </HeroSection>
+          </Stack>
+        </Row>
+      </Stack>
 
-      <InfoCard>
-        <Text fontSize="$4" fontWeight="600" color="$color11" mb="$4">
+      <Stack
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: '12px',
+          boxShadow: '0 5px 10px var(--color-shadow)',
+          border: '1px solid var(--color-border)',
+          padding: '24px',
+        }}
+      >
+        <Text style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-11)', marginBottom: '16px' }}>
           Color Scale Structure
         </Text>
-        <YStack gap="$2">
-          <Text fontSize="$2" color="$color10">
-            <Text fontWeight="600" color="$color11">100:</Text> Lightest tint - near white with subtle color hint
+        <Stack style={{ gap: '8px' }}>
+          <Text style={{ fontSize: '14px', color: 'var(--color-10)' }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-11)' }}>100:</Text> Lightest tint - near white with subtle color hint
           </Text>
-          <Text fontSize="$2" color="$color10">
-            <Text fontWeight="600" color="$color11">200-400:</Text> Light variations - ideal for backgrounds and subtle UI elements
+          <Text style={{ fontSize: '14px', color: 'var(--color-10)' }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-11)' }}>200-400:</Text> Light variations - ideal for backgrounds and subtle UI elements
           </Text>
-          <Text fontSize="$2" color="$color10">
-            <Text fontWeight="600" color="$color11">500:</Text> Base color - the primary brand color value
+          <Text style={{ fontSize: '14px', color: 'var(--color-10)' }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-11)' }}>500:</Text> Base color - the primary brand color value
           </Text>
-          <Text fontSize="$2" color="$color10">
-            <Text fontWeight="600" color="$color11">600-800:</Text> Dark variations - ideal for text and emphasis
+          <Text style={{ fontSize: '14px', color: 'var(--color-10)' }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-11)' }}>600-800:</Text> Dark variations - ideal for text and emphasis
           </Text>
-          <Text fontSize="$2" color="$color10">
-            <Text fontWeight="600" color="$color11">900:</Text> Darkest shade - near black with subtle color tint
+          <Text style={{ fontSize: '14px', color: 'var(--color-10)' }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-11)' }}>900:</Text> Darkest shade - near black with subtle color tint
           </Text>
-        </YStack>
-      </InfoCard>
+        </Stack>
+      </Stack>
 
-      <XStack flexWrap="wrap" gap="$6">
+      <Row style={{ flexWrap: 'wrap', gap: '24px' }}>
         {colorPalettes.map((palette) => (
-          <YStack key={palette.name} flex={1} minWidth={300}>
+          <Stack key={palette.name} style={{ flex: 1, minWidth: 300 }}>
             <ColorPalette
               name={palette.name}
               displayName={palette.displayName}
               baseColor={palette.baseColor}
             />
-          </YStack>
+          </Stack>
         ))}
-      </XStack>
+      </Row>
 
-      <InfoCard>
-        <Text fontSize="$4" fontWeight="600" color="$color11" mb="$4">
+      <Stack
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: '12px',
+          boxShadow: '0 5px 10px var(--color-shadow)',
+          border: '1px solid var(--color-border)',
+          padding: '24px',
+        }}
+      >
+        <Text style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-11)', marginBottom: '16px' }}>
           Usage Examples
         </Text>
-        <YStack gap="$4">
-          <YStack>
-            <Text fontSize="$2" fontWeight="600" color="$color11" mb="$2">
+        <Stack style={{ gap: '16px' }}>
+          <Stack>
+            <Text style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-11)', marginBottom: '8px' }}>
               Tamagui Theme Tokens
             </Text>
-            <CodeBlock>
+            <Stack
+              style={{
+                backgroundColor: 'var(--color-background-secondary)',
+                borderRadius: '8px',
+                padding: '16px',
+                fontFamily: 'monospace',
+                fontSize: '14px',
+                color: 'var(--color-10)',
+                gap: '4px',
+              }}
+            >
               <Text>backgroundColor: '$blue9'</Text>
               <Text>color: '$orange11'</Text>
               <Text>borderColor: '$teal7'</Text>
-            </CodeBlock>
-          </YStack>
+            </Stack>
+          </Stack>
 
-          <YStack>
-            <Text fontSize="$2" fontWeight="600" color="$color11" mb="$2">
+          <Stack>
+            <Text style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-11)', marginBottom: '8px' }}>
               CSS Variables
             </Text>
-            <CodeBlock>
+            <Stack
+              style={{
+                backgroundColor: 'var(--color-background-secondary)',
+                borderRadius: '8px',
+                padding: '16px',
+                fontFamily: 'monospace',
+                fontSize: '14px',
+                color: 'var(--color-10)',
+                gap: '4px',
+              }}
+            >
               <Text>color: rgb(var(--color-blue-500));</Text>
               <Text>background-color: rgb(var(--color-orange-100));</Text>
               <Text>border-color: rgb(var(--color-gray-300));</Text>
-            </CodeBlock>
-          </YStack>
-        </YStack>
-      </InfoCard>
-    </YStack>
+            </Stack>
+          </Stack>
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }

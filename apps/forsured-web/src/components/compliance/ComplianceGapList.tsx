@@ -3,7 +3,8 @@
  * Compliance Gap List Component
  */
 
-import { YStack, XStack, Text } from '@unicornlove/ui';
+import React from 'react';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 import { ComplianceGap, GapType, GapSeverity } from '../../lib/compliance/evaluator';
 
 interface ComplianceGapListProps {
@@ -16,24 +17,27 @@ interface ComplianceGapListProps {
 export const ComplianceGapList: React.FC<ComplianceGapListProps> = ({ gaps }) => {
   if (gaps.length === 0) {
     return (
-      <YStack
-        backgroundColor="$green2"
-        borderWidth={1}
-        borderColor="$green6"
-        borderRadius="$4"
-        padding="$6"
-        alignItems="center"
+      <Stack
+        style={{
+          backgroundColor: 'var(--color-green2)',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: 'var(--color-green6)',
+          borderRadius: '8px',
+          padding: '24px',
+          alignItems: 'center',
+        }}
       >
-        <Text fontSize="$10" mb="$2">
-          ✓
+        <Text style={{ fontSize: '36px', marginBottom: '8px' }}>
+          &#10003;
         </Text>
-        <Text color="$green11" fontWeight="600">
+        <Text style={{ color: 'var(--color-green11)', fontWeight: 600 }}>
           No Compliance Gaps Identified
         </Text>
-        <Text color="$green10" fontSize="$3" mt="$1">
+        <Text style={{ color: 'var(--color-green10)', fontSize: '14px', marginTop: '4px' }}>
           This policy meets all project requirements
         </Text>
-      </YStack>
+      </Stack>
     );
   }
 
@@ -43,58 +47,58 @@ export const ComplianceGapList: React.FC<ComplianceGapListProps> = ({ gaps }) =>
   const infoGaps = gaps.filter((g) => g.severity === 'info');
 
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <Text fontSize="$8" fontWeight="700" color="$color12">
+    <Stack style={{ gap: '24px' }}>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: '28px', fontWeight: 700, color: 'var(--color-color12)' }}>
           Compliance Gaps
         </Text>
-        <Text fontSize="$3" color="$color10">
+        <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
           {gaps.length} {gaps.length === 1 ? 'issue' : 'issues'} found
         </Text>
-      </XStack>
+      </Row>
 
       {/* Critical Gaps */}
       {criticalGaps.length > 0 && (
-        <YStack>
-          <Text fontSize="$6" fontWeight="600" color="$red11" mb="$3">
+        <Stack>
+          <Text style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-red11)', marginBottom: '12px' }}>
             Critical Issues ({criticalGaps.length})
           </Text>
-          <YStack gap="$3">
+          <Stack style={{ gap: '12px' }}>
             {criticalGaps.map((gap) => (
               <GapCard key={gap.id} gap={gap} />
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Warning Gaps */}
       {warningGaps.length > 0 && (
-        <YStack>
-          <Text fontSize="$6" fontWeight="600" color="$yellow11" mb="$3">
+        <Stack>
+          <Text style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-yellow11)', marginBottom: '12px' }}>
             Warnings ({warningGaps.length})
           </Text>
-          <YStack gap="$3">
+          <Stack style={{ gap: '12px' }}>
             {warningGaps.map((gap) => (
               <GapCard key={gap.id} gap={gap} />
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Info Gaps */}
       {infoGaps.length > 0 && (
-        <YStack>
-          <Text fontSize="$6" fontWeight="600" color="$blue11" mb="$3">
+        <Stack>
+          <Text style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-blue11)', marginBottom: '12px' }}>
             Information ({infoGaps.length})
           </Text>
-          <YStack gap="$3">
+          <Stack style={{ gap: '12px' }}>
             {infoGaps.map((gap) => (
               <GapCard key={gap.id} gap={gap} />
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 };
 
@@ -105,26 +109,26 @@ const GapCard: React.FC<{ gap: ComplianceGap }> = ({ gap }) => {
   const getSeverityIcon = (severity: GapSeverity): string => {
     switch (severity) {
       case 'critical':
-        return '🔴';
+        return '!';
       case 'warning':
-        return '⚠️';
+        return '!';
       case 'info':
-        return 'ℹ️';
+        return 'i';
       default:
-        return '❓';
+        return '?';
     }
   };
 
-  const getSeverityColors = (severity: GapSeverity) => {
+  const getSeverityColors = (severity: GapSeverity): React.CSSProperties => {
     switch (severity) {
       case 'critical':
-        return { border: '$red6', bg: '$red2' };
+        return { borderColor: 'var(--color-red6)', backgroundColor: 'var(--color-red2)' };
       case 'warning':
-        return { border: '$yellow6', bg: '$yellow2' };
+        return { borderColor: 'var(--color-yellow6)', backgroundColor: 'var(--color-yellow2)' };
       case 'info':
-        return { border: '$blue6', bg: '$blue2' };
+        return { borderColor: 'var(--color-blue6)', backgroundColor: 'var(--color-blue2)' };
       default:
-        return { border: '$borderColor', bg: '$color2' };
+        return { borderColor: 'var(--color-border)', backgroundColor: 'var(--color-color2)' };
     }
   };
 
@@ -167,52 +171,54 @@ const GapCard: React.FC<{ gap: ComplianceGap }> = ({ gap }) => {
   const colors = getSeverityColors(gap.severity);
 
   return (
-    <YStack
-      borderWidth={2}
-      borderRadius="$4"
-      padding="$4"
-      borderColor={colors.border}
-      backgroundColor={colors.bg}
+    <Stack
+      style={{
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        borderRadius: '8px',
+        padding: '16px',
+        ...colors,
+      }}
     >
-      <XStack alignItems="flex-start" justifyContent="space-between">
-        <XStack alignItems="flex-start" gap="$3" flex={1}>
-          <Text fontSize="$8">{getSeverityIcon(gap.severity)}</Text>
-          <YStack flex={1}>
-            <Text fontWeight="600" color="$color12">
+      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <Row style={{ alignItems: 'flex-start', gap: '12px', flex: 1 }}>
+          <Text style={{ fontSize: '28px' }}>{getSeverityIcon(gap.severity)}</Text>
+          <Stack style={{ flex: 1 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-color12)' }}>
               {getGapTypeLabel(gap.type)}
             </Text>
             {gap.coverage_type && (
-              <Text fontSize="$3" color="$color10" mt="$1">
+              <Text style={{ fontSize: '14px', color: 'var(--color-color10)', marginTop: '4px' }}>
                 Coverage: {gap.coverage_type.replace(/_/g, ' ')}
               </Text>
             )}
             {gap.endorsement && (
-              <Text fontSize="$3" color="$color10" mt="$1">
+              <Text style={{ fontSize: '14px', color: 'var(--color-color10)', marginTop: '4px' }}>
                 Endorsement: {gap.endorsement.replace(/_/g, ' ')}
               </Text>
             )}
             {gap.current_value !== undefined && gap.current_value !== null && (
-              <Text fontSize="$3" color="$color10" mt="$1">
-                Current: {formatValue(gap.current_value)} → Required:{' '}
+              <Text style={{ fontSize: '14px', color: 'var(--color-color10)', marginTop: '4px' }}>
+                Current: {formatValue(gap.current_value)} -&gt; Required:{' '}
                 {formatValue(gap.required_value)}
               </Text>
             )}
-          </YStack>
-        </XStack>
-        <Text fontSize="$3" fontWeight="600" color="$color11">
+          </Stack>
+        </Row>
+        <Text style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-color11)' }}>
           -{gap.points_deducted} pts
         </Text>
-      </XStack>
+      </Row>
 
       {/* Remediation */}
-      <YStack mt="$3" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
-        <Text fontSize="$1" fontWeight="600" color="$color11" mb="$1">
+      <Stack style={{ marginTop: '12px', paddingTop: '12px', borderTopWidth: '1px', borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
+        <Text style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-color11)', marginBottom: '4px' }}>
           How to Fix:
         </Text>
-        <Text fontSize="$3" color="$color12">
+        <Text style={{ fontSize: '14px', color: 'var(--color-color12)' }}>
           {gap.remediation}
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 };

@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { YStack, XStack, View, Text, H3 } from '@unicornlove/ui';
+import { Stack, Row, Text, H3, Box } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize, borderRadius, shadows } from '@unicornlove/beyond-ui';
 
 export interface ComponentShowcaseProps {
   title: string;
@@ -13,38 +14,38 @@ export default function ComponentShowcase({
   children,
 }: ComponentShowcaseProps) {
   return (
-    <View
-      backgroundColor="$background"
-      borderRadius="$6"
-      borderWidth={1}
-      borderColor="$borderColor"
-      shadowRadius={2}
-      shadowColor="$shadowColor"
-      shadowOffset={{ width: 0, height: 1 }}
+    <Box
       id={title.toLowerCase().replace(/\s+/g, '-')}
+      style={{
+        backgroundColor: colors.bg.light.default,
+        borderRadius: borderRadius.xl,
+        border: `1px solid ${colors.border.light.default}`,
+        boxShadow: shadows.s.boxShadow,
+      }}
     >
-      <View paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
-        <H3 fontSize="$5" fontWeight="600" color="$color12">{title}</H3>
+      <Box style={{ paddingLeft: spacing[24], paddingRight: spacing[24], paddingTop: spacing[16], paddingBottom: spacing[16], borderBottom: `1px solid ${colors.border.light.default}` }}>
+        <H3 style={{ fontSize: fontSize.h5, fontWeight: 600, color: colors.text.light.primary }}>{title}</H3>
         {description && (
-          <Text fontSize="$3" color="$color11" mt="$1">{description}</Text>
+          <Text style={{ fontSize: fontSize.sm, color: colors.text.light.secondary, marginTop: spacing[4] }}>{description}</Text>
         )}
-      </View>
-      <View padding="$6">
-        <XStack
-          alignItems="center"
-          justifyContent="center"
-          flexWrap="wrap"
-          gap="$4"
-          padding="$8"
-          backgroundColor="$backgroundSecondary"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          minHeight={120}
+      </Box>
+      <Box style={{ padding: spacing[24] }}>
+        <Row
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: spacing[16],
+            padding: spacing[32],
+            backgroundColor: colors.bg.light.secondary,
+            borderRadius: borderRadius.s,
+            border: `1px solid ${colors.border.light.default}`,
+            minHeight: 120,
+          }}
         >
           {children}
-        </XStack>
-      </View>
-    </View>
+        </Row>
+      </Box>
+    </Box>
   );
 }

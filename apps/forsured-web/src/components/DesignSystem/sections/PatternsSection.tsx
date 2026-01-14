@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { YStack, XStack, View, Text, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Alert } from '@unicornlove/beyond-ui';
 import ComponentShowcase from '../ComponentShowcase';
 import Input from '../../Common/Input';
 import Select from '../../Common/Select';
 import Textarea from '../../Common/Textarea';
 import Button from '../../Common/Button';
 import Checkbox from '../../../ui/Checkbox';
-import { Alert } from '@unicornlove/ui';
 import { LayoutGrid } from 'lucide-react';
 
 export default function PatternsSection() {
@@ -42,21 +41,21 @@ export default function PatternsSection() {
   };
 
   return (
-    <YStack gap="$8" mb="$12">
-      <XStack alignItems="center" gap="$3" mb="$6">
+    <Stack style={{ gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
+      <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
         <LayoutGrid color="var(--blue10)" size={32} />
-        <H2 fontSize="$9" fontWeight="bold" color="$color12">
+        <H2 style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>
           Patterns
         </H2>
-      </XStack>
+      </Row>
 
-      <View id="form-patterns">
+      <div id="form-patterns">
         <ComponentShowcase
           title="Form Validation Pattern"
           description="Complete form with validation, error states, and success feedback"
         >
-          <View width="100%" maxWidth={672}>
-            <YStack tag="form" onSubmit={handleSubmit} gap="$4">
+          <div style={{ width: '100%', maxWidth: 672 }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {showSuccess && (
                 <Alert
                   variant="success"
@@ -130,84 +129,86 @@ export default function PatternsSection() {
                 required
               />
 
-              <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+              <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-4)' }}>
                 <Button variant="ghost" type="button">
                   Cancel
                 </Button>
                 <Button variant="primary" type="submit">
                   Submit Form
                 </Button>
-              </XStack>
-            </YStack>
-          </View>
+              </Row>
+            </form>
+          </div>
         </ComponentShowcase>
-      </View>
+      </div>
 
-      <View id="layout-patterns">
+      <div id="layout-patterns">
         <ComponentShowcase
           title="Dashboard Layout Pattern"
           description="Typical dashboard layout with stats, charts, and lists"
         >
-          <View width="100%">
-            <XStack flexWrap="wrap" gap="$4" mb="$6">
-              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" mb="$1">
+          <div style={{ width: '100%' }}>
+            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+              <div style={{ flex: 1, minWidth: 200, backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginBottom: 'var(--space-1)' }}>
                   Total Projects
                 </Text>
-                <Text fontSize="$9" fontWeight="bold" color="$color12">24</Text>
-                <Text fontSize="$2" color="$green11" mt="$1">
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>24</Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--green11)', marginTop: 'var(--space-1)' }}>
                   +12% from last month
                 </Text>
-              </View>
-              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" mb="$1">Active Tasks</Text>
-                <Text fontSize="$9" fontWeight="bold" color="$color12">156</Text>
-                <Text fontSize="$2" color="$yellow11" mt="$1">8 overdue</Text>
-              </View>
-              <View flex={1} minWidth={200} backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
-                <Text fontSize="$3" color="$color11" mb="$1">
+              </div>
+              <div style={{ flex: 1, minWidth: 200, backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginBottom: 'var(--space-1)' }}>Active Tasks</Text>
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>156</Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--yellow11)', marginTop: 'var(--space-1)' }}>8 overdue</Text>
+              </div>
+              <div style={{ flex: 1, minWidth: 200, backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)', marginBottom: 'var(--space-1)' }}>
                   Compliance Score
                 </Text>
-                <Text fontSize="$9" fontWeight="bold" color="$color12">94%</Text>
-                <Text fontSize="$2" color="$green11" mt="$1">+2% improvement</Text>
-              </View>
-            </XStack>
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>94%</Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--green11)', marginTop: 'var(--space-1)' }}>+2% improvement</Text>
+              </div>
+            </Row>
 
-            <View backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
-              <Text fontWeight="600" color="$color12" mb="$4">
+            <div style={{ backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-4)', padding: 'var(--space-6)' }}>
+              <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>
                 Recent Activity
               </Text>
-              <YStack gap="$3">
+              <Stack style={{ gap: 'var(--space-3)' }}>
                 {[1, 2, 3].map((i) => (
-                  <XStack
+                  <Row
                     key={i}
-                    alignItems="center"
-                    gap="$3"
-                    paddingVertical="$2"
-                    borderBottomWidth={i < 3 ? 1 : 0}
-                    borderBottomColor="$borderColor"
+                    style={{
+                      alignItems: 'center',
+                      gap: 'var(--space-3)',
+                      paddingTop: 'var(--space-2)',
+                      paddingBottom: 'var(--space-2)',
+                      borderBottom: i < 3 ? '1px solid var(--color-border)' : 'none',
+                    }}
                   >
-                    <View width={8} height={8} borderRadius={4} backgroundColor="$blue10" />
-                    <View flex={1}>
-                      <Text fontSize="$3" color="$color12">
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--blue10)' }} />
+                    <div style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>
                         Activity item {i}
                       </Text>
-                      <Text fontSize="$2" color="$color10">2 hours ago</Text>
-                    </View>
-                  </XStack>
+                      <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>2 hours ago</Text>
+                    </div>
+                  </Row>
                 ))}
-              </YStack>
-            </View>
-          </View>
+              </Stack>
+            </div>
+          </div>
         </ComponentShowcase>
-      </View>
+      </div>
 
-      <View id="feedback-patterns">
+      <div id="feedback-patterns">
         <ComponentShowcase
           title="Feedback Patterns"
           description="Different ways to provide user feedback"
         >
-          <YStack width="100%" gap="$4">
+          <Stack style={{ width: '100%', gap: 'var(--space-4)' }}>
             <Alert variant="info" title="Pro Tip">
               Use keyboard shortcuts to navigate faster through the application.
             </Alert>
@@ -225,9 +226,9 @@ export default function PatternsSection() {
             >
               Your session is about to expire. Please save your work.
             </Alert>
-          </YStack>
+          </Stack>
         </ComponentShowcase>
-      </View>
-    </YStack>
+      </div>
+    </Stack>
   );
 }

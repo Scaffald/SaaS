@@ -1,9 +1,9 @@
 /**
- * DocumentBreadcrumb - Breadcrumb navigation using Tamagui
+ * DocumentBreadcrumb - Breadcrumb navigation using Beyond UI
  * REQ-284: Document Organization by Client/Project/GC
  */
 import React from 'react';
-import { XStack, Text, styled } from '@unicornlove/ui';
+import { Row, Text } from '@unicornlove/beyond-ui';
 import { ChevronRight, Home } from 'lucide-react';
 
 export interface DocumentBreadcrumbProps {
@@ -22,21 +22,6 @@ function Separator() {
   );
 }
 
-// Styled anchor for breadcrumb navigation with proper link semantics
-const StyledAnchor = styled(Text, {
-  name: 'BreadcrumbAnchor',
-  tag: 'a',
-  fontSize: '$2',
-  color: '$blue9',
-  cursor: 'pointer',
-  textDecorationLine: 'none',
-  
-  hoverStyle: {
-    color: '$blue11',
-    textDecorationLine: 'underline',
-  },
-});
-
 function BreadcrumbLink({
   href,
   onClick,
@@ -54,18 +39,31 @@ function BreadcrumbLink({
   };
 
   return (
-    <StyledAnchor
+    <a
       href={href}
       onClick={handleClick}
+      style={{
+        fontSize: '12px',
+        color: 'var(--color-blue-9)',
+        cursor: 'pointer',
+        textDecoration: 'none',
+      }}
     >
       {children}
-    </StyledAnchor>
+    </a>
   );
 }
 
 function CurrentPage({ children }: { children: React.ReactNode }) {
   return (
-    <Text fontSize="$2" color="$color10" fontWeight="500" aria-current="page">
+    <Text
+      style={{
+        fontSize: '12px',
+        color: 'var(--color-gray-10)',
+        fontWeight: 500,
+      }}
+      aria-current="page"
+    >
       {children}
     </Text>
   );
@@ -86,10 +84,10 @@ export function DocumentBreadcrumb({
   if (showHome) {
     breadcrumbs.push(
       <BreadcrumbLink key="home" href={basePath} onClick={onNavigate}>
-        <XStack alignItems="center" gap="$1">
+        <Row style={{ alignItems: 'center', gap: '4px' }}>
           <Home size={16} />
-          <Text display={{ sm: 'none' }}>Dashboard</Text>
-        </XStack>
+          <Text style={{ display: 'none' }}>Dashboard</Text>
+        </Row>
       </BreadcrumbLink>
     );
   }
@@ -134,14 +132,14 @@ export function DocumentBreadcrumb({
 
   return (
     <nav aria-label="Breadcrumb">
-      <XStack alignItems="center" gap="$2" flexWrap="wrap">
+      <Row style={{ alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
         {breadcrumbs.map((crumb, index) => (
           <React.Fragment key={index}>
             {index > 0 && <Separator />}
             {crumb}
           </React.Fragment>
         ))}
-      </XStack>
+      </Row>
     </nav>
   );
 }

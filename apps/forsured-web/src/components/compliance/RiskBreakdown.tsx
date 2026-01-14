@@ -9,7 +9,7 @@
  *   - History (15%): Trend over time
  */
 import React from 'react';
-import { XStack, YStack, Text, Progress } from '@unicornlove/ui';
+import { Row, Stack, Text } from '@unicornlove/beyond-ui';
 import { CheckCircle, FileText, AlertTriangle, TrendingUp, AlertCircle } from 'lucide-react';
 import { RiskBreakdown as RiskBreakdownType, RiskLevel } from '../../lib/compliance/riskCalculationService';
 import { RiskBadge } from './RiskBadge';
@@ -37,6 +37,13 @@ interface ComponentRowProps {
   showDetails: boolean;
 }
 
+function getProgressColor(score: number): string {
+  if (score >= 90) return 'var(--color-green-9)';
+  if (score >= 70) return 'var(--color-yellow-9)';
+  if (score >= 50) return 'var(--color-orange-9)';
+  return 'var(--color-red-9)';
+}
+
 const ComponentRow: React.FC<ComponentRowProps> = ({
   label,
   score,
@@ -46,32 +53,46 @@ const ComponentRow: React.FC<ComponentRowProps> = ({
   icon,
   showDetails,
 }) => {
-  const progressColor = score >= 90 ? '$green9' : score >= 70 ? '$yellow9' : score >= 50 ? '$orange9' : '$red9';
+  const progressColor = getProgressColor(score);
 
   return (
-    <YStack gap="$1">
-      <XStack justifyContent="space-between" alignItems="center">
-        <XStack alignItems="center" gap="$2">
+    <Stack style={{ gap: 4 }}>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Row style={{ alignItems: 'center', gap: 8 }}>
           {icon}
-          <Text fontSize="$2" fontWeight="500">
+          <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500 }}>
             {label}
           </Text>
-        </XStack>
-        <Text fontSize="$1" color="$color9">
+        </Row>
+        <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-9)' }}>
           {score}% x {(weight * 100).toFixed(0)}% = {weighted}
         </Text>
-      </XStack>
+      </Row>
 
-      <Progress value={score} max={100} height={6}>
-        <Progress.Indicator backgroundColor={progressColor} />
-      </Progress>
+      <div
+        style={{
+          height: 6,
+          backgroundColor: 'var(--color-gray-4)',
+          borderRadius: 3,
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${score}%`,
+            backgroundColor: progressColor,
+            borderRadius: 3,
+          }}
+        />
+      </div>
 
       {showDetails && (
-        <Text fontSize="$1" color="$color10">
+        <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>
           {detail}
         </Text>
       )}
-    </YStack>
+    </Stack>
   );
 };
 
@@ -91,7 +112,7 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
       detail: breakdown.coverage.totalRequirements > 0
         ? `${breakdown.coverage.metRequirements}/${breakdown.coverage.totalRequirements} requirements met`
         : 'No requirements defined',
-      icon: <CheckCircle size={16} color="$color9" />,
+      icon: <CheckCircle size={16} style={{ color: 'var(--color-9)' }} />,
     },
     {
       label: 'Policy Status',
@@ -103,7 +124,7 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
         : breakdown.policy.penalty > 0
           ? `${breakdown.policy.penalty} point penalty from expiring policies`
           : 'All policies current',
-      icon: <FileText size={16} color="$color9" />,
+      icon: <FileText size={16} style={{ color: 'var(--color-9)' }} />,
     },
     {
       label: 'Issues',
@@ -113,7 +134,7 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
       detail: breakdown.issues.criticalCount > 0
         ? `${breakdown.issues.criticalCount} critical issue${breakdown.issues.criticalCount > 1 ? 's' : ''} open`
         : 'No critical issues',
-      icon: <AlertTriangle size={16} color="$color9" />,
+      icon: <AlertTriangle size={16} style={{ color: 'var(--color-9)' }} />,
     },
     {
       label: 'History',
@@ -121,29 +142,29 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
       weight: breakdown.history.weight,
       weighted: breakdown.history.weighted,
       detail: `Trend: ${breakdown.history.trend}`,
-      icon: <TrendingUp size={16} color="$color9" />,
+      icon: <TrendingUp size={16} style={{ color: 'var(--color-9)' }} />,
     },
   ];
 
   const hasOverride = breakdown.overrides.hasCriticalOverride;
 
   return (
-    <YStack gap="$4" padding="$3" backgroundColor="$backgroundHover" borderRadius="$3">
+    <Stack style={{ gap: 'var(--space-4)', padding: 'var(--space-3)', backgroundColor: 'var(--color-background-hover)', borderRadius: 'var(--radius-3)' }}>
       {/* Header with overall score */}
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack gap="$1">
-          <Text fontSize="$4" fontWeight="700">
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Stack style={{ gap: 4 }}>
+          <Text style={{ fontSize: 'var(--font-size-4)', fontWeight: 700 }}>
             Risk Score Breakdown
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
             Overall Score: {complianceScore}%
           </Text>
-        </YStack>
+        </Stack>
         <RiskBadge level={riskLevel} score={complianceScore} showScore size="lg" />
-      </XStack>
+      </Row>
 
       {/* Component rows */}
-      <YStack gap="$3">
+      <Stack style={{ gap: 'var(--space-3)' }}>
         {components.map((component) => (
           <ComponentRow
             key={component.label}
@@ -151,58 +172,61 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
             showDetails={showDetails}
           />
         ))}
-      </YStack>
+      </Stack>
 
       {/* Override alerts */}
       {showOverrides && hasOverride && (
-        <YStack
-          padding="$3"
-          backgroundColor="$red3"
-          borderRadius="$2"
-          borderWidth={1}
-          borderColor="$red6"
+        <Stack
+          style={{
+            padding: 'var(--space-3)',
+            backgroundColor: 'var(--color-red-3)',
+            borderRadius: 'var(--radius-2)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-red-6)',
+          }}
         >
-          <XStack alignItems="center" gap="$2" marginBottom="$2">
-            <AlertCircle size={18} color="var(--red10)" />
-            <Text fontSize="$2" fontWeight="600" color="$red11">
+          <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <AlertCircle size={18} style={{ color: 'var(--color-red-10)' }} />
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 600, color: 'var(--color-red-11)' }}>
               Override Active
             </Text>
-          </XStack>
-          <YStack gap="$1">
+          </Row>
+          <Stack style={{ gap: 4 }}>
             {breakdown.overrides.expiredPolicyOverride && (
-              <Text fontSize="$1" color="$red10">
+              <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-red-10)' }}>
                 Policy expired more than 60 days
               </Text>
             )}
             {breakdown.overrides.criticalIssueOverride && (
-              <Text fontSize="$1" color="$red10">
+              <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-red-10)' }}>
                 Critical issue open more than 14 days
               </Text>
             )}
             {breakdown.overrides.lowCoverageOverride && (
-              <Text fontSize="$1" color="$red10">
+              <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-red-10)' }}>
                 Coverage below 50%
               </Text>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Legend */}
       {showDetails && (
-        <YStack gap="$2" padding="$2" backgroundColor="$background" borderRadius="$2">
-          <Text fontSize="$1" fontWeight="600" color="$color10">
+        <Stack style={{ gap: 8, padding: 8, backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-2)' }}>
+          <Text style={{ fontSize: 'var(--font-size-1)', fontWeight: 600, color: 'var(--color-10)' }}>
             Risk Level Thresholds
           </Text>
-          <XStack flexWrap="wrap" gap="$2">
-            <Text fontSize="$1" color="$green10">90-100: LOW</Text>
-            <Text fontSize="$1" color="$yellow10">70-89: MEDIUM</Text>
-            <Text fontSize="$1" color="$orange10">50-69: HIGH</Text>
-            <Text fontSize="$1" color="$red10">0-49: CRITICAL</Text>
-          </XStack>
-        </YStack>
+          <Row style={{ flexWrap: 'wrap', gap: 8 }}>
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-green-10)' }}>90-100: LOW</Text>
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-yellow-10)' }}>70-89: MEDIUM</Text>
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-orange-10)' }}>50-69: HIGH</Text>
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-red-10)' }}>0-49: CRITICAL</Text>
+          </Row>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 };
 
@@ -215,39 +239,39 @@ export const RiskSummary: React.FC<{
   complianceScore: number;
 }> = ({ breakdown, riskLevel, complianceScore }) => {
   return (
-    <YStack gap="$2" padding="$2">
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$2" fontWeight="500">Compliance Score</Text>
+    <Stack style={{ gap: 8, padding: 8 }}>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500 }}>Compliance Score</Text>
         <RiskBadge level={riskLevel} score={complianceScore} showScore />
-      </XStack>
+      </Row>
 
-      <XStack gap="$2" flexWrap="wrap">
-        <XStack alignItems="center" gap="$1">
+      <Row style={{ gap: 8, flexWrap: 'wrap' }}>
+        <Row style={{ alignItems: 'center', gap: 4 }}>
           <CheckCircle size={12} />
-          <Text fontSize="$1" color="$color10">
+          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>
             Coverage: {breakdown.coverage.score}%
           </Text>
-        </XStack>
-        <XStack alignItems="center" gap="$1">
+        </Row>
+        <Row style={{ alignItems: 'center', gap: 4 }}>
           <FileText size={12} />
-          <Text fontSize="$1" color="$color10">
+          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>
             Policy: {breakdown.policy.score}%
           </Text>
-        </XStack>
-        <XStack alignItems="center" gap="$1">
+        </Row>
+        <Row style={{ alignItems: 'center', gap: 4 }}>
           <AlertTriangle size={12} />
-          <Text fontSize="$1" color="$color10">
+          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>
             Issues: {breakdown.issues.score}%
           </Text>
-        </XStack>
-        <XStack alignItems="center" gap="$1">
+        </Row>
+        <Row style={{ alignItems: 'center', gap: 4 }}>
           <TrendingUp size={12} />
-          <Text fontSize="$1" color="$color10">
+          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>
             Trend: {breakdown.history.trend}
           </Text>
-        </XStack>
-      </XStack>
-    </YStack>
+        </Row>
+      </Row>
+    </Stack>
   );
 };
 

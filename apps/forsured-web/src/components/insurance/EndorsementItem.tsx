@@ -4,7 +4,7 @@
  */
 
 import { FileCheck, DollarSign, Calendar } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { PolicyEndorsement } from '../../types';
 
 export interface EndorsementItemProps {
@@ -37,73 +37,81 @@ export default function EndorsementItem({ endorsement }: EndorsementItemProps) {
 
   return (
     <Card
-      flexDirection="row"
-      alignItems="flex-start"
-      gap="$3"
-      padding="$3"
-      backgroundColor="white"
-      borderRadius="$2"
-      borderWidth={1}
-      borderColor="$borderColor"
-      ml="$8"
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: '12px',
+        padding: '12px',
+        backgroundColor: 'white',
+        borderRadius: '4px',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        borderColor: 'var(--color-border)',
+        marginLeft: '32px',
+      }}
     >
       {/* Icon */}
-      <FileCheck size={16} color="$green10" mt="$0.5" flexShrink={0} />
+      <FileCheck size={16} color="var(--color-green-10)" style={{ marginTop: '2px', flexShrink: 0 }} />
 
       {/* Content */}
-      <YStack flex={1} minWidth={0}>
-        <XStack alignItems="center" gap="$2">
-          <Text fontSize="$2" fontWeight="500" color="$color12">
+      <Stack style={{ flex: 1, minWidth: 0 }}>
+        <Row style={{ alignItems: 'center', gap: '8px' }}>
+          <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-12)' }}>
             {endorsement.endorsement_type}
           </Text>
           {endorsement.endorsement_code && (
             <Text
-              paddingHorizontal="$2"
-              paddingVertical="$0.5"
-              fontSize="$1"
-              fontFamily="$mono"
-              backgroundColor="$backgroundHover"
-              color="$color10"
-              borderRadius="$1"
+              style={{
+                paddingLeft: '8px',
+                paddingRight: '8px',
+                paddingTop: '2px',
+                paddingBottom: '2px',
+                fontSize: '12px',
+                fontFamily: 'monospace',
+                backgroundColor: 'var(--color-background-hover)',
+                color: 'var(--color-10)',
+                borderRadius: '2px',
+              }}
             >
               {endorsement.endorsement_code}
             </Text>
           )}
-        </XStack>
+        </Row>
 
         {endorsement.description && (
-          <Text fontSize="$1" color="$color10" mt="$1">
+          <Text style={{ fontSize: '12px', color: 'var(--color-10)', marginTop: '4px' }}>
             {endorsement.description}
           </Text>
         )}
 
         {/* Metadata */}
-        <XStack flexWrap="wrap" alignItems="center" gap="$4" mt="$2">
+        <Row style={{ flexWrap: 'wrap', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
           {endorsement.limit_amount && (
-            <XStack alignItems="center" gap="$1.5">
-              <DollarSign size={12} color="$color10" />
-              <Text fontSize="$1" color="$color10">
+            <Row style={{ alignItems: 'center', gap: '6px' }}>
+              <DollarSign size={12} color="var(--color-10)" />
+              <Text style={{ fontSize: '12px', color: 'var(--color-10)' }}>
                 Limit:
               </Text>
-              <Text fontSize="$1" fontWeight="500" color="$color12">
+              <Text style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-12)' }}>
                 {formatCurrency(endorsement.limit_amount)}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {endorsement.effective_date && (
-            <XStack alignItems="center" gap="$1.5">
-              <Calendar size={12} color="$color10" />
-              <Text fontSize="$1" color="$color10">
+            <Row style={{ alignItems: 'center', gap: '6px' }}>
+              <Calendar size={12} color="var(--color-10)" />
+              <Text style={{ fontSize: '12px', color: 'var(--color-10)' }}>
                 Effective:
               </Text>
-              <Text fontSize="$1" fontWeight="500" color="$color12">
+              <Text style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-12)' }}>
                 {formatDate(endorsement.effective_date)}
               </Text>
-            </XStack>
+            </Row>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Card>
   );
 }

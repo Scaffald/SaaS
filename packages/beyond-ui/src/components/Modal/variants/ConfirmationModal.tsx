@@ -60,7 +60,7 @@ export function ConfirmationModal({
   )
 }
 
-function getIconContainerStyle(theme: ThemeMode): ViewStyle {
+function getIconContainerStyle(_theme: ThemeMode): ViewStyle {
   return {
     width: spacing[48],
     height: spacing[48],

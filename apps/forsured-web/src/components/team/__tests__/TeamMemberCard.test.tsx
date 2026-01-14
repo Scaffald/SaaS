@@ -45,7 +45,7 @@ describe('TeamMemberCard', () => {
 
       const badge = screen.getByText('Manager');
       expect(badge).toBeInTheDocument();
-      // Badge now uses Tamagui tokens instead of className
+      // Badge uses Beyond UI inline styles
     });
 
     it('renders initials when no avatar provided', () => {
@@ -67,7 +67,7 @@ describe('TeamMemberCard', () => {
 
       const badge = screen.getByText('Admin');
       expect(badge).toBeInTheDocument();
-      // Badge now uses Tamagui tokens instead of className
+      // Badge uses Beyond UI inline styles
     });
 
     it('renders correct role badge color for broker', () => {
@@ -75,7 +75,7 @@ describe('TeamMemberCard', () => {
 
       const badge = screen.getByText('Broker');
       expect(badge).toBeInTheDocument();
-      // Badge now uses Tamagui tokens instead of className
+      // Badge uses Beyond UI inline styles
     });
 
     it('renders correct role badge color for subcontractor', () => {
@@ -83,7 +83,7 @@ describe('TeamMemberCard', () => {
 
       const badge = screen.getByText('Subcontractor');
       expect(badge).toBeInTheDocument();
-      // Badge now uses Tamagui tokens instead of className
+      // Badge uses Beyond UI inline styles
     });
 
     it('renders correct role badge color for user', () => {
@@ -91,7 +91,7 @@ describe('TeamMemberCard', () => {
 
       const badge = screen.getByText('User');
       expect(badge).toBeInTheDocument();
-      // Badge now uses Tamagui tokens instead of className
+      // Badge uses Beyond UI inline styles
     });
   });
 

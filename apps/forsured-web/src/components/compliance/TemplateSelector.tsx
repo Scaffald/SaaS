@@ -4,7 +4,8 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { YStack, XStack, Text, Button, Card, H2, Spinner } from '@unicornlove/ui';
+import { Loader2 } from 'lucide-react';
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
 import { ComplianceRequirement, CoverageType } from '../../lib/compliance/types';
 import { listRequirements } from '../../lib/compliance/requirementService';
 
@@ -52,11 +53,11 @@ export default function TemplateSelector({
 
   function getTypeIcon(type: CoverageType): string {
     const icons = {
-      [CoverageType.GENERAL_LIABILITY]: '🏢',
-      [CoverageType.WORKERS_COMP]: '👷',
-      [CoverageType.AUTO_LIABILITY]: '🚗',
-      [CoverageType.UMBRELLA]: '☂️',
-      [CoverageType.CUSTOM]: '✏️'
+      [CoverageType.GENERAL_LIABILITY]: '',
+      [CoverageType.WORKERS_COMP]: '',
+      [CoverageType.AUTO_LIABILITY]: '',
+      [CoverageType.UMBRELLA]: '',
+      [CoverageType.CUSTOM]: ''
     };
     return icons[type];
   }
@@ -94,167 +95,177 @@ export default function TemplateSelector({
 
   if (loading) {
     return (
-      <YStack alignItems="center" justifyContent="center" height={256}>
-        <Spinner size="large" />
-        <Text color="$color10" mt="$4">Loading templates...</Text>
-      </YStack>
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Loader2 className="animate-spin" style={{ width: 32, height: 32, color: 'var(--color-blue-10)' }} />
+        <Text style={{ color: 'var(--color-10)', marginTop: 'var(--space-4)' }}>Loading templates...</Text>
+      </Stack>
     );
   }
 
   if (error) {
     return (
-      <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$4" padding="$4">
-        <Text color="$red11" mb="$2">Error: {error}</Text>
-        <Button
-          onPress={() => loadTemplates()}
-          fontSize="$3"
-          color="$red10"
-          hoverStyle={{ color: '$red11' }}
-          backgroundColor="transparent"
-          borderWidth={0}
-          textDecorationLine="underline"
+      <Card style={{ backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-5)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+        <Text style={{ color: 'var(--color-red-11)', marginBottom: 8 }}>Error: {error}</Text>
+        <button
+          onClick={() => loadTemplates()}
+          style={{
+            fontSize: 'var(--font-size-3)',
+            color: 'var(--color-red-10)',
+            backgroundColor: 'transparent',
+            border: 'none',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+          }}
         >
           Retry
-        </Button>
+        </button>
       </Card>
     );
   }
 
   return (
-    <YStack gap="$4">
-      <XStack alignItems="center" justifyContent="space-between">
-        <H2 fontSize="$7" fontWeight="700" color="$color12">Select a Template</H2>
+    <Stack style={{ gap: 'var(--space-4)' }}>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <h2 style={{ fontSize: 'var(--font-size-7)', fontWeight: 700, color: 'var(--color-12)', margin: 0 }}>Select a Template</h2>
         {onCancel && (
-          <Button
-            onPress={onCancel}
-            color="$color10"
-            hoverStyle={{ color: '$color11' }}
-            backgroundColor="transparent"
-            borderWidth={0}
+          <button
+            onClick={onCancel}
+            style={{
+              color: 'var(--color-10)',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
             Cancel
-          </Button>
+          </button>
         )}
-      </XStack>
+      </Row>
 
       {/* Type Filter */}
-      <XStack gap="$2" flexWrap="wrap">
-        <Button
-          onPress={() => setSelectedType('all')}
-          paddingHorizontal="$4"
-          paddingVertical="$2"
-          borderRadius="$4"
-          fontSize="$3"
-          fontWeight="500"
-          backgroundColor={selectedType === 'all' ? '$blue9' : '$gray5'}
-          color={selectedType === 'all' ? 'white' : '$color11'}
-          hoverStyle={{ backgroundColor: selectedType === 'all' ? '$blue10' : '$gray6' }}
+      <Row style={{ gap: 8, flexWrap: 'wrap' }}>
+        <button
+          onClick={() => setSelectedType('all')}
+          style={{
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+            paddingTop: 8,
+            paddingBottom: 8,
+            borderRadius: 'var(--radius-4)',
+            fontSize: 'var(--font-size-3)',
+            fontWeight: 500,
+            backgroundColor: selectedType === 'all' ? 'var(--color-blue-9)' : 'var(--color-gray-5)',
+            color: selectedType === 'all' ? 'white' : 'var(--color-11)',
+            border: 'none',
+            cursor: 'pointer',
+          }}
         >
           All Types
-        </Button>
+        </button>
         {Object.values(CoverageType).map((type) => (
-          <Button
+          <button
             key={type}
-            onPress={() => setSelectedType(type)}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            borderRadius="$4"
-            fontSize="$3"
-            fontWeight="500"
-            backgroundColor={selectedType === type ? '$blue9' : '$gray5'}
-            color={selectedType === type ? 'white' : '$color11'}
-            hoverStyle={{ backgroundColor: selectedType === type ? '$blue10' : '$gray6' }}
+            onClick={() => setSelectedType(type)}
+            style={{
+              paddingLeft: 'var(--space-4)',
+              paddingRight: 'var(--space-4)',
+              paddingTop: 8,
+              paddingBottom: 8,
+              borderRadius: 'var(--radius-4)',
+              fontSize: 'var(--font-size-3)',
+              fontWeight: 500,
+              backgroundColor: selectedType === type ? 'var(--color-blue-9)' : 'var(--color-gray-5)',
+              color: selectedType === type ? 'white' : 'var(--color-11)',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
             {getTypeIcon(type)} {getTypeLabel(type)}
-          </Button>
+          </button>
         ))}
-      </XStack>
+      </Row>
 
       {/* Template Grid */}
       {filteredTemplates.length === 0 ? (
-        <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowOpacity={0.1} shadowRadius={2} padding="$8">
-          <Text color="$color10" style={{ textAlign: 'center' }}>No templates found for this type.</Text>
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 1px 2px var(--color-shadow)', padding: 'var(--space-8)' }}>
+          <Text style={{ color: 'var(--color-10)', textAlign: 'center' }}>No templates found for this type.</Text>
         </Card>
       ) : (
-        <XStack flexWrap="wrap" gap="$4">
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
           {filteredTemplates.map((template) => (
             <Card
               key={template.id}
-              as="button"
               onPress={() => onSelectTemplate(template)}
-              backgroundColor="$background"
-              borderRadius="$4"
-              shadowColor="$shadowColor"
-              shadowOpacity={0.1}
-              shadowRadius={2}
-              padding="$6"
-              hoverStyle={{ shadowOpacity: 0.2, shadowRadius: 4 }}
-              focusStyle={{ borderWidth: 2, borderColor: '$blue9' }}
-              borderWidth={0}
-              width="100%"
-              maxWidth={{ $gtMd: 'calc(50% - 8px)', $gtLg: 'calc(33.333% - 11px)' }}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderRadius: 'var(--radius-4)',
+                boxShadow: '0 1px 2px var(--color-shadow)',
+                padding: 'var(--space-6)',
+                borderWidth: 0,
+                width: '100%',
+                maxWidth: 'calc(33.333% - 11px)',
+                cursor: 'pointer',
+              }}
             >
-              <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
-                <Text fontSize="$9">{getTypeIcon(template.type)}</Text>
-                <Text fontSize="$1" fontWeight="500" color="$blue10" backgroundColor="$blue2" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
+              <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
+                <Text style={{ fontSize: 'var(--font-size-9)' }}>{getTypeIcon(template.type)}</Text>
+                <Text style={{ fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)', paddingLeft: 8, paddingRight: 8, paddingTop: 4, paddingBottom: 4, borderRadius: 'var(--radius-2)' }}>
                   v{template.version}
                 </Text>
-              </XStack>
+              </Row>
 
-              <Text fontSize="$5" fontWeight="600" color="$color12" mb="$2">{template.name}</Text>
+              <Text style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>{template.name}</Text>
 
-              <Text fontSize="$3" color="$color10" mb="$3">{formatCoverage(template)}</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)', marginBottom: 'var(--space-3)' }}>{formatCoverage(template)}</Text>
 
               {template.description && (
-                <Text fontSize="$2" color="$color9" mb="$3" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-9)', marginBottom: 'var(--space-3)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {template.description}
                 </Text>
               )}
 
-              <YStack mt="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color9">
+              <Stack style={{ marginTop: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
+                <Stack style={{ gap: 4 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-9)' }}>
                     {template.requirement_definition.required_endorsements.length} endorsements
                   </Text>
-                  <Text fontSize="$2" color="$color9">
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-9)' }}>
                     {template.requirement_definition.documentation_requirements.filter(d => d.is_required).length} required documents
                   </Text>
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
 
-              <XStack mt="$4">
-                <Text fontSize="$3" fontWeight="500" color="$blue10">Use Template →</Text>
-              </XStack>
+              <Row style={{ marginTop: 'var(--space-4)' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-blue-10)' }}>Use Template</Text>
+              </Row>
             </Card>
           ))}
-        </XStack>
+        </Row>
       )}
 
       {/* Custom Option */}
       <Card
-        borderRadius="$4"
-        shadowColor="$shadowColor"
-        shadowOpacity={0.1}
-        shadowRadius={2}
-        padding="$6"
-        borderWidth={2}
-        borderStyle="dashed"
-        borderColor="$purple7"
         style={{
-          background: 'linear-gradient(to right, var(--purple2), var(--blue2))',
+          borderRadius: 'var(--radius-4)',
+          boxShadow: '0 1px 2px var(--color-shadow)',
+          padding: 'var(--space-6)',
+          borderWidth: 2,
+          borderStyle: 'dashed',
+          borderColor: 'var(--color-purple-7)',
+          background: 'linear-gradient(to right, var(--color-purple-2), var(--color-blue-2))',
         }}
       >
-        <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
-          <YStack flex={1} minWidth="200px">
-            <Text fontSize="$5" fontWeight="600" color="$color12" mb="$2">
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+          <Stack style={{ flex: 1, minWidth: 200 }}>
+            <Text style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>
               Create Custom Requirement
             </Text>
-            <Text fontSize="$3" color="$color10">
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
               Build a requirement from scratch with your own specifications
             </Text>
-          </YStack>
-          <Button
-            onPress={() => onSelectTemplate({
+          </Stack>
+          <button
+            onClick={() => onSelectTemplate({
               id: '',
               name: '',
               type: CoverageType.CUSTOM,
@@ -276,18 +287,22 @@ export default function TemplateSelector({
               updated_at: new Date().toISOString(),
               archived_at: null
             })}
-            paddingHorizontal="$6"
-            paddingVertical="$3"
-            backgroundColor="$purple9"
-            color="white"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: '$purple10' }}
-            focusStyle={{ borderWidth: 2, borderColor: '$purple9' }}
+            style={{
+              paddingLeft: 'var(--space-6)',
+              paddingRight: 'var(--space-6)',
+              paddingTop: 'var(--space-3)',
+              paddingBottom: 'var(--space-3)',
+              backgroundColor: 'var(--color-purple-9)',
+              color: 'white',
+              borderRadius: 'var(--radius-4)',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
             Create Custom
-          </Button>
-        </XStack>
+          </button>
+        </Row>
       </Card>
-    </YStack>
+    </Stack>
   );
 }

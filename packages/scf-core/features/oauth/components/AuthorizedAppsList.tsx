@@ -6,6 +6,7 @@
 import { Button, Card, Paragraph, SizableText, XStack, YStack, AlertDialog, Separator } from '@unicornlove/ui'
 import { useState } from 'react'
 import { api } from '@scf/core/utils/api'
+import type { OAuthApp } from '@scf/schemas/oauth'
 
 export function AuthorizedAppsList() {
   const [revokeAppId, setRevokeAppId] = useState<string | null>(null)
@@ -45,7 +46,7 @@ export function AuthorizedAppsList() {
       {consents.length > 0 ? (
         <YStack gap="$3">
           {consents.map((consent) => {
-            const app = consent.oauth_app as any
+            const app = consent.oauth_app as OAuthApp | undefined
             const grantedAt = new Date(consent.granted_at)
             const expiresAt = consent.expires_at ? new Date(consent.expires_at) : null
 
@@ -157,7 +158,7 @@ export function AuthorizedAppsList() {
                 <AlertDialog.Title>Revoke App Access</AlertDialog.Title>
                 <AlertDialog.Description>
                   Are you sure you want to revoke access for{' '}
-                  <strong>{(appToRevoke?.oauth_app as any)?.display_name}</strong>? This will:
+                  <strong>{(appToRevoke?.oauth_app as OAuthApp | undefined)?.display_name}</strong>? This will:
                 </AlertDialog.Description>
               </YStack>
 

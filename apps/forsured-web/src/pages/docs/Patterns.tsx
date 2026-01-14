@@ -1,28 +1,32 @@
 // src/pages/docs/Patterns.tsx
 import React from 'react';
-import { YStack, XStack, View, Text, H1, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Box, Text, H1, H2, H3 } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui';
 import Button from '../../components/Common/Button';
 import Input from '../../components/Common/Input';
 
 function PatternsDoc() {
   return (
-    <View padding="$6">
-      <H1 fontSize="$9" fontWeight="bold" marginBottom="$4" color="$color12">UI Patterns</H1>
-      <Text fontSize="$5" color="$color11" marginBottom="$6">
+    <Box style={{ padding: spacing[24] }}>
+      <H1 style={{ fontSize: fontSize.h3, fontWeight: 'bold', marginBottom: spacing[16], color: colors.text.light.primary }}>UI Patterns</H1>
+      <Text style={{ fontSize: fontSize.h5, color: colors.text.light.secondary, marginBottom: spacing[24] }}>
         UI patterns are reusable solutions to common design problems. They provide a standardized way to build consistent and effective user interfaces.
       </Text>
 
-      <H2 fontSize="$7" fontWeight="600" marginBottom="$3" color="$color12">Form Validation</H2>
-      <Text marginBottom="$4" color="$color11">
+      <H2 style={{ fontSize: fontSize.h4, fontWeight: 600, marginBottom: spacing[12], color: colors.text.light.primary }}>Form Validation</H2>
+      <Text style={{ marginBottom: spacing[16], color: colors.text.light.secondary }}>
         Ensure user input is correct and provide clear feedback.
       </Text>
-      <View
-        borderWidth={1}
-        borderColor="$borderColor"
-        borderRadius="$4"
-        padding="$4"
-        marginBottom="$6"
-        backgroundColor="$background"
+      <Box
+        style={{
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: colors.border.light.default,
+          borderRadius: borderRadius.s,
+          padding: spacing[16],
+          marginBottom: spacing[24],
+          backgroundColor: colors.bg.light.default,
+        }}
       >
         <Input
           label="Email Address"
@@ -30,41 +34,49 @@ function PatternsDoc() {
           error="Please enter a valid email address."
           fullWidth
         />
-      </View>
+      </Box>
 
-      <H2 fontSize="$7" fontWeight="600" marginBottom="$3" color="$color12">Empty States</H2>
-      <Text marginBottom="$4" color="$color11">
+      <H2 style={{ fontSize: fontSize.h4, fontWeight: 600, marginBottom: spacing[12], color: colors.text.light.primary }}>Empty States</H2>
+      <Text style={{ marginBottom: spacing[16], color: colors.text.light.secondary }}>
         Provide guidance and calls to action when there is no data to display.
       </Text>
-      <View
-        borderWidth={1}
-        borderColor="$borderColor"
-        borderRadius="$4"
-        padding="$4"
-        marginBottom="$6"
-        backgroundColor="$background"
-        alignItems="center"
+      <Box
+        style={{
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: colors.border.light.default,
+          borderRadius: borderRadius.s,
+          padding: spacing[16],
+          marginBottom: spacing[24],
+          backgroundColor: colors.bg.light.default,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
       >
-        <View
-          width={48}
-          height={48}
-          borderRadius={24}
-          backgroundColor="$backgroundSecondary"
-          alignItems="center"
-          justifyContent="center"
-          marginBottom="$2"
+        <Box
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            backgroundColor: colors.bg.light.secondary,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: spacing[8],
+          }}
         >
-          <Text fontSize="$6" color="$color10">📦</Text>
-        </View>
-        <H3 fontSize="$3" fontWeight="500" marginTop="$2" color="$color12">No items</H3>
-        <Text fontSize="$3" color="$color11" marginTop="$1">Get started by creating a new item.</Text>
-        <View marginTop="$6">
+          <Text style={{ fontSize: fontSize.h6, color: colors.text.light.tertiary }}>📦</Text>
+        </Box>
+        <H3 style={{ fontSize: fontSize.sm, fontWeight: 500, marginTop: spacing[8], color: colors.text.light.primary }}>No items</H3>
+        <Text style={{ fontSize: fontSize.sm, color: colors.text.light.secondary, marginTop: spacing[4] }}>Get started by creating a new item.</Text>
+        <Box style={{ marginTop: spacing[24] }}>
           <Button variant="primary">
             Create New Item
           </Button>
-        </View>
-      </View>
-    </View>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

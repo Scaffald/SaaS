@@ -8,9 +8,9 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { UserPlus, X } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H2, SizableText } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, H2 } from '@unicornlove/beyond-ui';
 import { AddTeamMemberForm } from './AddTeamMemberForm';
 import type { AccessLevel } from './AccessLevelSelector';
 
@@ -63,89 +63,100 @@ export function AddTeamMemberModal({
   if (!isOpen) return null;
 
   return (
-    <YStack
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      zIndex={50}
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="rgba(0,0,0,0.5)"
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="add-member-modal-title"
       onClick={handleBackdropClick}
     >
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={4}
-        width="100%"
-        maxWidth={448}
-        marginHorizontal="$4"
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 8,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          width: '100%',
+          maxWidth: 448,
+          marginLeft: 16,
+          marginRight: 16,
+        }}
+        onPress={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* Header */}
-        <XStack
-          alignItems="center"
-          justifyContent="space-between"
-          padding="$4"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
+        <Row
+          style={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: 16,
+            borderBottom: '1px solid var(--color-border)',
+          }}
         >
-          <XStack alignItems="center" gap="$3">
-            <YStack
-              width={40}
-              height={40}
-              borderRadius={9999}
-              backgroundColor="$blue2"
-              alignItems="center"
-              justifyContent="center"
+          <Row style={{ alignItems: 'center', gap: 12 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                backgroundColor: 'var(--color-blue-2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <UserPlus size={20} color="var(--blue10)" />
-            </YStack>
-            <YStack>
+              <UserPlus size={20} color="var(--color-blue-10)" />
+            </div>
+            <Stack>
               <H2
                 id="add-member-modal-title"
-                fontSize="$6"
-                fontWeight="600"
-                color="$color12"
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  color: 'var(--color-gray-12)',
+                }}
               >
                 Invite Team Member
               </H2>
-              <SizableText fontSize="$3" color="$color10">
+              <Text style={{ fontSize: 14, color: 'var(--color-gray-10)' }}>
                 Send an invitation to join your team
-              </SizableText>
-            </YStack>
-          </XStack>
+              </Text>
+            </Stack>
+          </Row>
 
           {/* Close Button */}
           <Button
             onPress={onClose}
             disabled={loading}
-            variant="outlined"
-            size="$2"
-            padding="$1"
-            opacity={loading ? 0.5 : 1}
+            variant="outline"
+            size="sm"
+            style={{ padding: 4, opacity: loading ? 0.5 : 1 }}
             aria-label="Close modal"
           >
             <X size={20} />
           </Button>
-        </XStack>
+        </Row>
 
         {/* Form Content */}
-        <YStack padding="$4">
+        <Stack style={{ padding: 16 }}>
           <AddTeamMemberForm
             onSubmit={onSubmit}
             onCancel={onClose}
             loading={loading}
             existingEmails={existingEmails}
           />
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </div>
   );
 }
 

@@ -3,7 +3,7 @@
  * REQ-2, TASK-13: Visual type indicator for coverage requirements
  */
 
-import { XStack, Text } from '@unicornlove/ui';
+import { Row, Text } from '@unicornlove/beyond-ui';
 import {
   Shield,
   Umbrella,
@@ -21,73 +21,88 @@ interface RequirementTypeBadgeProps {
   showIcon?: boolean;
 }
 
-const typeConfig: Record<CoverageType, { label: string; backgroundColor: string; textColor: string; borderColor: string; icon: LucideIcon }> = {
+interface TypeConfig {
+  label: string;
+  backgroundColor: string;
+  textColor: string;
+  borderColor: string;
+  icon: LucideIcon;
+}
+
+const typeConfig: Record<CoverageType, TypeConfig> = {
   general_liability: {
     label: 'General Liability',
-    backgroundColor: '$blue4',
-    textColor: '$blue11',
-    borderColor: '$blue6',
+    backgroundColor: 'var(--color-blue-4)',
+    textColor: 'var(--color-blue-11)',
+    borderColor: 'var(--color-blue-6)',
     icon: Shield,
   },
   umbrella_liability: {
     label: 'Umbrella',
-    backgroundColor: '$purple4',
-    textColor: '$purple11',
-    borderColor: '$purple6',
+    backgroundColor: 'var(--color-purple-4)',
+    textColor: 'var(--color-purple-11)',
+    borderColor: 'var(--color-purple-6)',
     icon: Umbrella,
   },
   auto_liability: {
     label: 'Auto',
-    backgroundColor: '$blue4',
-    textColor: '$blue11',
-    borderColor: '$blue6',
+    backgroundColor: 'var(--color-blue-4)',
+    textColor: 'var(--color-blue-11)',
+    borderColor: 'var(--color-blue-6)',
     icon: Car,
   },
   workers_comp: {
     label: 'Workers Comp',
-    backgroundColor: '$yellow4',
-    textColor: '$yellow11',
-    borderColor: '$yellow6',
+    backgroundColor: 'var(--color-yellow-4)',
+    textColor: 'var(--color-yellow-11)',
+    borderColor: 'var(--color-yellow-6)',
     icon: HardHat,
   },
   professional_liability: {
     label: 'Professional',
-    backgroundColor: '$purple4',
-    textColor: '$purple11',
-    borderColor: '$purple6',
+    backgroundColor: 'var(--color-purple-4)',
+    textColor: 'var(--color-purple-11)',
+    borderColor: 'var(--color-purple-6)',
     icon: Building2,
   },
   excess_liability: {
     label: 'Excess',
-    backgroundColor: '$purple4',
-    textColor: '$purple11',
-    borderColor: '$purple6',
+    backgroundColor: 'var(--color-purple-4)',
+    textColor: 'var(--color-purple-11)',
+    borderColor: 'var(--color-purple-6)',
     icon: FileCheck,
   },
 };
 
-const sizeConfig = {
+interface SizeConfig {
+  paddingHorizontal: string;
+  paddingVertical: string;
+  fontSize: string;
+  gap: string;
+}
+
+const sizeConfig: Record<'xs' | 'sm' | 'md', SizeConfig> = {
   xs: {
-    paddingHorizontal: '$1.5',
-    paddingVertical: '$0.5',
-    fontSize: '$2',
-    gap: '$1',
+    paddingHorizontal: '6px',
+    paddingVertical: '2px',
+    fontSize: 'var(--font-size-2)',
+    gap: '4px',
   },
   sm: {
-    paddingHorizontal: '$2',
-    paddingVertical: '$0.5',
-    fontSize: '$2',
-    gap: '$1',
+    paddingHorizontal: '8px',
+    paddingVertical: '2px',
+    fontSize: 'var(--font-size-2)',
+    gap: '4px',
   },
   md: {
-    paddingHorizontal: '$2.5',
-    paddingVertical: '$1',
-    fontSize: '$3',
-    gap: '$1.5',
+    paddingHorizontal: '10px',
+    paddingVertical: '4px',
+    fontSize: 'var(--font-size-3)',
+    gap: '6px',
   },
 };
 
-const iconSizes = {
+const iconSizes: Record<'xs' | 'sm' | 'md', number> = {
   xs: 10,
   sm: 12,
   md: 14,
@@ -99,21 +114,26 @@ export function RequirementTypeBadge({ type, size = 'sm', showIcon = true }: Req
   const Icon = config.icon;
 
   return (
-    <XStack
-      alignItems="center"
-      borderRadius="$2"
-      borderWidth={1}
-      backgroundColor={config.backgroundColor}
-      borderColor={config.borderColor}
-      paddingHorizontal={sizeProps.paddingHorizontal}
-      paddingVertical={sizeProps.paddingVertical}
-      gap={sizeProps.gap}
+    <Row
+      style={{
+        alignItems: 'center',
+        borderRadius: 'var(--radius-2)',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        backgroundColor: config.backgroundColor,
+        borderColor: config.borderColor,
+        paddingLeft: sizeProps.paddingHorizontal,
+        paddingRight: sizeProps.paddingHorizontal,
+        paddingTop: sizeProps.paddingVertical,
+        paddingBottom: sizeProps.paddingVertical,
+        gap: sizeProps.gap,
+      }}
     >
-      {showIcon && <Icon size={iconSizes[size]} />}
-      <Text fontSize={sizeProps.fontSize} fontWeight="500" color={config.textColor}>
+      {showIcon && <Icon size={iconSizes[size]} style={{ color: config.textColor }} />}
+      <Text style={{ fontSize: sizeProps.fontSize, fontWeight: 500, color: config.textColor }}>
         {config.label}
       </Text>
-    </XStack>
+    </Row>
   );
 }
 

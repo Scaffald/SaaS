@@ -11,7 +11,7 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-import { YStack, XStack, Text, Button, Card, H3, H4, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, H3, H4 } from '@unicornlove/beyond-ui';
 import { trpc } from '../../lib/trpc';
 
 // =============================================================================
@@ -214,47 +214,48 @@ export function BulkImportUI({
   // =============================================================================
 
   const renderUploadStep = () => (
-    <YStack gap="$6">
+    <Stack style={{ gap: '24px' }}>
       {/* Template Download Section */}
-      <Card backgroundColor="$blue2" borderColor="$blue5" borderRadius="$4" padding="$4">
-        <H4 fontSize="$4" fontWeight="600" color="$blue11" mb="$2">Download Templates</H4>
-        <Text fontSize="$3" color="$blue10" mb="$3">
+      <Card style={{ backgroundColor: 'var(--color-blue2)', borderColor: 'var(--color-blue5)', borderRadius: '8px', padding: '16px' }}>
+        <H4 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-blue11)', marginBottom: '8px' }}>Download Templates</H4>
+        <Text style={{ fontSize: '14px', color: 'var(--color-blue10)', marginBottom: '12px' }}>
           Start with a template to ensure your data is formatted correctly.
         </Text>
-        <XStack gap="$3">
+        <Row style={{ gap: '12px' }}>
           <Button
             variant="outlined"
-            size="$3"
+            size="sm"
             onPress={() => handleDownloadTemplate('csv')}
             disabled={!templatesQuery.data}
           >
-            📄 CSV Template
+            CSV Template
           </Button>
           <Button
             variant="outlined"
-            size="$3"
+            size="sm"
             onPress={() => handleDownloadTemplate('json')}
             disabled={!templatesQuery.data}
           >
-            📋 JSON Template
+            JSON Template
           </Button>
-        </XStack>
+        </Row>
       </Card>
 
       {/* File Upload Section */}
-      <YStack>
-        <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$2">
+      <Stack>
+        <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray11)', marginBottom: '8px' }}>
           Upload File
         </Text>
         <Card
-          borderWidth={2}
-          borderStyle="dashed"
-          borderColor="$gray6"
-          borderRadius="$4"
-          padding="$6"
-          alignItems="center"
-          hoverStyle={{ borderColor: '$gray7' }}
-          cursor="pointer"
+          style={{
+            borderWidth: '2px',
+            borderStyle: 'dashed',
+            borderColor: 'var(--color-gray6)',
+            borderRadius: '8px',
+            padding: '24px',
+            alignItems: 'center',
+            cursor: 'pointer',
+          }}
           onPress={() => fileInputRef.current?.click()}
         >
           <input
@@ -265,7 +266,7 @@ export function BulkImportUI({
             style={{ display: 'none' }}
             data-testid="file-input"
           />
-          <YStack gap="$2" alignItems="center">
+          <Stack style={{ gap: '8px', alignItems: 'center' }}>
             <svg
               style={{ margin: '0 auto', height: '48px', width: '48px', color: '#9CA3AF' }}
               fill="none"
@@ -279,44 +280,45 @@ export function BulkImportUI({
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-            <Text fontSize="$3" color="$gray10">
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray10)' }}>
               {fileName ? (
-                <Text fontWeight="500" color="$blue9">{fileName}</Text>
+                <Text style={{ fontWeight: 500, color: 'var(--color-blue9)' }}>{fileName}</Text>
               ) : (
                 <>
-                  <Text
-                    color="$blue9"
-                    hoverStyle={{ color: '$blue10' }}
-                    fontWeight="500"
-                    cursor="pointer"
-                    onPress={() => fileInputRef.current?.click()}
+                  <span
+                    style={{
+                      color: 'var(--color-blue9)',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => fileInputRef.current?.click()}
                   >
                     Click to upload
-                  </Text>{' '}
+                  </span>{' '}
                   or drag and drop
                 </>
               )}
             </Text>
-            <Text fontSize="$2" color="$gray9">CSV or JSON files up to 10MB</Text>
-          </YStack>
+            <Text style={{ fontSize: '12px', color: 'var(--color-gray9)' }}>CSV or JSON files up to 10MB</Text>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
 
       {/* Or Paste Data Section */}
-      <YStack position="relative">
-        <XStack position="absolute" inset={0} alignItems="center">
-          <YStack width="100%" borderTopWidth={1} borderColor="$gray6" />
-        </XStack>
-        <XStack position="relative" justifyContent="center">
-          <Text paddingHorizontal="$2" backgroundColor="$background" fontSize="$3" color="$gray9">
+      <Stack style={{ position: 'relative' }}>
+        <Row style={{ position: 'absolute', inset: 0, alignItems: 'center' }}>
+          <Stack style={{ width: '100%', borderTopWidth: '1px', borderColor: 'var(--color-gray6)' }} />
+        </Row>
+        <Row style={{ position: 'relative', justifyContent: 'center' }}>
+          <Text style={{ paddingLeft: '8px', paddingRight: '8px', backgroundColor: 'var(--color-background)', fontSize: '14px', color: 'var(--color-gray9)' }}>
             Or paste data directly
           </Text>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
-      <YStack>
-        <XStack justifyContent="space-between" alignItems="center" mb="$2">
-          <Text fontSize="$3" fontWeight="500" color="$gray11">
+      <Stack>
+        <Row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray11)' }}>
             Paste CSV or JSON
           </Text>
           <select
@@ -335,7 +337,7 @@ export function BulkImportUI({
             <option value="csv">CSV</option>
             <option value="json">JSON</option>
           </select>
-        </XStack>
+        </Row>
         <textarea
           value={importData}
           onChange={(e) => setImportData(e.target.value)}
@@ -351,10 +353,10 @@ export function BulkImportUI({
           }}
           data-testid="import-data-textarea"
         />
-      </YStack>
+      </Stack>
 
       {/* Options */}
-      <XStack alignItems="center">
+      <Row style={{ alignItems: 'center' }}>
         <input
           type="checkbox"
           id="skip-duplicates"
@@ -366,13 +368,13 @@ export function BulkImportUI({
             accentColor: '#2563EB',
           }}
         />
-        <Text ml="$2" fontSize="$3" color="$gray11">
+        <Text style={{ marginLeft: '8px', fontSize: '14px', color: 'var(--color-gray11)' }}>
           Skip duplicate requirement codes (recommended)
         </Text>
-      </XStack>
+      </Row>
 
       {/* Actions */}
-      <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$gray6">
+      <Row style={{ justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTopWidth: '1px', borderColor: 'var(--color-gray6)' }}>
         {onClose && (
           <Button variant="outlined" onPress={onClose}>
             Cancel
@@ -385,8 +387,8 @@ export function BulkImportUI({
         >
           {previewQuery.isFetching ? 'Validating...' : 'Validate & Preview'}
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   );
 
   const renderPreviewStep = () => {
@@ -396,31 +398,31 @@ export function BulkImportUI({
     const hasWarnings = previewData.warningRows > 0;
 
     return (
-      <YStack gap="$6">
+      <Stack style={{ gap: '24px' }}>
         {/* Summary */}
-        <XStack flexWrap="wrap" gap="$4">
-          <Card flex={1} minWidth="150px" backgroundColor="$gray2" borderRadius="$4" padding="$4" alignItems="center">
-            <Text fontSize="$9" fontWeight="700" color="$gray12">{previewData.totalRows}</Text>
-            <Text fontSize="$3" color="$gray10">Total Rows</Text>
+        <Row style={{ flexWrap: 'wrap', gap: '16px' }}>
+          <Card style={{ flex: 1, minWidth: '150px', backgroundColor: 'var(--color-gray2)', borderRadius: '8px', padding: '16px', alignItems: 'center' }}>
+            <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-gray12)' }}>{previewData.totalRows}</Text>
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray10)' }}>Total Rows</Text>
           </Card>
-          <Card flex={1} minWidth="150px" backgroundColor="$green2" borderRadius="$4" padding="$4" alignItems="center">
-            <Text fontSize="$9" fontWeight="700" color="$green9">{previewData.validRows}</Text>
-            <Text fontSize="$3" color="$green10">Valid</Text>
+          <Card style={{ flex: 1, minWidth: '150px', backgroundColor: 'var(--color-green2)', borderRadius: '8px', padding: '16px', alignItems: 'center' }}>
+            <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-green9)' }}>{previewData.validRows}</Text>
+            <Text style={{ fontSize: '14px', color: 'var(--color-green10)' }}>Valid</Text>
           </Card>
-          <Card flex={1} minWidth="150px" backgroundColor="$red2" borderRadius="$4" padding="$4" alignItems="center">
-            <Text fontSize="$9" fontWeight="700" color="$red9">{previewData.invalidRows}</Text>
-            <Text fontSize="$3" color="$red10">Invalid</Text>
+          <Card style={{ flex: 1, minWidth: '150px', backgroundColor: 'var(--color-red2)', borderRadius: '8px', padding: '16px', alignItems: 'center' }}>
+            <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-red9)' }}>{previewData.invalidRows}</Text>
+            <Text style={{ fontSize: '14px', color: 'var(--color-red10)' }}>Invalid</Text>
           </Card>
-          <Card flex={1} minWidth="150px" backgroundColor="$yellow2" borderRadius="$4" padding="$4" alignItems="center">
-            <Text fontSize="$9" fontWeight="700" color="$yellow9">{previewData.warningRows}</Text>
-            <Text fontSize="$3" color="$yellow10">Warnings</Text>
+          <Card style={{ flex: 1, minWidth: '150px', backgroundColor: 'var(--color-yellow2)', borderRadius: '8px', padding: '16px', alignItems: 'center' }}>
+            <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-yellow9)' }}>{previewData.warningRows}</Text>
+            <Text style={{ fontSize: '14px', color: 'var(--color-yellow10)' }}>Warnings</Text>
           </Card>
-        </XStack>
+        </Row>
 
         {/* Duplicate Codes Warning */}
         {previewData.duplicateCodes.length > 0 && (
-          <Card backgroundColor="$yellow2" borderColor="$yellow5" borderRadius="$4" padding="$4">
-            <XStack alignItems="flex-start">
+          <Card style={{ backgroundColor: 'var(--color-yellow2)', borderColor: 'var(--color-yellow5)', borderRadius: '8px', padding: '16px' }}>
+            <Row style={{ alignItems: 'flex-start' }}>
               <svg
                 style={{ height: '20px', width: '20px', color: '#FBBF24', marginTop: '2px' }}
                 fill="currentColor"
@@ -432,114 +434,136 @@ export function BulkImportUI({
                   clipRule="evenodd"
                 />
               </svg>
-              <YStack ml="$3" flex={1}>
-                <H4 fontSize="$3" fontWeight="500" color="$yellow11">Duplicate Codes Found</H4>
-                <Text fontSize="$3" color="$yellow10" mt="$1">
+              <Stack style={{ marginLeft: '12px', flex: 1 }}>
+                <H4 style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-yellow11)' }}>Duplicate Codes Found</H4>
+                <Text style={{ fontSize: '14px', color: 'var(--color-yellow10)', marginTop: '4px' }}>
                   {skipDuplicates
                     ? 'The following codes already exist and will be skipped:'
                     : 'The following codes already exist and may cause conflicts:'}
                 </Text>
-                <XStack mt="$2" flexWrap="wrap" gap="$2">
+                <Row style={{ marginTop: '8px', flexWrap: 'wrap', gap: '8px' }}>
                   {previewData.duplicateCodes.map((code) => (
                     <Text
                       key={code}
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      fontSize="$2"
-                      fontWeight="500"
-                      backgroundColor="$yellow3"
-                      color="$yellow11"
+                      style={{
+                        paddingLeft: '8px',
+                        paddingRight: '8px',
+                        paddingTop: '4px',
+                        paddingBottom: '4px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        backgroundColor: 'var(--color-yellow3)',
+                        color: 'var(--color-yellow11)',
+                      }}
                     >
                       {code}
                     </Text>
                   ))}
-                </XStack>
-              </YStack>
-            </XStack>
+                </Row>
+              </Stack>
+            </Row>
           </Card>
         )}
 
         {/* Row Details */}
-        <YStack>
-          <H4 fontSize="$3" fontWeight="500" color="$gray12" mb="$3">Row Details</H4>
-          <Card borderColor="$gray5" borderRadius="$4" overflow="hidden">
-            <YStack maxHeight={384} overflowY="auto">
+        <Stack>
+          <H4 style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray12)', marginBottom: '12px' }}>Row Details</H4>
+          <Card style={{ borderColor: 'var(--color-gray5)', borderRadius: '8px', overflow: 'hidden' }}>
+            <Stack style={{ maxHeight: '384px', overflowY: 'auto' }}>
               {previewData.rows.map((row, idx) => (
-                <YStack
+                <Stack
                   key={row.rowIndex}
-                  borderBottomWidth={idx < previewData.rows.length - 1 ? 1 : 0}
-                  borderColor="$gray5"
-                  backgroundColor={
-                    !row.isValid
-                      ? '$red2'
+                  style={{
+                    borderBottomWidth: idx < previewData.rows.length - 1 ? '1px' : '0',
+                    borderColor: 'var(--color-gray5)',
+                    backgroundColor: !row.isValid
+                      ? 'var(--color-red2)'
                       : row.warnings.length > 0
-                        ? '$yellow2'
-                        : '$background'
-                  }
+                        ? 'var(--color-yellow2)'
+                        : 'var(--color-background)',
+                  }}
                 >
-                  <Button
-                    unstyled
-                    width="100%"
-                    paddingHorizontal="$4"
-                    paddingVertical="$3"
-                    flexDirection="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    style={{ textAlign: 'left' }}
-                    hoverStyle={{ backgroundColor: '$gray2' }}
-                    onPress={() => toggleRowExpansion(row.rowIndex)}
+                  <button
+                    style={{
+                      width: '100%',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      paddingTop: '12px',
+                      paddingBottom: '12px',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      textAlign: 'left',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => toggleRowExpansion(row.rowIndex)}
                   >
-                    <XStack alignItems="center" gap="$3">
-                      <Text fontSize="$3" fontWeight="500" color="$gray9">
+                    <Row style={{ alignItems: 'center', gap: '12px' }}>
+                      <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray9)' }}>
                         Row {row.rowIndex + 1}
                       </Text>
                       {row.isValid ? (
                         row.warnings.length > 0 ? (
                           <Text
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
-                            borderRadius="$2"
-                            fontSize="$2"
-                            fontWeight="500"
-                            backgroundColor="$yellow3"
-                            color="$yellow11"
+                            style={{
+                              paddingLeft: '8px',
+                              paddingRight: '8px',
+                              paddingTop: '4px',
+                              paddingBottom: '4px',
+                              borderRadius: '4px',
+                              fontSize: '12px',
+                              fontWeight: 500,
+                              backgroundColor: 'var(--color-yellow3)',
+                              color: 'var(--color-yellow11)',
+                            }}
                           >
-                            ⚠️ {row.warnings.length} warning(s)
+                            {row.warnings.length} warning(s)
                           </Text>
                         ) : (
                           <Text
-                            paddingHorizontal="$2"
-                            paddingVertical="$1"
-                            borderRadius="$2"
-                            fontSize="$2"
-                            fontWeight="500"
-                            backgroundColor="$green3"
-                            color="$green11"
+                            style={{
+                              paddingLeft: '8px',
+                              paddingRight: '8px',
+                              paddingTop: '4px',
+                              paddingBottom: '4px',
+                              borderRadius: '4px',
+                              fontSize: '12px',
+                              fontWeight: 500,
+                              backgroundColor: 'var(--color-green3)',
+                              color: 'var(--color-green11)',
+                            }}
                           >
-                            ✓ Valid
+                            Valid
                           </Text>
                         )
                       ) : (
                         <Text
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
-                          fontSize="$2"
-                          fontWeight="500"
-                          backgroundColor="$red3"
-                          color="$red11"
+                          style={{
+                            paddingLeft: '8px',
+                            paddingRight: '8px',
+                            paddingTop: '4px',
+                            paddingBottom: '4px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            backgroundColor: 'var(--color-red3)',
+                            color: 'var(--color-red11)',
+                          }}
                         >
-                          ✕ {row.errors.length} error(s)
+                          {row.errors.length} error(s)
                         </Text>
                       )}
                       {row.normalizedData && (
-                        <Text fontSize="$3" color="$gray10">
+                        <Text style={{ fontSize: '14px', color: 'var(--color-gray10)' }}>
                           {(row.normalizedData as { code?: string }).code} -{' '}
                           {(row.normalizedData as { name?: string }).name}
                         </Text>
                       )}
-                    </XStack>
+                    </Row>
                     <svg
                       style={{
                         height: '20px',
@@ -559,48 +583,48 @@ export function BulkImportUI({
                         d="M19 9l-7 7-7-7"
                       />
                     </svg>
-                  </Button>
+                  </button>
 
                   {expandedRows.has(row.rowIndex) && (
-                    <YStack paddingHorizontal="$4" paddingBottom="$3" gap="$3">
+                    <Stack style={{ paddingLeft: '16px', paddingRight: '16px', paddingBottom: '12px', gap: '12px' }}>
                       {/* Errors */}
                       {row.errors.length > 0 && (
-                        <YStack gap="$1">
-                          <Text fontSize="$2" fontWeight="500" color="$red10" textTransform="uppercase">
+                        <Stack style={{ gap: '4px' }}>
+                          <Text style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-red10)', textTransform: 'uppercase' }}>
                             Errors
                           </Text>
                           {row.errors.map((error, errorIdx) => (
-                            <XStack key={errorIdx} alignItems="flex-start" gap="$2">
-                              <Text fontSize="$3" color="$red7">•</Text>
-                              <Text fontSize="$3" color="$red9">
-                                <Text fontWeight="600">{error.field}:</Text> {error.message}
+                            <Row key={errorIdx} style={{ alignItems: 'flex-start', gap: '8px' }}>
+                              <Text style={{ fontSize: '14px', color: 'var(--color-red7)' }}>*</Text>
+                              <Text style={{ fontSize: '14px', color: 'var(--color-red9)' }}>
+                                <Text style={{ fontWeight: 600 }}>{error.field}:</Text> {error.message}
                               </Text>
-                            </XStack>
+                            </Row>
                           ))}
-                        </YStack>
+                        </Stack>
                       )}
 
                       {/* Warnings */}
                       {row.warnings.length > 0 && (
-                        <YStack gap="$1">
-                          <Text fontSize="$2" fontWeight="500" color="$yellow10" textTransform="uppercase">
+                        <Stack style={{ gap: '4px' }}>
+                          <Text style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-yellow10)', textTransform: 'uppercase' }}>
                             Warnings
                           </Text>
                           {row.warnings.map((warning, warnIdx) => (
-                            <XStack key={warnIdx} alignItems="flex-start" gap="$2">
-                              <Text fontSize="$3" color="$yellow7">•</Text>
-                              <Text fontSize="$3" color="$yellow9">
-                                <Text fontWeight="600">{warning.field}:</Text> {warning.message}
+                            <Row key={warnIdx} style={{ alignItems: 'flex-start', gap: '8px' }}>
+                              <Text style={{ fontSize: '14px', color: 'var(--color-yellow7)' }}>*</Text>
+                              <Text style={{ fontSize: '14px', color: 'var(--color-yellow9)' }}>
+                                <Text style={{ fontWeight: 600 }}>{warning.field}:</Text> {warning.message}
                               </Text>
-                            </XStack>
+                            </Row>
                           ))}
-                        </YStack>
+                        </Stack>
                       )}
 
                       {/* Raw Data */}
                       {row.data && (
-                        <YStack>
-                          <Text fontSize="$2" fontWeight="500" color="$gray9" textTransform="uppercase" mb="$1">
+                        <Stack>
+                          <Text style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-gray9)', textTransform: 'uppercase', marginBottom: '4px' }}>
                             Raw Data
                           </Text>
                           <pre style={{
@@ -613,20 +637,20 @@ export function BulkImportUI({
                           }}>
                             {JSON.stringify(row.data, null, 2)}
                           </pre>
-                        </YStack>
+                        </Stack>
                       )}
-                    </YStack>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
               ))}
-            </YStack>
+            </Stack>
           </Card>
-        </YStack>
+        </Stack>
 
         {/* Cannot Proceed Warning */}
         {!previewData.canProceed && (
-          <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$4" padding="$4">
-            <XStack alignItems="center">
+          <Card style={{ backgroundColor: 'var(--color-red2)', borderColor: 'var(--color-red5)', borderRadius: '8px', padding: '16px' }}>
+            <Row style={{ alignItems: 'center' }}>
               <svg style={{ height: '20px', width: '20px', color: '#F87171' }} fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -634,19 +658,19 @@ export function BulkImportUI({
                   clipRule="evenodd"
                 />
               </svg>
-              <Text ml="$3" fontSize="$3" color="$red10">
+              <Text style={{ marginLeft: '12px', fontSize: '14px', color: 'var(--color-red10)' }}>
                 Cannot proceed with import. Please fix all errors and try again.
               </Text>
-            </XStack>
+            </Row>
           </Card>
         )}
 
         {/* Actions */}
-        <XStack justifyContent="space-between" paddingTop="$4" borderTopWidth={1} borderColor="$gray6">
+        <Row style={{ justifyContent: 'space-between', paddingTop: '16px', borderTopWidth: '1px', borderColor: 'var(--color-gray6)' }}>
           <Button variant="outlined" onPress={handleReset}>
-            ← Back to Upload
+            Back to Upload
           </Button>
-          <XStack gap="$3">
+          <Row style={{ gap: '12px' }}>
             {onClose && (
               <Button variant="outlined" onPress={onClose}>
                 Cancel
@@ -661,9 +685,9 @@ export function BulkImportUI({
                 ? 'Importing...'
                 : `Import ${previewData.validRows} Requirement${previewData.validRows !== 1 ? 's' : ''}`}
             </Button>
-          </XStack>
-        </XStack>
-      </YStack>
+          </Row>
+        </Row>
+      </Stack>
     );
   };
 
@@ -671,13 +695,15 @@ export function BulkImportUI({
     if (!importResult) return null;
 
     return (
-      <YStack gap="$6">
+      <Stack style={{ gap: '24px' }}>
         {/* Success/Failure Header */}
         <Card
-          borderRadius="$4"
-          padding="$6"
-          alignItems="center"
-          backgroundColor={importResult.success ? '$green2' : '$yellow2'}
+          style={{
+            borderRadius: '8px',
+            padding: '24px',
+            alignItems: 'center',
+            backgroundColor: importResult.success ? 'var(--color-green2)' : 'var(--color-yellow2)',
+          }}
         >
           {importResult.success ? (
             <>
@@ -694,8 +720,8 @@ export function BulkImportUI({
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <H3 mt="$3" fontSize="$6" fontWeight="500" color="$green11">Import Successful!</H3>
-              <Text mt="$1" fontSize="$3" color="$green10">
+              <H3 style={{ marginTop: '12px', fontSize: '24px', fontWeight: 500, color: 'var(--color-green11)' }}>Import Successful!</H3>
+              <Text style={{ marginTop: '4px', fontSize: '14px', color: 'var(--color-green10)' }}>
                 {importResult.successfulImports} requirement
                 {importResult.successfulImports !== 1 ? 's' : ''} imported successfully.
               </Text>
@@ -715,8 +741,8 @@ export function BulkImportUI({
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-              <H3 mt="$3" fontSize="$6" fontWeight="500" color="$yellow11">Import Partially Complete</H3>
-              <Text mt="$1" fontSize="$3" color="$yellow10">
+              <H3 style={{ marginTop: '12px', fontSize: '24px', fontWeight: 500, color: 'var(--color-yellow11)' }}>Import Partially Complete</H3>
+              <Text style={{ marginTop: '4px', fontSize: '14px', color: 'var(--color-yellow10)' }}>
                 {importResult.successfulImports} succeeded, {importResult.failedImports} failed.
               </Text>
             </>
@@ -724,57 +750,61 @@ export function BulkImportUI({
         </Card>
 
         {/* Summary Stats */}
-        <XStack flexWrap="wrap" gap="$4">
-          <Card flex={1} minWidth="150px" backgroundColor="$gray2" borderRadius="$4" padding="$4" alignItems="center">
-            <Text fontSize="$9" fontWeight="700" color="$gray12">
+        <Row style={{ flexWrap: 'wrap', gap: '16px' }}>
+          <Card style={{ flex: 1, minWidth: '150px', backgroundColor: 'var(--color-gray2)', borderRadius: '8px', padding: '16px', alignItems: 'center' }}>
+            <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-gray12)' }}>
               {importResult.totalAttempted}
             </Text>
-            <Text fontSize="$3" color="$gray10">Attempted</Text>
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray10)' }}>Attempted</Text>
           </Card>
-          <Card flex={1} minWidth="150px" backgroundColor="$green2" borderRadius="$4" padding="$4" alignItems="center">
-            <Text fontSize="$9" fontWeight="700" color="$green9">
+          <Card style={{ flex: 1, minWidth: '150px', backgroundColor: 'var(--color-green2)', borderRadius: '8px', padding: '16px', alignItems: 'center' }}>
+            <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-green9)' }}>
               {importResult.successfulImports}
             </Text>
-            <Text fontSize="$3" color="$green10">Succeeded</Text>
+            <Text style={{ fontSize: '14px', color: 'var(--color-green10)' }}>Succeeded</Text>
           </Card>
-          <Card flex={1} minWidth="150px" backgroundColor="$red2" borderRadius="$4" padding="$4" alignItems="center">
-            <Text fontSize="$9" fontWeight="700" color="$red9">{importResult.failedImports}</Text>
-            <Text fontSize="$3" color="$red10">Failed</Text>
+          <Card style={{ flex: 1, minWidth: '150px', backgroundColor: 'var(--color-red2)', borderRadius: '8px', padding: '16px', alignItems: 'center' }}>
+            <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-red9)' }}>{importResult.failedImports}</Text>
+            <Text style={{ fontSize: '14px', color: 'var(--color-red10)' }}>Failed</Text>
           </Card>
-        </XStack>
+        </Row>
 
         {/* Errors List */}
         {importResult.errors.length > 0 && (
-          <YStack>
-            <H4 fontSize="$3" fontWeight="500" color="$gray12" mb="$3">Import Errors</H4>
-            <Card borderColor="$red5" borderRadius="$4" overflow="hidden">
-              <YStack maxHeight={256} overflowY="auto">
+          <Stack>
+            <H4 style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray12)', marginBottom: '12px' }}>Import Errors</H4>
+            <Card style={{ borderColor: 'var(--color-red5)', borderRadius: '8px', overflow: 'hidden' }}>
+              <Stack style={{ maxHeight: '256px', overflowY: 'auto' }}>
                 {importResult.errors.map((error, idx) => (
-                  <YStack
+                  <Stack
                     key={idx}
-                    paddingHorizontal="$4"
-                    paddingVertical="$3"
-                    borderBottomWidth={idx < importResult.errors.length - 1 ? 1 : 0}
-                    borderColor="$red4"
-                    backgroundColor="$red2"
+                    style={{
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      paddingTop: '12px',
+                      paddingBottom: '12px',
+                      borderBottomWidth: idx < importResult.errors.length - 1 ? '1px' : '0',
+                      borderColor: 'var(--color-red4)',
+                      backgroundColor: 'var(--color-red2)',
+                    }}
                   >
-                    <XStack alignItems="flex-start" gap="$3">
-                      <Text fontSize="$3" fontWeight="500" color="$red10">
+                    <Row style={{ alignItems: 'flex-start', gap: '12px' }}>
+                      <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-red10)' }}>
                         Row {error.rowIndex + 1}
                       </Text>
-                      <Text fontSize="$3" color="$red9">
-                        <Text fontWeight="600">{error.code}:</Text> {error.message}
+                      <Text style={{ fontSize: '14px', color: 'var(--color-red9)' }}>
+                        <Text style={{ fontWeight: 600 }}>{error.code}:</Text> {error.message}
                       </Text>
-                    </XStack>
-                  </YStack>
+                    </Row>
+                  </Stack>
                 ))}
-              </YStack>
+              </Stack>
             </Card>
-          </YStack>
+          </Stack>
         )}
 
         {/* Actions */}
-        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$gray6">
+        <Row style={{ justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTopWidth: '1px', borderColor: 'var(--color-gray6)' }}>
           <Button variant="outlined" onPress={handleReset}>
             Import More
           </Button>
@@ -783,8 +813,8 @@ export function BulkImportUI({
               Done
             </Button>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     );
   };
 
@@ -793,75 +823,78 @@ export function BulkImportUI({
   // =============================================================================
 
   return (
-    <Card backgroundColor="$background" borderRadius="$4" elevation={4}>
+    <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: '8px' }}>
       {/* Header */}
-      <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray5">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12">Bulk Import Requirements</H3>
-        <Text mt="$1" fontSize="$3" color="$gray9">
+      <Stack style={{ paddingLeft: '24px', paddingRight: '24px', paddingTop: '16px', paddingBottom: '16px', borderBottomWidth: '1px', borderColor: 'var(--color-gray5)' }}>
+        <H3 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-gray12)' }}>Bulk Import Requirements</H3>
+        <Text style={{ marginTop: '4px', fontSize: '14px', color: 'var(--color-gray9)' }}>
           Import multiple compliance requirements from a CSV or JSON file.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Step Indicator */}
-      <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray4" backgroundColor="$gray2">
-        <XStack alignItems="center" justifyContent="center">
+      <Stack style={{ paddingLeft: '24px', paddingRight: '24px', paddingTop: '16px', paddingBottom: '16px', borderBottomWidth: '1px', borderColor: 'var(--color-gray4)', backgroundColor: 'var(--color-gray2)' }}>
+        <Row style={{ alignItems: 'center', justifyContent: 'center' }}>
           {(['upload', 'preview', 'result'] as const).map((s, idx) => (
-            <XStack key={s} alignItems="center">
+            <Row key={s} style={{ alignItems: 'center' }}>
               {idx > 0 && (
-                <YStack
-                  width={48}
-                  height={2}
-                  marginHorizontal="$2"
-                  backgroundColor={
-                    step === 'preview' || step === 'result' ? '$blue9' : '$gray6'
-                  }
+                <Stack
+                  style={{
+                    width: '48px',
+                    height: '2px',
+                    marginLeft: '8px',
+                    marginRight: '8px',
+                    backgroundColor:
+                      step === 'preview' || step === 'result' ? 'var(--color-blue9)' : 'var(--color-gray6)',
+                  }}
                 />
               )}
-              <YStack alignItems="center">
-                <YStack
-                  width={32}
-                  height={32}
-                  borderRadius={9999}
-                  alignItems="center"
-                  justifyContent="center"
-                  fontSize="$3"
-                  fontWeight="500"
-                  backgroundColor={
-                    step === s
-                      ? '$blue9'
-                      : (step === 'preview' && s === 'upload') ||
-                          (step === 'result' && (s === 'upload' || s === 'preview'))
-                        ? '$green9'
-                        : '$gray5'
-                  }
-                  color={
-                    step === s ||
-                    (step === 'preview' && s === 'upload') ||
-                    (step === 'result' && (s === 'upload' || s === 'preview'))
-                      ? '$background'
-                      : '$gray10'
-                  }
+              <Stack style={{ alignItems: 'center' }}>
+                <Stack
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '9999px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    backgroundColor:
+                      step === s
+                        ? 'var(--color-blue9)'
+                        : (step === 'preview' && s === 'upload') ||
+                            (step === 'result' && (s === 'upload' || s === 'preview'))
+                          ? 'var(--color-green9)'
+                          : 'var(--color-gray5)',
+                    color:
+                      step === s ||
+                      (step === 'preview' && s === 'upload') ||
+                      (step === 'result' && (s === 'upload' || s === 'preview'))
+                        ? 'var(--color-background)'
+                        : 'var(--color-gray10)',
+                  }}
                 >
                   {(step === 'preview' && s === 'upload') ||
                   (step === 'result' && (s === 'upload' || s === 'preview')) ? (
-                    '✓'
+                    <span>&#10003;</span>
                   ) : (
                     idx + 1
                   )}
-                </YStack>
-                <Text mt="$1" fontSize="$2" color="$gray10" textTransform="capitalize">{s}</Text>
-              </YStack>
-            </XStack>
+                </Stack>
+                <Text style={{ marginTop: '4px', fontSize: '12px', color: 'var(--color-gray10)', textTransform: 'capitalize' }}>{s}</Text>
+              </Stack>
+            </Row>
           ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Content */}
-      <YStack padding="$6">
+      <Stack style={{ padding: '24px' }}>
         {step === 'upload' && renderUploadStep()}
         {step === 'preview' && renderPreviewStep()}
         {step === 'result' && renderResultStep()}
-      </YStack>
+      </Stack>
     </Card>
   );
 }

@@ -12,35 +12,35 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { YStack, XStack, Text, Button, Card, H2, H3, Input, Spinner } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Card, Heading, Input, Spinner, colors, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'
 
 // Color mappings
 const SEVERITY_COLORS: Record<string, { bg: string; text: string }> = {
-  critical: { bg: '$red2', text: '$red11' },
-  high: { bg: '$orange2', text: '$orange11' },
-  medium: { bg: '$yellow2', text: '$yellow11' },
-  low: { bg: '$green2', text: '$green11' },
-  info: { bg: '$gray2', text: '$gray11' },
+  critical: { bg: colors.error[200], text: colors.error[600] },
+  high: { bg: colors.warning[200], text: colors.warning[600] },
+  medium: { bg: colors.warning[200], text: colors.warning[600] },
+  low: { bg: colors.success[200], text: colors.success[600] },
+  info: { bg: colors.gray[100], text: colors.text.light.secondary },
 }
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
-  compliance: { bg: '$blue2', text: '$blue11' },
-  security: { bg: '$red2', text: '$red11' },
-  data_access: { bg: '$green2', text: '$green11' },
-  data_modification: { bg: '$orange2', text: '$orange11' },
-  authentication: { bg: '$purple2', text: '$purple11' },
-  authorization: { bg: '$cyan2', text: '$cyan11' },
-  admin: { bg: '$yellow2', text: '$yellow11' },
-  system: { bg: '$gray2', text: '$gray11' },
+  compliance: { bg: colors.primary[200], text: colors.primary[600] },
+  security: { bg: colors.error[200], text: colors.error[600] },
+  data_access: { bg: colors.success[200], text: colors.success[600] },
+  data_modification: { bg: colors.warning[200], text: colors.warning[600] },
+  authentication: { bg: colors.purple[200], text: colors.purple[600] },
+  authorization: { bg: colors.info[200], text: colors.info[600] },
+  admin: { bg: colors.warning[200], text: colors.warning[600] },
+  system: { bg: colors.gray[100], text: colors.text.light.secondary },
 }
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  success: { bg: '$green2', text: '$green11' },
-  failure: { bg: '$red2', text: '$red11' },
-  partial: { bg: '$yellow2', text: '$yellow11' },
-  denied: { bg: '$orange2', text: '$orange11' },
+  success: { bg: colors.success[200], text: colors.success[600] },
+  failure: { bg: colors.error[200], text: colors.error[600] },
+  partial: { bg: colors.warning[200], text: colors.warning[600] },
+  denied: { bg: colors.warning[200], text: colors.warning[600] },
 }
 
 export default function CCPAAuditLogPage() {
@@ -138,46 +138,47 @@ export default function CCPAAuditLogPage() {
   // Loading state
   if (isLoading) {
     return (
-      <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
-        <YStack alignItems="center" justifyContent="center" minHeight={400}>
-          <Spinner size="large" />
-          <Text color="$gray11" marginTop="$4">
+      <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+          <Spinner size="lg" />
+          <Text color={colors.text.light.secondary} style={{ marginTop: spacing[16] }}>
             Loading audit log...
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
-        <YStack
-          padding="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
+      <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
+        <Stack
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
         >
-          <Text fontWeight="600" color="$red11">
+          <Text weight="semibold" color={colors.error[600]}>
             Error loading audit log
           </Text>
-          <Text color="$red10" fontSize="$2" marginTop="$2">
+          <Text color={colors.error[500]} size="xs" style={{ marginTop: spacing[8] }}>
             {error.message || 'Failed to load data. Please try again.'}
           </Text>
           <Button
-            marginTop="$3"
-            size="$3"
-            backgroundColor="$red9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$red10' }}
+            style={{ marginTop: spacing[12] }}
+            size="sm"
+            color="error"
+            variant="filled"
             onPress={() => refetch()}
           >
             Retry
           </Button>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
@@ -187,90 +188,87 @@ export default function CCPAAuditLogPage() {
   const currentPage = Math.floor(offset / limit) + 1
 
   return (
-    <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
+    <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <YStack>
-          <H2 marginBottom="$2">CCPA Audit Log</H2>
-          <Text color="$gray11">
+      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[24] }}>
+        <Stack>
+          <Heading level={2} style={{ marginBottom: spacing[8] }}>CCPA Audit Log</Heading>
+          <Text color={colors.text.light.secondary}>
             {totalCount} event{totalCount !== 1 ? 's' : ''} in the last 30 days
           </Text>
-        </YStack>
-        <XStack gap="$2">
+        </Stack>
+        <Row gap={spacing[8]}>
           <Button
-            backgroundColor="$gray3"
-            color="$gray11"
-            hoverStyle={{ backgroundColor: '$gray4' }}
+            variant="outline"
+            color="gray"
             onPress={() => router.push('/admin/ccpa')}
           >
             Back to Dashboard
           </Button>
           <Button
-            backgroundColor="$blue9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            color="primary"
+            variant="filled"
             onPress={() => handleExport('csv')}
           >
             Export CSV
           </Button>
           <Button
-            backgroundColor="$gray3"
-            color="$gray11"
-            hoverStyle={{ backgroundColor: '$gray4' }}
+            variant="outline"
+            color="gray"
             onPress={() => handleExport('json')}
           >
             Export JSON
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Summary Stats */}
       {statsData && (
-        <XStack gap="$4" marginBottom="$6" flexWrap="wrap">
-          <Card padding="$4" flex={1} minWidth={180}>
-            <Text color="$gray11" fontSize="$2" marginBottom="$1">
+        <Row gap={spacing[16]} style={{ marginBottom: spacing[24], flexWrap: 'wrap' }}>
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
+            <Text color={colors.text.light.secondary} size="xs" style={{ marginBottom: spacing[4] }}>
               Total Events (30d)
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$gray12">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.text.light.primary}>
               {statsData.totalEvents}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={180} backgroundColor="$red2">
-            <Text color="$red11" fontSize="$2" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 180, backgroundColor: colors.error[200] }}>
+            <Text color={colors.error[600]} size="xs" style={{ marginBottom: spacing[4] }}>
               Security Events
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$red11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.error[600]}>
               {statsData.securityEvents}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={180} backgroundColor="$orange2">
-            <Text color="$orange11" fontSize="$2" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 180, backgroundColor: colors.warning[200] }}>
+            <Text color={colors.warning[600]} size="xs" style={{ marginBottom: spacing[4] }}>
               Failed Events
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$orange11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.warning[600]}>
               {statsData.failedEvents}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={180}>
-            <Text color="$gray11" fontSize="$2" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
+            <Text color={colors.text.light.secondary} size="xs" style={{ marginBottom: spacing[4] }}>
               Compliance Events
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$blue11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.primary[600]}>
               {statsData.categoryBreakdown?.compliance ?? 0}
             </Text>
           </Card>
-        </XStack>
+        </Row>
       )}
 
       {/* Filters */}
-      <Card padding="$4" marginBottom="$4">
-        <H3 marginBottom="$3">Filters</H3>
-        <XStack flexWrap="wrap" gap="$4" alignItems="flex-end">
-          <YStack minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+      <Card style={{ padding: spacing[16], marginBottom: spacing[16] }}>
+        <Heading level={3} style={{ marginBottom: spacing[12] }}>Filters</Heading>
+        <Row style={{ flexWrap: 'wrap', gap: spacing[16], alignItems: 'flex-end' }}>
+          <Stack style={{ minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Category
             </Text>
-            <XStack gap="$2" flexWrap="wrap">
+            <Row gap={spacing[8]} style={{ flexWrap: 'wrap' }}>
               {['all', 'compliance', 'security', 'data_access', 'data_modification'].map(
                 (category) => (
                   <Button
@@ -279,12 +277,9 @@ export default function CCPAAuditLogPage() {
                       setCategoryFilter(category)
                       setOffset(0)
                     }}
-                    size="$2"
-                    backgroundColor={categoryFilter === category ? '$blue9' : '$gray3'}
-                    color={categoryFilter === category ? 'white' : '$gray11'}
-                    hoverStyle={{
-                      backgroundColor: categoryFilter === category ? '$blue10' : '$gray4',
-                    }}
+                    size="xs"
+                    color={categoryFilter === category ? 'primary' : 'gray'}
+                    variant={categoryFilter === category ? 'filled' : 'outline'}
                   >
                     {category === 'all'
                       ? 'All'
@@ -292,14 +287,14 @@ export default function CCPAAuditLogPage() {
                   </Button>
                 )
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
-          <YStack minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Stack style={{ minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Severity
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               {['all', 'critical', 'high', 'medium', 'low', 'info'].map((severity) => (
                 <Button
                   key={severity}
@@ -307,21 +302,18 @@ export default function CCPAAuditLogPage() {
                     setSeverityFilter(severity)
                     setOffset(0)
                   }}
-                  size="$2"
-                  backgroundColor={severityFilter === severity ? '$blue9' : '$gray3'}
-                  color={severityFilter === severity ? 'white' : '$gray11'}
-                  hoverStyle={{
-                    backgroundColor: severityFilter === severity ? '$blue10' : '$gray4',
-                  }}
+                  size="xs"
+                  color={severityFilter === severity ? 'primary' : 'gray'}
+                  variant={severityFilter === severity ? 'filled' : 'outline'}
                 >
                   {severity.charAt(0).toUpperCase() + severity.slice(1)}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
-          <YStack flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Stack style={{ flex: 1, minWidth: 200 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Search Action
             </Text>
             <Input
@@ -332,182 +324,186 @@ export default function CCPAAuditLogPage() {
                 setOffset(0)
               }}
             />
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
       </Card>
 
       {/* Audit Log Table */}
-      <Card overflow="hidden">
-        <YStack>
+      <Card style={{ overflow: 'hidden' }}>
+        <Stack>
           {/* Table Header */}
-          <XStack backgroundColor="$gray2" paddingHorizontal="$4" paddingVertical="$3">
-            <Text width={180} fontSize="$2" fontWeight="500" color="$gray11">
+          <Row style={{ backgroundColor: colors.gray[100], paddingHorizontal: spacing[16], paddingVertical: spacing[12] }}>
+            <Text style={{ width: 180 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Timestamp
             </Text>
-            <Text width={120} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 120 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Category
             </Text>
-            <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Action
             </Text>
-            <Text width={80} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 80 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Severity
             </Text>
-            <Text width={80} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 80 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Status
             </Text>
-            <Text width={150} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 150 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Resource
             </Text>
-          </XStack>
+          </Row>
 
           {/* Table Body */}
           {logs.length === 0 ? (
-            <YStack padding="$8" alignItems="center">
-              <Text fontSize="$6" color="$gray8" marginBottom="$2">
+            <Stack style={{ padding: spacing[32], alignItems: 'center' }}>
+              <Text style={{ fontSize: 24 }} color={colors.gray[300]} style={{ marginBottom: spacing[8] }}>
                 No audit events found
               </Text>
-              <Text color="$gray11" textAlign="center">
+              <Text color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
                 No CCPA-related events match your current filters.
               </Text>
-            </YStack>
+            </Stack>
           ) : (
-            <YStack>
+            <Stack>
               {logs.map((log) => (
-                <XStack
+                <Row
                   key={log.id}
-                  paddingHorizontal="$4"
-                  paddingVertical="$3"
-                  borderBottomWidth={1}
-                  borderColor="$borderColor"
-                  hoverStyle={{ backgroundColor: '$gray2' }}
-                  alignItems="center"
+                  style={{
+                    paddingHorizontal: spacing[16],
+                    paddingVertical: spacing[12],
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border.light.default,
+                    alignItems: 'center',
+                  }}
                 >
                   {/* Timestamp */}
-                  <Text width={180} fontSize="$2" color="$gray11">
+                  <Text style={{ width: 180 }} size="xs" color={colors.text.light.secondary}>
                     {formatDate(log.createdAt)}
                   </Text>
 
                   {/* Category */}
-                  <XStack width={120} alignItems="center">
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={CATEGORY_COLORS[log.category]?.bg ?? '$gray2'}
+                  <Row style={{ width: 120, alignItems: 'center' }}>
+                    <Row
+                      style={{
+                        paddingHorizontal: spacing[8],
+                        paddingVertical: spacing[4],
+                        borderRadius: 8,
+                        backgroundColor: CATEGORY_COLORS[log.category]?.bg ?? colors.gray[100],
+                      }}
                     >
                       <Text
-                        fontSize="$1"
-                        color={CATEGORY_COLORS[log.category]?.text ?? '$gray11'}
+                        size="xs"
+                        color={CATEGORY_COLORS[log.category]?.text ?? colors.text.light.secondary}
                       >
                         {log.category?.replace(/_/g, ' ')}
                       </Text>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {/* Action */}
-                  <YStack flex={1}>
-                    <Text fontWeight="500" color="$gray12" fontSize="$2">
+                  <Stack style={{ flex: 1 }}>
+                    <Text weight="medium" color={colors.text.light.primary} size="xs">
                       {log.action?.replace(/_/g, ' ')}
                     </Text>
                     {log.tableName && (
-                      <Text fontSize="$1" color="$gray10">
+                      <Text size="xs" color={colors.text.light.tertiary}>
                         Table: {log.tableName}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
 
                   {/* Severity */}
-                  <XStack width={80} alignItems="center">
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={SEVERITY_COLORS[log.severity]?.bg ?? '$gray2'}
+                  <Row style={{ width: 80, alignItems: 'center' }}>
+                    <Row
+                      style={{
+                        paddingHorizontal: spacing[8],
+                        paddingVertical: spacing[4],
+                        borderRadius: 8,
+                        backgroundColor: SEVERITY_COLORS[log.severity]?.bg ?? colors.gray[100],
+                      }}
                     >
                       <Text
-                        fontSize="$1"
-                        color={SEVERITY_COLORS[log.severity]?.text ?? '$gray11'}
+                        size="xs"
+                        color={SEVERITY_COLORS[log.severity]?.text ?? colors.text.light.secondary}
                       >
                         {log.severity}
                       </Text>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {/* Status */}
-                  <XStack width={80} alignItems="center">
+                  <Row style={{ width: 80, alignItems: 'center' }}>
                     {log.status && (
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={STATUS_COLORS[log.status]?.bg ?? '$gray2'}
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor: STATUS_COLORS[log.status]?.bg ?? colors.gray[100],
+                        }}
                       >
                         <Text
-                          fontSize="$1"
-                          color={STATUS_COLORS[log.status]?.text ?? '$gray11'}
+                          size="xs"
+                          color={STATUS_COLORS[log.status]?.text ?? colors.text.light.secondary}
                         >
                           {log.status}
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
-                  </XStack>
+                  </Row>
 
                   {/* Resource */}
-                  <XStack width={150} alignItems="center">
-                    <Text fontSize="$2" color="$gray11" numberOfLines={1}>
+                  <Row style={{ width: 150, alignItems: 'center' }}>
+                    <Text size="xs" color={colors.text.light.secondary} style={{ numberOfLines: 1 }}>
                       {log.resourceName || log.recordId?.substring(0, 8) || '-'}
                     </Text>
-                  </XStack>
-                </XStack>
+                  </Row>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Pagination */}
       {totalCount > limit && (
-        <XStack justifyContent="space-between" alignItems="center" marginTop="$4">
-          <Text color="$gray11" fontSize="$2">
+        <Row justifyContent="space-between" alignItems="center" style={{ marginTop: spacing[16] }}>
+          <Text color={colors.text.light.secondary} size="xs">
             Showing {offset + 1} - {Math.min(offset + limit, totalCount)} of {totalCount}
           </Text>
-          <XStack gap="$2">
+          <Row gap={spacing[8]}>
             <Button
-              size="$2"
-              backgroundColor="$gray3"
-              color="$gray11"
-              hoverStyle={{ backgroundColor: '$gray4' }}
+              size="xs"
+              variant="outline"
+              color="gray"
               disabled={currentPage === 1}
               onPress={() => setOffset(Math.max(0, offset - limit))}
             >
               Previous
             </Button>
-            <Text color="$gray11" paddingHorizontal="$2">
+            <Text color={colors.text.light.secondary} style={{ paddingHorizontal: spacing[8] }}>
               Page {currentPage} of {totalPages}
             </Text>
             <Button
-              size="$2"
-              backgroundColor="$gray3"
-              color="$gray11"
-              hoverStyle={{ backgroundColor: '$gray4' }}
+              size="xs"
+              variant="outline"
+              color="gray"
               disabled={currentPage === totalPages}
               onPress={() => setOffset(offset + limit)}
             >
               Next
             </Button>
-          </XStack>
-          <XStack gap="$2" alignItems="center">
-            <Text color="$gray11" fontSize="$2">
+          </Row>
+          <Row gap={spacing[8]} alignItems="center">
+            <Text color={colors.text.light.secondary} size="xs">
               Rows per page:
             </Text>
             {[50, 100, 200].map((size) => (
               <Button
                 key={size}
-                size="$2"
-                backgroundColor={limit === size ? '$blue9' : '$gray3'}
-                color={limit === size ? 'white' : '$gray11'}
-                hoverStyle={{ backgroundColor: limit === size ? '$blue10' : '$gray4' }}
+                size="xs"
+                color={limit === size ? 'primary' : 'gray'}
+                variant={limit === size ? 'filled' : 'outline'}
                 onPress={() => {
                   setLimit(size)
                   setOffset(0)
@@ -516,28 +512,30 @@ export default function CCPAAuditLogPage() {
                 {size}
               </Button>
             ))}
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       )}
 
       {/* Help Text */}
       <Card
-        padding="$4"
-        marginTop="$6"
-        backgroundColor="$blue2"
-        borderWidth={1}
-        borderColor="$blue6"
+        style={{
+          padding: spacing[16],
+          marginTop: spacing[24],
+          backgroundColor: colors.info[200],
+          borderWidth: 1,
+          borderColor: colors.info[400],
+        }}
       >
-        <Text fontWeight="500" color="$blue11" marginBottom="$2">
+        <Text weight="medium" color={colors.info[600]} style={{ marginBottom: spacing[8] }}>
           About CCPA Audit Log
         </Text>
-        <Text color="$blue10" fontSize="$2">
+        <Text color={colors.info[500]} size="xs">
           This audit log tracks all CCPA-related events including privacy requests, data access,
           modifications, and compliance activities. Logs are immutable and retained for 7 years per
           regulatory requirements. Use the filters above to narrow down events, and export for
           reporting purposes.
         </Text>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

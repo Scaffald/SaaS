@@ -1,72 +1,249 @@
 /**
- * ForSured Email Manager Configuration
+ * ForSured Email Configuration
  *
  * REQ-130: Email communication auditability
  *
- * STUB IMPLEMENTATION: The @bernierllc/email-manager package is not available.
- * This provides stub implementations for server-side email functionality.
- *
- * TODO: Implement proper email sending via Supabase Edge Functions or replace with working package
+ * Direct SendGrid API integration for email sending.
+ * Webhooks are handled via /api/webhooks/sendgrid route.
  *
  * This is a server-side module (Node.js only).
  */
 
+// Environment variables
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
+const SENDGRID_FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_FROM_ADDRESS
+const SENDGRID_FROM_NAME = process.env.SENDGRID_FROM_NAME || process.env.EMAIL_FROM_NAME || 'ForSured'
+
 // Validate required environment variables at module load
-if (typeof process !== 'undefined') {
-  if (!process.env.SENDGRID_API_KEY) {
-    console.warn('[email-manager] SENDGRID_API_KEY not set - email sending will fail')
-  }
+if (typeof process !== 'undefined' && !SENDGRID_API_KEY) {
+  console.warn('[email] SENDGRID_API_KEY not set - email sending will fail')
 }
 
-/**
- * Send a simple email - STUB IMPLEMENTATION
- */
-export async function sendEmail(options: {
+export interface SendEmailOptions {
   to: string | string[]
   subject: string
   html: string
   text?: string
   metadata?: Record<string, unknown>
-}) {
-  console.warn('[email-manager] STUB: sendEmail called', {
-    to: options.to,
-    subject: options.subject,
-    metadata: options.metadata,
-  })
+}
 
-  // Return a mock successful result
-  return {
-    success: true,
-    messageId: `stub-${Date.now()}`,
-    provider: 'stub',
+export interface SendEmailResult {
+  success: boolean
+  messageId?: string
+  provider: string
+  error?: string
+}
+
+/**
+ * Send an email via SendGrid API
+ */
+export async function sendEmail(options: SendEmailOptions): Promise<SendEmailResult> {
+  if (!SENDGRID_API_KEY) {
+    console.error('[email] Cannot send email: SENDGRID_API_KEY not configured')
+    return {
+      success: false,
+      provider: 'sendgrid',
+      error: 'SENDGRID_API_KEY not configured',
+    }
+  }
+
+  if (!SENDGRID_FROM_EMAIL) {
+    console.error('[email] Cannot send email: SENDGRID_FROM_EMAIL not configured')
+    return {
+      success: false,
+      provider: 'sendgrid',
+      error: 'SENDGRID_FROM_EMAIL not configured',
+    }
+  }
+
+  // Normalize recipients to array
+  const recipients = Array.isArray(options.to) ? options.to : [options.to]
+
+  // Build custom args from metadata for webhook tracking
+  const customArgs: Record<string, string> = {
+    forsured: 'true',
+  }
+
+  if (options.metadata) {
+    for (const [key, value] of Object.entries(options.metadata)) {
+      if (value !== undefined && value !== null) {
+        customArgs[key] = String(value)
+      }
+    }
+  }
+
+  const payload = {
+    personalizations: [
+      {
+        to: recipients.map((email) => ({ email })),
+        custom_args: customArgs,
+      },
+    ],
+    from: {
+      email: SENDGRID_FROM_EMAIL,
+      name: SENDGRID_FROM_NAME,
+    },
+    subject: options.subject,
+    content: [
+      ...(options.text ? [{ type: 'text/plain', value: options.text }] : []),
+      { type: 'text/html', value: options.html },
+    ],
+    categories: ['forsured'],
+    custom_args: customArgs,
+  }
+
+  try {
+    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    // SendGrid returns 202 Accepted for successful sends
+    if (response.status === 202) {
+      const messageId = response.headers.get('x-message-id') || undefined
+      console.log('[email] Email sent successfully', {
+        to: recipients,
+        subject: options.subject,
+        messageId,
+      })
+      return {
+        success: true,
+        messageId,
+        provider: 'sendgrid',
+      }
+    }
+
+    const errorBody = await response.text()
+    console.error('[email] SendGrid API error', {
+      status: response.status,
+      body: errorBody,
+    })
+    return {
+      success: false,
+      provider: 'sendgrid',
+      error: `HTTP ${response.status}: ${errorBody}`,
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    console.error('[email] Failed to send email', { error: errorMessage })
+    return {
+      success: false,
+      provider: 'sendgrid',
+      error: errorMessage,
+    }
   }
 }
 
 /**
- * Send a templated email - STUB IMPLEMENTATION
+ * Send a templated email via SendGrid dynamic templates
  */
 export async function sendTemplatedEmail(
   templateId: string,
   data: Record<string, unknown>,
   to: string | string[],
   metadata?: Record<string, unknown>
-) {
-  console.warn('[email-manager] STUB: sendTemplatedEmail called', {
-    templateId,
-    to,
-    metadata,
-  })
+): Promise<SendEmailResult> {
+  if (!SENDGRID_API_KEY) {
+    console.error('[email] Cannot send templated email: SENDGRID_API_KEY not configured')
+    return {
+      success: false,
+      provider: 'sendgrid',
+      error: 'SENDGRID_API_KEY not configured',
+    }
+  }
 
-  // Return a mock successful result
-  return {
-    success: true,
-    messageId: `stub-${Date.now()}`,
-    provider: 'stub',
+  if (!SENDGRID_FROM_EMAIL) {
+    console.error('[email] Cannot send templated email: SENDGRID_FROM_EMAIL not configured')
+    return {
+      success: false,
+      provider: 'sendgrid',
+      error: 'SENDGRID_FROM_EMAIL not configured',
+    }
+  }
+
+  const recipients = Array.isArray(to) ? to : [to]
+
+  const customArgs: Record<string, string> = {
+    forsured: 'true',
+    templateId,
+  }
+
+  if (metadata) {
+    for (const [key, value] of Object.entries(metadata)) {
+      if (value !== undefined && value !== null) {
+        customArgs[key] = String(value)
+      }
+    }
+  }
+
+  const payload = {
+    personalizations: [
+      {
+        to: recipients.map((email) => ({ email })),
+        dynamic_template_data: data,
+        custom_args: customArgs,
+      },
+    ],
+    from: {
+      email: SENDGRID_FROM_EMAIL,
+      name: SENDGRID_FROM_NAME,
+    },
+    template_id: templateId,
+    categories: ['forsured'],
+    custom_args: customArgs,
+  }
+
+  try {
+    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (response.status === 202) {
+      const messageId = response.headers.get('x-message-id') || undefined
+      console.log('[email] Templated email sent successfully', {
+        to: recipients,
+        templateId,
+        messageId,
+      })
+      return {
+        success: true,
+        messageId,
+        provider: 'sendgrid',
+      }
+    }
+
+    const errorBody = await response.text()
+    console.error('[email] SendGrid API error for templated email', {
+      status: response.status,
+      body: errorBody,
+    })
+    return {
+      success: false,
+      provider: 'sendgrid',
+      error: `HTTP ${response.status}: ${errorBody}`,
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    console.error('[email] Failed to send templated email', { error: errorMessage })
+    return {
+      success: false,
+      provider: 'sendgrid',
+      error: errorMessage,
+    }
   }
 }
 
 /**
- * Track an email event for audit logging - STUB IMPLEMENTATION
+ * Track an email event for audit logging
  * Called from the webhook handler
  */
 export function trackEmailEvent(
@@ -74,13 +251,16 @@ export function trackEmailEvent(
   messageId: string,
   recipient: string,
   metadata?: Record<string, unknown>
-) {
-  console.warn('[email-manager] STUB: trackEmailEvent called', {
+): void {
+  // Log the event for audit trail
+  console.log('[email] Tracking email event', {
     eventType,
     messageId,
     recipient,
     metadata,
+    timestamp: new Date().toISOString(),
   })
 
-  // Return void (no-op)
+  // TODO: Store in audit log table when available
+  // This would integrate with the AuditService from src/lib/audit/
 }

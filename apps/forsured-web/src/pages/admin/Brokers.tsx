@@ -1,8 +1,8 @@
 // src/pages/admin/Brokers.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Trash2, Mail, RefreshCcw, Send } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H3, Card, Spinner } from '@unicornlove/ui';
-import { EmptyState } from '@unicornlove/ui';
+import { Trash2, Mail, RefreshCcw, Send, Plus } from 'lucide-react';
+import { Stack, Row, Text, Button, H1, Card, Spinner } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
 import { useAuth } from '../../contexts/AuthContext';
 import { logAdminAction, AUDIT_ACTIONS } from '../../services/auditLogService';
 import InvitationForm from '../../components/admin/InvitationForm';
@@ -158,57 +158,48 @@ function AdminBrokers() {
 
   if (isLoading && invitations.length === 0) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <XStack alignItems="center" gap="$2">
-          <Spinner size="large" color="$blue10" />
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
+        <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+          <Spinner size="large" />
           <Text>Loading invitations...</Text>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     );
   }
 
   if (error) {
     return (
-      <Card padding="$6" borderRadius="$4" backgroundColor="$red4">
-        <Text color="$red11">Error: {error}</Text>
-        <Button onPress={fetchInvitations} marginTop="$2" backgroundColor="transparent" padding={0}>
-          <Text color="$blue10" textDecorationLine="underline">Try again</Text>
+      <Card style={{ padding: 'var(--space-6)', borderRadius: 'var(--radius-4)', backgroundColor: 'var(--color-red-4)' }}>
+        <Text style={{ color: 'var(--color-red-11)' }}>Error: {error}</Text>
+        <Button onPress={fetchInvitations} variant="ghost" style={{ marginTop: 'var(--space-2)', padding: 0 }}>
+          <Text style={{ color: 'var(--color-blue-10)', textDecoration: 'underline' }}>Try again</Text>
         </Button>
       </Card>
     );
   }
 
   return (
-    <YStack>
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <H1 fontSize="$8" fontWeight="700">Broker Invitations</H1>
-        <XStack gap="$3">
+    <Stack>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
+        <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 700 }}>Broker Invitations</H1>
+        <Row style={{ gap: 'var(--space-3)' }}>
           <Button
             onPress={fetchInvitations}
             disabled={isLoading}
-            icon={isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            borderWidth={1}
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-            opacity={isLoading ? 0.5 : 1}
+            variant="outline"
+            iconStart={isLoading ? undefined : RefreshCcw}
           >
-            Refresh
+            {isLoading ? 'Loading...' : 'Refresh'}
           </Button>
           <Button
+            color="primary"
+            iconStart={Plus}
             onPress={() => setShowInvitationForm(true)}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            backgroundColor="$blue10"
-            color="white"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: "$blue11" }}
           >
             Create Invitation
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {showInvitationForm && (
         <InvitationForm
@@ -218,7 +209,7 @@ function AdminBrokers() {
         />
       )}
 
-      <Card padding="$6" borderRadius="$4" elevation={1} backgroundColor="$background" marginBottom="$6">
+      <Card style={{ padding: 'var(--space-6)', borderRadius: 'var(--radius-4)', backgroundColor: 'var(--color-background)', marginBottom: 'var(--space-6)' }}>
         {invitations.length === 0 ? (
           <EmptyState
             icon={Send}
@@ -233,95 +224,95 @@ function AdminBrokers() {
           <table style={{ width: '100%', minWidth: '100%' }}>
             <thead>
               <tr>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Code</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Email</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Expires</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Usage</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Status</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Created</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Actions</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Code</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Email</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Expires</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Usage</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Status</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Created</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {invitations.map((inv) => (
                 <tr key={inv.id}>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
-                    <Text fontFamily="$mono">{inv.code}</Text>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
+                    <Text style={{ fontFamily: 'monospace' }}>{inv.code}</Text>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Text>{inv.email || 'Any'}</Text>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Text>{new Date(inv.expires_at).toLocaleDateString()}</Text>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Text>{inv.use_count}/{inv.max_uses}</Text>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={
-                        inv.status === 'active'
-                          ? '$green4'
-                          : inv.status === 'used'
-                            ? '$blue4'
-                            : inv.status === 'expired'
-                              ? '$backgroundHover'
-                              : '$red4'
-                      }
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
+                    <Row
+                      style={{
+                        paddingLeft: 'var(--space-2)',
+                        paddingRight: 'var(--space-2)',
+                        paddingTop: 'var(--space-1)',
+                        paddingBottom: 'var(--space-1)',
+                        borderRadius: 'var(--radius-2)',
+                        display: 'inline-flex',
+                        backgroundColor:
+                          inv.status === 'active'
+                            ? 'var(--color-green-4)'
+                            : inv.status === 'used'
+                              ? 'var(--color-blue-4)'
+                              : inv.status === 'expired'
+                                ? 'var(--color-background-hover)'
+                                : 'var(--color-red-4)'
+                      }}
                     >
-                      <Text fontSize="$1" textTransform="capitalize" color={
+                      <Text style={{ fontSize: 'var(--font-size-1)', textTransform: 'capitalize', color:
                         inv.status === 'active'
-                          ? '$green11'
+                          ? 'var(--color-green-11)'
                           : inv.status === 'used'
-                            ? '$blue11'
+                            ? 'var(--color-blue-11)'
                             : inv.status === 'expired'
-                              ? '$color11'
-                              : '$red11'
-                      }>
+                              ? 'var(--color-11)'
+                              : 'var(--color-red-11)'
+                      }}>
                         {inv.status}
                       </Text>
-                    </XStack>
+                    </Row>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Text>{new Date(inv.created_at).toLocaleDateString()}</Text>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     {inv.status === 'active' && (
-                      <XStack alignItems="center" gap="$2">
+                      <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                         {inv.email && (
                           <Button
                             onPress={() => handleResendInvitation(inv.id)}
                             disabled={actionInProgress === inv.id}
-                            backgroundColor="transparent"
-                            padding="$1"
-                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                            opacity={actionInProgress === inv.id ? 0.5 : 1}
+                            variant="ghost"
+                            style={{ padding: 'var(--space-1)', opacity: actionInProgress === inv.id ? 0.5 : 1 }}
                           >
                             {actionInProgress === inv.id ? (
-                              <Spinner size="small" color="$blue10" />
+                              <Spinner size="small" />
                             ) : (
-                              <Mail size={16} color="$blue10" />
+                              <Mail size={16} color="var(--color-blue-10)" />
                             )}
                           </Button>
                         )}
                         <Button
                           onPress={() => handleRevokeInvitation(inv.id)}
                           disabled={actionInProgress === inv.id}
-                          backgroundColor="transparent"
-                          padding="$1"
-                          hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                          opacity={actionInProgress === inv.id ? 0.5 : 1}
+                          variant="ghost"
+                          style={{ padding: 'var(--space-1)', opacity: actionInProgress === inv.id ? 0.5 : 1 }}
                         >
                           {actionInProgress === inv.id ? (
-                            <Spinner size="small" color="$red10" />
+                            <Spinner size="small" />
                           ) : (
-                            <Trash2 size={16} color="$red10" />
+                            <Trash2 size={16} color="var(--color-red-10)" />
                           )}
                         </Button>
-                      </XStack>
+                      </Row>
                     )}
                   </td>
                 </tr>
@@ -330,7 +321,7 @@ function AdminBrokers() {
           </table>
         )}
       </Card>
-    </YStack>
+    </Stack>
   );
 }
 

@@ -1,5 +1,5 @@
-/* Font imports */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rokkitt:wght@400;500;600;700;800&display=swap');
+/* Font imports - Beyond UI uses Roboto fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&family=Roboto+Serif:wght@400;500;600&display=swap');
 
 /* Minimal reset */
 *, *::before, *::after {
@@ -15,5 +15,5 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

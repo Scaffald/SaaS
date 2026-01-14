@@ -1,17 +1,14 @@
-import { useTheme, styled } from '@unicornlove/ui'
-import type { GetProps } from '@unicornlove/ui'
+/**
+ * ForsuredLogo - Logo component using Beyond UI
+ * Migrated from Tamagui to Beyond UI
+ */
+import { useEffect, useState } from 'react';
 
-const SvgContainer = styled('svg', {
-  name: 'ForsuredLogoSvg',
-})
-
-type SvgContainerProps = GetProps<typeof SvgContainer>
-
-interface ForsuredLogoProps extends Omit<SvgContainerProps, 'height' | 'width' | 'marginBottom'> {
-  height?: number
-  width?: number
-  color?: 'blue' | 'white' | 'auto'
-  mb?: SvgContainerProps['mb']
+interface ForsuredLogoProps extends React.SVGProps<SVGSVGElement> {
+  height?: number;
+  width?: number;
+  color?: 'blue' | 'white' | 'auto';
+  mb?: number;
 }
 
 export default function ForsuredLogo({
@@ -19,40 +16,59 @@ export default function ForsuredLogo({
   width,
   color = 'auto',
   mb,
+  style,
   ...props
 }: ForsuredLogoProps) {
-  const theme = useTheme()
+  const [themeName, setThemeName] = useState('light');
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const theme = document.documentElement.getAttribute('data-theme');
+      setThemeName(theme || 'light');
+    };
+    updateTheme();
+
+    // Watch for theme changes
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const getLogoColor = () => {
-    if (color === 'blue') return '#0166FF'
-    if (color === 'white') return '#F9FAFB'
+    if (color === 'blue') return '#0166FF';
+    if (color === 'white') return '#F9FAFB';
 
-    // Use Tamagui theme colors
-    const themeName = theme?.name || 'light'
     switch (themeName) {
       case 'light':
-        return '#0166FF'
+        return '#0166FF';
       case 'dark':
-        return '#60A5FA'
+        return '#60A5FA';
       case 'earth':
-        return '#8B6944'
+        return '#8B6944';
       default:
-        return '#0166FF'
+        return '#0166FF';
     }
-  }
+  };
 
-  const fillColor = getLogoColor()
-  const aspectRatio = 151 / 30
-  const calculatedWidth = width ?? height * aspectRatio
+  const fillColor = getLogoColor();
+  const aspectRatio = 151 / 30;
+  const calculatedWidth = width ?? height * aspectRatio;
 
   return (
-    <SvgContainer
+    <svg
       width={calculatedWidth}
       height={height}
       viewBox="0 0 151 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      mb={mb}
+      style={{
+        marginBottom: mb,
+        ...style,
+      }}
       {...props}
     >
       <path
@@ -87,6 +103,6 @@ export default function ForsuredLogo({
         d="M45.9522 29.0745V16.8951L50.0068 12.7561H52.4395L56.3252 8.78681H48.9931L45.6143 12.2473V8.78681H41.357V29.0745H45.9522Z"
         fill={fillColor}
       />
-    </SvgContainer>
-  )
+    </svg>
+  );
 }

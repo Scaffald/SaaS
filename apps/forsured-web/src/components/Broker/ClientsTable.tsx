@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Search, Calendar, MessageSquare, Users } from 'lucide-react';
-import { YStack, XStack, Text, H2, Card, Input } from '@unicornlove/ui';
-import { BrokerClient, PolicyData, ComplianceData } from '../../types';
+import { ChevronRight, Search, Calendar, MessageSquare, Users, Shield } from 'lucide-react';
+import { Stack, Row, Text, H2, Card, Input } from '@unicornlove/beyond-ui';
+import type { BrokerClient, PolicyData, ComplianceData } from '../../types';
 import { formatDistanceToNow } from '../../utils/dateHelpers';
+import type { ClientBrokerCount } from '../../hooks/useClientBrokerCounts';
 
 type SortOption = 'default' | 'most-subs' | 'lowest-compliance' | 'recent-activity';
 
@@ -23,6 +24,8 @@ interface ClientsTableProps {
   complianceData?: ComplianceData[];
   /** Projects for mapping GCs to their subcontractors */
   projects?: Array<{ id: string; client_id: string }>;
+  /** Optional map of client organization ID to broker count info */
+  brokerCounts?: Map<string, ClientBrokerCount>;
 }
 
 export default function ClientsTable({
@@ -32,6 +35,7 @@ export default function ClientsTable({
   gcOnly = false,
   complianceData = [],
   projects = [],
+  brokerCounts,
 }: ClientsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [riskFilter, setRiskFilter] = useState<string>('all');
@@ -167,19 +171,19 @@ export default function ClientsTable({
     gcSubStats,
   ]);
 
-  const getRiskBadge = (risk: string) => {
-    const styles = {
-      low: { backgroundColor: '$green2', color: '$green11', borderColor: '$green6' },
-      medium: { backgroundColor: '$yellow2', color: '$yellow11', borderColor: '$yellow6' },
-      high: { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' },
+  const getRiskBadgeStyle = (risk: string): React.CSSProperties => {
+    const styles: Record<string, React.CSSProperties> = {
+      low: { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-11)', borderColor: 'var(--color-green-6)' },
+      medium: { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)', borderColor: 'var(--color-yellow-6)' },
+      high: { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)', borderColor: 'var(--color-red-6)' },
     };
-    return styles[risk as keyof typeof styles] || styles.medium;
+    return styles[risk] || styles.medium;
   };
 
   const getComplianceColor = (score: number) => {
-    if (score >= 90) return '$green10';
-    if (score >= 70) return '$yellow10';
-    return '$red10';
+    if (score >= 90) return 'var(--color-green-10)';
+    if (score >= 70) return 'var(--color-yellow-10)';
+    return 'var(--color-red-10)';
   };
 
   const getOpenItemsCount = (clientId: string) => {
@@ -205,37 +209,50 @@ export default function ClientsTable({
     return isNaN(firstDate.getTime()) ? 'N/A' : firstDate.toLocaleDateString();
   };
 
+  const selectStyle: React.CSSProperties = {
+    padding: '8px 16px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    fontSize: 14,
+    backgroundColor: 'var(--color-background)',
+  };
+
+  const thStyle: React.CSSProperties = {
+    padding: '12px 24px',
+    textAlign: 'left',
+    fontSize: 12,
+    fontWeight: 500,
+    color: 'var(--color-text-muted)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  };
+
   return (
     <Card
-      backgroundColor="$background"
-      borderRadius="$4"
-      elevation={1}
-      borderWidth={1}
-      borderColor="$borderColor"
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: 12,
+        border: '1px solid var(--color-border)',
+      }}
     >
-      <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-        <XStack alignItems="center" justifyContent="space-between" mb="$4">
-          <XStack alignItems="center" gap="$3">
-            <H2 fontSize="$6" fontWeight="600" color="$color12">
+      <Stack padding={24} style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+          <Row alignItems="center" gap={12}>
+            <H2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}>
               {gcOnly ? 'Key Clients (General Contractors)' : 'Key Clients'}
             </H2>
             {gcOnly && (
-              <Text fontSize="$3" color="$color11">
+              <Text size="sm" muted>
                 {filteredClients.length} GC{filteredClients.length !== 1 ? 's' : ''}
               </Text>
             )}
-          </XStack>
-          <XStack alignItems="center" gap="$3">
+          </Row>
+          <Row alignItems="center" gap={12}>
             {gcOnly && (
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value as SortOption)}
-                style={{
-                  padding: '6px 12px',
-                  fontSize: '14px',
-                  border: '1px solid var(--borderColor)',
-                  borderRadius: '8px',
-                }}
+                style={{ ...selectStyle, padding: '6px 12px' }}
               >
                 <option value="default">Sort by: Default</option>
                 <option value="most-subs">Most Subcontractors</option>
@@ -243,61 +260,56 @@ export default function ClientsTable({
                 <option value="recent-activity">Recent Activity</option>
               </select>
             )}
-            <XStack
-              as="button"
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              fontSize="$3"
-              fontWeight="500"
-              color="$blue10"
-              hoverStyle={{ color: '$blue11' }}
+            <button
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '8px 16px',
+                fontSize: 14,
+                fontWeight: 500,
+                color: 'var(--color-blue-10)',
+                cursor: 'pointer',
+              }}
             >
-              <Text fontSize="$3" fontWeight="500" color="$blue10">View all Clients</Text>
-            </XStack>
-          </XStack>
-        </XStack>
+              View all Clients
+            </button>
+          </Row>
+        </Row>
 
-        <XStack
-          flexDirection="column"
-          $gtMd={{ flexDirection: 'row' }}
-          $gtLg={{ flexDirection: 'row' }}
-          gap="$4"
-          flexWrap="wrap"
-        >
-          <YStack position="relative" flex={1} minWidth="18%">
-            <YStack
-              position="absolute"
-              left="$3"
-              top="50%"
-              transform="translateY(-50%)"
-              zIndex={1}
+        <Row gap={16} style={{ flexWrap: 'wrap' }}>
+          <Stack style={{ position: 'relative', flex: 1, minWidth: '18%' }}>
+            <Stack
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 1,
+              }}
             >
-              <Search color="$color10" size={18} />
-            </YStack>
+              <Search size={18} style={{ color: 'var(--color-text-muted)' }} />
+            </Stack>
             <Input
               type="text"
               placeholder="Search clients..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              width="100%"
-              paddingLeft="$10"
-              paddingRight="$4"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
+              style={{
+                width: '100%',
+                paddingLeft: 40,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+                border: '1px solid var(--color-border)',
+                borderRadius: 8,
+              }}
             />
-          </YStack>
+          </Stack>
 
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value)}
-            style={{
-              padding: '8px 16px',
-              border: '1px solid var(--borderColor)',
-              borderRadius: '8px',
-              fontSize: '14px',
-            }}
+            style={selectStyle}
           >
             <option value="all">All Risk Levels</option>
             <option value="low">Low Risk</option>
@@ -308,12 +320,7 @@ export default function ClientsTable({
           <select
             value={complianceFilter}
             onChange={(e) => setComplianceFilter(e.target.value)}
-            style={{
-              padding: '8px 16px',
-              border: '1px solid var(--borderColor)',
-              borderRadius: '8px',
-              fontSize: '14px',
-            }}
+            style={selectStyle}
           >
             <option value="all">All Compliance</option>
             <option value="compliant">Compliant (90%+)</option>
@@ -324,12 +331,7 @@ export default function ClientsTable({
           <select
             value={expiringFilter}
             onChange={(e) => setExpiringFilter(e.target.value)}
-            style={{
-              padding: '8px 16px',
-              border: '1px solid var(--borderColor)',
-              borderRadius: '8px',
-              fontSize: '14px',
-            }}
+            style={selectStyle}
           >
             <option value="all">All Policies</option>
             <option value="30">Expiring in 30 days</option>
@@ -337,76 +339,57 @@ export default function ClientsTable({
             <option value="90">Expiring in 90 days</option>
           </select>
 
-          <XStack
-            as="button"
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$3"
-            fontWeight="500"
-            color="$color11"
-            hoverStyle={{ color: '$color12' }}
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
+          <button
             onClick={() => {
               setSearchTerm('');
               setRiskFilter('all');
               setComplianceFilter('all');
               setExpiringFilter('all');
             }}
+            style={{
+              padding: '8px 16px',
+              fontSize: 14,
+              fontWeight: 500,
+              color: 'var(--color-text-muted)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 8,
+              background: 'none',
+              cursor: 'pointer',
+            }}
           >
-            <Text fontSize="$3" fontWeight="500" color="$color11">Clear Filters</Text>
-          </XStack>
-        </XStack>
-      </YStack>
+            Clear Filters
+          </button>
+        </Row>
+      </Stack>
 
-      <YStack overflowX="auto">
+      <Stack style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%' }}>
-          <thead style={{ backgroundColor: 'var(--gray3)' }}>
+          <thead style={{ backgroundColor: 'var(--color-gray-3)' }}>
             <tr>
-              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Client
-              </th>
-              {gcOnly && (
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Subs Compliant
-                </th>
-              )}
-              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Risk Score
-              </th>
-              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Open Items
-              </th>
-              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Next Renewal
-              </th>
-              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Compliance
-              </th>
-              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Last Activity
-              </th>
-              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Notes
-              </th>
-              <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Actions
-              </th>
+              <th style={thStyle}>Client</th>
+              {gcOnly && <th style={thStyle}>Subs Compliant</th>}
+              <th style={thStyle}>Risk Score</th>
+              <th style={thStyle}>Open Items</th>
+              <th style={thStyle}>Next Renewal</th>
+              <th style={thStyle}>Compliance</th>
+              {brokerCounts && <th style={thStyle}>Brokers</th>}
+              <th style={thStyle}>Last Activity</th>
+              <th style={thStyle}>Notes</th>
+              <th style={{ ...thStyle, textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
-          <tbody style={{ backgroundColor: 'var(--background)' }}>
+          <tbody style={{ backgroundColor: 'var(--color-background)' }}>
             {filteredClients.map((client, index) => {
-              const riskBadge = getRiskBadge(client.risk_level);
+              const riskBadgeStyle = getRiskBadgeStyle(client.risk_level);
               return (
                 <tr
                   key={client.id}
                   style={{
-                    borderTop: index > 0 ? '1px solid var(--borderColor)' : 'none',
+                    borderTop: index > 0 ? '1px solid var(--color-border)' : 'none',
                     cursor: 'pointer',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--gray2)';
+                    e.currentTarget.style.backgroundColor = 'var(--color-gray-2)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent';
@@ -414,156 +397,208 @@ export default function ClientsTable({
                   onClick={() => onClientClick?.(client)}
                 >
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <XStack alignItems="center">
-                      <YStack
-                        flexShrink={0}
-                        width={40}
-                        height={40}
-                        backgroundColor="$blue3"
-                        borderRadius={9999}
+                    <Row alignItems="center">
+                      <Stack
                         alignItems="center"
                         justifyContent="center"
+                        style={{
+                          flexShrink: 0,
+                          width: 40,
+                          height: 40,
+                          backgroundColor: 'var(--color-blue-3)',
+                          borderRadius: 9999,
+                        }}
                       >
-                        <Text fontSize="$3" fontWeight="500" color="$blue10">
+                        <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-10)' }}>
                           {(client.company_name || '')
                             .split(' ')
                             .map((n) => n[0] || '')
                             .join('')
                             .substring(0, 2) || '??'}
                         </Text>
-                      </YStack>
-                      <YStack ml="$4">
+                      </Stack>
+                      <Stack style={{ marginLeft: 16 }}>
                         <Link
                           to={`/broker/clients/${client.id}`}
                           style={{
-                            fontSize: '14px',
+                            fontSize: 14,
                             fontWeight: 500,
-                            color: 'var(--blue10)',
+                            color: 'var(--color-blue-10)',
                             textDecoration: 'none',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.color = 'var(--blue11)';
-                            e.currentTarget.style.textDecoration = 'underline';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.color = 'var(--blue10)';
-                            e.currentTarget.style.textDecoration = 'none';
                           }}
                           onClick={(e) => e.stopPropagation()}
                           data-testid="client-name-link"
                         >
                           {client.company_name}
                         </Link>
-                        <YStack mt="$1">
-                          <XStack
-                            alignItems="center"
-                            paddingHorizontal="$2"
-                            paddingVertical="$0.5"
-                            borderRadius="$2"
-                            fontSize="$1"
-                            fontWeight="500"
-                            backgroundColor={client.client_type === 'subcontractor' ? '$blue2' : '$purple2'}
-                            color={client.client_type === 'subcontractor' ? '$blue11' : '$purple11'}
+                        <Stack style={{ marginTop: 4 }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              paddingLeft: 8,
+                              paddingRight: 8,
+                              paddingTop: 2,
+                              paddingBottom: 2,
+                              borderRadius: 4,
+                              fontSize: 12,
+                              fontWeight: 500,
+                              backgroundColor: client.client_type === 'subcontractor' ? 'var(--color-blue-2)' : 'var(--color-purple-2)',
+                              color: client.client_type === 'subcontractor' ? 'var(--color-blue-11)' : 'var(--color-purple-11)',
+                            }}
                           >
-                            <Text fontSize="$1" fontWeight="500" color={client.client_type === 'subcontractor' ? '$blue11' : '$purple11'}>
-                              {client.client_type === 'subcontractor'
-                                ? 'Sub'
-                                : 'GC'}
-                            </Text>
-                          </XStack>
-                        </YStack>
-                      </YStack>
-                    </XStack>
+                            {client.client_type === 'subcontractor' ? 'Sub' : 'GC'}
+                          </span>
+                        </Stack>
+                      </Stack>
+                    </Row>
                   </td>
                   {gcOnly && (
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
                       {(() => {
                         const stats = gcSubStats.get(client.id);
                         if (!stats || stats.totalSubs === 0) {
-                          return <Text fontSize="$3" color="$color10">No subs</Text>;
+                          return <Text size="sm" muted>No subs</Text>;
                         }
                         const color = stats.compliancePercent >= 80
-                          ? '$green10'
+                          ? 'var(--color-green-10)'
                           : stats.compliancePercent >= 50
-                          ? '$yellow10'
-                          : '$red10';
+                          ? 'var(--color-yellow-10)'
+                          : 'var(--color-red-10)';
                         return (
-                          <XStack alignItems="center" gap="$2">
-                            <Users size={16} color="$color10" />
-                            <Text fontSize="$3" fontWeight="500" color={color}>
+                          <Row alignItems="center" gap={8}>
+                            <Users size={16} style={{ color: 'var(--color-text-muted)' }} />
+                            <Text size="sm" weight="medium" style={{ color }}>
                               {stats.compliantSubs}/{stats.totalSubs} ({stats.compliancePercent}%)
                             </Text>
-                          </XStack>
+                          </Row>
                         );
                       })()}
                     </td>
                   )}
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <XStack
-                      alignItems="center"
-                      paddingHorizontal="$3"
-                      paddingVertical="$1"
-                      borderRadius={9999}
-                      fontSize="$1"
-                      fontWeight="500"
-                      borderWidth={1}
-                      {...riskBadge}
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        paddingLeft: 12,
+                        paddingRight: 12,
+                        paddingTop: 4,
+                        paddingBottom: 4,
+                        borderRadius: 9999,
+                        fontSize: 12,
+                        fontWeight: 500,
+                        border: '1px solid',
+                        ...riskBadgeStyle,
+                      }}
                     >
-                      <Text fontSize="$1" fontWeight="500" color={riskBadge.color}>
-                        {client.risk_level}
-                      </Text>
-                    </XStack>
+                      {client.risk_level}
+                    </span>
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <Text fontSize="$3" color="$color12" fontWeight="500">
+                    <Text size="sm" weight="medium">
                       {getOpenItemsCount(client.id)}
                     </Text>
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <XStack alignItems="center" fontSize="$3" color="$color11">
-                      <Calendar size={14} mr="$1" color="$color11" />
-                      <Text fontSize="$3" color="$color11">{getNextRenewal(client.id)}</Text>
-                    </XStack>
+                    <Row alignItems="center" gap={4}>
+                      <Calendar size={14} style={{ color: 'var(--color-text-muted)' }} />
+                      <Text size="sm" muted>{getNextRenewal(client.id)}</Text>
+                    </Row>
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <XStack alignItems="center" gap="$2">
-                      <YStack width={64} backgroundColor="$gray6" borderRadius={9999} height={8}>
-                        <YStack
-                          height={8}
-                          borderRadius={9999}
-                          backgroundColor={getComplianceColor(client.compliance_score)}
-                          width={`${client.compliance_score}%`}
+                    <Row alignItems="center" gap={8}>
+                      <Stack
+                        style={{
+                          width: 64,
+                          backgroundColor: 'var(--color-gray-6)',
+                          borderRadius: 9999,
+                          height: 8,
+                        }}
+                      >
+                        <Stack
+                          style={{
+                            height: 8,
+                            borderRadius: 9999,
+                            backgroundColor: getComplianceColor(client.compliance_score),
+                            width: `${client.compliance_score}%`,
+                          }}
                         />
-                      </YStack>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                      </Stack>
+                      <Text size="sm" weight="medium">
                         {client.compliance_score}%
                       </Text>
-                    </XStack>
+                    </Row>
                   </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color11)' }}>
-                    <XStack alignItems="center">
-                      <MessageSquare size={14} mr="$1" color="$color11" />
-                      <Text fontSize="$3" color="$color11">
+                  {brokerCounts && (
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      {(() => {
+                        const brokerInfo = brokerCounts.get(client.id);
+                        if (!brokerInfo || brokerInfo.brokerCount === 0) {
+                          return (
+                            <Text size="sm" muted>-</Text>
+                          );
+                        }
+                        if (brokerInfo.hasMultipleBrokers) {
+                          return (
+                            <Row
+                              alignItems="center"
+                              gap={4}
+                              style={{
+                                backgroundColor: 'var(--color-orange-2)',
+                                paddingLeft: 8,
+                                paddingRight: 8,
+                                paddingTop: 4,
+                                paddingBottom: 4,
+                                borderRadius: 4,
+                                display: 'inline-flex',
+                              }}
+                              title={`This client works with ${brokerInfo.brokerCount} brokers`}
+                            >
+                              <Shield size={14} style={{ color: 'var(--color-orange-10)' }} />
+                              <Text size="sm" weight="semibold" style={{ color: 'var(--color-orange-11)' }}>
+                                {brokerInfo.brokerCount}
+                              </Text>
+                            </Row>
+                          );
+                        }
+                        return (
+                          <Row alignItems="center" gap={4}>
+                            <Shield size={14} style={{ color: 'var(--color-text-muted)' }} />
+                            <Text size="sm" muted>1</Text>
+                          </Row>
+                        );
+                      })()}
+                    </td>
+                  )}
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: 14, color: 'var(--color-text-muted)' }}>
+                    <Row alignItems="center" gap={4}>
+                      <MessageSquare size={14} />
+                      <Text size="sm" muted>
                         {client.last_activity_at ? formatDistanceToNow(client.last_activity_at) : 'No activity'}
                       </Text>
-                    </XStack>
+                    </Row>
                   </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color11)' }}>
-                    <XStack alignItems="center">
-                      <MessageSquare size={14} mr="$1" color="$color11" />
-                      <Text fontSize="$3" color="$color11">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: 14, color: 'var(--color-text-muted)' }}>
+                    <Row alignItems="center" gap={4}>
+                      <MessageSquare size={14} />
+                      <Text size="sm" muted>
                         {client.notes ? '2 comments' : 'No notes'}
                       </Text>
-                    </XStack>
+                    </Row>
                   </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right', fontSize: '14px', fontWeight: 500 }}>
-                    <XStack
-                      as="button"
-                      color="$blue10"
-                      hoverStyle={{ color: '$blue12' }}
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right', fontSize: 14, fontWeight: 500 }}>
+                    <button
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: 'var(--color-blue-10)',
+                        padding: 4,
+                      }}
                     >
-                      <ChevronRight size={20} color="$blue10" />
-                    </XStack>
+                      <ChevronRight size={20} />
+                    </button>
                   </td>
                 </tr>
               );
@@ -572,13 +607,13 @@ export default function ClientsTable({
         </table>
 
         {filteredClients.length === 0 && (
-          <YStack alignItems="center" paddingVertical="$12">
-            <Text color="$color11">
+          <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+            <Text muted>
               No clients found matching your filters
             </Text>
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
   );
 }

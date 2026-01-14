@@ -21,7 +21,7 @@ import {
   Trash2,
   AlertCircle,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H3, H4 } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
 import {
   useCreateComplianceRequirement,
   useUpdateComplianceRequirement,
@@ -381,57 +381,61 @@ export function RequirementEditorForm({
     section: keyof typeof expandedSections;
     count?: number;
   }) => (
-    <Button
+    <button
       type="button"
-      onPress={() => toggleSection(section)}
-      width="100%"
-      padding="$4"
-      backgroundColor="$backgroundHover"
-      borderRadius="$4"
-      hoverStyle={{ backgroundColor: '$background' }}
-      borderWidth={0}
-      justifyContent="space-between"
+      onClick={() => toggleSection(section)}
+      style={{
+        width: '100%',
+        padding: 'var(--space-4)',
+        backgroundColor: 'var(--color-background-hover)',
+        borderRadius: 'var(--radius-4)',
+        border: 'none',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        cursor: 'pointer',
+      }}
     >
-      <XStack alignItems="center" gap="$2">
-        <Text fontWeight="500" color="$color12">
+      <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+        <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
           {title}
         </Text>
         {count !== undefined && (
-          <Text fontSize="$3" color="$color10">
+          <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
             ({count})
           </Text>
         )}
-      </XStack>
+      </Row>
       {expandedSections[section] ? (
-        <ChevronUp size={20} color="var(--color10)" />
+        <ChevronUp size={20} color="var(--color-10)" />
       ) : (
-        <ChevronDown size={20} color="var(--color10)" />
+        <ChevronDown size={20} color="var(--color-10)" />
       )}
-    </Button>
+    </button>
   );
 
   return (
     <form onSubmit={handleSubmit}>
-      <YStack gap="$6">
+      <Stack style={{ gap: 'var(--space-6)' }}>
         {/* Error Alert */}
         {errors.general && (
-          <Card padding="$4" backgroundColor="$red2" borderColor="$red5" borderRadius="$4">
-            <XStack alignItems="flex-start" gap="$3">
-              <AlertCircle color="var(--red9)" size={20} style={{ marginTop: '2px', flexShrink: 0 }} />
-              <YStack>
-                <Text fontWeight="500" color="$red11">Error saving requirement</Text>
-                <Text fontSize="$3" color="$red9" mt="$1">{errors.general}</Text>
-              </YStack>
-            </XStack>
+          <Card style={{ padding: 'var(--space-4)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-5)', borderRadius: 'var(--radius-4)' }}>
+            <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+              <AlertCircle color="var(--color-red-9)" size={20} style={{ marginTop: '2px', flexShrink: 0 }} />
+              <Stack>
+                <Text style={{ fontWeight: 500, color: 'var(--color-red-11)' }}>Error saving requirement</Text>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-red-9)', marginTop: 4 }}>{errors.general}</Text>
+              </Stack>
+            </Row>
           </Card>
         )}
 
         {/* Basic Information */}
-        <Card backgroundColor="$background" borderRadius="$4" borderColor="$borderColor" borderWidth={1} overflow="hidden">
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderColor: 'var(--color-border)', borderWidth: 1, borderStyle: 'solid', overflow: 'hidden' }}>
           <SectionHeader title="Basic Information" section="basicInfo" />
           {expandedSections.basicInfo && (
-            <YStack padding="$4" gap="$4" borderTopWidth={1} borderColor="$borderColor">
-              <XStack flexWrap="wrap" gap="$4">
+            <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-4)', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
+              <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
                 <Input
                   label="Code"
                   value={formData.code}
@@ -449,37 +453,37 @@ export function RequirementEditorForm({
                   error={errors.name}
                   required
                 />
-              </XStack>
+              </Row>
 
-                <XStack flexWrap="wrap" gap="$4">
-                  <Select
-                    label="Coverage Type"
-                    value={formData.type}
-                    onChange={(e) => updateField('type', e.target.value as CoverageType)}
-                    options={coverageTypeOptions}
-                  />
-                  <Select
-                    label="Status"
-                    value={formData.status}
-                    onChange={(e) => updateField('status', e.target.value as RequirementStatus)}
-                    options={statusOptions}
-                  />
-                  <XStack alignItems="center" paddingTop="$6" flex={1} minWidth="200px">
-                    <XStack alignItems="center" gap="$2" cursor="pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.is_template}
-                        onChange={(e) => updateField('is_template', e.target.checked)}
-                        style={{
-                          borderRadius: '4px',
-                          border: '1px solid var(--borderColor)',
-                          accentColor: 'var(--blue9)',
-                        }}
-                      />
-                      <Text fontSize="$3" color="$color12">Template</Text>
-                    </XStack>
-                  </XStack>
-                </XStack>
+              <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+                <Select
+                  label="Coverage Type"
+                  value={formData.type}
+                  onChange={(e) => updateField('type', e.target.value as CoverageType)}
+                  options={coverageTypeOptions}
+                />
+                <Select
+                  label="Status"
+                  value={formData.status}
+                  onChange={(e) => updateField('status', e.target.value as RequirementStatus)}
+                  options={statusOptions}
+                />
+                <Row style={{ alignItems: 'center', paddingTop: 'var(--space-6)', flex: 1, minWidth: 200 }}>
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={formData.is_template}
+                      onChange={(e) => updateField('is_template', e.target.checked)}
+                      style={{
+                        borderRadius: '4px',
+                        border: '1px solid var(--color-border)',
+                        accentColor: 'var(--color-blue-9)',
+                      }}
+                    />
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>Template</Text>
+                  </Row>
+                </Row>
+              </Row>
 
               <Textarea
                 label="Description"
@@ -489,337 +493,343 @@ export function RequirementEditorForm({
                 rows={3}
               />
 
-                <XStack flexWrap="wrap" gap="$4">
-                  <Input
-                    label="Effective Date"
-                    type="date"
-                    value={formData.effective_date}
-                    onChange={(e) => updateField('effective_date', e.target.value)}
-                    error={errors.effective_date}
-                    required
-                  />
-                  <Input
-                    label="Expiration Date"
-                    type="date"
-                    value={formData.expiration_date}
-                    onChange={(e) => updateField('expiration_date', e.target.value)}
-                  />
-                </XStack>
+              <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+                <Input
+                  label="Effective Date"
+                  type="date"
+                  value={formData.effective_date}
+                  onChange={(e) => updateField('effective_date', e.target.value)}
+                  error={errors.effective_date}
+                  required
+                />
+                <Input
+                  label="Expiration Date"
+                  type="date"
+                  value={formData.expiration_date}
+                  onChange={(e) => updateField('expiration_date', e.target.value)}
+                />
+              </Row>
 
-                {isEditing && (
-                  <Textarea
-                    label="Change Summary"
-                    value={formData.change_summary}
-                    onChange={(e) => updateField('change_summary', e.target.value)}
-                    placeholder="Describe the changes being made..."
-                    rows={2}
-                  />
-                )}
-              </YStack>
-            )}
-          </Card>
+              {isEditing && (
+                <Textarea
+                  label="Change Summary"
+                  value={formData.change_summary}
+                  onChange={(e) => updateField('change_summary', e.target.value)}
+                  placeholder="Describe the changes being made..."
+                  rows={2}
+                />
+              )}
+            </Stack>
+          )}
+        </Card>
 
-          {/* Coverage Limits */}
-          <Card backgroundColor="$background" borderRadius="$4" borderColor="$borderColor" borderWidth={1} overflow="hidden">
-            <SectionHeader title="Coverage Limits" section="coverageLimits" />
-            {expandedSections.coverageLimits && (
-              <YStack padding="$4" gap="$4" borderTopWidth={1} borderColor="$borderColor">
-                <Text fontSize="$3" color="$color10">
-                  Specify minimum coverage limits required. Leave blank if not applicable.
-                </Text>
-                <XStack flexWrap="wrap" gap="$4">
-              <Input
-                label="Per Occurrence"
-                type="number"
-                value={formData.requirement_definition.coverage_limits.per_occurrence || ''}
-                onChange={(e) =>
-                  updateCoverageLimit(
-                    'per_occurrence',
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
-                placeholder="e.g., 1000000"
-              />
-              <Input
-                label="Aggregate"
-                type="number"
-                value={formData.requirement_definition.coverage_limits.aggregate || ''}
-                onChange={(e) =>
-                  updateCoverageLimit(
-                    'aggregate',
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
-                placeholder="e.g., 2000000"
-              />
-              <Input
-                label="Products/Completed Ops"
-                type="number"
-                value={formData.requirement_definition.coverage_limits.products_completed_ops || ''}
-                onChange={(e) =>
-                  updateCoverageLimit(
-                    'products_completed_ops',
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
-                placeholder="e.g., 2000000"
-              />
-              <Input
-                label="Personal/Advertising Injury"
-                type="number"
-                value={formData.requirement_definition.coverage_limits.personal_advertising_injury || ''}
-                onChange={(e) =>
-                  updateCoverageLimit(
-                    'personal_advertising_injury',
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
-                placeholder="e.g., 1000000"
-              />
-              <Input
-                label="Each Employee (WC)"
-                type="number"
-                value={formData.requirement_definition.coverage_limits.each_employee || ''}
-                onChange={(e) =>
-                  updateCoverageLimit(
-                    'each_employee',
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
-                placeholder="e.g., 1000000"
-              />
-              <Input
-                label="Policy Limit (WC)"
-                type="number"
-                value={formData.requirement_definition.coverage_limits.policy_limit || ''}
-                onChange={(e) =>
-                  updateCoverageLimit(
-                    'policy_limit',
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
-                placeholder="e.g., 1000000"
-              />
-                </XStack>
-              </YStack>
-            )}
-          </Card>
+        {/* Coverage Limits */}
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderColor: 'var(--color-border)', borderWidth: 1, borderStyle: 'solid', overflow: 'hidden' }}>
+          <SectionHeader title="Coverage Limits" section="coverageLimits" />
+          {expandedSections.coverageLimits && (
+            <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-4)', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
+                Specify minimum coverage limits required. Leave blank if not applicable.
+              </Text>
+              <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+                <Input
+                  label="Per Occurrence"
+                  type="number"
+                  value={formData.requirement_definition.coverage_limits.per_occurrence || ''}
+                  onChange={(e) =>
+                    updateCoverageLimit(
+                      'per_occurrence',
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
+                  placeholder="e.g., 1000000"
+                />
+                <Input
+                  label="Aggregate"
+                  type="number"
+                  value={formData.requirement_definition.coverage_limits.aggregate || ''}
+                  onChange={(e) =>
+                    updateCoverageLimit(
+                      'aggregate',
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
+                  placeholder="e.g., 2000000"
+                />
+                <Input
+                  label="Products/Completed Ops"
+                  type="number"
+                  value={formData.requirement_definition.coverage_limits.products_completed_ops || ''}
+                  onChange={(e) =>
+                    updateCoverageLimit(
+                      'products_completed_ops',
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
+                  placeholder="e.g., 2000000"
+                />
+                <Input
+                  label="Personal/Advertising Injury"
+                  type="number"
+                  value={formData.requirement_definition.coverage_limits.personal_advertising_injury || ''}
+                  onChange={(e) =>
+                    updateCoverageLimit(
+                      'personal_advertising_injury',
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
+                  placeholder="e.g., 1000000"
+                />
+                <Input
+                  label="Each Employee (WC)"
+                  type="number"
+                  value={formData.requirement_definition.coverage_limits.each_employee || ''}
+                  onChange={(e) =>
+                    updateCoverageLimit(
+                      'each_employee',
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
+                  placeholder="e.g., 1000000"
+                />
+                <Input
+                  label="Policy Limit (WC)"
+                  type="number"
+                  value={formData.requirement_definition.coverage_limits.policy_limit || ''}
+                  onChange={(e) =>
+                    updateCoverageLimit(
+                      'policy_limit',
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
+                  placeholder="e.g., 1000000"
+                />
+              </Row>
+            </Stack>
+          )}
+        </Card>
 
-          {/* Required Endorsements */}
-          <Card backgroundColor="$background" borderRadius="$4" borderColor="$borderColor" borderWidth={1} overflow="hidden">
-            <SectionHeader
-              title="Required Endorsements"
-              section="endorsements"
-              count={formData.requirement_definition.required_endorsements.length}
-            />
-            {expandedSections.endorsements && (
-              <YStack padding="$4" gap="$4" borderTopWidth={1} borderColor="$borderColor">
-                {formData.requirement_definition.required_endorsements.map((endorsement, index) => (
-                  <XStack key={index} alignItems="flex-start" gap="$4" padding="$4" backgroundColor="$backgroundHover" borderRadius="$4">
-                    <XStack flex={1} flexWrap="wrap" gap="$4">
+        {/* Required Endorsements */}
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderColor: 'var(--color-border)', borderWidth: 1, borderStyle: 'solid', overflow: 'hidden' }}>
+          <SectionHeader
+            title="Required Endorsements"
+            section="endorsements"
+            count={formData.requirement_definition.required_endorsements.length}
+          />
+          {expandedSections.endorsements && (
+            <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-4)', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
+              {formData.requirement_definition.required_endorsements.map((endorsement, index) => (
+                <Row key={index} style={{ alignItems: 'flex-start', gap: 'var(--space-4)', padding: 'var(--space-4)', backgroundColor: 'var(--color-background-hover)', borderRadius: 'var(--radius-4)' }}>
+                  <Row style={{ flex: 1, flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+                    <Input
+                      label="Endorsement Code"
+                      value={endorsement.code}
+                      onChange={(e) => updateEndorsement(index, 'code', e.target.value)}
+                      placeholder="e.g., CG 20 10"
+                    />
+                    <Input
+                      label="Name"
+                      value={endorsement.name}
+                      onChange={(e) => updateEndorsement(index, 'name', e.target.value)}
+                      placeholder="e.g., Additional Insured"
+                    />
+                    <Row style={{ alignItems: 'center', paddingTop: 'var(--space-6)', flex: 1, minWidth: 200 }}>
+                      <Row style={{ alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={endorsement.is_mandatory}
+                          onChange={(e) => updateEndorsement(index, 'is_mandatory', e.target.checked)}
+                          style={{
+                            borderRadius: '4px',
+                            border: '1px solid var(--color-border)',
+                            accentColor: 'var(--color-blue-9)',
+                          }}
+                        />
+                        <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>Mandatory</Text>
+                      </Row>
+                    </Row>
+                  </Row>
+                  <button
+                    type="button"
+                    onClick={() => removeEndorsement(index)}
+                    style={{
+                      padding: 'var(--space-2)',
+                      color: 'var(--color-10)',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </Row>
+              ))}
+              <Button type="button" variant="secondary" size="$2" onPress={addEndorsement}>
+                <Row style={{ alignItems: 'center', gap: 4 }}>
+                  <Plus size={16} />
+                  <Text>Add Endorsement</Text>
+                </Row>
+              </Button>
+            </Stack>
+          )}
+        </Card>
+
+        {/* Policy Conditions */}
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderColor: 'var(--color-border)', borderWidth: 1, borderStyle: 'solid', overflow: 'hidden' }}>
+          <SectionHeader
+            title="Policy Conditions"
+            section="conditions"
+            count={formData.requirement_definition.policy_conditions.length}
+          />
+          {expandedSections.conditions && (
+            <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-4)', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
+              {formData.requirement_definition.policy_conditions.map((condition, index) => (
+                <Row key={index} style={{ alignItems: 'flex-start', gap: 'var(--space-4)', padding: 'var(--space-4)', backgroundColor: 'var(--color-background-hover)', borderRadius: 'var(--radius-4)' }}>
+                  <Stack style={{ flex: 1, gap: 'var(--space-4)' }}>
+                    <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
                       <Input
-                        label="Endorsement Code"
-                        value={endorsement.code}
-                        onChange={(e) => updateEndorsement(index, 'code', e.target.value)}
-                        placeholder="e.g., CG 20 10"
+                        label="Condition Type"
+                        value={condition.type}
+                        onChange={(e) => updateCondition(index, 'type', e.target.value)}
+                        placeholder="e.g., Deductible, Exclusion"
                       />
-                      <Input
-                        label="Name"
-                        value={endorsement.name}
-                        onChange={(e) => updateEndorsement(index, 'name', e.target.value)}
-                        placeholder="e.g., Additional Insured"
-                      />
-                      <XStack alignItems="center" paddingTop="$6" flex={1} minWidth="200px">
-                        <XStack alignItems="center" gap="$2" cursor="pointer">
+                      <Row style={{ alignItems: 'center', paddingTop: 'var(--space-6)', flex: 1, minWidth: 200 }}>
+                        <Row style={{ alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
                           <input
                             type="checkbox"
-                            checked={endorsement.is_mandatory}
-                            onChange={(e) => updateEndorsement(index, 'is_mandatory', e.target.checked)}
+                            checked={condition.is_waivable}
+                            onChange={(e) => updateCondition(index, 'is_waivable', e.target.checked)}
                             style={{
                               borderRadius: '4px',
-                              border: '1px solid var(--borderColor)',
-                              accentColor: 'var(--blue9)',
+                              border: '1px solid var(--color-border)',
+                              accentColor: 'var(--color-blue-9)',
                             }}
                           />
-                          <Text fontSize="$3" color="$color12">Mandatory</Text>
-                        </XStack>
-                      </XStack>
-                    </XStack>
-                    <Button
-                      type="button"
-                      onPress={() => removeEndorsement(index)}
-                      padding="$2"
-                      color="$color10"
-                      hoverStyle={{ color: '$red10' }}
-                      backgroundColor="transparent"
-                      borderWidth={0}
-                    >
-                      <Trash2 size={18} />
-                    </Button>
-                  </XStack>
-                ))}
-                <Button type="button" variant="secondary" size="$2" onPress={addEndorsement}>
-                  <XStack alignItems="center" gap="$1">
-                    <Plus size={16} />
-                    <Text>Add Endorsement</Text>
-                  </XStack>
-                </Button>
-              </YStack>
-            )}
-          </Card>
+                          <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>Waivable</Text>
+                        </Row>
+                      </Row>
+                    </Row>
+                    <Textarea
+                      label="Description"
+                      value={condition.description}
+                      onChange={(e) => updateCondition(index, 'description', e.target.value)}
+                      placeholder="Describe the condition..."
+                      rows={2}
+                    />
+                  </Stack>
+                  <button
+                    type="button"
+                    onClick={() => removeCondition(index)}
+                    style={{
+                      padding: 'var(--space-2)',
+                      color: 'var(--color-10)',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </Row>
+              ))}
+              <Button type="button" variant="secondary" size="$2" onPress={addCondition}>
+                <Row style={{ alignItems: 'center', gap: 4 }}>
+                  <Plus size={16} />
+                  <Text>Add Condition</Text>
+                </Row>
+              </Button>
+            </Stack>
+          )}
+        </Card>
 
-          {/* Policy Conditions */}
-          <Card backgroundColor="$background" borderRadius="$4" borderColor="$borderColor" borderWidth={1} overflow="hidden">
-            <SectionHeader
-              title="Policy Conditions"
-              section="conditions"
-              count={formData.requirement_definition.policy_conditions.length}
-            />
-            {expandedSections.conditions && (
-              <YStack padding="$4" gap="$4" borderTopWidth={1} borderColor="$borderColor">
-                {formData.requirement_definition.policy_conditions.map((condition, index) => (
-                  <XStack key={index} alignItems="flex-start" gap="$4" padding="$4" backgroundColor="$backgroundHover" borderRadius="$4">
-                    <YStack flex={1} gap="$4">
-                      <XStack flexWrap="wrap" gap="$4">
-                        <Input
-                          label="Condition Type"
-                          value={condition.type}
-                          onChange={(e) => updateCondition(index, 'type', e.target.value)}
-                          placeholder="e.g., Deductible, Exclusion"
-                        />
-                        <XStack alignItems="center" paddingTop="$6" flex={1} minWidth="200px">
-                          <XStack alignItems="center" gap="$2" cursor="pointer">
-                            <input
-                              type="checkbox"
-                              checked={condition.is_waivable}
-                              onChange={(e) => updateCondition(index, 'is_waivable', e.target.checked)}
-                              style={{
-                                borderRadius: '4px',
-                                border: '1px solid var(--borderColor)',
-                                accentColor: 'var(--blue9)',
-                              }}
-                            />
-                            <Text fontSize="$3" color="$color12">Waivable</Text>
-                          </XStack>
-                        </XStack>
-                      </XStack>
-                      <Textarea
-                        label="Description"
-                        value={condition.description}
-                        onChange={(e) => updateCondition(index, 'description', e.target.value)}
-                        placeholder="Describe the condition..."
-                        rows={2}
+        {/* Documentation Requirements */}
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderColor: 'var(--color-border)', borderWidth: 1, borderStyle: 'solid', overflow: 'hidden' }}>
+          <SectionHeader
+            title="Documentation Requirements"
+            section="documentation"
+            count={formData.requirement_definition.documentation_requirements.length}
+          />
+          {expandedSections.documentation && (
+            <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-4)', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
+              {formData.requirement_definition.documentation_requirements.map((doc, index) => (
+                <Row key={index} style={{ alignItems: 'flex-start', gap: 'var(--space-4)', padding: 'var(--space-4)', backgroundColor: 'var(--color-background-hover)', borderRadius: 'var(--radius-4)' }}>
+                  <Stack style={{ flex: 1, gap: 'var(--space-4)' }}>
+                    <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+                      <Input
+                        label="Document Type"
+                        value={doc.type}
+                        onChange={(e) => updateDocumentationRequirement(index, 'type', e.target.value)}
+                        placeholder="e.g., COI, Endorsement Copy"
                       />
-                    </YStack>
-                    <Button
-                      type="button"
-                      onPress={() => removeCondition(index)}
-                      padding="$2"
-                      color="$color10"
-                      hoverStyle={{ color: '$red10' }}
-                      backgroundColor="transparent"
-                      borderWidth={0}
-                    >
-                      <Trash2 size={18} />
-                    </Button>
-                  </XStack>
-                ))}
-                <Button type="button" variant="secondary" size="$2" onPress={addCondition}>
-                  <XStack alignItems="center" gap="$1">
-                    <Plus size={16} />
-                    <Text>Add Condition</Text>
-                  </XStack>
-                </Button>
-              </YStack>
-            )}
-          </Card>
+                      <Row style={{ alignItems: 'center', paddingTop: 'var(--space-6)', flex: 1, minWidth: 200 }}>
+                        <Row style={{ alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={doc.is_mandatory}
+                            onChange={(e) =>
+                              updateDocumentationRequirement(index, 'is_mandatory', e.target.checked)
+                            }
+                            style={{
+                              borderRadius: '4px',
+                              border: '1px solid var(--color-border)',
+                              accentColor: 'var(--color-blue-9)',
+                            }}
+                          />
+                          <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>Mandatory</Text>
+                        </Row>
+                      </Row>
+                    </Row>
+                    <Textarea
+                      label="Description"
+                      value={doc.description}
+                      onChange={(e) => updateDocumentationRequirement(index, 'description', e.target.value)}
+                      placeholder="Describe the documentation requirement..."
+                      rows={2}
+                    />
+                  </Stack>
+                  <button
+                    type="button"
+                    onClick={() => removeDocumentationRequirement(index)}
+                    style={{
+                      padding: 'var(--space-2)',
+                      color: 'var(--color-10)',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </Row>
+              ))}
+              <Button type="button" variant="secondary" size="$2" onPress={addDocumentationRequirement}>
+                <Row style={{ alignItems: 'center', gap: 4 }}>
+                  <Plus size={16} />
+                  <Text>Add Documentation Requirement</Text>
+                </Row>
+              </Button>
+            </Stack>
+          )}
+        </Card>
 
-          {/* Documentation Requirements */}
-          <Card backgroundColor="$background" borderRadius="$4" borderColor="$borderColor" borderWidth={1} overflow="hidden">
-            <SectionHeader
-              title="Documentation Requirements"
-              section="documentation"
-              count={formData.requirement_definition.documentation_requirements.length}
-            />
-            {expandedSections.documentation && (
-              <YStack padding="$4" gap="$4" borderTopWidth={1} borderColor="$borderColor">
-                {formData.requirement_definition.documentation_requirements.map((doc, index) => (
-                  <XStack key={index} alignItems="flex-start" gap="$4" padding="$4" backgroundColor="$backgroundHover" borderRadius="$4">
-                    <YStack flex={1} gap="$4">
-                      <XStack flexWrap="wrap" gap="$4">
-                        <Input
-                          label="Document Type"
-                          value={doc.type}
-                          onChange={(e) => updateDocumentationRequirement(index, 'type', e.target.value)}
-                          placeholder="e.g., COI, Endorsement Copy"
-                        />
-                        <XStack alignItems="center" paddingTop="$6" flex={1} minWidth="200px">
-                          <XStack alignItems="center" gap="$2" cursor="pointer">
-                            <input
-                              type="checkbox"
-                              checked={doc.is_mandatory}
-                              onChange={(e) =>
-                                updateDocumentationRequirement(index, 'is_mandatory', e.target.checked)
-                              }
-                              style={{
-                                borderRadius: '4px',
-                                border: '1px solid var(--borderColor)',
-                                accentColor: 'var(--blue9)',
-                              }}
-                            />
-                            <Text fontSize="$3" color="$color12">Mandatory</Text>
-                          </XStack>
-                        </XStack>
-                      </XStack>
-                      <Textarea
-                        label="Description"
-                        value={doc.description}
-                        onChange={(e) => updateDocumentationRequirement(index, 'description', e.target.value)}
-                        placeholder="Describe the documentation requirement..."
-                        rows={2}
-                      />
-                    </YStack>
-                    <Button
-                      type="button"
-                      onPress={() => removeDocumentationRequirement(index)}
-                      padding="$2"
-                      color="$color10"
-                      hoverStyle={{ color: '$red10' }}
-                      backgroundColor="transparent"
-                      borderWidth={0}
-                    >
-                      <Trash2 size={18} />
-                    </Button>
-                  </XStack>
-                ))}
-                <Button type="button" variant="secondary" size="$2" onPress={addDocumentationRequirement}>
-                  <XStack alignItems="center" gap="$1">
-                    <Plus size={16} />
-                    <Text>Add Documentation Requirement</Text>
-                  </XStack>
-                </Button>
-              </YStack>
-            )}
-          </Card>
-
-          {/* Form Actions */}
-          <XStack alignItems="center" justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-            <Button type="button" variant="secondary" onPress={handleCancel} disabled={isSubmitting}>
-              <XStack alignItems="center" gap="$2">
-                <X size={18} />
-                <Text>Cancel</Text>
-              </XStack>
-            </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting}>
-              <XStack alignItems="center" gap="$2">
-                <Save size={18} />
-                <Text>{isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Requirement'}</Text>
-              </XStack>
-            </Button>
-          </XStack>
-        </YStack>
-      </form>
-    );
-  }
+        {/* Form Actions */}
+        <Row style={{ alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-4)', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
+          <Button type="button" variant="secondary" onPress={handleCancel} disabled={isSubmitting}>
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+              <X size={18} />
+              <Text>Cancel</Text>
+            </Row>
+          </Button>
+          <Button type="submit" variant="primary" disabled={isSubmitting}>
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+              <Save size={18} />
+              <Text>{isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Requirement'}</Text>
+            </Row>
+          </Button>
+        </Row>
+      </Stack>
+    </form>
+  );
+}
 
 export default RequirementEditorForm;

@@ -1,8 +1,7 @@
 /**
- * SyncHistory - Sync history table using Tamagui
+ * SyncHistory - Sync history table using Beyond UI
  */
-import { YStack, Text } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Stack, Text, Chip } from '@unicornlove/beyond-ui';
 import { DataTable } from '../Common/DataTable';
 import type { ColumnDef } from '@tanstack/react-table';
 
@@ -26,25 +25,25 @@ interface SyncHistoryProps {
 function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
   if (isLoading) {
     return (
-      <YStack padding="$4" alignItems="center">
+      <Stack style={{ padding: '16px', alignItems: 'center' }}>
         <Text>Loading sync history...</Text>
-      </YStack>
+      </Stack>
     );
   }
 
   if (error) {
     return (
-      <YStack padding="$4" alignItems="center">
-        <Text color="$red9">Error loading sync history: {error.message}</Text>
-      </YStack>
+      <Stack style={{ padding: '16px', alignItems: 'center' }}>
+        <Text style={{ color: 'var(--color-red-9)' }}>Error loading sync history: {error.message}</Text>
+      </Stack>
     );
   }
 
   if (history.length === 0) {
     return (
-      <YStack padding="$4" alignItems="center">
-        <Text color="$color10">No sync history available.</Text>
-      </YStack>
+      <Stack style={{ padding: '16px', alignItems: 'center' }}>
+        <Text style={{ color: 'var(--color-10)' }}>No sync history available.</Text>
+      </Stack>
     );
   }
 
@@ -53,7 +52,7 @@ function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
       accessorKey: 'created_at',
       header: 'Timestamp',
       cell: ({ row }) => (
-        <Text fontSize="$2">
+        <Text style={{ fontSize: '14px' }}>
           {new Date(row.original.created_at).toLocaleString()}
         </Text>
       ),
@@ -62,14 +61,14 @@ function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
       accessorKey: 'direction',
       header: 'Direction',
       cell: ({ row }) => (
-        <Text fontSize="$2">{row.original.direction}</Text>
+        <Text style={{ fontSize: '14px' }}>{row.original.direction}</Text>
       ),
     },
     {
       accessorKey: 'action',
       header: 'Action',
       cell: ({ row }) => (
-        <Text fontSize="$2">{row.original.action}</Text>
+        <Text style={{ fontSize: '14px' }}>{row.original.action}</Text>
       ),
     },
     {
@@ -77,11 +76,11 @@ function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
       header: 'Result',
       cell: ({ row }) => {
         const result = row.original.result;
-        const variant = result === 'success' ? 'success' : result === 'error' ? 'error' : 'warning';
+        const type = result === 'success' ? 'success' : result === 'error' ? 'error' : 'warning';
         return (
-          <Badge variant={variant} size="$2">
+          <Chip type={type} size="sm">
             {result}
-          </Badge>
+          </Chip>
         );
       },
     },
@@ -89,7 +88,7 @@ function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
       accessorKey: 'message',
       header: 'Message',
       cell: ({ row }) => (
-        <Text fontSize="$2">
+        <Text style={{ fontSize: '14px' }}>
           {row.original.error_message || JSON.stringify(row.original.entity_data)}
         </Text>
       ),
@@ -97,8 +96,8 @@ function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
   ];
 
   return (
-    <YStack gap="$4">
-      <Text fontSize="$5" fontWeight="600" mb="$4">
+    <Stack style={{ gap: '16px' }}>
+      <Text style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px' }}>
         Sync History
       </Text>
       <DataTable
@@ -108,7 +107,7 @@ function SyncHistory({ history, isLoading, error }: SyncHistoryProps) {
         enablePagination
         pageSize={10}
       />
-    </YStack>
+    </Stack>
   );
 }
 

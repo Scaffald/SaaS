@@ -15,18 +15,18 @@ import {
   BarChart3,
 } from 'lucide-react';
 import {
-  YStack,
-  XStack,
+  Stack,
+  Row,
   Text,
   H1,
   H2,
   H3,
   Card,
-  Button as TamaguiButton,
+  Button,
   Input,
   Spinner,
   Switch,
-} from '@unicornlove/ui';
+} from '@unicornlove/beyond-ui';
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 
@@ -216,227 +216,215 @@ export default function ReferralManagementPage() {
 
   if (loading) {
     return (
-      <YStack alignItems="center" justifyContent="center" height="100%" padding="$6">
-        <Spinner size="large" color="$blue10" />
-        <Text mt="$4" color="$color11">
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', height: '100%', padding: 'var(--space-6)' }}>
+        <Spinner size="large" />
+        <Text style={{ marginTop: 'var(--space-4)', color: 'var(--color-11)' }}>
           Loading referral program data...
         </Text>
-      </YStack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
       {/* Header */}
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack>
-          <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Stack>
+          <H1 style={{ fontSize: 'var(--font-size-10)', fontWeight: 700, color: 'var(--color-12)' }}>
             Referral Program Management
           </H1>
-          <Text color="$color11" fontSize="$6" mt="$1">
+          <Text style={{ color: 'var(--color-11)', fontSize: 'var(--font-size-6)', marginTop: 'var(--space-1)' }}>
             Manage referral program settings, campaigns, and rewards
           </Text>
-        </YStack>
+        </Stack>
         {settings && (
-          <XStack gap="$2" alignItems="center" backgroundColor={settings.is_active ? '$green2' : '$gray3'} paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3">
-            <Activity size={16} color={settings.is_active ? '$green10' : '$gray10'} />
-            <Text fontSize="$3" fontWeight="600" color={settings.is_active ? '$green10' : '$gray10'}>
+          <Row style={{ gap: 'var(--space-2)', alignItems: 'center', backgroundColor: settings.is_active ? 'var(--color-green-2)' : 'var(--color-gray-3)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', borderRadius: 'var(--radius-3)' }}>
+            <Activity size={16} color={settings.is_active ? 'var(--color-green-10)' : 'var(--color-gray-10)'} />
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 600, color: settings.is_active ? 'var(--color-green-10)' : 'var(--color-gray-10)' }}>
               {settings.is_active ? 'Program Active' : 'Program Inactive'}
             </Text>
-          </XStack>
+          </Row>
         )}
-      </XStack>
+      </Row>
 
       {/* Tab Navigation */}
-      <XStack gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingBottom="$2">
-        <TamaguiButton
-          size="$3"
-          variant="outlined"
-          backgroundColor={activeTab === 'overview' ? '$blue9' : 'transparent'}
-          color={activeTab === 'overview' ? 'white' : '$color11'}
+      <Row style={{ gap: 'var(--space-2)', borderBottomWidth: 1, borderColor: 'var(--color-border)', paddingBottom: 'var(--space-2)' }}>
+        <Button
+          variant={activeTab === 'overview' ? 'default' : 'outline'}
           onPress={() => setActiveTab('overview')}
+          style={{ backgroundColor: activeTab === 'overview' ? 'var(--color-blue-9)' : 'transparent', color: activeTab === 'overview' ? 'white' : 'var(--color-11)' }}
         >
           Overview
-        </TamaguiButton>
-        <TamaguiButton
-          size="$3"
-          variant="outlined"
-          backgroundColor={activeTab === 'settings' ? '$blue9' : 'transparent'}
-          color={activeTab === 'settings' ? 'white' : '$color11'}
+        </Button>
+        <Button
+          variant={activeTab === 'settings' ? 'default' : 'outline'}
           onPress={() => setActiveTab('settings')}
+          style={{ backgroundColor: activeTab === 'settings' ? 'var(--color-blue-9)' : 'transparent', color: activeTab === 'settings' ? 'white' : 'var(--color-11)' }}
         >
           Settings
-        </TamaguiButton>
-        <TamaguiButton
-          size="$3"
-          variant="outlined"
-          backgroundColor={activeTab === 'campaigns' ? '$blue9' : 'transparent'}
-          color={activeTab === 'campaigns' ? 'white' : '$color11'}
+        </Button>
+        <Button
+          variant={activeTab === 'campaigns' ? 'default' : 'outline'}
           onPress={() => setActiveTab('campaigns')}
+          style={{ backgroundColor: activeTab === 'campaigns' ? 'var(--color-blue-9)' : 'transparent', color: activeTab === 'campaigns' ? 'white' : 'var(--color-11)' }}
         >
           Campaigns
-        </TamaguiButton>
-        <TamaguiButton
-          size="$3"
-          variant="outlined"
-          backgroundColor={activeTab === 'rewards' ? '$blue9' : 'transparent'}
-          color={activeTab === 'rewards' ? 'white' : '$color11'}
+        </Button>
+        <Button
+          variant={activeTab === 'rewards' ? 'default' : 'outline'}
           onPress={() => setActiveTab('rewards')}
+          style={{ backgroundColor: activeTab === 'rewards' ? 'var(--color-blue-9)' : 'transparent', color: activeTab === 'rewards' ? 'white' : 'var(--color-11)' }}
         >
           Rewards
-        </TamaguiButton>
-      </XStack>
+        </Button>
+      </Row>
 
       {/* Overview Tab */}
       {activeTab === 'overview' && analytics && (
-        <YStack gap="$6">
+        <Stack style={{ gap: 'var(--space-6)' }}>
           {/* Key Metrics */}
-          <XStack gap="$4" flexWrap="wrap">
-            <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" flex={1} minWidth={200}>
-              <YStack gap="$2">
-                <XStack justifyContent="space-between" alignItems="center">
-                  <Text fontSize="$3" color="$color11">Total Invitations</Text>
-                  <Users size={20} color="$blue10" />
-                </XStack>
-                <Text fontSize="$9" fontWeight="700" color="$color12">
+          <Row style={{ gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+            <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-5)', flex: 1, minWidth: 200 }}>
+              <Stack style={{ gap: 'var(--space-2)' }}>
+                <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Total Invitations</Text>
+                  <Users size={20} color="var(--color-blue-10)" />
+                </Row>
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 700, color: 'var(--color-12)' }}>
                   {analytics.total_invitations}
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
                   All time
                 </Text>
-              </YStack>
+              </Stack>
             </Card>
 
-            <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" flex={1} minWidth={200}>
-              <YStack gap="$2">
-                <XStack justifyContent="space-between" alignItems="center">
-                  <Text fontSize="$3" color="$color11">Successful Connections</Text>
-                  <CheckCircle size={20} color="$green10" />
-                </XStack>
-                <Text fontSize="$9" fontWeight="700" color="$color12">
+            <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-5)', flex: 1, minWidth: 200 }}>
+              <Stack style={{ gap: 'var(--space-2)' }}>
+                <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Successful Connections</Text>
+                  <CheckCircle size={20} color="var(--color-green-10)" />
+                </Row>
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 700, color: 'var(--color-12)' }}>
                   {analytics.successful_connections}
                 </Text>
-                <Text fontSize="$2" color="$green10">
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-10)' }}>
                   {analytics.conversion_rate}% conversion rate
                 </Text>
-              </YStack>
+              </Stack>
             </Card>
 
-            <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" flex={1} minWidth={200}>
-              <YStack gap="$2">
-                <XStack justifyContent="space-between" alignItems="center">
-                  <Text fontSize="$3" color="$color11">Pending Invitations</Text>
-                  <Clock size={20} color="$orange10" />
-                </XStack>
-                <Text fontSize="$9" fontWeight="700" color="$color12">
+            <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-5)', flex: 1, minWidth: 200 }}>
+              <Stack style={{ gap: 'var(--space-2)' }}>
+                <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Pending Invitations</Text>
+                  <Clock size={20} color="var(--color-orange-10)" />
+                </Row>
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 700, color: 'var(--color-12)' }}>
                   {analytics.pending_invitations}
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
                   Awaiting response
                 </Text>
-              </YStack>
+              </Stack>
             </Card>
 
-            <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" flex={1} minWidth={200}>
-              <YStack gap="$2">
-                <XStack justifyContent="space-between" alignItems="center">
-                  <Text fontSize="$3" color="$color11">Credits Granted</Text>
-                  <Award size={20} color="$purple10" />
-                </XStack>
-                <Text fontSize="$9" fontWeight="700" color="$color12">
+            <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-5)', flex: 1, minWidth: 200 }}>
+              <Stack style={{ gap: 'var(--space-2)' }}>
+                <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Credits Granted</Text>
+                  <Award size={20} color="var(--color-purple-10)" />
+                </Row>
+                <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 700, color: 'var(--color-12)' }}>
                   {analytics.credits_granted}
                 </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
                   To new accounts
                 </Text>
-              </YStack>
+              </Stack>
             </Card>
-          </XStack>
+          </Row>
 
           {/* By User Type */}
-          <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5">
-            <YStack gap="$4">
-              <H3 fontSize="$5" fontWeight="600" color="$color12">
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-5)' }}>
+            <Stack style={{ gap: 'var(--space-4)' }}>
+              <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600, color: 'var(--color-12)' }}>
                 Invitations by User Type
               </H3>
-              <XStack gap="$4" flexWrap="wrap">
-                <YStack gap="$2" flex={1} minWidth={150}>
-                  <Text fontSize="$3" color="$color11">Brokers</Text>
-                  <Text fontSize="$7" fontWeight="600" color="$blue11">
+              <Row style={{ gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+                <Stack style={{ gap: 'var(--space-2)', flex: 1, minWidth: 150 }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Brokers</Text>
+                  <Text style={{ fontSize: 'var(--font-size-7)', fontWeight: 600, color: 'var(--color-blue-11)' }}>
                     {analytics.broker_invitations}
                   </Text>
-                </YStack>
-                <YStack gap="$2" flex={1} minWidth={150}>
-                  <Text fontSize="$3" color="$color11">Managers</Text>
-                  <Text fontSize="$7" fontWeight="600" color="$green11">
+                </Stack>
+                <Stack style={{ gap: 'var(--space-2)', flex: 1, minWidth: 150 }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Managers</Text>
+                  <Text style={{ fontSize: 'var(--font-size-7)', fontWeight: 600, color: 'var(--color-green-11)' }}>
                     {analytics.manager_invitations}
                   </Text>
-                </YStack>
-                <YStack gap="$2" flex={1} minWidth={150}>
-                  <Text fontSize="$3" color="$color11">Contractors</Text>
-                  <Text fontSize="$7" fontWeight="600" color="$purple11">
+                </Stack>
+                <Stack style={{ gap: 'var(--space-2)', flex: 1, minWidth: 150 }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Contractors</Text>
+                  <Text style={{ fontSize: 'var(--font-size-7)', fontWeight: 600, color: 'var(--color-purple-11)' }}>
                     {analytics.contractor_invitations}
                   </Text>
-                </YStack>
-              </XStack>
-            </YStack>
+                </Stack>
+              </Row>
+            </Stack>
           </Card>
-        </YStack>
+        </Stack>
       )}
 
       {/* Settings Tab */}
       {activeTab === 'settings' && settings && (
-        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5">
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
-              <H2 fontSize="$6" fontWeight="600" color="$color12">
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-5)' }}>
+          <Stack style={{ gap: 'var(--space-4)' }}>
+            <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)' }}>
                 Program Settings
               </H2>
               {!editingSettings ? (
-                <TamaguiButton
-                  size="$3"
-                  variant="outlined"
-                  icon={<Edit size={16} />}
+                <Button
+                  variant="outline"
+                  iconStart={Edit}
                   onPress={() => setEditingSettings(true)}
                 >
                   Edit Settings
-                </TamaguiButton>
+                </Button>
               ) : (
-                <XStack gap="$2">
-                  <TamaguiButton
-                    size="$3"
-                    variant="outlined"
+                <Row style={{ gap: 'var(--space-2)' }}>
+                  <Button
+                    variant="outline"
                     onPress={() => {
                       setEditingSettings(false);
                       fetchSettings();
                     }}
                   >
                     Cancel
-                  </TamaguiButton>
-                  <TamaguiButton
-                    size="$3"
-                    backgroundColor="$blue9"
-                    color="white"
+                  </Button>
+                  <Button
+                    color="primary"
                     onPress={handleSaveSettings}
                     disabled={savingSettings}
                   >
                     {savingSettings ? 'Saving...' : 'Save Changes'}
-                  </TamaguiButton>
-                </XStack>
+                  </Button>
+                </Row>
               )}
-            </XStack>
+            </Row>
 
             {/* Program Status */}
-            <YStack gap="$2">
-              <XStack justifyContent="space-between" alignItems="center">
-                <YStack gap="$1">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
+            <Stack style={{ gap: 'var(--space-2)' }}>
+              <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <Stack style={{ gap: 'var(--space-1)' }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 600, color: 'var(--color-12)' }}>
                     Program Active
                   </Text>
-                  <Text fontSize="$2" color="$color11">
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-11)' }}>
                     Enable or disable the entire referral program
                   </Text>
-                </YStack>
+                </Stack>
                 <Switch
                   checked={settings.is_active}
                   onCheckedChange={(checked) =>
@@ -444,318 +432,327 @@ export default function ReferralManagementPage() {
                   }
                   disabled={!editingSettings}
                 />
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
             {/* Credit Settings */}
-            <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-              <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <Stack style={{ gap: 'var(--space-3)', borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
+              <H3 style={{ fontSize: 'var(--font-size-4)', fontWeight: 600, color: 'var(--color-12)' }}>
                 Credit Settings
               </H3>
-              
-              <YStack gap="$2">
-                <Text fontSize="$2" fontWeight="500" color="$color11">
+
+              <Stack style={{ gap: 'var(--space-2)' }}>
+                <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)' }}>
                   Default Credit Amount (${settings.credit_currency})
                 </Text>
                 <Input
                   value={String(settings.default_credit_amount)}
-                  onChangeText={(text) =>
-                    setSettings({ ...settings, default_credit_amount: parseFloat(text) || 0 })
+                  onChange={(e) =>
+                    setSettings({ ...settings, default_credit_amount: parseFloat(e.target.value) || 0 })
                   }
                   disabled={!editingSettings}
-                  keyboardType="numeric"
+                  type="number"
                 />
-              </YStack>
+              </Stack>
 
-              <YStack gap="$2">
-                <Text fontSize="$2" fontWeight="500" color="$color11">
+              <Stack style={{ gap: 'var(--space-2)' }}>
+                <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)' }}>
                   Minimum Account Age (hours) for Credits
                 </Text>
                 <Input
                   value={String(settings.min_account_age_hours)}
-                  onChangeText={(text) =>
-                    setSettings({ ...settings, min_account_age_hours: parseInt(text) || 24 })
+                  onChange={(e) =>
+                    setSettings({ ...settings, min_account_age_hours: parseInt(e.target.value) || 24 })
                   }
                   disabled={!editingSettings}
-                  keyboardType="numeric"
+                  type="number"
                 />
-                <Text fontSize="$1" color="$color10">
+                <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>
                   Only accounts newer than this get referral credits
                 </Text>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
 
             {/* Relationship Multipliers */}
-            <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-              <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <Stack style={{ gap: 'var(--space-3)', borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
+              <H3 style={{ fontSize: 'var(--font-size-4)', fontWeight: 600, color: 'var(--color-12)' }}>
                 Relationship Credit Multipliers
               </H3>
-              
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
-                  <Text fontSize="$2" fontWeight="500" color="$color11">
+
+              <Row style={{ gap: 'var(--space-3)' }}>
+                <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)' }}>
                     Broker Multiplier
                   </Text>
                   <Input
                     value={String(settings.broker_relationship_multiplier)}
-                    onChangeText={(text) =>
-                      setSettings({ ...settings, broker_relationship_multiplier: parseFloat(text) || 1.0 })
+                    onChange={(e) =>
+                      setSettings({ ...settings, broker_relationship_multiplier: parseFloat(e.target.value) || 1.0 })
                     }
                     disabled={!editingSettings}
-                    keyboardType="decimal-pad"
+                    type="number"
+                    step="0.1"
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2" flex={1}>
-                  <Text fontSize="$2" fontWeight="500" color="$color11">
+                <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)' }}>
                     Manager Multiplier
                   </Text>
                   <Input
                     value={String(settings.manager_relationship_multiplier)}
-                    onChangeText={(text) =>
-                      setSettings({ ...settings, manager_relationship_multiplier: parseFloat(text) || 1.0 })
+                    onChange={(e) =>
+                      setSettings({ ...settings, manager_relationship_multiplier: parseFloat(e.target.value) || 1.0 })
                     }
                     disabled={!editingSettings}
-                    keyboardType="decimal-pad"
+                    type="number"
+                    step="0.1"
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2" flex={1}>
-                  <Text fontSize="$2" fontWeight="500" color="$color11">
+                <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)' }}>
                     Contractor Multiplier
                   </Text>
                   <Input
                     value={String(settings.contractor_relationship_multiplier)}
-                    onChangeText={(text) =>
-                      setSettings({ ...settings, contractor_relationship_multiplier: parseFloat(text) || 1.0 })
+                    onChange={(e) =>
+                      setSettings({ ...settings, contractor_relationship_multiplier: parseFloat(e.target.value) || 1.0 })
                     }
                     disabled={!editingSettings}
-                    keyboardType="decimal-pad"
+                    type="number"
+                    step="0.1"
                   />
-                </YStack>
-              </XStack>
-            </YStack>
+                </Stack>
+              </Row>
+            </Stack>
 
             {/* Rate Limits */}
-            <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-              <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <Stack style={{ gap: 'var(--space-3)', borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
+              <H3 style={{ fontSize: 'var(--font-size-4)', fontWeight: 600, color: 'var(--color-12)' }}>
                 Rate Limits
               </H3>
-              
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
-                  <Text fontSize="$2" fontWeight="500" color="$color11">
+
+              <Row style={{ gap: 'var(--space-3)' }}>
+                <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)' }}>
                     Max Invitations per Day
                   </Text>
                   <Input
                     value={String(settings.max_invitations_per_day)}
-                    onChangeText={(text) =>
-                      setSettings({ ...settings, max_invitations_per_day: parseInt(text) || 10 })
+                    onChange={(e) =>
+                      setSettings({ ...settings, max_invitations_per_day: parseInt(e.target.value) || 10 })
                     }
                     disabled={!editingSettings}
-                    keyboardType="numeric"
+                    type="number"
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2" flex={1}>
-                  <Text fontSize="$2" fontWeight="500" color="$color11">
+                <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)' }}>
                     Max Invitations per Month
                   </Text>
                   <Input
                     value={String(settings.max_invitations_per_month)}
-                    onChangeText={(text) =>
-                      setSettings({ ...settings, max_invitations_per_month: parseInt(text) || 50 })
+                    onChange={(e) =>
+                      setSettings({ ...settings, max_invitations_per_month: parseInt(e.target.value) || 50 })
                     }
                     disabled={!editingSettings}
-                    keyboardType="numeric"
+                    type="number"
                   />
-                </YStack>
-              </XStack>
-            </YStack>
-          </YStack>
+                </Stack>
+              </Row>
+            </Stack>
+          </Stack>
         </Card>
       )}
 
       {/* Campaigns Tab */}
       {activeTab === 'campaigns' && (
-        <YStack gap="$4">
-          <XStack justifyContent="space-between" alignItems="center">
-            <H2 fontSize="$6" fontWeight="600" color="$color12">
+        <Stack style={{ gap: 'var(--space-4)' }}>
+          <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)' }}>
               Referral Campaigns
             </H2>
-            <TamaguiButton
-              size="$3"
-              backgroundColor="$blue9"
-              color="white"
-              icon={<Plus size={16} />}
+            <Button
+              color="primary"
+              iconStart={Plus}
               onPress={() => toast.info('Campaign creation coming soon')}
             >
               Create Campaign
-            </TamaguiButton>
-          </XStack>
+            </Button>
+          </Row>
 
           {campaigns.length === 0 ? (
-            <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6">
-              <YStack alignItems="center" gap="$3">
-                <Calendar size={48} color="$color10" />
-                <Text fontSize="$4" color="$color11">
+            <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-6)' }}>
+              <Stack style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+                <Calendar size={48} color="var(--color-10)" />
+                <Text style={{ fontSize: 'var(--font-size-4)', color: 'var(--color-11)' }}>
                   No campaigns yet
                 </Text>
-                <Text fontSize="$2" color="$color10" textAlign="center">
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)', textAlign: 'center' }}>
                   Create targeted campaigns to boost referral activity
                 </Text>
-              </YStack>
+              </Stack>
             </Card>
           ) : (
-            <YStack gap="$3">
+            <Stack style={{ gap: 'var(--space-3)' }}>
               {campaigns.map((campaign) => (
-                <Card key={campaign.id} backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$4">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <YStack gap="$2" flex={1}>
-                      <XStack gap="$2" alignItems="center">
-                        <Text fontSize="$4" fontWeight="600" color="$color12">
+                <Card key={campaign.id} style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-4)' }}>
+                  <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                      <Row style={{ gap: 'var(--space-2)', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 'var(--font-size-4)', fontWeight: 600, color: 'var(--color-12)' }}>
                           {campaign.name}
                         </Text>
-                        <XStack
-                          backgroundColor={
-                            campaign.status === 'active' ? '$green2' :
-                            campaign.status === 'completed' ? '$blue2' : '$gray3'
-                          }
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
+                        <Row
+                          style={{
+                            backgroundColor:
+                              campaign.status === 'active' ? 'var(--color-green-2)' :
+                              campaign.status === 'completed' ? 'var(--color-blue-2)' : 'var(--color-gray-3)',
+                            paddingLeft: 'var(--space-2)',
+                            paddingRight: 'var(--space-2)',
+                            paddingTop: 'var(--space-1)',
+                            paddingBottom: 'var(--space-1)',
+                            borderRadius: 'var(--radius-2)'
+                          }}
                         >
                           <Text
-                            fontSize="$1"
-                            fontWeight="600"
-                            color={
-                              campaign.status === 'active' ? '$green10' :
-                              campaign.status === 'completed' ? '$blue10' : '$gray10'
-                            }
+                            style={{
+                              fontSize: 'var(--font-size-1)',
+                              fontWeight: 600,
+                              color:
+                                campaign.status === 'active' ? 'var(--color-green-10)' :
+                                campaign.status === 'completed' ? 'var(--color-blue-10)' : 'var(--color-gray-10)',
+                              textTransform: 'uppercase'
+                            }}
                           >
-                            {campaign.status.toUpperCase()}
+                            {campaign.status}
                           </Text>
-                        </XStack>
-                      </XStack>
+                        </Row>
+                      </Row>
                       {campaign.description && (
-                        <Text fontSize="$2" color="$color11">
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-11)' }}>
                           {campaign.description}
                         </Text>
                       )}
-                      <XStack gap="$4">
-                        <Text fontSize="$2" color="$color10">
+                      <Row style={{ gap: 'var(--space-4)' }}>
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
                           Invitations: {campaign.total_invitations}
                         </Text>
-                        <Text fontSize="$2" color="$color10">
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
                           Connections: {campaign.total_connections}
                         </Text>
-                        <Text fontSize="$2" color="$color10">
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
                           Credits: ${campaign.total_credits_granted}
                         </Text>
-                      </XStack>
-                    </YStack>
-                    <TamaguiButton
-                      size="$2"
-                      variant="outlined"
-                      icon={<Edit size={14} />}
+                      </Row>
+                    </Stack>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      iconStart={Edit}
                       onPress={() => toast.info('Campaign editing coming soon')}
                     >
                       Edit
-                    </TamaguiButton>
-                  </XStack>
+                    </Button>
+                  </Row>
                 </Card>
               ))}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       )}
 
       {/* Rewards Tab */}
       {activeTab === 'rewards' && (
-        <YStack gap="$4">
-          <H2 fontSize="$6" fontWeight="600" color="$color12">
+        <Stack style={{ gap: 'var(--space-4)' }}>
+          <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)' }}>
             Reward Management
           </H2>
 
           {rewards.length === 0 ? (
-            <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6">
-              <YStack alignItems="center" gap="$3">
-                <Award size={48} color="$color10" />
-                <Text fontSize="$4" color="$color11">
+            <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-6)' }}>
+              <Stack style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+                <Award size={48} color="var(--color-10)" />
+                <Text style={{ fontSize: 'var(--font-size-4)', color: 'var(--color-11)' }}>
                   No rewards yet
                 </Text>
-                <Text fontSize="$2" color="$color10" textAlign="center">
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)', textAlign: 'center' }}>
                   Rewards will appear here as users earn credits
                 </Text>
-              </YStack>
+              </Stack>
             </Card>
           ) : (
-            <YStack gap="$3">
+            <Stack style={{ gap: 'var(--space-3)' }}>
               {rewards.map((reward) => (
-                <Card key={reward.id} backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$4">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <YStack gap="$2" flex={1}>
-                      <XStack gap="$2" alignItems="center">
-                        <Text fontSize="$4" fontWeight="600" color="$color12">
+                <Card key={reward.id} style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', borderWidth: 1, borderColor: 'var(--color-border)', padding: 'var(--space-4)' }}>
+                  <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                      <Row style={{ gap: 'var(--space-2)', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 'var(--font-size-4)', fontWeight: 600, color: 'var(--color-12)' }}>
                           ${reward.credit_amount}
                         </Text>
-                        <XStack
-                          backgroundColor={
-                            reward.status === 'approved' || reward.status === 'paid' ? '$green2' :
-                            reward.status === 'pending' ? '$orange2' : '$gray3'
-                          }
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
+                        <Row
+                          style={{
+                            backgroundColor:
+                              reward.status === 'approved' || reward.status === 'paid' ? 'var(--color-green-2)' :
+                              reward.status === 'pending' ? 'var(--color-orange-2)' : 'var(--color-gray-3)',
+                            paddingLeft: 'var(--space-2)',
+                            paddingRight: 'var(--space-2)',
+                            paddingTop: 'var(--space-1)',
+                            paddingBottom: 'var(--space-1)',
+                            borderRadius: 'var(--radius-2)'
+                          }}
                         >
                           <Text
-                            fontSize="$1"
-                            fontWeight="600"
-                            color={
-                              reward.status === 'approved' || reward.status === 'paid' ? '$green10' :
-                              reward.status === 'pending' ? '$orange10' : '$gray10'
-                            }
+                            style={{
+                              fontSize: 'var(--font-size-1)',
+                              fontWeight: 600,
+                              color:
+                                reward.status === 'approved' || reward.status === 'paid' ? 'var(--color-green-10)' :
+                                reward.status === 'pending' ? 'var(--color-orange-10)' : 'var(--color-gray-10)',
+                              textTransform: 'uppercase'
+                            }}
                           >
-                            {reward.status.toUpperCase()}
+                            {reward.status}
                           </Text>
-                        </XStack>
-                      </XStack>
-                      <Text fontSize="$2" color="$color11">
+                        </Row>
+                      </Row>
+                      <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-11)' }}>
                         Type: {reward.reward_type.replace('_', ' ')}
                       </Text>
-                      <Text fontSize="$2" color="$color10">
+                      <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
                         Created: {new Date(reward.created_at).toLocaleDateString()}
                       </Text>
-                    </YStack>
+                    </Stack>
                     {reward.status === 'pending' && (
-                      <XStack gap="$2">
-                        <TamaguiButton
-                          size="$2"
-                          backgroundColor="$green9"
-                          color="white"
-                          icon={<CheckCircle size={14} />}
+                      <Row style={{ gap: 'var(--space-2)' }}>
+                        <Button
+                          size="sm"
+                          iconStart={CheckCircle}
                           onPress={() => toast.info('Reward approval coming soon')}
+                          style={{ backgroundColor: 'var(--color-green-9)', color: 'white' }}
                         >
                           Approve
-                        </TamaguiButton>
-                        <TamaguiButton
-                          size="$2"
-                          variant="outlined"
-                          icon={<XCircle size={14} />}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          iconStart={XCircle}
                           onPress={() => toast.info('Reward rejection coming soon')}
                         >
                           Reject
-                        </TamaguiButton>
-                      </XStack>
+                        </Button>
+                      </Row>
                     )}
-                  </XStack>
+                  </Row>
                 </Card>
               ))}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
-

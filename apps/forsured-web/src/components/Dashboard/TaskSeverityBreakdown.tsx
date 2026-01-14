@@ -1,10 +1,10 @@
 /**
- * TaskSeverityBreakdown - Task severity breakdown widget using Tamagui
+ * TaskSeverityBreakdown - Task severity breakdown widget using Beyond UI
  * REQ-266: Task Correlation with Compliance Score
+ * Migrated from Tamagui to Beyond UI
  */
 import React from 'react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Stack, Row, Text, Chip } from '@unicornlove/beyond-ui';
 import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react';
 import {
   Task,
@@ -29,17 +29,17 @@ export interface TaskSeverityBreakdownProps {
 function getSeverityIcon(severity: TaskSeverity): React.ReactNode {
   switch (severity) {
     case 'critical':
-      return <AlertTriangle size={16} color="currentColor" />;
+      return <AlertTriangle size={16} />;
     case 'high':
-      return <AlertCircle size={16} color="currentColor" />;
+      return <AlertCircle size={16} />;
     case 'medium':
-      return <Info size={16} color="currentColor" />;
+      return <Info size={16} />;
     case 'low':
-      return <CheckCircle size={16} color="currentColor" />;
+      return <CheckCircle size={16} />;
     case 'info':
-      return <Info size={16} color="currentColor" />;
+      return <Info size={16} />;
     default:
-      return <Info size={16} color="currentColor" />;
+      return <Info size={16} />;
   }
 }
 
@@ -62,13 +62,13 @@ const SeverityBadge: React.FC<SeverityBadgeProps> = ({ severity, count }) => {
   };
 
   return (
-    <Badge variant={variantMap[severity]} size="$2">
-      <XStack alignItems="center" gap="$1">
+    <Chip variant={variantMap[severity]} size="sm">
+      <Row alignItems="center" gap={4}>
         {getSeverityIcon(severity)}
-        <Text>{count}</Text>
-        <Text display={{ sm: 'none' }}>{config.label.toLowerCase()}</Text>
-      </XStack>
-    </Badge>
+        <span>{count}</span>
+        <span style={{ display: 'none' }}>{config.label.toLowerCase()}</span>
+      </Row>
+    </Chip>
   );
 };
 
@@ -88,17 +88,17 @@ export const TaskSeverityBreakdown: React.FC<TaskSeverityBreakdownProps> = ({
 
   if (loading) {
     return (
-      <YStack padding="$4" gap="$2">
-        <Text fontSize="$2" color="$color10">Loading task breakdown...</Text>
-      </YStack>
+      <Stack padding={16} gap={8}>
+        <Text size="sm" muted>Loading task breakdown...</Text>
+      </Stack>
     );
   }
 
   if (totalTasks === 0) {
     return (
-      <YStack padding="$4" gap="$2">
-        <Text fontSize="$2" color="$color10">No tasks available</Text>
-      </YStack>
+      <Stack padding={16} gap={8}>
+        <Text size="sm" muted>No tasks available</Text>
+      </Stack>
     );
   }
 
@@ -114,42 +114,43 @@ export const TaskSeverityBreakdown: React.FC<TaskSeverityBreakdownProps> = ({
     : '';
 
   return (
-    <YStack
-      gap="$3"
-      padding="$4"
-      onPress={onClick}
-      cursor={onClick ? 'pointer' : 'default'}
+    <Stack
+      gap={12}
+      padding={16}
+      onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      className={className}
     >
-      <XStack alignItems="center" gap="$2" flexWrap="wrap">
+      <Row alignItems="center" gap={8} style={{ flexWrap: 'wrap' }}>
         {showIcon && (
-          <AlertTriangle size={20} color="currentColor" />
+          <AlertTriangle size={20} />
         )}
-        <Text fontSize="$4" fontWeight="600" color="$color11">
+        <Text size="lg" weight="semibold">
           {totalTasks} tasks
         </Text>
         {breakdownText && (
-          <Text fontSize="$3" color="$color10">
+          <Text size="md" muted>
             {breakdownText}
           </Text>
         )}
-      </XStack>
+      </Row>
 
       {showBreakdown && (
-        <XStack gap="$2" flexWrap="wrap">
+        <Row gap={8} style={{ flexWrap: 'wrap' }}>
           <SeverityBadge severity="critical" count={counts.critical} />
           <SeverityBadge severity="high" count={counts.high} />
           <SeverityBadge severity="medium" count={counts.medium} />
           <SeverityBadge severity="low" count={counts.low} />
           {includeInfo && <SeverityBadge severity="info" count={counts.info} />}
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   );
 };
 
 export default TaskSeverityBreakdown;
 
-// Stub for CompactSeverityBreakdown - TODO: implement if needed
+// Stub for CompactSeverityBreakdown
 export interface CompactSeverityBreakdownProps {
   tasks: Task[];
   includeInfo?: boolean;
@@ -168,7 +169,7 @@ export const CompactSeverityBreakdown: React.FC<CompactSeverityBreakdownProps> =
   const totalTasks = Object.values(counts).reduce((sum, count) => sum + count, 0);
 
   if (totalTasks === 0) {
-    return <Text fontSize="$2" color="$color10">No tasks</Text>;
+    return <Text size="sm" muted>No tasks</Text>;
   }
 
   const breakdownParts: string[] = [];
@@ -182,10 +183,16 @@ export const CompactSeverityBreakdown: React.FC<CompactSeverityBreakdownProps> =
   const breakdownText = breakdownParts.length > 0 ? ` (${breakdownParts.join(', ')})` : '';
 
   return (
-    <XStack alignItems="center" gap="$2" cursor={onClick ? 'pointer' : 'default'} onPress={onClick}>
-      <Text fontSize="$3" fontWeight="500" color="$color11">
+    <Row
+      alignItems="center"
+      gap={8}
+      onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      className={className}
+    >
+      <Text size="md" weight="medium">
         {totalTasks} {taskWord}{breakdownText}
       </Text>
-    </XStack>
+    </Row>
   );
 };

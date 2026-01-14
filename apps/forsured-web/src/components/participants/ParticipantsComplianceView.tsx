@@ -1,11 +1,9 @@
 /**
- * ParticipantsComplianceView - Using Tamagui
+ * ParticipantsComplianceView - Using Beyond UI
  * REQ-281: Participants Tab Compliance View - TASK-4
  */
 import React, { useState, useCallback } from 'react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
-import { Card } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, Button } from '@unicornlove/beyond-ui';
 import {
   ParticipantsTable,
   ParticipantsFilter,
@@ -97,9 +95,9 @@ export function ParticipantsComplianceView({
     : undefined;
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       {/* Filter Bar */}
-      <Card padding="$4">
+      <Card style={{ padding: 'var(--space-4)' }}>
         <ParticipantsFilter
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
@@ -109,76 +107,74 @@ export function ParticipantsComplianceView({
 
       {/* Summary Metrics */}
       {summaryData && (
-        <XStack flexWrap="wrap" gap="$4">
-          <Card padding="$4" flex={1} minWidth={200}>
-            <Text fontSize="$2" color="$color10">Total Participants</Text>
-            <Text fontSize="$8" fontWeight="700" color="$color12">
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+          <Card style={{ padding: 'var(--space-4)', flex: 1, minWidth: 200 }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-text-secondary)' }}>Total Participants</Text>
+            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-text-primary)' }}>
               {summaryData.total}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={200} borderColor="$green6">
-            <Text fontSize="$2" color="$green9">Compliant</Text>
-            <Text fontSize="$8" fontWeight="700" color="$green11">
+          <Card style={{ padding: 'var(--space-4)', flex: 1, minWidth: 200, borderColor: 'var(--color-green-6)' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-9)' }}>Compliant</Text>
+            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-green-11)' }}>
               {summaryData.compliant}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={200} borderColor="$yellow6">
-            <Text fontSize="$2" color="$yellow9">At Risk</Text>
-            <Text fontSize="$8" fontWeight="700" color="$yellow11">
+          <Card style={{ padding: 'var(--space-4)', flex: 1, minWidth: 200, borderColor: 'var(--color-yellow-6)' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow-9)' }}>At Risk</Text>
+            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-yellow-11)' }}>
               {summaryData.atRisk}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={200} borderColor="$red6">
-            <Text fontSize="$2" color="$red9">Non-Compliant</Text>
-            <Text fontSize="$8" fontWeight="700" color="$red11">
+          <Card style={{ padding: 'var(--space-4)', flex: 1, minWidth: 200, borderColor: 'var(--color-red-6)' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-red-9)' }}>Non-Compliant</Text>
+            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-red-11)' }}>
               {summaryData.nonCompliant}
             </Text>
           </Card>
-        </XStack>
+        </Row>
       )}
 
       {/* Results Count */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <Text fontSize="$2" color="$color10">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-text-secondary)' }}>
           {participantsLoading
             ? 'Loading...'
             : `${participants.length} participant${participants.length !== 1 ? 's' : ''} found`}
         </Text>
         {activeFilter !== 'all' && (
-          <CoreButton
-            variant="text"
+          <Button
+            variant="ghost"
             onPress={() => setActiveFilter('all')}
-            fontSize="$2"
-            color="$blue9"
-            hoverStyle={{ color: '$blue11' }}
+            style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue-9)' }}
           >
             Clear filter
-          </CoreButton>
+          </Button>
         )}
-      </XStack>
+      </Row>
 
       {/* Participants Table */}
       <Card>
         {participantsLoading ? (
-          <YStack padding="$8">
+          <Stack style={{ padding: 'var(--space-8)' }}>
             <SkeletonLoader variant="table" count={5} />
-          </YStack>
+          </Stack>
         ) : participants.length > 0 ? (
           <ParticipantsTable
             participants={participants}
             onRowClick={handleParticipantClick}
           />
         ) : (
-          <YStack padding="$12" alignItems="center">
-            <Text color="$color10">
+          <Stack style={{ padding: 'var(--space-12)', alignItems: 'center' }}>
+            <Text style={{ color: 'var(--color-text-secondary)' }}>
               {activeFilter === 'all'
                 ? 'No participants found for this project'
                 : `No ${activeFilter} participants found`}
             </Text>
-          </YStack>
+          </Stack>
         )}
       </Card>
-    </YStack>
+    </Stack>
   );
 }
 

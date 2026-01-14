@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { X, Calendar, User, MessageSquare, CheckCircle2 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
 import { Task } from '../../types';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
@@ -75,109 +75,116 @@ export default function TaskDetailModal({
     }
   };
 
-  const getPriorityColorProps = (priority: string) => {
+  const getPriorityColorProps = (priority: string): React.CSSProperties => {
     switch (priority) {
       case 'urgent':
-        return { color: '$red10', backgroundColor: '$red2' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)' };
       case 'high':
-        return { color: '$orange10', backgroundColor: '$orange2' };
+        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)' };
       default:
-        return { color: '$blue10', backgroundColor: '$blue2' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
     }
   };
 
-  const getStatusColorProps = (status: string) => {
+  const getStatusColorProps = (status: string): React.CSSProperties => {
     switch (status) {
       case 'completed':
-        return { color: '$green10', backgroundColor: '$green2' };
+        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' };
       case 'in_progress':
-        return { color: '$blue10', backgroundColor: '$blue2' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
       case 'pending':
-        return { color: '$color11', backgroundColor: '$gray2' };
+        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' };
       default:
-        return { color: '$color11', backgroundColor: '$gray2' };
+        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' };
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="">
-      <YStack gap="$6">
-        <XStack alignItems="flex-start" justifyContent="space-between">
-          <YStack flex={1}>
-            <H2 fontSize="$8" fontWeight="600" color="$color12" mb="$2">
+      <Stack gap={24}>
+        <Row alignItems="flex-start" justifyContent="space-between">
+          <Stack style={{ flex: 1 }}>
+            <H2 style={{ fontSize: 28, fontWeight: 600, marginBottom: 8 }}>
               {task.title}
             </H2>
-            <XStack alignItems="center" gap="$2">
-              <Text
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                fontSize="$1"
-                fontWeight="500"
-                borderRadius="$2"
-                {...getPriorityColorProps(task.priority)}
+            <Row alignItems="center" gap={8}>
+              <span
+                style={{
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  borderRadius: 8,
+                  ...getPriorityColorProps(task.priority),
+                }}
               >
                 {task.priority}
-              </Text>
-              <Text
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                fontSize="$1"
-                fontWeight="500"
-                borderRadius="$2"
-                {...getStatusColorProps(task.status)}
+              </span>
+              <span
+                style={{
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  borderRadius: 8,
+                  ...getStatusColorProps(task.status),
+                }}
               >
                 {task.status.replace('_', ' ')}
-              </Text>
-            </XStack>
-          </YStack>
-          <XStack
-            onPress={onClose}
-            cursor="pointer"
-            hoverStyle={{ opacity: 0.8 }}
+              </span>
+            </Row>
+          </Stack>
+          <div
+            onClick={onClose}
+            style={{ cursor: 'pointer' }}
           >
-            <X size={20} color="$color10" />
-          </XStack>
-        </XStack>
+            <X size={20} color="var(--color-text-muted)" />
+          </div>
+        </Row>
 
         {task.description && (
-          <YStack>
-            <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+          <Stack>
+            <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>
               Description
             </H3>
-            <Text fontSize="$3" color="$color11">{task.description}</Text>
-          </YStack>
+            <Text size="sm" muted>{task.description}</Text>
+          </Stack>
         )}
 
-        <XStack flexWrap="wrap" gap="$4">
+        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
           {task.due_date && (
-            <YStack flex={1} minWidth="calc(50% - 8px)">
-              <H3 fontSize="$1" fontWeight="500" color="$color10" mb="$1">
+            <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+              <H3 style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: 4 }}>
                 Due Date
               </H3>
-              <XStack alignItems="center" fontSize="$3" color="$color12">
-                <Calendar size={14} mr="$2" />
-                <Text fontSize="$3" color="$color12">{formatDate(task.due_date)}</Text>
-              </XStack>
-            </YStack>
+              <Row alignItems="center" gap={8}>
+                <Calendar size={14} />
+                <Text size="sm">{formatDate(task.due_date)}</Text>
+              </Row>
+            </Stack>
           )}
 
-          <YStack flex={1} minWidth="calc(50% - 8px)">
-            <H3 fontSize="$1" fontWeight="500" color="$color10" mb="$1">
+          <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+            <H3 style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: 4 }}>
               Task Type
             </H3>
-            <Text fontSize="$3" color="$color12" textTransform="capitalize">
+            <Text size="sm" style={{ textTransform: 'capitalize' }}>
               {task.task_type || 'General'}
             </Text>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
         {task.status !== 'completed' && (
           <>
-            <YStack>
-              <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+            <Stack>
+              <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>
                 Reassign Task
               </H3>
-              <XStack alignItems="center" gap="$2">
+              <Row alignItems="center" gap={8}>
                 <Select
                   value={selectedAssignee}
                   onChange={(e) => setSelectedAssignee(e.target.value)}
@@ -191,100 +198,104 @@ export default function TaskDetailModal({
                   ]}
                 />
                 <Button
-                  onClick={handleReassign}
+                  onPress={handleReassign}
                   disabled={
                     !selectedAssignee ||
                     selectedAssignee === task.assigned_to_user_id
                   }
-                  size="$2"
+                  size="sm"
                 >
                   Reassign
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
-            <YStack>
-              <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+            <Stack>
+              <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>
                 Mark as Complete
               </H3>
               {!showCompletionForm ? (
                 <Button
-                  onClick={() => setShowCompletionForm(true)}
+                  onPress={() => setShowCompletionForm(true)}
                   variant="secondary"
-                  icon={CheckCircle2}
-                  width="100%"
+                  leftIcon={CheckCircle2}
+                  fullWidth
                 >
                   Complete Task
                 </Button>
               ) : (
-                <Card gap="$3" padding="$4" backgroundColor="$green2" borderWidth={1} borderColor="$green8" borderRadius="$4">
-                  <Textarea
-                    value={completionNote}
-                    onChange={(e) => setCompletionNote(e.target.value)}
-                    placeholder="Add completion notes (optional)"
-                    rows={3}
-                  />
-                  <XStack gap="$2">
-                    <Button
-                      onClick={handleComplete}
-                      variant="primary"
-                      flex={1}
-                    >
-                      Confirm Complete
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setShowCompletionForm(false);
-                        setCompletionNote('');
-                      }}
-                      variant="ghost"
-                      flex={1}
-                    >
-                      Cancel
-                    </Button>
-                  </XStack>
+                <Card style={{ padding: 16, backgroundColor: 'var(--color-green-2)', border: '1px solid var(--color-green-8)', borderRadius: 12 }}>
+                  <Stack gap={12}>
+                    <Textarea
+                      value={completionNote}
+                      onChange={(e) => setCompletionNote(e.target.value)}
+                      placeholder="Add completion notes (optional)"
+                      rows={3}
+                    />
+                    <Row gap={8}>
+                      <Button
+                        onPress={handleComplete}
+                        variant="primary"
+                        style={{ flex: 1 }}
+                      >
+                        Confirm Complete
+                      </Button>
+                      <Button
+                        onPress={() => {
+                          setShowCompletionForm(false);
+                          setCompletionNote('');
+                        }}
+                        variant="ghost"
+                        style={{ flex: 1 }}
+                      >
+                        Cancel
+                      </Button>
+                    </Row>
+                  </Stack>
                 </Card>
               )}
-            </YStack>
+            </Stack>
           </>
         )}
 
-        <YStack>
-          <XStack alignItems="center" gap="$2" mb="$2">
+        <Stack>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <MessageSquare size={16} />
-            <H3 fontSize="$3" fontWeight="500" color="$color12">
+            <H3 style={{ fontSize: 14, fontWeight: 500 }}>
               Comments
             </H3>
-          </XStack>
+          </Row>
 
-          <YStack gap="$3" mb="$3" maxHeight={160} overflowY="auto">
+          <Stack gap={12} style={{ marginBottom: 12, maxHeight: 160, overflowY: 'auto' }}>
             {task.metadata?.comments?.length > 0 ? (
-              task.metadata.comments.map((comment: unknown) => (
+              task.metadata.comments.map((comment: any) => (
                 <Card
                   key={comment.id}
-                  padding="$3"
-                  backgroundColor="$backgroundHover"
-                  borderRadius="$4"
+                  style={{
+                    padding: 12,
+                    backgroundColor: 'var(--color-gray-2)',
+                    borderRadius: 12,
+                  }}
                 >
-                  <XStack alignItems="center" justifyContent="space-between" mb="$1">
-                    <Text fontSize="$1" fontWeight="500" color="$color12">
+                  <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 4 }}>
+                    <Text size="xs" weight="medium">
                       {comment.author}
                     </Text>
-                    <Text fontSize="$1" color="$color10">
+                    <Text size="xs" muted>
                       {formatDate(comment.timestamp)}
                     </Text>
-                  </XStack>
-                  <Text fontSize="$3" color="$color11">{comment.text}</Text>
+                  </Row>
+                  <Text size="sm" muted>{comment.text}</Text>
                 </Card>
               ))
             ) : (
-              <Text fontSize="$3" color="$color10" fontStyle="italic">
+              <Text size="sm" muted style={{ fontStyle: 'italic' }}>
                 No comments yet
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <XStack gap="$2">
+          <Row gap={8}>
             <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -293,26 +304,26 @@ export default function TaskDetailModal({
               style={{ flex: 1 }}
             />
             <Button
-              onClick={handleAddComment}
+              onPress={handleAddComment}
               disabled={!comment.trim()}
-              size="$2"
+              size="sm"
             >
               Add
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
         {task.metadata?.completion_note && (
-          <Card padding="$4" backgroundColor="$green2" borderWidth={1} borderColor="$green8" borderRadius="$4">
-            <H3 fontSize="$3" fontWeight="500" color="$green10" mb="$2">
+          <Card style={{ padding: 16, backgroundColor: 'var(--color-green-2)', border: '1px solid var(--color-green-8)', borderRadius: 12 }}>
+            <H3 style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-green-10)', marginBottom: 8 }}>
               Completion Notes
             </H3>
-            <Text fontSize="$3" color="$color11">
+            <Text size="sm" muted>
               {task.metadata.completion_note}
             </Text>
           </Card>
         )}
-      </YStack>
+      </Stack>
     </Modal>
   );
 }

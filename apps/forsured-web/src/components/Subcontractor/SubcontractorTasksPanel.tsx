@@ -11,7 +11,7 @@ import {
   Mail,
   DollarSign,
 } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button, H1 } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, Button, H1 } from '@unicornlove/beyond-ui';
 import { Task, SeverityLevel, SubcontractorTaskMetadata } from '../../types';
 import { formatDate, isOverdue } from '../../utils/dateHelpers';
 import CommonButton from '../Common/Button';
@@ -57,6 +57,48 @@ const sortTasksBySeverity = (tasks: Task[]): Task[] => {
   });
 };
 
+const getSeverityColors = (severity: SeverityLevel): React.CSSProperties => {
+  switch (severity) {
+    case 'critical':
+      return {
+        color: 'var(--color-red10)',
+        backgroundColor: 'var(--color-red3)',
+        borderColor: 'var(--color-red6)',
+      };
+    case 'high':
+      return {
+        color: 'var(--color-orange10)',
+        backgroundColor: 'var(--color-orange3)',
+        borderColor: 'var(--color-orange6)',
+      };
+    case 'medium':
+      return {
+        color: 'var(--color-blue10)',
+        backgroundColor: 'var(--color-blue3)',
+        borderColor: 'var(--color-blue6)',
+      };
+    case 'low':
+      return {
+        color: 'var(--color-gray10)',
+        backgroundColor: 'var(--color-gray3)',
+        borderColor: 'var(--color-gray6)',
+      };
+  }
+};
+
+const getSeverityBadgeColors = (severity: SeverityLevel): React.CSSProperties => {
+  switch (severity) {
+    case 'critical':
+      return { backgroundColor: 'var(--color-red9)', color: 'white' };
+    case 'high':
+      return { backgroundColor: 'var(--color-orange9)', color: 'white' };
+    case 'medium':
+      return { backgroundColor: 'var(--color-blue9)', color: 'white' };
+    case 'low':
+      return { backgroundColor: 'var(--color-gray9)', color: 'white' };
+  }
+};
+
 export default function SubcontractorTasksPanel({
   tasks,
   onTaskClick,
@@ -82,48 +124,6 @@ export default function SubcontractorTasksPanel({
 
   const sortedTasks = sortTasksBySeverity(filteredTasks);
 
-  const getSeverityColors = (severity: SeverityLevel) => {
-    switch (severity) {
-      case 'critical':
-        return {
-          textColor: '$red10',
-          backgroundColor: '$red3',
-          borderColor: '$red6',
-        };
-      case 'high':
-        return {
-          textColor: '$orange10',
-          backgroundColor: '$orange3',
-          borderColor: '$orange6',
-        };
-      case 'medium':
-        return {
-          textColor: '$blue10',
-          backgroundColor: '$blue3',
-          borderColor: '$blue6',
-        };
-      case 'low':
-        return {
-          textColor: '$gray10',
-          backgroundColor: '$gray3',
-          borderColor: '$gray6',
-        };
-    }
-  };
-
-  const getSeverityBadgeColors = (severity: SeverityLevel) => {
-    switch (severity) {
-      case 'critical':
-        return { backgroundColor: '$red9', color: 'white' };
-      case 'high':
-        return { backgroundColor: '$orange9', color: 'white' };
-      case 'medium':
-        return { backgroundColor: '$blue9', color: 'white' };
-      case 'low':
-        return { backgroundColor: '$gray9', color: 'white' };
-    }
-  };
-
   const getTaskTypeLabel = (taskType: string | undefined) => {
     if (!taskType) return 'Task';
     const labels: Record<string, string> = {
@@ -145,13 +145,13 @@ export default function SubcontractorTasksPanel({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle color="$green10" size={16} />;
+        return <CheckCircle color="var(--color-green10)" size={16} />;
       case 'rejected':
-        return <XCircle color="$red10" size={16} />;
+        return <XCircle color="var(--color-red10)" size={16} />;
       case 'submitted':
-        return <Clock color="$blue10" size={16} />;
+        return <Clock color="var(--color-blue10)" size={16} />;
       default:
-        return <AlertCircle color="$orange10" size={16} />;
+        return <AlertCircle color="var(--color-orange10)" size={16} />;
     }
   };
 
@@ -194,58 +194,91 @@ export default function SubcontractorTasksPanel({
   };
 
   return (
-    <Card elevation={1} borderWidth={1} borderColor="$borderColor">
-      <YStack padding="$6" borderBottomWidth={1} borderBottomColor="$borderColor">
-        <XStack alignItems="center" justifyContent="space-between" mb="$4">
-          <YStack>
-            <H1 fontSize="$6" fontWeight="600" color="$color12">
+    <Card
+      elevation={1}
+      style={{
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: 'var(--color-border)',
+      }}
+    >
+      <Stack
+        style={{
+          padding: 24,
+          borderBottomWidth: 1,
+          borderBottomStyle: 'solid',
+          borderBottomColor: 'var(--color-border)',
+        }}
+      >
+        <Row
+          style={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 16,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Stack>
+            <H1 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray12)' }}>
               My Tasks
             </H1>
-            <Text fontSize="$2" color="$color11">Tasks assigned to you</Text>
-          </YStack>
-          <XStack alignItems="center" gap="$2">
+            <Text style={{ fontSize: 12, color: 'var(--color-gray11)' }}>Tasks assigned to you</Text>
+          </Stack>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
             <Button
               onPress={() => setFilter('all')}
-              paddingHorizontal="$3"
-              paddingVertical="$1"
-              fontSize="$1"
-              fontWeight="500"
-              borderRadius="$2"
-              backgroundColor={filter === 'all' ? '$blue9' : '$gray3'}
-              color={filter === 'all' ? 'white' : '$color11'}
+              style={{
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 4,
+                paddingBottom: 4,
+                fontSize: 12,
+                fontWeight: 500,
+                borderRadius: 4,
+                backgroundColor: filter === 'all' ? 'var(--color-blue9)' : 'var(--color-gray3)',
+                color: filter === 'all' ? 'white' : 'var(--color-gray11)',
+              }}
             >
               All
             </Button>
             <Button
               onPress={() => setFilter('broker')}
-              paddingHorizontal="$3"
-              paddingVertical="$1"
-              fontSize="$1"
-              fontWeight="500"
-              borderRadius="$2"
-              backgroundColor={filter === 'broker' ? '$blue9' : '$gray3'}
-              color={filter === 'broker' ? 'white' : '$color11'}
+              style={{
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 4,
+                paddingBottom: 4,
+                fontSize: 12,
+                fontWeight: 500,
+                borderRadius: 4,
+                backgroundColor: filter === 'broker' ? 'var(--color-blue9)' : 'var(--color-gray3)',
+                color: filter === 'broker' ? 'white' : 'var(--color-gray11)',
+              }}
             >
               From Broker
             </Button>
             <Button
               onPress={() => setFilter('manager')}
-              paddingHorizontal="$3"
-              paddingVertical="$1"
-              fontSize="$1"
-              fontWeight="500"
-              borderRadius="$2"
-              backgroundColor={filter === 'manager' ? '$blue9' : '$gray3'}
-              color={filter === 'manager' ? 'white' : '$color11'}
+              style={{
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 4,
+                paddingBottom: 4,
+                fontSize: 12,
+                fontWeight: 500,
+                borderRadius: 4,
+                backgroundColor: filter === 'manager' ? 'var(--color-blue9)' : 'var(--color-gray3)',
+                color: filter === 'manager' ? 'white' : 'var(--color-gray11)',
+              }}
             >
               From Manager
             </Button>
-          </XStack>
-        </XStack>
-      </YStack>
+          </Row>
+        </Row>
+      </Stack>
 
-      <YStack padding="$6">
-        <YStack gap="$4">
+      <Stack style={{ padding: 24 }}>
+        <Stack style={{ gap: 16 }}>
           {sortedTasks.map((task) => {
             const metadata = task.metadata as
               | SubcontractorTaskMetadata
@@ -257,194 +290,218 @@ export default function SubcontractorTasksPanel({
             return (
               <Card
                 key={task.id}
-                borderWidth={2}
-                borderRadius="$4"
-                padding="$4"
-                cursor="pointer"
                 elevation={0}
-                hoverStyle={{
-                  elevation: 2,
+                style={{
+                  borderWidth: 2,
+                  borderStyle: 'solid',
+                  borderRadius: 8,
+                  padding: 16,
+                  cursor: 'pointer',
+                  backgroundColor: severityColors.backgroundColor,
+                  borderColor: severityColors.borderColor,
                 }}
-                backgroundColor={severityColors.backgroundColor}
-                borderColor={severityColors.borderColor}
                 onPress={() => onTaskClick?.(task)}
               >
-                <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
-                  <YStack flex={1}>
-                    <XStack alignItems="center" gap="$2" mb="$2" flexWrap="wrap">
-                      <XStack
-                        display="inline-flex"
-                        alignItems="center"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
-                        backgroundColor={badgeColors.backgroundColor}
+                <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <Stack style={{ flex: 1 }}>
+                    <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 2,
+                          paddingBottom: 2,
+                          borderRadius: 4,
+                          ...badgeColors,
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="bold" textTransform="uppercase" color={badgeColors.color}>
+                        <Text style={{ fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase', color: badgeColors.color }}>
                           {severity}
                         </Text>
-                      </XStack>
-                      <XStack
-                        display="inline-flex"
-                        alignItems="center"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
-                        backgroundColor={task.origin_role === 'broker' ? '$gray9' : '$blue9'}
+                      </span>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 2,
+                          paddingBottom: 2,
+                          borderRadius: 4,
+                          backgroundColor: task.origin_role === 'broker' ? 'var(--color-gray9)' : 'var(--color-blue9)',
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color="white">
+                        <Text style={{ fontSize: 10, fontWeight: 500, color: 'white' }}>
                           {task.origin_role || 'manager'}
                         </Text>
-                      </XStack>
-                      <XStack
-                        display="inline-flex"
-                        alignItems="center"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
-                        backgroundColor="$gray3"
+                      </span>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 2,
+                          paddingBottom: 2,
+                          borderRadius: 4,
+                          backgroundColor: 'var(--color-gray3)',
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color="$color11">
+                        <Text style={{ fontSize: 10, fontWeight: 500, color: 'var(--color-gray11)' }}>
                           {getTaskTypeLabel(task.task_type)}
                         </Text>
-                      </XStack>
-                      <XStack alignItems="center" gap="$1">
+                      </span>
+                      <Row style={{ alignItems: 'center', gap: 4 }}>
                         {getStatusIcon(task.status)}
-                        <Text fontSize="$1" color="$color11">
+                        <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
                           {getStatusLabel(task.status)}
                         </Text>
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
 
-                    <Text fontSize="$2" fontWeight="600" color="$color12" mb="$1">
+                    <Text style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-gray12)', marginBottom: 4 }}>
                       {task.title}
                     </Text>
                     {task.description && (
-                      <Text fontSize="$2" color="$color11" mb="$2">
+                      <Text style={{ fontSize: 12, color: 'var(--color-gray11)', marginBottom: 8 }}>
                         {task.description}
                       </Text>
                     )}
 
                     {/* Project and GC Info */}
                     {(task.project_name || task.gc_company_name) && (
-                      <XStack alignItems="center" gap="$4" mb="$2">
+                      <Row style={{ alignItems: 'center', gap: 16, marginBottom: 8 }}>
                         {task.project_name && (
-                          <XStack alignItems="center">
-                            <Building size={12} mr="$1" />
-                            <Text fontSize="$1" color="$color11">
+                          <Row style={{ alignItems: 'center' }}>
+                            <Building size={12} style={{ marginRight: 4 }} />
+                            <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
                               {task.project_name}
                             </Text>
-                          </XStack>
+                          </Row>
                         )}
                         {task.gc_company_name && (
-                          <Text fontSize="$1" color="$color11">
+                          <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
                             {task.gc_company_name}
                           </Text>
                         )}
-                      </XStack>
+                      </Row>
                     )}
 
                     {/* Policy Number */}
                     {task.policy_number && (
-                      <Text fontSize="$1" color="$color11" mb="$2">
+                      <Text style={{ fontSize: 10, color: 'var(--color-gray11)', marginBottom: 8 }}>
                         Policy: {task.policy_number}
                       </Text>
                     )}
 
                     {/* Metadata Details */}
                     {metadata && (
-                      <YStack mt="$2" gap="$1">
+                      <Stack style={{ marginTop: 8, gap: 4 }}>
                         {metadata.missing_endorsement && (
-                          <Text fontSize="$1" color="$color11">
-                            <Text fontWeight="bold">Missing:</Text>{' '}
+                          <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
+                            <Text style={{ fontWeight: 'bold' }}>Missing:</Text>{' '}
                             {metadata.missing_endorsement}
                           </Text>
                         )}
                         {metadata.required_endorsement_form && (
-                          <Text fontSize="$1" color="$color11">
-                            <Text fontWeight="bold">Required Form:</Text>{' '}
+                          <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
+                            <Text style={{ fontWeight: 'bold' }}>Required Form:</Text>{' '}
                             {metadata.required_endorsement_form}
                           </Text>
                         )}
                         {metadata.current_limit && metadata.required_limit && (
-                          <Text fontSize="$1" color="$color11">
-                            <Text fontWeight="bold">Current:</Text> $
+                          <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
+                            <Text style={{ fontWeight: 'bold' }}>Current:</Text> $
                             {(metadata.current_limit / 1000000).toFixed(1)}M |{' '}
-                            <Text fontWeight="bold">Required:</Text> $
+                            <Text style={{ fontWeight: 'bold' }}>Required:</Text> $
                             {(metadata.required_limit / 1000000).toFixed(1)}M
                           </Text>
                         )}
                         {metadata.current_symbol &&
                           metadata.required_symbol && (
-                            <Text fontSize="$1" color="$color11">
-                              <Text fontWeight="bold">Current:</Text>{' '}
+                            <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
+                              <Text style={{ fontWeight: 'bold' }}>Current:</Text>{' '}
                               {metadata.current_symbol} |{' '}
-                              <Text fontWeight="bold">Required:</Text>{' '}
+                              <Text style={{ fontWeight: 'bold' }}>Required:</Text>{' '}
                               {metadata.required_symbol}
                             </Text>
                           )}
                         {metadata.rejection_reason && (
                           <Card
-                            backgroundColor="$red3"
-                            padding="$2"
-                            borderRadius="$2"
-                            mt="$2"
+                            style={{
+                              backgroundColor: 'var(--color-red3)',
+                              padding: 8,
+                              borderRadius: 4,
+                              marginTop: 8,
+                            }}
                           >
-                            <Text fontSize="$1" color="$red10">
-                              <Text fontWeight="bold">Rejection Reason:</Text>{' '}
+                            <Text style={{ fontSize: 10, color: 'var(--color-red10)' }}>
+                              <Text style={{ fontWeight: 'bold' }}>Rejection Reason:</Text>{' '}
                               {metadata.rejection_reason}
                             </Text>
                           </Card>
                         )}
-                      </YStack>
+                      </Stack>
                     )}
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
 
-                <XStack alignItems="center" justifyContent="space-between" mt="$3" paddingTop="$3" borderTopWidth={1} borderTopColor="$borderColor" opacity={0.5}>
-                  <XStack alignItems="center" gap="$4">
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: 12,
+                    paddingTop: 12,
+                    borderTopWidth: 1,
+                    borderTopStyle: 'solid',
+                    borderTopColor: 'var(--color-border)',
+                    opacity: 0.5,
+                  }}
+                >
+                  <Row style={{ alignItems: 'center', gap: 16 }}>
                     {task.created_by && (
-                      <XStack alignItems="center">
-                        <Building size={12} mr="$1" />
-                        <Text fontSize="$1" color="$color11">
+                      <Row style={{ alignItems: 'center' }}>
+                        <Building size={12} style={{ marginRight: 4 }} />
+                        <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
                           {task.created_by.name}
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
                     {task.due_date && (
-                      <XStack alignItems="center">
-                        <Clock size={12} mr="$1" />
+                      <Row style={{ alignItems: 'center' }}>
+                        <Clock size={12} style={{ marginRight: 4 }} />
                         {isOverdue(task.due_date) ? (
-                          <Text fontSize="$1" color="$red10" fontWeight="500">
+                          <Text style={{ fontSize: 10, color: 'var(--color-red10)', fontWeight: 500 }}>
                             Overdue!
                           </Text>
                         ) : (
-                          <Text fontSize="$1" color="$color11">
+                          <Text style={{ fontSize: 10, color: 'var(--color-gray11)' }}>
                             Due {formatDate(task.due_date)}
                           </Text>
                         )}
-                      </XStack>
+                      </Row>
                     )}
                     {task.document_link && (
-                      <XStack
-                        as="a"
-                        href={task.document_link}
+                      <a href={task.document_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        alignItems="center"
-                        color="$blue10"
-                        hoverStyle={{
-                          color: '$blue12',
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          color: 'var(--color-blue10)',
+                          textDecoration: 'none',
                         }}
-                        onPress={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <FileText size={12} mr="$1" />
-                        <Text fontSize="$1">View Doc</Text>
-                      </XStack>
+                        <FileText size={12} style={{ marginRight: 4 }} />
+                        <Text style={{ fontSize: 10 }}>View Doc</Text>
+                      </a>
                     )}
-                  </XStack>
+                  </Row>
 
-                  <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
                     {/* Quick Actions */}
                     {task.quick_actions && task.quick_actions.length > 0 && (
                       <>
@@ -452,42 +509,42 @@ export default function SubcontractorTasksPanel({
                           <CommonButton
                             size="sm"
                             variant="ghost"
-                            onClick={(e) =>
+                            onPress={(e) =>
                               handleQuickAction('upload_document', task, e)
                             }
                           >
-                            <XStack alignItems="center" gap="$1">
+                            <Row style={{ alignItems: 'center', gap: 4 }}>
                               <Upload size={14} />
-                              <Text fontSize="$1">Upload</Text>
-                            </XStack>
+                              <Text style={{ fontSize: 10 }}>Upload</Text>
+                            </Row>
                           </CommonButton>
                         )}
                         {task.quick_actions.includes('view_requirements') && (
                           <CommonButton
                             size="sm"
                             variant="ghost"
-                            onClick={(e) =>
+                            onPress={(e) =>
                               handleQuickAction('view_requirements', task, e)
                             }
                           >
-                            <XStack alignItems="center" gap="$1">
+                            <Row style={{ alignItems: 'center', gap: 4 }}>
                               <Eye size={14} />
-                              <Text fontSize="$1">Requirements</Text>
-                            </XStack>
+                              <Text style={{ fontSize: 10 }}>Requirements</Text>
+                            </Row>
                           </CommonButton>
                         )}
                         {task.quick_actions.includes('contact_broker') && (
                           <CommonButton
                             size="sm"
                             variant="ghost"
-                            onClick={(e) =>
+                            onPress={(e) =>
                               handleQuickAction('contact_broker', task, e)
                             }
                           >
-                            <XStack alignItems="center" gap="$1">
+                            <Row style={{ alignItems: 'center', gap: 4 }}>
                               <Mail size={14} />
-                              <Text fontSize="$1">Broker</Text>
-                            </XStack>
+                              <Text style={{ fontSize: 10 }}>Broker</Text>
+                            </Row>
                           </CommonButton>
                         )}
                         {(task.quick_actions.includes('request_quote') ||
@@ -495,18 +552,18 @@ export default function SubcontractorTasksPanel({
                           <CommonButton
                             size="sm"
                             variant="ghost"
-                            onClick={(e) =>
+                            onPress={(e) =>
                               handleQuickAction('request_quote', task, e)
                             }
                           >
-                            <XStack alignItems="center" gap="$1">
+                            <Row style={{ alignItems: 'center', gap: 4 }}>
                               <DollarSign size={14} />
-                              <Text fontSize="$1">
+                              <Text style={{ fontSize: 10 }}>
                                 {task.quick_actions.includes('view_quote')
                                   ? 'Quote'
                                   : 'Request Quote'}
                               </Text>
-                            </XStack>
+                            </Row>
                           </CommonButton>
                         )}
                       </>
@@ -517,36 +574,36 @@ export default function SubcontractorTasksPanel({
                       task.status === 'submitted') && (
                       <CommonButton
                         size="sm"
-                        onClick={(e) => {
+                        onPress={(e) => {
                           e.stopPropagation();
                           onCompleteTask?.(task.id);
                         }}
                       >
-                        <XStack alignItems="center" gap="$1">
+                        <Row style={{ alignItems: 'center', gap: 4 }}>
                           <CheckCircle size={14} />
-                          <Text fontSize="$1">Complete</Text>
-                        </XStack>
+                          <Text style={{ fontSize: 10 }}>Complete</Text>
+                        </Row>
                       </CommonButton>
                     )}
-                  </XStack>
-                </XStack>
+                  </Row>
+                </Row>
               </Card>
             );
           })}
-        </YStack>
+        </Stack>
 
         {sortedTasks.length === 0 && (
-          <YStack alignItems="center" paddingVertical="$12">
-            <CheckCircle color="$green10" size={48} mb="$3" />
-            <Text color="$color12" fontWeight="500" mb="$2">
+          <Stack style={{ alignItems: 'center', paddingTop: 48, paddingBottom: 48 }}>
+            <CheckCircle color="var(--color-green10)" size={48} style={{ marginBottom: 12 }} />
+            <Text style={{ color: 'var(--color-gray12)', fontWeight: 500, marginBottom: 8 }}>
               All caught up!
             </Text>
-            <Text color="$color11" fontSize="$2">
+            <Text style={{ color: 'var(--color-gray11)', fontSize: 12 }}>
               No pending tasks
             </Text>
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
   );
 }

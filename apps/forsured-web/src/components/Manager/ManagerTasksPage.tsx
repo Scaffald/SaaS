@@ -9,11 +9,28 @@ import {
   ChevronDown,
   X,
   Loader2,
+  Plus,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle } from '@unicornlove/ui';
-import Button from '../Common/Button';
+import {
+  Stack,
+  Row,
+  Text,
+  H1,
+  H2,
+  H3,
+  Card,
+  Button,
+  Input,
+  SearchSelect,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
+  FormField,
+  Chip,
+  Spinner,
+} from '@unicornlove/beyond-ui';
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
-// Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
@@ -356,53 +373,53 @@ export default function ManagerTasksPage() {
     taskStatuses,   // Added dependency
   ]);
 
-  const getPriorityColorProps = (priority: string) => {
+  const getPriorityColorProps = (priority: string): React.CSSProperties => {
     const priorityEnum = taskPriorities?.find(p => p.value === priority);
-    if (!priorityEnum) return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
+    if (!priorityEnum) return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
 
     switch (priorityEnum.value) {
       case 'urgent':
-        return { color: '$red10', backgroundColor: '$red2', borderColor: '$red8' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-8)' };
       case 'high':
-        return { color: '$orange10', backgroundColor: '$orange2', borderColor: '$orange8' };
+        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)', borderColor: 'var(--color-orange-8)' };
       case 'medium':
-        return { color: '$blue10', backgroundColor: '$blue2', borderColor: '$blue8' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-8)' };
       case 'low':
-        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
       default:
-        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
     }
   };
 
-  const getStatusColorProps = (status: string) => {
+  const getStatusColorProps = (status: string): React.CSSProperties => {
     const statusEnum = taskStatuses?.find(s => s.value === status);
-    if (!statusEnum) return { color: '$color11', backgroundColor: '$gray2' };
+    if (!statusEnum) return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' };
 
     switch (statusEnum.value) {
       case 'pending':
-        return { color: '$blue10', backgroundColor: '$blue2' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
       case 'in_progress':
-        return { color: '$blue10', backgroundColor: '$blue2' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
       case 'submitted':
-        return { color: '$blue9', backgroundColor: '$blue2' };
+        return { color: 'var(--color-blue-9)', backgroundColor: 'var(--color-blue-2)' };
       case 'in_review':
-        return { color: '$purple10', backgroundColor: '$purple2' };
+        return { color: 'var(--color-purple-10)', backgroundColor: 'var(--color-purple-2)' };
       case 'approved':
-        return { color: '$green10', backgroundColor: '$green2' };
+        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' };
       case 'rejected':
-        return { color: '$red10', backgroundColor: '$red2' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)' };
       case 'needs_info':
-        return { color: '$orange10', backgroundColor: '$orange2' };
+        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)' };
       case 'completed':
-        return { color: '$green10', backgroundColor: '$green2' };
+        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' };
       case 'cancelled':
-        return { color: '$color10', backgroundColor: '$gray2' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)' };
       default:
-        return { color: '$color11', backgroundColor: '$gray2' };
+        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' };
     }
   };
 
-  const formatDueDate = (dueAt: string) => {
+  const formatDueDate = (dueAt: string): { text: string; color: string } => {
     const date = new Date(dueAt);
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
@@ -411,14 +428,14 @@ export default function ManagerTasksPage() {
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)}d overdue`,
-        color: '$red10',
+        color: 'var(--color-red-10)',
       };
-    if (diffDays === 0) return { text: 'Due today', color: '$orange10' };
+    if (diffDays === 0) return { text: 'Due today', color: 'var(--color-orange-10)' };
     if (diffDays === 1)
-      return { text: 'Due tomorrow', color: '$orange10' };
+      return { text: 'Due tomorrow', color: 'var(--color-orange-10)' };
     if (diffDays <= 3)
-      return { text: `Due in ${diffDays}d`, color: '$orange10' };
-    return { text: date.toLocaleDateString(), color: '$color11' };
+      return { text: `Due in ${diffDays}d`, color: 'var(--color-orange-10)' };
+    return { text: date.toLocaleDateString(), color: 'var(--color-text-muted)' };
   };
 
   const toggle = (tag: string) => {
@@ -455,367 +472,234 @@ export default function ManagerTasksPage() {
   // Show loading state
   if (loading || loadingStatuses || loadingPriorities) {
     return (
-      <YStack alignItems="center" justifyContent="center" minHeight={400}>
-        <YStack alignItems="center" gap="$4">
-          <Spinner size="large" color="$blue10" />
-          <Text color="$color11">Loading tasks and filters...</Text>
-        </YStack>
-      </YStack>
+      <Stack align="center" justify="center" style={{ minHeight: 400 }}>
+        <Stack align="center" gap={16}>
+          <Loader2 size={32} color="var(--color-blue-10)" className="animate-spin" />
+          <Text color="secondary">Loading tasks and filters...</Text>
+        </Stack>
+      </Stack>
     );
   }
 
   // Show error state
   if (error) {
     return (
-      <YStack alignItems="center" justifyContent="center" minHeight={400}>
-        <YStack alignItems="center">
-          <YStack alignItems="center" mb="$4">
-            <AlertCircle color="$red10" size={48} />
-          </YStack>
-          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
+      <Stack align="center" justify="center" style={{ minHeight: 400 }}>
+        <Stack align="center">
+          <Stack align="center" style={{ marginBottom: 16 }}>
+            <AlertCircle color="var(--color-red-10)" size={48} />
+          </Stack>
+          <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
             Failed to load tasks
           </H3>
-          <Text color="$color11">{error.message}</Text>
-        </YStack>
-      </YStack>
+          <Text color="secondary">{error.message}</Text>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
+    <Stack gap={24}>
+      <Row align="center" justify="space-between">
+        <Stack>
+          <H1 style={{ fontSize: 32, fontWeight: 700 }}>
             Tasks
           </H1>
-          <Text color="$color11" fontSize="$6" mt="$1">
+          <Text color="secondary" style={{ fontSize: 18, marginTop: 4 }}>
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
-        </YStack>
+        </Stack>
         <Button
-          variant="primary"
+          color="primary"
+          iconStart={Plus}
           onPress={() => setShowCreateTask(true)}
         >
           Create Task
         </Button>
-      </XStack>
+      </Row>
 
-      <XStack alignItems="center" gap="$4" fontSize="$3">
-        <XStack alignItems="center" gap="$2">
-          <Circle size={12} backgroundColor="$blue10" />
-          <Text fontWeight="600" color="$color12">
+      <Row align="center" gap={16} style={{ fontSize: 12 }}>
+        <Row align="center" gap={8}>
+          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-blue-10)' }} />
+          <Text weight="semibold">
             {statusCounts.pending}
           </Text>
-          <Text color="$color11">Pending</Text>
-        </XStack>
-        <YStack height={16} width={1} backgroundColor="$borderColor" />
-        <XStack alignItems="center" gap="$2">
-          <Circle size={12} backgroundColor="$blue10" />
-          <Text fontWeight="600" color="$color12">
+          <Text color="secondary">Pending</Text>
+        </Row>
+        <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
+        <Row align="center" gap={8}>
+          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-blue-10)' }} />
+          <Text weight="semibold">
             {statusCounts.in_progress}
           </Text>
-          <Text color="$color11">In Progress</Text>
-        </XStack>
-        <YStack height={16} width={1} backgroundColor="$borderColor" />
-        <XStack alignItems="center" gap="$2">
-          <Circle size={12} backgroundColor="$red10" />
-          <Text fontWeight="600" color="$color12">
+          <Text color="secondary">In Progress</Text>
+        </Row>
+        <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
+        <Row align="center" gap={8}>
+          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-red-10)' }} />
+          <Text weight="semibold">
             {statusCounts.needs_attention}
           </Text>
-          <Text color="$color11">Needs Attention</Text>
-        </XStack>
-        <YStack height={16} width={1} backgroundColor="$borderColor" />
-        <XStack alignItems="center" gap="$2">
-          <Circle size={12} backgroundColor="$green10" />
-          <Text fontWeight="600" color="$color12">
+          <Text color="secondary">Needs Attention</Text>
+        </Row>
+        <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
+        <Row align="center" gap={8}>
+          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-green-10)' }} />
+          <Text weight="semibold">
             {statusCounts.completed}
           </Text>
-          <Text color="$color11">Completed</Text>
-        </XStack>
-      </XStack>
+          <Text color="secondary">Completed</Text>
+        </Row>
+      </Row>
 
-      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$4" elevation={1} gap="$4">
-        <XStack alignItems="center" gap="$3">
-          <YStack flex={1} position="relative">
-            <YStack position="absolute" left="$3" top="50%" transform="translateY(-50%)" zIndex={1}>
-              <Search
-                color="$color10"
-                size={20}
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 16, border: '1px solid var(--color-border)', padding: 16 }}>
+        <Stack gap={16}>
+          <Row align="center" gap={12}>
+            <Stack style={{ flex: 1 }}>
+              <Input
+                placeholder="Search tasks by title, description, or tags..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                iconStart={Search}
+                testID="task-search-input"
+                accessibilityLabel="Search tasks"
               />
-            </YStack>
-            <input
-              type="text"
-              placeholder="Search tasks by title, description, or tags..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                paddingLeft: '40px',
-                paddingRight: '16px',
-                paddingTop: '10px',
-                paddingBottom: '10px',
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: 'var(--color12)',
-                fontFamily: 'inherit',
-              }}
-            />
-          </YStack>
-          <XStack
-            onPress={() => setShowFilters(!showFilters)}
-            alignItems="center"
-            gap="$2"
-            paddingHorizontal="$4"
-            paddingVertical="$2.5"
-            borderWidth={1}
-            borderRadius="$4"
-            fontSize="$3"
-            fontWeight="500"
-            backgroundColor={showFilters ? '$blue2' : '$background'}
-            borderColor={showFilters ? '$blue10' : '$borderColor'}
-            color={showFilters ? '$blue10' : '$color11'}
-            hoverStyle={{ backgroundColor: '$backgroundHover' }}
-            cursor="pointer"
-          >
-            <Filter size={18} />
-            <Text fontSize="$3" fontWeight="500" color={showFilters ? '$blue10' : '$color11'}>
-              Filters
-            </Text>
-            {activeFilterCount > 0 && (
-              <Text
-                ml="$1"
-                paddingHorizontal="$2"
-                paddingVertical="$0.5"
-                backgroundColor="$blue10"
-                color="white"
-                fontSize="$1"
-                borderRadius={9999}
-              >
-                {activeFilterCount}
-              </Text>
-            )}
-          </XStack>
-        </XStack>
+            </Stack>
+            <Button
+              variant={showFilters ? 'filled' : 'outline'}
+              color={showFilters ? 'primary' : 'gray'}
+              iconStart={Filter}
+              onPress={() => setShowFilters(!showFilters)}
+              accessibilityLabel={showFilters ? 'Hide filters' : 'Show filters'}
+              testID="toggle-filters-btn"
+            >
+              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            </Button>
+          </Row>
 
-        {showFilters && (
-          <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" gap="$4">
-            <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
-              <YStack flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
-                <Text
-                  as="label"
-                  display="block"
-                  fontSize="$1"
-                  fontWeight="500"
-                  color="$color11"
-                  mb="$2"
-                >
-                  Status
+          {showFilters && (
+            <Stack style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }} gap={16}>
+              <Row style={{ flexWrap: 'wrap' }} gap={16}>
+                <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
+                  <SearchSelect
+                    label="Status"
+                    options={[
+                      { value: 'ALL', label: 'All Statuses' },
+                      ...(taskStatuses?.map(s => ({ value: s.value, label: s.display_name })) || [])
+                    ]}
+                    value={selectedStatus}
+                    onChange={(value) => setSelectedStatus(value as string)}
+                    searchable={false}
+                    clearable={false}
+                    testID="status-filter-select"
+                  />
+                </Stack>
+
+                <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
+                  <SearchSelect
+                    label="Priority"
+                    options={[
+                      { value: 'ALL', label: 'All Priorities' },
+                      ...(taskPriorities?.map(p => ({ value: p.value, label: p.display_name })) || [])
+                    ]}
+                    value={selectedPriority}
+                    onChange={(value) => setSelectedPriority(value as string)}
+                    searchable={false}
+                    clearable={false}
+                    testID="priority-filter-select"
+                  />
+                </Stack>
+
+                <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
+                  <SearchSelect
+                    label="Project"
+                    options={[
+                      { value: 'ALL', label: 'All Projects' },
+                      ...allProjects.map(p => ({ value: p, label: p }))
+                    ]}
+                    value={selectedProject}
+                    onChange={(value) => setSelectedProject(value as string)}
+                    searchable={allProjects.length > 5}
+                    clearable={false}
+                    testID="project-filter-select"
+                  />
+                </Stack>
+              </Row>
+
+              <Stack>
+                <Text size="xs" weight="medium" color="secondary" style={{ marginBottom: 8 }}>
+                  Tags
                 </Text>
-                <select
-                  value={selectedStatus}
-                  onChange={(e) =>
-                    setSelectedStatus(e.target.value as string)
-                  }
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: 'var(--background)',
-                    border: '1px solid var(--borderColor)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--color12)',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <option value="ALL">All Statuses</option>
-                  {taskStatuses?.map((status) => (
-                    <option key={status.value} value={status.value}>
-                      {status.display_name}
-                    </option>
-                  ))}
-                </select>
-              </YStack>
-
-              <YStack flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
-                <Text
-                  as="label"
-                  display="block"
-                  fontSize="$1"
-                  fontWeight="500"
-                  color="$color11"
-                  mb="$2"
-                >
-                  Priority
-                </Text>
-                <select
-                  value={selectedPriority}
-                  onChange={(e) =>
-                    setSelectedPriority(e.target.value as string)
-                  }
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: 'var(--background)',
-                    border: '1px solid var(--borderColor)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--color12)',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <option value="ALL">All Priorities</option>
-                  {taskPriorities?.map((priority) => (
-                    <option key={priority.value} value={priority.value}>
-                      {priority.display_name}
-                    </option>
-                  ))}
-                </select>
-              </YStack>
-
-              <YStack flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
-                <Text
-                  as="label"
-                  display="block"
-                  fontSize="$1"
-                  fontWeight="500"
-                  color="$color11"
-                  mb="$2"
-                >
-                  Project
-                </Text>
-                <select
-                  value={selectedProject}
-                  onChange={(e) => setSelectedProject(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: 'var(--background)',
-                    border: '1px solid var(--borderColor)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--color12)',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <option value="ALL">All Projects</option>
-                  {allProjects.map((project) => (
-                    <option key={project} value={project}>
-                      {project}
-                    </option>
-                  ))}
-                </select>
-              </YStack>
-            </XStack>
-
-            <YStack>
-              <Text
-                as="label"
-                display="block"
-                fontSize="$1"
-                fontWeight="500"
-                color="$color11"
-                mb="$2"
-              >
-                Tags
-              </Text>
-              <XStack flexWrap="wrap" gap="$2">
-                {alls.map((tag) => (
-                  <XStack
-                    key={tag}
-                    onPress={() => toggle(tag)}
-                    paddingHorizontal="$3"
-                    paddingVertical="$1.5"
-                    fontSize="$1"
-                    fontWeight="500"
-                    borderRadius={9999}
-                    borderWidth={1}
-                    backgroundColor={selecteds.includes(tag) ? '$blue10' : '$background'}
-                    borderColor={selecteds.includes(tag) ? '$blue10' : '$borderColor'}
-                    color={selecteds.includes(tag) ? 'white' : '$color11'}
-                    hoverStyle={{ backgroundColor: selecteds.includes(tag) ? '$blue11' : '$backgroundHover' }}
-                    cursor="pointer"
-                  >
-                    <Text fontSize="$1" fontWeight="500" color={selecteds.includes(tag) ? 'white' : '$color11'}>
+                <Row style={{ flexWrap: 'wrap' }} gap={8}>
+                  {alls.map((tag) => (
+                    <Chip
+                      key={tag}
+                      type={selecteds.includes(tag) ? 'filled' : 'outline'}
+                      onPress={() => toggle(tag)}
+                      testID={`tag-filter-${tag}`}
+                    >
                       {tag}
-                    </Text>
-                  </XStack>
-                ))}
-              </XStack>
-            </YStack>
+                    </Chip>
+                  ))}
+                </Row>
+              </Stack>
 
-            {activeFilterCount > 0 && (
-              <XStack
-                onPress={clearFilters}
-                alignItems="center"
-                gap="$2"
-                fontSize="$3"
-                color="$color11"
-                hoverStyle={{ color: '$color12' }}
-                cursor="pointer"
-              >
-                <X size={16} />
-                <Text fontSize="$3" color="$color11">Clear all filters</Text>
-              </XStack>
-            )}
-          </YStack>
-        )}
+              {activeFilterCount > 0 && (
+                <Button
+                  variant="ghost"
+                  color="gray"
+                  size="sm"
+                  iconStart={X}
+                  onPress={clearFilters}
+                  testID="clear-filters-btn"
+                >
+                  Clear all filters
+                </Button>
+              )}
+            </Stack>
+          )}
 
-        <XStack alignItems="center" justifyContent="space-between" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-          <Text fontSize="$3" color="$color11">
-            Showing{' '}
-            <Text fontWeight="600" color="$color12">
-              {filteredAndSortedTasks.length}
-            </Text>{' '}
-            of {tasks.length} tasks
-          </Text>
-          <XStack alignItems="center" gap="$3">
-            <Text fontSize="$1" color="$color11">Sort by:</Text>
-            <select
-              value={sortBy}
-              onChange={(e) =>
-                setSortBy(e.target.value as 'due_date' | 'priority' | 'status')
-              }
-              style={{
-                padding: '6px 12px',
-                backgroundColor: 'var(--background)',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '4px',
-                fontSize: '14px',
-                color: 'var(--color12)',
-                fontFamily: 'inherit',
-              }}
-            >
-              <option value="due_date">Due Date</option>
-              <option value="priority">Priority</option>
-              <option value="status">Status</option>
-            </select>
-            <XStack
-              onPress={() =>
-                setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
-              }
-              padding="$1.5"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$2"
-              hoverStyle={{ backgroundColor: '$backgroundHover' }}
-              cursor="pointer"
-            >
-              <ChevronDown
-                size={16}
-                color="$color11"
+          <Row align="center" justify="space-between" style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+            <Text size="sm" color="secondary">
+              Showing{' '}
+              <Text weight="semibold">
+                {filteredAndSortedTasks.length}
+              </Text>{' '}
+              of {tasks.length} tasks
+            </Text>
+            <Row align="center" gap={12}>
+              <Text size="xs" color="secondary">Sort by:</Text>
+              <SearchSelect
+                options={[
+                  { value: 'due_date', label: 'Due Date' },
+                  { value: 'priority', label: 'Priority' },
+                  { value: 'status', label: 'Status' },
+                ]}
+                value={sortBy}
+                onChange={(value) => setSortBy(value as 'due_date' | 'priority' | 'status')}
+                searchable={false}
+                clearable={false}
+                size="sm"
+                testID="sort-by-select"
+              />
+              <Button
+                variant="outline"
+                color="gray"
+                size="sm"
+                iconStart={ChevronDown}
+                onPress={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                accessibilityLabel={sortOrder === 'asc' ? 'Sort descending' : 'Sort ascending'}
+                testID="sort-order-btn"
                 style={{
-                  transform: sortOrder === 'desc' ? 'rotate(180deg)' : 'none',
-                  transition: 'transform 0.2s',
+                  transform: [{ rotate: sortOrder === 'desc' ? '180deg' : '0deg' }],
                 }}
               />
-            </XStack>
-          </XStack>
-        </XStack>
+            </Row>
+          </Row>
+        </Stack>
       </Card>
 
-      <YStack gap="$3">
+      <Stack gap={12}>
         {filteredAndSortedTasks.map((task) => {
           const dueDate = formatDueDate(task.due_date);
           const taskTags = task.metadata?.tags || [];
@@ -835,130 +719,145 @@ export default function ManagerTasksPage() {
           return (
             <Card
               key={task.id}
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              hoverStyle={{ borderColor: '$blue8' }}
-              cursor="pointer"
               onPress={() => setSelectedTask(task)}
-              elevation={1}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderRadius: 16,
+                border: '1px solid var(--color-border)',
+                cursor: 'pointer',
+              }}
             >
-              <YStack padding="$5">
-                <XStack alignItems="flex-start" justifyContent="space-between" mb="$3">
-                  <YStack flex={1}>
-                    <XStack alignItems="center" gap="$3" mb="$2">
-                      <H3 fontSize="$5" fontWeight="600" color="$color12">
-                        {task.title}
-                      </H3>
-                      <Text
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        fontSize="$1"
-                        fontWeight="500"
-                        borderRadius="$2"
-                        borderWidth={1}
-                        {...getPriorityColorProps(task.priority)}
-                      >
-                        {formatLabel(task.priority)}
-                      </Text>
-                      <Text
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        fontSize="$1"
-                        fontWeight="500"
-                        borderRadius="$2"
-                        {...getStatusColorProps(task.status)}
-                      >
-                        {formatLabel(task.status)}
-                      </Text>
-                    </XStack>
-                    <Text fontSize="$3" color="$color11" mb="$3">
-                      {task.description}
-                    </Text>
-                    <XStack alignItems="center" gap="$4" fontSize="$1" color="$color10">
-                      <XStack alignItems="center" gap="$1">
-                        <Calendar size={14} />
-                        <Text fontSize="$1" color={dueDate.color}>
-                          {dueDate.text}
-                        </Text>
-                      </XStack>
-                      <Text fontSize="$1" color="$color10">•</Text>
-                      <Text fontSize="$1" color="$color10">{projectName}</Text>
-                      {taskBlockers.length > 0 && (
-                        <>
-                          <Text fontSize="$1" color="$color10">•</Text>
-                          <XStack alignItems="center" gap="$1" fontSize="$1" color="$red10">
-                            <AlertCircle size={14} />
-                            <Text fontSize="$1" color="$red10">
-                              {taskBlockers.length} blocker
-                              {taskBlockers.length > 1 ? 's' : ''}
-                            </Text>
-                          </XStack>
-                        </>
-                      )}
-                    </XStack>
-                  </YStack>
-                </XStack>
+              <Stack style={{ padding: 20 }} gap={12}>
+                {/* Title row with badges */}
+                <Row align="center" gap={12} wrap={false}>
+                  <H3 style={{ fontSize: 16, fontWeight: 600, flex: 1 }}>
+                    {task.title}
+                  </H3>
+                  <Row align="center" gap={8} style={{ flexShrink: 0 }}>
+                    <span
+                      style={{
+                        paddingLeft: 8,
+                        paddingRight: 8,
+                        paddingTop: 2,
+                        paddingBottom: 2,
+                        fontSize: 11,
+                        fontWeight: 500,
+                        borderRadius: 6,
+                        border: '1px solid',
+                        whiteSpace: 'nowrap',
+                        ...getPriorityColorProps(task.priority),
+                      }}
+                    >
+                      {formatLabel(task.priority)}
+                    </span>
+                    <span
+                      style={{
+                        paddingLeft: 8,
+                        paddingRight: 8,
+                        paddingTop: 2,
+                        paddingBottom: 2,
+                        fontSize: 11,
+                        fontWeight: 500,
+                        borderRadius: 6,
+                        whiteSpace: 'nowrap',
+                        ...getStatusColorProps(task.status),
+                      }}
+                    >
+                      {formatLabel(task.status)}
+                    </span>
+                  </Row>
+                </Row>
 
-                <XStack alignItems="center" justifyContent="space-between">
-                  <XStack flexWrap="wrap" gap="$1.5">
+                {/* Description */}
+                <Text size="sm" color="secondary">
+                  {task.description}
+                </Text>
+
+                {/* Metadata row */}
+                <Row align="center" gap={16}>
+                  <Row align="center" gap={4}>
+                    <Calendar size={14} color="var(--color-text-muted)" />
+                    <Text size="xs" style={{ color: dueDate.color }}>
+                      {dueDate.text}
+                    </Text>
+                  </Row>
+                  <Text size="xs" color="secondary">·</Text>
+                  <Text size="xs" color="secondary">{projectName}</Text>
+                  {taskBlockers.length > 0 && (
+                    <>
+                      <Text size="xs" color="secondary">·</Text>
+                      <Row align="center" gap={4}>
+                        <AlertCircle size={14} color="var(--color-red-10)" />
+                        <Text size="xs" style={{ color: 'var(--color-red-10)' }}>
+                          {taskBlockers.length} blocker{taskBlockers.length > 1 ? 's' : ''}
+                        </Text>
+                      </Row>
+                    </>
+                  )}
+                </Row>
+
+                {/* Tags and quick actions row */}
+                <Row align="center" justify="space-between">
+                  <Row style={{ flexWrap: 'wrap' }} gap={6}>
                     {taskTags.map((tag) => (
-                      <Text
+                      <span
                         key={tag}
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        backgroundColor="$backgroundHover"
-                        color="$color10"
-                        fontSize="$1"
-                        borderRadius="$2"
-                        borderWidth={1}
-                        borderColor="$borderColor"
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          backgroundColor: 'var(--color-gray-2)',
+                          color: 'var(--color-text-muted)',
+                          fontSize: 10,
+                          borderRadius: 8,
+                          border: '1px solid var(--color-border)',
+                        }}
                       >
                         {tag}
-                      </Text>
+                      </span>
                     ))}
-                  </XStack>
-                  <XStack alignItems="center" gap="$2">
+                  </Row>
+                  <Row align="center" gap={8}>
                     {taskQuickActions.slice(0, 3).map((action) => (
-                      <XStack
+                      <div
                         key={action}
-                        onPress={(e) => {
+                        onClick={(e) => {
                           e.stopPropagation();
                         }}
-                        paddingHorizontal="$3"
-                        paddingVertical="$1.5"
-                        fontSize="$1"
-                        fontWeight="500"
-                        color="$blue10"
-                        borderWidth={1}
-                        borderColor="$blue10"
-                        borderRadius="$2"
-                        hoverStyle={{ backgroundColor: '$blue2' }}
-                        cursor="pointer"
+                        style={{
+                          paddingLeft: 12,
+                          paddingRight: 12,
+                          paddingTop: 6,
+                          paddingBottom: 6,
+                          fontSize: 10,
+                          fontWeight: 500,
+                          color: 'var(--color-blue-10)',
+                          border: '1px solid var(--color-blue-10)',
+                          borderRadius: 8,
+                          cursor: 'pointer',
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color="$blue10">
-                          {action.replace('_', ' ')}
-                        </Text>
-                      </XStack>
+                        {action.replace('_', ' ')}
+                      </div>
                     ))}
-                  </XStack>
-                </XStack>
-              </YStack>
+                  </Row>
+                </Row>
+              </Stack>
             </Card>
           );
         })}
-      </YStack>
+      </Stack>
 
       {filteredAndSortedTasks.length === 0 && (
-        <Card alignItems="center" paddingVertical="$16" backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
-          <YStack alignItems="center" mb="$4">
-            <CheckCircle color="$color10" size={64} />
-          </YStack>
-          <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
+        <Card style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 64, paddingBottom: 64, backgroundColor: 'var(--color-background)', borderRadius: 16, border: '1px solid var(--color-border)' }}>
+          <Stack align="center" style={{ marginBottom: 16 }}>
+            <CheckCircle color="var(--color-text-muted)" size={64} />
+          </Stack>
+          <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
             No tasks found
           </H3>
-          <Text color="$color11">
+          <Text color="secondary">
             Try adjusting your filters or search criteria
           </Text>
         </Card>
@@ -996,244 +895,132 @@ export default function ManagerTasksPage() {
         }}
       />
 
-      {/* Simple overlay modal - avoiding ResponsiveModal freeze issue */}
-      {showCreateTask && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-          onClick={handleCloseCreateTask}
-        >
-          <Card
-            backgroundColor="$background"
-            padding="$6"
-            borderRadius="$4"
-            width={560}
-            maxHeight="90vh"
-            overflow="auto"
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            data-testid="task-modal"
-          >
-            <YStack gap="$5">
-              <XStack alignItems="center" justifyContent="space-between">
-                <H2 fontSize="$6" fontWeight="600" color="$color12">
-                  Create New Task
-                </H2>
-                <XStack
-                  onPress={handleCloseCreateTask}
-                  padding="$2"
-                  borderRadius="$2"
-                  hoverStyle={{ backgroundColor: '$backgroundHover' }}
-                  cursor="pointer"
+      {/* Create Task Modal */}
+      <Modal
+        visible={showCreateTask}
+        onClose={handleCloseCreateTask}
+        width={560}
+        testID="create-task-modal"
+      >
+        <ModalHeader
+          title="Create New Task"
+          onClose={handleCloseCreateTask}
+        />
+        <ModalContent>
+          <Stack gap={20}>
+            {/* Title Field */}
+            <Input
+              label="Title"
+              required
+              placeholder="Enter task title..."
+              value={newTaskForm.title}
+              onChangeText={(text) => handleFormChange('title', text)}
+              error={formErrors.title}
+              testID="task-title-input"
+            />
+
+            {/* Description Field */}
+            <Input
+              label="Description"
+              placeholder="Enter task description (optional)..."
+              value={newTaskForm.description}
+              onChangeText={(text) => handleFormChange('description', text)}
+              multiline
+              numberOfLines={3}
+              testID="task-description-input"
+            />
+
+            {/* Project and Subcontractor Row */}
+            <Row gap={16}>
+              <Stack style={{ flex: 1 }}>
+                <SearchSelect
+                  label="Project"
+                  options={[
+                    { value: '', label: 'Select a project...' },
+                    ...projects.map(p => ({ value: p.id, label: p.name }))
+                  ]}
+                  value={newTaskForm.project_id}
+                  onChange={(value) => handleFormChange('project_id', value as string)}
+                  error={!!formErrors.project_id}
+                  errorMessage={formErrors.project_id}
+                  searchable={projects.length > 5}
+                  clearable={false}
+                  testID="task-project-select"
+                />
+              </Stack>
+
+              <Stack style={{ flex: 1 }}>
+                <SearchSelect
+                  label="Subcontractor"
+                  options={[
+                    { value: '', label: 'None (optional)' },
+                    ...subcontractors.map(s => ({ value: s.id, label: s.name }))
+                  ]}
+                  value={newTaskForm.subcontractor_id}
+                  onChange={(value) => handleFormChange('subcontractor_id', value as string)}
+                  searchable={subcontractors.length > 5}
+                  clearable={false}
+                  testID="task-subcontractor-select"
+                />
+              </Stack>
+            </Row>
+
+            {/* Priority and Due Date Row */}
+            <Row gap={16}>
+              <Stack style={{ flex: 1 }}>
+                <SearchSelect
+                  label="Priority"
+                  options={taskPriorities?.map(p => ({ value: p.value, label: p.display_name })) || []}
+                  value={newTaskForm.priority}
+                  onChange={(value) => handleFormChange('priority', value as string)}
+                  searchable={false}
+                  clearable={false}
+                  testID="task-priority-select"
+                />
+              </Stack>
+
+              <Stack style={{ flex: 1 }}>
+                <FormField
+                  label="Due Date"
+                  required
+                  error={formErrors.due_date}
                 >
-                  <X size={20} color="var(--color11)" />
-                </XStack>
-              </XStack>
-
-              {/* Title Field */}
-              <YStack gap="$2">
-                <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
-                  Title <Text color="$red10">*</Text>
-                </Text>
-                <input
-                  type="text"
-                  placeholder="Enter task title..."
-                  value={newTaskForm.title}
-                  onChange={(e) => handleFormChange('title', e.target.value)}
-                  data-testid="task-title-input"
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'var(--background)',
-                    border: formErrors.title ? '1px solid var(--red8)' : '1px solid var(--borderColor)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--color12)',
-                    fontFamily: 'inherit',
-                  }}
-                />
-                {formErrors.title && (
-                  <Text fontSize="$1" color="$red10">{formErrors.title}</Text>
-                )}
-              </YStack>
-
-              {/* Description Field */}
-              <YStack gap="$2">
-                <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
-                  Description
-                </Text>
-                <textarea
-                  placeholder="Enter task description (optional)..."
-                  value={newTaskForm.description}
-                  onChange={(e) => handleFormChange('description', e.target.value)}
-                  data-testid="task-description-input"
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'var(--background)',
-                    border: '1px solid var(--borderColor)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--color12)',
-                    fontFamily: 'inherit',
-                    resize: 'vertical',
-                  }}
-                />
-              </YStack>
-
-              {/* Project and Subcontractor Row */}
-              <XStack gap="$4">
-                <YStack gap="$2" flex={1}>
-                  <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
-                    Project <Text color="$red10">*</Text>
-                  </Text>
-                  <select
-                    value={newTaskForm.project_id}
-                    onChange={(e) => handleFormChange('project_id', e.target.value)}
-                    data-testid="task-project-select"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--background)',
-                      border: formErrors.project_id ? '1px solid var(--red8)' : '1px solid var(--borderColor)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color12)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <option value="">Select a project...</option>
-                    {projects.map((project) => (
-                      <option key={project.id} value={project.id}>
-                        {project.name}
-                      </option>
-                    ))}
-                  </select>
-                  {formErrors.project_id && (
-                    <Text fontSize="$1" color="$red10">{formErrors.project_id}</Text>
-                  )}
-                </YStack>
-
-                <YStack gap="$2" flex={1}>
-                  <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
-                    Subcontractor
-                  </Text>
-                  <select
-                    value={newTaskForm.subcontractor_id}
-                    onChange={(e) => handleFormChange('subcontractor_id', e.target.value)}
-                    data-testid="task-subcontractor-select"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--background)',
-                      border: '1px solid var(--borderColor)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color12)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <option value="">None (optional)</option>
-                    {subcontractors.map((sub) => (
-                      <option key={sub.id} value={sub.id}>
-                        {sub.name}
-                      </option>
-                    ))}
-                  </select>
-                </YStack>
-              </XStack>
-
-              {/* Priority and Due Date Row */}
-              <XStack gap="$4">
-                <YStack gap="$2" flex={1}>
-                  <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
-                    Priority
-                  </Text>
-                  <select
-                    value={newTaskForm.priority}
-                    onChange={(e) => handleFormChange('priority', e.target.value)}
-                    data-testid="task-priority-select"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--background)',
-                      border: '1px solid var(--borderColor)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color12)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    {taskPriorities?.map((priority) => (
-                      <option key={priority.value} value={priority.value}>
-                        {priority.display_name}
-                      </option>
-                    ))}
-                  </select>
-                </YStack>
-
-                <YStack gap="$2" flex={1}>
-                  <Text as="label" fontSize="$2" fontWeight="500" color="$color11">
-                    Due Date <Text color="$red10">*</Text>
-                  </Text>
                   <input
                     type="date"
                     value={newTaskForm.due_date}
                     onChange={(e) => handleFormChange('due_date', e.target.value)}
                     data-testid="task-due-date-input"
+                    aria-label="Due Date"
                     style={{
                       width: '100%',
                       padding: '10px 12px',
-                      backgroundColor: 'var(--background)',
-                      border: formErrors.due_date ? '1px solid var(--red8)' : '1px solid var(--borderColor)',
+                      backgroundColor: 'var(--color-background)',
+                      border: formErrors.due_date ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
                       borderRadius: '8px',
                       fontSize: '14px',
-                      color: 'var(--color12)',
+                      color: 'var(--color-text)',
                       fontFamily: 'inherit',
                     }}
                   />
-                  {formErrors.due_date && (
-                    <Text fontSize="$1" color="$red10">{formErrors.due_date}</Text>
-                  )}
-                </YStack>
-              </XStack>
-
-              {/* Action Buttons */}
-              <XStack gap="$3" justifyContent="flex-end" marginTop="$2">
-                <Button
-                  variant="outlined"
-                  onPress={handleCloseCreateTask}
-                  disabled={isCreatingTask}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onPress={handleCreateTask}
-                  disabled={isCreatingTask}
-                  data-testid="submit-create-task-btn"
-                >
-                  {isCreatingTask ? (
-                    <XStack alignItems="center" gap="$2">
-                      <Loader2 size={16} className="animate-spin" />
-                      <Text>Creating...</Text>
-                    </XStack>
-                  ) : (
-                    'Create Task'
-                  )}
-                </Button>
-              </XStack>
-            </YStack>
-          </Card>
-        </div>
-      )}
-    </YStack>
+                </FormField>
+              </Stack>
+            </Row>
+          </Stack>
+        </ModalContent>
+        <ModalActions
+          primaryAction={{
+            label: isCreatingTask ? 'Creating...' : 'Create Task',
+            onPress: handleCreateTask,
+            disabled: isCreatingTask,
+            loading: isCreatingTask,
+          }}
+          secondaryAction={{
+            label: 'Cancel',
+            onPress: handleCloseCreateTask,
+            disabled: isCreatingTask,
+          }}
+        />
+      </Modal>
+    </Stack>
   );
 }

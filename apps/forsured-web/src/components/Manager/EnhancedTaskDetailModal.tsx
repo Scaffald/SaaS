@@ -9,7 +9,7 @@ import {
   CheckCircle,
   MessageSquare,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card, Circle } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
 import Button from '../Common/Button';
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import { useDatabase } from '../../contexts/DatabaseContext';
@@ -93,14 +93,16 @@ const ModalOverlay = ({
     onClick={onClose}
   >
     <Card
-      backgroundColor="$background"
-      padding="$6"
-      borderRadius="$4"
-      width={width}
-      maxWidth="95vw"
-      maxHeight="90vh"
-      overflow="scroll"
-      onClick={(e: React.MouseEvent) => e.stopPropagation()}
+      onPress={(e: React.MouseEvent) => e.stopPropagation()}
+      style={{
+        backgroundColor: 'var(--color-background)',
+        padding: 24,
+        borderRadius: 12,
+        width,
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        overflow: 'auto',
+      }}
     >
       {children}
     </Card>
@@ -181,33 +183,33 @@ export default function EnhancedTaskDetailModal({
   const tags = task.metadata?.tags || [];
   const related = task.metadata?.related;
 
-  const getPriorityColorProps = (priority: string) => {
+  const getPriorityColorProps = (priority: string): React.CSSProperties => {
     switch (priority) {
       case 'urgent':
-        return { color: '$red10', backgroundColor: '$red2', borderColor: '$red8' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-8)' };
       case 'high':
-        return { color: '$orange10', backgroundColor: '$orange2', borderColor: '$orange8' };
+        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)', borderColor: 'var(--color-orange-8)' };
       case 'medium':
-        return { color: '$blue10', backgroundColor: '$blue2', borderColor: '$blue8' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-8)' };
       case 'low':
-        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
+        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
       default:
-        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
+        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
     }
   };
 
-  const getStatusColorProps = (status: string) => {
+  const getStatusColorProps = (status: string): React.CSSProperties => {
     switch (status) {
       case 'pending':
-        return { backgroundColor: '$blue2', color: '$blue10' };
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' };
       case 'in_progress':
-        return { backgroundColor: '$blue2', color: '$blue10' };
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' };
       case 'completed':
-        return { backgroundColor: '$green2', color: '$green10' };
+        return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-10)' };
       case 'cancelled':
-        return { backgroundColor: '$gray2', color: '$gray10' };
+        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-10)' };
       default:
-        return { backgroundColor: '$blue2', color: '$blue10' };
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' };
     }
   };
 
@@ -225,20 +227,20 @@ export default function EnhancedTaskDetailModal({
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)} days overdue`,
-        color: '$red10',
+        color: 'var(--color-red-10)',
         isOverdue: true,
       };
     if (diffDays === 0)
-      return { text: 'Due today', color: '$orange10', isOverdue: false };
+      return { text: 'Due today', color: 'var(--color-orange-10)', isOverdue: false };
     if (diffDays === 1)
       return {
         text: 'Due tomorrow',
-        color: '$orange10',
+        color: 'var(--color-orange-10)',
         isOverdue: false,
       };
     return {
       text: `Due in ${diffDays} days`,
-      color: '$color11',
+      color: 'var(--color-text-muted)',
       isOverdue: false,
     };
   };
@@ -282,339 +284,349 @@ export default function EnhancedTaskDetailModal({
   return (
     <>
       <ModalOverlay onClose={onClose} width={700}>
-        <YStack gap="$5">
+        <Stack gap={20}>
           {/* Header with title, badges, and close button */}
-          <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
-            <YStack flex={1} gap="$2">
-              <XStack alignItems="center" gap="$3" flexWrap="wrap">
-                <H2 fontSize="$8" fontWeight="700" color="$color12">
+          <Row alignItems="flex-start" justifyContent="space-between" gap={16}>
+            <Stack style={{ flex: 1 }} gap={8}>
+              <Row alignItems="center" gap={12} style={{ flexWrap: 'wrap' }}>
+                <H2 style={{ fontSize: 28, fontWeight: 700 }}>
                   {task.title}
                 </H2>
-                <XStack gap="$2">
-                  <Text
-                    paddingHorizontal="$2.5"
-                    paddingVertical="$1"
-                    fontSize="$1"
-                    fontWeight="500"
-                    borderRadius="$2"
-                    borderWidth={1}
-                    {...getPriorityColorProps(task.priority)}
+                <Row gap={8}>
+                  <span
+                    style={{
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      borderRadius: 8,
+                      border: '1px solid',
+                      ...getPriorityColorProps(task.priority),
+                    }}
                   >
                     {task.priority}
-                  </Text>
-                  <Text
-                    paddingHorizontal="$2.5"
-                    paddingVertical="$1"
-                    fontSize="$1"
-                    fontWeight="500"
-                    borderRadius="$2"
-                    {...getStatusColorProps(task.status)}
+                  </span>
+                  <span
+                    style={{
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      borderRadius: 8,
+                      ...getStatusColorProps(task.status),
+                    }}
                   >
                     {formatStatus(task.status)}
-                  </Text>
-                </XStack>
-              </XStack>
+                  </span>
+                </Row>
+              </Row>
               {task.description && (
-                <Text color="$color11" fontSize="$3">
+                <Text size="sm" muted>
                   {task.description}
                 </Text>
               )}
-            </YStack>
-            <XStack
-              onPress={onClose}
-              cursor="pointer"
-              padding="$2"
-              borderRadius="$2"
-              hoverStyle={{ backgroundColor: '$backgroundHover' }}
+            </Stack>
+            <div
+              onClick={onClose}
+              style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
             >
-              <X size={24} color="$color10" />
-            </XStack>
-          </XStack>
+              <X size={24} color="var(--color-text-muted)" />
+            </div>
+          </Row>
 
           {/* Info row: Due Date and Project side by side */}
-          <XStack gap="$3">
+          <Row gap={12}>
             <Card
-              flexDirection="row"
-              alignItems="center"
-              gap="$3"
-              padding="$3"
-              backgroundColor="$backgroundHover"
-              borderRadius="$3"
-              flex={1}
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+                padding: 12,
+                backgroundColor: 'var(--color-gray-2)',
+                borderRadius: 12,
+                flex: 1,
+              }}
             >
-              <Calendar color="$color10" size={20} />
-              <YStack>
-                <Text fontSize="$1" color="$color10">Due Date</Text>
-                <XStack alignItems="center" gap="$2">
-                  <Text fontSize="$3" fontWeight="500" color={dueDate.color}>
+              <Calendar color="var(--color-text-muted)" size={20} />
+              <Stack>
+                <Text size="xs" muted>Due Date</Text>
+                <Row alignItems="center" gap={8}>
+                  <Text size="sm" weight="medium" style={{ color: dueDate.color }}>
                     {dueDate.text}
                   </Text>
-                  {dueDate.isOverdue && <Text fontSize="$3">⚠️</Text>}
-                </XStack>
-              </YStack>
+                  {dueDate.isOverdue && <Text size="sm">⚠️</Text>}
+                </Row>
+              </Stack>
             </Card>
 
             <Card
-              flexDirection="row"
-              alignItems="center"
-              gap="$3"
-              padding="$3"
-              backgroundColor="$backgroundHover"
-              borderRadius="$3"
-              flex={1}
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+                padding: 12,
+                backgroundColor: 'var(--color-gray-2)',
+                borderRadius: 12,
+                flex: 1,
+              }}
             >
-              <Building color="$color10" size={20} />
-              <YStack>
-                <Text fontSize="$1" color="$color10">Project</Text>
-                <Text fontSize="$3" fontWeight="500" color="$color12">
+              <Building color="var(--color-text-muted)" size={20} />
+              <Stack>
+                <Text size="xs" muted>Project</Text>
+                <Text size="sm" weight="medium">
                   {projectName}
                 </Text>
-              </YStack>
+              </Stack>
             </Card>
-          </XStack>
+          </Row>
 
           {/* Assigned To section */}
-          <YStack gap="$2">
-            <XStack alignItems="center" justifyContent="space-between">
-              <Text fontSize="$2" fontWeight="600" color="$color11">
+          <Stack gap={8}>
+            <Row alignItems="center" justifyContent="space-between">
+              <Text size="sm" weight="semibold" muted>
                 Assigned To
               </Text>
-              <XStack
-                onPress={() => setShowReassignModal(true)}
-                cursor="pointer"
-                hoverStyle={{ opacity: 0.8 }}
+              <div
+                onClick={() => setShowReassignModal(true)}
+                style={{ cursor: 'pointer' }}
               >
-                <Text fontSize="$2" color="$blue10" fontWeight="500">
+                <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-10)' }}>
                   {assigneeDetails.length > 0 ? 'Reassign' : 'Assign'}
                 </Text>
-              </XStack>
-            </XStack>
+              </div>
+            </Row>
             {assigneeDetails.length > 0 ? (
-              <YStack gap="$2">
+              <Stack gap={8}>
                 {assigneeDetails.map((person) => (
-                  <XStack
+                  <Row
                     key={person?.id}
                     alignItems="center"
-                    gap="$3"
-                    padding="$3"
-                    backgroundColor="$backgroundHover"
-                    borderRadius="$3"
+                    gap={12}
+                    style={{
+                      padding: 12,
+                      backgroundColor: 'var(--color-gray-2)',
+                      borderRadius: 12,
+                    }}
                   >
-                    <YStack
-                      width={36}
-                      height={36}
-                      backgroundColor="$blue10"
-                      borderRadius={9999}
+                    <Stack
                       alignItems="center"
                       justifyContent="center"
+                      style={{
+                        width: 36,
+                        height: 36,
+                        backgroundColor: 'var(--color-blue-10)',
+                        borderRadius: 9999,
+                      }}
                     >
-                      <Text fontSize="$2" fontWeight="600" color="white">
+                      <Text size="sm" weight="semibold" style={{ color: 'white' }}>
                         {person?.name
                           .split(' ')
                           .map((n) => n[0])
                           .join('')}
                       </Text>
-                    </YStack>
-                    <YStack>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                    </Stack>
+                    <Stack>
+                      <Text size="sm" weight="medium">
                         {person?.name}
                       </Text>
-                      <Text fontSize="$1" color="$color10">
+                      <Text size="xs" muted>
                         {person?.email}
                       </Text>
-                    </YStack>
-                  </XStack>
+                    </Stack>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             ) : (
               <Card
-                padding="$3"
-                backgroundColor="$backgroundHover"
-                borderRadius="$3"
-                alignItems="center"
+                style={{
+                  padding: 12,
+                  backgroundColor: 'var(--color-gray-2)',
+                  borderRadius: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
-                <XStack alignItems="center" gap="$2">
-                  <User size={16} color="$color9" />
-                  <Text fontSize="$2" color="$color9">
+                <Row alignItems="center" gap={8}>
+                  <User size={16} color="var(--color-text-muted)" />
+                  <Text size="sm" muted>
                     No one assigned
                   </Text>
-                </XStack>
+                </Row>
               </Card>
             )}
-          </YStack>
+          </Stack>
 
           {/* Blockers section */}
           {blockers.length > 0 && (
-            <YStack gap="$2">
-              <XStack alignItems="center" gap="$2">
-                <AlertCircle color="$red10" size={16} />
-                <Text fontSize="$2" fontWeight="600" color="$red10">
+            <Stack gap={8}>
+              <Row alignItems="center" gap={8}>
+                <AlertCircle color="var(--color-red-10)" size={16} />
+                <Text size="sm" weight="semibold" style={{ color: 'var(--color-red-10)' }}>
                   Blockers
                 </Text>
-              </XStack>
-              <YStack gap="$2">
+              </Row>
+              <Stack gap={8}>
                 {blockers.map((blocker, index) => (
-                  <XStack
+                  <Row
                     key={index}
                     alignItems="flex-start"
-                    gap="$2"
-                    padding="$3"
-                    backgroundColor="$red2"
-                    borderWidth={1}
-                    borderColor="$red8"
-                    borderRadius="$3"
+                    gap={8}
+                    style={{
+                      padding: 12,
+                      backgroundColor: 'var(--color-red-2)',
+                      border: '1px solid var(--color-red-8)',
+                      borderRadius: 12,
+                    }}
                   >
-                    <Circle size={6} backgroundColor="$red10" marginTop={6} />
-                    <Text fontSize="$2" color="$red12">{blocker}</Text>
-                  </XStack>
+                    <div style={{ width: 6, height: 6, backgroundColor: 'var(--color-red-10)', borderRadius: 9999, marginTop: 6 }} />
+                    <Text size="sm" style={{ color: 'var(--color-red-12)' }}>{blocker}</Text>
+                  </Row>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
 
           {/* Tags section */}
           {tags.length > 0 && (
-            <YStack gap="$2">
-              <Text fontSize="$2" fontWeight="600" color="$color11">Tags</Text>
-              <XStack flexWrap="wrap" gap="$2">
+            <Stack gap={8}>
+              <Text size="sm" weight="semibold" muted>Tags</Text>
+              <Row style={{ flexWrap: 'wrap', gap: 8 }}>
                 {tags.map((tag) => (
-                  <Text
+                  <span
                     key={tag}
-                    paddingHorizontal="$2.5"
-                    paddingVertical="$1"
-                    backgroundColor="$backgroundHover"
-                    color="$color11"
-                    fontSize="$1"
-                    fontWeight="500"
-                    borderRadius={9999}
-                    borderWidth={1}
-                    borderColor="$borderColor"
+                    style={{
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      backgroundColor: 'var(--color-gray-2)',
+                      color: 'var(--color-text-muted)',
+                      fontSize: 12,
+                      fontWeight: 500,
+                      borderRadius: 9999,
+                      border: '1px solid var(--color-border)',
+                    }}
                   >
                     {tag}
-                  </Text>
+                  </span>
                 ))}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           )}
 
           {/* Actions section */}
-          <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-            <Text fontSize="$2" fontWeight="600" color="$color11">
+          <Stack gap={12} style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+            <Text size="sm" weight="semibold" muted>
               Actions
             </Text>
 
             {/* Status buttons */}
-            <XStack gap="$2">
+            <Row gap={8}>
               <Button
                 variant={task.status === 'in_progress' ? 'primary' : 'secondary'}
-                onClick={() => handleStatusChange('in_progress')}
-                icon={Clock}
-                flex={1}
-                size="$3"
+                onPress={() => handleStatusChange('in_progress')}
+                leftIcon={Clock}
+                style={{ flex: 1 }}
               >
                 Start Working
               </Button>
               <Button
                 variant={task.status === 'completed' ? 'success' : 'secondary'}
-                onClick={() => handleStatusChange('completed')}
-                icon={CheckCircle}
-                flex={1}
-                size="$3"
+                onPress={() => handleStatusChange('completed')}
+                leftIcon={CheckCircle}
+                style={{ flex: 1 }}
               >
                 Complete
               </Button>
-            </XStack>
+            </Row>
 
             {/* Secondary actions */}
-            <XStack gap="$2">
+            <Row gap={8}>
               <Button
                 variant="secondary"
-                onClick={() => handleStatusChange('pending')}
-                flex={1}
-                size="$3"
+                onPress={() => handleStatusChange('pending')}
+                style={{ flex: 1 }}
               >
                 Mark Pending
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => setShowAddNoteModal(true)}
-                icon={MessageSquare}
-                flex={1}
-                size="$3"
+                onPress={() => setShowAddNoteModal(true)}
+                leftIcon={MessageSquare}
+                style={{ flex: 1 }}
               >
                 Add Note
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {/* Related Items section */}
           {related && Object.keys(related).length > 0 && (
-            <YStack gap="$2" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-              <Text fontSize="$2" fontWeight="600" color="$color11">
+            <Stack gap={8} style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+              <Text size="sm" weight="semibold" muted>
                 Related Items
               </Text>
-              <YStack gap="$1">
+              <Stack gap={4}>
                 {Object.entries(related).map(([key, value]) => (
-                  <XStack
+                  <Row
                     key={key}
                     alignItems="center"
                     justifyContent="space-between"
-                    padding="$2"
-                    backgroundColor="$backgroundHover"
-                    borderRadius="$2"
+                    style={{
+                      padding: 8,
+                      backgroundColor: 'var(--color-gray-2)',
+                      borderRadius: 8,
+                    }}
                   >
-                    <Text fontSize="$1" color="$color10" textTransform="capitalize">
+                    <Text size="xs" muted style={{ textTransform: 'capitalize' }}>
                       {key.replace(/_/g, ' ')}
                     </Text>
-                    <Text fontSize="$1" fontFamily="$mono" color="$color11">
+                    <Text size="xs" muted style={{ fontFamily: 'monospace' }}>
                       {Array.isArray(value) ? value.join(', ') : String(value)}
                     </Text>
-                  </XStack>
+                  </Row>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </ModalOverlay>
 
       {/* Reassign Modal */}
       {showReassignModal && (
         <ModalOverlay onClose={() => setShowReassignModal(false)} width={400}>
-          <YStack gap="$4">
-            <XStack alignItems="center" justifyContent="space-between" mb="$2">
-              <H3 fontSize="$5" fontWeight="600" color="$color12">Reassign Task</H3>
-              <XStack
-                onPress={() => setShowReassignModal(false)}
-                cursor="pointer"
-                padding="$2"
-                borderRadius="$2"
-                hoverStyle={{ backgroundColor: '$backgroundHover' }}
+          <Stack gap={16}>
+            <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 8 }}>
+              <H3 style={{ fontSize: 18, fontWeight: 600 }}>Reassign Task</H3>
+              <div
+                onClick={() => setShowReassignModal(false)}
+                style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
               >
-                <X size={20} color="$color10" />
-              </XStack>
-            </XStack>
-            <YStack>
-              <Text
-                as="label"
-                display="block"
-                fontSize="$3"
-                fontWeight="500"
-                color="$color11"
-                mb="$2"
-              >
+                <X size={20} color="var(--color-text-muted)" />
+              </div>
+            </Row>
+            <Stack>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: 8 }}>
                 Select Assignee
-              </Text>
+              </label>
               <select
                 value={selectedAssignee}
                 onChange={(e) => setSelectedAssignee(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  backgroundColor: 'var(--background)',
-                  border: '1px solid var(--borderColor)',
+                  backgroundColor: 'var(--color-background)',
+                  border: '1px solid var(--color-border)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  color: 'var(--color12)',
+                  color: 'var(--color-text)',
                   fontFamily: 'inherit',
                 }}
               >
@@ -625,54 +637,44 @@ export default function EnhancedTaskDetailModal({
                   </option>
                 ))}
               </select>
-            </YStack>
-            <XStack gap="$3">
+            </Stack>
+            <Row gap={12}>
               <Button
                 variant="secondary"
-                onClick={() => setShowReassignModal(false)}
-                flex={1}
+                onPress={() => setShowReassignModal(false)}
+                style={{ flex: 1 }}
               >
                 Cancel
               </Button>
               <Button
                 variant="primary"
-                onClick={handleReassign}
-                flex={1}
+                onPress={handleReassign}
+                style={{ flex: 1 }}
               >
                 Reassign
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </ModalOverlay>
       )}
 
       {/* Add Note Modal */}
       {showAddNoteModal && (
         <ModalOverlay onClose={() => setShowAddNoteModal(false)} width={400}>
-          <YStack gap="$4">
-            <XStack alignItems="center" justifyContent="space-between" mb="$2">
-              <H3 fontSize="$5" fontWeight="600" color="$color12">Add Note</H3>
-              <XStack
-                onPress={() => setShowAddNoteModal(false)}
-                cursor="pointer"
-                padding="$2"
-                borderRadius="$2"
-                hoverStyle={{ backgroundColor: '$backgroundHover' }}
+          <Stack gap={16}>
+            <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 8 }}>
+              <H3 style={{ fontSize: 18, fontWeight: 600 }}>Add Note</H3>
+              <div
+                onClick={() => setShowAddNoteModal(false)}
+                style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
               >
-                <X size={20} color="$color10" />
-              </XStack>
-            </XStack>
-            <YStack>
-              <Text
-                as="label"
-                display="block"
-                fontSize="$3"
-                fontWeight="500"
-                color="$color11"
-                mb="$2"
-              >
+                <X size={20} color="var(--color-text-muted)" />
+              </div>
+            </Row>
+            <Stack>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: 8 }}>
                 Note
-              </Text>
+              </label>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
@@ -681,32 +683,32 @@ export default function EnhancedTaskDetailModal({
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  backgroundColor: 'var(--background)',
-                  border: '1px solid var(--borderColor)',
+                  backgroundColor: 'var(--color-background)',
+                  border: '1px solid var(--color-border)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  color: 'var(--color12)',
+                  color: 'var(--color-text)',
                   fontFamily: 'inherit',
                 }}
               />
-            </YStack>
-            <XStack gap="$3">
+            </Stack>
+            <Row gap={12}>
               <Button
                 variant="secondary"
-                onClick={() => setShowAddNoteModal(false)}
-                flex={1}
+                onPress={() => setShowAddNoteModal(false)}
+                style={{ flex: 1 }}
               >
                 Cancel
               </Button>
               <Button
                 variant="primary"
-                onClick={handleAddNote}
-                flex={1}
+                onPress={handleAddNote}
+                style={{ flex: 1 }}
               >
                 Add Note
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </ModalOverlay>
       )}
     </>

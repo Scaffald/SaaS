@@ -1,11 +1,23 @@
 /**
- * Modal - Re-export from @unicornlove/ui
+ * Modal - Wrapper using Beyond UI Modal
+ * Migrated from Tamagui to Beyond UI
  *
- * Note: Uses ResponsiveModal from @unicornlove/ui internally
- * Provides backward-compatible props (isOpen, onClose) mapped to the new API
+ * Features:
+ * - Backward-compatible props (isOpen, onClose) mapped to the new API
+ * - Focus trap for accessibility (keyboard users stay within modal)
+ * - Smooth entrance/exit animations
+ * - Escape key to close
  */
-import { ResponsiveModal, type ResponsiveModalProps } from '@unicornlove/ui';
+import { useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
+import {
+  Modal as BeyondModal,
+  ModalHeader,
+  ModalContent,
+  useFocusTrap,
+  FadeTransition,
+  ScaleTransition,
+} from '@unicornlove/beyond-ui';
 
 export interface ModalProps {
   /** Whether the modal is open (alias for 'open' prop) */
@@ -24,6 +36,8 @@ export interface ModalProps {
   size?: 'small' | 'medium' | 'large' | 'full';
   /** Whether to close on overlay click (mapped to onOpenChange) */
   closeOnOverlayClick?: boolean;
+  /** Disable animations (for reduced motion preference) */
+  disableAnimations?: boolean;
 }
 
 const Modal = ({
@@ -34,30 +48,71 @@ const Modal = ({
   title = '',
   children,
   size = 'medium',
-  ...props
+  closeOnOverlayClick = true,
+  disableAnimations = false,
 }: ModalProps) => {
   // Support both isOpen and open props for backward compatibility
   const modalOpen = open ?? isOpen ?? false;
 
   // Handle both onClose and onOpenChange callbacks
-  const handleOpenChange = (newOpen: boolean) => {
+  const handleClose = useCallback(() => {
     if (onOpenChange) {
-      onOpenChange(newOpen);
+      onOpenChange(false);
     }
-    if (!newOpen && onClose) {
+    if (onClose) {
       onClose();
     }
-  };
+  }, [onOpenChange, onClose]);
+
+  // Focus trap for accessibility - keeps focus within modal when open
+  const { containerRef } = useFocusTrap({
+    active: modalOpen,
+    returnFocusOnDeactivate: true,
+  });
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    if (!modalOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen, handleClose]);
+
+  // Don't render anything if modal is closed (for animation purposes we still render the wrapper)
+  if (!modalOpen && disableAnimations) {
+    return null;
+  }
+
+  const modalContent = (
+    <BeyondModal
+      open={modalOpen}
+      onClose={handleClose}
+      closeOnOverlayClick={closeOnOverlayClick}
+    >
+      <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+        {title && <ModalHeader title={title} onClose={handleClose} />}
+        <ModalContent>{children}</ModalContent>
+      </div>
+    </BeyondModal>
+  );
+
+  // Return with animations unless disabled
+  if (disableAnimations) {
+    return modalContent;
+  }
 
   return (
-    <ResponsiveModal
-      open={modalOpen}
-      onOpenChange={handleOpenChange}
-      title={title}
-      size={size}
-    >
-      {children}
-    </ResponsiveModal>
+    <FadeTransition visible={modalOpen} duration="fast" unmountOnHide={false}>
+      <ScaleTransition visible={modalOpen} fromScale={0.95} unmountOnHide={false}>
+        {modalContent}
+      </ScaleTransition>
+    </FadeTransition>
   );
 };
 

@@ -34,7 +34,7 @@ import { useThemeContext } from '../../../playground/ThemeProvider'
 import { colors } from '../../../tokens/colors'
 import type { ThemeMode } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
-import { borderRadius, borderWidth } from '../../../tokens/borders'
+import { borderRadius, } from '../../../tokens/borders'
 import { typography } from '../../../tokens/typography'
 import { boxShadows } from '../../../tokens/shadows'
 import { Input } from '../../Input'
@@ -85,7 +85,7 @@ function getTabText(theme: ThemeMode, isSelected: boolean): TextStyle {
   }
 }
 
-function getBadge(theme: ThemeMode): ViewStyle {
+function getBadge(_theme: ThemeMode): ViewStyle {
   return {
     backgroundColor: colors.gray[900], // foreground-01
     borderRadius: borderRadius.max, // Fully rounded
@@ -98,7 +98,7 @@ function getBadge(theme: ThemeMode): ViewStyle {
   }
 }
 
-function getBadgeText(theme: ThemeMode): TextStyle {
+function getBadgeText(_theme: ThemeMode): TextStyle {
   return {
     fontFamily: typography.captionMedium.fontFamily,
     fontSize: typography.captionMedium.fontSize,
@@ -109,7 +109,7 @@ function getBadgeText(theme: ThemeMode): TextStyle {
   }
 }
 
-function getAddMemberButton(theme: ThemeMode): ViewStyle {
+function getAddMemberButton(_theme: ThemeMode): ViewStyle {
   return {
     flexDirection: 'row',
     alignItems: 'center',
@@ -128,7 +128,7 @@ function getAddMemberText(theme: ThemeMode): TextStyle {
   }
 }
 
-function getMemberItem(theme: ThemeMode): ViewStyle {
+function getMemberItem(_theme: ThemeMode): ViewStyle {
   return {
     flexDirection: 'row',
     alignItems: 'center',

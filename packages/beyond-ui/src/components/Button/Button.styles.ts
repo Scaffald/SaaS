@@ -62,7 +62,9 @@ export function getButtonStyles(
   iconOnly: boolean,
   theme: ThemeMode = 'light'
 ): ButtonStyleConfig {
-  const sizeStyles = sizeConfig[size]
+  // Safety check: ensure size is valid, fallback to 'md' if invalid
+  const validSize: ButtonSize = sizeConfig[size] ? size : 'md'
+  const sizeStyles = sizeConfig[validSize]
 
   // Base container styles
   const baseContainer: ViewStyle = {

@@ -1,9 +1,9 @@
 /**
- * StatusBadge - Status badge component using Tamagui
+ * StatusBadge - Status badge component using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
 import React from 'react';
-import { XStack, Text } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Row, Chip } from '@unicornlove/beyond-ui';
 import {
   CheckCircle,
   AlertTriangle,
@@ -141,11 +141,11 @@ export default function StatusBadge({
   const Icon = config.icon;
 
   return (
-    <Badge variant={config.variant} size={size}>
-      <XStack gap="$1" alignItems="center">
+    <Chip variant={config.variant} size={size}>
+      <Row gap={4} alignItems="center">
         {showIcon && <Icon size={iconSizes[size]} />}
-        <Text>{config.label}</Text>
-      </XStack>
-    </Badge>
+        <span>{config.label}</span>
+      </Row>
+    </Chip>
   );
 }

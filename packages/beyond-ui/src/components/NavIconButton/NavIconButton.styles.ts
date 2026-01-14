@@ -8,7 +8,7 @@ import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
-import { typography, fontWeight } from '../../tokens/typography'
+import { fontWeight } from '../../tokens/typography'
 import type {
   NavIconButtonBadge,
   NavIconButtonState,

@@ -1,44 +1,37 @@
 /**
- * OAuth Callback Page - Using Tamagui
+ * OAuth Callback Page - Using Beyond UI
  * REQ-126: OAuth 2.0 + RBAC Authentication System
  */
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { YStack, XStack, Text, styled } from '@unicornlove/ui'
-import { Button as CoreButton } from '@unicornlove/ui'
-import { Spinner } from '@unicornlove/ui'
+import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui'
 import { CheckCircle, AlertTriangle } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import type { AuthError } from '../../lib/auth/types'
 
-const PageContainer = styled(YStack, {
-  name: 'CallbackPageContainer',
+const pageContainerStyle: React.CSSProperties = {
   minHeight: '100vh',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: '$background',
-})
+  backgroundColor: 'var(--color-background)',
+}
 
-const CardContainer = styled(YStack, {
-  name: 'CallbackCardContainer',
-  maxWidth: 448,
+const cardContainerStyle: React.CSSProperties = {
+  maxWidth: '448px',
   width: '100%',
-  gap: '$8',
-  padding: '$10',
-  backgroundColor: '$backgroundHover',
-  borderRadius: '$5',
-  shadowColor: '$shadowColor',
-  shadowRadius: 20,
-  shadowOffset: { width: 0, height: 10 },
-})
+  gap: '32px',
+  padding: '40px',
+  backgroundColor: 'var(--color-backgroundHover)',
+  borderRadius: '12px',
+  boxShadow: '0 10px 20px var(--color-shadow)',
+}
 
-const SpinnerContainer = styled(YStack, {
-  name: 'SpinnerContainer',
+const spinnerContainerStyle: React.CSSProperties = {
   position: 'relative',
-  width: 64,
-  height: 64,
-})
+  width: '64px',
+  height: '64px',
+}
 
 export const CallbackPage: React.FC = () => {
   const [searchParams] = useSearchParams()
@@ -75,135 +68,147 @@ export const CallbackPage: React.FC = () => {
 
   if (isProcessing && !error) {
     return (
-      <PageContainer>
-        <CardContainer style={{ textAlign: 'center' }}>
+      <Stack style={pageContainerStyle}>
+        <Stack style={{ ...cardContainerStyle, textAlign: 'center' }}>
           {/* Loading Animation */}
-          <YStack alignItems="center" gap="$6">
-            <SpinnerContainer>
-              <YStack
-                width={64}
-                height={64}
-                borderRadius="$10"
-                borderWidth={4}
-                borderColor="$blue6"
+          <Stack style={{ alignItems: 'center', gap: '24px' }}>
+            <Stack style={spinnerContainerStyle}>
+              <Stack
+                style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '24px',
+                  borderWidth: '4px',
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-blue6)',
+                }}
               />
-              <YStack
-                position="absolute"
-                top={0}
-                left={0}
-                width={64}
-                height={64}
-                borderRadius="$10"
-                borderWidth={4}
-                borderColor="$blue9"
-                borderTopColor="transparent"
-                animation="spin"
-                animationDuration="1s"
-                animationIterationCount="infinite"
+              <Stack
+                className="animate-spin"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '24px',
+                  borderWidth: '4px',
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-blue9)',
+                  borderTopColor: 'transparent',
+                }}
               />
-            </SpinnerContainer>
-            <Text fontSize="$8" fontWeight="700" color="$color12">
+            </Stack>
+            <Text style={{ fontSize: '28px', fontWeight: 700, color: 'var(--color-color12)' }}>
               Completing Sign In
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
               Please wait while we authenticate your account...
             </Text>
-          </YStack>
+          </Stack>
 
           {/* Progress Steps */}
-          <YStack gap="$3" mt="$8" alignItems="flex-start">
-            <XStack alignItems="center" gap="$3">
+          <Stack style={{ gap: '12px', marginTop: '32px', alignItems: 'flex-start' }}>
+            <Row style={{ alignItems: 'center', gap: '12px' }}>
               <CheckCircle size={20} color="currentColor" />
-              <Text fontSize="$2" color="$color11">
+              <Text style={{ fontSize: '12px', color: 'var(--color-color11)' }}>
                 Authenticated with Scaffald
               </Text>
-            </XStack>
-            <XStack alignItems="center" gap="$3">
-              <YStack
-                width={20}
-                height={20}
-                borderRadius="$10"
-                backgroundColor="$blue9"
-                animation="pulse"
-                animationDuration="2s"
-                animationIterationCount="infinite"
+            </Row>
+            <Row style={{ alignItems: 'center', gap: '12px' }}>
+              <div
+                className="animate-pulse"
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-blue9)',
+                }}
               />
-              <Text fontSize="$2" color="$color11">
+              <Text style={{ fontSize: '12px', color: 'var(--color-color11)' }}>
                 Exchanging authorization code
               </Text>
-            </XStack>
-            <XStack alignItems="center" gap="$3" opacity={0.5}>
-              <YStack
-                width={20}
-                height={20}
-                borderRadius="$10"
-                borderWidth={2}
-                borderColor="$borderColor"
+            </Row>
+            <Row style={{ alignItems: 'center', gap: '12px', opacity: 0.5 }}>
+              <div
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  borderWidth: '2px',
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-border)',
+                }}
               />
-              <Text fontSize="$2" color="$color10">
+              <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
                 Creating secure session
               </Text>
-            </XStack>
-          </YStack>
-        </CardContainer>
-      </PageContainer>
+            </Row>
+          </Stack>
+        </Stack>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <PageContainer>
-        <CardContainer>
+      <Stack style={pageContainerStyle}>
+        <Stack style={cardContainerStyle}>
           {/* Error Icon */}
-          <YStack alignItems="center" gap="$6">
-            <YStack
-              width={64}
-              height={64}
-              backgroundColor="$red3"
-              borderRadius="$10"
-              alignItems="center"
-              justifyContent="center"
+          <Stack style={{ alignItems: 'center', gap: '24px' }}>
+            <Stack
+              style={{
+                width: '64px',
+                height: '64px',
+                backgroundColor: 'var(--color-red3)',
+                borderRadius: '24px',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
               <AlertTriangle size={40} color="currentColor" />
-            </YStack>
-            <Text fontSize="$8" fontWeight="700" color="$color12">
+            </Stack>
+            <Text style={{ fontSize: '28px', fontWeight: 700, color: 'var(--color-color12)' }}>
               Authentication Failed
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
               We encountered an error while signing you in
             </Text>
-          </YStack>
+          </Stack>
 
           {/* Error Details */}
-          <YStack
-            backgroundColor="$red2"
-            borderWidth={1}
-            borderColor="$red6"
-            borderRadius="$3"
-            padding="$4"
-            gap="$1"
+          <Stack
+            style={{
+              backgroundColor: 'var(--color-red2)',
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: 'var(--color-red6)',
+              borderRadius: '8px',
+              padding: '16px',
+              gap: '4px',
+            }}
           >
-            <Text fontSize="$2" color="$red11">
-              <Text fontWeight="600">Error:</Text> {error.message}
+            <Text style={{ fontSize: '12px', color: 'var(--color-red11)' }}>
+              <Text style={{ fontWeight: 600 }}>Error:</Text> {error.message}
             </Text>
             {error.code && (
-              <Text fontSize="$1" color="$red10" mt="$1">
+              <Text style={{ fontSize: '10px', color: 'var(--color-red10)', marginTop: '4px' }}>
                 Code: {error.code}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Actions */}
-          <YStack gap="$3">
-            <CoreButton onPress={handleRetry} variant="primary" fullWidth>
+          <Stack style={{ gap: '12px' }}>
+            <Button onPress={handleRetry} variant="primary" fullWidth>
               Try Again
-            </CoreButton>
-            <CoreButton onPress={() => navigate('/')} variant="outlined" fullWidth>
+            </Button>
+            <Button onPress={() => navigate('/')} variant="outlined" fullWidth>
               Go Home
-            </CoreButton>
-          </YStack>
-        </CardContainer>
-      </PageContainer>
+            </Button>
+          </Stack>
+        </Stack>
+      </Stack>
     )
   }
 

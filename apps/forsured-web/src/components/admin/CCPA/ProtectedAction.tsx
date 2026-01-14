@@ -7,7 +7,7 @@
  */
 
 import type { ReactNode } from 'react'
-import { YStack, Text, Tooltip } from '@unicornlove/ui'
+import { Stack, Text, Tooltip } from '@unicornlove/beyond-ui'
 import { useCCPAPermissions } from '../../../hooks/useCCPAPermissions'
 import type { CCPAPermission } from '../../../lib/auth/ccpaPermissions'
 
@@ -66,7 +66,7 @@ export interface ProtectedActionProps {
  * // With fallback content
  * <ProtectedAction
  *   permission={CCPAPermission.SETTINGS_EDIT}
- *   fallback={<Text color="$gray11">Read-only</Text>}
+ *   fallback={<Text style={{ color: 'var(--color-gray-11)' }}>Read-only</Text>}
  * >
  *   <Button>Edit Settings</Button>
  * </ProtectedAction>
@@ -117,10 +117,10 @@ export function ProtectedAction({
       return (
         <Tooltip>
           <Tooltip.Trigger asChild>
-            <YStack>{fallback}</YStack>
+            <Stack>{fallback}</Stack>
           </Tooltip.Trigger>
           <Tooltip.Content>
-            <Text fontSize="$2">{deniedTooltip}</Text>
+            <Text style={{ fontSize: 12 }}>{deniedTooltip}</Text>
           </Tooltip.Content>
         </Tooltip>
       )
@@ -188,10 +188,10 @@ export function ProtectedActionDisabled({
     return (
       <Tooltip>
         <Tooltip.Trigger asChild>
-          <YStack>{content}</YStack>
+          <Stack>{content}</Stack>
         </Tooltip.Trigger>
         <Tooltip.Content>
-          <Text fontSize="$2">{deniedTooltip}</Text>
+          <Text style={{ fontSize: 12 }}>{deniedTooltip}</Text>
         </Tooltip.Content>
       </Tooltip>
     )

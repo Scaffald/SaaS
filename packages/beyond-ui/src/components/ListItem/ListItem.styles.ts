@@ -7,7 +7,6 @@ import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
-import { borderRadius } from '../../tokens/borders'
 import { typographyVariants } from '../../tokens/typography'
 import type { ListItemVariant } from './ListItem.types'
 

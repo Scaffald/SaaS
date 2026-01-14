@@ -1,5 +1,5 @@
 import { FileText, DollarSign, Calendar, Award, Building } from 'lucide-react';
-import { XStack, YStack, Text, SizableText, Card } from '@unicornlove/ui';
+import { Row, Stack, Text, Card } from '@unicornlove/beyond-ui';
 import Button from '../Common/Button';
 import { PublicRFP } from '../../types';
 
@@ -10,6 +10,44 @@ interface RFPCardProps {
   onRespond?: () => void;
   onView?: () => void;
 }
+
+const getStatusStyles = (status: string): React.CSSProperties => {
+  switch (status) {
+    case 'published':
+      return {
+        borderColor: 'var(--color-green5)',
+        backgroundColor: 'var(--color-green2)',
+      };
+    case 'closed':
+      return {
+        borderColor: 'var(--color-color5)',
+        backgroundColor: 'var(--color-color2)',
+      };
+    case 'awarded':
+      return {
+        borderColor: 'var(--color-blue5)',
+        backgroundColor: 'var(--color-blue2)',
+      };
+    default:
+      return {
+        borderColor: 'var(--color-orange5)',
+        backgroundColor: 'var(--color-orange2)',
+      };
+  }
+};
+
+const getStatusTextColor = (status: string): string => {
+  switch (status) {
+    case 'published':
+      return 'var(--color-green11)';
+    case 'closed':
+      return 'var(--color-color11)';
+    case 'awarded':
+      return 'var(--color-blue11)';
+    default:
+      return 'var(--color-orange11)';
+  }
+};
 
 export default function RFPCard({
   rfp,
@@ -47,208 +85,206 @@ export default function RFPCard({
 
   const daysLeft = getDaysUntilDeadline();
 
-  const getStatusBadgeColor = () => {
-    switch (rfp.status) {
-      case 'published':
-        return 'bg-success-100 text-success-700 border-success-300';
-      case 'closed':
-        return 'bg-neutral-100 text-neutral-700 border-neutral-300';
-      case 'awarded':
-        return 'bg-primary-100 text-primary-700 border-primary-300';
-      default:
-        return 'bg-warning-100 text-warning-700 border-warning-300';
-    }
-  };
-
   return (
     <Card
-      backgroundColor="$background"
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="$borderColor"
-      elevation={1}
-      hoverStyle={{
-        elevation: 2,
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: 'var(--color-border)',
       }}
     >
-      <YStack padding="$6">
-        <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
-          <XStack alignItems="flex-start" gap="$3" flex={1} minWidth={0}>
-            <XStack
-              width={48}
-              height={48}
-              backgroundColor="$orange2"
-              borderRadius="$4"
-              alignItems="center"
-              justifyContent="center"
-              flexShrink={0}
+      <Stack style={{ padding: 24 }}>
+        <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+          <Row style={{ alignItems: 'flex-start', gap: 12, flex: 1, minWidth: 0 }}>
+            <Row
+              style={{
+                width: 48,
+                height: 48,
+                backgroundColor: 'var(--color-orange2)',
+                borderRadius: 12,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
             >
-              <FileText color="$orange9" size={24} />
-            </XStack>
-            <YStack flex={1} minWidth={0}>
-              <Text fontSize="$6" fontWeight="600" color="$color12">
+              <FileText color="var(--color-orange9)" size={24} />
+            </Row>
+            <Stack style={{ flex: 1, minWidth: 0 }}>
+              <Text style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-color12)' }}>
                 {rfp.title}
               </Text>
               {rfp.trade_required && (
-                <XStack
-                  alignItems="center"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius="$2"
-                  backgroundColor="$color3"
-                  borderWidth={1}
-                  borderColor="$color5"
-                  mt="$1"
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    borderRadius: 6,
+                    backgroundColor: 'var(--color-color3)',
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-color5)',
+                    marginTop: 4,
+                    width: 'fit-content',
+                  }}
                 >
-                  <SizableText size="$1" fontWeight="500" color="$color11">
+                  <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-color11)' }}>
                     {rfp.trade_required}
-                  </SizableText>
-                </XStack>
+                  </Text>
+                </Row>
               )}
-            </YStack>
-          </XStack>
-          <XStack
-            alignItems="center"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
-            borderWidth={1}
-            borderColor={
-              rfp.status === 'published'
-                ? '$green5'
-                : rfp.status === 'closed'
-                  ? '$color5'
-                  : rfp.status === 'awarded'
-                    ? '$blue5'
-                    : '$orange5'
-            }
-            backgroundColor={
-              rfp.status === 'published'
-                ? '$green2'
-                : rfp.status === 'closed'
-                  ? '$color2'
-                  : rfp.status === 'awarded'
-                    ? '$blue2'
-                    : '$orange2'
-            }
+            </Stack>
+          </Row>
+          <Row
+            style={{
+              alignItems: 'center',
+              paddingLeft: 8,
+              paddingRight: 8,
+              paddingTop: 4,
+              paddingBottom: 4,
+              borderRadius: 6,
+              borderWidth: 1,
+              borderStyle: 'solid',
+              ...getStatusStyles(rfp.status),
+            }}
           >
-            <SizableText
-              size="$1"
-              fontWeight="500"
-              color={
-                rfp.status === 'published'
-                  ? '$green11'
-                  : rfp.status === 'closed'
-                    ? '$color11'
-                    : rfp.status === 'awarded'
-                      ? '$blue11'
-                      : '$orange11'
-              }
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: getStatusTextColor(rfp.status),
+              }}
             >
               {rfp.status}
-            </SizableText>
-          </XStack>
-        </XStack>
+            </Text>
+          </Row>
+        </Row>
 
         {rfp.description && (
-          <SizableText size="$3" color="$color11" numberOfLines={3} mb="$4">
+          <Text
+            style={{
+              fontSize: 14,
+              color: 'var(--color-color11)',
+              marginBottom: 16,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+            }}
+          >
             {rfp.description}
-          </SizableText>
+          </Text>
         )}
 
-        <XStack flexWrap="wrap" gap="$4" mb="$4">
-          <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
-            <DollarSign size={14} color="$color11" />
-            <YStack>
-              <SizableText size="$1" color="$color11">Budget Range</SizableText>
-              <SizableText size="$3" fontWeight="500" color="$color12">
+        <Row style={{ flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
+          <Row style={{ alignItems: 'center', gap: 8, flex: 1, minWidth: 150 }}>
+            <DollarSign size={14} color="var(--color-color11)" />
+            <Stack>
+              <Text style={{ fontSize: 12, color: 'var(--color-color11)' }}>Budget Range</Text>
+              <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-color12)' }}>
                 {formatCurrency(rfp.budget_range_min)} -{' '}
                 {formatCurrency(rfp.budget_range_max)}
-              </SizableText>
-            </YStack>
-          </XStack>
+              </Text>
+            </Stack>
+          </Row>
 
           {rfp.deadline && (
-            <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
-              <Calendar size={14} color="$color11" />
-              <YStack>
-                <SizableText size="$1" color="$color11">Deadline</SizableText>
-                <SizableText size="$3" fontWeight="500" color="$color12">
+            <Row style={{ alignItems: 'center', gap: 8, flex: 1, minWidth: 150 }}>
+              <Calendar size={14} color="var(--color-color11)" />
+              <Stack>
+                <Text style={{ fontSize: 12, color: 'var(--color-color11)' }}>Deadline</Text>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-color12)' }}>
                   {formatDate(rfp.deadline)}
-                </SizableText>
+                </Text>
                 {daysLeft !== null && daysLeft > 0 && (
-                  <SizableText
-                    size="$1"
-                    color={daysLeft <= 7 ? '$red9' : '$color11'}
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: daysLeft <= 7 ? 'var(--color-red9)' : 'var(--color-color11)',
+                    }}
                   >
                     {daysLeft} {daysLeft === 1 ? 'day' : 'days'} left
-                  </SizableText>
+                  </Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           )}
 
           {rfp.published_at && (
-            <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
-              <Building size={14} color="$color11" />
-              <YStack>
-                <SizableText size="$1" color="$color11">Published</SizableText>
-                <SizableText size="$3" fontWeight="500" color="$color12">
+            <Row style={{ alignItems: 'center', gap: 8, flex: 1, minWidth: 150 }}>
+              <Building size={14} color="var(--color-color11)" />
+              <Stack>
+                <Text style={{ fontSize: 12, color: 'var(--color-color11)' }}>Published</Text>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-color12)' }}>
                   {formatDate(rfp.published_at)}
-                </SizableText>
-              </YStack>
-            </XStack>
+                </Text>
+              </Stack>
+            </Row>
           )}
 
-          <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
-            <Award size={14} color="$color11" />
-            <YStack>
-              <SizableText size="$1" color="$color11">Responses</SizableText>
-              <SizableText size="$3" fontWeight="500" color="$color12">
+          <Row style={{ alignItems: 'center', gap: 8, flex: 1, minWidth: 150 }}>
+            <Award size={14} color="var(--color-color11)" />
+            <Stack>
+              <Text style={{ fontSize: 12, color: 'var(--color-color11)' }}>Responses</Text>
+              <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-color12)' }}>
                 {rfp.response_count}
-              </SizableText>
-            </YStack>
-          </XStack>
-        </XStack>
+              </Text>
+            </Stack>
+          </Row>
+        </Row>
 
         {rfp.requirements && Object.keys(rfp.requirements).length > 0 && (
-          <YStack mb="$4" padding="$3" backgroundColor="$color4" borderRadius="$4">
-            <SizableText size="$1" fontWeight="500" color="$color12" mb="$2">
+          <Stack style={{ marginBottom: 16, padding: 12, backgroundColor: 'var(--color-color4)', borderRadius: 12 }}>
+            <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-color12)', marginBottom: 8 }}>
               Requirements
-            </SizableText>
-            <YStack gap="$1">
+            </Text>
+            <Stack style={{ gap: 4 }}>
               {rfp.requirements.insurance && (
-                <SizableText size="$1" color="$color11">
+                <Text style={{ fontSize: 12, color: 'var(--color-color11)' }}>
                   Insurance:{' '}
                   {Array.isArray(rfp.requirements.insurance)
                     ? rfp.requirements.insurance.join(', ')
                     : rfp.requirements.insurance}
-                </SizableText>
+                </Text>
               )}
               {rfp.requirements.certifications && (
-                <SizableText size="$1" color="$color11">
+                <Text style={{ fontSize: 12, color: 'var(--color-color11)' }}>
                   Certifications:{' '}
                   {Array.isArray(rfp.requirements.certifications)
                     ? rfp.requirements.certifications.join(', ')
                     : rfp.requirements.certifications}
-                </SizableText>
+                </Text>
               )}
               {rfp.requirements.minimum_coverage && (
-                <SizableText size="$1" color="$color11">
+                <Text style={{ fontSize: 12, color: 'var(--color-color11)' }}>
                   Min Coverage:{' '}
                   {formatCurrency(rfp.requirements.minimum_coverage)}
-                </SizableText>
+                </Text>
               )}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
-        <XStack alignItems="center" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+        <Row
+          style={{
+            alignItems: 'center',
+            gap: 12,
+            paddingTop: 16,
+            borderTopWidth: 1,
+            borderTopStyle: 'solid',
+            borderTopColor: 'var(--color-border)',
+          }}
+        >
           {userRole === 'subcontractor' && rfp.status === 'published' && (
             <>
               <Button
                 variant="primary"
-                flex={1}
+                style={{ flex: 1 }}
                 onPress={onRespond}
                 disabled={hasResponded}
               >
@@ -261,18 +297,18 @@ export default function RFPCard({
           )}
 
           {userRole === 'manager' && (
-            <Button variant="ghost" flex={1} onPress={onView}>
+            <Button variant="ghost" style={{ flex: 1 }} onPress={onView}>
               View Responses ({rfp.response_count})
             </Button>
           )}
 
           {!userRole && (
-            <Button variant="ghost" flex={1} onPress={onView}>
+            <Button variant="ghost" style={{ flex: 1 }} onPress={onView}>
               View Details
             </Button>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Card>
   );
 }

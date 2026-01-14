@@ -1,6 +1,6 @@
 // src/pages/help/HelpArticle.tsx
 import React from 'react';
-import { YStack, H1, Text, Card, XStack } from '@unicornlove/ui';
+import { Stack, Text, H1 } from '@unicornlove/beyond-ui';
 import { HelpArticle as ArticleType } from '../../services/helpArticleService';
 
 interface HelpArticleProps {
@@ -21,7 +21,7 @@ function markdownToHtml(markdown: string): string {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    
+
     // Empty lines
     if (!line) {
       if (inList) {
@@ -52,10 +52,10 @@ function markdownToHtml(markdown: string): string {
         htmlLines.push('</div>');
         inStepSection = false;
       }
-      
+
       const headerText = line.substring(3);
       const isStep = /^Step \d+:/.test(headerText);
-      
+
       if (isStep) {
         stepNumber++;
         htmlLines.push(`<div class="step-section">`);
@@ -125,7 +125,7 @@ function markdownToHtml(markdown: string): string {
     let processedLine = line;
     processedLine = processedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     processedLine = processedLine.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="help-link">$1</a>');
-    
+
     htmlLines.push(`<p class="help-paragraph">${processedLine}</p>`);
   }
 
@@ -144,27 +144,31 @@ function HelpArticle({ article }: HelpArticleProps) {
   const htmlContent = markdownToHtml(article.content);
 
   return (
-    <YStack maxWidth={900} width="100%">
+    <Stack style={{ maxWidth: 900, width: '100%' }}>
       {/* Hero Section */}
-      <YStack marginBottom="$8">
-        <H1 
-          fontSize="$10" 
-          fontWeight="700" 
-          marginBottom="$3"
-          color="$gray12"
-          lineHeight="$10"
+      <Stack style={{ marginBottom: 'var(--space-8)' }}>
+        <H1
+          style={{
+            fontSize: 'var(--font-size-10)',
+            fontWeight: 700,
+            marginBottom: 'var(--space-3)',
+            color: 'var(--color-gray-12)',
+            lineHeight: 'var(--line-height-10)',
+          }}
         >
           {article.title}
         </H1>
-        <Text 
-          fontSize="$5" 
-          color="$gray11" 
-          lineHeight="$6"
-          marginTop="$2"
+        <Text
+          style={{
+            fontSize: 'var(--font-size-5)',
+            color: 'var(--color-gray-11)',
+            lineHeight: 'var(--line-height-6)',
+            marginTop: 'var(--space-2)',
+          }}
         >
           Welcome to ForSured! This guide will help you set up your account and start managing subcontractor compliance in minutes.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Content with enhanced styling */}
       <div
@@ -258,7 +262,7 @@ function HelpArticle({ article }: HelpArticleProps) {
           font-weight: 600;
         }
       `}</style>
-    </YStack>
+    </Stack>
   );
 }
 

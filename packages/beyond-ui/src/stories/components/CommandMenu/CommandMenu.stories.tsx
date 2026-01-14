@@ -10,7 +10,6 @@ import { CommandMenu } from '../../../components/CommandMenu'
 import { Button } from '../../../components/Button'
 import type { CommandMenuItemData } from '../../../components/CommandMenu'
 import {
-  User,
   FileText,
   Folder,
   Puzzle,

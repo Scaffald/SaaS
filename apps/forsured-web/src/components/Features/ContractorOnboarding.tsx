@@ -14,8 +14,9 @@ import {
   X,
   Eye,
   Download,
+  Loader2,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Button as TamaguiButton, Card, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2, H3, Button, Card } from '@unicornlove/beyond-ui';
 import StatusBadge from '../Common/StatusBadge';
 
 interface UploadedDocument {
@@ -38,6 +39,19 @@ interface CoverageAssessment {
   industryAverage: number;
   status: 'adequate' | 'below-recommended' | 'excellent';
   reasoning: string;
+}
+
+function getStatusColor(status: string): React.CSSProperties {
+  switch (status) {
+    case 'excellent':
+      return { color: 'var(--color-green-11)', backgroundColor: 'var(--color-green-2)' };
+    case 'adequate':
+      return { color: 'var(--color-blue-11)', backgroundColor: 'var(--color-blue-2)' };
+    case 'below-recommended':
+      return { color: 'var(--color-gray-11)', backgroundColor: 'var(--color-gray-2)' };
+    default:
+      return { color: 'var(--color-11)', backgroundColor: 'var(--color-background-hover)' };
+  }
 }
 
 export default function ContractorOnboarding() {
@@ -154,19 +168,6 @@ export default function ContractorOnboarding() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'excellent':
-        return { color: '$green11', backgroundColor: '$green2' };
-      case 'adequate':
-        return { color: '$blue11', backgroundColor: '$blue2' };
-      case 'below-recommended':
-        return { color: '$gray11', backgroundColor: '$gray2' };
-      default:
-        return { color: '$color11', backgroundColor: '$backgroundHover' };
-    }
-  };
-
   const getCompletionPercentage = () => {
     const totalCoverageTypes = 4;
     const adequateCoverage = coverageAssessments.filter(
@@ -176,670 +177,710 @@ export default function ContractorOnboarding() {
   };
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: '24px' }}>
       {/* Header */}
-      <YStack>
-        <H1 fontSize="$8" fontWeight="700" color="$color12">
+      <Stack>
+        <H1 style={{ fontSize: '32px', fontWeight: 700, color: 'var(--color-12)' }}>
           Contractor Onboarding
         </H1>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-11)' }}>
           Upload your insurance documents and get a comprehensive coverage
           assessment
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Progress Steps */}
-      <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-        <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: '8px', border: '1px solid var(--color-border)', padding: '24px' }}>
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
           {steps.map((step, index) => (
-            <XStack key={step.id} alignItems="center" flex={1} minWidth={200}>
-              <XStack alignItems="center">
-                <YStack
-                  width={40}
-                  height={40}
-                  borderRadius={9999}
-                  alignItems="center"
-                  justifyContent="center"
-                  backgroundColor={currentStep >= step.id ? "$blue10" : "$backgroundHover"}
+            <Row key={step.id} style={{ alignItems: 'center', flex: 1, minWidth: 200 }}>
+              <Row style={{ alignItems: 'center' }}>
+                <Stack
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    backgroundColor: currentStep >= step.id ? 'var(--color-blue-10)' : 'var(--color-background-hover)',
+                  }}
                 >
                   {currentStep > step.id ? (
                     <CheckCircle size={20} color="white" />
                   ) : (
                     <Text
-                      fontWeight="500"
-                      color={currentStep >= step.id ? "white" : "$color11"}
+                      style={{
+                        fontWeight: 500,
+                        color: currentStep >= step.id ? 'white' : 'var(--color-11)',
+                      }}
                     >
                       {step.id}
                     </Text>
                   )}
-                </YStack>
-                <YStack ml="$3">
+                </Stack>
+                <Stack style={{ marginLeft: '12px' }}>
                   <Text
-                    fontWeight="500"
-                    color={currentStep >= step.id ? "$color12" : "$color11"}
+                    style={{
+                      fontWeight: 500,
+                      color: currentStep >= step.id ? 'var(--color-12)' : 'var(--color-11)',
+                    }}
                   >
                     {step.title}
                   </Text>
-                  <Text fontSize="$3" color="$color11">
+                  <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                     {step.description}
                   </Text>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
               {index < steps.length - 1 && (
-                <ArrowRight size={20} color="$gray8" marginHorizontal="$6" />
+                <ArrowRight size={20} color="var(--color-gray-8)" style={{ marginLeft: '24px', marginRight: '24px' }} />
               )}
-            </XStack>
+            </Row>
           ))}
-        </XStack>
+        </Row>
       </Card>
 
       {/* Step 1: Document Upload */}
       {currentStep === 1 && (
-        <YStack gap="$6">
-          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-            <XStack alignItems="center" justifyContent="space-between" mb="$6">
-              <H2 fontSize="$6" fontWeight="600" color="$color12">
+        <Stack style={{ gap: '24px' }}>
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: '8px', border: '1px solid var(--color-border)', padding: '24px' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <H2 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-12)' }}>
                 Upload Your Insurance Documents
               </H2>
-              <TamaguiButton
+              <Button
                 onPress={() => setShowUploadModal(true)}
-                backgroundColor="$blue10"
-                color="white"
-                paddingHorizontal="$4"
-                paddingVertical="$2"
-                borderRadius="$4"
-                hoverStyle={{ backgroundColor: '$blue11' }}
+                style={{
+                  backgroundColor: 'var(--color-blue-10)',
+                  color: 'white',
+                  paddingLeft: '16px',
+                  paddingRight: '16px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  borderRadius: '8px',
+                }}
               >
-                <XStack alignItems="center" gap="$2">
-                <Upload size={16} />
+                <Row style={{ alignItems: 'center', gap: '8px' }}>
+                  <Upload size={16} />
                   <Text>Upload Documents</Text>
-                </XStack>
-              </TamaguiButton>
-            </XStack>
+                </Row>
+              </Button>
+            </Row>
 
             {/* Document Types Guide */}
-            <XStack flexWrap="wrap" gap="$4" mb="$6">
-              <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <FileText size={24} color="$blue10" mb="$2" />
-                <H3 fontWeight="500" color="$color12" mb="$1">
+            <Row style={{ flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+              <Card style={{ padding: '16px', border: '1px solid var(--color-border)', borderRadius: '8px', flex: 1, minWidth: '45%' }}>
+                <FileText size={24} color="var(--color-blue-10)" style={{ marginBottom: '8px' }} />
+                <H3 style={{ fontWeight: 500, color: 'var(--color-12)', marginBottom: '4px' }}>
                   Certificate of Insurance
                 </H3>
-                <Text fontSize="$3" color="$color11">
+                <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                   COI documents showing current coverage
                 </Text>
               </Card>
-              <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <Shield size={24} color="$green10" mb="$2" />
-                <H3 fontWeight="500" color="$color12" mb="$1">
+              <Card style={{ padding: '16px', border: '1px solid var(--color-border)', borderRadius: '8px', flex: 1, minWidth: '45%' }}>
+                <Shield size={24} color="var(--color-green-10)" style={{ marginBottom: '8px' }} />
+                <H3 style={{ fontWeight: 500, color: 'var(--color-12)', marginBottom: '4px' }}>
                   Insurance Policies
                 </H3>
-                <Text fontSize="$3" color="$color11">
+                <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                   Full policy documents with terms
                 </Text>
               </Card>
-              <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <Award size={24} color="$gray10" mb="$2" />
-                <H3 fontWeight="500" color="$color12" mb="$1">Licenses</H3>
-                <Text fontSize="$3" color="$color11">
+              <Card style={{ padding: '16px', border: '1px solid var(--color-border)', borderRadius: '8px', flex: 1, minWidth: '45%' }}>
+                <Award size={24} color="var(--color-gray-10)" style={{ marginBottom: '8px' }} />
+                <H3 style={{ fontWeight: 500, color: 'var(--color-12)', marginBottom: '4px' }}>Licenses</H3>
+                <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                   Professional and trade licenses
                 </Text>
               </Card>
-              <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
-                <DollarSign size={24} color="$gray11" mb="$2" />
-                <H3 fontWeight="500" color="$color12" mb="$1">Bonds</H3>
-                <Text fontSize="$3" color="$color11">
+              <Card style={{ padding: '16px', border: '1px solid var(--color-border)', borderRadius: '8px', flex: 1, minWidth: '45%' }}>
+                <DollarSign size={24} color="var(--color-gray-11)" style={{ marginBottom: '8px' }} />
+                <H3 style={{ fontWeight: 500, color: 'var(--color-12)', marginBottom: '4px' }}>Bonds</H3>
+                <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                   Surety bonds and guarantees
                 </Text>
               </Card>
-            </XStack>
+            </Row>
 
             {/* Uploaded Documents */}
-            <YStack gap="$3">
-              <H3 fontWeight="500" color="$color12">
+            <Stack style={{ gap: '12px' }}>
+              <H3 style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                 Uploaded Documents ({uploadedDocs.length})
               </H3>
               {uploadedDocs.map((doc) => (
-                <XStack
+                <Row
                   key={doc.id}
-                  alignItems="center"
-                  justifyContent="space-between"
-                  padding="$4"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '16px',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: '8px',
+                  }}
                 >
-                  <XStack alignItems="center" gap="$3">
-                    <FileText size={20} color="$color10" />
-                    <YStack>
-                      <Text fontWeight="500" color="$color12">
+                  <Row style={{ alignItems: 'center', gap: '12px' }}>
+                    <FileText size={20} color="var(--color-10)" />
+                    <Stack>
+                      <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                         {doc.name}
                       </Text>
-                      <XStack alignItems="center" gap="$2">
-                        <Text fontSize="$3" color="$color11" textTransform="capitalize">
+                      <Row style={{ alignItems: 'center', gap: '8px' }}>
+                        <Text style={{ fontSize: '14px', color: 'var(--color-11)', textTransform: 'capitalize' }}>
                           {doc.type}
                         </Text>
                         {doc.provider && (
                           <>
-                            <Text fontSize="$3" color="$color11">•</Text>
-                            <Text fontSize="$3" color="$color11">{doc.provider}</Text>
+                            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>•</Text>
+                            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>{doc.provider}</Text>
                           </>
                         )}
                         {doc.expiryDate && (
                           <>
-                            <Text fontSize="$3" color="$color11">•</Text>
-                            <Text fontSize="$3" color="$color11">
+                            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>•</Text>
+                            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                               Expires: {doc.expiryDate.toLocaleDateString()}
                             </Text>
                           </>
                         )}
-                      </XStack>
-                    </YStack>
-                  </XStack>
-                  <XStack alignItems="center" gap="$3">
+                      </Row>
+                    </Stack>
+                  </Row>
+                  <Row style={{ alignItems: 'center', gap: '12px' }}>
                     <StatusBadge status={doc.status} size="sm" />
-                    <TamaguiButton unstyled padding="$1" color="$color10" hoverStyle={{ color: '$color11' }}>
+                    <Button style={{ padding: '4px', color: 'var(--color-10)', background: 'none', border: 'none' }}>
                       <Eye size={16} />
-                    </TamaguiButton>
-                    <TamaguiButton unstyled padding="$1" color="$color10" hoverStyle={{ color: '$color11' }}>
+                    </Button>
+                    <Button style={{ padding: '4px', color: 'var(--color-10)', background: 'none', border: 'none' }}>
                       <Download size={16} />
-                    </TamaguiButton>
-                  </XStack>
-                </XStack>
+                    </Button>
+                  </Row>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
 
-            <XStack mt="$6" justifyContent="flex-end">
-              <TamaguiButton
+            <Row style={{ marginTop: '24px', justifyContent: 'flex-end' }}>
+              <Button
                 onPress={() => setCurrentStep(2)}
-                backgroundColor="$blue10"
-                color="white"
-                paddingHorizontal="$6"
-                paddingVertical="$2"
-                borderRadius="$4"
-                hoverStyle={{ backgroundColor: '$blue11' }}
+                style={{
+                  backgroundColor: 'var(--color-blue-10)',
+                  color: 'white',
+                  paddingLeft: '24px',
+                  paddingRight: '24px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  borderRadius: '8px',
+                }}
               >
                 Continue to Review
-              </TamaguiButton>
-            </XStack>
+              </Button>
+            </Row>
           </Card>
-        </YStack>
+        </Stack>
       )}
 
       {/* Step 2: Document Review */}
       {currentStep === 2 && (
-        <YStack gap="$6">
-          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$6">
+        <Stack style={{ gap: '24px' }}>
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: '8px', border: '1px solid var(--color-border)', padding: '24px' }}>
+            <H2 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-12)', marginBottom: '24px' }}>
               Document Verification Status
             </H2>
 
-            <YStack gap="$4">
+            <Stack style={{ gap: '16px' }}>
               {uploadedDocs.map((doc) => (
                 <Card
                   key={doc.id}
-                  padding="$4"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
+                  style={{
+                    padding: '16px',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: '8px',
+                  }}
                 >
-                  <XStack alignItems="center" justifyContent="space-between" mb="$3">
-                    <H3 fontWeight="500" color="$color12">
+                  <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <H3 style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                       {doc.name}
                     </H3>
                     <StatusBadge status={doc.status} />
-                  </XStack>
+                  </Row>
 
                   {doc.status === 'verified' && (
-                    <Card backgroundColor="$green2" padding="$3" borderRadius="$4">
-                      <XStack alignItems="center" gap="$2" mb="$2">
-                        <CheckCircle size={16} color="$green11" />
-                        <Text fontSize="$3" fontWeight="500" color="$green12">
+                    <Card style={{ backgroundColor: 'var(--color-green-2)', padding: '12px', borderRadius: '8px' }}>
+                      <Row style={{ alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <CheckCircle size={16} color="var(--color-green-11)" />
+                        <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-green-12)' }}>
                           Verification Complete
                         </Text>
-                      </XStack>
-                      <XStack flexWrap="wrap" gap="$4">
+                      </Row>
+                      <Row style={{ flexWrap: 'wrap', gap: '16px' }}>
                         {doc.coverage && (
-                          <YStack>
-                            <Text fontSize="$3" color="$color11">
+                          <Stack>
+                            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                               Coverage:
                             </Text>
-                            <Text fontSize="$3" fontWeight="500">
+                            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
                               ${doc.coverage.toLocaleString()}
                             </Text>
-                          </YStack>
+                          </Stack>
                         )}
                         {doc.premium && (
-                          <YStack>
-                            <Text fontSize="$3" color="$color11">
+                          <Stack>
+                            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                               Annual Premium:
                             </Text>
-                            <Text fontSize="$3" fontWeight="500">
+                            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
                               ${doc.premium.toLocaleString()}
                             </Text>
-                          </YStack>
+                          </Stack>
                         )}
                         {doc.policyNumber && (
-                          <YStack>
-                            <Text fontSize="$3" color="$color11">
+                          <Stack>
+                            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                               Policy Number:
                             </Text>
-                            <Text fontSize="$3" fontWeight="500">{doc.policyNumber}</Text>
-                          </YStack>
+                            <Text style={{ fontSize: '14px', fontWeight: 500 }}>{doc.policyNumber}</Text>
+                          </Stack>
                         )}
                         {doc.expiryDate && (
-                          <YStack>
-                            <Text fontSize="$3" color="$color11">
+                          <Stack>
+                            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                               Expires:
                             </Text>
-                            <Text fontSize="$3" fontWeight="500">
+                            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
                               {doc.expiryDate.toLocaleDateString()}
                             </Text>
-                          </YStack>
+                          </Stack>
                         )}
-                      </XStack>
+                      </Row>
                     </Card>
                   )}
 
                   {doc.status === 'processing' && (
-                    <Card backgroundColor="$blue2" padding="$3" borderRadius="$4">
-                      <XStack alignItems="center" gap="$2">
-                        <Spinner size="small" color="$blue10" />
-                        <Text fontSize="$3" color="$blue12">
+                    <Card style={{ backgroundColor: 'var(--color-blue-2)', padding: '12px', borderRadius: '8px' }}>
+                      <Row style={{ alignItems: 'center', gap: '8px' }}>
+                        <Loader2 size={16} color="var(--color-blue-10)" className="animate-spin" />
+                        <Text style={{ fontSize: '14px', color: 'var(--color-blue-12)' }}>
                           Processing document with AI verification...
                         </Text>
-                      </XStack>
+                      </Row>
                     </Card>
                   )}
                 </Card>
               ))}
-            </YStack>
+            </Stack>
 
-            <XStack mt="$6" justifyContent="space-between">
-              <TamaguiButton
+            <Row style={{ marginTop: '24px', justifyContent: 'space-between' }}>
+              <Button
                 onPress={() => setCurrentStep(1)}
-                paddingHorizontal="$6"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                backgroundColor="transparent"
-                hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                style={{
+                  paddingLeft: '24px',
+                  paddingRight: '24px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '8px',
+                  backgroundColor: 'transparent',
+                }}
               >
                 Back
-              </TamaguiButton>
-              <TamaguiButton
+              </Button>
+              <Button
                 onPress={() => setCurrentStep(3)}
-                backgroundColor="$blue10"
-                color="white"
-                paddingHorizontal="$6"
-                paddingVertical="$2"
-                borderRadius="$4"
-                hoverStyle={{ backgroundColor: '$blue11' }}
+                style={{
+                  backgroundColor: 'var(--color-blue-10)',
+                  color: 'white',
+                  paddingLeft: '24px',
+                  paddingRight: '24px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  borderRadius: '8px',
+                }}
               >
                 View Coverage Assessment
-              </TamaguiButton>
-            </XStack>
+              </Button>
+            </Row>
           </Card>
-        </YStack>
+        </Stack>
       )}
 
       {/* Step 3: Coverage Assessment */}
       {currentStep === 3 && (
-        <YStack gap="$6">
+        <Stack style={{ gap: '24px' }}>
           {/* Overall Score */}
-          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-            <XStack alignItems="center" justifyContent="space-between" mb="$6">
-              <YStack>
-                <H2 fontSize="$6" fontWeight="600" color="$color12">
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: '8px', border: '1px solid var(--color-border)', padding: '24px' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <Stack>
+                <H2 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-12)' }}>
                   Coverage Assessment
                 </H2>
-                <Text color="$color11">
+                <Text style={{ color: 'var(--color-11)' }}>
                   How your insurance coverage compares to industry standards
                 </Text>
-              </YStack>
-              <YStack alignItems="center">
-                <XStack
-                  width={80}
-                  height={80}
-                  backgroundColor="$blue2"
-                  borderRadius={9999}
-                  alignItems="center"
-                  justifyContent="center"
-                  mb="$2"
+              </Stack>
+              <Stack style={{ alignItems: 'center' }}>
+                <Row
+                  style={{
+                    width: 80,
+                    height: 80,
+                    backgroundColor: 'var(--color-blue-2)',
+                    borderRadius: '50%',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    marginBottom: '8px',
+                  }}
                 >
-                  <Text fontSize="$8" fontWeight="700" color="$blue11">
+                  <Text style={{ fontSize: '32px', fontWeight: 700, color: 'var(--color-blue-11)' }}>
                     {getCompletionPercentage()}%
                   </Text>
-                </XStack>
-                <Text fontSize="$3" color="$color11">Coverage Score</Text>
-              </YStack>
-            </XStack>
+                </Row>
+                <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>Coverage Score</Text>
+              </Stack>
+            </Row>
 
-            <XStack flexWrap="wrap" gap="$6">
-              <Card alignItems="center" padding="$4" backgroundColor="$green2" borderRadius="$4" flex={1} minWidth="30%">
-                <TrendingUp size={24} color="$green11" mb="$2" />
-                <Text fontWeight="500" color="$green12">Above Average</Text>
-                <Text fontSize="$3" color="$green11">1 coverage type</Text>
+            <Row style={{ flexWrap: 'wrap', gap: '24px' }}>
+              <Card style={{ alignItems: 'center', padding: '16px', backgroundColor: 'var(--color-green-2)', borderRadius: '8px', flex: 1, minWidth: '30%', display: 'flex', flexDirection: 'column' }}>
+                <TrendingUp size={24} color="var(--color-green-11)" style={{ marginBottom: '8px' }} />
+                <Text style={{ fontWeight: 500, color: 'var(--color-green-12)' }}>Above Average</Text>
+                <Text style={{ fontSize: '14px', color: 'var(--color-green-11)' }}>1 coverage type</Text>
               </Card>
-              <Card alignItems="center" padding="$4" backgroundColor="$orange2" borderRadius="$4" flex={1} minWidth="30%">
-                <AlertTriangle size={24} color="$orange11" mb="$2" />
-                <Text fontWeight="500" color="$orange12">Needs Improvement</Text>
-                <Text fontSize="$3" color="$orange11">3 coverage types</Text>
+              <Card style={{ alignItems: 'center', padding: '16px', backgroundColor: 'var(--color-orange-2)', borderRadius: '8px', flex: 1, minWidth: '30%', display: 'flex', flexDirection: 'column' }}>
+                <AlertTriangle size={24} color="var(--color-orange-11)" style={{ marginBottom: '8px' }} />
+                <Text style={{ fontWeight: 500, color: 'var(--color-orange-12)' }}>Needs Improvement</Text>
+                <Text style={{ fontSize: '14px', color: 'var(--color-orange-11)' }}>3 coverage types</Text>
               </Card>
-              <Card alignItems="center" padding="$4" backgroundColor="$blue2" borderRadius="$4" flex={1} minWidth="30%">
-                <Shield size={24} color="$blue11" mb="$2" />
-                <Text fontWeight="500" color="$blue12">Total Coverage</Text>
-                <Text fontSize="$3" color="$blue11">$3M current</Text>
+              <Card style={{ alignItems: 'center', padding: '16px', backgroundColor: 'var(--color-blue-2)', borderRadius: '8px', flex: 1, minWidth: '30%', display: 'flex', flexDirection: 'column' }}>
+                <Shield size={24} color="var(--color-blue-11)" style={{ marginBottom: '8px' }} />
+                <Text style={{ fontWeight: 500, color: 'var(--color-blue-12)' }}>Total Coverage</Text>
+                <Text style={{ fontSize: '14px', color: 'var(--color-blue-11)' }}>$3M current</Text>
               </Card>
-            </XStack>
+            </Row>
           </Card>
 
           {/* Detailed Assessment */}
-          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor">
-            <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-              <H3 fontSize="$6" fontWeight="600" color="$color12">
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+            <Stack style={{ padding: '24px', borderBottom: '1px solid var(--color-border)' }}>
+              <H3 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-12)' }}>
                 Coverage Breakdown
               </H3>
-            </YStack>
-            <YStack padding="$6">
-              <YStack gap="$6">
+            </Stack>
+            <Stack style={{ padding: '24px' }}>
+              <Stack style={{ gap: '24px' }}>
                 {coverageAssessments.map((assessment, index) => (
                   <Card
                     key={index}
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    borderRadius="$4"
-                    padding="$4"
+                    style={{
+                      border: '1px solid var(--color-border)',
+                      borderRadius: '8px',
+                      padding: '16px',
+                    }}
                   >
-                    <XStack alignItems="center" justifyContent="space-between" mb="$3">
-                      <H3 fontWeight="500" color="$color12">
+                    <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <H3 style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                         {assessment.type}
                       </H3>
-                      <XStack
-                        paddingHorizontal="$3"
-                        paddingVertical="$1"
-                        borderRadius={9999}
-                        fontSize="$3"
-                        fontWeight="500"
-                        {...getStatusColor(assessment.status)}
+                      <Row
+                        style={{
+                          paddingLeft: '12px',
+                          paddingRight: '12px',
+                          paddingTop: '4px',
+                          paddingBottom: '4px',
+                          borderRadius: '9999px',
+                          fontSize: '14px',
+                          fontWeight: 500,
+                          ...getStatusColor(assessment.status),
+                        }}
                       >
                         <Text>
-                        {assessment.status
-                          .replace('-', ' ')
-                          .replace(/\b\w/g, (l) => l.toUpperCase())}
+                          {assessment.status
+                            .replace('-', ' ')
+                            .replace(/\b\w/g, (l) => l.toUpperCase())}
                         </Text>
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
 
-                    <XStack gap="$4" mb="$4">
-                      <YStack alignItems="center" flex={1}>
-                        <Text fontSize="$3" color="$color11">
+                    <Row style={{ gap: '16px', marginBottom: '16px' }}>
+                      <Stack style={{ alignItems: 'center', flex: 1 }}>
+                        <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                           Your Coverage
                         </Text>
-                        <Text fontSize="$6" fontWeight="700" color="$color12">
+                        <Text style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-12)' }}>
                           {assessment.current > 0
                             ? `$${(assessment.current / 1000000).toFixed(1)}M`
                             : 'None'}
                         </Text>
-                      </YStack>
-                      <YStack alignItems="center" flex={1}>
-                        <Text fontSize="$3" color="$color11">
+                      </Stack>
+                      <Stack style={{ alignItems: 'center', flex: 1 }}>
+                        <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                           Recommended
                         </Text>
-                        <Text fontSize="$6" fontWeight="700" color="$blue11">
+                        <Text style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-blue-11)' }}>
                           ${(assessment.recommended / 1000000).toFixed(1)}M
                         </Text>
-                      </YStack>
-                      <YStack alignItems="center" flex={1}>
-                        <Text fontSize="$3" color="$color11">
+                      </Stack>
+                      <Stack style={{ alignItems: 'center', flex: 1 }}>
+                        <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                           Industry Average
                         </Text>
-                        <Text fontSize="$6" fontWeight="700" color="$color11">
+                        <Text style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-11)' }}>
                           ${(assessment.industryAverage / 1000000).toFixed(1)}M
                         </Text>
-                      </YStack>
-                    </XStack>
+                      </Stack>
+                    </Row>
 
-                    <Card backgroundColor="$backgroundHover" padding="$3" borderRadius="$4">
-                      <XStack alignItems="flex-start" gap="$2">
-                        <Info size={16} color="$blue11" mt="$0.5" />
-                        <Text fontSize="$3" color="$color12">
+                    <Card style={{ backgroundColor: 'var(--color-background-hover)', padding: '12px', borderRadius: '8px' }}>
+                      <Row style={{ alignItems: 'flex-start', gap: '8px' }}>
+                        <Info size={16} color="var(--color-blue-11)" style={{ marginTop: '2px' }} />
+                        <Text style={{ fontSize: '14px', color: 'var(--color-12)' }}>
                           {assessment.reasoning}
                         </Text>
-                      </XStack>
+                      </Row>
                     </Card>
                   </Card>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           </Card>
 
-          <XStack justifyContent="space-between">
-            <TamaguiButton
+          <Row style={{ justifyContent: 'space-between' }}>
+            <Button
               onPress={() => setCurrentStep(2)}
-              paddingHorizontal="$6"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              backgroundColor="transparent"
-              hoverStyle={{ backgroundColor: '$backgroundHover' }}
+              style={{
+                paddingLeft: '24px',
+                paddingRight: '24px',
+                paddingTop: '8px',
+                paddingBottom: '8px',
+                border: '1px solid var(--color-border)',
+                borderRadius: '8px',
+                backgroundColor: 'transparent',
+              }}
             >
               Back
-            </TamaguiButton>
-            <TamaguiButton
+            </Button>
+            <Button
               onPress={() => setCurrentStep(4)}
-              backgroundColor="$blue10"
-              color="white"
-              paddingHorizontal="$6"
-              paddingVertical="$2"
-              borderRadius="$4"
-              hoverStyle={{ backgroundColor: '$blue11' }}
+              style={{
+                backgroundColor: 'var(--color-blue-10)',
+                color: 'white',
+                paddingLeft: '24px',
+                paddingRight: '24px',
+                paddingTop: '8px',
+                paddingBottom: '8px',
+                borderRadius: '8px',
+              }}
             >
               Get Recommendations
-            </TamaguiButton>
-          </XStack>
-        </YStack>
+            </Button>
+          </Row>
+        </Stack>
       )}
 
       {/* Step 4: Recommendations */}
       {currentStep === 4 && (
-        <YStack gap="$6">
-          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-            <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$6">
+        <Stack style={{ gap: '24px' }}>
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: '8px', border: '1px solid var(--color-border)', padding: '24px' }}>
+            <H2 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-12)', marginBottom: '24px' }}>
               Personalized Coverage Recommendations
             </H2>
 
-            <YStack gap="$6">
+            <Stack style={{ gap: '24px' }}>
               {/* Priority Recommendations */}
-              <Card backgroundColor="$orange2" borderWidth={1} borderColor="$orange6" borderRadius="$4" padding="$4">
-                <XStack alignItems="center" gap="$2" mb="$3">
-                  <AlertTriangle size={20} color="$orange11" />
-                  <H3 fontWeight="500" color="$orange12">
+              <Card style={{ backgroundColor: 'var(--color-orange-2)', border: '1px solid var(--color-orange-6)', borderRadius: '8px', padding: '16px' }}>
+                <Row style={{ alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <AlertTriangle size={20} color="var(--color-orange-11)" />
+                  <H3 style={{ fontWeight: 500, color: 'var(--color-orange-12)' }}>
                     Priority Actions
                   </H3>
-                </XStack>
-                <YStack gap="$3">
-                  <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$background" borderRadius="$4">
-                    <YStack>
-                      <Text fontWeight="500" color="$color12">
+                </Row>
+                <Stack style={{ gap: '12px' }}>
+                  <Row style={{ alignItems: 'center', justifyContent: 'space-between', padding: '12px', backgroundColor: 'var(--color-background)', borderRadius: '8px' }}>
+                    <Stack>
+                      <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                         Increase Workers Compensation
                       </Text>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                         From $1M to $1.5M coverage
                       </Text>
-                    </YStack>
-                    <TamaguiButton backgroundColor="$orange10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$orange11' }}>
+                    </Stack>
+                    <Button style={{ backgroundColor: 'var(--color-orange-10)', color: 'white', paddingLeft: '16px', paddingRight: '16px', paddingTop: '8px', paddingBottom: '8px', borderRadius: '8px' }}>
                       Get Quote
-                    </TamaguiButton>
-                  </XStack>
-                  <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$background" borderRadius="$4">
-                    <YStack>
-                      <Text fontWeight="500" color="$color12">
+                    </Button>
+                  </Row>
+                  <Row style={{ alignItems: 'center', justifyContent: 'space-between', padding: '12px', backgroundColor: 'var(--color-background)', borderRadius: '8px' }}>
+                    <Stack>
+                      <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                         Add Professional Liability
                       </Text>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                         $1M coverage recommended
                       </Text>
-                    </YStack>
-                    <TamaguiButton backgroundColor="$orange10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$orange11' }}>
+                    </Stack>
+                    <Button style={{ backgroundColor: 'var(--color-orange-10)', color: 'white', paddingLeft: '16px', paddingRight: '16px', paddingTop: '8px', paddingBottom: '8px', borderRadius: '8px' }}>
                       Get Quote
-                    </TamaguiButton>
-                  </XStack>
-                </YStack>
+                    </Button>
+                  </Row>
+                </Stack>
               </Card>
 
               {/* Additional Recommendations */}
-              <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
-                <XStack alignItems="center" gap="$2" mb="$3">
-                  <Info size={20} color="$blue11" />
-                  <H3 fontWeight="500" color="$blue12">
+              <Card style={{ backgroundColor: 'var(--color-blue-2)', border: '1px solid var(--color-blue-6)', borderRadius: '8px', padding: '16px' }}>
+                <Row style={{ alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <Info size={20} color="var(--color-blue-11)" />
+                  <H3 style={{ fontWeight: 500, color: 'var(--color-blue-12)' }}>
                     Additional Recommendations
                   </H3>
-                </XStack>
-                <YStack gap="$3">
-                  <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$background" borderRadius="$4">
-                    <YStack>
-                      <Text fontWeight="500" color="$color12">
+                </Row>
+                <Stack style={{ gap: '12px' }}>
+                  <Row style={{ alignItems: 'center', justifyContent: 'space-between', padding: '12px', backgroundColor: 'var(--color-background)', borderRadius: '8px' }}>
+                    <Stack>
+                      <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                         Commercial Auto Insurance
                       </Text>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                         $1M coverage for business vehicles
                       </Text>
-                    </YStack>
-                    <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
+                    </Stack>
+                    <Button style={{ backgroundColor: 'var(--color-blue-10)', color: 'white', paddingLeft: '16px', paddingRight: '16px', paddingTop: '8px', paddingBottom: '8px', borderRadius: '8px' }}>
                       Get Quote
-                    </TamaguiButton>
-                  </XStack>
-                  <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$background" borderRadius="$4">
-                    <YStack>
-                      <Text fontWeight="500" color="$color12">
+                    </Button>
+                  </Row>
+                  <Row style={{ alignItems: 'center', justifyContent: 'space-between', padding: '12px', backgroundColor: 'var(--color-background)', borderRadius: '8px' }}>
+                    <Stack>
+                      <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                         Umbrella Policy
                       </Text>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                         $5M additional liability protection
                       </Text>
-                    </YStack>
-                    <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
+                    </Stack>
+                    <Button style={{ backgroundColor: 'var(--color-blue-10)', color: 'white', paddingLeft: '16px', paddingRight: '16px', paddingTop: '8px', paddingBottom: '8px', borderRadius: '8px' }}>
                       Get Quote
-                    </TamaguiButton>
-                  </XStack>
-                </YStack>
+                    </Button>
+                  </Row>
+                </Stack>
               </Card>
 
               {/* Cost Estimate */}
-              <Card backgroundColor="$green2" borderWidth={1} borderColor="$green6" borderRadius="$4" padding="$4">
-                <H3 fontWeight="500" color="$green12" mb="$3">
+              <Card style={{ backgroundColor: 'var(--color-green-2)', border: '1px solid var(--color-green-6)', borderRadius: '8px', padding: '16px' }}>
+                <H3 style={{ fontWeight: 500, color: 'var(--color-green-12)', marginBottom: '12px' }}>
                   Estimated Annual Cost
                 </H3>
-                <XStack gap="$4">
-                  <YStack flex={1}>
-                    <Text fontSize="$3" color="$color11">
+                <Row style={{ gap: '16px' }}>
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                       Current Annual Premium
                     </Text>
-                    <Text fontSize="$8" fontWeight="700" color="$color12">
+                    <Text style={{ fontSize: '32px', fontWeight: 700, color: 'var(--color-12)' }}>
                       $5,600
                     </Text>
-                  </YStack>
-                  <YStack flex={1}>
-                    <Text fontSize="$3" color="$color11">
+                  </Stack>
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                       With Recommendations
                     </Text>
-                    <Text fontSize="$8" fontWeight="700" color="$green11">
+                    <Text style={{ fontSize: '32px', fontWeight: 700, color: 'var(--color-green-11)' }}>
                       $8,400
                     </Text>
-                  </YStack>
-                </XStack>
-                <Text fontSize="$3" color="$green12" mt="$2">
+                  </Stack>
+                </Row>
+                <Text style={{ fontSize: '14px', color: 'var(--color-green-12)', marginTop: '8px' }}>
                   Additional $2,800/year for comprehensive coverage that meets
                   industry standards
                 </Text>
               </Card>
-            </YStack>
+            </Stack>
 
-            <XStack mt="$6" justifyContent="space-between">
-              <TamaguiButton
+            <Row style={{ marginTop: '24px', justifyContent: 'space-between' }}>
+              <Button
                 onPress={() => setCurrentStep(3)}
-                paddingHorizontal="$6"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                backgroundColor="transparent"
-                hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                style={{
+                  paddingLeft: '24px',
+                  paddingRight: '24px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '8px',
+                  backgroundColor: 'transparent',
+                }}
               >
                 Back
-              </TamaguiButton>
-              <XStack gap="$3">
-                <TamaguiButton backgroundColor="$green10" color="white" paddingHorizontal="$6" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$green11' }}>
+              </Button>
+              <Row style={{ gap: '12px' }}>
+                <Button style={{ backgroundColor: 'var(--color-green-10)', color: 'white', paddingLeft: '24px', paddingRight: '24px', paddingTop: '8px', paddingBottom: '8px', borderRadius: '8px' }}>
                   Shop Insurance
-                </TamaguiButton>
-                <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$6" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
+                </Button>
+                <Button style={{ backgroundColor: 'var(--color-blue-10)', color: 'white', paddingLeft: '24px', paddingRight: '24px', paddingTop: '8px', paddingBottom: '8px', borderRadius: '8px' }}>
                   Complete Onboarding
-                </TamaguiButton>
-              </XStack>
-            </XStack>
+                </Button>
+              </Row>
+            </Row>
           </Card>
-        </YStack>
+        </Stack>
       )}
 
       {/* Upload Modal */}
       {showUploadModal && (
-        <YStack
-          position="fixed"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          zIndex={50}
+        <Stack
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            display: 'flex',
+            zIndex: 50,
+          }}
         >
-          <Card backgroundColor="$background" borderRadius="$4" padding="$6" width="100%" maxWidth={600}>
-            <XStack alignItems="center" justifyContent="space-between" mb="$4">
-              <H3 fontSize="$6" fontWeight="600" color="$color12">
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: '8px', padding: '24px', width: '100%', maxWidth: 600 }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <H3 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-12)' }}>
                 Upload Documents
               </H3>
-              <TamaguiButton unstyled onPress={() => setShowUploadModal(false)} color="$color10" hoverStyle={{ color: '$color11' }}>
+              <Button onPress={() => setShowUploadModal(false)} style={{ color: 'var(--color-10)', background: 'none', border: 'none' }}>
                 <X size={20} />
-              </TamaguiButton>
-            </XStack>
+              </Button>
+            </Row>
 
-            <YStack
-              borderWidth={2}
-              borderStyle="dashed"
-              borderRadius="$4"
-              padding="$8"
-              alignItems="center"
-              borderColor={dragActive ? '$blue10' : '$borderColor'}
-              backgroundColor={dragActive ? '$blue2' : 'transparent'}
+            <Stack
+              style={{
+                border: '2px dashed',
+                borderRadius: '8px',
+                padding: '32px',
+                alignItems: 'center',
+                display: 'flex',
+                borderColor: dragActive ? 'var(--color-blue-10)' : 'var(--color-border)',
+                backgroundColor: dragActive ? 'var(--color-blue-2)' : 'transparent',
+              }}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
-              <Upload size={48} color="$color10" mb="$4" />
-              <Text fontSize="$6" fontWeight="500" color="$color12" mb="$2">
+              <Upload size={48} color="var(--color-10)" style={{ marginBottom: '16px' }} />
+              <Text style={{ fontSize: '24px', fontWeight: 500, color: 'var(--color-12)', marginBottom: '8px' }}>
                 Drop files here or click to upload
               </Text>
-              <Text fontSize="$3" color="$color11" mb="$4">
+              <Text style={{ fontSize: '14px', color: 'var(--color-11)', marginBottom: '16px' }}>
                 Supported formats: PDF, JPG, PNG (max 10MB)
               </Text>
-              <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
+              <Button style={{ backgroundColor: 'var(--color-blue-10)', color: 'white', paddingLeft: '16px', paddingRight: '16px', paddingTop: '8px', paddingBottom: '8px', borderRadius: '8px' }}>
                 Choose Files
-              </TamaguiButton>
-            </YStack>
+              </Button>
+            </Stack>
 
-            <YStack mt="$4">
-              <Text fontSize="$2" color="$color11">• Certificates of Insurance (COI)</Text>
-              <Text fontSize="$2" color="$color11">• Full insurance policies</Text>
-              <Text fontSize="$2" color="$color11">• Professional licenses</Text>
-              <Text fontSize="$2" color="$color11">• Surety bonds</Text>
-            </YStack>
+            <Stack style={{ marginTop: '16px' }}>
+              <Text style={{ fontSize: '12px', color: 'var(--color-11)' }}>• Certificates of Insurance (COI)</Text>
+              <Text style={{ fontSize: '12px', color: 'var(--color-11)' }}>• Full insurance policies</Text>
+              <Text style={{ fontSize: '12px', color: 'var(--color-11)' }}>• Professional licenses</Text>
+              <Text style={{ fontSize: '12px', color: 'var(--color-11)' }}>• Surety bonds</Text>
+            </Stack>
           </Card>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }

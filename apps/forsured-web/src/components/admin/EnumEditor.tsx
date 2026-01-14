@@ -1,6 +1,6 @@
 // src/components/admin/EnumEditor.tsx
 import React, { useState, useEffect } from 'react';
-import { YStack, XStack, Text, H3, Card, Button, Input, Label } from '@unicornlove/ui';
+import { Stack, Row, Text, H3, Card, Button, Input, Label } from '@unicornlove/beyond-ui';
 
 interface EnumValue {
   id: string;
@@ -39,55 +39,55 @@ function EnumEditor({ enumValue, onSubmit, onCancel, isLoading = false }: EnumEd
   };
 
   return (
-    <Card padding="$4" borderWidth={1} borderRadius="$4" elevation={1} backgroundColor="$background">
-      <H3 fontSize="$6" fontWeight="600" mb="$4">{enumValue ? 'Edit Enum Value' : 'Add New Enum Value'}</H3>
+    <Card style={{ padding: 16, borderWidth: 1, borderRadius: 12, backgroundColor: 'var(--color-background)' }}>
+      <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>{enumValue ? 'Edit Enum Value' : 'Add New Enum Value'}</H3>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
-          <YStack gap="$2">
+        <Stack style={{ gap: 16 }}>
+          <Stack style={{ gap: 8 }}>
             <Label>Value</Label>
             <Input
               type="text"
               value={value}
-              onChangeText={setValue}
+              onChange={(e) => setValue(e.target.value)}
               required
               disabled={!!enumValue}
             />
-          </YStack>
-          <YStack gap="$2">
+          </Stack>
+          <Stack style={{ gap: 8 }}>
             <Label>Display Name</Label>
             <Input
               type="text"
               value={displayName}
-              onChangeText={setDisplayName}
+              onChange={(e) => setDisplayName(e.target.value)}
               required
             />
-          </YStack>
-          <YStack gap="$2">
+          </Stack>
+          <Stack style={{ gap: 8 }}>
             <Label>Sort Order</Label>
             <Input
               type="number"
               value={sortOrder.toString()}
-              onChangeText={(val) => setSortOrder(parseInt(val) || 0)}
+              onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
               required
             />
-          </YStack>
-          <XStack alignItems="center" gap="$2">
+          </Stack>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
             <input
               type="checkbox"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
             />
             <Label>Is Active</Label>
-          </XStack>
-          <XStack justifyContent="flex-end" gap="$2">
+          </Row>
+          <Row style={{ justifyContent: 'flex-end', gap: 8 }}>
             <Button variant="outlined" onPress={onCancel} disabled={isLoading}>
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
               {enumValue ? 'Save Changes' : 'Add Value'}
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </form>
     </Card>
   );

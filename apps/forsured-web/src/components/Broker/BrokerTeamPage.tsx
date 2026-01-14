@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Users, UserPlus, Shield, Mail } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2, Card } from '@unicornlove/beyond-ui';
 import { useUsers } from '../../hooks/useUsers';
 import { useClients } from '../../hooks/useClients';
 import Button from '../Common/Button';
@@ -20,252 +20,251 @@ export default function BrokerTeamPage() {
     return <DashboardSkeleton />;
   }
 
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: 'var(--color-background)',
+    borderRadius: 12,
+    padding: 24,
+    border: '1px solid var(--color-border)',
+    flex: 1,
+    minWidth: '30%',
+  };
+
+  const iconBoxStyle = (color: string): React.CSSProperties => ({
+    backgroundColor: `var(--color-${color}-3)`,
+    padding: 12,
+    borderRadius: 8,
+  });
+
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1 fontSize="$8" fontWeight="bold" color="$color12">
+    <Stack gap={24}>
+      <Row alignItems="center" justifyContent="space-between">
+        <Stack>
+          <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>
             Team Management
           </H1>
-          <Text color="$color11">
+          <Text muted>
             Manage your broker team and client assignments
           </Text>
-        </YStack>
-        <Button
-          onClick={() => setIsInviteModalOpen(true)}
-        >
-          <UserPlus size={18} />
-          <Text ml="$2">Invite Team Member</Text>
+        </Stack>
+        <Button onPress={() => setIsInviteModalOpen(true)}>
+          <Row alignItems="center" gap={8}>
+            <UserPlus size={18} />
+            <span>Invite Team Member</span>
+          </Row>
         </Button>
-      </XStack>
+      </Row>
 
-      <XStack
-        flexDirection="column"
-        $gtMd={{ flexDirection: 'row' }}
-        gap="$6"
-        flexWrap="wrap"
-      >
-        <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="30%"
-        >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Total Team Members</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
+      <Row gap={24} style={{ flexWrap: 'wrap' }}>
+        <Card style={cardStyle}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text size="sm" muted>Total Team Members</Text>
+              <Text size="2xl" weight="bold" style={{ marginTop: 4 }}>
                 {brokerUsers.length}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$blue3" padding="$3" borderRadius="$4">
-              <Users color="$blue10" size={24} />
-            </YStack>
-          </XStack>
+            </Stack>
+            <div style={iconBoxStyle('blue')}>
+              <Users size={24} style={{ color: 'var(--color-blue-10)' }} />
+            </div>
+          </Row>
         </Card>
 
-        <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="30%"
-        >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Administrators</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$purple10" mt="$1">
+        <Card style={cardStyle}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text size="sm" muted>Administrators</Text>
+              <Text size="2xl" weight="bold" style={{ color: 'var(--color-purple-10)', marginTop: 4 }}>
                 {adminUsers.length}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$purple3" padding="$3" borderRadius="$4">
-              <Shield color="$purple10" size={24} />
-            </YStack>
-          </XStack>
+            </Stack>
+            <div style={iconBoxStyle('purple')}>
+              <Shield size={24} style={{ color: 'var(--color-purple-10)' }} />
+            </div>
+          </Row>
         </Card>
 
-        <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="30%"
-        >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Workers</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
+        <Card style={cardStyle}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text size="sm" muted>Workers</Text>
+              <Text size="2xl" weight="bold" style={{ color: 'var(--color-blue-10)', marginTop: 4 }}>
                 {workerUsers.length}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$blue3" padding="$3" borderRadius="$4">
-              <Users color="$blue10" size={24} />
-            </YStack>
-          </XStack>
+            </Stack>
+            <div style={iconBoxStyle('blue')}>
+              <Users size={24} style={{ color: 'var(--color-blue-10)' }} />
+            </div>
+          </Row>
         </Card>
-      </XStack>
+      </Row>
 
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={1}
-        borderWidth={1}
-        borderColor="$borderColor"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          border: '1px solid var(--color-border)',
+        }}
       >
-        <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-          <H2 fontSize="$6" fontWeight="600" color="$color12">
+        <Stack padding={24} style={{ borderBottom: '1px solid var(--color-border)' }}>
+          <H2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}>
             Team Members
           </H2>
-        </YStack>
+        </Stack>
 
-        <YStack>
+        <Stack>
           {brokerUsers.map((user, index) => (
-            <YStack
+            <Stack
               key={user.id}
-              padding="$6"
-              hoverStyle={{ backgroundColor: '$gray2' }}
-              borderTopWidth={index > 0 ? 1 : 0}
-              borderColor="$borderColor"
+              padding={24}
+              style={{
+                borderTop: index > 0 ? '1px solid var(--color-border)' : 'none',
+              }}
             >
-              <XStack alignItems="center" justifyContent="space-between">
-                <XStack alignItems="center" gap="$4">
-                  <YStack
-                    width={48}
-                    height={48}
-                    backgroundColor="$blue3"
-                    borderRadius={9999}
+              <Row alignItems="center" justifyContent="space-between">
+                <Row alignItems="center" gap={16}>
+                  <Stack
                     alignItems="center"
                     justifyContent="center"
+                    style={{
+                      width: 48,
+                      height: 48,
+                      backgroundColor: 'var(--color-blue-3)',
+                      borderRadius: 9999,
+                    }}
                   >
-                    <Text fontSize="$6" fontWeight="600" color="$blue10">
+                    <Text size="lg" weight="semibold" style={{ color: 'var(--color-blue-10)' }}>
                       {user.name
                         .split(' ')
                         .map((n) => n[0])
                         .join('')}
                     </Text>
-                  </YStack>
-                  <YStack>
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                  </Stack>
+                  <Stack>
+                    <Text size="md" weight="semibold">
                       {user.name}
                     </Text>
-                    <XStack alignItems="center" gap="$4" mt="$1">
-                      <XStack alignItems="center" color="$color11" fontSize="$3">
-                        <Mail size={14} mr="$1" color="$color11" />
-                        <Text fontSize="$3" color="$color11">{user.email}</Text>
-                      </XStack>
-                      <XStack
-                        alignItems="center"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
-                        fontSize="$1"
-                        fontWeight="500"
-                        borderWidth={1}
-                        backgroundColor={user.broker_role === 'admin' ? '$purple2' : '$blue2'}
-                        color={user.broker_role === 'admin' ? '$purple11' : '$blue11'}
-                        borderColor={user.broker_role === 'admin' ? '$purple6' : '$blue6'}
+                    <Row alignItems="center" gap={16} style={{ marginTop: 4 }}>
+                      <Row alignItems="center" gap={4}>
+                        <Mail size={14} style={{ color: 'var(--color-text-muted)' }} />
+                        <Text size="sm" muted>{user.email}</Text>
+                      </Row>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 2,
+                          paddingBottom: 2,
+                          borderRadius: 4,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          border: '1px solid',
+                          backgroundColor: user.broker_role === 'admin' ? 'var(--color-purple-2)' : 'var(--color-blue-2)',
+                          color: user.broker_role === 'admin' ? 'var(--color-purple-11)' : 'var(--color-blue-11)',
+                          borderColor: user.broker_role === 'admin' ? 'var(--color-purple-6)' : 'var(--color-blue-6)',
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color={user.broker_role === 'admin' ? '$purple11' : '$blue11'}>
-                          {user.broker_role === 'admin'
-                            ? 'Administrator'
-                            : 'Worker'}
-                        </Text>
-                      </XStack>
-                    </XStack>
-                  </YStack>
-                </XStack>
+                        {user.broker_role === 'admin' ? 'Administrator' : 'Worker'}
+                      </span>
+                    </Row>
+                  </Stack>
+                </Row>
 
-                <XStack alignItems="center" gap="$2">
-                  <Button variant="ghost" size="$2">
+                <Row alignItems="center" gap={8}>
+                  <Button variant="ghost" size="sm">
                     Edit Access
                   </Button>
-                  <Button variant="ghost" size="$2">
+                  <Button variant="ghost" size="sm">
                     View Activity
                   </Button>
-                </XStack>
-              </XStack>
+                </Row>
+              </Row>
 
-              <YStack mt="$4" paddingLeft={64}>
-                <YStack backgroundColor="$gray2" borderRadius="$4" padding="$4">
-                  <Text fontSize="$1" fontWeight="500" color="$color11" mb="$2">
+              <Stack style={{ marginTop: 16, paddingLeft: 64 }}>
+                <Stack
+                  style={{
+                    backgroundColor: 'var(--color-gray-2)',
+                    borderRadius: 8,
+                    padding: 16,
+                  }}
+                >
+                  <Text size="xs" weight="medium" muted style={{ marginBottom: 8 }}>
                     CLIENT ASSIGNMENTS
                   </Text>
-                  <XStack flexWrap="wrap" gap="$2">
+                  <Row gap={8} style={{ flexWrap: 'wrap' }}>
                     {clients.slice(0, 3).map((client) => (
-                      <XStack
+                      <span
                         key={client.id}
-                        alignItems="center"
-                        paddingHorizontal="$3"
-                        paddingVertical="$1"
-                        borderRadius={9999}
-                        fontSize="$1"
-                        fontWeight="500"
-                        backgroundColor="$background"
-                        borderWidth={1}
-                        borderColor="$borderColor"
-                        color="$color12"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: 12,
+                          paddingRight: 12,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 9999,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          backgroundColor: 'var(--color-background)',
+                          border: '1px solid var(--color-border)',
+                          color: 'var(--color-text)',
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color="$color12">
-                          {client.company_name}
-                        </Text>
-                      </XStack>
+                        {client.company_name}
+                      </span>
                     ))}
                     {clients.length > 3 && (
-                      <XStack
-                        alignItems="center"
-                        paddingHorizontal="$3"
-                        paddingVertical="$1"
-                        borderRadius={9999}
-                        fontSize="$1"
-                        fontWeight="500"
-                        backgroundColor="$blue2"
-                        color="$blue11"
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: 12,
+                          paddingRight: 12,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 9999,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          backgroundColor: 'var(--color-blue-2)',
+                          color: 'var(--color-blue-11)',
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color="$blue11">
-                          +{clients.length - 3} more
-                        </Text>
-                      </XStack>
+                        +{clients.length - 3} more
+                      </span>
                     )}
-                  </XStack>
-                </YStack>
-              </YStack>
-            </YStack>
+                  </Row>
+                </Stack>
+              </Stack>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       </Card>
 
       {brokerUsers.length === 0 && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$12"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 12,
+            border: '1px solid var(--color-border)',
+            padding: 48,
+          }}
         >
-          <YStack alignItems="center">
-            <Users color="$color10" size={48} mb="$4" />
-            <Text color="$color12" fontWeight="500" mb="$2">
+          <Stack alignItems="center">
+            <Users size={48} style={{ color: 'var(--color-text-muted)', marginBottom: 16 }} />
+            <Text weight="medium" style={{ marginBottom: 8 }}>
               No team members yet
             </Text>
-            <Text fontSize="$3" color="$color11" mb="$4">
+            <Text size="sm" muted style={{ marginBottom: 16 }}>
               Invite team members to collaborate
             </Text>
-            <Button onClick={() => setIsInviteModalOpen(true)}>
-              <UserPlus size={18} mr="$2" />
-              Invite Team Member
+            <Button onPress={() => setIsInviteModalOpen(true)}>
+              <Row alignItems="center" gap={8}>
+                <UserPlus size={18} />
+                <span>Invite Team Member</span>
+              </Row>
             </Button>
-          </YStack>
+          </Stack>
         </Card>
       )}
 
@@ -277,6 +276,6 @@ export default function BrokerTeamPage() {
           fetchUsers();
         }}
       />
-    </YStack>
+    </Stack>
   );
 }

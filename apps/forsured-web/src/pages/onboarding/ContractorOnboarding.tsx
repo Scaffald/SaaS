@@ -1,7 +1,7 @@
 // src/pages/onboarding/ContractorOnboarding.tsx
 // REQ-126: Contractor Onboarding Page
 import React from 'react';
-import { View } from '@unicornlove/ui';
+import { Stack } from '@unicornlove/beyond-ui';
 import { useOnboarding } from '../../hooks/useOnboarding';
 import OnboardingWizard from '../../components/Onboarding/OnboardingWizard';
 import CompanyStep from '../../components/Onboarding/steps/contractor/CompanyStep';
@@ -67,7 +67,7 @@ function ContractorOnboarding() {
   };
 
   return (
-    <View flex={1}>
+    <Stack style={{ flex: 1 }}>
       <OnboardingWizard
         userType="contractor"
         currentStep={currentStep}
@@ -80,7 +80,7 @@ function ContractorOnboarding() {
       >
         {renderStepContent()}
       </OnboardingWizard>
-    </View>
+    </Stack>
   );
 }
 

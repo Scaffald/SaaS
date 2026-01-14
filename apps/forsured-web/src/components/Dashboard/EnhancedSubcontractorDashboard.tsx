@@ -1,3 +1,7 @@
+/**
+ * EnhancedSubcontractorDashboard - Subcontractor dashboard using Beyond UI
+ * Migrated from Tamagui to Beyond UI
+ */
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -14,7 +18,8 @@ import {
   X,
   Briefcase,
 } from 'lucide-react';
-import { EmptyState, YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
 import { useTasks } from '../../hooks/useTasks';
 import { Task, SubcontractorTaskMetadata } from '../../types';
 import ComplianceScore from '../Common/ComplianceScore';
@@ -128,13 +133,13 @@ export default function EnhancedSubcontractorDashboard() {
   // Show empty state when no tasks/projects assigned
   if (!loading && tasks.length === 0) {
     return (
-      <YStack gap="$6">
-        <YStack>
-          <Text fontSize="$8" fontWeight="700" color="$color12">{t('nav.dashboard')}</Text>
-          <Text color="$color11">
+      <Stack gap={16}>
+        <Stack>
+          <Text size="sm" weight="medium" >{t('nav.dashboard')}</Text>
+          <Text >
             Track your compliance status and manage documents
           </Text>
-        </YStack>
+        </Stack>
         <EmptyState
           icon={Briefcase}
           title="No Active Projects"
@@ -144,120 +149,120 @@ export default function EnhancedSubcontractorDashboard() {
             onClick: () => navigate('/subcontractor/documents'),
           }}
         />
-      </YStack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$6">
-      <YStack>
-        <Text fontSize="$8" fontWeight="700" color="$color12">{t('nav.dashboard')}</Text>
-        <Text color="$color11">
+    <Stack gap={16}>
+      <Stack>
+        <Text size="sm" weight="medium" >{t('nav.dashboard')}</Text>
+        <Text >
           Track your compliance status and manage documents
         </Text>
-      </YStack>
+      </Stack>
 
-      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6">
-        <XStack alignItems="center" justifyContent="space-between" mb="$6">
-          <YStack>
-            <Text fontSize="$6" fontWeight="600" color="$color12">
+      <Card style={{backgroundColor: 'var(--color-background)'}} style={{borderRadius: 8}} borderWidth={1} style={{borderColor: 'var(--color-border)'}} padding={16}>
+        <Row alignItems="center" justifyContent="space-between" style={{marginBottom: 16}}>
+          <Stack>
+            <Text size="sm" weight="medium" >
               Compliance Status
             </Text>
-            <Text color="$color11">
+            <Text >
               Your overall compliance health score
             </Text>
-          </YStack>
+          </Stack>
           <ComplianceScore score={complianceScore} trend="up" size="lg" />
-        </XStack>
+        </Row>
 
-        <XStack flexWrap="wrap" gap="$4">
-          <YStack flex={1} minWidth={200} alignItems="center" padding="$4" backgroundColor="$green2" borderRadius="$4">
+        <Row flexWrap="wrap" gap={16}>
+          <Stack flex={1} minWidth={200} alignItems="center" padding={16} style={{backgroundColor: 'var(--color-green-2)'}} style={{borderRadius: 8}}>
             <CheckCircle color="var(--green10)" style={{ margin: '0 auto 8px' }} size={24} />
-            <Text fontSize="$3" fontWeight="500" color="$color12">All Current</Text>
-            <Text fontSize="$2" color="$green11">
+            <Text size="sm" weight="medium" >All Current</Text>
+            <Text size="sm" style={{color: 'var(--color-green-10)'}}>
               Insurance policies active
             </Text>
-          </YStack>
-          <YStack flex={1} minWidth={200} alignItems="center" padding="$4" backgroundColor="$yellow2" borderRadius="$4">
+          </Stack>
+          <Stack flex={1} minWidth={200} alignItems="center" padding={16} style={{backgroundColor: 'var(--color-yellow-2)'}} style={{borderRadius: 8}}>
             <Clock color="var(--yellow10)" style={{ margin: '0 auto 8px' }} size={24} />
-            <Text fontSize="$3" fontWeight="500" color="$color12">
+            <Text size="sm" weight="medium" >
               2 Expiring Soon
             </Text>
-            <Text fontSize="$2" color="$yellow11">Renew within 30 days</Text>
-          </YStack>
-          <YStack flex={1} minWidth={200} alignItems="center" padding="$4" backgroundColor="$blue2" borderRadius="$4">
+            <Text size="sm" style={{color: 'var(--color-yellow-10)'}}>Renew within 30 days</Text>
+          </Stack>
+          <Stack flex={1} minWidth={200} alignItems="center" padding={16} style={{backgroundColor: 'var(--color-blue-2)'}} style={{borderRadius: 8}}>
             <Shield color="var(--blue10)" style={{ margin: '0 auto 8px' }} size={24} />
-            <Text fontSize="$3" fontWeight="500" color="$color12">
+            <Text size="sm" weight="medium" >
               Fully Compliant
             </Text>
-            <Text fontSize="$2" color="$blue11">Meeting all requirements</Text>
-          </YStack>
-        </XStack>
+            <Text size="sm" style={{color: 'var(--color-blue-10)'}}>Meeting all requirements</Text>
+          </Stack>
+        </Row>
       </Card>
 
-      <XStack flexWrap="wrap" gap="$6">
-        <Card flex={1} minWidth={200} backgroundColor="$background" borderRadius="$4" padding="$6" borderWidth={1} borderColor="$borderColor">
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Documents</Text>
-              <Text fontSize="$10" fontWeight="700" color="$color12">
+      <Row flexWrap="wrap" gap={16}>
+        <Card flex={1} minWidth={200} style={{backgroundColor: 'var(--color-background)'}} style={{borderRadius: 8}} padding={16} borderWidth={1} style={{borderColor: 'var(--color-border)'}}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text  size="sm">Documents</Text>
+              <Text size="sm" weight="medium" >
                 {documentsUploaded}
               </Text>
-            </YStack>
-            <XStack backgroundColor="$blue3" padding="$3" borderRadius="$12">
+            </Stack>
+            <Row style={{backgroundColor: 'var(--color-blue-3)'}} padding={16} style={{borderRadius: 24}}>
               <FileText color="var(--blue10)" size={24} />
-            </XStack>
-          </XStack>
-          <Text mt="$3" fontSize="$3" color="$green11">All verified</Text>
+            </Row>
+          </Row>
+          <Text style={{marginTop: 16}} size="sm" style={{color: 'var(--color-green-10)'}}>All verified</Text>
         </Card>
 
-        <Card flex={1} minWidth={200} backgroundColor="$background" borderRadius="$4" padding="$6" borderWidth={1} borderColor="$borderColor">
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Active Policies</Text>
-              <Text fontSize="$10" fontWeight="700" color="$green11">
+        <Card flex={1} minWidth={200} style={{backgroundColor: 'var(--color-background)'}} style={{borderRadius: 8}} padding={16} borderWidth={1} style={{borderColor: 'var(--color-border)'}}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text  size="sm">Active Policies</Text>
+              <Text size="sm" weight="medium" style={{color: 'var(--color-green-10)'}}>
                 {activePolicies}
               </Text>
-            </YStack>
-            <XStack backgroundColor="$green3" padding="$3" borderRadius="$12">
+            </Stack>
+            <Row style={{backgroundColor: 'var(--color-green-3)'}} padding={16} style={{borderRadius: 24}}>
               <Shield color="var(--green10)" size={24} />
-            </XStack>
-          </XStack>
-          <Text mt="$3" fontSize="$3" color="$color11">
+            </Row>
+          </Row>
+          <Text style={{marginTop: 16}} size="sm" >
             $5.2M total coverage
           </Text>
         </Card>
 
-        <Card flex={1} minWidth={200} backgroundColor="$background" borderRadius="$4" padding="$6" borderWidth={1} borderColor="$borderColor">
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Expiring Soon</Text>
-              <Text fontSize="$10" fontWeight="700" color="$orange11">
+        <Card flex={1} minWidth={200} style={{backgroundColor: 'var(--color-background)'}} style={{borderRadius: 8}} padding={16} borderWidth={1} style={{borderColor: 'var(--color-border)'}}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text  size="sm">Expiring Soon</Text>
+              <Text size="sm" weight="medium" style={{color: 'var(--color-orange-10)'}}>
                 {documentsExpiring}
               </Text>
-            </YStack>
-            <XStack backgroundColor="$orange3" padding="$3" borderRadius="$12">
+            </Stack>
+            <Row style={{backgroundColor: 'var(--color-orange-3)'}} padding={16} style={{borderRadius: 24}}>
               <AlertTriangle color="var(--orange10)" size={24} />
-            </XStack>
-          </XStack>
-          <Text mt="$3" fontSize="$3" color="$orange11">Action required</Text>
+            </Row>
+          </Row>
+          <Text style={{marginTop: 16}} size="sm" style={{color: 'var(--color-orange-10)'}}>Action required</Text>
         </Card>
 
-        <Card flex={1} minWidth={200} backgroundColor="$background" borderRadius="$4" padding="$6" borderWidth={1} borderColor="$borderColor">
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Annual Premium</Text>
-              <Text fontSize="$10" fontWeight="700" color="$color12">$18.5K</Text>
-            </YStack>
-            <XStack backgroundColor="$orange3" padding="$3" borderRadius="$12">
+        <Card flex={1} minWidth={200} style={{backgroundColor: 'var(--color-background)'}} style={{borderRadius: 8}} padding={16} borderWidth={1} style={{borderColor: 'var(--color-border)'}}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text  size="sm">Annual Premium</Text>
+              <Text size="sm" weight="medium" >$18.5K</Text>
+            </Stack>
+            <Row style={{backgroundColor: 'var(--color-orange-3)'}} padding={16} style={{borderRadius: 24}}>
               <DollarSign color="var(--orange9)" size={24} />
-            </XStack>
-          </XStack>
-          <Text mt="$3" fontSize="$3" color="$green11">
+            </Row>
+          </Row>
+          <Text style={{marginTop: 16}} size="sm" style={{color: 'var(--color-green-10)'}}>
             Save 15% with bundling
           </Text>
         </Card>
-      </XStack>
+      </Row>
 
       <SubcontractorTasksPanel
         tasks={tasks}
@@ -268,103 +273,103 @@ export default function EnhancedSubcontractorDashboard() {
         onRequestQuote={handleRequestQuote}
       />
 
-      <XStack flexWrap="wrap" gap="$6">
-        <Card flex={1} minWidth={300} backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+      <Row flexWrap="wrap" gap={16}>
+        <Card flex={1} minWidth={300} style={{backgroundColor: 'var(--color-background)'}} style={{borderRadius: 8}} borderWidth={1} style={{borderColor: 'var(--color-border)'}} padding={16}>
+          <Text size="sm" weight="medium"  style={{marginBottom: 16}}>
             Quick Actions
           </Text>
-          <YStack gap="$3">
+          <Stack gap={16}>
             <Button
               variant="ghost"
               fullWidth
               justifyContent="space-between"
-              padding="$3"
-              backgroundColor="$blue2"
+              padding={16}
+              style={{backgroundColor: 'var(--color-blue-2)'}}
               hoverStyle={{ backgroundColor: '$blue3' }}
               height="auto"
             >
-              <XStack alignItems="center" gap="$3">
+              <Row alignItems="center" gap={16}>
                 <FileText color="var(--blue10)" size={20} />
-                <Text color="$color12" fontWeight="500">
+                <Text  weight="medium">
                   Upload Documents
                 </Text>
-              </XStack>
-              <Text color="$blue11">→</Text>
+              </Row>
+              <Text style={{color: 'var(--color-blue-10)'}}>→</Text>
             </Button>
 
             <Button
               variant="ghost"
               fullWidth
               justifyContent="space-between"
-              padding="$3"
-              backgroundColor="$green2"
+              padding={16}
+              style={{backgroundColor: 'var(--color-green-2)'}}
               hoverStyle={{ backgroundColor: '$green3' }}
               height="auto"
             >
-              <XStack alignItems="center" gap="$3">
+              <Row alignItems="center" gap={16}>
                 <DollarSign color="var(--green10)" size={20} />
-                <Text color="$color12" fontWeight="500">
+                <Text  weight="medium">
                   Shop Insurance
                 </Text>
-              </XStack>
-              <Text color="$green11">→</Text>
+              </Row>
+              <Text style={{color: 'var(--color-green-10)'}}>→</Text>
             </Button>
 
             <Button
               variant="ghost"
               fullWidth
               justifyContent="space-between"
-              padding="$3"
-              backgroundColor="$orange2"
+              padding={16}
+              style={{backgroundColor: 'var(--color-orange-2)'}}
               hoverStyle={{ backgroundColor: '$orange3' }}
               height="auto"
             >
-              <XStack alignItems="center" gap="$3">
+              <Row alignItems="center" gap={16}>
                 <Calendar color="var(--orange9)" size={20} />
-                <Text color="$color12" fontWeight="500">
+                <Text  weight="medium">
                   Schedule Renewal
                 </Text>
-              </XStack>
-              <Text color="$orange10">→</Text>
+              </Row>
+              <Text style={{color: 'var(--color-orange-10)'}}>→</Text>
             </Button>
-          </YStack>
+          </Stack>
         </Card>
 
-        <Card flex={1} minWidth={300} backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+        <Card flex={1} minWidth={300} style={{backgroundColor: 'var(--color-background)'}} style={{borderRadius: 8}} borderWidth={1} style={{borderColor: 'var(--color-border)'}} padding={16}>
+          <Text size="sm" weight="medium"  style={{marginBottom: 16}}>
             Recent Activity
           </Text>
-          <YStack gap="$4">
-            <XStack alignItems="center" gap="$3">
-              <XStack width={8} height={8} backgroundColor="$green9" borderRadius="$12" />
-              <YStack flex={1}>
-                <Text fontSize="$3" color="$color12">
+          <Stack gap={16}>
+            <Row alignItems="center" gap={16}>
+              <Row width={8} height={8} backgroundColor="$green9" style={{borderRadius: 24}} />
+              <Stack flex={1}>
+                <Text size="sm" >
                   General Liability renewed
                 </Text>
-                <Text fontSize="$2" color="$color11">2 days ago</Text>
-              </YStack>
-            </XStack>
-            <XStack alignItems="center" gap="$3">
-              <XStack width={8} height={8} backgroundColor="$blue9" borderRadius="$12" />
-              <YStack flex={1}>
-                <Text fontSize="$3" color="$color12">
+                <Text size="sm" >2 days ago</Text>
+              </Stack>
+            </Row>
+            <Row alignItems="center" gap={16}>
+              <Row width={8} height={8} backgroundColor="$blue9" style={{borderRadius: 24}} />
+              <Stack flex={1}>
+                <Text size="sm" >
                   License certificate uploaded
                 </Text>
-                <Text fontSize="$2" color="$color11">1 week ago</Text>
-              </YStack>
-            </XStack>
-            <XStack alignItems="center" gap="$3">
-              <XStack width={8} height={8} backgroundColor="$yellow9" borderRadius="$12" />
-              <YStack flex={1}>
-                <Text fontSize="$3" color="$color12">
+                <Text size="sm" >1 week ago</Text>
+              </Stack>
+            </Row>
+            <Row alignItems="center" gap={16}>
+              <Row width={8} height={8} backgroundColor="$yellow9" style={{borderRadius: 24}} />
+              <Stack flex={1}>
+                <Text size="sm" >
                   Workers' comp expires in 30 days
                 </Text>
-                <Text fontSize="$2" color="$color11">Alert generated</Text>
-              </YStack>
-            </XStack>
-          </YStack>
+                <Text size="sm" >Alert generated</Text>
+              </Stack>
+            </Row>
+          </Stack>
         </Card>
-      </XStack>
+      </Row>
 
       <InsuranceRequirementsModal
         isOpen={requirementsModalOpen}
@@ -390,57 +395,57 @@ export default function EnhancedSubcontractorDashboard() {
             const broker = getBrokerContact(selectedTask);
             if (!broker) {
               return (
-                <YStack alignItems="center" paddingVertical="$8">
-                  <Text color="$color11">
+                <Stack alignItems="center" style={{paddingTop: 16, paddingBottom: 16}}>
+                  <Text >
                     Broker contact information not available for this task.
                   </Text>
-                </YStack>
+                </Stack>
               );
             }
             return (
-              <YStack gap="$4">
-                <YStack backgroundColor="$blue2" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
-                  <Text fontWeight="600" color="$color12" mb="$2">
+              <Stack gap={16}>
+                <Stack style={{backgroundColor: 'var(--color-blue-2)'}} style={{borderRadius: 8}} padding={16} borderWidth={1} borderColor="$blue6">
+                  <Text weight="medium"  style={{marginBottom: 16}}>
                     {broker.name}
                   </Text>
-                  <YStack gap="$2">
-                    <XStack
+                  <Stack gap={16}>
+                    <Row
                       tag="a"
                       href={`mailto:${broker.email}`}
                       alignItems="center"
-                      gap="$2"
-                      color="$blue11"
+                      gap={16}
+                      style={{color: 'var(--color-blue-10)'}}
                       hoverStyle={{ color: '$blue12' }}
                     >
                       <Mail size={16} />
                       <Text>{broker.email}</Text>
-                    </XStack>
+                    </Row>
                     {broker.phone && (
-                      <XStack
+                      <Row
                         tag="a"
                         href={`tel:${broker.phone}`}
                         alignItems="center"
-                        gap="$2"
-                        color="$blue11"
+                        gap={16}
+                        style={{color: 'var(--color-blue-10)'}}
                         hoverStyle={{ color: '$blue12' }}
                       >
                         <Phone size={16} />
                         <Text>{broker.phone}</Text>
-                      </XStack>
+                      </Row>
                     )}
-                  </YStack>
-                </YStack>
-                <YStack fontSize="$3" color="$color11">
-                  <Text mb="$2">
-                    Task: <Text fontWeight="700">{selectedTask.title}</Text>
+                  </Stack>
+                </Stack>
+                <Stack size="sm" >
+                  <Text style={{marginBottom: 16}}>
+                    Task: <Text weight="medium">{selectedTask.title}</Text>
                   </Text>
                   {selectedTask.project_name && (
                     <Text>
-                      Project: <Text fontWeight="700">{selectedTask.project_name}</Text>
+                      Project: <Text weight="medium">{selectedTask.project_name}</Text>
                     </Text>
                   )}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             );
           })()}
       </Modal>
@@ -460,23 +465,23 @@ export default function EnhancedSubcontractorDashboard() {
         size="medium"
       >
         {selectedTask && (
-          <YStack gap="$4">
-            <YStack backgroundColor="$blue2" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
-              <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
+          <Stack gap={16}>
+            <Stack style={{backgroundColor: 'var(--color-blue-2)'}} style={{borderRadius: 8}} padding={16} borderWidth={1} borderColor="$blue6">
+              <Text size="sm" weight="medium"  style={{marginBottom: 16}}>
                 {selectedTask.title}
               </Text>
               {selectedTask.description && (
-                <Text fontSize="$2" color="$color11">
+                <Text size="sm" >
                   {selectedTask.description}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
-            <YStack>
-              <Text tag="label" display="block" fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+            <Stack>
+              <Text tag="label" display="block" size="sm" weight="medium"  style={{marginBottom: 16}}>
                 Select Document
               </Text>
-              <YStack borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
+              <Stack borderWidth={2} borderStyle="dashed" style={{borderColor: 'var(--color-border)'}} style={{borderRadius: 8}} padding={16} alignItems="center">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -485,35 +490,35 @@ export default function EnhancedSubcontractorDashboard() {
                   accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
                   id="file-upload"
                 />
-                <YStack
+                <Stack
                   tag="label"
                   htmlFor="file-upload"
                   cursor="pointer"
                   alignItems="center"
-                  gap="$2"
+                  gap={16}
                 >
                   <Upload color="var(--blue10)" size={32} />
-                  <Text fontSize="$3" color="$color12">
+                  <Text size="sm" >
                     {uploadedFile
                       ? uploadedFile.name
                       : 'Click to upload or drag and drop'}
                   </Text>
-                  <Text fontSize="$2" color="$color11">
+                  <Text size="sm" >
                     PDF, DOC, DOCX, PNG, JPG (Max 10MB)
                   </Text>
-                </YStack>
-              </YStack>
-            </YStack>
+                </Stack>
+              </Stack>
+            </Stack>
 
             {uploadedFile && (
-              <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$green2" borderRadius="$4" borderWidth={1} borderColor="$green6">
-                <XStack alignItems="center" gap="$2">
+              <Row alignItems="center" justifyContent="space-between" padding={16} style={{backgroundColor: 'var(--color-green-2)'}} style={{borderRadius: 8}} borderWidth={1} borderColor="$green6">
+                <Row alignItems="center" gap={16}>
                   <FileText color="var(--green10)" size={16} />
-                  <Text fontSize="$3" color="$color12">
+                  <Text size="sm" >
                     {uploadedFile.name}
                   </Text>
-                </XStack>
-                <XStack
+                </Row>
+                <Row
                   tag="button"
                   onPress={() => {
                     setUploadedFile(null);
@@ -521,19 +526,19 @@ export default function EnhancedSubcontractorDashboard() {
                       fileInputRef.current.value = '';
                     }
                   }}
-                  color="$red11"
+                  style={{color: 'var(--color-red-10)'}}
                   hoverStyle={{ color: '$red12' }}
                   cursor="pointer"
                 >
                   <X size={16} />
-                </XStack>
-              </XStack>
+                </Row>
+              </Row>
             )}
 
-            <XStack justifyContent="flex-end" gap="$2" paddingTop="$4">
+            <Row justifyContent="flex-end" gap={16} style={{paddingTop: 16}}>
               <Button
                 variant="ghost"
-                onClick={() => {
+                onPress={() => {
                   setUploadModalOpen(false);
                   setSelectedTask(null);
                   setUploadedFile(null);
@@ -544,11 +549,11 @@ export default function EnhancedSubcontractorDashboard() {
               >
                 Cancel
               </Button>
-              <Button onClick={handleUploadSubmit} disabled={!uploadedFile}>
+              <Button onPress={handleUploadSubmit} disabled={!uploadedFile}>
                 Upload Document
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
       </Modal>
 
@@ -567,41 +572,41 @@ export default function EnhancedSubcontractorDashboard() {
           (() => {
             const quoteDetails = getQuoteDetails(selectedTask);
             return (
-              <YStack gap="$4">
-                <YStack backgroundColor="$blue2" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
-                  <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+              <Stack gap={16}>
+                <Stack style={{backgroundColor: 'var(--color-blue-2)'}} style={{borderRadius: 8}} padding={16} borderWidth={1} borderColor="$blue6">
+                  <Text size="sm" weight="medium"  style={{marginBottom: 16}}>
                     {selectedTask.title}
                   </Text>
                   {quoteDetails && (
-                    <YStack gap="$1" fontSize="$3">
-                      <XStack justifyContent="space-between">
-                        <Text color="$color11">
+                    <Stack gap={16} size="sm">
+                      <Row justifyContent="space-between">
+                        <Text >
                           Current Limit:
                         </Text>
-                        <Text fontWeight="500" color="$color12">
+                        <Text weight="medium" >
                           ${(quoteDetails.current / 1000000).toFixed(1)}M
                         </Text>
-                      </XStack>
-                      <XStack justifyContent="space-between">
-                        <Text color="$color11">
+                      </Row>
+                      <Row justifyContent="space-between">
+                        <Text >
                           Required Limit:
                         </Text>
-                        <Text fontWeight="500" color="$color12">
+                        <Text weight="medium" >
                           ${(quoteDetails.required / 1000000).toFixed(1)}M
                         </Text>
-                      </XStack>
-                      <XStack justifyContent="space-between" paddingTop="$2" borderTopWidth={1} borderTopColor="$blue6">
-                        <Text color="$color11">Gap Amount:</Text>
-                        <Text fontWeight="500" color="$yellow11">
+                      </Row>
+                      <Row justifyContent="space-between" style={{paddingTop: 16}} borderTopWidth={1} borderTopColor="$blue6">
+                        <Text >Gap Amount:</Text>
+                        <Text weight="medium" style={{color: 'var(--color-yellow-10)'}}>
                           ${(quoteDetails.gap / 1000000).toFixed(1)}M
                         </Text>
-                      </XStack>
-                    </YStack>
+                      </Row>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
 
-                <YStack>
-                  <Text tag="label" display="block" fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+                <Stack>
+                  <Text tag="label" display="block" size="sm" weight="medium"  style={{marginBottom: 16}}>
                     Additional Information (Optional)
                   </Text>
                   <Textarea
@@ -612,12 +617,12 @@ export default function EnhancedSubcontractorDashboard() {
                     placeholder="Add any specific requirements or questions for your broker..."
                     rows={4}
                   />
-                </YStack>
+                </Stack>
 
-                <XStack justifyContent="flex-end" gap="$2" paddingTop="$4">
+                <Row justifyContent="flex-end" gap={16} style={{paddingTop: 16}}>
                   <Button
                     variant="ghost"
-                    onClick={() => {
+                    onPress={() => {
                       setQuoteModalOpen(false);
                       setSelectedTask(null);
                       setQuoteRequest({ message: '' });
@@ -625,12 +630,12 @@ export default function EnhancedSubcontractorDashboard() {
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleQuoteSubmit}>Submit Request</Button>
-                </XStack>
-              </YStack>
+                  <Button onPress={handleQuoteSubmit}>Submit Request</Button>
+                </Row>
+              </Stack>
             );
           })()}
       </Modal>
-    </YStack>
+    </Stack>
   );
 }

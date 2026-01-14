@@ -31,8 +31,8 @@
  * ```
  */
 
-import { useState, useMemo } from 'react'
-import { View, Pressable, Text, StyleSheet } from 'react-native'
+import { useState, useMemo, useEffect } from 'react'
+import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -69,6 +69,28 @@ export function Checkbox({
 
   const { theme } = useThemeContext()
   const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
+
+  // Create a stable initial value for animation
+  const initialValue = checked || indeterminate ? 1 : 0
+
+  // Animation state - always use regular React state for compatibility
+  // This avoids conditional hook calls when Reanimated may or may not be available
+  const [animationScale, setAnimationScale] = useState(initialValue)
+  const [animationOpacity, setAnimationOpacity] = useState(initialValue)
+
+  // Animate icon when checked/indeterminate state changes
+  useEffect(() => {
+    const targetValue = checked || indeterminate ? 1 : 0
+    // For now, use instant transitions (can be enhanced with CSS transitions on web)
+    setAnimationScale(targetValue)
+    setAnimationOpacity(targetValue)
+  }, [checked, indeterminate])
+
+  // Computed style for the icon
+  const animatedIconStyle = useMemo(() => ({
+    transform: [{ scale: animationScale }],
+    opacity: animationOpacity,
+  }), [animationScale, animationOpacity])
 
   const handlePress = () => {
     if (disabled) return
@@ -194,10 +216,14 @@ export function Checkbox({
             ]}
           >
             {showCheckIcon && (
-              <CheckIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+              <View style={animatedIconStyle}>
+                <CheckIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+              </View>
             )}
             {showMinusIcon && (
-              <MinusIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+              <View style={animatedIconStyle}>
+                <MinusIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+              </View>
             )}
           </View>
         </View>

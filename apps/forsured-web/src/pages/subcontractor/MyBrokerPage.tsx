@@ -1,6 +1,6 @@
 /**
  * My Broker Page - Subcontractor View
- * 
+ *
  * Allows subcontractors to:
  * - Invite their broker to Forsured
  * - Connect using broker's relationship code
@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { YStack, XStack, Text, Card, Button as UIButton, Input, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, Button, Input, Spinner } from '@unicornlove/beyond-ui';
 import { Mail, Phone, Building2, Copy, CheckCircle, AlertCircle, Briefcase } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUser } from '../../contexts/UserContext';
@@ -21,7 +21,6 @@ import {
   type RelationshipInvitation,
 } from '../../lib/relationshipInvitations';
 import { getUserOrganizationId } from '../../lib/supabase';
-import Button from '../../components/Common/Button';
 
 export default function MyBrokerPage() {
   const { user } = useAuth();
@@ -65,7 +64,7 @@ export default function MyBrokerPage() {
       const userInvitations = await getUserInvitations(userId);
       // Filter for broker invitations
       const brokerInvitations = userInvitations.filter(
-        inv => inv.invitee_type === 'broker' || inv.inviter_type === 'broker'
+        (inv) => inv.invitee_type === 'broker' || inv.inviter_type === 'broker'
       );
       setInvitations(brokerInvitations);
     } catch (error) {
@@ -142,11 +141,7 @@ export default function MyBrokerPage() {
     setLoading(true);
 
     try {
-      const result = await connectByRelationshipCode(
-        connectionCode.trim(),
-        organizationId,
-        userId
-      );
+      const result = await connectByRelationshipCode(connectionCode.trim(), organizationId, userId);
 
       if (result.success) {
         toast.success('Connected to broker successfully!');
@@ -168,90 +163,145 @@ export default function MyBrokerPage() {
     toast.success('Code copied to clipboard');
   };
 
-  const connectedBrokers = invitations.filter(inv => inv.status === 'connected');
-  const pendingInvitations = invitations.filter(inv => inv.status === 'pending');
+  const connectedBrokers = invitations.filter((inv) => inv.status === 'connected');
+  const pendingInvitations = invitations.filter((inv) => inv.status === 'pending');
 
   return (
-    <YStack gap="$6" padding="$6">
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="700" color="$color12">
+    <Stack style={{ gap: 'var(--space-6)', padding: 'var(--space-6)' }}>
+      <Stack style={{ gap: 'var(--space-2)' }}>
+        <Text
+          style={{
+            fontSize: 'var(--font-size-8)',
+            fontWeight: 700,
+            color: 'var(--color-12)',
+          }}
+        >
           My Broker
         </Text>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-11)' }}>
           Invite your insurance broker to Forsured or connect using their code
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Connected Brokers */}
       {connectedBrokers.length > 0 && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$6"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 'var(--radius-4)',
+            border: '1px solid var(--color-border)',
+            padding: 'var(--space-6)',
+          }}
         >
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+          <Text
+            style={{
+              fontSize: 'var(--font-size-6)',
+              fontWeight: 600,
+              color: 'var(--color-12)',
+              marginBottom: 'var(--space-4)',
+            }}
+          >
             Connected Brokers
           </Text>
-          <YStack gap="$3">
-            {connectedBrokers.map(inv => (
+          <Stack style={{ gap: 'var(--space-3)' }}>
+            {connectedBrokers.map((inv) => (
               <Card
                 key={inv.id}
-                backgroundColor="$green2"
-                borderColor="$green6"
-                borderWidth={1}
-                borderRadius="$3"
-                padding="$4"
+                style={{
+                  backgroundColor: 'var(--color-green-2)',
+                  border: '1px solid var(--color-green-6)',
+                  borderRadius: 'var(--radius-3)',
+                  padding: 'var(--space-4)',
+                }}
               >
-                <XStack alignItems="center" gap="$2" marginBottom="$2">
-                  <CheckCircle size={20} color="var(--green10)" />
-                  <Text fontSize="$4" fontWeight="600" color="$color12">
-                    {inv.inviter_type === 'broker' ? inv.invitee_name : inv.invitee_name || inv.invitee_email}
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    gap: 'var(--space-2)',
+                    marginBottom: 'var(--space-2)',
+                  }}
+                >
+                  <CheckCircle size={20} color="var(--color-green-10)" />
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-4)',
+                      fontWeight: 600,
+                      color: 'var(--color-12)',
+                    }}
+                  >
+                    {inv.inviter_type === 'broker'
+                      ? inv.invitee_name
+                      : inv.invitee_name || inv.invitee_email}
                   </Text>
-                </XStack>
+                </Row>
                 {inv.invitee_company && (
-                  <Text fontSize="$3" color="$color11">
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                     {inv.invitee_company}
                   </Text>
                 )}
                 {inv.referral_credit_granted && (
-                  <XStack alignItems="center" gap="$2" marginTop="$2">
-                    <Text fontSize="$2" color="$green11" fontWeight="500">
-                      ✓ Referral credit earned
+                  <Row
+                    style={{
+                      alignItems: 'center',
+                      gap: 'var(--space-2)',
+                      marginTop: 'var(--space-2)',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-2)',
+                        color: 'var(--color-green-11)',
+                        fontWeight: 500,
+                      }}
+                    >
+                      Referral credit earned
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
               </Card>
             ))}
-          </YStack>
+          </Stack>
         </Card>
       )}
 
       {/* Invite Broker */}
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding="$6"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 'var(--radius-4)',
+          border: '1px solid var(--color-border)',
+          padding: 'var(--space-6)',
+        }}
       >
-        <XStack alignItems="center" gap="$3" marginBottom="$4">
-          <Mail size={24} color="var(--blue10)" />
-          <Text fontSize="$6" fontWeight="600" color="$color12">
+        <Row
+          style={{
+            alignItems: 'center',
+            gap: 'var(--space-3)',
+            marginBottom: 'var(--space-4)',
+          }}
+        >
+          <Mail size={24} color="var(--color-blue-10)" />
+          <Text
+            style={{
+              fontSize: 'var(--font-size-6)',
+              fontWeight: 600,
+              color: 'var(--color-12)',
+            }}
+          >
             Invite Your Broker
           </Text>
-        </XStack>
-        <Text color="$color11" marginBottom="$4">
-          Enter your broker's information. They can connect using your email or the generated connection code.
+        </Row>
+        <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
+          Enter your broker's information. They can connect using your email or the generated
+          connection code.
         </Text>
 
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Input
             label="Broker Email *"
             type="email"
             value={brokerEmail}
-            onChangeText={setBrokerEmail}
+            onChange={(e) => setBrokerEmail(e.target.value)}
             placeholder="broker@example.com"
             disabled={loading}
           />
@@ -259,7 +309,7 @@ export default function MyBrokerPage() {
             label="Broker Name *"
             type="text"
             value={brokerName}
-            onChangeText={setBrokerName}
+            onChange={(e) => setBrokerName(e.target.value)}
             placeholder="John Doe"
             disabled={loading}
           />
@@ -267,7 +317,7 @@ export default function MyBrokerPage() {
             label="Broker Company"
             type="text"
             value={brokerCompany}
-            onChangeText={setBrokerCompany}
+            onChange={(e) => setBrokerCompany(e.target.value)}
             placeholder="ABC Insurance Agency"
             disabled={loading}
           />
@@ -275,115 +325,156 @@ export default function MyBrokerPage() {
             label="Broker Phone (Optional)"
             type="tel"
             value={brokerPhone}
-            onChangeText={setBrokerPhone}
+            onChange={(e) => setBrokerPhone(e.target.value)}
             placeholder="(555) 123-4567"
             disabled={loading}
           />
 
-          <UIButton
-            onPress={handleInviteBroker}
-            disabled={loading || !brokerEmail || !brokerName}
-          >
-            {loading ? <Spinner size="small" /> : 'Send Invitation'}
-          </UIButton>
-        </YStack>
+          <Button onPress={handleInviteBroker} disabled={loading || !brokerEmail || !brokerName}>
+            {loading ? <Spinner size="sm" /> : 'Send Invitation'}
+          </Button>
+        </Stack>
       </Card>
 
       {/* Connect Using Broker's Code */}
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding="$6"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 'var(--radius-4)',
+          border: '1px solid var(--color-border)',
+          padding: 'var(--space-6)',
+        }}
       >
-        <XStack alignItems="center" gap="$3" marginBottom="$4">
-          <Briefcase size={24} color="var(--blue10)" />
-          <Text fontSize="$6" fontWeight="600" color="$color12">
+        <Row
+          style={{
+            alignItems: 'center',
+            gap: 'var(--space-3)',
+            marginBottom: 'var(--space-4)',
+          }}
+        >
+          <Briefcase size={24} color="var(--color-blue-10)" />
+          <Text
+            style={{
+              fontSize: 'var(--font-size-6)',
+              fontWeight: 600,
+              color: 'var(--color-12)',
+            }}
+          >
             Connect Using Broker's Code
           </Text>
-        </XStack>
-        <Text color="$color11" marginBottom="$4">
+        </Row>
+        <Text style={{ color: 'var(--color-11)', marginBottom: 'var(--space-4)' }}>
           If your broker gave you a connection code, enter it here to connect.
         </Text>
 
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Input
             label="Connection Code"
             type="text"
             value={connectionCode}
-            onChangeText={setConnectionCode}
+            onChange={(e) => setConnectionCode(e.target.value)}
             placeholder="BKR-XXXXXX"
             disabled={loading}
           />
 
-          <UIButton
-            onPress={handleConnectByCode}
-            disabled={loading || !connectionCode}
-          >
-            {loading ? <Spinner size="small" /> : 'Connect'}
-          </UIButton>
-        </YStack>
+          <Button onPress={handleConnectByCode} disabled={loading || !connectionCode}>
+            {loading ? <Spinner size="sm" /> : 'Connect'}
+          </Button>
+        </Stack>
       </Card>
 
       {/* Pending Invitations */}
       {pendingInvitations.length > 0 && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$6"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 'var(--radius-4)',
+            border: '1px solid var(--color-border)',
+            padding: 'var(--space-6)',
+          }}
         >
-          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+          <Text
+            style={{
+              fontSize: 'var(--font-size-6)',
+              fontWeight: 600,
+              color: 'var(--color-12)',
+              marginBottom: 'var(--space-4)',
+            }}
+          >
             Pending Invitations
           </Text>
-          <YStack gap="$3">
-            {pendingInvitations.map(inv => (
+          <Stack style={{ gap: 'var(--space-3)' }}>
+            {pendingInvitations.map((inv) => (
               <Card
                 key={inv.id}
-                backgroundColor="$yellow2"
-                borderColor="$yellow6"
-                borderWidth={1}
-                borderRadius="$3"
-                padding="$4"
+                style={{
+                  backgroundColor: 'var(--color-yellow-2)',
+                  border: '1px solid var(--color-yellow-6)',
+                  borderRadius: 'var(--radius-3)',
+                  padding: 'var(--space-4)',
+                }}
               >
-                <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
-                  <YStack flex={1}>
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 'var(--space-2)',
+                  }}
+                >
+                  <Stack style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-4)',
+                        fontWeight: 600,
+                        color: 'var(--color-12)',
+                      }}
+                    >
                       {inv.invitee_name || inv.invitee_email}
                     </Text>
                     {inv.invitee_company && (
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                         {inv.invitee_company}
                       </Text>
                     )}
-                  </YStack>
-                  <AlertCircle size={20} color="var(--yellow10)" />
-                </XStack>
-                
-                <XStack alignItems="center" gap="$2" marginTop="$2">
-                  <Text fontSize="$3" color="$color11" fontFamily="$mono">
+                  </Stack>
+                  <AlertCircle size={20} color="var(--color-yellow-10)" />
+                </Row>
+
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    gap: 'var(--space-2)',
+                    marginTop: 'var(--space-2)',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-3)',
+                      color: 'var(--color-11)',
+                      fontFamily: 'var(--font-mono)',
+                    }}
+                  >
                     {inv.relationship_code}
                   </Text>
-                  <UIButton
-                    size="small"
-                    variant="ghost"
-                    onPress={() => copyCode(inv.relationship_code)}
-                  >
+                  <Button size="sm" variant="ghost" onPress={() => copyCode(inv.relationship_code)}>
                     <Copy size={16} />
-                  </UIButton>
-                </XStack>
-                
-                <Text fontSize="$2" color="$color10" marginTop="$2">
+                  </Button>
+                </Row>
+
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-2)',
+                    color: 'var(--color-10)',
+                    marginTop: 'var(--space-2)',
+                  }}
+                >
                   Invited {new Date(inv.invited_at).toLocaleDateString()}
                 </Text>
               </Card>
             ))}
-          </YStack>
+          </Stack>
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 }
-

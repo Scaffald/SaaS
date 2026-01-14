@@ -22,8 +22,8 @@ import {
   AlertTriangle,
   Search,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label, Spinner } from '@unicornlove/ui';
-import { EmptyState } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Heading, Card, Input, Label, Spinner, colors, spacing } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState'
 import { trpc } from '../../lib/trpc';
 import { DEFAULT_LEXICON } from '../../contexts/LexiconContext';
 
@@ -231,25 +231,25 @@ function AdminLexiconEditor() {
 
   if (isLoadingTypes) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <XStack alignItems="center" gap="$2">
-          <Spinner size="large" color="$blue10" />
+      <Stack alignItems="center" justifyContent="center" paddingVertical={spacing[48]}>
+        <Row alignItems="center" gap={spacing[8]}>
+          <Spinner size="lg" color={colors.primary[500]} />
           <Text>Loading...</Text>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     );
   }
 
   return (
-    <YStack>
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <YStack>
-          <H1 fontSize="$8" fontWeight="700">Lexicon Editor</H1>
-          <Text color="$color11" fontSize="$3" marginTop="$1">
+    <Stack>
+      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[24] }}>
+        <Stack>
+          <Heading level={1} weight="bold" style={{ fontSize: 32, fontWeight: '700' }}>Lexicon Editor</Heading>
+          <Text color={colors.text.light.secondary} size="sm" style={{ marginTop: spacing[4] }}>
             Customize labels and text for each industry vertical
           </Text>
-        </YStack>
-        <XStack alignItems="center" gap="$3">
+        </Stack>
+        <Row alignItems="center" gap={spacing[12]}>
           <select
             value={selectedTypeId}
             onChange={(e) => setSelectedTypeId(e.target.value)}
@@ -273,18 +273,16 @@ function AdminLexiconEditor() {
           <Button
             onPress={handleRefresh}
             disabled={isLoadingLexicon || !selectedTypeId}
-            icon={isLoadingLexicon ? <Spinner size="small" /> : <RefreshCcw size={16} />}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            borderWidth={1}
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-            opacity={isLoadingLexicon || !selectedTypeId ? 0.5 : 1}
+            iconStart={isLoadingLexicon ? undefined : RefreshCcw}
+            loading={isLoadingLexicon}
+            variant="outline"
+            color="gray"
+            style={{ opacity: isLoadingLexicon || !selectedTypeId ? 0.5 : 1 }}
           >
             Refresh
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {!selectedTypeId ? (
         <EmptyState
@@ -295,83 +293,76 @@ function AdminLexiconEditor() {
       ) : (
         <>
           {/* Summary and Filters */}
-          <Card padding="$4" borderRadius="$4" elevation={1} backgroundColor="$background" marginBottom="$6">
-            <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
-              <XStack alignItems="center" gap="$4">
-                <XStack alignItems="center" gap="$2">
-                  <Book size={20} color="$blue10" />
-                  <Text fontWeight="600">{selectedType?.name}</Text>
-                </XStack>
-                <XStack alignItems="center" gap="$2">
-                  <Text fontSize="$3" color="$color11">
+          <Card style={{ padding: spacing[16], marginBottom: spacing[24] }}>
+            <Row alignItems="center" justifyContent="space-between" style={{ flexWrap: 'wrap', gap: spacing[16] }}>
+              <Row alignItems="center" gap={spacing[16]}>
+                <Row alignItems="center" gap={spacing[8]}>
+                  <Book size={20} color={colors.primary[500]} />
+                  <Text weight="semibold">{selectedType?.name}</Text>
+                </Row>
+                <Row alignItems="center" gap={spacing[8]}>
+                  <Text size="sm" color={colors.text.light.secondary}>
                     {lexiconEntries.length} entries
                   </Text>
                   {customCount > 0 && (
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      backgroundColor="$blue4"
-                      borderRadius="$2"
+                    <Row
+                      style={{
+                        paddingHorizontal: spacing[8],
+                        paddingVertical: spacing[4],
+                        backgroundColor: colors.primary[200],
+                        borderRadius: 8,
+                      }}
                     >
-                      <Text fontSize="$2" color="$blue11">
+                      <Text size="xs" color={colors.primary[600]}>
                         {customCount} customized
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
-                </XStack>
-              </XStack>
-              <XStack alignItems="center" gap="$3">
-                <XStack position="relative" width={256}>
+                </Row>
+              </Row>
+              <Row alignItems="center" gap={spacing[12]}>
+                <Row style={{ position: 'relative', width: 256 }}>
                   <Search
                     size={16}
-                    color="$color10"
+                    color={colors.text.light.tertiary}
                     style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
                   />
                   <Input
                     value={searchTerm}
                     onChangeText={setSearchTerm}
                     placeholder="Search keys or values..."
-                    paddingLeft="$9"
-                    paddingRight="$4"
-                    paddingVertical="$2"
-                    borderWidth={1}
-                    borderRadius="$4"
-                    width={256}
+                    containerStyle={{ paddingLeft: spacing[36], paddingRight: spacing[16], width: 256 }}
                   />
-                </XStack>
-                <XStack alignItems="center" gap="$2">
+                </Row>
+                <Row alignItems="center" gap={spacing[8]}>
                   <input
                     type="checkbox"
                     checked={showCustomOnly}
                     onChange={(e) => setShowCustomOnly(e.target.checked)}
                     style={{ marginRight: 8 }}
                   />
-                  <Label fontSize="$3" color="$color11">Customized only</Label>
-                </XStack>
+                  <Label size="sm" color={colors.text.light.secondary}>Customized only</Label>
+                </Row>
                 <Button
                   onPress={openAddModal}
-                  icon={<PlusCircle size={16} />}
-                  paddingHorizontal="$4"
-                  paddingVertical="$2"
-                  backgroundColor="$blue10"
-                  color="white"
-                  borderRadius="$4"
-                  hoverStyle={{ backgroundColor: "$blue11" }}
+                  iconStart={PlusCircle}
+                  color="primary"
+                  variant="filled"
                 >
                   Add Entry
                 </Button>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           </Card>
 
           {/* Lexicon Entries by Category */}
           {isLoadingLexicon ? (
-            <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
-              <XStack alignItems="center" gap="$2">
-                <Spinner size="small" color="$blue10" />
+            <Stack alignItems="center" justifyContent="center" paddingVertical={spacing[48]}>
+              <Row alignItems="center" gap={spacing[8]}>
+                <Spinner size="sm" color={colors.primary[500]} />
                 <Text>Loading lexicon...</Text>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ) : filteredEntries.length === 0 ? (
             <EmptyState
               icon={Search}
@@ -386,22 +377,24 @@ function AdminLexiconEditor() {
               }}
             />
           ) : (
-            <YStack gap="$6">
+            <Stack gap={spacing[24]}>
               {Object.entries(groupedEntries).map(([category, entries]) => (
-                <Card key={category} borderRadius="$4" elevation={1} backgroundColor="$background">
-                  <XStack
-                    paddingHorizontal="$4"
-                    paddingVertical="$3"
-                    borderBottomWidth={1}
-                    borderColor="$borderColor"
-                    backgroundColor="$backgroundHover"
-                    borderTopLeftRadius="$4"
-                    borderTopRightRadius="$4"
+                <Card key={category}>
+                  <Row
+                    style={{
+                      paddingHorizontal: spacing[16],
+                      paddingVertical: spacing[12],
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.border.light.default,
+                      backgroundColor: colors.bg.light.subtle,
+                      borderTopLeftRadius: spacing[16],
+                      borderTopRightRadius: spacing[16],
+                    }}
                   >
-                    <H3 fontWeight="600" color="$color12" textTransform="capitalize">
+                    <Heading level={3} weight="semibold" style={{ textTransform: 'capitalize' }}>
                       {category} ({entries.length})
-                    </H3>
-                  </XStack>
+                    </Heading>
+                  </Row>
                   <table style={{ width: '100%', minWidth: '100%' }}>
                     <thead>
                       <tr>
@@ -423,92 +416,85 @@ function AdminLexiconEditor() {
                           }}
                         >
                           <td style={{ padding: '8px 16px', fontFamily: 'monospace', fontSize: 14 }}>
-                            <Text fontFamily="$mono" fontSize="$3" color="$color11">
+                            <Text style={{ fontFamily: 'monospace' }} size="sm" color={colors.text.light.secondary}>
                               {entry.key}
                             </Text>
                           </td>
                           <td style={{ padding: '8px 16px' }}>
-                            <XStack alignItems="center" gap="$2">
-                              <Text color={entry.isCustom ? '$blue11' : '$color12'} fontWeight={entry.isCustom ? '600' : '400'}>
+                            <Row alignItems="center" gap={spacing[8]}>
+                              <Text color={entry.isCustom ? colors.primary[600] : colors.text.light.primary} weight={entry.isCustom ? 'semibold' : 'regular'}>
                                 {entry.value}
                               </Text>
                               {entry.isCustom && DEFAULT_LEXICON[entry.key] && (
-                                <Text fontSize="$1" color="$color10">
+                                <Text size="xs" color={colors.text.light.tertiary}>
                                   (default: {DEFAULT_LEXICON[entry.key]})
                                 </Text>
                               )}
-                            </XStack>
+                            </Row>
                           </td>
                           <td style={{ padding: '8px 16px' }}>
                             {entry.isCustom ? (
-                              <XStack
-                                paddingHorizontal="$2"
-                                paddingVertical="$1"
-                                backgroundColor="$blue4"
-                                borderRadius="$2"
+                              <Row
+                                style={{
+                                  paddingHorizontal: spacing[8],
+                                  paddingVertical: spacing[4],
+                                  backgroundColor: colors.primary[200],
+                                  borderRadius: 8,
+                                }}
                               >
-                                <Text fontSize="$1" color="$blue11">
+                                <Text size="xs" color={colors.primary[600]}>
                                   Customized
                                 </Text>
-                              </XStack>
+                              </Row>
                             ) : (
-                              <XStack
-                                paddingHorizontal="$2"
-                                paddingVertical="$1"
-                                backgroundColor="$backgroundHover"
-                                borderRadius="$2"
+                              <Row
+                                style={{
+                                  paddingHorizontal: spacing[8],
+                                  paddingVertical: spacing[4],
+                                  backgroundColor: colors.bg.light.subtle,
+                                  borderRadius: 8,
+                                }}
                               >
-                                <Text fontSize="$1" color="$color11">
+                                <Text size="xs" color={colors.text.light.secondary}>
                                   Default
                                 </Text>
-                              </XStack>
+                              </Row>
                             )}
                           </td>
                           <td style={{ padding: '8px 16px' }}>
-                            <XStack alignItems="center" gap="$1">
+                            <Row alignItems="center" gap={spacing[4]}>
                               <Button
                                 onPress={() => openEditModal(entry)}
                                 disabled={actionInProgress === entry.key}
-                                padding="$1"
-                                backgroundColor="transparent"
-                                hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                                opacity={actionInProgress === entry.key ? 0.5 : 1}
-                              >
-                                <Edit size={16} color="$blue10" />
-                              </Button>
+                                iconStart={Edit}
+                                variant="text"
+                                color="gray"
+                                iconOnly
+                                style={{ opacity: actionInProgress === entry.key ? 0.5 : 1 }}
+                              />
                               {entry.isCustom && DEFAULT_LEXICON[entry.key] && (
                                 <Button
                                   onPress={() => handleResetToDefault(entry.key)}
                                   disabled={actionInProgress === entry.key}
-                                  padding="$1"
-                                  backgroundColor="transparent"
-                                  hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                                  opacity={actionInProgress === entry.key ? 0.5 : 1}
-                                >
-                                  {actionInProgress === entry.key ? (
-                                    <Spinner size="small" color="$orange10" />
-                                  ) : (
-                                    <RotateCcw size={16} color="$orange10" />
-                                  )}
-                                </Button>
+                                  iconStart={actionInProgress === entry.key ? undefined : RotateCcw}
+                                  loading={actionInProgress === entry.key}
+                                  variant="text"
+                                  color="gray"
+                                  iconOnly
+                                />
                               )}
                               {entry.isCustom && !DEFAULT_LEXICON[entry.key] && (
                                 <Button
                                   onPress={() => handleDeleteCustom(entry.key)}
                                   disabled={actionInProgress === entry.key}
-                                  padding="$1"
-                                  backgroundColor="transparent"
-                                  hoverStyle={{ backgroundColor: "$backgroundHover" }}
-                                  opacity={actionInProgress === entry.key ? 0.5 : 1}
-                                >
-                                  {actionInProgress === entry.key ? (
-                                    <Spinner size="small" color="$red10" />
-                                  ) : (
-                                    <Trash2 size={16} color="$red10" />
-                                  )}
-                                </Button>
+                                  iconStart={actionInProgress === entry.key ? undefined : Trash2}
+                                  loading={actionInProgress === entry.key}
+                                  variant="text"
+                                  color="error"
+                                  iconOnly
+                                />
                               )}
-                            </XStack>
+                            </Row>
                           </td>
                         </tr>
                       ))}
@@ -516,142 +502,134 @@ function AdminLexiconEditor() {
                   </table>
                 </Card>
               ))}
-            </YStack>
+            </Stack>
           )}
         </>
       )}
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <YStack
-          position="fixed"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          zIndex={50}
+        <Stack
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+          }}
         >
           <Card
-            backgroundColor="$background"
-            borderRadius="$4"
-            elevation={4}
-            width="100%"
-            maxWidth={448}
-            marginHorizontal="$4"
+            style={{
+              width: '100%',
+              maxWidth: 448,
+              marginHorizontal: spacing[16],
+            }}
           >
-            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderBottomWidth={1} borderColor="$borderColor">
-              <H3 fontSize="$6" fontWeight="600">
+            <Row alignItems="center" justifyContent="space-between" style={{ padding: spacing[16], borderBottomWidth: 1, borderBottomColor: colors.border.light.default }}>
+              <Heading level={3} weight="semibold" style={{ fontSize: 20 }}>
                 {modalMode === 'add' ? 'Add Lexicon Entry' : 'Edit Lexicon Entry'}
-              </H3>
+              </Heading>
               <Button
                 onPress={closeModal}
-                backgroundColor="transparent"
-                padding="$1"
-                hoverStyle={{ backgroundColor: "$backgroundHover" }}
-              >
-                <X size={20} color="$color11" />
-              </Button>
-            </XStack>
+                iconStart={X}
+                variant="text"
+                color="gray"
+                iconOnly
+              />
+            </Row>
 
             <form onSubmit={handleSubmit}>
-              <YStack padding="$4" gap="$4">
+              <Stack style={{ padding: spacing[16], gap: spacing[16] }}>
                 {formError && (
-                  <XStack
-                    padding="$3"
-                    backgroundColor="$red4"
-                    borderWidth={1}
-                    borderColor="$red8"
-                    borderRadius="$2"
-                    gap="$2"
-                    alignItems="flex-start"
+                  <Row
+                    style={{
+                      padding: spacing[12],
+                      backgroundColor: colors.error[200],
+                      borderWidth: 1,
+                      borderColor: colors.error[400],
+                      borderRadius: 8,
+                      gap: spacing[8],
+                      alignItems: 'flex-start',
+                    }}
                   >
-                    <AlertTriangle size={16} color="$red10" style={{ marginTop: 2, flexShrink: 0 }} />
-                    <Text fontSize="$3" color="$red11">{formError}</Text>
-                  </XStack>
+                    <AlertTriangle size={16} color={colors.error[500]} style={{ marginTop: 2, flexShrink: 0 }} />
+                    <Text size="sm" color={colors.error[600]}>{formError}</Text>
+                  </Row>
                 )}
 
-                <YStack gap="$1">
-                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                <Stack gap={spacing[4]}>
+                  <Label size="sm" weight="semibold" color={colors.text.light.primary} style={{ marginBottom: spacing[4] }}>
                     Key
                   </Label>
                   <Input
                     value={formData.key}
                     onChangeText={(value) => setFormData((prev) => ({ ...prev, key: value }))}
                     disabled={modalMode === 'edit'}
-                    width="100%"
-                    padding="$2"
-                    borderWidth={1}
-                    borderRadius="$4"
-                    fontFamily="$mono"
-                    backgroundColor={modalMode === 'edit' ? '$backgroundHover' : '$background'}
+                    containerStyle={{
+                      width: '100%',
+                      backgroundColor: modalMode === 'edit' ? colors.bg.light.subtle : colors.bg.light.default,
+                    }}
+                    style={{ fontFamily: 'monospace' }}
                     placeholder="e.g., nav.custom_link"
                     required
                   />
                   {modalMode === 'edit' && (
-                    <Text fontSize="$1" color="$color11" marginTop="$1">
+                    <Text size="xs" color={colors.text.light.secondary} style={{ marginTop: spacing[4] }}>
                       Key cannot be changed
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
-                <YStack gap="$1">
-                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                <Stack gap={spacing[4]}>
+                  <Label size="sm" weight="semibold" color={colors.text.light.primary} style={{ marginBottom: spacing[4] }}>
                     Value
                   </Label>
                   <Input
                     value={formData.value}
                     onChangeText={(value) => setFormData((prev) => ({ ...prev, value }))}
-                    width="100%"
-                    padding="$2"
-                    borderWidth={1}
-                    borderRadius="$4"
+                    containerStyle={{ width: '100%' }}
                     placeholder="Display text for this key"
                     required
                   />
                   {editingEntry && DEFAULT_LEXICON[editingEntry.key] && (
-                    <Text fontSize="$1" color="$color11" marginTop="$1">
+                    <Text size="xs" color={colors.text.light.secondary} style={{ marginTop: spacing[4] }}>
                       Default value: {DEFAULT_LEXICON[editingEntry.key]}
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
-                <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+                <Row justifyContent="flex-end" gap={spacing[12]} style={{ paddingTop: spacing[16] }}>
                   <Button
-                    type="button"
                     onPress={closeModal}
-                    paddingHorizontal="$4"
-                    paddingVertical="$2"
-                    borderWidth={1}
-                    borderRadius="$4"
-                    backgroundColor="transparent"
-                    hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                    variant="outline"
+                    color="gray"
                   >
                     Cancel
                   </Button>
                   <Button
-                    type="submit"
+                    onPress={() => {
+                      const syntheticEvent = new Event('submit') as any;
+                      syntheticEvent.preventDefault = () => {};
+                      handleSubmit(syntheticEvent);
+                    }}
                     disabled={isSubmitting}
-                    paddingHorizontal="$4"
-                    paddingVertical="$2"
-                    backgroundColor="$blue10"
-                    color="white"
-                    borderRadius="$4"
-                    hoverStyle={{ backgroundColor: "$blue11" }}
-                    opacity={isSubmitting ? 0.5 : 1}
-                    icon={isSubmitting ? <Spinner size="small" /> : undefined}
+                    loading={isSubmitting}
+                    color="primary"
+                    variant="filled"
                   >
                     {modalMode === 'add' ? 'Add Entry' : 'Save Changes'}
                   </Button>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             </form>
           </Card>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

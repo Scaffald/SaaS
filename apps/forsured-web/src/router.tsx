@@ -20,7 +20,6 @@ const LazyRoute = ({ children }: { children: React.ReactNode }) => (
 
 // === LAZY LOADED COMPONENTS ===
 // Public pages
-const DesignSystemHome = lazy(() => import('./components/DesignSystem/DesignSystemHome'));
 const Colors = lazy(() => import('./components/Features/Colors'));
 const TestingPage = lazy(() => import('./components/Features/TestingPage'));
 const TestSupabase = lazy(() => import('./pages/TestSupabase'));
@@ -141,7 +140,6 @@ const AppRoutes = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/invite/:code" element={<InvitationLandingPage />} />
-        <Route path="/design-system" element={<DesignSystemHome />} />
         <Route path="/colors" element={<Colors />} />
         <Route path="/testing" element={<TestingPage />} />
         <Route path="/test-supabase" element={<TestSupabase />} />

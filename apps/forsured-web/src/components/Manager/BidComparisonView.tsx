@@ -1,26 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo, useEffect, useRef } from 'react';
 import {
-  CheckCircle,
   XCircle,
   MessageSquare,
   Trophy,
-  TrendingUp,
-  TrendingDown,
-  AlertTriangle,
-  Download,
-  Filter,
   ArrowUpDown,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui';
 import { useBids } from '../../hooks/useBids';
 import { useProjects } from '../../hooks/useProjects';
 import { useUsers } from '../../hooks/useUsers';
-import {
-  mockCalculateComplianceScore,
-  BidScoreBreakdown,
-} from '../../utils/bidScoring';
+import { mockCalculateComplianceScore } from '../../utils/bidScoring';
 import Button from '../Common/Button';
 import Select from '../Common/Select';
 import Modal from '../Common/Modal';
@@ -29,8 +21,6 @@ import AIProcessingIndicator, {
   AIProcessingState,
 } from '../Common/AIProcessingIndicator';
 import AISummaryScreen from '../Common/AISummaryScreen';
-import { BidProposal } from '../../types';
-import { formatDate } from '../../utils/dateHelpers';
 
 interface BidComparisonViewProps {
   projectId: string;
@@ -266,10 +256,10 @@ export default function BidComparisonView({
     }
   };
 
-  const getScoreColorProps = (score: number) => {
-    if (score >= 80) return { color: '$green10', backgroundColor: '$green2', borderColor: '$green8' };
-    if (score >= 60) return { color: '$orange10', backgroundColor: '$orange2', borderColor: '$orange8' };
-    return { color: '$red10', backgroundColor: '$red2', borderColor: '$red8' };
+  const getScoreColorProps = (score: number): React.CSSProperties => {
+    if (score >= 80) return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)', borderColor: 'var(--color-green-8)' };
+    if (score >= 60) return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)', borderColor: 'var(--color-orange-8)' };
+    return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-8)' };
   };
 
   const formatCurrency = (amount: number) => {
@@ -288,18 +278,18 @@ export default function BidComparisonView({
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="Bid Comparison" size="xl">
-        <YStack gap="$6">
-          <YStack>
-            <H2 fontSize="$8" fontWeight="700" color="$color12" mb="$1">
+        <Stack gap={24}>
+          <Stack>
+            <H2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 4 }}>
               {project.name}
             </H2>
-            <Text color="$color11">
+            <Text muted>
               Compare bids from all subcontractors
             </Text>
-          </YStack>
+          </Stack>
 
           {/* Filters and Sort */}
-          <XStack alignItems="center" gap="$3">
+          <Row alignItems="center" gap={12}>
             <Select
               value={complianceFilter}
               onChange={(e) => setComplianceFilter(e.target.value)}
@@ -321,119 +311,127 @@ export default function BidComparisonView({
             />
             <Button
               variant="ghost"
-              size="$2"
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              size="sm"
+              onPress={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               leftIcon={ArrowUpDown}
             >
               {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
             </Button>
-          </XStack>
+          </Row>
 
           {loading ? (
-            <YStack alignItems="center" paddingVertical="$12">
-              <Spinner size="large" color="$blue10" mb="$2" />
-              <Text color="$color11">Loading bids...</Text>
-            </YStack>
+            <Stack alignItems="center" style={{ padding: '48px 0' }}>
+              <Loader2 size={32} color="var(--color-blue-10)" className="animate-spin" style={{ marginBottom: 8 }} />
+              <Text muted>Loading bids...</Text>
+            </Stack>
           ) : filteredAndSortedBids.length === 0 ? (
-            <YStack alignItems="center" paddingVertical="$12">
-              <YStack alignItems="center" mb="$4">
-                <Trophy color="$color10" size={48} />
-              </YStack>
-              <Text color="$color12" fontWeight="500" mb="$2">
+            <Stack alignItems="center" style={{ padding: '48px 0' }}>
+              <Stack alignItems="center" style={{ marginBottom: 16 }}>
+                <Trophy color="var(--color-text-muted)" size={48} />
+              </Stack>
+              <Text weight="medium" style={{ marginBottom: 8 }}>
                 No bids found
               </Text>
-              <Text color="$color11" fontSize="$3">
+              <Text size="sm" muted>
                 No subcontractors have submitted bids yet
               </Text>
-            </YStack>
+            </Stack>
           ) : (
-            <YStack gap="$4">
-              {filteredAndSortedBids.map((bid) => (
+            <Stack gap={16}>
+              {filteredAndSortedBids.map((bid) => {
+                const scoreProps = getScoreColorProps(bid.score.overallScore);
+                return (
                 <Card
                   key={bid.id}
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
-                  padding="$6"
-                  hoverStyle={{ borderColor: '$blue8' }}
+                  style={{
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 12,
+                    padding: 24,
+                  }}
                 >
-                  <XStack flexWrap="wrap" gap="$4" mb="$4">
-                    <YStack flex={2} minWidth="calc(33.333% - 11px)">
-                      <Text fontSize="$3" color="$color10" mb="$1">
+                  <Row style={{ flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
+                    <Stack style={{ flex: 2, minWidth: 'calc(33.333% - 11px)' }}>
+                      <Text size="sm" muted style={{ marginBottom: 4 }}>
                         Subcontractor
                       </Text>
-                      <Text fontWeight="600" color="$color12">
+                      <Text weight="semibold">
                         {bid.subcontractorName}
                       </Text>
-                    </YStack>
-                    <YStack flex={1} minWidth="calc(16.666% - 11px)">
-                      <Text fontSize="$3" color="$color10" mb="$1">
+                    </Stack>
+                    <Stack style={{ flex: 1, minWidth: 'calc(16.666% - 11px)' }}>
+                      <Text size="sm" muted style={{ marginBottom: 4 }}>
                         Bid Amount
                       </Text>
-                      <Text fontWeight="600" color="$color12">
+                      <Text weight="semibold">
                         {formatCurrency(bid.bid_amount)}
                       </Text>
-                    </YStack>
-                    <YStack flex={1} minWidth="calc(16.666% - 11px)">
-                      <Text fontSize="$3" color="$color10" mb="$1">
+                    </Stack>
+                    <Stack style={{ flex: 1, minWidth: 'calc(16.666% - 11px)' }}>
+                      <Text size="sm" muted style={{ marginBottom: 4 }}>
                         Compliance Score
                       </Text>
-                      <XStack
-                        alignItems="center"
-                        paddingHorizontal="$3"
-                        paddingVertical="$1"
-                        borderRadius={9999}
-                        borderWidth={1}
-                        {...getScoreColorProps(bid.score.overallScore)}
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: 12,
+                          paddingRight: 12,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 9999,
+                          border: '1px solid',
+                          ...scoreProps,
+                        }}
                       >
-                        <Text fontWeight="700" fontSize="$7" color={getScoreColorProps(bid.score.overallScore).color}>
+                        <span style={{ fontWeight: 700, fontSize: 20, color: scoreProps.color }}>
                           {bid.score.overallScore}
-                        </Text>
-                        <Text fontSize="$1" ml="$1" color={getScoreColorProps(bid.score.overallScore).color}>
+                        </span>
+                        <span style={{ fontSize: 12, marginLeft: 4, color: scoreProps.color }}>
                           /100
-                        </Text>
-                      </XStack>
-                    </YStack>
-                    <YStack flex={1} minWidth="calc(16.666% - 11px)">
-                      <Text fontSize="$3" color="$color10" mb="$1">
+                        </span>
+                      </span>
+                    </Stack>
+                    <Stack style={{ flex: 1, minWidth: 'calc(16.666% - 11px)' }}>
+                      <Text size="sm" muted style={{ marginBottom: 4 }}>
                         Response Time
                       </Text>
-                      <Text fontWeight="500" color="$color12">
+                      <Text weight="medium">
                         {bid.daysToRespond} days
                       </Text>
-                    </YStack>
-                    <YStack flex={1} minWidth="calc(16.666% - 11px)">
-                      <Text fontSize="$3" color="$color10" mb="$1">Status</Text>
-                      <Text
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        fontSize="$1"
-                        fontWeight="500"
-                        borderRadius="$2"
-                        backgroundColor={
-                          bid.status === 'awarded'
-                            ? '$green2'
+                    </Stack>
+                    <Stack style={{ flex: 1, minWidth: 'calc(16.666% - 11px)' }}>
+                      <Text size="sm" muted style={{ marginBottom: 4 }}>Status</Text>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          borderRadius: 8,
+                          textTransform: 'uppercase',
+                          backgroundColor: bid.status === 'awarded'
+                            ? 'var(--color-green-2)'
                             : bid.status === 'rejected'
-                              ? '$red2'
-                              : '$blue2'
-                        }
-                        color={
-                          bid.status === 'awarded'
-                            ? '$green10'
+                              ? 'var(--color-red-2)'
+                              : 'var(--color-blue-2)',
+                          color: bid.status === 'awarded'
+                            ? 'var(--color-green-10)'
                             : bid.status === 'rejected'
-                              ? '$red10'
-                              : '$blue10'
-                        }
-                        textTransform="uppercase"
+                              ? 'var(--color-red-10)'
+                              : 'var(--color-blue-10)',
+                        }}
                       >
                         {bid.status.replace('_', ' ')}
-                      </Text>
-                    </YStack>
-                  </XStack>
+                      </span>
+                    </Stack>
+                  </Row>
 
                   {/* AI Processing Indicator */}
                   {bid.aiProcessingState && (
-                    <YStack mb="$4">
+                    <Stack style={{ marginBottom: 16 }}>
                       <AIProcessingIndicator
                         state={bid.aiProcessingState}
                         message={
@@ -449,95 +447,95 @@ export default function BidComparisonView({
                             : undefined
                         }
                       />
-                    </YStack>
+                    </Stack>
                   )}
 
                   {/* Score Breakdown */}
                   {!bid.aiProcessingState && (
-                    <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4" mb="$4">
-                      <Text fontSize="$1" fontWeight="500" color="$color11" mb="$3">
+                    <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                      <Text size="xs" weight="medium" muted style={{ marginBottom: 12 }}>
                         Score Breakdown
                       </Text>
-                      <XStack flexWrap="wrap" gap="$3" fontSize="$1">
-                        <YStack>
-                          <Text color="$color10">Coverage:</Text>
-                          <Text fontWeight="500" color="$color12">
+                      <Row style={{ flexWrap: 'wrap', gap: 12 }}>
+                        <Stack>
+                          <Text size="xs" muted>Coverage:</Text>
+                          <Text size="xs" weight="medium">
                             {bid.score.insuranceCoverage}/40
                           </Text>
-                        </YStack>
-                        <YStack>
-                          <Text color="$color10">Documents:</Text>
-                          <Text fontWeight="500" color="$color12">
+                        </Stack>
+                        <Stack>
+                          <Text size="xs" muted>Documents:</Text>
+                          <Text size="xs" weight="medium">
                             {bid.score.documentCompleteness}/20
                           </Text>
-                        </YStack>
-                        <YStack>
-                          <Text color="$color10">Carrier:</Text>
-                          <Text fontWeight="500" color="$color12">
+                        </Stack>
+                        <Stack>
+                          <Text size="xs" muted>Carrier:</Text>
+                          <Text size="xs" weight="medium">
                             {bid.score.carrierRatings}/15
                           </Text>
-                        </YStack>
-                        <YStack>
-                          <Text color="$color10">
+                        </Stack>
+                        <Stack>
+                          <Text size="xs" muted>
                             Performance:
                           </Text>
-                          <Text fontWeight="500" color="$color12">
+                          <Text size="xs" weight="medium">
                             {bid.score.pastPerformance}/15
                           </Text>
-                        </YStack>
-                        <YStack>
-                          <Text color="$color10">
+                        </Stack>
+                        <Stack>
+                          <Text size="xs" muted>
                             Timeliness:
                           </Text>
-                          <Text fontWeight="500" color="$color12">
+                          <Text size="xs" weight="medium">
                             {bid.score.responseTimeliness}/10
                           </Text>
-                        </YStack>
-                      </XStack>
+                        </Stack>
+                      </Row>
                     </Card>
                   )}
 
                   {/* Coverage Gaps */}
                   {!bid.aiProcessingState &&
                     bid.score.coverageGaps.length > 0 && (
-                      <Card backgroundColor="$orange2" borderWidth={1} borderColor="$orange8" borderRadius="$4" padding="$3" mb="$4">
-                        <Text fontSize="$1" fontWeight="500" color="$orange12" mb="$2">
+                      <Card style={{ backgroundColor: 'var(--color-orange-2)', border: '1px solid var(--color-orange-8)', borderRadius: 12, padding: 12, marginBottom: 16 }}>
+                        <Text size="xs" weight="medium" style={{ color: 'var(--color-orange-12)', marginBottom: 8 }}>
                           Coverage Gaps
                         </Text>
-                        <YStack gap="$1">
+                        <Stack gap={4}>
                           {bid.score.coverageGaps.map((gap, index) => (
                             <Text
                               key={index}
-                              fontSize="$1"
-                              color="$orange11"
+                              size="xs"
+                              style={{ color: 'var(--color-orange-11)' }}
                             >
                               • {gap.type}: {formatCurrency(gap.actual)} /{' '}
                               {formatCurrency(gap.required)} required
                             </Text>
                           ))}
-                        </YStack>
+                        </Stack>
                       </Card>
                     )}
 
                   {/* Risk Assessment */}
                   {!bid.aiProcessingState && (
-                    <YStack mb="$4">
-                      <Text fontSize="$1" fontWeight="500" color="$color11" mb="$1">
+                    <Stack style={{ marginBottom: 16 }}>
+                      <Text size="xs" weight="medium" muted style={{ marginBottom: 4 }}>
                         Risk Assessment
                       </Text>
-                      <Text fontSize="$3" color="$color12">
+                      <Text size="sm">
                         {bid.score.riskAssessment}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
 
                   {/* Actions */}
                   {!bid.aiProcessingState && bid.status === 'submitted' && (
-                    <XStack alignItems="center" gap="$2" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                    <Row alignItems="center" gap={8} style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
                       <Button
                         variant="success"
-                        size="$2"
-                        onClick={() => {
+                        size="sm"
+                        onPress={() => {
                           setSelectedBid(bid.id);
                           setShowAwardModal(true);
                         }}
@@ -547,8 +545,8 @@ export default function BidComparisonView({
                       </Button>
                       <Button
                         variant="secondary"
-                        size="$2"
-                        onClick={() => {
+                        size="sm"
+                        onPress={() => {
                           setSelectedBid(bid.id);
                           setShowClarificationModal(true);
                         }}
@@ -558,8 +556,8 @@ export default function BidComparisonView({
                       </Button>
                       <Button
                         variant="danger"
-                        size="$2"
-                        onClick={() => {
+                        size="sm"
+                        onPress={() => {
                           setSelectedBid(bid.id);
                           setShowRejectModal(true);
                         }}
@@ -568,20 +566,20 @@ export default function BidComparisonView({
                         Reject
                       </Button>
                       <Button
-                        variant="outline"
-                        size="$2"
-                        onClick={() => setShowAISummary(bid.id)}
+                        variant="outlined"
+                        size="sm"
+                        onPress={() => setShowAISummary(bid.id)}
                         leftIcon={Sparkles}
                       >
                         View AI Summary
                       </Button>
-                    </XStack>
+                    </Row>
                   )}
                 </Card>
-              ))}
-            </YStack>
+              )})}
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </Modal>
 
       {/* AI Summary Modal for Bids */}
@@ -640,15 +638,15 @@ export default function BidComparisonView({
         title="Award Bid"
         size="sm"
       >
-        <YStack gap="$4">
-          <Text color="$color11">
+        <Stack gap={16}>
+          <Text muted>
             Are you sure you want to award this bid? All other bids will be
             automatically rejected.
           </Text>
-          <XStack gap="$3">
+          <Row gap={12}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowAwardModal(false);
                 setSelectedBid(null);
               }}
@@ -658,14 +656,14 @@ export default function BidComparisonView({
             </Button>
             <Button
               variant="success"
-              onClick={() => selectedBid && handleAwardBid(selectedBid)}
+              onPress={() => selectedBid && handleAwardBid(selectedBid)}
               fullWidth
               leftIcon={Trophy}
             >
               Award Bid
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Modal>
 
       {/* Reject Modal */}
@@ -679,7 +677,7 @@ export default function BidComparisonView({
         title="Reject Bid"
         size="sm"
       >
-        <YStack gap="$4">
+        <Stack gap={16}>
           <Textarea
             label="Reason for Rejection"
             value={rejectReason}
@@ -689,10 +687,10 @@ export default function BidComparisonView({
             fullWidth
             required
           />
-          <XStack gap="$3">
+          <Row gap={12}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowRejectModal(false);
                 setSelectedBid(null);
                 setRejectReason('');
@@ -703,15 +701,15 @@ export default function BidComparisonView({
             </Button>
             <Button
               variant="danger"
-              onClick={handleRejectBid}
+              onPress={handleRejectBid}
               disabled={!rejectReason.trim()}
               fullWidth
               leftIcon={XCircle}
             >
               Reject Bid
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Modal>
 
       {/* Clarification Modal */}
@@ -725,7 +723,7 @@ export default function BidComparisonView({
         title="Request Clarification"
         size="sm"
       >
-        <YStack gap="$4">
+        <Stack gap={16}>
           <Textarea
             label="Questions or Clarifications Needed"
             value={clarificationQuestion}
@@ -735,10 +733,10 @@ export default function BidComparisonView({
             fullWidth
             required
           />
-          <XStack gap="$3">
+          <Row gap={12}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowClarificationModal(false);
                 setSelectedBid(null);
                 setClarificationQuestion('');
@@ -749,15 +747,15 @@ export default function BidComparisonView({
             </Button>
             <Button
               variant="primary"
-              onClick={handleRequestClarification}
+              onPress={handleRequestClarification}
               disabled={!clarificationQuestion.trim()}
               fullWidth
               leftIcon={MessageSquare}
             >
               Send Request
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Modal>
     </>
   );

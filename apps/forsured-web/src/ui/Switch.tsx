@@ -1,138 +1,80 @@
-import React, { InputHTMLAttributes, forwardRef } from 'react';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
+/**
+ * Switch wrapper - migrated from Tamagui to Beyond UI Toggle
+ * Provides backwards-compatible API for existing code
+ */
+import React, { forwardRef, useCallback, useId } from 'react';
+import { Toggle, type ToggleSize } from '@unicornlove/beyond-ui';
 
-export interface SwitchProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
+export interface SwitchProps {
   label?: string;
   helperText?: string;
   size?: 'sm' | 'md' | 'lg';
+  checked?: boolean;
+  defaultChecked?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onCheckedChange?: (checked: boolean) => void;
+  id?: string;
+  name?: string;
+  value?: string;
+  className?: string;
 }
 
-const SwitchContainer = styled(YStack, {
-  name: 'SwitchContainer',
-});
-
-const SwitchWrapper = styled(XStack, {
-  name: 'SwitchWrapper',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-});
-
-const SwitchInputWrapper = styled(XStack, {
-  name: 'SwitchInputWrapper',
-  alignItems: 'center',
-});
-
-const SwitchTrack = styled(XStack, {
-  name: 'SwitchTrack',
-  backgroundColor: '$gray7',
-  borderRadius: '$full',
-  position: 'relative',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease-in-out',
-  variants: {
-    size: {
-      sm: { width: 36, height: 20 }, // w-9 h-5
-      md: { width: 44, height: 24 }, // w-11 h-6
-      lg: { width: 56, height: 28 }, // w-14 h-7
-    },
-    checked: {
-      true: {
-        backgroundColor: '$primary9',
-      },
-      false: {
-        backgroundColor: '$gray7',
-      },
-    },
-    disabled: {
-      true: {
-        opacity: 0.5,
-        cursor: 'not-allowed',
-      },
-      false: {},
-    },
-  } as const,
-});
-
-const SwitchThumb = styled(XStack, {
-  name: 'SwitchThumb',
-  backgroundColor: '$color1',
-  borderRadius: '$full',
-  position: 'absolute',
-  left: 2, // left-0.5
-  top: 2, // top-0.5
-  transition: 'transform 0.2s ease-in-out',
-  variants: {
-    size: {
-      sm: { width: 16, height: 16 },
-      md: { width: 20, height: 20 },
-      lg: { width: 24, height: 24 },
-    },
-  } as const,
-});
-
-const SwitchLabel = styled(Text, {
-  name: 'SwitchLabel',
-  marginLeft: '$3',
-  fontSize: '$2',
-  fontWeight: '500',
-  color: '$color11',
-  cursor: 'pointer',
-});
+// Map size - Beyond UI Toggle only supports 'sm' | 'md', so 'lg' maps to 'md'
+const mapSize = (size: 'sm' | 'md' | 'lg'): ToggleSize => {
+  return size === 'lg' ? 'md' : size;
+};
 
 const Switch = forwardRef<HTMLInputElement, SwitchProps>(
-  ({ label, helperText, size = 'md', className = '', id, ...props }, ref) => {
-    const switchId = id || `switch-${Math.random().toString(36).substr(2, 9)}`;
-    const isChecked = props.checked ?? props.defaultChecked ?? false;
+  (
+    {
+      label,
+      helperText,
+      size = 'md',
+      checked,
+      defaultChecked,
+      disabled,
+      required,
+      onChange,
+      onCheckedChange,
+      className = '',
+      ...props
+    },
+    _ref
+  ) => {
+    const generatedId = useId();
+    const switchId = props.id || generatedId;
 
-    // Calculate thumb translation based on size
-    const thumbTranslation = {
-      sm: 16,
-      md: 20,
-      lg: 28,
-    };
+    // Handle both old onChange (event-based) and new onCheckedChange (boolean) APIs
+    const handleChange = useCallback(
+      (isChecked: boolean) => {
+        onCheckedChange?.(isChecked);
+        // Simulate event for backwards compatibility
+        if (onChange) {
+          const syntheticEvent = {
+            target: { checked: isChecked, name: props.name, value: props.value },
+            currentTarget: { checked: isChecked, name: props.name, value: props.value },
+          } as React.ChangeEvent<HTMLInputElement>;
+          onChange(syntheticEvent);
+        }
+      },
+      [onChange, onCheckedChange, props.name, props.value]
+    );
+
+    // Build label with required indicator if needed
+    const labelWithRequired = label && required ? `${label} *` : label;
 
     return (
-      <SwitchContainer className={className}>
-        <SwitchWrapper>
-          <SwitchInputWrapper>
-            <XStack position="relative" display="inline-block">
-              <input
-                ref={ref}
-                id={switchId}
-                type="checkbox"
-                style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
-                {...props}
-              />
-              <SwitchTrack
-                size={size}
-                checked={isChecked}
-                disabled={props.disabled}
-                as="label"
-                htmlFor={switchId}
-              >
-                <SwitchThumb
-                  size={size}
-                  style={{
-                    transform: isChecked ? `translateX(${thumbTranslation[size]}px)` : 'translateX(0)'
-                  }}
-                />
-              </SwitchTrack>
-            </XStack>
-            {label && (
-              <SwitchLabel as="label" htmlFor={switchId}>
-                {label}
-                {props.required && <Text color="$red9" marginLeft="$1">*</Text>}
-              </SwitchLabel>
-            )}
-          </SwitchInputWrapper>
-        </SwitchWrapper>
-        {helperText && (
-          <Text fontSize="$2" color="$color9" marginTop="$1.5">
-            {helperText}
-          </Text>
-        )}
-      </SwitchContainer>
+      <Toggle
+        checked={checked ?? defaultChecked}
+        onChange={handleChange}
+        size={mapSize(size)}
+        disabled={disabled}
+        label={labelWithRequired}
+        helperText={helperText}
+        containerStyle={{ className } as any}
+      />
     );
   }
 );

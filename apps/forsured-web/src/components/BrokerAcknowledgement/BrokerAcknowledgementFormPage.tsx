@@ -8,8 +8,9 @@ import {
   AlertCircle,
   CheckCircle,
   Info,
+  Loader2,
 } from 'lucide-react';
-import { YStack, XStack, Text, Card, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { useBrokerAcknowledgements } from '../../hooks/useBrokerAcknowledgements';
 import { AcknowledgementCoverageItem } from '../../types';
 import CoverageVerificationSection from './CoverageVerificationSection';
@@ -22,11 +23,11 @@ import Button from '../Common/Button';
 const COVERAGE_REQUIREMENTS = {
   general_liability: [
     {
-      name: 'Additional Insured – Ongoing Operations (CG 2010 or equivalent)',
+      name: 'Additional Insured - Ongoing Operations (CG 2010 or equivalent)',
       description: '',
     },
     {
-      name: 'Additional Insured – Completed Operations (CG 2037 or equivalent)',
+      name: 'Additional Insured - Completed Operations (CG 2037 or equivalent)',
       description: '',
     },
     { name: 'Primary and Non-Contributory Endorsement', description: '' },
@@ -208,36 +209,38 @@ export default function BrokerAcknowledgementFormPage() {
 
   if (!formId) {
     return (
-      <YStack alignItems="center" justifyContent="center" height={256}>
-        <AlertCircle size={48} color="$red10" mb="$4" />
-        <Text fontSize="$7" fontWeight="600" color="$color12" mb="$2">
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <AlertCircle size={48} style={{ color: 'var(--color-red-10)', marginBottom: 'var(--space-4)' }} />
+        <Text style={{ fontSize: 'var(--font-size-7)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-2)' }}>
           No Form Selected
         </Text>
-        <Text color="$color11" mb="$6">
+        <Text style={{ color: 'var(--color-gray-11)', marginBottom: 'var(--space-6)' }}>
           Please select a form to view or edit.
         </Text>
-        <XStack
-          as="button"
-          onPress={() => navigate('/broker/acknowledgements')}
-          alignItems="center"
-          gap="$2"
-          color="$blue10"
-          hoverStyle={{
-            color: '$blue12',
+        <button
+          onClick={() => navigate('/broker/acknowledgements')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-2)',
+            color: 'var(--color-blue-10)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
           }}
         >
           <ArrowLeft size={20} />
           <Text>Back to Forms List</Text>
-        </XStack>
-      </YStack>
+        </button>
+      </Stack>
     );
   }
 
   if (loading || !currentForm) {
     return (
-      <YStack alignItems="center" justifyContent="center" height={256}>
-        <Spinner size="large" color="$blue10" />
-      </YStack>
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Loader2 size={32} className="animate-spin" style={{ color: 'var(--color-blue-10)' }} />
+      </Stack>
     );
   }
 
@@ -256,36 +259,40 @@ export default function BrokerAcknowledgementFormPage() {
   );
 
   return (
-    <YStack gap="$6" paddingBottom="$12">
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <XStack
-            as="button"
-            onPress={() => navigate('/broker/acknowledgements')}
-            alignItems="center"
-            gap="$2"
-            color="$color11"
-            hoverStyle={{
-              color: '$color12',
+    <Stack style={{ gap: 'var(--space-6)', paddingBottom: 'var(--space-12)' }}>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack>
+          <button
+            onClick={() => navigate('/broker/acknowledgements')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-2)',
+              color: 'var(--color-gray-11)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              marginBottom: 'var(--space-4)',
             }}
-            mb="$4"
           >
             <ArrowLeft size={20} />
             <Text>Back</Text>
-          </XStack>
-          <Text fontSize="$8" fontWeight="bold" color="$color12">
+          </button>
+          <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
             Broker Acknowledgement Form - Tier 1
           </Text>
-          <Text color="$color11" mt="$1">
+          <Text style={{ color: 'var(--color-gray-11)', marginTop: 'var(--space-1)' }}>
             {currentForm.gc_project_name}
           </Text>
-        </YStack>
+        </Stack>
 
-        <XStack alignItems="center" gap="$3">
+        <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
           {saveMessage && (
             <Text
-              fontSize="$2"
-              color={saveMessage.includes('Error') ? '$red10' : '$green10'}
+              style={{
+                fontSize: 'var(--font-size-2)',
+                color: saveMessage.includes('Error') ? 'var(--color-red-10)' : 'var(--color-green-10)',
+              }}
             >
               {saveMessage}
             </Text>
@@ -294,137 +301,136 @@ export default function BrokerAcknowledgementFormPage() {
             <>
               <Button
                 variant="outline"
-                onClick={() => handleSave()}
+                onPress={() => handleSave()}
                 disabled={isSaving}
               >
-                <XStack alignItems="center" gap="$2">
+                <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                   <Save size={16} />
                   <Text>{isSaving ? 'Saving...' : 'Save Draft'}</Text>
-                </XStack>
+                </Row>
               </Button>
-              <Button onClick={handleSubmit}>
-                <XStack alignItems="center" gap="$2">
+              <Button onPress={handleSubmit}>
+                <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                   <Send size={16} />
                   <Text>Submit Form</Text>
-                </XStack>
+                </Row>
               </Button>
             </>
           )}
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {isReadOnly && (
         <Card
-          backgroundColor="$blue3"
-          borderWidth={1}
-          borderColor="$blue6"
-          borderRadius="$4"
-          padding="$4"
+          style={{
+            backgroundColor: 'var(--color-blue-3)',
+            border: '1px solid var(--color-blue-6)',
+            borderRadius: 'var(--radius-4)',
+            padding: 'var(--space-4)',
+          }}
         >
-          <XStack alignItems="flex-start" gap="$3">
-            <Info size={20} color="$blue10" mt="$0.5" flexShrink={0} />
-            <YStack>
-              <Text fontWeight="500" color="$blue11">
+          <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+            <Info size={20} style={{ color: 'var(--color-blue-10)', marginTop: 'var(--space-0-5)', flexShrink: 0 }} />
+            <Stack>
+              <Text style={{ fontWeight: 500, color: 'var(--color-blue-11)' }}>
               Form Status: {currentForm.status}
               </Text>
-              <Text fontSize="$2" color="$blue10" mt="$1">
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue-10)', marginTop: 'var(--space-1)' }}>
               This form has been submitted and is locked for editing.
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
         </Card>
       )}
 
-      <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-        <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+      <Card style={{ border: '1px solid var(--color-border)', padding: 'var(--space-6)' }}>
+        <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)' }}>
           General Information
         </Text>
-        <XStack
-          flexWrap="wrap"
-          gap="$4"
-          $gtMd={{
-            flexWrap: 'nowrap',
+        <Row
+          style={{
+            flexWrap: 'wrap',
+            gap: 'var(--space-4)',
           }}
         >
-          <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
+          <Stack style={{ flex: 1, minWidth: '200px' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)', display: 'block', marginBottom: 'var(--space-1)' }}>
               Subcontractor Company
             </Text>
-            <Text color="$color12" fontWeight="500">
+            <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
               {currentForm.subcontractor_company_name}
             </Text>
-          </YStack>
-          <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
+          </Stack>
+          <Stack style={{ flex: 1, minWidth: '200px' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)', display: 'block', marginBottom: 'var(--space-1)' }}>
               Broker / Agency
             </Text>
-            <Text color="$color12" fontWeight="500">
+            <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
               {currentForm.broker_agency_name}
             </Text>
-          </YStack>
-          <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
+          </Stack>
+          <Stack style={{ flex: 1, minWidth: '200px' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)', display: 'block', marginBottom: 'var(--space-1)' }}>
               Broker Contact
             </Text>
-            <Text color="$color12" fontWeight="500">
+            <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
               {currentForm.broker_contact_name}
             </Text>
-          </YStack>
-          <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
+          </Stack>
+          <Stack style={{ flex: 1, minWidth: '200px' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)', display: 'block', marginBottom: 'var(--space-1)' }}>
               Broker Email
             </Text>
-            <Text color="$color12" fontWeight="500">
+            <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
               {currentForm.broker_email}
             </Text>
-          </YStack>
-          <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
+          </Stack>
+          <Stack style={{ flex: 1, minWidth: '200px' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)', display: 'block', marginBottom: 'var(--space-1)' }}>
               Date Issued
             </Text>
-            <Text color="$color12" fontWeight="500">
+            <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
               {new Date(currentForm.date_issued).toLocaleDateString()}
             </Text>
-          </YStack>
-          <YStack flex={1} minWidth="200px">
-            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" mb="$1">
+          </Stack>
+          <Stack style={{ flex: 1, minWidth: '200px' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)', display: 'block', marginBottom: 'var(--space-1)' }}>
               Due Date
             </Text>
-            <Text color="$color12" fontWeight="500">
+            <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
               {new Date(currentForm.date_due).toLocaleDateString()}
             </Text>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
       </Card>
 
       <Card
-        backgroundColor="$orange3"
-        borderWidth={1}
-        borderColor="$orange6"
-        borderRadius="$4"
-        padding="$4"
+        style={{
+          backgroundColor: 'var(--color-orange-3)',
+          border: '1px solid var(--color-orange-6)',
+          borderRadius: 'var(--radius-4)',
+          padding: 'var(--space-4)',
+        }}
       >
-        <XStack alignItems="flex-start" gap="$3">
+        <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
         <AlertCircle
           size={20}
-            color="$orange10"
-            mt="$0.5"
-            flexShrink={0}
+            style={{ color: 'var(--color-orange-10)', marginTop: 'var(--space-0-5)', flexShrink: 0 }}
           />
-          <YStack fontSize="$2" color="$orange11">
-            <Text fontWeight="500" mb="$1">Important Notes:</Text>
-            <YStack gap="$1" paddingLeft="$4">
-              <Text>• No new insurance should be purchased until the project contract is executed</Text>
-              <Text>• All endorsement forms must include corresponding policy numbers</Text>
-              <Text>• Endorsements must match the insured name and W-9 provided in Phase 1</Text>
-              <Text>• Incomplete forms or missing endorsements will delay onboarding</Text>
-            </YStack>
-          </YStack>
-        </XStack>
+          <Stack style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange-11)' }}>
+            <Text style={{ fontWeight: 500, marginBottom: 'var(--space-1)' }}>Important Notes:</Text>
+            <Stack style={{ gap: 'var(--space-1)', paddingLeft: 'var(--space-4)' }}>
+              <Text>- No new insurance should be purchased until the project contract is executed</Text>
+              <Text>- All endorsement forms must include corresponding policy numbers</Text>
+              <Text>- Endorsements must match the insured name and W-9 provided in Phase 1</Text>
+              <Text>- Incomplete forms or missing endorsements will delay onboarding</Text>
+            </Stack>
+          </Stack>
+        </Row>
       </Card>
 
-      <YStack gap="$6">
-        <Text fontSize="$7" fontWeight="bold" color="$color12">
+      <Stack style={{ gap: 'var(--space-6)' }}>
+        <Text style={{ fontSize: 'var(--font-size-7)', fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
           Insurance Coverage Verification
         </Text>
 
@@ -486,19 +492,21 @@ export default function BrokerAcknowledgementFormPage() {
           />
         )}
 
-        <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+        <Card style={{ border: '1px solid var(--color-border)', padding: 'var(--space-6)' }}>
+          <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)' }}>
             (6) Hazardous Materials Work
           </Text>
-          <Text fontSize="$2" color="$color11" mb="$4">
+          <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-4)' }}>
             If the subcontractor's scope involves creating, hauling, or
             disposing of hazardous waste, pollution coverage must include the
             appropriate endorsements.
           </Text>
-          <XStack
-            as="label"
-            alignItems="center"
-            gap="$3"
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+            }}
           >
             <input
               type="checkbox"
@@ -506,10 +514,10 @@ export default function BrokerAcknowledgementFormPage() {
               onChange={(e) => setHasHazardousMaterials(e.target.checked)}
               disabled={isReadOnly}
             />
-            <Text fontSize="$2" color="$color12">
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)' }}>
               Yes, hazardous materials work is included in scope
             </Text>
-          </XStack>
+          </label>
         </Card>
 
         {currentForm.requires_professional_liability && (
@@ -539,18 +547,20 @@ export default function BrokerAcknowledgementFormPage() {
           />
         )}
 
-        <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+        <Card style={{ border: '1px solid var(--color-border)', padding: 'var(--space-6)' }}>
+          <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)' }}>
             (9) Trenching or Excavation Work
           </Text>
-          <Text fontSize="$2" color="$color11" mb="$4">
+          <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-4)' }}>
             If trenching, excavation, or underground work is part of scope, the
             following must be confirmed.
           </Text>
-          <XStack
-            as="label"
-            alignItems="center"
-            gap="$3"
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+            }}
           >
             <input
               type="checkbox"
@@ -558,10 +568,10 @@ export default function BrokerAcknowledgementFormPage() {
               onChange={(e) => setHasTrenching(e.target.checked)}
               disabled={isReadOnly}
             />
-            <Text fontSize="$2" color="$color12">
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)' }}>
               Yes, trenching / digging work is included in scope
             </Text>
-          </XStack>
+          </label>
         </Card>
 
         {hasTrenching && (
@@ -587,10 +597,10 @@ export default function BrokerAcknowledgementFormPage() {
             />
           </>
         )}
-      </YStack>
+      </Stack>
 
-      <YStack gap="$6">
-        <Text fontSize="$7" fontWeight="bold" color="$color12">Certifications</Text>
+      <Stack style={{ gap: 'var(--space-6)' }}>
+        <Text style={{ fontSize: 'var(--font-size-7)', fontWeight: 'bold', color: 'var(--color-gray-12)' }}>Certifications</Text>
 
         <BrokerCertification
           formId={formId!}
@@ -606,49 +616,55 @@ export default function BrokerAcknowledgementFormPage() {
           disabled={isReadOnly}
           defaultCompanyName={currentForm.subcontractor_company_name}
         />
-      </YStack>
+      </Stack>
 
       {currentForm.compliance_score > 0 && (
-        <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-          <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+        <Card style={{ border: '1px solid var(--color-border)', padding: 'var(--space-6)' }}>
+          <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)' }}>
             Compliance Summary
           </Text>
-          <XStack
-            flexWrap="wrap"
-            gap="$4"
-            $gtMd={{
-              flexWrap: 'nowrap',
+          <Row
+            style={{
+              flexWrap: 'wrap',
+              gap: 'var(--space-4)',
             }}
           >
             <Card
-              alignItems="center"
-              padding="$4"
-              backgroundColor="$blue3"
-              borderRadius="$4"
-              flex={1}
-              minWidth="200px"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 'var(--space-4)',
+                backgroundColor: 'var(--color-blue-3)',
+                borderRadius: 'var(--radius-4)',
+                flex: 1,
+                minWidth: '200px',
+              }}
             >
-              <Text fontSize="$9" fontWeight="bold" color="$blue10">
+              <Text style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-blue-10)' }}>
                 {currentForm.compliance_score}%
               </Text>
-              <Text fontSize="$2" color="$color11" mt="$1">
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)', marginTop: 'var(--space-1)' }}>
                 Compliance Score
               </Text>
             </Card>
             <Card
-              alignItems="center"
-              padding="$4"
-              backgroundColor="$green3"
-              borderRadius="$4"
-              flex={1}
-              minWidth="200px"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 'var(--space-4)',
+                backgroundColor: 'var(--color-green-3)',
+                borderRadius: 'var(--radius-4)',
+                flex: 1,
+                minWidth: '200px',
+              }}
             >
               <CheckCircle
-                color="$green10"
+                style={{ color: 'var(--color-green-10)', marginBottom: 'var(--space-2)' }}
                 size={24}
-                mb="$2"
               />
-              <Text fontSize="$2" fontWeight="500" color="$color12">
+              <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)' }}>
                 {
                   coverageItems.filter(
                     (i) => i.verification_status === 'included'
@@ -658,15 +674,19 @@ export default function BrokerAcknowledgementFormPage() {
               </Text>
             </Card>
             <Card
-              alignItems="center"
-              padding="$4"
-              backgroundColor="$red3"
-              borderRadius="$4"
-              flex={1}
-              minWidth="200px"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 'var(--space-4)',
+                backgroundColor: 'var(--color-red-3)',
+                borderRadius: 'var(--radius-4)',
+                flex: 1,
+                minWidth: '200px',
+              }}
             >
-              <AlertCircle color="$red10" size={24} mb="$2" />
-              <Text fontSize="$2" fontWeight="500" color="$color12">
+              <AlertCircle style={{ color: 'var(--color-red-10)', marginBottom: 'var(--space-2)' }} size={24} />
+              <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)' }}>
                 {
                   coverageItems.filter(
                     (i) => i.verification_status === 'excluded'
@@ -675,32 +695,33 @@ export default function BrokerAcknowledgementFormPage() {
                 Missing
               </Text>
             </Card>
-          </XStack>
+          </Row>
 
           {currentForm.missing_endorsements &&
             currentForm.missing_endorsements.length > 0 && (
               <Card
-                mt="$4"
-                backgroundColor="$orange3"
-                borderWidth={1}
-                borderColor="$orange6"
-                borderRadius="$4"
-                padding="$4"
+                style={{
+                  marginTop: 'var(--space-4)',
+                  backgroundColor: 'var(--color-orange-3)',
+                  border: '1px solid var(--color-orange-6)',
+                  borderRadius: 'var(--radius-4)',
+                  padding: 'var(--space-4)',
+                }}
               >
-                <Text fontWeight="500" color="$orange11" mb="$2">
+                <Text style={{ fontWeight: 500, color: 'var(--color-orange-11)', marginBottom: 'var(--space-2)' }}>
                   Missing Endorsements:
                 </Text>
-                <YStack gap="$1" paddingLeft="$4">
+                <Stack style={{ gap: 'var(--space-1)', paddingLeft: 'var(--space-4)' }}>
                   {currentForm.missing_endorsements.map((item, index) => (
-                    <Text key={index} fontSize="$2" color="$orange10">
-                      • {item}
+                    <Text key={index} style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange-10)' }}>
+                      - {item}
                     </Text>
                   ))}
-                </YStack>
+                </Stack>
               </Card>
             )}
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 }

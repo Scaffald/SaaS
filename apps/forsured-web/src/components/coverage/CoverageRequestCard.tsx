@@ -4,9 +4,8 @@
  */
 
 import { FileQuestion, DollarSign, Calendar, User } from 'lucide-react';
-import { YStack, XStack, Text, Button } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, CardContent } from '@unicornlove/beyond-ui';
 import { CoverageRequest } from '../../types';
-import Card from '../Common/Card';
 import StatusBadge from '../Common/StatusBadge';
 
 export interface CoverageRequestCardProps {
@@ -72,112 +71,127 @@ export default function CoverageRequestCard({
 
   return (
     <Card padding="none">
-      <YStack padding="$4">
-        <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
+      <CardContent padding="lg">
+        <Row align="flex-start" justify="space-between" gap={16}>
           {/* Left: Request Info */}
-          <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" mb="$2">
-              <FileQuestion color="$blue10" size={24} />
-              <YStack>
-                <Text fontSize="$6" fontWeight="600" color="$color12">
+          <Stack style={{ flex: 1 }}>
+            <Row align="center" gap={12} style={{ marginBottom: 8 }}>
+              <FileQuestion color="var(--color-blue-10)" size={24} />
+              <Stack>
+                <Text
+                  size="lg"
+                  weight="semibold"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
                   {request.coverage_type} Coverage Request
                 </Text>
-                <Text fontSize="$3" color="$color11">
+                <Text size="sm" style={{ color: 'var(--color-text-secondary)' }}>
                   Request #{request.id.substring(0, 8)}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
             {/* Request Details */}
-            <XStack
-              flexWrap="wrap"
-              gap="$4"
-              mt="$3"
-              $gtMd={{ flexDirection: 'row' }}
-            >
+            <Row wrap gap={16} style={{ marginTop: 12 }}>
               {/* Quote Amount (if quoted) */}
               {request.quote_amount && (
-                <XStack alignItems="center" gap="$2">
-                  <DollarSign size={16} color="$color11" />
-                  <YStack>
-                    <Text fontSize="$1" color="$color11">
+                <Row align="center" gap={8}>
+                  <DollarSign size={16} color="var(--color-text-secondary)" />
+                  <Stack>
+                    <Text size="xs" style={{ color: 'var(--color-text-secondary)' }}>
                       Quote Amount
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Text
+                      size="sm"
+                      weight="medium"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
                       {formatCurrency(request.quote_amount)}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               )}
 
               {/* Created Date */}
-              <XStack alignItems="center" gap="$2">
-                <Calendar size={16} color="$color11" />
-                <YStack>
-                  <Text fontSize="$1" color="$color11">
+              <Row align="center" gap={8}>
+                <Calendar size={16} color="var(--color-text-secondary)" />
+                <Stack>
+                  <Text size="xs" style={{ color: 'var(--color-text-secondary)' }}>
                     Requested On
                   </Text>
-                  <Text fontSize="$3" fontWeight="500" color="$color12">
+                  <Text
+                    size="sm"
+                    weight="medium"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
                     {formatDate(request.created_at)}
                   </Text>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
 
               {/* Broker (if assigned) */}
               {request.broker_id && (
-                <XStack alignItems="center" gap="$2">
-                  <User size={16} color="$color11" />
-                  <YStack>
-                    <Text fontSize="$1" color="$color11">
+                <Row align="center" gap={8}>
+                  <User size={16} color="var(--color-text-secondary)" />
+                  <Stack>
+                    <Text size="xs" style={{ color: 'var(--color-text-secondary)' }}>
                       Assigned Broker
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Text
+                      size="sm"
+                      weight="medium"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
                       Broker #{request.broker_id.substring(0, 8)}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               )}
-            </XStack>
+            </Row>
 
             {/* Quote Details (if available) */}
             {request.quote_details && (
-              <YStack
-                mt="$3"
-                padding="$3"
-                backgroundColor="$color2"
-                borderRadius="$2"
+              <Stack
+                style={{
+                  marginTop: 12,
+                  padding: 12,
+                  backgroundColor: 'var(--color-bg-subtle)',
+                  borderRadius: 8,
+                }}
               >
-                <Text fontSize="$1" fontWeight="600" color="$color12" mb="$1">
+                <Text
+                  size="xs"
+                  weight="semibold"
+                  style={{ color: 'var(--color-text-primary)', marginBottom: 4 }}
+                >
                   Quote Details:
                 </Text>
                 <Text
-                  fontSize="$1"
-                  color="$color11"
-                  fontFamily="$mono"
-                  overflowX="auto"
+                  size="xs"
+                  mono
+                  style={{ color: 'var(--color-text-secondary)', overflowX: 'auto' }}
                 >
                   {JSON.stringify(request.quote_details, null, 2)}
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           {/* Right: Status and Actions */}
-          <YStack alignItems="flex-end" gap="$2">
+          <Stack align="flex-end" gap={8}>
             <StatusBadge
               status={request.status}
               variant={getStatusColor(request.status)}
             />
 
             {/* Action Buttons */}
-            <YStack gap="$2" mt="$2">
+            <Stack gap={8} style={{ marginTop: 8 }}>
               {/* Broker: Provide Quote */}
               {canBrokerProvideQuote && onProvideQuote && (
                 <Button
-                  size="$3"
-                  backgroundColor="$blue10"
-                  color="white"
-                  hoverStyle={{ backgroundColor: '$blue11' }}
+                  size="sm"
+                  color="primary"
+                  variant="filled"
                   onPress={() => onProvideQuote(request.id)}
                 >
                   Provide Quote
@@ -189,10 +203,9 @@ export default function CoverageRequestCard({
                 <>
                   {onApprove && (
                     <Button
-                      size="$3"
-                      backgroundColor="$green10"
-                      color="white"
-                      hoverStyle={{ backgroundColor: '$green11' }}
+                      size="sm"
+                      color="green"
+                      variant="filled"
                       onPress={() => onApprove(request.id)}
                     >
                       Approve Quote
@@ -200,10 +213,9 @@ export default function CoverageRequestCard({
                   )}
                   {onReject && (
                     <Button
-                      size="$3"
-                      backgroundColor="$red10"
-                      color="white"
-                      hoverStyle={{ backgroundColor: '$red11' }}
+                      size="sm"
+                      color="red"
+                      variant="filled"
                       onPress={() => onReject(request.id)}
                     >
                       Reject Quote
@@ -215,19 +227,18 @@ export default function CoverageRequestCard({
               {/* Cancel Request */}
               {canCancel && onCancel && (
                 <Button
-                  size="$3"
+                  size="sm"
+                  color="gray"
                   variant="outlined"
-                  color="$color11"
-                  hoverStyle={{ color: '$color12', borderColor: '$borderColor' }}
                   onPress={() => onCancel(request.id)}
                 >
                   Cancel Request
                 </Button>
               )}
-            </YStack>
-          </YStack>
-        </XStack>
-      </YStack>
+            </Stack>
+          </Stack>
+        </Row>
+      </CardContent>
     </Card>
   );
 }

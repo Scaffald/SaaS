@@ -14,33 +14,35 @@
 
 import { useState, useCallback } from 'react'
 import {
-  YStack,
-  XStack,
+  Stack,
+  Row,
   Text,
   Button,
   Card,
-  H2,
-  H3,
-  TextArea,
+  Heading,
   Spinner,
-} from '@unicornlove/ui'
+  Modal,
+  colors,
+  spacing,
+} from '@unicornlove/beyond-ui'
+import Textarea from '../../../../../../components/Common/Textarea'
 import { useRouter, useParams } from 'next/navigation'
 import { trpc } from '../../../../../../lib/trpc'
 
 // Color mappings
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  pending: { bg: '$yellow2', text: '$yellow11' },
-  in_progress: { bg: '$blue2', text: '$blue11' },
-  completed: { bg: '$green2', text: '$green11' },
-  denied: { bg: '$red2', text: '$red11' },
-  cancelled: { bg: '$gray2', text: '$gray11' },
+  pending: { bg: colors.warning[200], text: colors.warning[600] },
+  in_progress: { bg: colors.primary[200], text: colors.primary[600] },
+  completed: { bg: colors.success[200], text: colors.success[600] },
+  denied: { bg: colors.error[200], text: colors.error[600] },
+  cancelled: { bg: colors.gray[100], text: colors.text.light.secondary },
 }
 
 const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
-  low: { bg: '$gray2', text: '$gray11' },
-  medium: { bg: '$blue2', text: '$blue11' },
-  high: { bg: '$orange2', text: '$orange11' },
-  urgent: { bg: '$red2', text: '$red11' },
+  low: { bg: colors.gray[100], text: colors.text.light.secondary },
+  medium: { bg: colors.primary[200], text: colors.primary[600] },
+  high: { bg: colors.warning[200], text: colors.warning[600] },
+  urgent: { bg: colors.error[200], text: colors.error[600] },
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -118,11 +120,11 @@ export default function CCPARequestDetailPage() {
   }, [])
 
   const getSLAColor = useCallback((daysRemaining: number, status: string) => {
-    if (!['pending', 'in_progress'].includes(status)) return '$gray11'
-    if (daysRemaining < 0) return '$red11'
-    if (daysRemaining <= 7) return '$red11'
-    if (daysRemaining <= 14) return '$orange11'
-    return '$green11'
+    if (!['pending', 'in_progress'].includes(status)) return colors.text.light.secondary
+    if (daysRemaining < 0) return colors.error[600]
+    if (daysRemaining <= 7) return colors.error[600]
+    if (daysRemaining <= 14) return colors.warning[600]
+    return colors.success[600]
   }, [])
 
   // Handlers
@@ -186,286 +188,295 @@ export default function CCPARequestDetailPage() {
   // Loading state
   if (isLoading) {
     return (
-      <YStack padding="$6" maxWidth={1200} marginHorizontal="auto">
-        <YStack alignItems="center" justifyContent="center" minHeight={400}>
-          <Spinner size="large" />
-          <Text color="$gray11" marginTop="$4">
+      <Stack style={{ padding: spacing[24], maxWidth: 1200, marginHorizontal: 'auto' }}>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+          <Spinner size="lg" />
+          <Text color={colors.text.light.secondary} style={{ marginTop: spacing[16] }}>
             Loading request details...
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   // Error state
   if (error || !request) {
     return (
-      <YStack padding="$6" maxWidth={1200} marginHorizontal="auto">
-        <YStack
-          padding="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
+      <Stack style={{ padding: spacing[24], maxWidth: 1200, marginHorizontal: 'auto' }}>
+        <Stack
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
         >
-          <Text fontWeight="600" color="$red11">
+          <Text weight="semibold" color={colors.error[600]}>
             Error loading request
           </Text>
-          <Text color="$red10" fontSize="$2" marginTop="$2">
+          <Text color={colors.error[500]} size="xs" style={{ marginTop: spacing[8] }}>
             {error?.message || 'Request not found'}
           </Text>
-          <XStack gap="$2" marginTop="$3">
+          <Row gap={spacing[8]} style={{ marginTop: spacing[12] }}>
             <Button
-              size="$3"
-              backgroundColor="$red9"
-              color="white"
-              hoverStyle={{ backgroundColor: '$red10' }}
+              size="sm"
+              color="error"
+              variant="filled"
               onPress={() => refetch()}
             >
               Retry
             </Button>
             <Button
-              size="$3"
-              backgroundColor="$gray3"
-              color="$gray11"
-              hoverStyle={{ backgroundColor: '$gray4' }}
+              size="sm"
+              variant="outline"
+              color="gray"
               onPress={() => router.push('/admin/ccpa/requests')}
             >
               Back to List
             </Button>
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack padding="$6" maxWidth={1200} marginHorizontal="auto">
+    <Stack style={{ padding: spacing[24], maxWidth: 1200, marginHorizontal: 'auto' }}>
       {/* Header */}
-      <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$6">
-        <YStack>
-          <XStack alignItems="center" gap="$3" marginBottom="$2">
-            <H2>{TYPE_LABELS[request.type] ?? request.type} Request</H2>
-            <XStack
-              paddingHorizontal="$3"
-              paddingVertical="$1"
-              borderRadius="$2"
-              backgroundColor={STATUS_COLORS[request.status]?.bg ?? '$gray2'}
+      <Row alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: spacing[24] }}>
+        <Stack>
+          <Row alignItems="center" gap={spacing[12]} style={{ marginBottom: spacing[8] }}>
+            <Heading level={2}>{TYPE_LABELS[request.type] ?? request.type} Request</Heading>
+            <Row
+              style={{
+                paddingHorizontal: spacing[12],
+                paddingVertical: spacing[4],
+                borderRadius: 8,
+                backgroundColor: STATUS_COLORS[request.status]?.bg ?? colors.gray[100],
+              }}
             >
-              <Text fontWeight="600" color={STATUS_COLORS[request.status]?.text ?? '$gray11'}>
+              <Text weight="semibold" color={STATUS_COLORS[request.status]?.text ?? colors.text.light.secondary}>
                 {request.status === 'in_progress' ? 'Processing' : request.status.toUpperCase()}
               </Text>
-            </XStack>
+            </Row>
             {request.is_overdue && (
-              <XStack
-                paddingHorizontal="$3"
-                paddingVertical="$1"
-                backgroundColor="$red9"
-                borderRadius="$2"
+              <Row
+                style={{
+                  paddingHorizontal: spacing[12],
+                  paddingVertical: spacing[4],
+                  backgroundColor: colors.error[500],
+                  borderRadius: 8,
+                }}
               >
-                <Text fontWeight="600" color="white">
+                <Text weight="semibold" color="white">
                   OVERDUE
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </XStack>
-          <Text color="$gray11">Request ID: {request.id}</Text>
-        </YStack>
+          </Row>
+          <Text color={colors.text.light.secondary}>Request ID: {request.id}</Text>
+        </Stack>
         <Button
-          backgroundColor="$gray3"
-          color="$gray11"
-          hoverStyle={{ backgroundColor: '$gray4' }}
+          variant="outline"
+          color="gray"
           onPress={() => router.push('/admin/ccpa/requests')}
         >
           Back to List
         </Button>
-      </XStack>
+      </Row>
 
-      <XStack gap="$6" flexWrap="wrap">
+      <Row gap={spacing[24]} style={{ flexWrap: 'wrap' }}>
         {/* Left Column */}
-        <YStack flex={2} minWidth={400} gap="$6">
+        <Stack style={{ flex: 2, minWidth: 400 }} gap={spacing[24]}>
           {/* Subject Information */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">Subject Information</H3>
-            <YStack gap="$3">
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Name</Text>
-                <Text fontWeight="500" color="$gray12">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>Subject Information</Heading>
+            <Stack gap={spacing[12]}>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Name</Text>
+                <Text weight="medium" color={colors.text.light.primary}>
                   {request.user_name}
                 </Text>
-              </XStack>
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Email</Text>
-                <Text fontWeight="500" color="$gray12">
+              </Row>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Email</Text>
+                <Text weight="medium" color={colors.text.light.primary}>
                   {request.user_email}
                 </Text>
-              </XStack>
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">User ID</Text>
-                <Text fontWeight="500" color="$gray12" fontSize="$2">
+              </Row>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>User ID</Text>
+                <Text weight="medium" color={colors.text.light.primary} size="xs">
                   {request.user_id ?? 'N/A'}
                 </Text>
-              </XStack>
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Verification</Text>
-                <Text fontWeight="500" color="$gray12">
+              </Row>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Verification</Text>
+                <Text weight="medium" color={colors.text.light.primary}>
                   {request.verification_method ?? 'Pending'}
                 </Text>
-              </XStack>
+              </Row>
               {request.verified_at && (
-                <XStack justifyContent="space-between">
-                  <Text color="$gray11">Verified At</Text>
-                  <Text fontWeight="500" color="$gray12">
+                <Row justifyContent="space-between">
+                  <Text color={colors.text.light.secondary}>Verified At</Text>
+                  <Text weight="medium" color={colors.text.light.primary}>
                     {formatDate(request.verified_at)}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </YStack>
+            </Stack>
           </Card>
 
           {/* SLA Information */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">SLA Information</H3>
-            <YStack gap="$3">
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Submitted</Text>
-                <Text fontWeight="500" color="$gray12">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>SLA Information</Heading>
+            <Stack gap={spacing[12]}>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Submitted</Text>
+                <Text weight="medium" color={colors.text.light.primary}>
                   {formatDate(request.created_at)}
                 </Text>
-              </XStack>
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Days Elapsed</Text>
-                <Text fontWeight="500" color="$gray12">
+              </Row>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Days Elapsed</Text>
+                <Text weight="medium" color={colors.text.light.primary}>
                   {request.days_elapsed} days
                 </Text>
-              </XStack>
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Original Deadline</Text>
-                <Text fontWeight="500" color="$gray12">
+              </Row>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Original Deadline</Text>
+                <Text weight="medium" color={colors.text.light.primary}>
                   {formatShortDate(request.original_deadline_at)}
                 </Text>
-              </XStack>
+              </Row>
               {request.extended_deadline_at && (
-                <XStack justifyContent="space-between">
-                  <Text color="$gray11">Extended Deadline</Text>
-                  <Text fontWeight="500" color="$orange11">
+                <Row justifyContent="space-between">
+                  <Text color={colors.text.light.secondary}>Extended Deadline</Text>
+                  <Text weight="medium" color={colors.warning[600]}>
                     {formatShortDate(request.extended_deadline_at)}
                   </Text>
-                </XStack>
+                </Row>
               )}
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Days Remaining</Text>
-                <Text fontWeight="600" color={getSLAColor(request.days_remaining, request.status)}>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Days Remaining</Text>
+                <Text weight="semibold" color={getSLAColor(request.days_remaining, request.status)}>
                   {['pending', 'in_progress'].includes(request.status)
                     ? request.is_overdue
                       ? `${Math.abs(request.days_remaining)} days overdue`
                       : `${request.days_remaining} days`
                     : 'Resolved'}
                 </Text>
-              </XStack>
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Priority</Text>
-                <XStack
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius="$2"
-                  backgroundColor={PRIORITY_COLORS[request.priority]?.bg ?? '$gray2'}
+              </Row>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Priority</Text>
+                <Row
+                  style={{
+                    paddingHorizontal: spacing[8],
+                    paddingVertical: spacing[4],
+                    borderRadius: 8,
+                    backgroundColor: PRIORITY_COLORS[request.priority]?.bg ?? colors.gray[100],
+                  }}
                 >
                   <Text
-                    fontWeight="500"
-                    color={PRIORITY_COLORS[request.priority]?.text ?? '$gray11'}
+                    weight="medium"
+                    color={PRIORITY_COLORS[request.priority]?.text ?? colors.text.light.secondary}
                   >
                     {request.priority.toUpperCase()}
                   </Text>
-                </XStack>
-              </XStack>
+                </Row>
+              </Row>
               {request.completed_at && (
-                <XStack justifyContent="space-between">
-                  <Text color="$gray11">Completed</Text>
-                  <Text fontWeight="500" color="$green11">
+                <Row justifyContent="space-between">
+                  <Text color={colors.text.light.secondary}>Completed</Text>
+                  <Text weight="medium" color={colors.success[600]}>
                     {formatDate(request.completed_at)}
                   </Text>
-                </XStack>
+                </Row>
               )}
               {request.denial_reason && (
-                <YStack marginTop="$2" padding="$3" backgroundColor="$red2" borderRadius="$2">
-                  <Text fontWeight="500" color="$red11" marginBottom="$1">
+                <Stack style={{ marginTop: spacing[8], padding: spacing[12], backgroundColor: colors.error[200], borderRadius: 8 }}>
+                  <Text weight="medium" color={colors.error[600]} style={{ marginBottom: spacing[4] }}>
                     Denial Reason
                   </Text>
-                  <Text color="$red10">{request.denial_reason}</Text>
-                </YStack>
+                  <Text color={colors.error[500]}>{request.denial_reason}</Text>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           </Card>
 
           {/* Timeline */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">Timeline</H3>
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>Timeline</Heading>
             {history.length === 0 ? (
-              <Text color="$gray11">No timeline events yet.</Text>
+              <Text color={colors.text.light.secondary}>No timeline events yet.</Text>
             ) : (
-              <YStack gap="$3">
+              <Stack gap={spacing[12]}>
                 {history.map((event, index) => (
-                  <XStack
+                  <Row
                     key={event.id}
-                    gap="$3"
-                    paddingBottom="$3"
-                    borderBottomWidth={index < history.length - 1 ? 1 : 0}
-                    borderColor="$borderColor"
+                    gap={spacing[12]}
+                    style={{
+                      paddingBottom: spacing[12],
+                      borderBottomWidth: index < history.length - 1 ? 1 : 0,
+                      borderBottomColor: colors.border.light.default,
+                    }}
                   >
-                    <YStack
-                      width={12}
-                      height={12}
-                      borderRadius={6}
-                      backgroundColor={STATUS_COLORS[event.status]?.bg ?? '$gray4'}
-                      marginTop="$1"
+                    <Stack
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 6,
+                        backgroundColor: STATUS_COLORS[event.status]?.bg ?? colors.gray[200],
+                        marginTop: spacing[4],
+                      }}
                     />
-                    <YStack flex={1}>
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <Text fontWeight="500" color="$gray12">
+                    <Stack style={{ flex: 1 }}>
+                      <Row justifyContent="space-between" alignItems="center">
+                        <Text weight="medium" color={colors.text.light.primary}>
                           Status: {event.status}
                         </Text>
-                        <Text fontSize="$2" color="$gray10">
+                        <Text size="xs" color={colors.text.light.tertiary}>
                           {formatDate(event.changed_at)}
                         </Text>
-                      </XStack>
+                      </Row>
                       {event.notes && (
-                        <Text fontSize="$2" color="$gray11" marginTop="$1">
+                        <Text size="xs" color={colors.text.light.secondary} style={{ marginTop: spacing[4] }}>
                           {event.notes}
                         </Text>
                       )}
-                    </YStack>
-                  </XStack>
+                    </Stack>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
           </Card>
-        </YStack>
+        </Stack>
 
         {/* Right Column */}
-        <YStack flex={1} minWidth={300} gap="$6">
+        <Stack style={{ flex: 1, minWidth: 300 }} gap={spacing[24]}>
           {/* Actions */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">Actions</H3>
-            <YStack gap="$3">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>Actions</Heading>
+            <Stack gap={spacing[12]}>
               {request.status === 'pending' && (
                 <Button
-                  backgroundColor="$blue9"
-                  color="white"
-                  hoverStyle={{ backgroundColor: '$blue10' }}
+                  color="primary"
+                  variant="filled"
                   onPress={handleApprove}
                   disabled={approveRequest.isPending}
+                  loading={approveRequest.isPending}
                 >
                   {approveRequest.isPending ? 'Processing...' : 'Start Processing'}
                 </Button>
               )}
               {request.status === 'in_progress' && (
                 <Button
-                  backgroundColor="$green9"
-                  color="white"
-                  hoverStyle={{ backgroundColor: '$green10' }}
+                  color="success"
+                  variant="filled"
                   onPress={handleComplete}
                   disabled={updateStatus.isPending}
+                  loading={updateStatus.isPending}
                 >
                   {updateStatus.isPending ? 'Completing...' : 'Mark as Completed'}
                 </Button>
@@ -473,17 +484,15 @@ export default function CCPARequestDetailPage() {
               {['pending', 'in_progress'].includes(request.status) && (
                 <>
                   <Button
-                    backgroundColor="$red3"
-                    color="$red11"
-                    hoverStyle={{ backgroundColor: '$red4' }}
+                    variant="outline"
+                    color="error"
                     onPress={() => setShowDenyModal(true)}
                   >
                     Deny Request
                   </Button>
                   <Button
-                    backgroundColor="$gray3"
-                    color="$gray11"
-                    hoverStyle={{ backgroundColor: '$gray4' }}
+                    variant="outline"
+                    color="gray"
                     onPress={handleCancel}
                     disabled={updateStatus.isPending}
                   >
@@ -492,111 +501,103 @@ export default function CCPARequestDetailPage() {
                 </>
               )}
               {['completed', 'denied', 'cancelled'].includes(request.status) && (
-                <Text color="$gray11" textAlign="center" padding="$2">
+                <Text color={colors.text.light.secondary} style={{ textAlign: 'center', padding: spacing[8] }}>
                   This request has been resolved and no actions are available.
                 </Text>
               )}
-            </YStack>
+            </Stack>
           </Card>
 
           {/* Internal Notes */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">Internal Notes</H3>
-            <YStack gap="$3">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>Internal Notes</Heading>
+            <Stack gap={spacing[12]}>
               {/* Existing notes */}
               {request.internal_notes.length > 0 ? (
-                <YStack gap="$2" marginBottom="$3">
+                <Stack gap={spacing[8]} style={{ marginBottom: spacing[12] }}>
                   {request.internal_notes.map((note, index) => (
-                    <YStack key={index} padding="$3" backgroundColor="$gray2" borderRadius="$2">
-                      <Text fontSize="$2" color="$gray12">
+                    <Stack key={index} style={{ padding: spacing[12], backgroundColor: colors.gray[100], borderRadius: 8 }}>
+                      <Text size="xs" color={colors.text.light.primary}>
                         {note.text}
                       </Text>
-                      <Text fontSize="$1" color="$gray10" marginTop="$1">
+                      <Text size="xs" color={colors.text.light.tertiary} style={{ marginTop: spacing[4] }}>
                         {formatDate(note.created_at)}
                       </Text>
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
+                </Stack>
               ) : (
-                <Text color="$gray11" marginBottom="$3">
+                <Text color={colors.text.light.secondary} style={{ marginBottom: spacing[12] }}>
                   No internal notes yet.
                 </Text>
               )}
 
               {/* Add note form */}
-              <YStack gap="$2">
-                <TextArea
+              <Stack gap={spacing[8]}>
+                <Textarea
                   placeholder="Add a note..."
                   value={newNote}
-                  onChangeText={setNewNote}
+                  onChange={(e) => setNewNote(e.target.value)}
                   rows={3}
                 />
                 <Button
-                  backgroundColor="$blue9"
-                  color="white"
-                  hoverStyle={{ backgroundColor: '$blue10' }}
+                  color="primary"
+                  variant="filled"
                   onPress={handleAddNote}
                   disabled={!newNote.trim() || addNote.isPending}
+                  loading={addNote.isPending}
                 >
                   {addNote.isPending ? 'Adding...' : 'Add Note'}
                 </Button>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           </Card>
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
       {/* Deny Modal */}
-      {showDenyModal && (
-        <YStack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          zIndex={1000}
-        >
-          <Card padding="$6" maxWidth={500} width="90%">
-            <H3 marginBottom="$4">Deny Request</H3>
-            <Text color="$gray11" marginBottom="$4">
+      <Modal open={showDenyModal} onOpenChange={setShowDenyModal}>
+        <Modal.Header>
+          <Heading level={3}>Deny Request</Heading>
+        </Modal.Header>
+        <Modal.Content>
+          <Stack gap={spacing[16]}>
+            <Text color={colors.text.light.secondary}>
               Please provide a reason for denying this request. This will be recorded in the request
               history.
             </Text>
-            <TextArea
+            <Textarea
               placeholder="Enter denial reason..."
               value={denyReason}
-              onChangeText={setDenyReason}
+              onChange={(e) => setDenyReason(e.target.value)}
               rows={4}
-              marginBottom="$4"
             />
-            <XStack gap="$3" justifyContent="flex-end">
-              <Button
-                backgroundColor="$gray3"
-                color="$gray11"
-                hoverStyle={{ backgroundColor: '$gray4' }}
-                onPress={() => {
-                  setShowDenyModal(false)
-                  setDenyReason('')
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                backgroundColor="$red9"
-                color="white"
-                hoverStyle={{ backgroundColor: '$red10' }}
-                onPress={handleDeny}
-                disabled={!denyReason.trim() || updateStatus.isPending}
-              >
-                {updateStatus.isPending ? 'Denying...' : 'Deny Request'}
-              </Button>
-            </XStack>
-          </Card>
-        </YStack>
-      )}
-    </YStack>
+          </Stack>
+        </Modal.Content>
+        <Modal.Footer>
+          <Row gap={spacing[12]} justifyContent="flex-end">
+            <Button
+              variant="outline"
+              color="gray"
+              onPress={() => {
+                setShowDenyModal(false)
+                setDenyReason('')
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="error"
+              variant="filled"
+              onPress={handleDeny}
+              disabled={!denyReason.trim() || updateStatus.isPending}
+              loading={updateStatus.isPending}
+            >
+              {updateStatus.isPending ? 'Denying...' : 'Deny Request'}
+            </Button>
+          </Row>
+        </Modal.Footer>
+      </Modal>
+    </Stack>
   )
 }

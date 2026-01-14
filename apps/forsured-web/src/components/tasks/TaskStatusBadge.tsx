@@ -1,11 +1,10 @@
 /**
- * TaskStatusBadge - Task status badge using Tamagui
+ * TaskStatusBadge - Task status badge using Beyond UI
  * REQ-166: Task Management Workflow & UI
  */
 import React from 'react';
-import { XStack, Text, Spinner } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
-import { Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Row, Text, Chip } from '@unicornlove/beyond-ui';
+import { Clock, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { TaskStatus } from '../../types';
 
 interface TaskStatusBadgeProps {
@@ -28,7 +27,7 @@ const statusConfig: Record<TaskStatus | 'unknown', {
   in_progress: {
     label: 'In Progress',
     variant: 'info',
-    icon: <Spinner size="small" color="$blue10" />,
+    icon: <Loader2 size={16} className="animate-spin" style={{ color: 'var(--color-blue10)' }} />,
   },
   completed: {
     label: 'Completed',
@@ -56,16 +55,16 @@ export const TaskStatusBadge: React.FC<TaskStatusBadgeProps> = ({
   const config = statusConfig[status as TaskStatus] || statusConfig.unknown;
 
   return (
-    <Badge
+    <Chip
       variant={config.variant}
       size={size}
       role="status"
       aria-label={`Task status: ${config.label}`}
     >
-      <XStack alignItems="center" gap="$1">
+      <Row style={{ alignItems: 'center', gap: '4px' }}>
         {showIcon && config.icon}
         <Text>{config.label}</Text>
-      </XStack>
-    </Badge>
+      </Row>
+    </Chip>
   );
 };

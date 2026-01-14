@@ -1,10 +1,10 @@
 /**
- * FlagFilter - Flag filter component using Tamagui
+ * FlagFilter - Flag filter component using Beyond UI
  * REQ-269: Policy & Endorsement Level Flags
  */
 import React, { useState, useCallback, useMemo } from 'react';
-import { YStack, XStack, Text, Button, styled } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
+import { Chip as Badge } from '@unicornlove/beyond-ui';
 import { FileText, Layers, ScrollText, Filter, CheckCircle } from 'lucide-react';
 import { FlaggableEntityType } from '../../types';
 import { FlagComplianceIssue, FlagComplianceReport } from '../../lib/compliance/evaluator';
@@ -45,40 +45,41 @@ function getFilterLabel(option: FilterOption): string {
   }
 }
 
-const ToggleButton = styled(Button, {
-  name: 'FilterToggleButton',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: '$2',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  fontSize: '$2',
-  fontWeight: '500',
-  borderRadius: '$3',
-  backgroundColor: 'transparent',
-  borderWidth: 1,
-  borderColor: 'transparent',
-  
-  variants: {
-    active: {
-      true: {
-        backgroundColor: '$background',
-        shadowColor: '$shadowColor',
-        shadowRadius: 4,
-        shadowOffset: { width: 0, height: 2 },
-        color: '$blue11',
-        borderColor: '$blue6',
-      },
-      false: {
-        color: '$color10',
-        hoverStyle: {
-          color: '$color11',
-          backgroundColor: '$backgroundPress',
-        },
-      },
-    },
-  } as const,
-});
+function getToggleButtonStyles(isActive: boolean): React.CSSProperties {
+  const baseStyles: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 'var(--space-2)',
+    paddingLeft: 'var(--space-3)',
+    paddingRight: 'var(--space-3)',
+    paddingTop: 'var(--space-2)',
+    paddingBottom: 'var(--space-2)',
+    fontSize: 'var(--font-size-2)',
+    fontWeight: 500,
+    borderRadius: 'var(--radius-3)',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'transparent',
+    cursor: 'pointer',
+  };
+
+  if (isActive) {
+    return {
+      ...baseStyles,
+      backgroundColor: 'var(--color-background)',
+      boxShadow: '0 2px 4px var(--color-shadow)',
+      color: 'var(--color-blue-11)',
+      borderColor: 'var(--color-blue-6)',
+    };
+  }
+
+  return {
+    ...baseStyles,
+    color: 'var(--color-10)',
+  };
+}
 
 export const FlagFilter: React.FC<FlagFilterProps> = ({
   report,
@@ -128,19 +129,22 @@ export const FlagFilter: React.FC<FlagFilterProps> = ({
   const filterOptions: FilterOption[] = ['all', 'policy', 'provision', 'endorsement'];
 
   return (
-    <YStack mb="$4" gap="$2">
-      <Text fontSize="$2" fontWeight="500" color="$color10">
+    <Stack style={{ marginBottom: 'var(--space-4)', gap: 'var(--space-2)' }}>
+      <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-10)' }}>
         Filter by flag level
       </Text>
 
-      <XStack
-        display="inline-flex"
-        borderRadius="$3"
-        backgroundColor="$backgroundHover"
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding="$1"
-        gap="$1"
+      <Row
+        style={{
+          display: 'inline-flex',
+          borderRadius: 'var(--radius-3)',
+          backgroundColor: 'var(--color-background-hover)',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'var(--color-border)',
+          padding: 4,
+          gap: 4,
+        }}
         role="radiogroup"
         aria-label="Filter compliance flags by level"
       >
@@ -149,28 +153,28 @@ export const FlagFilter: React.FC<FlagFilterProps> = ({
           const count = counts[option];
 
           return (
-            <ToggleButton
+            <button
               key={option}
               type="button"
               role="radio"
               aria-checked={isSelected}
-              active={isSelected}
-              onPress={() => handleFilterChange(option)}
+              style={getToggleButtonStyles(isSelected)}
+              onClick={() => handleFilterChange(option)}
             >
               {getFilterIcon(option)}
               <Text>{getFilterLabel(option)}</Text>
               <Badge
-                variant={isSelected ? 'default' : 'default'}
+                variant="default"
                 size="$2"
-                opacity={count === 0 ? 0.5 : 1}
+                style={{ opacity: count === 0 ? 0.5 : 1 }}
               >
                 {count}
               </Badge>
-            </ToggleButton>
+            </button>
           );
         })}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   );
 };
 
@@ -235,7 +239,7 @@ export const FilterableFlagList: React.FC<FilterableFlagListProps> = ({
   };
 
   return (
-    <YStack>
+    <Stack>
       <FlagFilter
         report={report}
         onFilterChange={(flags) => {
@@ -245,25 +249,28 @@ export const FilterableFlagList: React.FC<FilterableFlagListProps> = ({
       />
 
       {filteredFlags.length === 0 ? (
-        <YStack
-          backgroundColor="$green2"
-          borderWidth={1}
-          borderColor="$green6"
-          borderRadius="$3"
-          padding="$6"
-          alignItems="center"
-          gap="$2"
+        <Stack
+          style={{
+            backgroundColor: 'var(--color-green-2)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-green-6)',
+            borderRadius: 'var(--radius-3)',
+            padding: 'var(--space-6)',
+            alignItems: 'center',
+            gap: 'var(--space-2)',
+          }}
         >
-          <CheckCircle size={32} color="currentColor" mb="$2" />
-          <Text color="$green11" fontWeight="500">
+          <CheckCircle size={32} style={{ color: 'currentColor', marginBottom: 8 }} />
+          <Text style={{ color: 'var(--color-green-11)', fontWeight: 500 }}>
             {getEmptyMessage()}
           </Text>
-          <Text fontSize="$2" color="$green10" mt="$1">
+          <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-10)', marginTop: 4 }}>
             All requirements are met for this filter
           </Text>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$3">
+        <Stack style={{ gap: 'var(--space-3)' }}>
           {filteredFlags.map((flag) => (
             <FlagBadge
               key={flag.flagId}
@@ -275,9 +282,9 @@ export const FilterableFlagList: React.FC<FilterableFlagListProps> = ({
               showDescription={showDescription}
             />
           ))}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 };
 

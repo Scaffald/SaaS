@@ -31,7 +31,7 @@
  * ```
  */
 
-import { useState, useMemo } from 'react'
+import { useState, } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { DatePickerBase } from '../DatePickerBase'
 import { Button } from '../Button'

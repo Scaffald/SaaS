@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building, ArrowRight, X } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, Circle, Input, H1 } from '@unicornlove/ui';
-import { ResponsiveSelect } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, Input, H1 } from '@unicornlove/beyond-ui';
+import Select from '../Common/Select';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -60,161 +60,187 @@ export default function ManagerOnboarding() {
     formData.companyName && formData.companySize && formData.primaryLocation;
 
   return (
-    <YStack
-      minHeight="100vh"
-      backgroundColor="$background"
-      alignItems="center"
-      justifyContent="center"
-      padding="$4"
+    <Stack
+      style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--color-background)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16,
+      }}
     >
-      <YStack width="100%" maxWidth={448} position="relative">
+      <Stack style={{ width: '100%', maxWidth: 448, position: 'relative' }}>
         <Button
           onPress={handleSkip}
           disabled={isSubmitting}
-          position="absolute"
-          top="$6"
-          right="$6"
           variant="ghost"
-          size="$3"
-          opacity={isSubmitting ? 0.5 : 1}
+          style={{
+            position: 'absolute',
+            top: 24,
+            right: 24,
+            opacity: isSubmitting ? 0.5 : 1,
+          }}
         >
-          <XStack gap="$2" alignItems="center">
-            <Text fontSize="$3">Skip for now</Text>
-          <X size={18} />
-          </XStack>
+          <Row style={{ gap: 8, alignItems: 'center' }}>
+            <Text style={{ fontSize: 14 }}>Skip for now</Text>
+            <X size={18} />
+          </Row>
         </Button>
 
-        <YStack alignItems="center" mb="$8">
-          <YStack alignItems="center" mb="$6">
+        <Stack style={{ alignItems: 'center', marginBottom: 32 }}>
+          <Stack style={{ alignItems: 'center', marginBottom: 24 }}>
             <ForsuredLogo />
-          </YStack>
-          <H1 fontSize="$8" fontWeight="bold" mb="$2" style={{ textAlign: 'center' }}>
+          </Stack>
+          <H1 style={{ fontSize: 28, fontWeight: 'bold', marginBottom: 8, textAlign: 'center' }}>
             Welcome, General Contractor
           </H1>
-          <Text color="$color11" style={{ textAlign: 'center' }}>Let's get your company set up</Text>
-        </YStack>
+          <Text style={{ color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+            Let's get your company set up
+          </Text>
+        </Stack>
 
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={4}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$8"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 16,
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            border: '1px solid var(--color-border)',
+            padding: 32,
+          }}
         >
-          <YStack alignItems="center" mb="$6">
-            <Circle
-              size={64}
-              backgroundColor="$blue3"
-              alignItems="center"
-              justifyContent="center"
+          <Stack style={{ alignItems: 'center', marginBottom: 24 }}>
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                backgroundColor: 'var(--color-blue-3)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <Building color="$blue10" size={32} />
-            </Circle>
-          </YStack>
+              <Building color="var(--color-blue-10)" size={32} />
+            </div>
+          </Stack>
 
-          <YStack tag="form" onSubmit={handleSubmit} gap="$6">
-            <YStack>
-              <Text
-                fontSize="$3"
-                fontWeight="600"
-                color="$color12"
-                mb="$2"
-                display="block"
+          <form onSubmit={handleSubmit}>
+            <Stack style={{ gap: 24 }}>
+              <Stack>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: 'var(--color-text)',
+                    marginBottom: 8,
+                    display: 'block',
+                  }}
+                >
+                  Company Name
+                </Text>
+                <Input
+                  value={formData.companyName}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      companyName: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter your company name"
+                  style={{
+                    width: '100%',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 16,
+                    paddingLeft: 16,
+                    paddingRight: 16,
+                    paddingTop: 12,
+                    paddingBottom: 12,
+                  }}
+                  required
+                />
+              </Stack>
+
+              <Stack>
+                <Select
+                  label="Company Size"
+                  value={formData.companySize}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      companySize: value,
+                    }))
+                  }
+                  placeholder="Select company size"
+                  options={[
+                    { value: '', label: 'Select company size' },
+                    { value: '1-10', label: '1-10 employees' },
+                    { value: '11-50', label: '11-50 employees' },
+                    { value: '51-200', label: '51-200 employees' },
+                    { value: '201+', label: '201+ employees' },
+                  ]}
+                  required
+                />
+              </Stack>
+
+              <Stack>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: 'var(--color-text)',
+                    marginBottom: 8,
+                    display: 'block',
+                  }}
+                >
+                  Primary Location
+                </Text>
+                <Input
+                  value={formData.primaryLocation}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      primaryLocation: e.target.value,
+                    }))
+                  }
+                  placeholder="City, State"
+                  style={{
+                    width: '100%',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 16,
+                    paddingLeft: 16,
+                    paddingRight: 16,
+                    paddingTop: 12,
+                    paddingBottom: 12,
+                  }}
+                  required
+                />
+              </Stack>
+
+              <Button
+                type="submit"
+                disabled={!isValid || isSubmitting}
+                variant="primary"
+                style={{
+                  width: '100%',
+                  paddingLeft: 24,
+                  paddingRight: 24,
+                  paddingTop: 12,
+                  paddingBottom: 12,
+                  borderRadius: 16,
+                  fontWeight: 600,
+                  opacity: !isValid || isSubmitting ? 0.5 : 1,
+                  cursor: !isValid || isSubmitting ? 'not-allowed' : 'pointer',
+                }}
               >
-                Company Name
-              </Text>
-              <Input
-                value={formData.companyName}
-                onChangeText={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    companyName: value,
-                  }))
-                }
-                placeholder="Enter your company name"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                paddingHorizontal="$4"
-                paddingVertical="$3"
-                width="100%"
-                required
-              />
-            </YStack>
-
-            <YStack>
-              <ResponsiveSelect
-                label="Company Size"
-                value={formData.companySize}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    companySize: value,
-                  }))
-                }
-                placeholder="Select company size"
-                options={[
-                  { value: '', label: 'Select company size' },
-                  { value: '1-10', label: '1-10 employees' },
-                  { value: '11-50', label: '11-50 employees' },
-                  { value: '51-200', label: '51-200 employees' },
-                  { value: '201+', label: '201+ employees' },
-                ]}
-                size="$4"
-                required
-              />
-            </YStack>
-
-            <YStack>
-              <Text
-                fontSize="$3"
-                fontWeight="600"
-                color="$color12"
-                mb="$2"
-                display="block"
-              >
-                Primary Location
-              </Text>
-              <Input
-                value={formData.primaryLocation}
-                onChangeText={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    primaryLocation: value,
-                  }))
-                }
-                placeholder="City, State"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                paddingHorizontal="$4"
-                paddingVertical="$3"
-                width="100%"
-                required
-              />
-            </YStack>
-
-            <Button
-              type="submit"
-              disabled={!isValid || isSubmitting}
-              width="100%"
-              variant="primary"
-              paddingHorizontal="$6"
-              paddingVertical="$3"
-              borderRadius="$4"
-              fontWeight="600"
-              opacity={!isValid || isSubmitting ? 0.5 : 1}
-              cursor={!isValid || isSubmitting ? 'not-allowed' : 'pointer'}
-            >
-              <XStack gap="$2" alignItems="center" justifyContent="center">
-                <Text color="white">Continue to Dashboard</Text>
-              <ArrowRight size={18} />
-              </XStack>
-            </Button>
-          </YStack>
+                <Row style={{ gap: 8, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ color: 'white' }}>Continue to Dashboard</Text>
+                  <ArrowRight size={18} />
+                </Row>
+              </Button>
+            </Stack>
+          </form>
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 }

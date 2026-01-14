@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X, AlertCircle } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button as TamaguiButton } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, Button as BeyondButton } from '@unicornlove/beyond-ui';
 import { useBrokerAcknowledgements } from '../../hooks/useBrokerAcknowledgements';
 import { useProjects } from '../../hooks/useProjects';
 import { useRelationships } from '../../hooks/useRelationships';
@@ -170,77 +170,81 @@ export default function CreateBrokerAckFormModal({
   };
 
   return (
-    <YStack
-      position="fixed"
-      inset={0}
-      backgroundColor="rgba(0,0,0,0.5)"
-      alignItems="center"
-      justifyContent="center"
-      zIndex={50}
-      padding="$4"
+    <Stack
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 50,
+        padding: 'var(--space-4)',
+      }}
     >
       <Card
-        maxWidth={672}
-        width="100%"
-        maxHeight="90vh"
-        overflowY="auto"
-        elevation={24}
+        style={{
+          maxWidth: 672,
+          width: '100%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
       >
-        <XStack
-          position="sticky"
-          top={0}
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
-          paddingHorizontal="$6"
-          paddingVertical="$4"
-          alignItems="center"
-          justifyContent="space-between"
-          backgroundColor="$background"
+        <Row
+          style={{
+            position: 'sticky',
+            top: 0,
+            borderBottom: '1px solid var(--color-border)',
+            paddingLeft: 'var(--space-6)',
+            paddingRight: 'var(--space-6)',
+            paddingTop: 'var(--space-4)',
+            paddingBottom: 'var(--space-4)',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: 'var(--color-background)',
+          }}
         >
-          <Text fontSize="$7" fontWeight="bold" color="$color12">
+          <Text style={{ fontSize: 'var(--font-size-7)', fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
             Create Broker Acknowledgement Form
           </Text>
-          <TamaguiButton
+          <BeyondButton
             onPress={onClose}
-            padding="$1"
-            backgroundColor="transparent"
-            color="$color11"
-            hoverStyle={{
-              color: '$color12',
+            style={{
+              padding: 'var(--space-1)',
+              backgroundColor: 'transparent',
+              color: 'var(--color-gray-11)',
             }}
           >
             <X size={24} />
-          </TamaguiButton>
-        </XStack>
+          </BeyondButton>
+        </Row>
 
         <form onSubmit={handleSubmit}>
-          <YStack padding="$6" gap="$6">
+          <Stack style={{ padding: 'var(--space-6)', gap: 'var(--space-6)' }}>
             {error && (
               <Card
-                backgroundColor="$red3"
-                borderWidth={1}
-                borderColor="$red6"
-                borderRadius="$4"
-                padding="$4"
+                style={{
+                  backgroundColor: 'var(--color-red-3)',
+                  border: '1px solid var(--color-red-6)',
+                  borderRadius: 'var(--radius-4)',
+                  padding: 'var(--space-4)',
+                }}
               >
-                <XStack alignItems="flex-start" gap="$3">
+                <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
                   <AlertCircle
                     size={20}
-                    color="$red10"
-                    flexShrink={0}
-                    mt="$0.5"
+                    style={{ color: 'var(--color-red-10)', flexShrink: 0, marginTop: 'var(--space-0-5)' }}
                   />
-                  <YStack>
-                    <Text fontWeight="500" color="$red11">Error</Text>
-                    <Text fontSize="$2" color="$red10" mt="$1">{error}</Text>
-                  </YStack>
-                </XStack>
+                  <Stack>
+                    <Text style={{ fontWeight: 500, color: 'var(--color-red-11)' }}>Error</Text>
+                    <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-red-10)', marginTop: 'var(--space-1)' }}>{error}</Text>
+                  </Stack>
+                </Row>
               </Card>
             )}
 
-            <YStack>
-              <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-                Project <Text color="$red10">*</Text>
+            <Stack>
+              <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+                Project <span style={{ color: 'var(--color-red-10)' }}>*</span>
               </Text>
               <select
                 value={formData.project_id}
@@ -250,8 +254,10 @@ export default function CreateBrokerAckFormModal({
                 required
                 style={{
                   width: '100%',
-                  paddingHorizontal: 'var(--space-4)',
-                  paddingVertical: 'var(--space-2)',
+                  paddingLeft: 'var(--space-4)',
+                  paddingRight: 'var(--space-4)',
+                  paddingTop: 'var(--space-2)',
+                  paddingBottom: 'var(--space-2)',
                   border: '1px solid var(--color-border)',
                   borderRadius: 'var(--radius-4)',
                 }}
@@ -263,17 +269,17 @@ export default function CreateBrokerAckFormModal({
                   </option>
                 ))}
               </select>
-            </YStack>
+            </Stack>
 
-            <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
-              <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+            <Stack style={{ paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)' }}>
+              <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)' }}>
                 Subcontractor Information
               </Text>
 
-              <YStack gap="$4">
-                <YStack>
-                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-                    Subcontractor <Text color="$red10">*</Text>
+              <Stack style={{ gap: 'var(--space-4)' }}>
+                <Stack>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+                    Subcontractor <span style={{ color: 'var(--color-red-10)' }}>*</span>
                   </Text>
                   <select
                     value={formData.subcontractor_org_id}
@@ -289,8 +295,10 @@ export default function CreateBrokerAckFormModal({
                     disabled={loadingSubcontractors || relationshipsLoading || subcontractors.length === 0}
                     style={{
                       width: '100%',
-                      paddingHorizontal: 'var(--space-4)',
-                      paddingVertical: 'var(--space-2)',
+                      paddingLeft: 'var(--space-4)',
+                      paddingRight: 'var(--space-4)',
+                      paddingTop: 'var(--space-2)',
+                      paddingBottom: 'var(--space-2)',
                       border: '1px solid var(--color-border)',
                       borderRadius: 'var(--radius-4)',
                       opacity: loadingSubcontractors || relationshipsLoading ? 0.6 : 1,
@@ -309,19 +317,19 @@ export default function CreateBrokerAckFormModal({
                       </option>
                     ))}
                   </select>
-                </YStack>
-              </YStack>
-            </YStack>
+                </Stack>
+              </Stack>
+            </Stack>
 
-            <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
-              <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+            <Stack style={{ paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)' }}>
+              <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)' }}>
                 Broker Information
               </Text>
 
-              <YStack gap="$4">
-                <YStack>
-                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-                    Agency Name <Text color="$red10">*</Text>
+              <Stack style={{ gap: 'var(--space-4)' }}>
+                <Stack>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+                    Agency Name <span style={{ color: 'var(--color-red-10)' }}>*</span>
                   </Text>
                   <input
                     type="text"
@@ -335,24 +343,25 @@ export default function CreateBrokerAckFormModal({
                     required
                     style={{
                       width: '100%',
-                      paddingHorizontal: 'var(--space-4)',
-                      paddingVertical: 'var(--space-2)',
+                      paddingLeft: 'var(--space-4)',
+                      paddingRight: 'var(--space-4)',
+                      paddingTop: 'var(--space-2)',
+                      paddingBottom: 'var(--space-2)',
                       border: '1px solid var(--color-border)',
                       borderRadius: 'var(--radius-4)',
                     }}
                   />
-                </YStack>
+                </Stack>
 
-                <XStack
-                  flexWrap="wrap"
-                  gap="$4"
-                  $gtMd={{
-                    flexWrap: 'nowrap',
+                <Row
+                  style={{
+                    flexWrap: 'wrap',
+                    gap: 'var(--space-4)',
                   }}
                 >
-                  <YStack flex={1} minWidth="200px">
-                    <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-                      Contact Name <Text color="$red10">*</Text>
+                  <Stack style={{ flex: 1, minWidth: '200px' }}>
+                    <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+                      Contact Name <span style={{ color: 'var(--color-red-10)' }}>*</span>
                     </Text>
                     <input
                       type="text"
@@ -366,16 +375,18 @@ export default function CreateBrokerAckFormModal({
                       required
                       style={{
                         width: '100%',
-                        paddingHorizontal: 'var(--space-4)',
-                        paddingVertical: 'var(--space-2)',
+                        paddingLeft: 'var(--space-4)',
+                        paddingRight: 'var(--space-4)',
+                        paddingTop: 'var(--space-2)',
+                        paddingBottom: 'var(--space-2)',
                         border: '1px solid var(--color-border)',
                         borderRadius: 'var(--radius-4)',
                       }}
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack flex={1} minWidth="200px">
-                    <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
+                  <Stack style={{ flex: 1, minWidth: '200px' }}>
+                    <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
                       Phone
                     </Text>
                     <input
@@ -386,18 +397,20 @@ export default function CreateBrokerAckFormModal({
                       }
                       style={{
                         width: '100%',
-                        paddingHorizontal: 'var(--space-4)',
-                        paddingVertical: 'var(--space-2)',
+                        paddingLeft: 'var(--space-4)',
+                        paddingRight: 'var(--space-4)',
+                        paddingTop: 'var(--space-2)',
+                        paddingBottom: 'var(--space-2)',
                         border: '1px solid var(--color-border)',
                         borderRadius: 'var(--radius-4)',
                       }}
                     />
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
 
-                <YStack>
-                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-                    Email <Text color="$red10">*</Text>
+                <Stack>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+                    Email <span style={{ color: 'var(--color-red-10)' }}>*</span>
                   </Text>
                   <input
                     type="email"
@@ -408,27 +421,25 @@ export default function CreateBrokerAckFormModal({
                     required
                     style={{
                       width: '100%',
-                      paddingHorizontal: 'var(--space-4)',
-                      paddingVertical: 'var(--space-2)',
+                      paddingLeft: 'var(--space-4)',
+                      paddingRight: 'var(--space-4)',
+                      paddingTop: 'var(--space-2)',
+                      paddingBottom: 'var(--space-2)',
                       border: '1px solid var(--color-border)',
                       borderRadius: 'var(--radius-4)',
                     }}
                   />
-                </YStack>
-              </YStack>
-            </YStack>
+                </Stack>
+              </Stack>
+            </Stack>
 
-            <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
-              <Text fontSize="$6" fontWeight="600" color="$color12" mb="$4">
+            <Stack style={{ paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)' }}>
+              <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)' }}>
                 Coverage Requirements
               </Text>
 
-              <YStack gap="$3">
-                <XStack
-                  as="label"
-                  alignItems="center"
-                  gap="$3"
-                >
+              <Stack style={{ gap: 'var(--space-3)' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                   <input
                     type="checkbox"
                     checked={formData.requires_pollution_liability}
@@ -439,16 +450,12 @@ export default function CreateBrokerAckFormModal({
                       })
                     }
                   />
-                  <Text fontSize="$2" color="$color12">
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)' }}>
                     Requires Pollution Liability
                   </Text>
-                </XStack>
+                </label>
 
-                <XStack
-                  as="label"
-                  alignItems="center"
-                  gap="$3"
-                >
+                <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                   <input
                     type="checkbox"
                     checked={formData.requires_professional_liability}
@@ -459,16 +466,12 @@ export default function CreateBrokerAckFormModal({
                       })
                     }
                   />
-                  <Text fontSize="$2" color="$color12">
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)' }}>
                     Requires Professional Liability
                   </Text>
-                </XStack>
+                </label>
 
-                <XStack
-                  as="label"
-                  alignItems="center"
-                  gap="$3"
-                >
+                <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                   <input
                     type="checkbox"
                     checked={formData.involves_residential_work}
@@ -479,17 +482,17 @@ export default function CreateBrokerAckFormModal({
                       })
                     }
                   />
-                  <Text fontSize="$2" color="$color12">
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)' }}>
                     Involves Residential Construction
                   </Text>
-                </XStack>
-              </YStack>
-            </YStack>
+                </label>
+              </Stack>
+            </Stack>
 
-            <XStack justifyContent="flex-end" gap="$3" paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
+            <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)' }}>
               <Button
                 variant="outline"
-                onClick={onClose}
+                onPress={onClose}
                 type="button"
                 disabled={loading}
               >
@@ -498,10 +501,10 @@ export default function CreateBrokerAckFormModal({
               <Button type="submit" disabled={loading}>
                 {loading ? 'Creating...' : 'Create Form'}
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </form>
       </Card>
-    </YStack>
+    </Stack>
   );
 }

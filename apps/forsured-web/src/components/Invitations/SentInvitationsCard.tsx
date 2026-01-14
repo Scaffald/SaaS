@@ -6,8 +6,9 @@
  * Shows invitee info, status, and when the invitation was sent.
  */
 
-import { YStack, XStack, Text, Button, Card, H3, SizableText, Spinner } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Card, H3, Spinner } from '@unicornlove/beyond-ui'
 import { Mail, Send, ChevronRight, Check, X, Clock } from 'lucide-react'
+import type React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '../../lib/trpc'
 
@@ -38,39 +39,39 @@ export function SentInvitationsCard({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'accepted':
-        return <Check size={14} color="var(--green10)" />
+        return <Check size={14} color="var(--color-green10)" />
       case 'declined':
-        return <X size={14} color="var(--red10)" />
+        return <X size={14} color="var(--color-red10)" />
       case 'expired':
-        return <Clock size={14} color="var(--gray10)" />
+        return <Clock size={14} color="var(--color-gray10)" />
       default:
-        return <Clock size={14} color="var(--orange10)" />
+        return <Clock size={14} color="var(--color-orange10)" />
     }
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string): React.CSSProperties => {
     switch (status) {
       case 'accepted':
-        return '$green10' as const
+        return { color: 'var(--color-green10)' }
       case 'declined':
-        return '$red10' as const
+        return { color: 'var(--color-red10)' }
       case 'expired':
-        return '$gray10' as const
+        return { color: 'var(--color-gray10)' }
       default:
-        return '$orange10' as const
+        return { color: 'var(--color-orange10)' }
     }
   }
 
-  const getStatusBg = (status: string) => {
+  const getStatusBg = (status: string): React.CSSProperties => {
     switch (status) {
       case 'accepted':
-        return '$green3' as const
+        return { backgroundColor: 'var(--color-green3)' }
       case 'declined':
-        return '$red3' as const
+        return { backgroundColor: 'var(--color-red3)' }
       case 'expired':
-        return '$gray3' as const
+        return { backgroundColor: 'var(--color-gray3)' }
       default:
-        return '$orange3' as const
+        return { backgroundColor: 'var(--color-orange3)' }
     }
   }
 
@@ -88,117 +89,131 @@ export function SentInvitationsCard({
 
   return (
     <Card
-      backgroundColor="$background"
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="$borderColor"
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: 'var(--radius-4)',
+        border: '1px solid var(--color-border)',
+      }}
     >
       {/* Header */}
-      <XStack
-        padding="$4"
-        borderBottomWidth={1}
-        borderColor="$borderColor"
-        alignItems="center"
-        justifyContent="space-between"
+      <Row
+        style={{
+          padding: 'var(--space-4)',
+          borderBottom: '1px solid var(--color-border)',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
       >
-        <XStack alignItems="center" gap="$3">
-          <YStack
-            width={36}
-            height={36}
-            backgroundColor="$purple3"
-            borderRadius="$3"
-            alignItems="center"
-            justifyContent="center"
+        <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+          <Stack
+            style={{
+              width: 36,
+              height: 36,
+              backgroundColor: 'var(--color-purple3)',
+              borderRadius: 'var(--radius-3)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <Send size={18} color="var(--purple10)" />
-          </YStack>
-          <YStack>
-            <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <Send size={18} color="var(--color-purple10)" />
+          </Stack>
+          <Stack>
+            <H3 style={{ fontSize: 'var(--font-size-4)', fontWeight: 600, color: 'var(--color-color12)' }}>
               {title}
             </H3>
             {invitations && invitations.length > 0 && (
-              <Text fontSize="$2" color="$color11">
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
                 {invitations.filter((i) => i.status === 'pending').length} pending
               </Text>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
         {hasMore && (
           <Button
-            size="$2"
-            variant="outlined"
+            size="small"
+            variant="outline"
             onPress={() => navigate('/notifications')}
           >
-            <XStack alignItems="center" gap="$1">
-              <Text fontSize="$2">View All</Text>
+            <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Text style={{ fontSize: 'var(--font-size-2)' }}>View All</Text>
               <ChevronRight size={14} />
-            </XStack>
+            </Row>
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {/* Content */}
-      <YStack padding="$4" gap="$2">
+      <Stack style={{ padding: 'var(--space-4)', gap: 'var(--space-2)' }}>
         {/* Loading State */}
         {isLoading && (
-          <YStack alignItems="center" padding="$4">
-            <Spinner size="small" color="$blue10" />
-          </YStack>
+          <Stack style={{ alignItems: 'center', padding: 'var(--space-4)' }}>
+            <Spinner size="small" color="primary" />
+          </Stack>
         )}
 
         {/* Invitations List */}
         {visibleInvitations.map((invitation) => (
-          <XStack
+          <Row
             key={invitation.id}
-            padding="$3"
-            backgroundColor="$gray2"
-            borderRadius="$3"
-            alignItems="center"
-            justifyContent="space-between"
+            style={{
+              padding: 'var(--space-3)',
+              backgroundColor: 'var(--color-gray2)',
+              borderRadius: 'var(--radius-3)',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
-            <XStack alignItems="center" gap="$3" flex={1}>
-              <YStack
-                width={32}
-                height={32}
-                backgroundColor="$gray4"
-                borderRadius="$2"
-                alignItems="center"
-                justifyContent="center"
+            <Row style={{ alignItems: 'center', gap: 'var(--space-3)', flex: 1 }}>
+              <Stack
+                style={{
+                  width: 32,
+                  height: 32,
+                  backgroundColor: 'var(--color-gray4)',
+                  borderRadius: 'var(--radius-2)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
-                <Mail size={16} color="var(--gray11)" />
-              </YStack>
-              <YStack flex={1}>
-                <SizableText fontSize="$3" fontWeight="500" color="$color12">
+                <Mail size={16} color="var(--color-gray11)" />
+              </Stack>
+              <Stack style={{ flex: 1 }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
                   {invitation.invitee_name || invitation.invitee_email}
-                </SizableText>
-                <SizableText fontSize="$2" color="$color11">
-                  {invitation.rule?.name || 'Invitation'} • {formatDate(invitation.created_at)}
-                </SizableText>
-              </YStack>
-            </XStack>
+                </Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
+                  {invitation.rule?.name || 'Invitation'} &bull; {formatDate(invitation.created_at)}
+                </Text>
+              </Stack>
+            </Row>
 
             {/* Status Badge */}
-            <XStack
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              backgroundColor={getStatusBg(invitation.status)}
-              borderRadius="$2"
-              alignItems="center"
-              gap="$1"
+            <Row
+              style={{
+                paddingLeft: 'var(--space-2)',
+                paddingRight: 'var(--space-2)',
+                paddingTop: 'var(--space-1)',
+                paddingBottom: 'var(--space-1)',
+                borderRadius: 'var(--radius-2)',
+                alignItems: 'center',
+                gap: 'var(--space-1)',
+                ...getStatusBg(invitation.status),
+              }}
             >
               {getStatusIcon(invitation.status)}
-              <SizableText
-                fontSize="$1"
-                fontWeight="500"
-                textTransform="capitalize"
-                color={getStatusColor(invitation.status)}
+              <Text
+                style={{
+                  fontSize: 'var(--font-size-1)',
+                  fontWeight: 500,
+                  textTransform: 'capitalize',
+                  ...getStatusColor(invitation.status),
+                }}
               >
                 {invitation.status}
-              </SizableText>
-            </XStack>
-          </XStack>
+              </Text>
+            </Row>
+          </Row>
         ))}
-      </YStack>
+      </Stack>
     </Card>
   )
 }

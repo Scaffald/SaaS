@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   Clock,
   Calendar,
@@ -7,13 +7,12 @@ import {
   Building2,
   Plus,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, Card, Button as TamaguiButton } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, Card, Button, useAnnouncer } from '@unicornlove/beyond-ui';
 import { Task } from '../../types';
 import { formatDate, getDaysUntil, isOverdue } from '../../utils/dateHelpers';
-import Button from '../Common/Button';
 import TaskStatusBadge from '../Common/TaskStatusBadge';
 import { TaskViewToggle } from '../tasks/TaskViewToggle';
-import { useTaskViewFilter, TaskViewType } from '../../hooks/useTaskViewFilter';
+import { useTaskViewFilter } from '../../hooks/useTaskViewFilter';
 
 interface TasksInboxProps {
   tasks: Task[];
@@ -26,6 +25,21 @@ interface TasksInboxProps {
   onUpdateTaskStatus?: (taskId: string, status: string) => void;
 }
 
+// Map status values to human-readable labels for announcements
+const STATUS_LABELS: Record<string, string> = {
+  pending: 'Pending',
+  in_progress: 'In Progress',
+  submitted: 'Submitted',
+  in_review: 'In Review',
+  approved: 'Approved',
+  rejected: 'Rejected',
+  needs_info: 'Needs Info',
+  awaiting_response: 'Awaiting Response',
+  completed: 'Completed',
+  escalated: 'Escalated',
+  cancelled: 'Cancelled',
+};
+
 export default function TasksInbox({
   tasks,
   allTasks,
@@ -36,6 +50,20 @@ export default function TasksInbox({
 }: TasksInboxProps) {
   const [activeTab, setActiveTab] = useState<'urgent' | 'upcoming'>('urgent');
   const { currentView, setView } = useTaskViewFilter();
+
+  // Screen reader announcements for dynamic content
+  const { announce } = useAnnouncer();
+
+  // Wrap status update to announce changes to screen readers
+  const handleStatusChange = useCallback(
+    (taskId: string, newStatus: string, taskTitle: string) => {
+      onUpdateTaskStatus?.(taskId, newStatus);
+      // Announce the status change to screen readers
+      const statusLabel = STATUS_LABELS[newStatus] || newStatus;
+      announce(`Task "${taskTitle}" status changed to ${statusLabel}`);
+    },
+    [onUpdateTaskStatus, announce]
+  );
 
   // REQ-268: Calculate counts for view toggle
   // Use allTasks if provided (for accurate counts across both views)
@@ -103,19 +131,18 @@ export default function TasksInbox({
 
   const displayedTasks = activeTab === 'urgent' ? urgentTasks : upcomingTasks;
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityStyle = (priority: string): React.CSSProperties => {
     switch (priority) {
       case 'urgent':
-        return { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' };
+        return { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)', borderColor: 'var(--color-red-6)' };
       case 'high':
-        return { backgroundColor: '$yellow2', color: '$yellow11', borderColor: '$yellow6' };
+        return { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)', borderColor: 'var(--color-yellow-6)' };
       case 'normal':
-        return { backgroundColor: '$blue2', color: '$blue11', borderColor: '$blue6' };
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-11)', borderColor: 'var(--color-blue-6)' };
       default:
-        return { backgroundColor: '$gray2', color: '$gray11', borderColor: '$gray6' };
+        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)', borderColor: 'var(--color-gray-6)' };
     }
   };
-
 
   const getDueDateBadge = (dueDate?: string) => {
     if (!dueDate) return null;
@@ -123,220 +150,217 @@ export default function TasksInbox({
     const daysLeft = getDaysUntil(dueDate);
     if (isOverdue(dueDate)) {
       return (
-        <Text fontSize="$1" fontWeight="500" color="$red10">Overdue</Text>
+        <Text size="xs" weight="medium" style={{ color: 'var(--color-red-10)' }}>Overdue</Text>
       );
     } else if (daysLeft === 0) {
       return (
-        <XStack
+        <Row
           alignItems="center"
-          paddingHorizontal="$2"
-          paddingVertical="$0.5"
-          borderRadius="$2"
-          fontSize="$1"
-          fontWeight="500"
-          backgroundColor="$red2"
-          color="$red11"
-          borderWidth={1}
-          borderColor="$red6"
+          style={{
+            paddingLeft: 8,
+            paddingRight: 8,
+            paddingTop: 2,
+            paddingBottom: 2,
+            borderRadius: 4,
+            backgroundColor: 'var(--color-red-2)',
+            border: '1px solid var(--color-red-6)',
+          }}
         >
-          <Text fontSize="$1" fontWeight="500" color="$red11">Due Today</Text>
-        </XStack>
+          <Text size="xs" weight="medium" style={{ color: 'var(--color-red-11)' }}>Due Today</Text>
+        </Row>
       );
     } else if (daysLeft <= 3) {
       return (
-        <XStack
+        <Row
           alignItems="center"
-          paddingHorizontal="$2"
-          paddingVertical="$0.5"
-          borderRadius="$2"
-          fontSize="$1"
-          fontWeight="500"
-          backgroundColor="$yellow2"
-          color="$yellow11"
-          borderWidth={1}
-          borderColor="$yellow6"
+          style={{
+            paddingLeft: 8,
+            paddingRight: 8,
+            paddingTop: 2,
+            paddingBottom: 2,
+            borderRadius: 4,
+            backgroundColor: 'var(--color-yellow-2)',
+            border: '1px solid var(--color-yellow-6)',
+          }}
         >
-          <Text fontSize="$1" fontWeight="500" color="$yellow11">Due in {daysLeft}d</Text>
-        </XStack>
+          <Text size="xs" weight="medium" style={{ color: 'var(--color-yellow-11)' }}>Due in {daysLeft}d</Text>
+        </Row>
       );
     }
     return (
-      <Text fontSize="$1" color="$color11">{formatDate(dueDate)}</Text>
+      <Text size="xs" style={{ color: 'var(--color-text-muted)' }}>{formatDate(dueDate)}</Text>
     );
   };
 
+  const tabButtonStyle = (isActive: boolean): React.CSSProperties => ({
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+    fontSize: 14,
+    fontWeight: 500,
+    borderRadius: 8,
+    backgroundColor: isActive ? 'var(--color-blue-9)' : 'transparent',
+    color: isActive ? 'white' : 'var(--color-text-muted)',
+    border: 'none',
+    cursor: 'pointer',
+  });
+
   return (
     <Card
-      backgroundColor="$background"
-      borderRadius="$4"
-      elevation={1}
-      borderWidth={1}
-      borderColor="$borderColor"
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: 12,
+        border: '1px solid var(--color-border)',
+      }}
     >
-      <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-        <XStack alignItems="center" justifyContent="space-between" mb="$4">
-          <YStack>
-            <H2 fontSize="$6" fontWeight="600" color="$color12">
+      <Stack padding={24} style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+          <Stack>
+            <H2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}>
               {headerText.title}
             </H2>
-            <Text fontSize="$3" color="$color11">
+            <Text size="sm" muted>
               {headerText.subtitle}
             </Text>
-          </YStack>
-          <Button
-            onClick={onCreateTask}
-          >
-            <Plus size={18} />
-            <Text ml="$2">New Task</Text>
+          </Stack>
+          <Button color="primary" iconStart={Plus} onPress={onCreateTask}>
+            New Task
           </Button>
-        </XStack>
+        </Row>
 
         {/* REQ-268: View Toggle - My Inbox vs Assigned by Me */}
-        <YStack mb="$4">
+        <Stack style={{ marginBottom: 16 }}>
           <TaskViewToggle
             currentView={currentView}
             onViewChange={setView}
             inboxCount={inboxCount}
             assignedByMeCount={assignedByMeCount}
           />
-        </YStack>
+        </Stack>
 
-        <XStack gap="$4">
-          <TamaguiButton
-            onPress={() => setActiveTab('urgent')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$3"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={activeTab === 'urgent' ? '$blue9' : 'transparent'}
-            color={activeTab === 'urgent' ? 'white' : '$color11'}
-            hoverStyle={{
-              color: activeTab === 'urgent' ? 'white' : '$color12',
-              backgroundColor: activeTab === 'urgent' ? '$blue9' : '$gray2',
-            }}
+        <Row gap={16}>
+          <button
+            onClick={() => setActiveTab('urgent')}
+            style={tabButtonStyle(activeTab === 'urgent')}
           >
             Urgent ({urgentTasks.length})
-          </TamaguiButton>
-          <TamaguiButton
-            onPress={() => setActiveTab('upcoming')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$3"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={activeTab === 'upcoming' ? '$blue9' : 'transparent'}
-            color={activeTab === 'upcoming' ? 'white' : '$color11'}
-            hoverStyle={{
-              color: activeTab === 'upcoming' ? 'white' : '$color12',
-              backgroundColor: activeTab === 'upcoming' ? '$blue9' : '$gray2',
-            }}
+          </button>
+          <button
+            onClick={() => setActiveTab('upcoming')}
+            style={tabButtonStyle(activeTab === 'upcoming')}
           >
             Upcoming ({upcomingTasks.length})
-          </TamaguiButton>
-        </XStack>
-      </YStack>
+          </button>
+        </Row>
+      </Stack>
 
-      <YStack padding="$6" id="task-list" role="tabpanel">
-        <YStack gap="$4">
+      <Stack padding={24} id="task-list" role="tabpanel">
+        <Stack gap={16}>
           {displayedTasks.map((task) => {
-            const priorityColors = getPriorityColor(task.priority);
+            const priorityStyle = getPriorityStyle(task.priority);
             return (
               <Card
                 key={task.id}
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                padding="$4"
-                hoverStyle={{ borderColor: '$blue9' }}
-                cursor="pointer"
-                onClick={() => onTaskClick?.(task)}
+                onPress={() => onTaskClick?.(task)}
+                style={{
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 12,
+                  padding: 16,
+                  cursor: 'pointer',
+                }}
               >
-                <XStack alignItems="flex-start" justifyContent="space-between">
-                  <YStack flex={1}>
-                    <XStack alignItems="center" gap="$2" mb="$2">
-                      <XStack
-                        alignItems="center"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
-                        fontSize="$1"
-                        fontWeight="500"
-                        borderWidth={1}
-                        {...priorityColors}
+                <Row alignItems="flex-start" justifyContent="space-between">
+                  <Stack style={{ flex: 1 }}>
+                    <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 2,
+                          paddingBottom: 2,
+                          borderRadius: 4,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          border: '1px solid',
+                          ...priorityStyle,
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color={priorityColors.color}>
-                          {task.priority}
-                        </Text>
-                      </XStack>
+                        {task.priority}
+                      </span>
                       {task.due_date && getDueDateBadge(task.due_date)}
-                    </XStack>
+                    </Row>
 
-                    <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
+                    <Text size="sm" weight="medium" style={{ marginBottom: 4 }}>
                       {task.title}
                     </Text>
                     {task.description && (
-                      <Text fontSize="$3" color="$color11" mb="$2">
+                      <Text size="sm" muted style={{ marginBottom: 8 }}>
                         {task.description}
                       </Text>
                     )}
 
-                    <XStack
+                    <Row
                       alignItems="center"
-                      flexWrap="wrap"
-                      gapHorizontal="$4"
-                      gapVertical="$1"
-                      fontSize="$1"
-                      color="$color11"
+                      style={{
+                        flexWrap: 'wrap',
+                        gap: '4px 16px',
+                        fontSize: 12,
+                        color: 'var(--color-text-muted)',
+                      }}
                     >
                       {task.assigned_to && (
-                        <XStack alignItems="center">
-                          <User size={12} mr="$1" color="$color11" />
-                          <Text fontSize="$1" color="$color11">{task.assigned_to.name}</Text>
-                        </XStack>
+                        <Row alignItems="center" gap={4}>
+                          <User size={12} />
+                          <Text size="xs" muted>{task.assigned_to.name}</Text>
+                        </Row>
                       )}
                       {task.client && (
-                        <XStack alignItems="center">
-                          <FileText size={12} mr="$1" color="$color11" />
-                          <Text fontSize="$1" color="$color11">{task.client.company_name}</Text>
-                        </XStack>
+                        <Row alignItems="center" gap={4}>
+                          <FileText size={12} />
+                          <Text size="xs" muted>{task.client.company_name}</Text>
+                        </Row>
                       )}
                       {/* REQ-282 TASK-4: Display sub company context */}
                       {task.sub_company_name && (
-                        <XStack alignItems="center">
-                          <Building2 size={12} mr="$1" color="$blue10" />
-                          <Text fontSize="$1" color="$blue10">{task.sub_company_name}</Text>
-                        </XStack>
+                        <Row alignItems="center" gap={4}>
+                          <Building2 size={12} style={{ color: 'var(--color-blue-10)' }} />
+                          <Text size="xs" style={{ color: 'var(--color-blue-10)' }}>{task.sub_company_name}</Text>
+                        </Row>
                       )}
                       {task.due_date && (
-                        <XStack alignItems="center">
-                          <Calendar size={12} mr="$1" color="$color11" />
-                          <Text fontSize="$1" color="$color11">Due: {formatDate(task.due_date)}</Text>
-                        </XStack>
+                        <Row alignItems="center" gap={4}>
+                          <Calendar size={12} />
+                          <Text size="xs" muted>Due: {formatDate(task.due_date)}</Text>
+                        </Row>
                       )}
-                    </XStack>
+                    </Row>
 
                     {task.document_link && (
-                      <YStack mt="$2">
-                        <XStack
-                          as="a"
-                          href={task.document_link}
+                      <Stack style={{ marginTop: 8 }}>
+                        <a href={task.document_link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          fontSize="$1"
-                          color="$blue10"
-                          hoverStyle={{ color: '$blue11' }}
-                          alignItems="center"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            fontSize: 12,
+                            color: 'var(--color-blue-10)',
+                            textDecoration: 'none',
+                          }}
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <FileText size={12} mr="$1" color="$blue10" />
-                          <Text fontSize="$1" color="$blue10">View Document</Text>
-                        </XStack>
-                      </YStack>
+                          <FileText size={12} />
+                          <span>View Document</span>
+                        </a>
+                      </Stack>
                     )}
-                  </YStack>
+                  </Stack>
 
-                  <YStack alignItems="flex-end" gap="$2" ml="$4">
+                  <Stack alignItems="flex-end" gap={8} style={{ marginLeft: 16 }}>
                     {/* REQ-282: Use TaskStatusBadge with tooltip and rejection reason */}
                     <TaskStatusBadge
                       status={task.status}
@@ -344,18 +368,21 @@ export default function TasksInbox({
                       size="sm"
                     />
 
-                    <YStack position="relative">
+                    <Stack style={{ position: 'relative' }}>
                       <select
                         value={task.status}
                         onChange={(e) => {
                           e.stopPropagation();
-                          onUpdateTaskStatus?.(task.id, e.target.value);
+                          handleStatusChange(task.id, e.target.value, task.title);
                         }}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Change status for task: ${task.title}`}
                         style={{
-                          fontSize: '12px',
-                          border: '1px solid var(--borderColor)',
-                          borderRadius: '4px',
+                          fontSize: 12,
+                          border: '1px solid var(--color-border)',
+                          borderRadius: 4,
                           padding: '4px 8px',
+                          backgroundColor: 'var(--color-background)',
                         }}
                       >
                         <option value="pending">Pending</option>
@@ -371,21 +398,21 @@ export default function TasksInbox({
                         <option value="completed">Completed</option>
                         <option value="escalated">Escalated</option>
                       </select>
-                    </YStack>
-                  </YStack>
-                </XStack>
+                    </Stack>
+                  </Stack>
+                </Row>
               </Card>
             );
           })}
-        </YStack>
+        </Stack>
 
         {displayedTasks.length === 0 && (
-          <YStack alignItems="center" paddingVertical="$12">
-            <Clock color="$color10" size={48} mb="$3" />
-            <Text color="$color11">No {activeTab} tasks</Text>
-          </YStack>
+          <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+            <Clock size={48} style={{ color: 'var(--color-text-muted)', marginBottom: 12 }} />
+            <Text muted>No {activeTab} tasks</Text>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
   );
 }

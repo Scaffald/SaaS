@@ -1,8 +1,10 @@
 /**
- * Sidebar - Navigation sidebar component using Tamagui
+ * Sidebar - Navigation sidebar component using Beyond UI
  * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
+ * Fully migrated to Beyond UI Sidebar components
  */
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -13,16 +15,19 @@ import {
   Briefcase,
   Bell,
   LogOut,
-  User,
-  ClipboardCheck,
-  LifeBuoy,
   CheckSquare,
+  LifeBuoy,
   Shield,
 } from 'lucide-react';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
+import {
+  Sidebar as BeyondSidebar,
+  SidebarHeader,
+  SidebarMenuItem,
+  SidebarFooter,
+  Avatar,
+} from '@unicornlove/beyond-ui';
 import { User as UserType } from '../../types';
 import ForsuredLogo from '../Common/ForsuredLogo';
-import IconButton from '../Common/IconButton';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLexicon } from '../../contexts/LexiconContext';
 
@@ -31,50 +36,20 @@ interface SidebarProps {
   user: UserType;
   onNotificationsClick: () => void;
   alertCount: number;
+  collapsed?: boolean;
+  onCollapseChange?: (collapsed: boolean) => void;
 }
 
-const SidebarContainer = styled(YStack, {
-  name: 'Sidebar',
-  backgroundColor: '$backgroundHover',
-  color: '$color11',
-  width: 224,
-  minHeight: '100vh',
-  shadowColor: '$shadowColor',
-  shadowRadius: 10,
-  shadowOffset: { width: 4, height: 0 },
-  borderRightWidth: 1,
-  borderRightColor: '$borderColor',
-  flexDirection: 'column',
-});
-
-// NavLink wrapper component
-const NavLinkWrapper = ({ to, children }: { to: string; children: (props: { isActive: boolean }) => React.ReactNode }) => {
-  return (
-    <NavLink to={to}>
-      {({ isActive }) => (
-        <XStack
-          width="100%"
-          flexDirection="row"
-          alignItems="center"
-          gap="$2.5"
-          paddingHorizontal="$3"
-          paddingVertical="$2.5"
-          borderRadius="$3"
-          backgroundColor={isActive ? '$blue9' : 'transparent'}
-          color={isActive ? '$color1' : '$color10'}
-          shadowColor={isActive ? '$shadowColor' : 'transparent'}
-          shadowRadius={isActive ? 8 : 0}
-          shadowOffset={isActive ? { width: 0, height: 4 } : { width: 0, height: 0 }}
-          hoverStyle={!isActive ? {
-            backgroundColor: '$backgroundHover',
-            color: '$color11',
-          } : undefined}
-        >
-          {children({ isActive })}
-        </XStack>
-      )}
-    </NavLink>
-  );
+// Helper to get initials from name
+const getInitials = (name: string | undefined | null): string => {
+  if (!name) return 'U';
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .filter(Boolean)
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'U';
 };
 
 export default function Sidebar({
@@ -82,12 +57,44 @@ export default function Sidebar({
   user,
   onNotificationsClick,
   alertCount,
+  collapsed: controlledCollapsed,
+  onCollapseChange,
 }: SidebarProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Support both controlled and uncontrolled mode
+  const isControlled = controlledCollapsed !== undefined;
+
+  // Internal state for uncontrolled mode with localStorage persistence
+  const [internalCollapsed, setInternalCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('forsured-sidebar-collapsed') === 'true';
+    }
+    return false;
+  });
+
+  const isCollapsed = isControlled ? controlledCollapsed : internalCollapsed;
+
+  const handleCollapseChange = (newCollapsed: boolean) => {
+    if (isControlled && onCollapseChange) {
+      onCollapseChange(newCollapsed);
+    } else {
+      setInternalCollapsed(newCollapsed);
+    }
+  };
+
+  // Persist to localStorage (for both controlled and uncontrolled)
+  useEffect(() => {
+    localStorage.setItem('forsured-sidebar-collapsed', String(isCollapsed));
+  }, [isCollapsed]);
 
   // REQ-4: Use lexicon for dynamic labels
-  const { t, getManagerLabel, getContractorLabel } = useLexicon();
+  const { t, getContractorLabel } = useLexicon();
+
+  // Check if path is active (supports nested routes)
+  const isActive = (path: string) => location.pathname.startsWith(path);
 
   // REQ-4: Menu items with lexicon-based labels
   const managerMenuItems = [
@@ -97,32 +104,14 @@ export default function Sidebar({
     { path: '/manager/subcontractors', label: t('nav.contractors'), icon: Users },
     { path: '/manager/broker', label: 'My Broker', icon: Shield },
     { path: '/manager/documents', label: t('nav.documents'), icon: FileText },
-    {
-      path: '/manager/acknowledgements',
-      label: t('nav.acknowledgements'),
-      icon: ClipboardCheck,
-    },
-    // TODO: Re-enable when integrations feature is ready
-    // { path: '/manager/integrations', label: t('nav.integrations'), icon: Settings },
+    { path: '/manager/acknowledgements', label: t('nav.acknowledgements'), icon: Briefcase },
     { path: '/manager/help', label: t('nav.help'), icon: LifeBuoy },
   ];
 
   const subcontractorMenuItems = [
-    {
-      path: '/subcontractor/dashboard',
-      label: t('nav.dashboard'),
-      icon: LayoutDashboard,
-    },
-    {
-      path: '/subcontractor/relationships',
-      label: t('nav.managers'),
-      icon: Handshake,
-    },
-    {
-      path: '/subcontractor/broker',
-      label: 'My Broker',
-      icon: Briefcase,
-    },
+    { path: '/subcontractor/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { path: '/subcontractor/relationships', label: t('nav.managers'), icon: Handshake },
+    { path: '/subcontractor/broker', label: 'My Broker', icon: Briefcase },
     { path: '/subcontractor/projects', label: t('nav.projects'), icon: Building },
     { path: '/subcontractor/documents', label: t('nav.documents'), icon: FileText },
     { path: '/subcontractor/help', label: t('nav.help'), icon: LifeBuoy },
@@ -151,102 +140,76 @@ export default function Sidebar({
     navigate('/');
   };
 
+  const getSettingsPath = () => {
+    switch (userRole) {
+      case 'manager':
+        return '/manager/settings/profile';
+      case 'subcontractor':
+        return '/subcontractor/settings/profile';
+      case 'broker':
+        return '/broker/settings/profile';
+    }
+  };
+
+  // REQ-4: Get role display text
+  const getRoleDisplay = () => {
+    switch (userRole) {
+      case 'broker':
+        return `CMR (${t('role.broker')} View)`;
+      case 'manager':
+        return `MRC (${t('role.manager_view')})`;
+      case 'subcontractor':
+        return getContractorLabel();
+    }
+  };
+
   return (
-    <SidebarContainer as="aside">
-      <YStack padding="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
-        <ForsuredLogo height={24} />
-      </YStack>
+    <BeyondSidebar
+      variant="main"
+      collapsed={isCollapsed}
+      onCollapseChange={handleCollapseChange}
+    >
+      <SidebarHeader
+        title="Forsured"
+        logo={<ForsuredLogo height={24} width={24} />}
+        onCollapse={() => handleCollapseChange(!isCollapsed)}
+      />
 
-      <YStack flex={1} overflow="scroll" padding="$3">
-        <YStack gap="$0.5">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLinkWrapper key={item.path} to={item.path}>
-                {({ isActive }) => (
-                  <>
-                    <Icon size={18} />
-                    <Text fontSize="$3" fontWeight="500">
-                      {item.label}
-                    </Text>
-                  </>
-                )}
-              </NavLinkWrapper>
-            );
-          })}
-        </YStack>
-      </YStack>
+      {menuItems.map((item) => (
+        <SidebarMenuItem
+          key={item.path}
+          icon={item.icon}
+          label={item.label}
+          state={isActive(item.path) ? 'active' : 'default'}
+          onPress={() => navigate(item.path)}
+        />
+      ))}
 
-      <YStack borderTopWidth={1} borderTopColor="$borderColor" padding="$3" gap="$2">
-        <XStack alignItems="center" justifyContent="space-around" paddingHorizontal="$1">
-          <IconButton
-            onClick={onNotificationsClick}
-            icon={Bell}
-            size="md"
-            variant="ghost"
-            badge={alertCount > 0}
-            badgeContent={alertCount}
-            tooltip="Notifications"
-          />
-
-          <IconButton
-            onClick={() => {
-              const settingsPath = userRole === 'manager'
-                ? '/manager/settings/profile'
-                : userRole === 'subcontractor'
-                  ? '/subcontractor/settings/profile'
-                  : '/broker/settings/profile';
-              navigate(settingsPath);
-            }}
-            icon={Settings}
-            size="md"
-            variant="ghost"
-            tooltip="Settings"
-          />
-
-          <IconButton
-            onClick={handleLogout}
-            icon={LogOut}
-            size="md"
-            variant="ghost"
-            tooltip="Sign Out"
-          />
-        </XStack>
-
-        <XStack
-          alignItems="center"
-          gap="$2"
-          paddingHorizontal="$2"
-          paddingVertical="$1.5"
-          borderRadius="$3"
-          backgroundColor="$backgroundHover"
-        >
-          <XStack
-            width={28}
-            height={28}
-            backgroundColor="$background"
-            borderRadius="$10"
-            alignItems="center"
-            justifyContent="center"
-            flexShrink={0}
-          >
-            <User size={14} color="currentColor" />
-          </XStack>
-          <YStack flex={1} minWidth={0}>
-            <Text fontSize="$1" fontWeight="500" color="$color11" numberOfLines={1}>
-              {user.name}
-            </Text>
-            {/* REQ-4: Use lexicon for role display */}
-            <Text fontSize="$1" color="$color10">
-              {userRole === 'broker'
-                ? `CMR (${t('role.broker')} View)`
-                : userRole === 'manager'
-                  ? `MRC (${t('role.manager_view')})`
-                  : getContractorLabel()}
-            </Text>
-          </YStack>
-        </XStack>
-      </YStack>
-    </SidebarContainer>
+      <SidebarFooter
+        user={{
+          name: user.name || user.email || 'User',
+          email: getRoleDisplay(),
+          avatar: <Avatar initials={getInitials(user.name || user.email)} size={32} />,
+        }}
+        actions={[
+          {
+            icon: Bell,
+            onPress: onNotificationsClick,
+            badge: alertCount > 0 ? alertCount : undefined,
+            label: 'Notifications',
+          },
+          {
+            icon: Settings,
+            onPress: () => navigate(getSettingsPath()),
+            label: 'Settings',
+          },
+          {
+            icon: LogOut,
+            onPress: handleLogout,
+            label: 'Sign Out',
+          },
+        ]}
+      />
+    </BeyondSidebar>
   );
 }

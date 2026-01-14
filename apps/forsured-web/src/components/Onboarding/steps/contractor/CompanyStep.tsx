@@ -1,7 +1,7 @@
 // src/components/onboarding/steps/contractor/CompanyStep.tsx
 // REQ-126: Contractor Onboarding - Company Information Step
 import { useState } from 'react';
-import { YStack, Text, H2, Input, Button } from '@unicornlove/ui';
+import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
 
 interface CompanyStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -42,56 +42,58 @@ function CompanyStep({ onComplete, initialData = {}, isLoading = false }: Compan
   };
 
   return (
-    <YStack>
-      <H2 mb="$6">Company Information</H2>
-      <YStack tag="form" onSubmit={handleSubmit} gap="$4">
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">Company Name</Text>
-          <Input
-            value={companyName}
-            onChangeText={setCompanyName}
-            placeholder="Enter your company name"
-          />
-          {errors.companyName && <Text color="$red10" fontSize="$2">{errors.companyName}</Text>}
-        </YStack>
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">Trade/Specialty</Text>
-          <Input
-            value={trade}
-            onChangeText={setTrade}
-            placeholder="e.g., Electrical, Plumbing, HVAC"
-          />
-          {errors.trade && <Text color="$red10" fontSize="$2">{errors.trade}</Text>}
-        </YStack>
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">Address</Text>
-          <Input
-            value={address}
-            onChangeText={setAddress}
-            placeholder="Enter your company address"
-          />
-          {errors.address && <Text color="$red10" fontSize="$2">{errors.address}</Text>}
-        </YStack>
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">Phone</Text>
-          <Input
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="Enter your phone number"
-          />
-          {errors.phone && <Text color="$red10" fontSize="$2">{errors.phone}</Text>}
-        </YStack>
-        <YStack mt="$6">
-          <Button
-            onPress={handleSubmit}
-            variant="primary"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Saving...' : 'Continue'}
-          </Button>
-        </YStack>
-      </YStack>
-    </YStack>
+    <Stack>
+      <H2 style={{ marginBottom: 24 }}>Company Information</H2>
+      <form onSubmit={handleSubmit}>
+        <Stack style={{ gap: 16 }}>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>Company Name</Text>
+            <Input
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Enter your company name"
+            />
+            {errors.companyName && <Text style={{ color: 'var(--color-red-10)', fontSize: 12 }}>{errors.companyName}</Text>}
+          </Stack>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>Trade/Specialty</Text>
+            <Input
+              value={trade}
+              onChange={(e) => setTrade(e.target.value)}
+              placeholder="e.g., Electrical, Plumbing, HVAC"
+            />
+            {errors.trade && <Text style={{ color: 'var(--color-red-10)', fontSize: 12 }}>{errors.trade}</Text>}
+          </Stack>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>Address</Text>
+            <Input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Enter your company address"
+            />
+            {errors.address && <Text style={{ color: 'var(--color-red-10)', fontSize: 12 }}>{errors.address}</Text>}
+          </Stack>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>Phone</Text>
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Enter your phone number"
+            />
+            {errors.phone && <Text style={{ color: 'var(--color-red-10)', fontSize: 12 }}>{errors.phone}</Text>}
+          </Stack>
+          <Stack style={{ marginTop: 24 }}>
+            <Button
+              onPress={handleSubmit}
+              variant="primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Continue'}
+            </Button>
+          </Stack>
+        </Stack>
+      </form>
+    </Stack>
   );
 }
 

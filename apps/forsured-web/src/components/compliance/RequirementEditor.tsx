@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { YStack, XStack, Text, Button, Card, H3, Input } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
 import {
   CoverageType,
   RequirementStatus,
@@ -226,29 +226,29 @@ export default function RequirementEditor({
 
   if (loading) {
     return (
-      <YStack alignItems="center" paddingVertical="$8">
+      <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
         <Text>Loading...</Text>
-      </YStack>
+      </Stack>
     );
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <YStack gap="$6">
+      <Stack style={{ gap: 'var(--space-6)' }}>
         {errors.general && (
-          <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$2" padding="$4">
-            <Text color="$red11">{errors.general}</Text>
+          <Card style={{ backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-5)', borderRadius: 'var(--radius-2)', padding: 'var(--space-4)' }}>
+            <Text style={{ color: 'var(--color-red-11)' }}>{errors.general}</Text>
           </Card>
         )}
 
         {/* Basic Information */}
-        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-          <YStack gap="$4">
-            <H3 fontSize="$6" fontWeight="600" color="$gray12">Basic Information</H3>
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+          <Stack style={{ gap: 'var(--space-4)' }}>
+            <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', margin: 0 }}>Basic Information</h3>
 
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
-                Name <Text color="$red9">*</Text>
+            <Stack>
+              <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)', marginBottom: 4 }}>
+                Name <span style={{ color: 'var(--color-red-9)' }}>*</span>
               </Text>
               <input
                 type="text"
@@ -263,12 +263,12 @@ export default function RequirementEditor({
                   fontSize: '14px',
                 }}
               />
-              {errors.name && <Text color="$red9" fontSize="$3" mt="$1">{errors.name}</Text>}
-            </YStack>
+              {errors.name && <Text style={{ color: 'var(--color-red-9)', fontSize: 'var(--font-size-3)', marginTop: 4 }}>{errors.name}</Text>}
+            </Stack>
 
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
-                Type <Text color="$red9">*</Text>
+            <Stack>
+              <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)', marginBottom: 4 }}>
+                Type <span style={{ color: 'var(--color-red-9)' }}>*</span>
               </Text>
               <select
                 value={type}
@@ -288,10 +288,10 @@ export default function RequirementEditor({
                 <option value={CoverageType.UMBRELLA}>Umbrella/Excess Liability</option>
                 <option value={CoverageType.CUSTOM}>Custom</option>
               </select>
-            </YStack>
+            </Stack>
 
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
+            <Stack>
+              <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)', marginBottom: 4 }}>
                 Description
               </Text>
               <textarea
@@ -306,11 +306,11 @@ export default function RequirementEditor({
                   fontSize: '14px',
                 }}
               />
-            </YStack>
+            </Stack>
 
-            <XStack gap="$4" flexWrap="wrap">
-              <YStack flex={1} minWidth="200px">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
+            <Row style={{ gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+              <Stack style={{ flex: 1, minWidth: 200 }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)', marginBottom: 4 }}>
                   Status
                 </Text>
                 <select
@@ -328,11 +328,11 @@ export default function RequirementEditor({
                   <option value={RequirementStatus.ACTIVE}>Active</option>
                   <option value={RequirementStatus.ARCHIVED}>Archived</option>
                 </select>
-              </YStack>
+              </Stack>
 
               {!requirementId && (
-                <XStack alignItems="center" flex={1} minWidth="200px">
-                  <XStack alignItems="center" gap="$2">
+                <Row style={{ alignItems: 'center', flex: 1, minWidth: 200 }}>
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <input
                       type="checkbox"
                       checked={isTemplate}
@@ -343,22 +343,22 @@ export default function RequirementEditor({
                         accentColor: '#2563EB',
                       }}
                     />
-                    <Text fontSize="$3" fontWeight="500" color="$gray11">Save as template</Text>
-                  </XStack>
-                </XStack>
+                    <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)' }}>Save as template</Text>
+                  </Row>
+                </Row>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Card>
 
         {/* Coverage Limits */}
-        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-          <YStack gap="$4">
-            <H3 fontSize="$6" fontWeight="600" color="$gray12">Coverage Limits</H3>
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+          <Stack style={{ gap: 'var(--space-4)' }}>
+            <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', margin: 0 }}>Coverage Limits</h3>
 
-            <XStack flexWrap="wrap" gap="$4">
-              <YStack flex={1} minWidth="200px">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
+            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+              <Stack style={{ flex: 1, minWidth: 200 }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)', marginBottom: 4 }}>
                   Per Occurrence
                 </Text>
                 <input
@@ -375,12 +375,12 @@ export default function RequirementEditor({
                   }}
                 />
                 {errors['coverage_limits.per_occurrence'] && (
-                  <Text color="$red9" fontSize="$3" mt="$1">{errors['coverage_limits.per_occurrence']}</Text>
+                  <Text style={{ color: 'var(--color-red-9)', fontSize: 'var(--font-size-3)', marginTop: 4 }}>{errors['coverage_limits.per_occurrence']}</Text>
                 )}
-              </YStack>
+              </Stack>
 
-              <YStack flex={1} minWidth="200px">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
+              <Stack style={{ flex: 1, minWidth: 200 }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)', marginBottom: 4 }}>
                   Aggregate
                 </Text>
                 <input
@@ -397,12 +397,12 @@ export default function RequirementEditor({
                   }}
                 />
                 {errors['coverage_limits.aggregate'] && (
-                  <Text color="$red9" fontSize="$3" mt="$1">{errors['coverage_limits.aggregate']}</Text>
+                  <Text style={{ color: 'var(--color-red-9)', fontSize: 'var(--font-size-3)', marginTop: 4 }}>{errors['coverage_limits.aggregate']}</Text>
                 )}
-              </YStack>
+              </Stack>
 
-              <YStack flex={1} minWidth="200px">
-                <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
+              <Stack style={{ flex: 1, minWidth: 200 }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)', marginBottom: 4 }}>
                   Maximum Deductible
                 </Text>
                 <input
@@ -418,32 +418,36 @@ export default function RequirementEditor({
                     fontSize: '14px',
                   }}
                 />
-              </YStack>
-            </XStack>
-          </YStack>
+              </Stack>
+            </Row>
+          </Stack>
         </Card>
 
         {/* Required Endorsements */}
-        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-          <YStack gap="$4">
-            <XStack alignItems="center" justifyContent="space-between">
-              <H3 fontSize="$6" fontWeight="600" color="$gray12">Required Endorsements</H3>
-              <Button
-                unstyled
-                fontSize="$3"
-                color="$blue9"
-                hoverStyle={{ color: '$blue10' }}
-                onPress={addEndorsement}
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+          <Stack style={{ gap: 'var(--space-4)' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', margin: 0 }}>Required Endorsements</h3>
+              <button
+                type="button"
+                style={{
+                  fontSize: 'var(--font-size-3)',
+                  color: 'var(--color-blue-9)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onClick={addEndorsement}
               >
                 + Add Endorsement
-              </Button>
-            </XStack>
+              </button>
+            </Row>
 
             {endorsements.map((endorsement, index) => (
-              <Card key={index} borderColor="$gray5" borderRadius="$2" padding="$4">
-                <YStack gap="$3">
-                  <XStack alignItems="flex-start" justifyContent="space-between">
-                    <YStack flex={1} gap="$3">
+              <Card key={index} style={{ borderColor: 'var(--color-gray-5)', borderRadius: 'var(--radius-2)', padding: 'var(--space-4)' }}>
+                <Stack style={{ gap: 'var(--space-3)' }}>
+                  <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                    <Stack style={{ flex: 1, gap: 'var(--space-3)' }}>
                       <input
                         type="text"
                         value={endorsement.endorsement_type}
@@ -470,50 +474,58 @@ export default function RequirementEditor({
                           fontSize: '14px',
                         }}
                       />
-                    </YStack>
-                    <Button
-                      unstyled
-                      ml="$2"
-                      color="$red9"
-                      hoverStyle={{ color: '$red10' }}
-                      onPress={() => removeEndorsement(index)}
+                    </Stack>
+                    <button
+                      type="button"
+                      style={{
+                        marginLeft: 8,
+                        color: 'var(--color-red-9)',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => removeEndorsement(index)}
                     >
                       Remove
-                    </Button>
-                  </XStack>
-                </YStack>
+                    </button>
+                  </Row>
+                </Stack>
               </Card>
             ))}
             {errors.required_endorsements && (
-              <Text color="$red9" fontSize="$3">{errors.required_endorsements}</Text>
+              <Text style={{ color: 'var(--color-red-9)', fontSize: 'var(--font-size-3)' }}>{errors.required_endorsements}</Text>
             )}
-          </YStack>
+          </Stack>
         </Card>
 
         {/* Policy Conditions */}
-        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-          <YStack gap="$4">
-            <XStack alignItems="center" justifyContent="space-between">
-              <H3 fontSize="$6" fontWeight="600" color="$gray12">Policy Conditions</H3>
-              <Button
-                unstyled
-                fontSize="$3"
-                color="$blue9"
-                hoverStyle={{ color: '$blue10' }}
-                onPress={addCondition}
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+          <Stack style={{ gap: 'var(--space-4)' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', margin: 0 }}>Policy Conditions</h3>
+              <button
+                type="button"
+                style={{
+                  fontSize: 'var(--font-size-3)',
+                  color: 'var(--color-blue-9)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onClick={addCondition}
               >
                 + Add Condition
-              </Button>
-            </XStack>
+              </button>
+            </Row>
 
             {conditions.length === 0 ? (
-              <Text color="$gray9" fontSize="$3">No conditions specified</Text>
+              <Text style={{ color: 'var(--color-gray-9)', fontSize: 'var(--font-size-3)' }}>No conditions specified</Text>
             ) : (
               conditions.map((condition, index) => (
-                <Card key={index} borderColor="$gray5" borderRadius="$2" padding="$4">
-                  <YStack gap="$3">
-                    <XStack alignItems="flex-start" justifyContent="space-between">
-                      <YStack flex={1} gap="$3">
+                <Card key={index} style={{ borderColor: 'var(--color-gray-5)', borderRadius: 'var(--radius-2)', padding: 'var(--space-4)' }}>
+                  <Stack style={{ gap: 'var(--space-3)' }}>
+                    <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                      <Stack style={{ flex: 1, gap: 'var(--space-3)' }}>
                         <input
                           type="text"
                           value={condition.condition_type}
@@ -540,43 +552,51 @@ export default function RequirementEditor({
                             fontSize: '14px',
                           }}
                         />
-                      </YStack>
-                      <Button
-                        unstyled
-                        ml="$2"
-                        color="$red9"
-                        hoverStyle={{ color: '$red10' }}
-                        onPress={() => removeCondition(index)}
+                      </Stack>
+                      <button
+                        type="button"
+                        style={{
+                          marginLeft: 8,
+                          color: 'var(--color-red-9)',
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => removeCondition(index)}
                       >
                         Remove
-                      </Button>
-                    </XStack>
-                  </YStack>
+                      </button>
+                    </Row>
+                  </Stack>
                 </Card>
               ))
             )}
-          </YStack>
+          </Stack>
         </Card>
 
         {/* Documentation Requirements */}
-        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-          <YStack gap="$4">
-            <XStack alignItems="center" justifyContent="space-between">
-              <H3 fontSize="$6" fontWeight="600" color="$gray12">Documentation Requirements</H3>
-              <Button
-                unstyled
-                fontSize="$3"
-                color="$blue9"
-                hoverStyle={{ color: '$blue10' }}
-                onPress={addDocumentation}
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+          <Stack style={{ gap: 'var(--space-4)' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', margin: 0 }}>Documentation Requirements</h3>
+              <button
+                type="button"
+                style={{
+                  fontSize: 'var(--font-size-3)',
+                  color: 'var(--color-blue-9)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onClick={addDocumentation}
               >
                 + Add Document
-              </Button>
-            </XStack>
+              </button>
+            </Row>
 
             {documentation.map((doc, index) => (
-              <Card key={index} borderColor="$gray5" borderRadius="$2" padding="$4">
-                <XStack alignItems="center" justifyContent="space-between" gap="$3">
+              <Card key={index} style={{ borderColor: 'var(--color-gray-5)', borderRadius: 'var(--radius-2)', padding: 'var(--space-4)' }}>
+                <Row style={{ alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-3)' }}>
                   <input
                     type="text"
                     value={doc.document_type}
@@ -590,7 +610,7 @@ export default function RequirementEditor({
                       fontSize: '14px',
                     }}
                   />
-                  <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <input
                       type="checkbox"
                       checked={doc.is_required}
@@ -601,30 +621,34 @@ export default function RequirementEditor({
                         accentColor: '#2563EB',
                       }}
                     />
-                    <Text fontSize="$3" color="$gray11">Required</Text>
-                  </XStack>
-                  <Button
-                    unstyled
-                    color="$red9"
-                    hoverStyle={{ color: '$red10' }}
-                    onPress={() => removeDocumentation(index)}
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>Required</Text>
+                  </Row>
+                  <button
+                    type="button"
+                    style={{
+                      color: 'var(--color-red-9)',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => removeDocumentation(index)}
                   >
                     Remove
-                  </Button>
-                </XStack>
+                  </button>
+                </Row>
               </Card>
             ))}
             {errors.documentation_requirements && (
-              <Text color="$red9" fontSize="$3">{errors.documentation_requirements}</Text>
+              <Text style={{ color: 'var(--color-red-9)', fontSize: 'var(--font-size-3)' }}>{errors.documentation_requirements}</Text>
             )}
-          </YStack>
+          </Stack>
         </Card>
 
         {/* Change Summary (for updates only) */}
         {requirementId && (
-          <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-            <Text fontSize="$3" fontWeight="500" color="$gray11" mb="$1">
-              Change Summary <Text color="$red9">*</Text>
+          <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-11)', marginBottom: 4 }}>
+              Change Summary <span style={{ color: 'var(--color-red-9)' }}>*</span>
             </Text>
             <textarea
               value={changeSummary}
@@ -644,7 +668,7 @@ export default function RequirementEditor({
         )}
 
         {/* Actions */}
-        <XStack justifyContent="flex-end" gap="$3">
+        <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)' }}>
           {onCancel && (
             <Button variant="outlined" onPress={onCancel}>
               Cancel
@@ -660,15 +684,15 @@ export default function RequirementEditor({
               borderRadius: '6px',
               border: 'none',
               fontSize: '14px',
-              fontWeight: '500',
+              fontWeight: 500,
               cursor: saving ? 'not-allowed' : 'pointer',
               opacity: saving ? 0.5 : 1,
             }}
           >
             {saving ? 'Saving...' : requirementId ? 'Update Requirement' : 'Create Requirement'}
           </button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </form>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { YStack, XStack, View, Text, H1, H2 } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2 } from '@unicornlove/beyond-ui';
 import NavigationDrawer, { DrawerToggle } from './NavigationDrawer';
 import ThemeSwitcher from '../Common/ThemeSwitcher';
 import FoundationsSection from './sections/FoundationsSection';
@@ -11,79 +11,76 @@ export default function DesignSystemHome() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <View minHeight="100vh" backgroundColor="$backgroundSecondary">
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-background-secondary)' }}>
       <NavigationDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
 
-      <View
-        $gtLg={{ marginLeft: 288 }}
-      >
+      <div className="lg:ml-[288px]">
         <DrawerToggle onClick={() => setDrawerOpen(true)} />
 
-        <View maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8">
-          <View
-            borderRadius="$6"
-            padding="$8"
-            mb="$8"
-            shadowRadius={12}
-            shadowColor="$shadowColor"
-            shadowOffset={{ width: 0, height: 4 }}
+        <div style={{ maxWidth: 1280, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
+          <div
             style={{
+              borderRadius: 'var(--radius-6)',
+              padding: 'var(--space-8)',
+              marginBottom: 'var(--space-8)',
+              boxShadow: '0 4px 12px var(--color-shadow)',
               background: 'linear-gradient(to right, var(--color-primary-600), var(--color-primary-800))',
             }}
           >
-            <XStack alignItems="center" justifyContent="space-between">
-              <XStack alignItems="center" gap="$4">
-                <View
-                  padding="$4"
-                  borderRadius="$6"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+              <Row style={{ alignItems: 'center', gap: 'var(--space-4)' }}>
+                <div
+                  style={{
+                    padding: 'var(--space-4)',
+                    borderRadius: 'var(--radius-6)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  }}
                 >
                   <Palette size={32} color="white" />
-                </View>
-                <YStack>
-                  <H1 fontFamily="$display" fontSize="$9" fontWeight="bold" mb="$2" color="white">
+                </div>
+                <Stack>
+                  <H1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-9)', fontWeight: 'bold', marginBottom: 'var(--space-2)', color: 'white' }}>
                     Design System
                   </H1>
-                  <Text fontSize="$5" style={{ color: 'var(--color-primary-100)' }}>
+                  <Text style={{ fontSize: 'var(--font-size-5)', color: 'var(--color-primary-100)' }}>
                     Complete UI component library and design foundations
                   </Text>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
               <ThemeSwitcher />
-            </XStack>
-          </View>
+            </Row>
+          </div>
 
-          <View mb="$8">
-            <View
-              backgroundColor="$background"
-              borderRadius="$6"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$6"
-              shadowRadius={2}
-              shadowColor="$shadowColor"
-              shadowOffset={{ width: 0, height: 1 }}
+          <div style={{ marginBottom: 'var(--space-8)' }}>
+            <div
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderRadius: 'var(--radius-6)',
+                border: '1px solid var(--color-border)',
+                padding: 'var(--space-6)',
+                boxShadow: '0 1px 2px var(--color-shadow)',
+              }}
             >
-              <H2 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
+              <H2 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-2)' }}>
                 About This System
               </H2>
-              <Text color="$color11">
+              <Text style={{ color: 'var(--color-11)' }}>
                 This design system provides a comprehensive collection of
                 reusable components, design foundations, and patterns to ensure
                 consistency across all interfaces. Each component is built with
                 accessibility, theming, and responsive design in mind.
               </Text>
-            </View>
-          </View>
+            </div>
+          </div>
 
           <FoundationsSection />
           <ComponentsSection />
           <PatternsSection />
-        </View>
-      </View>
-    </View>
+        </div>
+      </div>
+    </div>
   );
 }

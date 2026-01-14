@@ -61,9 +61,9 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, forwardRef } from 'react'
 import { View, TextInput, Platform } from 'react-native'
-import type { TextInputProps as RNTextInputProps } from 'react-native'
+import type { TextInputProps as RNTextInputProps, TextInput as TextInputType } from 'react-native'
 import type { InputProps } from './Input.types'
 import { getInputStyles, getFocusBoxShadow, getFocusShadowStyle } from './Input.styles'
 import { InputLabel } from './InputLabel'
@@ -72,7 +72,7 @@ import { InputExternalAddon, InputLeftSide, InputRightSide } from './InputAddon'
 import { colors } from '../../tokens/colors'
 import { useThemeContext } from '../../playground/ThemeProvider'
 
-export function Input({
+export const Input = forwardRef<TextInputType, InputProps>(function Input({
   label,
   required = false,
   helperText,
@@ -92,7 +92,7 @@ export function Input({
   onBlur,
   value,
   ...textInputProps
-}: InputProps) {
+}, ref) {
   const [internalFocused, setInternalFocused] = useState(false)
   const { theme } = useThemeContext()
 
@@ -134,7 +134,18 @@ export function Input({
   const focusShadowStyle = getFocusShadowStyle(actualState || 'default')
 
   return (
-    <View style={[styles.container, fullWidth && { width: '100%' }, containerStyle]}>
+    <View style={[
+      styles.container, 
+      fullWidth && { 
+        width: '100%', 
+        minWidth: '100%', 
+        maxWidth: '100%',
+        alignSelf: 'stretch',
+        flexShrink: 0,
+        flexGrow: 1,
+      }, 
+      containerStyle
+    ]}>
       {/* Label */}
       {label && (
         <InputLabel
@@ -152,6 +163,9 @@ export function Input({
           flexDirection: 'row',
           alignItems: 'stretch',
           width: '100%',
+          minWidth: '100%',
+          maxWidth: '100%',
+          flexShrink: 0,
         }}
       >
         {/* External Addon (Prefix) */}
@@ -170,6 +184,12 @@ export function Input({
         <View
           style={[
             styles.input,
+            !hasExternalAddon && {
+              flex: 1,
+              width: '100%',
+              minWidth: '100%',
+              maxWidth: '100%',
+            },
             focusBoxShadow && Platform.OS === 'web' && { boxShadow: focusBoxShadow },
             focusShadowStyle,
           ]}
@@ -179,6 +199,7 @@ export function Input({
 
           {/* Text Input */}
           <TextInput
+            ref={ref}
             {...textInputProps}
             value={value}
             editable={!disabled}
@@ -209,7 +230,9 @@ export function Input({
       )}
     </View>
   )
-}
+})
+
+Input.displayName = 'Input'
 
 // Export types
 export type { InputProps, InputState, InputType } from './Input.types'

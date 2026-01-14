@@ -11,8 +11,8 @@
  */
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { ZoomIn, ZoomOut, Maximize, AlertTriangle, Info } from 'lucide-react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
+import { ZoomIn, ZoomOut, Maximize, AlertTriangle, Info, Loader2 } from 'lucide-react';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 import type { DependencyNode } from '../../lib/compliance/dependency-resolver';
 import type { CoverageType } from '../../lib/compliance/dependency-types';
 import { DependencyType } from '../../lib/compliance/dependency-types';
@@ -168,7 +168,7 @@ function GraphNode({ node, position, isSelected, onClick }: GraphNodeProps) {
   return (
     <g
       transform={`translate(${position.x}, ${position.y})`}
-      onClick={() => onClick(node)}
+      onPress={() => onClick(node)}
       style={{ cursor: 'pointer' }}
     >
       {/* Node rectangle */}
@@ -447,140 +447,159 @@ export function DependencyVisualizer({
   // Loading state
   if (isLoading) {
     return (
-      <YStack
-        alignItems="center"
-        justifyContent="center"
-        height={384}
-        backgroundColor="$color2"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
+      <Stack
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 384,
+          backgroundColor: 'var(--color-2)',
+          borderRadius: 'var(--radius-4)',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'var(--color-border)',
+        }}
       >
-        <YStack
-          width={32}
-          height={32}
-          borderRadius={9999}
-          borderWidth={2}
-          borderColor="$blue10"
-          borderTopColor="transparent"
-          animation="spin"
+        <Loader2
+          className="animate-spin"
+          style={{
+            width: 32,
+            height: 32,
+            color: 'var(--color-blue-10)',
+          }}
         />
-      </YStack>
+      </Stack>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <YStack
-        alignItems="center"
-        justifyContent="center"
-        height={384}
-        backgroundColor="$red2"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$red6"
+      <Stack
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 384,
+          backgroundColor: 'var(--color-red-2)',
+          borderRadius: 'var(--radius-4)',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'var(--color-red-6)',
+        }}
       >
-        <AlertTriangle color="$red10" size={32} mb="$2" />
-        <Text color="$red11" fontWeight="500">
+        <AlertTriangle style={{ color: 'var(--color-red-10)', marginBottom: 8 }} size={32} />
+        <Text style={{ color: 'var(--color-red-11)', fontWeight: 500 }}>
           Failed to load dependency tree
         </Text>
-        <Text color="$red10" fontSize="$3" mt="$1">
+        <Text style={{ color: 'var(--color-red-10)', fontSize: 'var(--font-size-3)', marginTop: 4 }}>
           {error.message}
         </Text>
-      </YStack>
+      </Stack>
     );
   }
 
   // Empty state
   if (!tree) {
     return (
-      <YStack
-        alignItems="center"
-        justifyContent="center"
-        height={384}
-        backgroundColor="$color2"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
+      <Stack
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 384,
+          backgroundColor: 'var(--color-2)',
+          borderRadius: 'var(--radius-4)',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'var(--color-border)',
+        }}
       >
-        <Info color="$color10" size={32} mb="$2" />
-        <Text color="$color11">No dependency data available</Text>
-      </YStack>
+        <Info style={{ color: 'var(--color-10)', marginBottom: 8 }} size={32} />
+        <Text style={{ color: 'var(--color-11)' }}>No dependency data available</Text>
+      </Stack>
     );
   }
 
   // No dependencies state
   if (tree.children.length === 0) {
     return (
-      <YStack
-        alignItems="center"
-        justifyContent="center"
-        height={384}
-        backgroundColor="$color2"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
+      <Stack
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 384,
+          backgroundColor: 'var(--color-2)',
+          borderRadius: 'var(--radius-4)',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'var(--color-border)',
+        }}
       >
-        <YStack
-          padding="$4"
-          backgroundColor="$background"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          alignItems="center"
+        <Stack
+          style={{
+            padding: 'var(--space-4)',
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 'var(--radius-4)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            alignItems: 'center',
+          }}
         >
-          <Info color="$color10" size={32} mb="$2" />
-          <Text color="$color11" fontWeight="500">
+          <Info style={{ color: 'var(--color-10)', marginBottom: 8 }} size={32} />
+          <Text style={{ color: 'var(--color-11)', fontWeight: 500 }}>
             No dependencies
           </Text>
-          <Text color="$color10" fontSize="$3" mt="$1">
+          <Text style={{ color: 'var(--color-10)', fontSize: 'var(--font-size-3)', marginTop: 4 }}>
             This requirement has no dependencies defined
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack flex={1} height="100%">
+    <Stack style={{ flex: 1, height: '100%' }}>
       {/* Controls */}
-      <XStack
-        alignItems="center"
-        justifyContent="space-between"
-        padding="$3"
-        backgroundColor="$color2"
-        borderBottomWidth={1}
-        borderColor="$borderColor"
+      <Row
+        style={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 'var(--space-3)',
+          backgroundColor: 'var(--color-2)',
+          borderBottomWidth: 1,
+          borderBottomStyle: 'solid',
+          borderColor: 'var(--color-border)',
+        }}
       >
-        <XStack alignItems="center" gap="$2">
-          <Button variant="secondary" size="$2" onClick={handleZoomIn} title="Zoom In">
+        <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+          <Button variant="secondary" size="$2" onPress={handleZoomIn} title="Zoom In">
             <ZoomIn size={16} />
           </Button>
-          <Button variant="secondary" size="$2" onClick={handleZoomOut} title="Zoom Out">
+          <Button variant="secondary" size="$2" onPress={handleZoomOut} title="Zoom Out">
             <ZoomOut size={16} />
           </Button>
-          <Button variant="secondary" size="$2" onClick={handleResetView} title="Reset View">
+          <Button variant="secondary" size="$2" onPress={handleResetView} title="Reset View">
             <Maximize size={16} />
           </Button>
-          <Text fontSize="$1" color="$color10" ml="$2">
+          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)', marginLeft: 'var(--space-2)' }}>
             {Math.round(zoom * 100)}%
           </Text>
-        </XStack>
+        </Row>
 
-        <Text fontSize="$3" color="$color11">
+        <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
           {nodes.length} node{nodes.length !== 1 ? 's' : ''} | {edges.length} edge
           {edges.length !== 1 ? 's' : ''}
         </Text>
-      </XStack>
+      </Row>
 
       {/* Graph container */}
-      <YStack
+      <Stack
         ref={containerRef}
-        flex={1}
-        overflow="hidden"
-        backgroundColor="white"
-        cursor="grab"
+        style={{
+          flex: 1,
+          overflow: 'hidden',
+          backgroundColor: 'white',
+          cursor: 'grab',
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -637,73 +656,82 @@ export function DependencyVisualizer({
                   node={node}
                   position={position}
                   isSelected={selectedNode?.id === node.id}
-                  onClick={handleNodeClick}
+                  onPress={handleNodeClick}
                 />
               );
             })}
           </g>
         </svg>
-      </YStack>
+      </Stack>
 
       {/* Selected node details */}
       {selectedNode && (
-        <YStack
-          padding="$3"
-          backgroundColor="$color2"
-          borderTopWidth={1}
-          borderColor="$borderColor"
+        <Stack
+          style={{
+            padding: 'var(--space-3)',
+            backgroundColor: 'var(--color-2)',
+            borderTopWidth: 1,
+            borderTopStyle: 'solid',
+            borderColor: 'var(--color-border)',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text fontWeight="500" color="$color12">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                 {selectedNode.name}
               </Text>
-              <Text fontSize="$3" color="$color11">
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                 {selectedNode.type.replace('_', ' ')} | Level {selectedNode.depth}
                 {selectedNode.dependency_type && (
-                  <Text ml="$2">
+                  <span style={{ marginLeft: 'var(--space-2)' }}>
                     ({dependencyTypeLabels[selectedNode.dependency_type] || selectedNode.dependency_type})
-                  </Text>
+                  </span>
                 )}
               </Text>
-            </YStack>
+            </Stack>
             <Button
               variant="secondary"
               size="$2"
-              onClick={() => setSelectedNode(null)}
+              onPress={() => setSelectedNode(null)}
             >
               Clear
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Legend */}
-      <YStack
-        padding="$3"
-        backgroundColor="$color2"
-        borderTopWidth={1}
-        borderColor="$borderColor"
+      <Stack
+        style={{
+          padding: 'var(--space-3)',
+          backgroundColor: 'var(--color-2)',
+          borderTopWidth: 1,
+          borderTopStyle: 'solid',
+          borderColor: 'var(--color-border)',
+        }}
       >
-        <XStack flexWrap="wrap" gap="$3">
+        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-3)' }}>
           {Object.entries(typeColors).map(([type, colors]) => (
-            <XStack key={type} alignItems="center" gap="$1.5">
-              <YStack
-                width={12}
-                height={12}
-                borderRadius="$1"
-                backgroundColor={colors.bg}
-                borderWidth={2}
-                borderColor={colors.border}
+            <Row key={type} style={{ alignItems: 'center', gap: 6 }}>
+              <div
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: 'var(--radius-1)',
+                  backgroundColor: colors.bg,
+                  borderWidth: 2,
+                  borderStyle: 'solid',
+                  borderColor: colors.border,
+                }}
               />
-              <Text fontSize="$1" color="$color11" textTransform="capitalize">
+              <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-11)', textTransform: 'capitalize' }}>
                 {type.replace('_', ' ')}
               </Text>
-            </XStack>
+            </Row>
           ))}
-        </XStack>
-      </YStack>
-    </YStack>
+        </Row>
+      </Stack>
+    </Stack>
   );
 }
 

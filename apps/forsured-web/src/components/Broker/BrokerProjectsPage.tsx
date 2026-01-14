@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building, Filter, Eye, Shield, Calendar } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, Card, Label } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2, Card } from '@unicornlove/beyond-ui';
 import { useProjects } from '../../hooks/useProjects';
 import { useClients } from '../../hooks/useClients';
 import ProjectCard from '../Shared/ProjectCard';
@@ -52,170 +52,146 @@ export default function BrokerProjectsPage() {
     return <DashboardSkeleton />;
   }
 
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: 'var(--color-background)',
+    borderRadius: 12,
+    padding: 24,
+    border: '1px solid var(--color-border)',
+    flex: 1,
+    minWidth: '20%',
+  };
+
+  const iconBoxStyle = (color: string): React.CSSProperties => ({
+    backgroundColor: `var(--color-${color}-3)`,
+    padding: 12,
+    borderRadius: 8,
+  });
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '8px 16px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    fontSize: 14,
+    backgroundColor: 'var(--color-background)',
+    color: 'var(--color-text)',
+  };
+
   return (
-    <YStack gap="$6">
-      <YStack>
-        <H1 fontSize="$8" fontWeight="bold" color="$color12">Projects</H1>
-        <Text color="$color11">
+    <Stack gap={24}>
+      <Stack>
+        <H1 style={{ fontSize: 24, fontWeight: 'bold' }}>Projects</H1>
+        <Text muted>
           Manage all client projects and monitor compliance
         </Text>
-      </YStack>
+      </Stack>
 
-      <XStack
-        flexDirection="column"
-        $gtMd={{ flexDirection: 'row' }}
-        gap="$6"
-        flexWrap="wrap"
-      >
-        <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="20%"
-        >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Total Projects</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
+      <Row gap={24} style={{ flexWrap: 'wrap' }}>
+        <Card style={cardStyle}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text size="sm" muted>Total Projects</Text>
+              <Text size="2xl" weight="bold" style={{ marginTop: 4 }}>
                 {stats.total}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$blue3" padding="$3" borderRadius="$4">
-              <Building color="$blue10" size={24} />
-            </YStack>
-          </XStack>
+            </Stack>
+            <div style={iconBoxStyle('blue')}>
+              <Building color="var(--color-blue-10)" size={24} />
+            </div>
+          </Row>
         </Card>
 
-        <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="20%"
-        >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Active Projects</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
+        <Card style={cardStyle}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text size="sm" muted>Active Projects</Text>
+              <Text size="2xl" weight="bold" style={{ color: 'var(--color-blue-10)', marginTop: 4 }}>
                 {stats.active}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$blue3" padding="$3" borderRadius="$4">
-              <Eye color="$blue10" size={24} />
-            </YStack>
-          </XStack>
+            </Stack>
+            <div style={iconBoxStyle('blue')}>
+              <Eye color="var(--color-blue-10)" size={24} />
+            </div>
+          </Row>
         </Card>
 
-        <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="20%"
-        >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Compliant</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$green10" mt="$1">
+        <Card style={cardStyle}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text size="sm" muted>Compliant</Text>
+              <Text size="2xl" weight="bold" style={{ color: 'var(--color-green-10)', marginTop: 4 }}>
                 {stats.compliant}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$green3" padding="$3" borderRadius="$4">
-              <Shield color="$green10" size={24} />
-            </YStack>
-          </XStack>
+            </Stack>
+            <div style={iconBoxStyle('green')}>
+              <Shield color="var(--color-green-10)" size={24} />
+            </div>
+          </Row>
         </Card>
 
-        <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="20%"
-        >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$3">Needs Attention</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$yellow10" mt="$1">
+        <Card style={cardStyle}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text size="sm" muted>Needs Attention</Text>
+              <Text size="2xl" weight="bold" style={{ color: 'var(--color-yellow-10)', marginTop: 4 }}>
                 {stats.needsAttention}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$yellow3" padding="$3" borderRadius="$4">
-              <Calendar color="$yellow10" size={24} />
-            </YStack>
-          </XStack>
+            </Stack>
+            <div style={iconBoxStyle('yellow')}>
+              <Calendar color="var(--color-yellow-10)" size={24} />
+            </div>
+          </Row>
         </Card>
-      </XStack>
+      </Row>
 
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={1}
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding="$6"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          border: '1px solid var(--color-border)',
+          padding: 24,
+        }}
       >
-        <XStack alignItems="center" justifyContent="space-between" mb="$6">
-          <XStack alignItems="center" gap="$2">
-            <Filter size={20} color="$color11" />
-            <H2 fontSize="$6" fontWeight="600" color="$color12">
+        <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 24 }}>
+          <Row alignItems="center" gap={8}>
+            <Filter size={20} color="var(--color-text-muted)" />
+            <H2 style={{ fontSize: 18, fontWeight: 600 }}>
               Filter Projects
             </H2>
-          </XStack>
-          <XStack
-            as="button"
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$3"
-            fontWeight="500"
-            color="$color11"
-            hoverStyle={{ color: '$color12' }}
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderRadius="$4"
+          </Row>
+          <button
             onClick={() => {
               setStatusFilter('all');
               setClientFilter('all');
               setComplianceFilter('all');
             }}
+            style={{
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 8,
+              paddingBottom: 8,
+              fontSize: 14,
+              fontWeight: 500,
+              color: 'var(--color-text-muted)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 8,
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
+            }}
           >
-            <Text fontSize="$3" fontWeight="500" color="$color11">Clear Filters</Text>
-          </XStack>
-        </XStack>
+            Clear Filters
+          </button>
+        </Row>
 
-        <XStack
-          flexDirection="column"
-          $gtMd={{ flexDirection: 'row' }}
-          gap="$4"
-          flexWrap="wrap"
-        >
-          <YStack flex={1} minWidth="30%">
-            <Label fontSize="$3" fontWeight="500" color="$color11" mb="$2">
+        <Row gap={16} style={{ flexWrap: 'wrap' }}>
+          <Stack style={{ flex: 1, minWidth: '30%' }}>
+            <Text size="sm" weight="medium" muted style={{ marginBottom: 8 }}>
               Status
-            </Label>
+            </Text>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 16px',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-              }}
+              style={selectStyle}
             >
               <option value="all">All Statuses</option>
               <option value="active">Active</option>
@@ -223,22 +199,16 @@ export default function BrokerProjectsPage() {
               <option value="on_hold">On Hold</option>
               <option value="cancelled">Cancelled</option>
             </select>
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="30%">
-            <Label fontSize="$3" fontWeight="500" color="$color11" mb="$2">
+          <Stack style={{ flex: 1, minWidth: '30%' }}>
+            <Text size="sm" weight="medium" muted style={{ marginBottom: 8 }}>
               Client
-            </Label>
+            </Text>
             <select
               value={clientFilter}
               onChange={(e) => setClientFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 16px',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-              }}
+              style={selectStyle}
             >
               <option value="all">All Clients</option>
               {clients.map((client) => (
@@ -247,92 +217,87 @@ export default function BrokerProjectsPage() {
                 </option>
               ))}
             </select>
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="30%">
-            <Label fontSize="$3" fontWeight="500" color="$color11" mb="$2">
+          <Stack style={{ flex: 1, minWidth: '30%' }}>
+            <Text size="sm" weight="medium" muted style={{ marginBottom: 8 }}>
               Compliance
-            </Label>
+            </Text>
             <select
               value={complianceFilter}
               onChange={(e) => setComplianceFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 16px',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-              }}
+              style={selectStyle}
             >
               <option value="all">All Compliance Levels</option>
               <option value="compliant">Compliant</option>
               <option value="warning">Warning</option>
               <option value="critical">Critical</option>
             </select>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
       </Card>
 
-      <XStack
-        flexDirection="column"
-        $gtLg={{ flexDirection: 'row' }}
-        gap="$6"
-        flexWrap="wrap"
-      >
+      <Row gap={24} style={{ flexWrap: 'wrap' }}>
         {filteredProjects.map((project) => (
-          <YStack key={project.id} position="relative" flex={1} minWidth="45%">
-            <YStack
-              position="absolute"
-              top="$4"
-              left="$4"
-              zIndex={10}
+          <Stack key={project.id} style={{ position: 'relative', flex: 1, minWidth: '45%' }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: 16,
+                left: 16,
+                zIndex: 10,
+              }}
             >
-              <YStack
-                backgroundColor="$background"
-                paddingHorizontal="$3"
-                paddingVertical="$1"
-                borderRadius={9999}
-                borderWidth={1}
-                borderColor="$borderColor"
-                elevation={1}
+              <span
+                style={{
+                  display: 'inline-flex',
+                  backgroundColor: 'var(--color-background)',
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  borderRadius: 9999,
+                  border: '1px solid var(--color-border)',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: 'var(--color-text-muted)',
+                }}
               >
-                <Text fontSize="$1" fontWeight="500" color="$color11">
-                  {getClientName(project.client_id)}
-                </Text>
-              </YStack>
-            </YStack>
-            <YStack paddingTop="$8">
+                {getClientName(project.client_id)}
+              </span>
+            </div>
+            <div style={{ paddingTop: 32 }}>
               <ProjectCard
                 project={project}
                 userRole="broker"
                 showActions={false}
                 onClick={() => navigate(`/broker/projects/${project.id}`)}
               />
-            </YStack>
-          </YStack>
+            </div>
+          </Stack>
         ))}
-      </XStack>
+      </Row>
 
       {filteredProjects.length === 0 && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$12"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 12,
+            border: '1px solid var(--color-border)',
+            padding: 48,
+          }}
         >
-          <YStack alignItems="center">
-            <Building color="$color10" size={48} mb="$4" />
-            <Text color="$color12" fontWeight="500" mb="$2">
+          <Stack alignItems="center">
+            <Building color="var(--color-text-muted)" size={48} style={{ marginBottom: 16 }} />
+            <Text weight="medium" style={{ marginBottom: 8 }}>
               No projects found
             </Text>
-            <Text fontSize="$3" color="$color11">
+            <Text size="sm" muted>
               Try adjusting your filters
             </Text>
-          </YStack>
+          </Stack>
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 }

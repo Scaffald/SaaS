@@ -1,7 +1,7 @@
 // src/components/onboarding/steps/broker/ClientInviteStep.tsx
 // REQ-126: Broker Onboarding - Client Invitation Step (Optional)
 import { useState } from 'react';
-import { YStack, Text, H2, Input, Button } from '@unicornlove/ui';
+import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
 
 interface ClientInviteStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -40,41 +40,43 @@ function ClientInviteStep({ onComplete, initialData = {}, isLoading = false }: C
   };
 
   return (
-    <YStack>
-      <H2 mb="$2">Add Your First Client (Optional)</H2>
-      <Text mb="$6" color="$color10">
+    <Stack>
+      <H2 style={{ marginBottom: 8 }}>Add Your First Client (Optional)</H2>
+      <Text style={{ marginBottom: 24, color: 'var(--color-text-secondary)' }}>
         You can skip this step and add clients later from your dashboard
       </Text>
-      <YStack tag="form" onSubmit={handleSubmit} gap="$4">
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">Client Name</Text>
-          <Input
-            value={clientName}
-            onChangeText={setClientName}
-            placeholder="Enter client company name"
-          />
-        </YStack>
-        <YStack gap="$2">
-          <Text fontWeight="600" color="$color12">Client Email</Text>
-          <Input
-            value={clientEmail}
-            onChangeText={setClientEmail}
-            placeholder="client@example.com"
-          />
-          <Text fontSize="$2" color="$color10">We'll send them an invitation to connect</Text>
-          {errors.clientEmail && <Text color="$red10" fontSize="$2">{errors.clientEmail}</Text>}
-        </YStack>
-        <YStack mt="$6">
-          <Button
-            onPress={handleSubmit}
-            variant="primary"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Saving...' : 'Continue'}
-          </Button>
-        </YStack>
-      </YStack>
-    </YStack>
+      <form onSubmit={handleSubmit}>
+        <Stack style={{ gap: 16 }}>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>Client Name</Text>
+            <Input
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
+              placeholder="Enter client company name"
+            />
+          </Stack>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontWeight: 600, color: 'var(--color-text)' }}>Client Email</Text>
+            <Input
+              value={clientEmail}
+              onChange={(e) => setClientEmail(e.target.value)}
+              placeholder="client@example.com"
+            />
+            <Text style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>We'll send them an invitation to connect</Text>
+            {errors.clientEmail && <Text style={{ color: 'var(--color-red-10)', fontSize: 12 }}>{errors.clientEmail}</Text>}
+          </Stack>
+          <Stack style={{ marginTop: 24 }}>
+            <Button
+              onPress={handleSubmit}
+              variant="primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Continue'}
+            </Button>
+          </Stack>
+        </Stack>
+      </form>
+    </Stack>
   );
 }
 

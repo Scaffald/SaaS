@@ -2,7 +2,7 @@
 // REQ-126: Contractor Onboarding - COI Upload Step (Optional)
 import { useState } from 'react';
 import { Upload, FileText } from 'lucide-react';
-import { YStack, XStack, Text, H2, Label, Button } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, Button } from '@unicornlove/beyond-ui';
 
 interface COIUploadStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -35,128 +35,109 @@ function COIUploadStep({ onComplete, initialData = {}, isLoading = false }: COIU
     });
   };
 
+  const uploadButtonStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+    border: '1px solid var(--color-gray-8)',
+    borderRadius: 16,
+    cursor: 'pointer',
+    backgroundColor: 'var(--color-background)',
+  };
+
   return (
-    <YStack>
-      <H2 mb="$2">Upload Certificates of Insurance (Optional)</H2>
-      <Text mb="$6" color="$color10">
+    <Stack>
+      <H2 style={{ marginBottom: 8 }}>Upload Certificates of Insurance (Optional)</H2>
+      <Text style={{ marginBottom: 24, color: 'var(--color-text-secondary)' }}>
         You can skip this step and upload certificates later. PDF files only.
       </Text>
-      <YStack tag="form" onSubmit={handleSubmit} gap="$6">
-        <YStack gap="$4">
-          <YStack>
-            <Label mb="$2" display="block">General Liability COI</Label>
-            <XStack alignItems="center" gap="$4">
-              <XStack
-                tag="label"
-                flexDirection="row"
-                alignItems="center"
-                gap="$2"
-                paddingHorizontal="$4"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderColor="$gray8"
-                borderRadius="$4"
-                cursor="pointer"
-                hoverStyle={{ backgroundColor: '$gray3' }}
-              >
-                <Upload size={16} />
-                <Text>{glCoi ? glCoi.name : 'Choose PDF file'}</Text>
-                <input
-                  type="file"
-                  accept=".pdf"
-                  style={{ display: 'none' }}
-                  onChange={(e) => handleFileChange(e, setGlCoi)}
-                />
-              </XStack>
-              {glCoi && (
-                <XStack alignItems="center" gap="$2">
-                  <FileText size={16} color="$color10" />
-                  <Text fontSize="$3" color="$color10">{glCoi.name}</Text>
-                </XStack>
-              )}
-            </XStack>
-          </YStack>
+      <form onSubmit={handleSubmit}>
+        <Stack style={{ gap: 24 }}>
+          <Stack style={{ gap: 16 }}>
+            <Stack>
+              <Text style={{ marginBottom: 8, display: 'block', fontWeight: 500 }}>General Liability COI</Text>
+              <Row style={{ alignItems: 'center', gap: 16 }}>
+                <label style={uploadButtonStyle}>
+                  <Upload size={16} />
+                  <Text>{glCoi ? glCoi.name : 'Choose PDF file'}</Text>
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleFileChange(e, setGlCoi)}
+                  />
+                </label>
+                {glCoi && (
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
+                    <FileText size={16} color="var(--color-text-secondary)" />
+                    <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>{glCoi.name}</Text>
+                  </Row>
+                )}
+              </Row>
+            </Stack>
 
-          <YStack>
-            <Label mb="$2" display="block">Workers Compensation COI</Label>
-            <XStack alignItems="center" gap="$4">
-              <XStack
-                tag="label"
-                flexDirection="row"
-                alignItems="center"
-                gap="$2"
-                paddingHorizontal="$4"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderColor="$gray8"
-                borderRadius="$4"
-                cursor="pointer"
-                hoverStyle={{ backgroundColor: '$gray3' }}
-              >
-                <Upload size={16} />
-                <Text>{wcCoi ? wcCoi.name : 'Choose PDF file'}</Text>
-                <input
-                  type="file"
-                  accept=".pdf"
-                  style={{ display: 'none' }}
-                  onChange={(e) => handleFileChange(e, setWcCoi)}
-                />
-              </XStack>
-              {wcCoi && (
-                <XStack alignItems="center" gap="$2">
-                  <FileText size={16} color="$color10" />
-                  <Text fontSize="$3" color="$color10">{wcCoi.name}</Text>
-                </XStack>
-              )}
-            </XStack>
-          </YStack>
+            <Stack>
+              <Text style={{ marginBottom: 8, display: 'block', fontWeight: 500 }}>Workers Compensation COI</Text>
+              <Row style={{ alignItems: 'center', gap: 16 }}>
+                <label style={uploadButtonStyle}>
+                  <Upload size={16} />
+                  <Text>{wcCoi ? wcCoi.name : 'Choose PDF file'}</Text>
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleFileChange(e, setWcCoi)}
+                  />
+                </label>
+                {wcCoi && (
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
+                    <FileText size={16} color="var(--color-text-secondary)" />
+                    <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>{wcCoi.name}</Text>
+                  </Row>
+                )}
+              </Row>
+            </Stack>
 
-          <YStack>
-            <Label mb="$2" display="block">Auto Liability COI</Label>
-            <XStack alignItems="center" gap="$4">
-              <XStack
-                tag="label"
-                flexDirection="row"
-                alignItems="center"
-                gap="$2"
-                paddingHorizontal="$4"
-                paddingVertical="$2"
-                borderWidth={1}
-                borderColor="$gray8"
-                borderRadius="$4"
-                cursor="pointer"
-                hoverStyle={{ backgroundColor: '$gray3' }}
-              >
-                <Upload size={16} />
-                <Text>{autoCoi ? autoCoi.name : 'Choose PDF file'}</Text>
-                <input
-                  type="file"
-                  accept=".pdf"
-                  style={{ display: 'none' }}
-                  onChange={(e) => handleFileChange(e, setAutoCoi)}
-                />
-              </XStack>
-              {autoCoi && (
-                <XStack alignItems="center" gap="$2">
-                  <FileText size={16} color="$color10" />
-                  <Text fontSize="$3" color="$color10">{autoCoi.name}</Text>
-                </XStack>
-              )}
-            </XStack>
-          </YStack>
-        </YStack>
+            <Stack>
+              <Text style={{ marginBottom: 8, display: 'block', fontWeight: 500 }}>Auto Liability COI</Text>
+              <Row style={{ alignItems: 'center', gap: 16 }}>
+                <label style={uploadButtonStyle}>
+                  <Upload size={16} />
+                  <Text>{autoCoi ? autoCoi.name : 'Choose PDF file'}</Text>
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleFileChange(e, setAutoCoi)}
+                  />
+                </label>
+                {autoCoi && (
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
+                    <FileText size={16} color="var(--color-text-secondary)" />
+                    <Text style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>{autoCoi.name}</Text>
+                  </Row>
+                )}
+              </Row>
+            </Stack>
+          </Stack>
 
-        <YStack mt="$6">
-          <Button
-            onPress={handleSubmit}
-            variant="primary"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Saving...' : 'Continue'}
-          </Button>
-        </YStack>
-      </YStack>
-    </YStack>
+          <Stack style={{ marginTop: 24 }}>
+            <Button
+              onPress={handleSubmit}
+              variant="primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Continue'}
+            </Button>
+          </Stack>
+        </Stack>
+      </form>
+    </Stack>
   );
 }
 

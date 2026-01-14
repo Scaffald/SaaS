@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CheckCircle } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { AcknowledgementSignature } from '../../types';
 import Button from '../Common/Button';
 
@@ -59,30 +59,29 @@ export function BrokerCertification({
   const isSigned = !!existingSignature?.digital_signature;
 
   return (
-    <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-      <YStack gap="$4">
-        <XStack alignItems="center" justifyContent="space-between">
-          <Text fontSize="$6" fontWeight="600" color="$color12">
+    <Card style={{ border: '1px solid var(--color-border)', padding: 'var(--space-6)' }}>
+      <Stack style={{ gap: 'var(--space-4)' }}>
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)' }}>
             Broker Certification
           </Text>
           {isSigned && (
-            <XStack alignItems="center" gap="$2" color="$green10">
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-green-10)' }}>
               <CheckCircle size={20} />
-              <Text fontSize="$2" fontWeight="500">Signed</Text>
-            </XStack>
+              <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500 }}>Signed</Text>
+            </Row>
           )}
-        </XStack>
+        </Row>
 
-        <XStack
-          flexWrap="wrap"
-          gap="$4"
-          $gtMd={{
-            flexWrap: 'nowrap',
+        <Row
+          style={{
+            flexWrap: 'wrap',
+            gap: 'var(--space-4)',
           }}
         >
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Agency Name <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Agency Name <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -97,11 +96,11 @@ export function BrokerCertification({
                 padding: 'var(--space-2) var(--space-4)',
               }}
             />
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Broker Full Name / Title <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Broker Full Name / Title <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -116,11 +115,11 @@ export function BrokerCertification({
                 padding: 'var(--space-2) var(--space-4)',
               }}
             />
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Title <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Title <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -135,11 +134,11 @@ export function BrokerCertification({
                 padding: 'var(--space-2) var(--space-4)',
               }}
             />
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Digital Signature <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Digital Signature <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -156,29 +155,29 @@ export function BrokerCertification({
                 fontSize: 'var(--font-size-6)',
               }}
             />
-            <Text fontSize="$1" color="$color11" mt="$1">
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)', marginTop: 'var(--space-1)' }}>
               By typing your name, you are providing a legal digital signature
             </Text>
-          </YStack>
+          </Stack>
 
           {existingSignature && (
-            <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
-              <Card backgroundColor="$green3" borderWidth={1} borderColor="$green6" borderRadius="$4" padding="$3">
-                <Text fontSize="$2" color="$green11">
+            <Stack style={{ flex: 1, minWidth: '100%' }}>
+              <Card style={{ backgroundColor: 'var(--color-green-3)', border: '1px solid var(--color-green-6)', borderRadius: 'var(--radius-4)', padding: 'var(--space-3)' }}>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-11)' }}>
                   Signed on{' '}
                   {new Date(existingSignature.signature_date).toLocaleDateString()}{' '}
                   at{' '}
                   {new Date(existingSignature.signature_date).toLocaleTimeString()}
                 </Text>
               </Card>
-            </YStack>
+            </Stack>
           )}
-        </XStack>
+        </Row>
 
         {!isSigned && !disabled && (
-          <XStack justifyContent="flex-end" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <Row style={{ justifyContent: 'flex-end', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
             <Button
-              onClick={handleSave}
+              onPress={handleSave}
               disabled={
                 saving ||
                 !agencyName ||
@@ -189,9 +188,9 @@ export function BrokerCertification({
             >
               {saving ? 'Saving...' : 'Save Broker Certification'}
             </Button>
-          </XStack>
+          </Row>
         )}
-      </YStack>
+      </Stack>
     </Card>
   );
 }
@@ -270,30 +269,29 @@ export function SubcontractorCertification({
   const isSigned = !!existingSignature?.digital_signature;
 
   return (
-    <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-      <YStack gap="$4">
-        <XStack alignItems="center" justifyContent="space-between">
-          <Text fontSize="$6" fontWeight="600" color="$color12">
+    <Card style={{ border: '1px solid var(--color-border)', padding: 'var(--space-6)' }}>
+      <Stack style={{ gap: 'var(--space-4)' }}>
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)' }}>
             Subcontractor Certification
           </Text>
           {isSigned && (
-            <XStack alignItems="center" gap="$2" color="$green10">
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-green-10)' }}>
               <CheckCircle size={20} />
-              <Text fontSize="$2" fontWeight="500">Signed</Text>
-            </XStack>
+              <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500 }}>Signed</Text>
+            </Row>
           )}
-        </XStack>
+        </Row>
 
-        <XStack
-          flexWrap="wrap"
-          gap="$4"
-          $gtMd={{
-            flexWrap: 'nowrap',
+        <Row
+          style={{
+            flexWrap: 'wrap',
+            gap: 'var(--space-4)',
           }}
         >
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Subcontractor Company Name <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Subcontractor Company Name <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -308,12 +306,12 @@ export function SubcontractorCertification({
                 padding: 'var(--space-2) var(--space-4)',
               }}
             />
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
               Authorized Representative Name{' '}
-              <Text color="$red10">*</Text>
+              <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -328,11 +326,11 @@ export function SubcontractorCertification({
                 padding: 'var(--space-2) var(--space-4)',
               }}
             />
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Title <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Title <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -347,11 +345,11 @@ export function SubcontractorCertification({
                 padding: 'var(--space-2) var(--space-4)',
               }}
             />
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Contractor License Number <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Contractor License Number <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -366,11 +364,11 @@ export function SubcontractorCertification({
                 padding: 'var(--space-2) var(--space-4)',
               }}
             />
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Scope of Work / Trade <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Scope of Work / Trade <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -385,11 +383,11 @@ export function SubcontractorCertification({
                 padding: 'var(--space-2) var(--space-4)',
               }}
             />
-          </YStack>
+          </Stack>
 
-          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
-            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" mb="$2">
-              Digital Signature <Text color="$red10">*</Text>
+          <Stack style={{ flex: 1, minWidth: '100%' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', display: 'block', marginBottom: 'var(--space-2)' }}>
+              Digital Signature <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <input
               type="text"
@@ -406,29 +404,29 @@ export function SubcontractorCertification({
                 fontSize: 'var(--font-size-6)',
               }}
             />
-            <Text fontSize="$1" color="$color11" mt="$1">
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)', marginTop: 'var(--space-1)' }}>
               By typing your name, you are providing a legal digital signature
             </Text>
-          </YStack>
+          </Stack>
 
           {existingSignature && (
-            <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
-              <Card backgroundColor="$green3" borderWidth={1} borderColor="$green6" borderRadius="$4" padding="$3">
-                <Text fontSize="$2" color="$green11">
+            <Stack style={{ flex: 1, minWidth: '100%' }}>
+              <Card style={{ backgroundColor: 'var(--color-green-3)', border: '1px solid var(--color-green-6)', borderRadius: 'var(--radius-4)', padding: 'var(--space-3)' }}>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-11)' }}>
                   Signed on{' '}
                   {new Date(existingSignature.signature_date).toLocaleDateString()}{' '}
                   at{' '}
                   {new Date(existingSignature.signature_date).toLocaleTimeString()}
                 </Text>
               </Card>
-            </YStack>
+            </Stack>
           )}
-        </XStack>
+        </Row>
 
         {!isSigned && !disabled && (
-          <XStack justifyContent="flex-end" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <Row style={{ justifyContent: 'flex-end', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
             <Button
-              onClick={handleSave}
+              onPress={handleSave}
               disabled={
                 saving ||
                 !companyName ||
@@ -441,9 +439,9 @@ export function SubcontractorCertification({
             >
               {saving ? 'Saving...' : 'Save Subcontractor Certification'}
             </Button>
-          </XStack>
+          </Row>
         )}
-      </YStack>
+      </Stack>
     </Card>
   );
 }

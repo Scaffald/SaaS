@@ -1,6 +1,6 @@
 // src/pages/broker/settings/AgencySettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2, Input } from '@unicornlove/ui';
+import { Stack, Text, Button, H2, Input } from '@unicornlove/beyond-ui';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -44,9 +44,7 @@ function BrokerAgencySettings() {
     return JSON.stringify(agencyInfo) !== JSON.stringify(originalInfo);
   }, [agencyInfo, originalInfo]);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = useCallback(async () => {
     try {
       await updateBrokerSettings({
         agency_info: agencyInfo,
@@ -66,66 +64,101 @@ function BrokerAgencySettings() {
     setAgencyInfo(prev => ({ ...prev, [key]: value }));
   }, []);
 
+  const skeletonStyle: React.CSSProperties = {
+    height: 40,
+    backgroundColor: 'var(--color-3)',
+    borderRadius: 'var(--radius-4)',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    backgroundColor: 'var(--color-background)',
+    fontSize: 14,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 14,
+    fontWeight: 500,
+    color: 'var(--color-text)',
+    marginBottom: 4,
+  };
+
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Agency Information</H2>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {[1, 2, 3, 4].map(i => (
-            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
+            <div key={i} style={skeletonStyle} />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Agency Information</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text muted style={{ marginBottom: 'var(--space-6)' }}>
         Manage your insurance agency's contact information.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
-          <Input
-            label="Agency Name"
-            type="text"
-            value={agencyInfo.agencyName}
-            onChangeText={(value) => updateField('agencyName', value)}
-            required
-          />
-          <Input
-            label="Address"
-            type="text"
-            value={agencyInfo.address}
-            onChangeText={(value) => updateField('address', value)}
-            required
-          />
-          <Input
-            label="Phone"
-            type="tel"
-            value={agencyInfo.phone}
-            onChangeText={(value) => updateField('phone', value)}
-            required
-          />
-          <Input
-            label="Website"
-            type="url"
-            value={agencyInfo.website}
-            onChangeText={(value) => updateField('website', value)}
-            placeholder="https://example.com"
-          />
+        <Stack style={{ gap: 'var(--space-4)' }}>
+          <Stack style={{ gap: 4 }}>
+            <Text style={labelStyle}>Agency Name *</Text>
+            <Input
+              type="text"
+              value={agencyInfo.agencyName}
+              onChange={(e) => updateField('agencyName', e.target.value)}
+              required
+              style={inputStyle}
+            />
+          </Stack>
+          <Stack style={{ gap: 4 }}>
+            <Text style={labelStyle}>Address *</Text>
+            <Input
+              type="text"
+              value={agencyInfo.address}
+              onChange={(e) => updateField('address', e.target.value)}
+              required
+              style={inputStyle}
+            />
+          </Stack>
+          <Stack style={{ gap: 4 }}>
+            <Text style={labelStyle}>Phone *</Text>
+            <Input
+              type="tel"
+              value={agencyInfo.phone}
+              onChange={(e) => updateField('phone', e.target.value)}
+              required
+              style={inputStyle}
+            />
+          </Stack>
+          <Stack style={{ gap: 4 }}>
+            <Text style={labelStyle}>Website</Text>
+            <Input
+              type="url"
+              value={agencyInfo.website}
+              onChange={(e) => updateField('website', e.target.value)}
+              placeholder="https://example.com"
+              style={inputStyle}
+            />
+          </Stack>
           <Button
-            type="submit"
+            onPress={handleSubmit}
             disabled={!isDirty || isSaving}
-            variant="primary"
-            marginTop="$6"
+            loading={isSaving}
+            color="primary"
+            style={{ marginTop: 'var(--space-6)' }}
           >
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            Save Changes
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

@@ -1,27 +1,38 @@
 /**
  * Start Page - Landing page with OAuth login
+ * Redesigned to use Beyond UI components and design tokens
  */
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { YStack, XStack, Text, Spinner } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
-import { Input as TextInput } from '@unicornlove/ui';
+import { useNavigate } from 'react-router-dom';
+import { TextInput, View, Platform } from 'react-native';
+import { 
+  Stack, 
+  Row, 
+  Text, 
+  Button, 
+  Spinner,
+  Separator,
+  Box,
+  H1,
+  H3,
+} from '@unicornlove/beyond-ui';
+import { colors, spacing, borderRadius, shadows, typography } from '@unicornlove/beyond-ui';
+import { ArrowLeft } from 'lucide-react';
 import { initiateOAuth } from '../lib/auth/oauth';
 import { supabase } from '../lib/supabase';
 
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
 /**
- * Test user credentials (seeded in database via migration 248)
- * Password for all test users: ForsuredTest123!
+ * Test user credentials (seeded via packages/supabase/seeds/forsured/)
+ * Password for all test users: TestPassword123
  */
 const TEST_USERS: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
-  gc: { email: 'test-gc@forsured.test', password: 'ForsuredTest123!' },
-  contractor: { email: 'test-contractor@forsured.test', password: 'ForsuredTest123!' },
-  broker: { email: 'test-broker@forsured.test', password: 'ForsuredTest123!' },
-  admin: { email: 'test-admin@forsured.test', password: 'ForsuredTest123!' },
+  gc: { email: 'gc-active@forsured-test.com', password: 'TestPassword123' },
+  contractor: { email: 'contractor-active@forsured-test.com', password: 'TestPassword123' },
+  broker: { email: 'broker-active@forsured-test.com', password: 'TestPassword123' },
+  admin: { email: 'admin@forsured-test.com', password: 'TestPassword123' },
 };
-
 
 function StartPage() {
   const navigate = useNavigate();
@@ -41,21 +52,16 @@ function StartPage() {
         initiateOAuth({ loginHint: email });
       } else {
         // Magic link mode: Use Supabase magic link (like Scaffald does)
-        // This creates users in Supabase Auth, which triggers the database trigger
-        // to create core.users, core.profile, etc. (same as Scaffald)
         const normalizedEmail = email.trim().toLowerCase();
-        // Use full URL with protocol - Supabase needs absolute URL
         const redirectTo = `${window.location.protocol}//${window.location.host}/auth/callback`;
-        
+
         console.log('[StartPage] Sending magic link with redirectTo:', redirectTo);
-        
-        // Send magic link - Supabase will handle user creation if needed
-        // Setting shouldCreateUser: true is safe - Supabase won't create duplicates
+
         const { error } = await supabase.auth.signInWithOtp({
           email: normalizedEmail,
           options: {
             emailRedirectTo: redirectTo,
-            shouldCreateUser: true, // Always allow creation - Supabase handles duplicates
+            shouldCreateUser: true,
           },
         });
 
@@ -67,7 +73,6 @@ function StartPage() {
         }
 
         console.log('[StartPage] Magic link sent - user will receive email');
-        // Navigate to verify page to show success message (like Scaffald does)
         navigate(`/auth/verify?email=${encodeURIComponent(normalizedEmail)}`);
       }
     } catch (error) {
@@ -84,10 +89,6 @@ function StartPage() {
 
   /**
    * Test login using real Supabase authentication
-   * Uses seeded test users from migration 248_forsured_seed_test_users.sql
-   *
-   * IMPORTANT: You must run the seed migration to create these users:
-   * pnpm supabase db reset (or apply migration 248)
    */
   const handleTestLogin = async (userType: 'gc' | 'contractor' | 'broker' | 'admin') => {
     const testUser = TEST_USERS[userType];
@@ -124,7 +125,6 @@ function StartPage() {
 
       console.log('[StartPage] Test login successful:', data.user.email);
 
-      // Navigate to the appropriate dashboard based on user type
       const dashboardRoutes: Record<string, string> = {
         gc: '/manager/dashboard',
         contractor: '/subcontractor/dashboard',
@@ -142,257 +142,242 @@ function StartPage() {
   };
 
   return (
-    <YStack
-      minHeight="100vh"
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="$blue2"
-      padding="$4"
+    <Box
+      style={{
+        minHeight: '100vh',
+        backgroundColor: colors.bg.light.subtle,
+        padding: spacing[16],
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
     >
-      <YStack
-        maxWidth={448}
-        width="100%"
-        gap="$8"
-        padding="$10"
-        backgroundColor="$background"
-        borderRadius="$5"
-        shadowColor="$shadowColor"
-        shadowRadius={20}
-        shadowOffset={{ width: 0, height: 8 }}
+      <Box
+        style={{
+          maxWidth: 448,
+          width: '100%',
+          backgroundColor: colors.bg.light.default,
+          borderRadius: borderRadius.xl,
+          padding: spacing[32],
+          boxShadow: shadows.md,
+        }}
       >
-        {/* Logo and Header */}
-        <YStack alignItems="center">
-          <YStack
-            width={64}
-            height={64}
-            backgroundColor="$blue9"
-            borderRadius="$5"
-            alignItems="center"
-            justifyContent="center"
-            shadowColor="$shadowColor"
-            shadowRadius={8}
-            shadowOffset={{ width: 0, height: 4 }}
-          >
-            <Text fontSize="$10" fontWeight="700" color="$color1">
-              F
-            </Text>
-          </YStack>
-          <Text fontSize="$9" fontWeight="800" color="$color12" marginTop="$6">
-            Welcome to ForSured
-          </Text>
-          <Text fontSize="$3" color="$color10" marginTop="$2">
-            Powered by Scaffald
-          </Text>
-          <Text fontSize="$3" color="$color11" marginTop="$1">
-            Manage subcontractor compliance with confidence.
-          </Text>
-        </YStack>
-
-        {/* Email Form */}
-        <form onSubmit={handleEmailContinue}>
-          <YStack gap="$4">
-          <YStack gap="$1.5">
-            <Text as="label" htmlFor="email" fontSize="$3" fontWeight="500" color="$color11">
-              Email address
-            </Text>
-            <TextInput
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError(null); // Clear error when user types
+        <Stack gap={spacing[32]} alignItems="center">
+          {/* Logo and Header */}
+          <Stack gap={spacing[16]} alignItems="center">
+            <Box
+              style={{
+                width: 64,
+                height: 64,
+                backgroundColor: colors.primary[500],
+                borderRadius: borderRadius.lg,
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: shadows.sm,
               }}
-              placeholder="you@company.com"
-              required
-              disabled={isLoading}
-            />
-            {error && (
-              <Text fontSize="$2" color="$red10" marginTop="$1">
-                {error}
+            >
+              <Text
+                style={{
+                  fontSize: 32,
+                  fontWeight: '700',
+                  color: colors.white,
+                }}
+              >
+                F
               </Text>
-            )}
-          </YStack>
+            </Box>
+            
+            <Stack gap={spacing[4]} alignItems="center">
+              <H1 style={{ textAlign: 'center', margin: 0 }}>
+                Welcome to ForSured
+              </H1>
+              <Text color="secondary" style={{ textAlign: 'center' }}>
+                Powered by Scaffald
+              </Text>
+              <Text color="secondary" style={{ textAlign: 'center', marginTop: spacing[4] }}>
+                Manage subcontractor compliance with confidence.
+              </Text>
+            </Stack>
+          </Stack>
 
-          <CoreButton
-            type="submit"
-            disabled={isLoading || !email}
-            variant="primary"
-            fullWidth
-          >
-            {isLoading ? (
-              <XStack gap="$2" alignItems="center">
-                <Spinner size="small" color="$color1" />
-                <Text>Redirecting...</Text>
-              </XStack>
-            ) : (
-              'Continue with Email'
-            )}
-          </CoreButton>
-          </YStack>
-        </form>
+          {/* Email Form */}
+          <form onSubmit={handleEmailContinue} style={{ width: '100%' }}>
+            <Stack gap={spacing[16]} style={{ width: '100%' }}>
+              {/* Email Input */}
+              <Stack gap={spacing[4]} style={{ width: '100%' }}>
+                {/* Label */}
+                <Text
+                  size="sm"
+                  weight="medium"
+                  color={error ? 'error' : 'primary'}
+                >
+                  Email address <Text style={{ color: colors.error[500] }}>*</Text>
+                </Text>
+                
+                {/* Input Field */}
+                <TextInput
+                  type="email"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    setError(null);
+                  }}
+                  placeholder="you@company.com"
+                  placeholderTextColor={colors.text.light.tertiary}
+                  editable={!isLoading}
+                  style={{
+                    width: '100%',
+                    minWidth: '100%',
+                    maxWidth: '100%',
+                    minHeight: 44,
+                    paddingHorizontal: spacing[12],
+                    paddingVertical: spacing[8],
+                    borderRadius: borderRadius.m,
+                    backgroundColor: colors.bg.light.default,
+                    borderWidth: 1,
+                    borderColor: error ? colors.error[500] : colors.border.light.default,
+                    ...typography.body,
+                    color: colors.text.light.primary,
+                    ...(Platform.OS === 'web' ? { 
+                      outlineStyle: 'none',
+                      boxSizing: 'border-box',
+                    } : {}),
+                  }}
+                />
+                
+                {/* Error Message */}
+                {error && (
+                  <Text size="sm" color="error">
+                    {error}
+                  </Text>
+                )}
+              </Stack>
 
-        {/* Divider */}
-        <YStack position="relative" alignItems="center">
-          <YStack
-            position="absolute"
-            width="100%"
-            height={1}
-            backgroundColor="$borderColor"
-            top="50%"
-          />
-          <XStack
-            position="relative"
-            backgroundColor="$background"
-            paddingHorizontal="$4"
-          >
-            <Text fontSize="$2" color="$color10">
+              <Button
+                type="submit"
+                color="primary"
+                variant="filled"
+                disabled={isLoading || !email}
+                fullWidth
+                loading={isLoading}
+              >
+                {isLoading ? 'Redirecting...' : 'Continue with Email'}
+              </Button>
+            </Stack>
+          </form>
+
+          {/* Divider */}
+          <Row alignItems="center" gap={spacing[12]} style={{ width: '100%' }}>
+            <Box style={{ flex: 1, height: 1, backgroundColor: colors.border.light.default }} />
+            <Text color="secondary" style={{ fontSize: 14 }}>
               or
             </Text>
-          </XStack>
-        </YStack>
+            <Box style={{ flex: 1, height: 1, backgroundColor: colors.border.light.default }} />
+          </Row>
 
-        {/* Direct Scaffald Login */}
-        <YStack gap="$4">
-          <CoreButton
-            onClick={handleScaffaldContinue}
-            disabled={isLoading}
-            variant="outlined"
-            fullWidth
+          {/* Direct Scaffald Login */}
+          <Stack gap={spacing[12]} style={{ width: '100%' }}>
+            <Button
+              onPress={handleScaffaldContinue}
+              disabled={isLoading}
+              color="gray"
+              variant="outline"
+              fullWidth
+              iconStart={ArrowLeft}
+            >
+              Continue with Scaffald Account
+            </Button>
+
+            <Text 
+              color="secondary" 
+              style={{ 
+                fontSize: 12, 
+                textAlign: 'center',
+              }}
+            >
+              Already have a Scaffald account? Sign in directly above.
+            </Text>
+          </Stack>
+
+          {/* TEMPORARY: Test Login Buttons */}
+          <Box
+            style={{
+              width: '100%',
+              padding: spacing[16],
+              backgroundColor: colors.warning[50],
+              borderWidth: 1,
+              borderColor: colors.warning[200],
+              borderRadius: borderRadius.m,
+            }}
           >
-            <XStack gap="$2" alignItems="center">
-              <svg
-                width={20}
-                height={20}
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <Text>Continue with Scaffald Account</Text>
-            </XStack>
-          </CoreButton>
+            <Stack gap={spacing[12]}>
+              <Stack gap={spacing[4]}>
+                <H3 style={{ margin: 0, color: colors.warning[700] }}>
+                  Temporary Test Login
+                </H3>
+                <Text style={{ fontSize: 12, color: colors.warning[600] }}>
+                  Real Supabase login with seeded test users. Run migrations first.
+                </Text>
+              </Stack>
+              
+              <Stack gap={spacing[8]}>
+                <Button
+                  onPress={() => handleTestLogin('gc')}
+                  color="gray"
+                  variant="light"
+                  fullWidth
+                  disabled={testLoginLoading !== null}
+                  loading={testLoginLoading === 'gc'}
+                >
+                  Test as GC / Manager
+                </Button>
+                <Button
+                  onPress={() => handleTestLogin('contractor')}
+                  color="gray"
+                  variant="light"
+                  fullWidth
+                  disabled={testLoginLoading !== null}
+                  loading={testLoginLoading === 'contractor'}
+                >
+                  Test as Contractor / Subcontractor
+                </Button>
+                <Button
+                  onPress={() => handleTestLogin('broker')}
+                  color="gray"
+                  variant="light"
+                  fullWidth
+                  disabled={testLoginLoading !== null}
+                  loading={testLoginLoading === 'broker'}
+                >
+                  Test as Broker
+                </Button>
+                <Button
+                  onPress={() => handleTestLogin('admin')}
+                  color="gray"
+                  variant="light"
+                  fullWidth
+                  disabled={testLoginLoading !== null}
+                  loading={testLoginLoading === 'admin'}
+                >
+                  Test as Admin
+                </Button>
+              </Stack>
+            </Stack>
+          </Box>
 
-          <Text fontSize="$1" textAlign="center" color="$color10">
-            Already have a Scaffald account? Sign in directly above.
-          </Text>
-        </YStack>
-
-        {/* TEMPORARY: Test Login Buttons */}
-        <YStack
-          marginTop="$4"
-          padding="$4"
-          backgroundColor="$yellow2"
-          borderWidth={1}
-          borderColor="$yellow6"
-          borderRadius="$3"
-          gap="$3"
-        >
-          <Text fontSize="$3" fontWeight="600" color="$yellow11">
-            🧪 Temporary Test Login
-          </Text>
-          <Text fontSize="$2" color="$yellow10">
-            Real Supabase login with seeded test users. Run migrations first.
-          </Text>
-          <YStack gap="$2" marginTop="$2">
-            <CoreButton
-              onClick={() => handleTestLogin('gc')}
-              variant="secondary"
-              fullWidth
-              size="$3"
-              disabled={testLoginLoading !== null}
-            >
-              {testLoginLoading === 'gc' ? (
-                <XStack gap="$2" alignItems="center">
-                  <Spinner size="small" />
-                  <Text>Signing in...</Text>
-                </XStack>
-              ) : (
-                <Text>Test as GC / Manager</Text>
-              )}
-            </CoreButton>
-            <CoreButton
-              onClick={() => handleTestLogin('contractor')}
-              variant="secondary"
-              fullWidth
-              size="$3"
-              disabled={testLoginLoading !== null}
-            >
-              {testLoginLoading === 'contractor' ? (
-                <XStack gap="$2" alignItems="center">
-                  <Spinner size="small" />
-                  <Text>Signing in...</Text>
-                </XStack>
-              ) : (
-                <Text>Test as Contractor / Subcontractor</Text>
-              )}
-            </CoreButton>
-            <CoreButton
-              onClick={() => handleTestLogin('broker')}
-              variant="secondary"
-              fullWidth
-              size="$3"
-              disabled={testLoginLoading !== null}
-            >
-              {testLoginLoading === 'broker' ? (
-                <XStack gap="$2" alignItems="center">
-                  <Spinner size="small" />
-                  <Text>Signing in...</Text>
-                </XStack>
-              ) : (
-                <Text>Test as Broker</Text>
-              )}
-            </CoreButton>
-            <CoreButton
-              onClick={() => handleTestLogin('admin')}
-              variant="secondary"
-              fullWidth
-              size="$3"
-              disabled={testLoginLoading !== null}
-            >
-              {testLoginLoading === 'admin' ? (
-                <XStack gap="$2" alignItems="center">
-                  <Spinner size="small" />
-                  <Text>Signing in...</Text>
-                </XStack>
-              ) : (
-                <Text>Test as Admin</Text>
-              )}
-            </CoreButton>
-          </YStack>
-        </YStack>
-
-        {/* Security Notice */}
-        <YStack marginTop="$6">
-          <Text fontSize="$1" textAlign="center" color="$color10">
+          {/* Security Notice */}
+          <Text 
+            color="secondary" 
+            style={{ 
+              fontSize: 12, 
+              textAlign: 'center',
+            }}
+          >
             Secured with OAuth 2.0 + PKCE
           </Text>
-        </YStack>
-
-        {/* Design System Link */}
-        <YStack
-          paddingTop="$4"
-          borderTopWidth={1}
-          borderTopColor="$borderColor"
-        >
-          <Text
-            as={Link}
-            to="/design-system"
-            fontSize="$1"
-            textAlign="center"
-            color="$color9"
-            hoverStyle={{ color: '$blue9' }}
-            textDecorationLine="underline"
-          >
-            View Design System
-          </Text>
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Box>
+    </Box>
   );
 }
 

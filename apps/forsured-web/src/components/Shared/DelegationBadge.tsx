@@ -1,9 +1,9 @@
 /**
- * DelegationBadge - Delegation badge using Tamagui
+ * DelegationBadge - Delegation badge using Beyond UI
  */
 import React from 'react';
-import { XStack, Text } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Row, Text } from '@unicornlove/beyond-ui';
+import { Chip as Badge } from '@unicornlove/beyond-ui';
 import { Shield, Eye, Edit } from 'lucide-react';
 
 interface DelegationBadgeProps {
@@ -63,10 +63,10 @@ export default function DelegationBadge({
 
   return (
     <Badge variant={variant} size={size}>
-      <XStack alignItems="center" gap="$1">
+      <Row style={{ alignItems: 'center', gap: 4 }}>
         <Icon size={iconSizes[size]} />
         <Text>{label}</Text>
-      </XStack>
+      </Row>
     </Badge>
   );
 }

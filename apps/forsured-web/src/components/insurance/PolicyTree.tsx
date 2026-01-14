@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { InsurancePolicy } from '../../types';
 import { getAllPolicies } from '../../lib/api/insurancePolicyService';
 import PolicyCard from './PolicyCard';
@@ -61,47 +61,47 @@ export default function PolicyTree({
 
   if (loading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: '16px' }}>
         <SkeletonLoader count={3} height={120} />
-      </YStack>
+      </Stack>
     );
   }
 
   if (error) {
     return (
-      <Card padding="$6">
-        <XStack alignItems="center" gap="$3">
-          <AlertCircle size={24} color="$red10" />
-          <YStack>
-            <Text fontWeight="500" color="$red10">
+      <Card style={{ padding: '24px' }}>
+        <Row style={{ alignItems: 'center', gap: '12px' }}>
+          <AlertCircle size={24} color="var(--color-red-10)" />
+          <Stack>
+            <Text style={{ fontWeight: 500, color: 'var(--color-red-10)' }}>
               Error loading policies
             </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text style={{ fontSize: '14px', color: 'var(--color-10)' }}>
               {error}
             </Text>
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
       </Card>
     );
   }
 
   if (policies.length === 0) {
     return (
-      <Card padding="$6">
-        <YStack alignItems="center">
-          <Text fontWeight="500" color="$color10">
+      <Card style={{ padding: '24px' }}>
+        <Stack style={{ alignItems: 'center' }}>
+          <Text style={{ fontWeight: 500, color: 'var(--color-10)' }}>
             No insurance policies found
           </Text>
-          <Text fontSize="$2" color="$color10" mt="$1">
+          <Text style={{ fontSize: '14px', color: 'var(--color-10)', marginTop: '4px' }}>
             Create your first insurance policy to get started
           </Text>
-        </YStack>
+        </Stack>
       </Card>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: '16px' }}>
       {policies.map((policy) => (
         <PolicyCard
           key={policy.id}
@@ -111,6 +111,6 @@ export default function PolicyTree({
           onClick={() => onPolicyClick?.(policy)}
         />
       ))}
-    </YStack>
+    </Stack>
   );
 }

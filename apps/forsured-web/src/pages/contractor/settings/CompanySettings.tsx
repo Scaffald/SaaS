@@ -1,6 +1,6 @@
 // src/pages/contractor/settings/CompanySettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, XStack, Text, Button, H2, Input, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, H2, Input, Card } from '@unicornlove/beyond-ui';
 import { useAuth } from '../../../contexts/AuthContext';
 import { scaffaldClient } from '../../../lib/scaffald/client';
 import { toast } from 'sonner';
@@ -110,101 +110,117 @@ function ContractorCompanySettings() {
 
   if (authLoading || isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Company Profile</H2>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
+            <Stack
+              key={i}
+              style={{
+                height: 40,
+                backgroundColor: 'var(--color-3)',
+                borderRadius: 'var(--radius-4)',
+              }}
+            />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   if (!companyId) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Company Profile</H2>
-        <Card backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" borderRadius="$4" padding="$4">
-          <Text color="$yellow11">
+        <Card
+          style={{
+            backgroundColor: 'var(--color-yellow-2)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-yellow-6)',
+            borderRadius: 'var(--radius-4)',
+            padding: 'var(--space-4)',
+          }}
+        >
+          <Text style={{ color: 'var(--color-yellow-11)' }}>
             No company is linked to your account. Please complete onboarding to connect your company.
           </Text>
         </Card>
-      </YStack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Company Profile</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-6)' }}>
         Manage your company information. This data is synced with Scaffald.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Input
             label="Company Name"
             type="text"
             value={companyInfo.name}
-            onChangeText={(value) => updateField('name', value)}
+            onChange={(e) => updateField('name', e.target.value)}
             required
           />
           <Input
             label="Street Address"
             type="text"
             value={companyInfo.address.street}
-            onChangeText={(value) => updateAddress('street', value)}
+            onChange={(e) => updateAddress('street', e.target.value)}
           />
-          <XStack gap="$4">
-            <XStack flex={1}>
+          <Row style={{ gap: 'var(--space-4)' }}>
+            <Stack style={{ flex: 1 }}>
               <Input
                 label="City"
                 type="text"
                 value={companyInfo.address.city}
-                onChangeText={(value) => updateAddress('city', value)}
+                onChange={(e) => updateAddress('city', e.target.value)}
               />
-            </XStack>
-            <XStack flex={1}>
+            </Stack>
+            <Stack style={{ flex: 1 }}>
               <Input
                 label="State"
                 type="text"
                 value={companyInfo.address.state}
-                onChangeText={(value) => updateAddress('state', value)}
+                onChange={(e) => updateAddress('state', e.target.value)}
               />
-            </XStack>
-            <XStack flex={1}>
+            </Stack>
+            <Stack style={{ flex: 1 }}>
               <Input
                 label="ZIP Code"
                 type="text"
                 value={companyInfo.address.zip}
-                onChangeText={(value) => updateAddress('zip', value)}
+                onChange={(e) => updateAddress('zip', e.target.value)}
               />
-            </XStack>
-          </XStack>
+            </Stack>
+          </Row>
           <Input
             label="Phone"
             type="tel"
             value={companyInfo.phone}
-            onChangeText={(value) => updateField('phone', value)}
+            onChange={(e) => updateField('phone', e.target.value)}
           />
           <Input
             label="Website"
             type="url"
             value={companyInfo.website}
-            onChangeText={(value) => updateField('website', value)}
+            onChange={(e) => updateField('website', e.target.value)}
             placeholder="https://example.com"
           />
           <Button
             type="submit"
             disabled={!isDirty || isSaving}
             variant="primary"
-            marginTop="$6"
+            style={{ marginTop: 'var(--space-6)' }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

@@ -10,19 +10,46 @@
 import '@testing-library/jest-dom';
 import { afterEach, afterAll, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
+import { config } from 'dotenv';
+
+/**
+ * Load environment variables from .env.test file
+ * Falls back to hardcoded defaults if file doesn't exist
+ * Note: .env.test is in the root directory, not in apps/forsured-web
+ */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+// Go up from src/test/setup.ts -> src/test -> src -> apps/forsured-web -> apps -> root
+const packageRoot = resolve(__dirname, '../../../..');
+const envTestPath = resolve(packageRoot, '.env.test');
+if (existsSync(envTestPath)) {
+  config({ path: envTestPath });
+  console.log(`✅ Loaded environment variables from ${envTestPath}`);
+} else {
+  console.warn(`⚠️  .env.test not found at ${envTestPath}, using defaults`);
+}
 
 /**
  * Set up environment variables for tests
  * Uses local Supabase instance (pnpm supa start)
+ * Values from .env.test will override these defaults
  */
-process.env.VITE_ENCRYPTION_KEY_ID = 'test-key-id';
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
-process.env.CORS_ORIGIN = 'http://localhost:3000';
+process.env.VITE_ENCRYPTION_KEY_ID = process.env.VITE_ENCRYPTION_KEY_ID || 'test-key-id';
+process.env.NEXT_PUBLIC_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+process.env.CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 // Vite env vars for Supabase (used by import.meta.env)
-process.env.VITE_SUPABASE_URL = 'http://localhost:54321';
-process.env.VITE_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
-process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+process.env.VITE_SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'http://localhost:54321';
+process.env.VITE_SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+
+// Email configuration for tests (can be overridden in .env.test)
+process.env.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || 'test-sendgrid-api-key';
+process.env.SENDGRID_FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_FROM_ADDRESS || 'test@forsured.test';
+process.env.SENDGRID_FROM_NAME = process.env.SENDGRID_FROM_NAME || process.env.EMAIL_FROM_NAME || 'ForSured Test';
 
 /**
  * Mock localStorage and sessionStorage for jsdom
@@ -63,7 +90,7 @@ Object.defineProperty(window, 'sessionStorage', {
 
 /**
  * Mock window.matchMedia for jsdom
- * Required for Tamagui components that use media queries
+ * Required for Beyond UI components that use media queries
  * Made robust to handle edge cases during test cleanup
  */
 const createMatchMediaMock = (query: string) => ({
@@ -85,7 +112,7 @@ Object.defineProperty(window, 'matchMedia', {
 
 /**
  * Mock ResizeObserver for jsdom
- * Required for some Tamagui components
+ * Required for some Beyond UI components
  */
 class ResizeObserverMock {
   observe() {}

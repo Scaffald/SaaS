@@ -9,16 +9,16 @@
  * - Requirement selection
  */
 
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { ChevronRight, ChevronDown, GitBranch, AlertTriangle, Info, Search } from 'lucide-react'
 import {
-  YStack,
-  XStack,
+  Stack,
+  Row,
   Text,
   Input,
   Button,
   H3,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import {
   useComplianceRequirements,
   type ComplianceRequirement,
@@ -56,6 +56,19 @@ const DEPENDENCY_TYPE_LABELS = {
   alternative: 'Alternative',
 }
 
+function getDependencyColor(type: string): { bg: string; color: string; border: string } {
+  switch (type) {
+    case 'requires':
+      return { bg: 'var(--color-red-2)', color: 'var(--color-red-10)', border: 'var(--color-red-6)' }
+    case 'recommended':
+      return { bg: 'var(--color-yellow-2)', color: 'var(--color-yellow-10)', border: 'var(--color-yellow-6)' }
+    case 'alternative':
+      return { bg: 'var(--color-blue-2)', color: 'var(--color-blue-10)', border: 'var(--color-blue-6)' }
+    default:
+      return { bg: 'var(--color-gray-2)', color: 'var(--color-gray-10)', border: 'var(--color-gray-6)' }
+  }
+}
+
 // =============================================================================
 // Tree Node Component
 // =============================================================================
@@ -70,44 +83,32 @@ function TreeNode({ node, level, onSelect }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(level < 2)
   const hasChildren = node.children.length > 0
 
-  const getDependencyColor = (type: string) => {
-    switch (type) {
-      case 'requires':
-        return { bg: '$red2', color: '$red10', border: '$red6' }
-      case 'recommended':
-        return { bg: '$yellow2', color: '$yellow10', border: '$yellow6' }
-      case 'alternative':
-        return { bg: '$blue2', color: '$blue10', border: '$blue6' }
-      default:
-        return { bg: '$gray2', color: '$gray10', border: '$gray6' }
-    }
-  }
-
   const depColors = getDependencyColor(node.dependency_type)
 
   return (
-    <YStack>
-      <XStack
-        alignItems="center"
-        gap="$2"
-        paddingVertical="$2"
-        paddingHorizontal="$3"
-        borderRadius="$4"
-        cursor="pointer"
-        hoverStyle={{ backgroundColor: '$gray2' }}
-        backgroundColor={level === 0 ? '$blue2' : 'transparent'}
-        borderWidth={level === 0 ? 1 : 0}
-        borderColor={level === 0 ? '$blue6' : 'transparent'}
-        ml={level * 24}
+    <Stack>
+      <Row
+        style={{
+          alignItems: 'center',
+          gap: 8,
+          paddingTop: 8,
+          paddingBottom: 8,
+          paddingLeft: 12,
+          paddingRight: 12,
+          borderRadius: 12,
+          cursor: 'pointer',
+          backgroundColor: level === 0 ? 'var(--color-blue-2)' : 'transparent',
+          borderWidth: level === 0 ? 1 : 0,
+          borderColor: level === 0 ? 'var(--color-blue-6)' : 'transparent',
+          marginLeft: level * 24,
+          userSelect: 'none',
+        }}
         onPress={() => onSelect(node.requirement_id)}
-        userSelect="none"
       >
         {hasChildren ? (
           <Button
-            unstyled
-            padding="$1"
-            hoverStyle={{ backgroundColor: '$gray4' }}
-            borderRadius="$2"
+            variant="ghost"
+            style={{ padding: 4, borderRadius: 6 }}
             onPress={(e) => {
               e.stopPropagation()
               setIsExpanded(!isExpanded)
@@ -116,44 +117,48 @@ function TreeNode({ node, level, onSelect }: TreeNodeProps) {
             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </Button>
         ) : (
-          <XStack width={20} />
+          <Stack style={{ width: 20 }} />
         )}
 
-        <YStack>
+        <Stack>
           <GitBranch size={16} style={{ color: 'var(--color-gray-10)' }} />
-        </YStack>
+        </Stack>
 
-        <Text fontFamily="$mono" fontSize="$1" color="$gray11">
+        <Text style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--color-gray-11)' }}>
           {node.code}
         </Text>
-        <Text fontWeight="600" fontSize="$3">
+        <Text style={{ fontWeight: 600, fontSize: 14 }}>
           {node.name}
         </Text>
 
         {level > 0 && (
           <Text
-            fontSize="$1"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius={9999}
-            borderWidth={1}
-            backgroundColor={depColors.bg}
-            color={depColors.color}
-            borderColor={depColors.border}
+            style={{
+              fontSize: 11,
+              paddingLeft: 8,
+              paddingRight: 8,
+              paddingTop: 4,
+              paddingBottom: 4,
+              borderRadius: 9999,
+              borderWidth: 1,
+              backgroundColor: depColors.bg,
+              color: depColors.color,
+              borderColor: depColors.border,
+            }}
           >
             {DEPENDENCY_TYPE_LABELS[node.dependency_type]}
           </Text>
         )}
-      </XStack>
+      </Row>
 
       {isExpanded && hasChildren && (
-        <YStack ml="$2" borderLeftWidth={1} borderColor="$gray6">
+        <Stack style={{ marginLeft: 8, borderLeft: '1px solid var(--color-gray-6)' }}>
           {node.children.map((child) => (
             <TreeNode key={child.id} node={child} level={level + 1} onSelect={onSelect} />
           ))}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -230,181 +235,205 @@ export function DependencyGraph({
   }
 
   return (
-    <YStack backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
-      <XStack height={600}>
+    <Stack style={{ backgroundColor: 'var(--color-background)', borderRadius: 12, borderWidth: 1, borderColor: 'var(--color-border)' }}>
+      <Row style={{ height: 600 }}>
         {/* Requirement Selector */}
-        <YStack padding="$4" overflow="scroll" flex={1} borderRightWidth={1} borderColor="$borderColor">
-          <H3 fontWeight="600" color="$color12" mb="$3">
+        <Stack style={{ padding: 16, overflow: 'auto', flex: 1, borderRight: '1px solid var(--color-border)' }}>
+          <H3 style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 12 }}>
             Select Requirement
           </H3>
 
           {/* Search */}
-          <XStack position="relative" mb="$3">
-            <YStack
-              position="absolute"
-              left="$3"
-              top="50%"
-              zIndex={1}
-              pointerEvents="none"
+          <Row style={{ position: 'relative', marginBottom: 12 }}>
+            <Stack
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 1,
+                pointerEvents: 'none',
+              }}
             >
               <Search size={16} style={{ color: 'var(--color-gray-10)' }} />
-            </YStack>
+            </Stack>
             <Input
-              flex={1}
-              paddingLeft="$9"
-              paddingRight="$3"
-              paddingVertical="$2"
-              fontSize="$3"
-              borderWidth={1}
-              borderColor="$gray8"
-              borderRadius="$4"
+              style={{
+                flex: 1,
+                paddingLeft: 36,
+                paddingRight: 12,
+                paddingTop: 8,
+                paddingBottom: 8,
+                fontSize: 14,
+                borderWidth: 1,
+                borderColor: 'var(--color-gray-8)',
+                borderRadius: 12,
+              }}
               placeholder="Search requirements..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </XStack>
+          </Row>
 
           {/* Requirements List */}
           {isLoadingRequirements ? (
-            <YStack alignItems="center" justifyContent="center" paddingVertical="$8">
+            <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 32, paddingBottom: 32 }}>
               <LoadingSpinner size="sm" />
-            </YStack>
+            </Stack>
           ) : (
-            <YStack gap="$1">
+            <Stack style={{ gap: 4 }}>
               {filteredRequirements.map((req) => (
                 <Button
                   key={req.id}
-                  unstyled
-                  width="100%"
-                  style={{ textAlign: 'left' }}
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  borderRadius="$4"
-                  backgroundColor={
-                    selectedRequirement?.id === req.id ? '$blue3' : 'transparent'
-                  }
-                  hoverStyle={{ backgroundColor: '$gray2' }}
+                  variant="ghost"
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    paddingLeft: 12,
+                    paddingRight: 12,
+                    paddingTop: 8,
+                    paddingBottom: 8,
+                    borderRadius: 12,
+                    backgroundColor:
+                      selectedRequirement?.id === req.id ? 'var(--color-blue-3)' : 'transparent',
+                  }}
                   onPress={() => onSelectRequirement(req)}
                 >
-                  <YStack>
-                    <Text fontWeight="600" fontSize="$3" color={selectedRequirement?.id === req.id ? '$blue11' : '$color12'}>
+                  <Stack>
+                    <Text style={{ fontWeight: 600, fontSize: 14, color: selectedRequirement?.id === req.id ? 'var(--color-blue-11)' : 'var(--color-12)' }}>
                       {req.name}
                     </Text>
-                    <Text fontSize="$1" color="$gray11">
+                    <Text style={{ fontSize: 11, color: 'var(--color-gray-11)' }}>
                       {req.code}
                     </Text>
-                  </YStack>
+                  </Stack>
                 </Button>
               ))}
               {filteredRequirements.length === 0 && (
-                <Text fontSize="$3" color="$gray11" style={{ textAlign: 'center' }} paddingVertical="$4">
+                <Text style={{ fontSize: 14, color: 'var(--color-gray-11)', textAlign: 'center', paddingTop: 16, paddingBottom: 16 }}>
                   No requirements found
                 </Text>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Dependency Tree */}
-        <YStack flex={2} padding="$4" overflow="scroll">
-          <H3 fontWeight="600" color="$color12" mb="$3">
+        <Stack style={{ flex: 2, padding: 16, overflow: 'auto' }}>
+          <H3 style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 12 }}>
             Dependency Tree
           </H3>
 
           {!selectedRequirement ? (
-            <YStack
-              flex={1}
-              alignItems="center"
-              justifyContent="center"
-              color="$gray11"
+            <Stack
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--color-gray-11)',
+              }}
             >
-              <YStack mb="$4">
+              <Stack style={{ marginBottom: 16 }}>
                 <Info size={48} style={{ color: 'var(--color-gray-8)' }} />
-              </YStack>
-              <Text color="$gray11">Select a requirement to view its dependencies</Text>
-            </YStack>
+              </Stack>
+              <Text style={{ color: 'var(--color-gray-11)' }}>Select a requirement to view its dependencies</Text>
+            </Stack>
           ) : dependencyTreeQuery.isLoading ? (
-            <YStack flex={1} alignItems="center" justifyContent="center">
+            <Stack style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <LoadingSpinner />
-              <Text ml="$2" color="$gray11">
+              <Text style={{ marginLeft: 8, color: 'var(--color-gray-11)' }}>
                 Loading dependencies...
               </Text>
-            </YStack>
+            </Stack>
           ) : dependencyTreeQuery.isError ? (
-            <YStack
-              flex={1}
-              alignItems="center"
-              justifyContent="center"
-              color="$red10"
+            <Stack
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--color-red-10)',
+              }}
             >
-              <YStack mb="$4">
+              <Stack style={{ marginBottom: 16 }}>
                 <AlertTriangle size={48} style={{ color: 'var(--color-red-10)' }} />
-              </YStack>
-              <Text color="$red10">Failed to load dependencies</Text>
-              <Text fontSize="$3" color="$gray11" mt="$1">
+              </Stack>
+              <Text style={{ color: 'var(--color-red-10)' }}>Failed to load dependencies</Text>
+              <Text style={{ fontSize: 14, color: 'var(--color-gray-11)', marginTop: 4 }}>
                 {dependencyTreeQuery.error?.message}
               </Text>
-            </YStack>
+            </Stack>
           ) : dependencyTree ? (
-            <YStack gap="$1">
+            <Stack style={{ gap: 4 }}>
               <TreeNode node={dependencyTree} level={0} onSelect={handleTreeSelect} />
               {dependencyTree.children.length === 0 && (
-                <Text fontSize="$3" color="$gray11" ml="$6" mt="$4">
+                <Text style={{ fontSize: 14, color: 'var(--color-gray-11)', marginLeft: 24, marginTop: 16 }}>
                   This requirement has no dependencies
                 </Text>
               )}
-            </YStack>
+            </Stack>
           ) : null}
 
           {/* Legend */}
           {selectedRequirement && dependencyTree && dependencyTree.children.length > 0 && (
-            <YStack mt="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-              <Text fontSize="$3" fontWeight="600" color="$color11" mb="$2">
+            <Stack style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
+              <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 8 }}>
                 Legend
               </Text>
-              <XStack alignItems="center" gap="$4" flexWrap="wrap">
+              <Row style={{ alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                 <Text
-                  fontSize="$1"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius={9999}
-                  borderWidth={1}
-                  backgroundColor="$red2"
-                  color="$red10"
-                  borderColor="$red6"
+                  style={{
+                    fontSize: 11,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    borderRadius: 9999,
+                    borderWidth: 1,
+                    backgroundColor: 'var(--color-red-2)',
+                    color: 'var(--color-red-10)',
+                    borderColor: 'var(--color-red-6)',
+                  }}
                 >
                   Required - Must be present
                 </Text>
                 <Text
-                  fontSize="$1"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius={9999}
-                  borderWidth={1}
-                  backgroundColor="$yellow2"
-                  color="$yellow10"
-                  borderColor="$yellow6"
+                  style={{
+                    fontSize: 11,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    borderRadius: 9999,
+                    borderWidth: 1,
+                    backgroundColor: 'var(--color-yellow-2)',
+                    color: 'var(--color-yellow-10)',
+                    borderColor: 'var(--color-yellow-6)',
+                  }}
                 >
                   Recommended - Should have
                 </Text>
                 <Text
-                  fontSize="$1"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius={9999}
-                  borderWidth={1}
-                  backgroundColor="$blue2"
-                  color="$blue10"
-                  borderColor="$blue6"
+                  style={{
+                    fontSize: 11,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    borderRadius: 9999,
+                    borderWidth: 1,
+                    backgroundColor: 'var(--color-blue-2)',
+                    color: 'var(--color-blue-10)',
+                    borderColor: 'var(--color-blue-6)',
+                  }}
                 >
                   Alternative - One of many
                 </Text>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           )}
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   )
 }
 

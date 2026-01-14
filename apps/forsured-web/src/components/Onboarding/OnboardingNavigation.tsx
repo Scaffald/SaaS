@@ -1,10 +1,9 @@
 /**
- * OnboardingNavigation - Navigation component using Tamagui
+ * OnboardingNavigation - Navigation component using Beyond UI
  * REQ-126: Onboarding Navigation Component
  */
 import React from 'react';
-import { XStack } from '@unicornlove/ui';
-import { Button } from '@unicornlove/ui';
+import { Row, Button } from '@unicornlove/beyond-ui';
 
 interface OnboardingNavigationProps {
   currentStep: number;
@@ -28,10 +27,12 @@ function OnboardingNavigation({
   isLoading = false,
 }: OnboardingNavigationProps) {
   return (
-    <XStack
-      alignItems="center"
-      justifyContent="space-between"
-      mt="$8"
+    <Row
+      style={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 32,
+      }}
     >
       <Button
         variant="outlined"
@@ -41,7 +42,7 @@ function OnboardingNavigation({
         Back
       </Button>
 
-      <XStack gap="$2">
+      <Row style={{ gap: 8 }}>
         {canSkip && onSkip && (
           <Button
             variant="ghost"
@@ -58,8 +59,8 @@ function OnboardingNavigation({
         >
           {isLastStep ? 'Finish' : 'Next'}
         </Button>
-      </XStack>
-    </XStack>
+      </Row>
+    </Row>
   );
 }
 

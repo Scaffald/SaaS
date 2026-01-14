@@ -7,7 +7,7 @@
  */
 
 import { trpc } from '../../lib/trpc';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 
 interface OrganizationExampleProps {
   organizationId: string;
@@ -53,39 +53,39 @@ export function OrganizationExample({ organizationId }: OrganizationExampleProps
   }
 
   return (
-    <YStack gap="$4">
-      <YStack>
-        <Text fontSize="$6" fontWeight="bold">{organization.name}</Text>
-        <Text fontSize="$2" color="$color10">ID: {organization.id}</Text>
-      </YStack>
+    <Stack style={{ gap: 'var(--space-4)' }}>
+      <Stack>
+        <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 'bold' }}>{organization.name}</Text>
+        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-text-secondary)' }}>ID: {organization.id}</Text>
+      </Stack>
 
       {stats && (
-        <XStack gap="$4" flexWrap="wrap">
-          <Card padding="$4" borderWidth={1} borderRadius="$4" flex={1} minWidth="45%">
-            <Text fontSize="$8" fontWeight="bold">{stats.projectCount}</Text>
-            <Text fontSize="$2" color="$color10">Projects</Text>
+        <Row style={{ gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+          <Card style={{ padding: 'var(--space-4)', borderWidth: 1, borderRadius: 'var(--radius-4)', flex: 1, minWidth: '45%' }}>
+            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>{stats.projectCount}</Text>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-text-secondary)' }}>Projects</Text>
           </Card>
-          <Card padding="$4" borderWidth={1} borderRadius="$4" flex={1} minWidth="45%">
-            <Text fontSize="$8" fontWeight="bold">{stats.taskCount}</Text>
-            <Text fontSize="$2" color="$color10">Tasks</Text>
+          <Card style={{ padding: 'var(--space-4)', borderWidth: 1, borderRadius: 'var(--radius-4)', flex: 1, minWidth: '45%' }}>
+            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>{stats.taskCount}</Text>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-text-secondary)' }}>Tasks</Text>
           </Card>
-        </XStack>
+        </Row>
       )}
 
       {projects && (
-        <YStack>
-          <Text fontSize="$5" fontWeight="600" mb="$2">Projects ({projects.total})</Text>
-          <YStack gap="$2">
+        <Stack>
+          <Text style={{ fontSize: 'var(--font-size-5)', fontWeight: '600', marginBottom: 'var(--space-2)' }}>Projects ({projects.total})</Text>
+          <Stack style={{ gap: 'var(--space-2)' }}>
             {projects.projects.map((project) => (
-              <Card key={project.id} padding="$2" borderWidth={1} borderRadius="$4">
-                <Text fontWeight="500">{project.name}</Text>
-                <Text fontSize="$2" color="$color10">{project.status}</Text>
+              <Card key={project.id} style={{ padding: 'var(--space-2)', borderWidth: 1, borderRadius: 'var(--radius-4)' }}>
+                <Text style={{ fontWeight: '500' }}>{project.name}</Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-text-secondary)' }}>{project.status}</Text>
               </Card>
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 
