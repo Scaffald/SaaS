@@ -211,14 +211,15 @@ export default function BrokerClientsPage() {
   };
 
   const statCardStyle: React.CSSProperties = {
-    backgroundColor: 'var(--color-background)',
+    backgroundColor: 'white',
     borderRadius: 12,
     padding: 20,
-    border: '1px solid var(--color-border)',
+    border: '1px solid var(--color-gray-4)',
     flex: 1,
-    minWidth: 150,
+    minWidth: 160,
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
+    transition: 'all 0.15s ease',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
   };
 
   const iconBoxStyle = (color: string): React.CSSProperties => ({
@@ -533,16 +534,18 @@ export default function BrokerClientsPage() {
           <Card 
             style={{
               ...statCardStyle,
-              borderColor: activeFilter === 'all' ? 'var(--color-orange-6)' : 'var(--color-border)',
-              boxShadow: activeFilter === 'all' ? '0 0 0 2px var(--color-orange-3)' : 'none',
+              border: activeFilter === 'all' ? '2px solid var(--color-orange-9)' : '1px solid var(--color-gray-4)',
+              boxShadow: activeFilter === 'all' ? '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)' : '0 1px 3px rgba(0, 0, 0, 0.08)',
             }}
             onClick={() => setActiveFilter('all')}
             onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
-              e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+              if (activeFilter !== 'all') {
+                e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+              }
             }}
             onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
               if (activeFilter !== 'all') {
-                e.currentTarget.style.borderColor = 'var(--color-border)';
+                e.currentTarget.style.borderColor = 'var(--color-gray-4)';
               }
             }}
           >
@@ -572,16 +575,18 @@ export default function BrokerClientsPage() {
           <Card 
             style={{
               ...statCardStyle,
-              borderColor: activeFilter === 'manager' ? 'var(--color-orange-6)' : 'var(--color-border)',
-              boxShadow: activeFilter === 'manager' ? '0 0 0 2px var(--color-orange-3)' : 'none',
+              border: activeFilter === 'manager' ? '2px solid var(--color-orange-9)' : '1px solid var(--color-gray-4)',
+              boxShadow: activeFilter === 'manager' ? '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)' : '0 1px 3px rgba(0, 0, 0, 0.08)',
             }}
             onClick={() => setActiveFilter('manager')}
             onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
-              e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+              if (activeFilter !== 'manager') {
+                e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+              }
             }}
             onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
               if (activeFilter !== 'manager') {
-                e.currentTarget.style.borderColor = 'var(--color-border)';
+                e.currentTarget.style.borderColor = 'var(--color-gray-4)';
               }
             }}
           >
@@ -604,16 +609,18 @@ export default function BrokerClientsPage() {
           <Card 
             style={{
               ...statCardStyle,
-              borderColor: activeFilter === 'subcontractor' ? 'var(--color-orange-6)' : 'var(--color-border)',
-              boxShadow: activeFilter === 'subcontractor' ? '0 0 0 2px var(--color-orange-3)' : 'none',
+              border: activeFilter === 'subcontractor' ? '2px solid var(--color-orange-9)' : '1px solid var(--color-gray-4)',
+              boxShadow: activeFilter === 'subcontractor' ? '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)' : '0 1px 3px rgba(0, 0, 0, 0.08)',
             }}
             onClick={() => setActiveFilter('subcontractor')}
             onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
-              e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+              if (activeFilter !== 'subcontractor') {
+                e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+              }
             }}
             onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
               if (activeFilter !== 'subcontractor') {
-                e.currentTarget.style.borderColor = 'var(--color-border)';
+                e.currentTarget.style.borderColor = 'var(--color-gray-4)';
               }
             }}
           >
@@ -633,7 +640,7 @@ export default function BrokerClientsPage() {
             </Text>
           </Card>
 
-          <Card style={statCardStyle}>
+          <Card style={{ ...statCardStyle, cursor: 'default' }}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>Avg Compliance</Text>
@@ -651,7 +658,7 @@ export default function BrokerClientsPage() {
             </Row>
           </Card>
 
-          <Card style={statCardStyle}>
+          <Card style={{ ...statCardStyle, cursor: 'default' }}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>High Risk</Text>
@@ -668,7 +675,7 @@ export default function BrokerClientsPage() {
             </Text>
           </Card>
 
-          <Card style={statCardStyle}>
+          <Card style={{ ...statCardStyle, cursor: 'default' }}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>Active Projects</Text>
