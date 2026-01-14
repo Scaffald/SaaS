@@ -536,14 +536,14 @@ export default function SubcontractorsPage() {
             <Row style={{ justifyContent: 'flex-end', gap: 12, marginTop: 8 }}>
               <Button
                 variant="outlined"
-                onClick={handleCloseModal}
+                onPress={handleCloseModal}
                 disabled={submitting}
               >
                 Cancel
               </Button>
               <Button
                 color="primary"
-                onClick={() => {
+                onPress={() => {
                   const form = document.querySelector('form');
                   if (form) form.requestSubmit();
                 }}
@@ -590,7 +590,7 @@ export default function SubcontractorsPage() {
               <Button
                 color="primary"
                 iconStart={Plus}
-                onClick={() => setShowAddModal(true)}
+                onPress={() => setShowAddModal(true)}
               >
                 Add Subcontractor
               </Button>
@@ -616,7 +616,7 @@ export default function SubcontractorsPage() {
         <Button
           color="primary"
           iconStart={Plus}
-          onClick={() => setShowAddModal(true)}
+          onPress={() => setShowAddModal(true)}
         >
           Add Subcontractor
         </Button>
@@ -637,7 +637,7 @@ export default function SubcontractorsPage() {
             <Button
               size="sm"
               variant="outlined"
-              onClick={() => setShowInviteSection(!showInviteSection)}
+              onPress={() => setShowInviteSection(!showInviteSection)}
             >
               {showInviteSection ? 'Hide' : 'Show Invitations'}
             </Button>
@@ -676,7 +676,7 @@ export default function SubcontractorsPage() {
                   <Button
                     size="sm"
                     iconStart={Copy}
-                    onClick={copyManagerCode}
+                    onPress={copyManagerCode}
                     disabled={!managerCode}
                   >
                     Copy
@@ -793,7 +793,7 @@ export default function SubcontractorsPage() {
                       color="primary"
                       iconStart={sendingInvite ? undefined : Mail}
                       disabled={sendingInvite || !inviteFormData.email || !inviteFormData.name}
-                      onClick={handleSendInvitation}
+                      onPress={handleSendInvitation}
                     >
                       {sendingInvite ? (
                         <Row style={{ alignItems: 'center', gap: 8 }}>

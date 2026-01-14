@@ -10,6 +10,7 @@ import {
   Clock,
   AlertTriangle,
   X,
+  Plus,
 } from 'lucide-react';
 import { Stack, Row, Text, H1, H2, H3, Card } from '@unicornlove/beyond-ui';
 import {
@@ -142,7 +143,7 @@ export default function ManagerAcknowledgementsList() {
             verification
           </Text>
         </Stack>
-        <Button variant="primary" onPress={() => setShowCreateModal(true)}>
+        <Button color="primary" iconStart={Plus} onPress={() => setShowCreateModal(true)}>
           Create Packet
         </Button>
       </Row>

@@ -4,7 +4,7 @@
 import React from 'react';
 import { Stack, Row, Text, Card, Button, Chip } from '@unicornlove/beyond-ui';
 import { EmptyState } from '../../ui/EmptyState';
-import { Archive, Building2, Users, CheckCircle } from 'lucide-react';
+import { Archive, Building2, Users, CheckCircle, Plus } from 'lucide-react';
 import { useLexicon } from '../../contexts/LexiconContext';
 
 // Mock projects for testing
@@ -61,8 +61,9 @@ function GCDashboard() {
             </Text>
             <Button
               data-testid="new-project-button"
-              onClick={handleCreateProject}
-              variant="primary"
+              color="primary"
+              iconStart={Plus}
+              onPress={handleCreateProject}
             >
               New Project
             </Button>

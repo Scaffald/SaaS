@@ -1,6 +1,6 @@
 // src/pages/admin/Brokers.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Trash2, Mail, RefreshCcw, Send } from 'lucide-react';
+import { Trash2, Mail, RefreshCcw, Send, Plus } from 'lucide-react';
 import { Stack, Row, Text, Button, H1, Card, Spinner } from '@unicornlove/beyond-ui';
 import { EmptyState } from '../../ui/EmptyState';
 import { useAuth } from '../../contexts/AuthContext';
@@ -195,8 +195,9 @@ function AdminBrokers() {
             </Row>
           </Button>
           <Button
-            onClick={() => setShowInvitationForm(true)}
-            style={{ paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', backgroundColor: 'var(--color-blue-10)', color: 'white', borderRadius: 'var(--radius-4)' }}
+            color="primary"
+            iconStart={Plus}
+            onPress={() => setShowInvitationForm(true)}
           >
             Create Invitation
           </Button>

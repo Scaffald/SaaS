@@ -10,6 +10,7 @@ import {
   ChevronDown,
   X,
   Loader2,
+  Plus,
 } from 'lucide-react';
 import { Stack, Row, Text, H1, H2, H3, Card } from '@unicornlove/beyond-ui';
 import Button from '../Common/Button';
@@ -493,7 +494,8 @@ export default function ManagerTasksPage() {
           </Text>
         </Stack>
         <Button
-          variant="primary"
+          color="primary"
+          iconStart={Plus}
           onPress={() => setShowCreateTask(true)}
         >
           Create Task

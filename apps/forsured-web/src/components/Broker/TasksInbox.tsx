@@ -195,11 +195,8 @@ export default function TasksInbox({
               {headerText.subtitle}
             </Text>
           </Stack>
-          <Button onPress={onCreateTask}>
-            <Row alignItems="center" gap={8}>
-              <Plus size={18} />
-              <span>New Task</span>
-            </Row>
+          <Button color="primary" iconStart={Plus} onPress={onCreateTask}>
+            New Task
           </Button>
         </Row>
 

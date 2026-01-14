@@ -333,7 +333,8 @@ export default function ManagerProjectsPage() {
             Create your first project to start managing subcontractor compliance and insurance requirements.
           </Text>
           <Button
-            variant="primary"
+            color="primary"
+            iconStart={FolderPlus}
             onPress={() => navigate('/manager/projects/new')}
           >
             Create Project
@@ -353,13 +354,11 @@ export default function ManagerProjectsPage() {
           </Text>
         </Stack>
         <Button
-          variant="primary"
+          color="primary"
+          iconStart={FolderPlus}
           onPress={() => navigate('/manager/projects/new')}
         >
-          <Row style={{ alignItems: 'center', gap: 8 }}>
-            <FolderPlus size={18} />
-            <Text>Add Project</Text>
-          </Row>
+          Add Project
         </Button>
       </Row>
 

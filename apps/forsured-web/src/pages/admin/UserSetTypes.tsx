@@ -231,13 +231,11 @@ function AdminUserSetTypes() {
             </Row>
           </Button>
           <Button
-            onClick={openAddModal}
-            style={{ backgroundColor: 'var(--color-blue-9)', color: 'white' }}
+            color="primary"
+            iconStart={PlusCircle}
+            onPress={openAddModal}
           >
-            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
-              <PlusCircle size={16} />
-              <span>Add Industry</span>
-            </Row>
+            Add Industry
           </Button>
         </Row>
       </Row>

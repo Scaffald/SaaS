@@ -577,13 +577,11 @@ export default function ReferralManagementPage() {
               Referral Campaigns
             </H2>
             <Button
-              onClick={() => toast.info('Campaign creation coming soon')}
-              style={{ backgroundColor: 'var(--color-blue-9)', color: 'white' }}
+              color="primary"
+              iconStart={Plus}
+              onPress={() => toast.info('Campaign creation coming soon')}
             >
-              <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
-                <Plus size={16} />
-                <span>Create Campaign</span>
-              </Row>
+              Create Campaign
             </Button>
           </Row>
 

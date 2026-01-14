@@ -12,6 +12,7 @@ import {
   Inbox,
   Send,
   List,
+  Plus,
 } from 'lucide-react';
 import { Stack, Row, Text, H1, H3, Card, Input } from '@unicornlove/beyond-ui';
 import { useTasks } from '../../hooks/useTasks';
@@ -525,7 +526,7 @@ export default function BrokerTasksPage() {
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
         </Stack>
-        <Button variant="primary" onPress={handleCreateTask}>
+        <Button color="primary" iconStart={Plus} onPress={handleCreateTask}>
           Create Task
         </Button>
       </Row>

@@ -258,7 +258,7 @@ export default function BrokerClientsPage() {
               </Stack>
               <Button
                 variant="outlined"
-                onClick={() => setShowInviteSection(!showInviteSection)}
+                onPress={() => setShowInviteSection(!showInviteSection)}
               >
                 {showInviteSection ? 'Hide' : 'Show Invitations'}
               </Button>
@@ -290,13 +290,11 @@ export default function BrokerClientsPage() {
                       </Text>
                     </Card>
                     <Button
-                      onClick={copyBrokerCode}
+                      onPress={copyBrokerCode}
                       disabled={!brokerCode}
+                      iconStart={Copy}
                     >
-                      <Row alignItems="center" gap={4}>
-                        <Copy size={16} />
-                        <span>Copy</span>
-                      </Row>
+                      Copy
                     </Button>
                   </Row>
                   <Text size="xs" muted>
