@@ -203,7 +203,7 @@ export default function BrokerClientProfilePage() {
                   Risk Level
                 </Text>
               </Row>
-              <span
+              <Text
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -219,7 +219,7 @@ export default function BrokerClientProfilePage() {
                 }}
               >
                 {client.risk_level.charAt(0).toUpperCase() + client.risk_level.slice(1)}
-              </span>
+              </Text>
             </Card>
           </Row>
 
@@ -400,7 +400,7 @@ export default function BrokerClientProfilePage() {
                             {policy.carrier} - {policy.policy_number}
                           </Text>
                         </Stack>
-                        <span
+                        <Text
                           style={{
                             paddingLeft: 12,
                             paddingRight: 12,
@@ -413,7 +413,7 @@ export default function BrokerClientProfilePage() {
                           }}
                         >
                           {policy.status}
-                        </span>
+                        </Text>
                       </Row>
                     </Card>
                   );
@@ -454,7 +454,7 @@ export default function BrokerClientProfilePage() {
                       <Text size="md" weight="semibold">{policy.policy_type}</Text>
                       <Text size="sm" muted>{policy.carrier}</Text>
                     </Stack>
-                    <span
+                    <Text
                       style={{
                         paddingLeft: 12,
                         paddingRight: 12,
@@ -467,7 +467,7 @@ export default function BrokerClientProfilePage() {
                       }}
                     >
                       {policy.status}
-                    </span>
+                    </Text>
                   </Row>
                   <Row gap={16} style={{ flexWrap: 'wrap' }}>
                     <Stack style={{ flex: 1, minWidth: '20%' }}>
@@ -552,7 +552,7 @@ export default function BrokerClientProfilePage() {
                         </Row>
                       )}
                     </Stack>
-                    <span
+                    <Text
                       style={{
                         paddingLeft: 12,
                         paddingRight: 12,
@@ -565,7 +565,7 @@ export default function BrokerClientProfilePage() {
                       }}
                     >
                       {project.status}
-                    </span>
+                    </Text>
                   </Row>
                   <Row alignItems="center" gap={24}>
                     <Row alignItems="center" gap={4}>
@@ -753,7 +753,7 @@ export default function BrokerClientProfilePage() {
                             <Text size="xs" muted>
                               {new Date(doc.uploaded_at).toLocaleDateString()}
                             </Text>
-                            <span
+                            <Text
                               style={{
                                 fontSize: 11,
                                 padding: '2px 6px',
@@ -763,7 +763,7 @@ export default function BrokerClientProfilePage() {
                               }}
                             >
                               {doc.category}
-                            </span>
+                            </Text>
                           </Row>
                         </Stack>
                       </Row>
@@ -842,7 +842,7 @@ export default function BrokerClientProfilePage() {
               {client.company_name}
             </H1>
             <Row alignItems="center" gap={12} style={{ marginTop: 4 }}>
-              <span
+              <Text
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -858,8 +858,8 @@ export default function BrokerClientProfilePage() {
                 }}
               >
                 {client.client_type === 'subcontractor' ? 'Subcontractor' : 'General Contractor'}
-              </span>
-              <span
+              </Text>
+              <Text
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -875,7 +875,7 @@ export default function BrokerClientProfilePage() {
                 }}
               >
                 {client.risk_level} risk
-              </span>
+              </Text>
             </Row>
           </Stack>
         </Row>
