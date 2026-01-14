@@ -334,7 +334,7 @@ export default function ReferralSettings() {
               >
                 {referralCode.referral_code}
               </Text>
-              <Button variant="ghost" onClick={handleCopyCode}>
+              <Button variant="ghost" onPress={handleCopyCode}>
                 <Copy size={20} />
               </Button>
             </Row>
@@ -371,7 +371,7 @@ export default function ReferralSettings() {
                 >
                   {referralLink}
                 </Text>
-                <Button variant="ghost" size="sm" onClick={handleCopyLink}>
+                <Button variant="ghost" size="sm" onPress={handleCopyLink}>
                   <Copy size={16} />
                 </Button>
               </Row>
@@ -422,7 +422,7 @@ export default function ReferralSettings() {
             disabled={sending}
           />
 
-          <Button onClick={handleSendReferral} disabled={sending || !emailToRefer}>
+          <Button onPress={handleSendReferral} disabled={sending || !emailToRefer}>
             {sending ? <Spinner size="sm" /> : 'Send Invitation'}
           </Button>
         </Stack>

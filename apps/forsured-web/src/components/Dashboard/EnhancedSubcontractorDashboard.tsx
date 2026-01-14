@@ -538,7 +538,7 @@ export default function EnhancedSubcontractorDashboard() {
             <Row justifyContent="flex-end" gap={16} style={{paddingTop: 16}}>
               <Button
                 variant="ghost"
-                onClick={() => {
+                onPress={() => {
                   setUploadModalOpen(false);
                   setSelectedTask(null);
                   setUploadedFile(null);
@@ -549,7 +549,7 @@ export default function EnhancedSubcontractorDashboard() {
               >
                 Cancel
               </Button>
-              <Button onClick={handleUploadSubmit} disabled={!uploadedFile}>
+              <Button onPress={handleUploadSubmit} disabled={!uploadedFile}>
                 Upload Document
               </Button>
             </Row>
@@ -622,7 +622,7 @@ export default function EnhancedSubcontractorDashboard() {
                 <Row justifyContent="flex-end" gap={16} style={{paddingTop: 16}}>
                   <Button
                     variant="ghost"
-                    onClick={() => {
+                    onPress={() => {
                       setQuoteModalOpen(false);
                       setSelectedTask(null);
                       setQuoteRequest({ message: '' });
@@ -630,7 +630,7 @@ export default function EnhancedSubcontractorDashboard() {
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleQuoteSubmit}>Submit Request</Button>
+                  <Button onPress={handleQuoteSubmit}>Submit Request</Button>
                 </Row>
               </Stack>
             );

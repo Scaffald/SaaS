@@ -330,7 +330,7 @@ export default function MyBrokerPage() {
             disabled={loading}
           />
 
-          <Button onClick={handleInviteBroker} disabled={loading || !brokerEmail || !brokerName}>
+          <Button onPress={handleInviteBroker} disabled={loading || !brokerEmail || !brokerName}>
             {loading ? <Spinner size="sm" /> : 'Send Invitation'}
           </Button>
         </Stack>
@@ -377,7 +377,7 @@ export default function MyBrokerPage() {
             disabled={loading}
           />
 
-          <Button onClick={handleConnectByCode} disabled={loading || !connectionCode}>
+          <Button onPress={handleConnectByCode} disabled={loading || !connectionCode}>
             {loading ? <Spinner size="sm" /> : 'Connect'}
           </Button>
         </Stack>
@@ -456,7 +456,7 @@ export default function MyBrokerPage() {
                   >
                     {inv.relationship_code}
                   </Text>
-                  <Button size="sm" variant="ghost" onClick={() => copyCode(inv.relationship_code)}>
+                  <Button size="sm" variant="ghost" onPress={() => copyCode(inv.relationship_code)}>
                     <Copy size={16} />
                   </Button>
                 </Row>

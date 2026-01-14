@@ -80,7 +80,7 @@ function EnumEditor({ enumValue, onSubmit, onCancel, isLoading = false }: EnumEd
             <Label>Is Active</Label>
           </Row>
           <Row style={{ justifyContent: 'flex-end', gap: 8 }}>
-            <Button variant="outlined" onClick={onCancel} disabled={isLoading}>
+            <Button variant="outlined" onPress={onCancel} disabled={isLoading}>
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>

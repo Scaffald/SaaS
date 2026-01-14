@@ -102,7 +102,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               </Stack>
             )}
 
-            <Button onClick={this.handleReset} variant="primary">
+            <Button onPress={this.handleReset} variant="primary">
               Try Again
             </Button>
           </Stack>

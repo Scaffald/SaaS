@@ -309,7 +309,7 @@ export default function BrokerAcknowledgementFormPage() {
                   <Text>{isSaving ? 'Saving...' : 'Save Draft'}</Text>
                 </Row>
               </Button>
-              <Button onClick={handleSubmit}>
+              <Button onPress={handleSubmit}>
                 <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                   <Send size={16} />
                   <Text>Submit Form</Text>

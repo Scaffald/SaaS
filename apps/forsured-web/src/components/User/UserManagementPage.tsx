@@ -119,7 +119,7 @@ export default function UserManagementPage() {
             Manage users, roles, and permissions
           </Text>
         </Stack>
-        <Button onClick={() => setShowInviteModal(true)}>
+        <Button onPress={() => setShowInviteModal(true)}>
           <Row style={{ alignItems: 'center', gap: '8px' }}>
             <UserPlus size={16} />
             <Text>Invite User</Text>

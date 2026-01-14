@@ -46,7 +46,7 @@ export default function BrokerTeamPage() {
             Manage your broker team and client assignments
           </Text>
         </Stack>
-        <Button onClick={() => setIsInviteModalOpen(true)}>
+        <Button onPress={() => setIsInviteModalOpen(true)}>
           <Row alignItems="center" gap={8}>
             <UserPlus size={18} />
             <span>Invite Team Member</span>
@@ -258,7 +258,7 @@ export default function BrokerTeamPage() {
             <Text size="sm" muted style={{ marginBottom: 16 }}>
               Invite team members to collaborate
             </Text>
-            <Button onClick={() => setIsInviteModalOpen(true)}>
+            <Button onPress={() => setIsInviteModalOpen(true)}>
               <Row alignItems="center" gap={8}>
                 <UserPlus size={18} />
                 <span>Invite Team Member</span>

@@ -347,7 +347,7 @@ export function BulkOperationsModal({
                   <Text style={{ color: 'var(--color-gray-11)', marginBottom: 16 }}>
                     {importPreview?.validRows} requirements have been imported.
                   </Text>
-                  <Button onClick={handleClose}>Done</Button>
+                  <Button onPress={handleClose}>Done</Button>
                 </Stack>
               ) : (
                 <>
@@ -706,7 +706,7 @@ export function BulkOperationsModal({
                 )}
               </Button>
             ) : (
-              <Button onClick={handleExport} disabled={isExporting}>
+              <Button onPress={handleExport} disabled={isExporting}>
                 {isExporting ? (
                   <Row style={{ alignItems: 'center', gap: 8 }}>
                     <LoadingSpinner size="sm" />

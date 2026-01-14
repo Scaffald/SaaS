@@ -290,20 +290,20 @@ export default function RFPCard({
               >
                 {hasResponded ? 'Response Submitted' : 'Submit Proposal'}
               </Button>
-              <Button variant="ghost" onClick={onView}>
+              <Button variant="ghost" onPress={onView}>
                 View Details
               </Button>
             </>
           )}
 
           {userRole === 'manager' && (
-            <Button variant="ghost" style={{ flex: 1 }} onClick={onView}>
+            <Button variant="ghost" style={{ flex: 1 }} onPress={onView}>
               View Responses ({rfp.response_count})
             </Button>
           )}
 
           {!userRole && (
-            <Button variant="ghost" style={{ flex: 1 }} onClick={onView}>
+            <Button variant="ghost" style={{ flex: 1 }} onPress={onView}>
               View Details
             </Button>
           )}

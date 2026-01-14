@@ -64,7 +64,7 @@ export function UserTypeSelection({
   return (
     <>
       {/* Back button */}
-      <Button onClick={onBack} variant="ghost" data-testid="back-to-industry">
+      <Button onPress={onBack} variant="ghost" data-testid="back-to-industry">
         <Row style={{ alignItems: 'center', gap: '8px' }}>
           <ChevronLeft size={16} />
           <Text>Back to industry selection</Text>

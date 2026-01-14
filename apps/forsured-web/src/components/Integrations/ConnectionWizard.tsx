@@ -778,7 +778,7 @@ export default function ConnectionWizard({
 
         {currentStep === 3 && (
           <Row style={{ justifyContent: 'flex-end', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
-            <Button variant="primary" onClick={handleClose}>
+            <Button variant="primary" onPress={handleClose}>
               Done
             </Button>
           </Row>

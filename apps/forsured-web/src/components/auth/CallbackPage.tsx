@@ -200,10 +200,10 @@ export const CallbackPage: React.FC = () => {
 
           {/* Actions */}
           <Stack style={{ gap: '12px' }}>
-            <Button onClick={handleRetry} variant="primary" fullWidth>
+            <Button onPress={handleRetry} variant="primary" fullWidth>
               Try Again
             </Button>
-            <Button onClick={() => navigate('/')} variant="outlined" fullWidth>
+            <Button onPress={() => navigate('/')} variant="outlined" fullWidth>
               Go Home
             </Button>
           </Stack>

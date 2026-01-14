@@ -462,7 +462,7 @@ export default function EnhancedManagerDashboard() {
                     </Row>
                   </Stack>
                 </Row>
-                <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedTask(task) }}>
+                <Button variant="secondary" size="sm" onPress={() => setSelectedTask(task)}>
                   View Details
                 </Button>
               </Row>

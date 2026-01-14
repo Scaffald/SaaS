@@ -20,7 +20,7 @@ function ModalDoc() {
 const [isOpen, setIsOpen] = useState(false);
 return (
   <>
-    <Button onClick={() => setIsOpen(true)}>Open Modal</Button>
+    <Button onPress={() => setIsOpen(true)}>Open Modal</Button>
     <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Example Modal">
       <p>This is the content of the modal.</p>
     </Modal>

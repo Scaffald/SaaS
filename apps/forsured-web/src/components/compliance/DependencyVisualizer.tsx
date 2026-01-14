@@ -571,13 +571,13 @@ export function DependencyVisualizer({
         }}
       >
         <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
-          <Button variant="secondary" size="$2" onClick={handleZoomIn} title="Zoom In">
+          <Button variant="secondary" size="$2" onPress={handleZoomIn} title="Zoom In">
             <ZoomIn size={16} />
           </Button>
-          <Button variant="secondary" size="$2" onClick={handleZoomOut} title="Zoom Out">
+          <Button variant="secondary" size="$2" onPress={handleZoomOut} title="Zoom Out">
             <ZoomOut size={16} />
           </Button>
-          <Button variant="secondary" size="$2" onClick={handleResetView} title="Reset View">
+          <Button variant="secondary" size="$2" onPress={handleResetView} title="Reset View">
             <Maximize size={16} />
           </Button>
           <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)', marginLeft: 'var(--space-2)' }}>

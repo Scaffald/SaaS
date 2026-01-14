@@ -317,7 +317,7 @@ export default function TaskTypeForm({
 
         {/* Form Actions */}
         <Row style={{ justifyContent: 'flex-end', gap: 12, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
-        <Button variant="ghost" onClick={onCancel} disabled={isSubmitting}>
+        <Button variant="ghost" onPress={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
         <Button variant="primary" type="submit" disabled={isSubmitting}>

@@ -525,7 +525,7 @@ export default function BrokerTasksPage() {
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
         </Stack>
-        <Button variant="primary" onClick={handleCreateTask}>
+        <Button variant="primary" onPress={handleCreateTask}>
           Create Task
         </Button>
       </Row>

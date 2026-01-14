@@ -286,7 +286,7 @@ export default function OrgCoverageRequirementsPage({
             Set organization-wide minimum coverage requirements for all subcontractors
           </Text>
         </Stack>
-        <ButtonCommon variant="primary" leftIcon={Plus} onClick={() => setShowForm(true)}>
+        <ButtonCommon variant="primary" leftIcon={Plus} onPress={() => setShowForm(true)}>
           Add Requirement
         </ButtonCommon>
       </Row>
@@ -552,7 +552,7 @@ export default function OrgCoverageRequirementsPage({
             >
               Cancel
             </ButtonCommon>
-            <ButtonCommon variant="danger" onClick={handleDelete} disabled={isSubmitting}>
+            <ButtonCommon variant="danger" onPress={handleDelete} disabled={isSubmitting}>
               {isSubmitting ? 'Deleting...' : 'Delete'}
             </ButtonCommon>
           </Row>

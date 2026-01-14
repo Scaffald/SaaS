@@ -267,7 +267,7 @@ export default function CoverageRequirementForm({
 
         {/* Form Actions */}
         <Row style={{ justifyContent: 'flex-end', gap: 12, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
-          <ButtonCommon variant="ghost" onClick={onCancel} disabled={isSubmitting}>
+          <ButtonCommon variant="ghost" onPress={onCancel} disabled={isSubmitting}>
             Cancel
           </ButtonCommon>
           <ButtonCommon variant="primary" type="submit" disabled={isSubmitting}>

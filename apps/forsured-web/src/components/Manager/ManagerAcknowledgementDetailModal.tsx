@@ -543,7 +543,7 @@ export default function ManagerAcknowledgementDetailModal({
         </Card>
 
         <Row justifyContent="flex-end" gap={12} style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" onPress={onClose}>
             Close
           </Button>
           {currentPacket.status === 'SENT' ||

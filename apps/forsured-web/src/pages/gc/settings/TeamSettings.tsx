@@ -45,7 +45,7 @@ function GCTeamSettings() {
     <Stack style={{ gap: 'var(--space-6)' }}>
       <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
         <H2>Team Management</H2>
-        <Button variant="primary" onClick={handleInviteMember} leftIcon={<PlusCircle size={16} />}>
+        <Button variant="primary" onPress={handleInviteMember} leftIcon={<PlusCircle size={16} />}>
           Invite Member
         </Button>
       </Row>

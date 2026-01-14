@@ -840,7 +840,7 @@ export default function ContractorOnboarding() {
               <H3 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-12)' }}>
                 Upload Documents
               </H3>
-              <Button onClick={() => setShowUploadModal(false)} style={{ color: 'var(--color-10)', background: 'none', border: 'none' }}>
+              <Button onPress={() => setShowUploadModal(false)} style={{ color: 'var(--color-10)', background: 'none', border: 'none' }}>
                 <X size={20} />
               </Button>
             </Row>

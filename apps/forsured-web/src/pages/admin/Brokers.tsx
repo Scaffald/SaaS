@@ -171,7 +171,7 @@ function AdminBrokers() {
     return (
       <Card style={{ padding: 'var(--space-6)', borderRadius: 'var(--radius-4)', backgroundColor: 'var(--color-red-4)' }}>
         <Text style={{ color: 'var(--color-red-11)' }}>Error: {error}</Text>
-        <Button onClick={fetchInvitations} variant="ghost" style={{ marginTop: 'var(--space-2)', padding: 0 }}>
+        <Button onPress={fetchInvitations} variant="ghost" style={{ marginTop: 'var(--space-2)', padding: 0 }}>
           <Text style={{ color: 'var(--color-blue-10)', textDecoration: 'underline' }}>Try again</Text>
         </Button>
       </Card>

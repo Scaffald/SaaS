@@ -664,7 +664,7 @@ export function RequirementEditorForm({
                   </button>
                 </Row>
               ))}
-              <Button type="button" variant="secondary" size="$2" onClick={addEndorsement}>
+              <Button type="button" variant="secondary" size="$2" onPress={addEndorsement}>
                 <Row style={{ alignItems: 'center', gap: 4 }}>
                   <Plus size={16} />
                   <Text>Add Endorsement</Text>
@@ -732,7 +732,7 @@ export function RequirementEditorForm({
                   </button>
                 </Row>
               ))}
-              <Button type="button" variant="secondary" size="$2" onClick={addCondition}>
+              <Button type="button" variant="secondary" size="$2" onPress={addCondition}>
                 <Row style={{ alignItems: 'center', gap: 4 }}>
                   <Plus size={16} />
                   <Text>Add Condition</Text>
@@ -802,7 +802,7 @@ export function RequirementEditorForm({
                   </button>
                 </Row>
               ))}
-              <Button type="button" variant="secondary" size="$2" onClick={addDocumentationRequirement}>
+              <Button type="button" variant="secondary" size="$2" onPress={addDocumentationRequirement}>
                 <Row style={{ alignItems: 'center', gap: 4 }}>
                   <Plus size={16} />
                   <Text>Add Documentation Requirement</Text>
@@ -814,7 +814,7 @@ export function RequirementEditorForm({
 
         {/* Form Actions */}
         <Row style={{ alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-4)', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)' }}>
-          <Button type="button" variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
+          <Button type="button" variant="secondary" onPress={handleCancel} disabled={isSubmitting}>
             <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
               <X size={18} />
               <Text>Cancel</Text>

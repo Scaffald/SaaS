@@ -376,13 +376,13 @@ export function BulkImportUI({
       {/* Actions */}
       <Row style={{ justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTopWidth: '1px', borderColor: 'var(--color-gray6)' }}>
         {onClose && (
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" onPress={onClose}>
             Cancel
           </Button>
         )}
         <Button
           variant="solid"
-          onClick={handlePreview}
+          onPress={handlePreview}
           disabled={!importData.trim() || previewQuery.isFetching}
         >
           {previewQuery.isFetching ? 'Validating...' : 'Validate & Preview'}
@@ -667,18 +667,18 @@ export function BulkImportUI({
 
         {/* Actions */}
         <Row style={{ justifyContent: 'space-between', paddingTop: '16px', borderTopWidth: '1px', borderColor: 'var(--color-gray6)' }}>
-          <Button variant="outlined" onClick={handleReset}>
+          <Button variant="outlined" onPress={handleReset}>
             Back to Upload
           </Button>
           <Row style={{ gap: '12px' }}>
             {onClose && (
-              <Button variant="outlined" onClick={onClose}>
+              <Button variant="outlined" onPress={onClose}>
                 Cancel
               </Button>
             )}
             <Button
               variant="solid"
-              onClick={handleExecuteImport}
+              onPress={handleExecuteImport}
               disabled={!previewData.canProceed || importMutation.isPending}
             >
               {importMutation.isPending
@@ -805,11 +805,11 @@ export function BulkImportUI({
 
         {/* Actions */}
         <Row style={{ justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTopWidth: '1px', borderColor: 'var(--color-gray6)' }}>
-          <Button variant="outlined" onClick={handleReset}>
+          <Button variant="outlined" onPress={handleReset}>
             Import More
           </Button>
           {onClose && (
-            <Button variant="solid" onClick={onClose}>
+            <Button variant="solid" onPress={onClose}>
               Done
             </Button>
           )}

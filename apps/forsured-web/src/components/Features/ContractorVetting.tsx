@@ -451,11 +451,11 @@ export default function SubcontractorVetting() {
               </Stack>
             </Stack>
             <Row style={{ justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
-              <Button onClick={() => setShowAddModal(false)} variant="ghost">
+              <Button onPress={() => setShowAddModal(false)} variant="ghost">
                 Cancel
               </Button>
               <Button
-                onClick={() => setShowAddModal(false)}
+                onPress={() => setShowAddModal(false)}
                 variant="primary"
                 style={{ backgroundColor: 'var(--color-blue-9)' }}
               >

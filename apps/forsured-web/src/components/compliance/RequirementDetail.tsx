@@ -184,12 +184,12 @@ export default function RequirementDetail({
           </Stack>
           <Row style={{ gap: 'var(--space-2)' }}>
             {onEdit && requirement.status !== RequirementStatus.ARCHIVED && (
-              <Button variant="solid" onClick={onEdit}>
+              <Button variant="solid" onPress={onEdit}>
                 Edit
               </Button>
             )}
             {onClose && (
-              <Button variant="outlined" onClick={onClose}>
+              <Button variant="outlined" onPress={onClose}>
                 Close
               </Button>
             )}

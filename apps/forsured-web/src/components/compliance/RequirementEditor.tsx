@@ -670,7 +670,7 @@ export default function RequirementEditor({
         {/* Actions */}
         <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)' }}>
           {onCancel && (
-            <Button variant="outlined" onClick={onCancel}>
+            <Button variant="outlined" onPress={onCancel}>
               Cancel
             </Button>
           )}

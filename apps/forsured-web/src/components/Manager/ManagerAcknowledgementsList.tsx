@@ -142,7 +142,7 @@ export default function ManagerAcknowledgementsList() {
             verification
           </Text>
         </Stack>
-        <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+        <Button variant="primary" onPress={() => setShowCreateModal(true)}>
           Create Packet
         </Button>
       </Row>

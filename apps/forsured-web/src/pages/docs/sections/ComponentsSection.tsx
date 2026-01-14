@@ -307,7 +307,7 @@ export default function ComponentsSection() {
             title="Modals"
             description="Dialog overlays for focused content"
           >
-            <Button onClick={() => setModalOpen(true)}>Open Modal</Button>
+            <Button onPress={() => setModalOpen(true)}>Open Modal</Button>
             <Modal
               isOpen={modalOpen}
               onClose={() => setModalOpen(false)}
@@ -319,10 +319,10 @@ export default function ComponentsSection() {
                 need.
               </Text>
               <Row style={{ marginTop: 'var(--space-4)', justifyContent: 'flex-end', gap: 'var(--space-3)' }}>
-                <Button variant="ghost" onClick={() => setModalOpen(false)}>
+                <Button variant="ghost" onPress={() => setModalOpen(false)}>
                   Cancel
                 </Button>
-                <Button variant="primary" onClick={() => setModalOpen(false)}>
+                <Button variant="primary" onPress={() => setModalOpen(false)}>
                   Confirm
                 </Button>
               </Row>

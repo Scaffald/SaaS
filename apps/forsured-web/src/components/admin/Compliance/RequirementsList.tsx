@@ -324,7 +324,7 @@ export function RequirementsList({
           >
             <RefreshCcw size={18} />
           </Button>
-          <Button onClick={onCreateNew}>
+          <Button onPress={onCreateNew}>
             <Row style={{ alignItems: 'center', gap: 4 }}>
               <Plus size={16} />
               <Text>New Requirement</Text>

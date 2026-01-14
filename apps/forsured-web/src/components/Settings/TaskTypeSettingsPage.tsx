@@ -259,7 +259,7 @@ export default function TaskTypeSettingsPage({
             Manage task types and their default configurations
           </Text>
         </Stack>
-        <ButtonCommon variant="primary" leftIcon={Plus} onClick={() => setShowForm(true)}>
+        <ButtonCommon variant="primary" leftIcon={Plus} onPress={() => setShowForm(true)}>
           Create Task Type
         </ButtonCommon>
       </Row>

@@ -717,7 +717,7 @@ export default function MyBrokerPage() {
                 {managerCode || 'Loading...'}
               </Text>
             </Card>
-            <Button onClick={copyManagerCode} disabled={!managerCode}>
+            <Button onPress={copyManagerCode} disabled={!managerCode}>
               <Copy size={16} />
               Copy
             </Button>

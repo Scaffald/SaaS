@@ -364,11 +364,11 @@ export function GenericInviteModal({
             borderTop: '1px solid var(--color-border)',
           }}
         >
-          <Button variant="outline" onClick={handleClose} style={{ flex: 1 }} disabled={isLoading}>
+          <Button variant="outline" onPress={handleClose} style={{ flex: 1 }} disabled={isLoading}>
             Cancel
           </Button>
           <Button
-            onClick={handleSubmit}
+            onPress={handleSubmit}
             style={{
               flex: 1,
               opacity: isLoading || !email.trim() || !selectedRuleId ? 0.5 : 1,

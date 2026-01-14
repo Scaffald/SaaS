@@ -156,7 +156,7 @@ export default function ProjectDetailPage() {
         <Text style={{ color: 'var(--color-11)', marginBottom: 16 }}>
           {error?.message || 'The project you are looking for does not exist.'}
         </Text>
-        <Button onClick={() => navigate(-1)} leftIcon={ArrowLeft}>
+        <Button onPress={() => navigate(-1)} leftIcon={ArrowLeft}>
           Go Back
         </Button>
       </Stack>

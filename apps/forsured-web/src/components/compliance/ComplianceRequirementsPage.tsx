@@ -272,7 +272,7 @@ export function ComplianceRequirementsPage() {
     return (
       <Stack style={{ padding: 'var(--space-8)', alignItems: 'center' }}>
         <Text style={{ color: 'var(--color-red-9)' }}>Error loading requirements: {error.message}</Text>
-        <Button variant="outlined" style={{ marginTop: 'var(--space-4)' }} onClick={() => window.location.reload()}>
+        <Button variant="outlined" style={{ marginTop: 'var(--space-4)' }} onPress={() => window.location.reload()}>
           Retry
         </Button>
       </Stack>
@@ -292,19 +292,19 @@ export function ComplianceRequirementsPage() {
           </Text>
         </Stack>
         <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
-          <Button variant="outlined" onClick={() => navigate('/admin/compliance/requirements/import')}>
+          <Button variant="outlined" onPress={() => navigate('/admin/compliance/requirements/import')}>
             <Row style={{ alignItems: 'center', gap: 8 }}>
               <Upload size={18} />
               Import
             </Row>
           </Button>
-          <Button variant="outlined" onClick={() => navigate('/admin/compliance/requirements/export')}>
+          <Button variant="outlined" onPress={() => navigate('/admin/compliance/requirements/export')}>
             <Row style={{ alignItems: 'center', gap: 8 }}>
               <Download size={18} />
               Export
             </Row>
           </Button>
-          <Button variant="solid" onClick={handleCreateRequirement}>
+          <Button variant="solid" onPress={handleCreateRequirement}>
             <Row style={{ alignItems: 'center', gap: 8 }}>
               <Plus size={18} />
               Create {view === 'templates' ? 'Template' : 'Requirement'}

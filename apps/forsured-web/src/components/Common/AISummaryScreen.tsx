@@ -213,12 +213,12 @@ export default function AISummaryScreen({
           }}
         >
           {onClose && (
-            <Button variant="secondary" onClick={onClose} style={{ flex: 1 }}>
+            <Button variant="secondary" onPress={onClose} style={{ flex: 1 }}>
               Close
             </Button>
           )}
           {onConfirm && (
-            <Button variant="primary" onClick={onConfirm} style={{ flex: 1 }}>
+            <Button variant="primary" onPress={onConfirm} style={{ flex: 1 }}>
               Confirm & Continue
             </Button>
           )}

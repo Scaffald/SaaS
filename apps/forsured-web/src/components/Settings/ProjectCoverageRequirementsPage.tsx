@@ -325,7 +325,7 @@ export default function ProjectCoverageRequirementsPage({
             Set project-specific coverage requirements for <Text style={{ fontWeight: 600 }}>{projectName}</Text>
           </Text>
         </Stack>
-        <ButtonCommon variant="primary" leftIcon={Plus} onClick={() => setShowForm(true)}>
+        <ButtonCommon variant="primary" leftIcon={Plus} onPress={() => setShowForm(true)}>
           Add Project Requirement
         </ButtonCommon>
       </Row>
@@ -736,7 +736,7 @@ export default function ProjectCoverageRequirementsPage({
             >
               Cancel
             </ButtonCommon>
-            <ButtonCommon variant="danger" onClick={handleDelete} disabled={isSubmitting}>
+            <ButtonCommon variant="danger" onPress={handleDelete} disabled={isSubmitting}>
               {isSubmitting ? 'Deleting...' : 'Delete'}
             </ButtonCommon>
           </Row>

@@ -438,7 +438,7 @@ export default function UnifiedTaskDetailModal({
                   Assigned To
                 </Text>
                 <Button
-                  onClick={() => setShowReassignModal(true)}
+                  onPress={() => setShowReassignModal(true)}
                   variant="ghost"
                   size="sm"
                   style={{ color: 'var(--color-blue-9)' }}
@@ -490,7 +490,7 @@ export default function UnifiedTaskDetailModal({
               {(['details', 'comments', 'attachments', 'history'] as const).map((tab) => (
                 <Button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  onPress={() => setActiveTab(tab)}
                   variant="ghost"
                   style={{
                     paddingBottom: 12,
@@ -520,7 +520,7 @@ export default function UnifiedTaskDetailModal({
                     {task.status === 'pending' && (
                       <Button
                         variant="primary"
-                        onClick={() => handleStatusChange('in_progress')}
+                        onPress={() => handleStatusChange('in_progress')}
                         style={{ flex: 1 }}
                       >
                         <Clock size={16} style={{ marginRight: 8 }} />
@@ -530,7 +530,7 @@ export default function UnifiedTaskDetailModal({
                     {task.status === 'in_progress' && (
                       <Button
                         variant="primary"
-                        onClick={() => handleStatusChange('completed')}
+                        onPress={() => handleStatusChange('completed')}
                         style={{ flex: 1, backgroundColor: 'var(--color-green-9)' }}
                       >
                         <CheckCircle size={16} style={{ marginRight: 8 }} />
@@ -540,7 +540,7 @@ export default function UnifiedTaskDetailModal({
                     {task.status !== 'blocked' && task.status !== 'completed' && (
                       <Button
                         variant="secondary"
-                        onClick={() => setShowBlockModal(true)}
+                        onPress={() => setShowBlockModal(true)}
                         style={{ flex: 1, color: 'var(--color-red-9)', borderColor: 'var(--color-red-9)' }}
                       >
                         <Ban size={16} style={{ marginRight: 8 }} />
@@ -549,7 +549,7 @@ export default function UnifiedTaskDetailModal({
                     )}
                     <Button
                       variant="secondary"
-                      onClick={() => setShowEditModal(true)}
+                      onPress={() => setShowEditModal(true)}
                       style={{ flex: 1 }}
                     >
                       <Edit size={16} style={{ marginRight: 8 }} />
@@ -576,7 +576,7 @@ export default function UnifiedTaskDetailModal({
                               <Button
                                 key={action}
                                 variant="secondary"
-                                onClick={() => setShowCOIComparison(true)}
+                                onPress={() => setShowCOIComparison(true)}
                               >
                                 <FileText size={16} style={{ marginRight: 8 }} />
                                 {action === 'open_coi' ? 'Open COI' : 'Compare To Req'}
@@ -702,7 +702,7 @@ export default function UnifiedTaskDetailModal({
                         {filteredUsers.map((user) => (
                           <Button
                             key={user.id}
-                            onClick={() => insertMention(user)}
+                            onPress={() => insertMention(user)}
                             variant="ghost"
                             style={{
                               width: '100%',
@@ -746,7 +746,7 @@ export default function UnifiedTaskDetailModal({
                     )}
                   </Stack>
                   <Row style={{ marginTop: 12 }} justifyContent="flex-end">
-                    <Button onClick={handleAddComment} disabled={!commentText.trim()}>
+                    <Button onPress={handleAddComment} disabled={!commentText.trim()}>
                       Add Comment
                     </Button>
                   </Row>
@@ -815,7 +815,7 @@ export default function UnifiedTaskDetailModal({
                               </a>
                             )}
                             <Button
-                              onClick={() => handleDeleteAttachment(attachment.id)}
+                              onPress={() => handleDeleteAttachment(attachment.id)}
                               size="sm"
                               variant="ghost"
                               style={{ padding: 8, color: 'var(--color-red-9)' }}
@@ -933,10 +933,10 @@ export default function UnifiedTaskDetailModal({
             fullWidth
           />
           <Row gap={12}>
-            <Button variant="secondary" onClick={() => setShowReassignModal(false)} style={{ flex: 1 }}>
+            <Button variant="secondary" onPress={() => setShowReassignModal(false)} style={{ flex: 1 }}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleReassign} style={{ flex: 1 }}>
+            <Button variant="primary" onPress={handleReassign} style={{ flex: 1 }}>
               Reassign
             </Button>
           </Row>
@@ -966,7 +966,7 @@ export default function UnifiedTaskDetailModal({
           <Row gap={12}>
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowBlockModal(false);
                 setBlockReason('');
               }}
@@ -976,7 +976,7 @@ export default function UnifiedTaskDetailModal({
             </Button>
             <Button
               variant="primary"
-              onClick={() => handleStatusChange('blocked', blockReason)}
+              onPress={() => handleStatusChange('blocked', blockReason)}
               disabled={!blockReason.trim()}
               style={{ flex: 1, backgroundColor: 'var(--color-red-9)' }}
             >
@@ -1017,10 +1017,10 @@ export default function UnifiedTaskDetailModal({
             fullWidth
           />
           <Row gap={12}>
-            <Button variant="secondary" onClick={() => setShowEditModal(false)} style={{ flex: 1 }}>
+            <Button variant="secondary" onPress={() => setShowEditModal(false)} style={{ flex: 1 }}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleEditTask} style={{ flex: 1 }}>
+            <Button variant="primary" onPress={handleEditTask} style={{ flex: 1 }}>
               Save Changes
             </Button>
           </Row>

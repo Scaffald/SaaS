@@ -25,7 +25,7 @@ export default function Header() {
       }}
     >
       <Row flex={1} />
-      <Button onClick={logout} variant="primary">
+      <Button onPress={logout} variant="primary">
         Logout
       </Button>
     </Row>

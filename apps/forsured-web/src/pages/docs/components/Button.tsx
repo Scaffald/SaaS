@@ -17,18 +17,18 @@ function ButtonDoc() {
   const examples = [
     {
       title: 'Primary Button',
-      code: `<Button variant="primary" onClick={() => alert('Clicked!')}>Click Me</Button>`,
+      code: `<Button variant="primary" onPress={() => alert('Clicked!')}>Click Me</Button>`,
       render: (
-        <Button variant="primary" onClick={() => alert('Clicked!')}>
+        <Button variant="primary" onPress={() => alert('Clicked!')}>
           Click Me
         </Button>
       ),
     },
     {
       title: 'Secondary Button',
-      code: `<Button variant="secondary" onClick={() => alert('Clicked!')}>Click Me</Button>`,
+      code: `<Button variant="secondary" onPress={() => alert('Clicked!')}>Click Me</Button>`,
       render: (
-        <Button variant="secondary" onClick={() => alert('Clicked!')}>
+        <Button variant="secondary" onPress={() => alert('Clicked!')}>
           Click Me
         </Button>
       ),

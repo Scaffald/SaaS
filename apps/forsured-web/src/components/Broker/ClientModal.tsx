@@ -333,10 +333,10 @@ export default function ClientModal({
         </Stack>
 
         <Row gap={12} justifyContent="flex-end" style={{ marginTop: 24 }}>
-          <Button variant="outlined" onClick={onClose} disabled={isSaving}>
+          <Button variant="outlined" onPress={onClose} disabled={isSaving}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSubmit} disabled={isSaving}>
+          <Button variant="primary" onPress={handleSubmit} disabled={isSaving}>
             {isSaving ? 'Saving...' : client ? 'Update Client' : 'Add Client'}
           </Button>
         </Row>

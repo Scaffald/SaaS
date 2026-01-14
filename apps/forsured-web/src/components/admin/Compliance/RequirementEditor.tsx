@@ -661,7 +661,7 @@ export function RequirementEditor({
           >
             <Text>Cancel</Text>
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+          <Button onPress={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? (
               <Row style={{ alignItems: 'center', gap: 8 }}>
                 <LoadingSpinner size="sm" />

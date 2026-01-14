@@ -73,7 +73,7 @@ function AdminAuditLog() {
     <Stack>
       <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
         <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>Admin Audit Log</H1>
-        <Button variant="outline" onClick={handleRefresh}>
+        <Button variant="outline" onPress={handleRefresh}>
           <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
             <RefreshCcw size={16} />
             <Text>Refresh</Text>

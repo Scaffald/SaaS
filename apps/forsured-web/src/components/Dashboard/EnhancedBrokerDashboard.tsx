@@ -155,7 +155,7 @@ export default function EnhancedBrokerDashboard() {
                 ))}
               </select>
             </Row>
-            <Button variant="ghost" onClick={fetchClients}>
+            <Button variant="ghost" onPress={fetchClients}>
               <Row alignItems="center" gap={8}>
                 <RefreshCw size={18} />
                 <Text>Refresh</Text>

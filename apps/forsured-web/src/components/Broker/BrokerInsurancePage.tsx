@@ -192,7 +192,7 @@ export default function BrokerInsurancePage() {
             <Card style={{ ...cardStyle, minWidth: '45%' }}>
               <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
                 <H3 style={{ fontSize: 18, fontWeight: 600 }}>Recent Policies</H3>
-                <Button variant="ghost" onClick={() => handleTabChange('policies')}>
+                <Button variant="ghost" onPress={() => handleTabChange('policies')}>
                   View All
                 </Button>
               </Row>

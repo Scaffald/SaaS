@@ -64,7 +64,7 @@ export default function BrokerAcknowledgementList() {
             Manage insurance verification forms for subcontractor projects
           </Text>
         </Stack>
-        <Button onClick={() => setShowCreateModal(true)}>
+        <Button onPress={() => setShowCreateModal(true)}>
           <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
             <Plus size={16} />
             <Text>New Form</Text>
@@ -151,7 +151,7 @@ export default function BrokerAcknowledgementList() {
               : 'Create your first broker acknowledgement form to get started'}
           </Text>
           {!searchTerm && statusFilter === 'all' && (
-            <Button onClick={() => setShowCreateModal(true)}>
+            <Button onPress={() => setShowCreateModal(true)}>
               <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                 <Plus size={16} />
                 <Text>Create First Form</Text>

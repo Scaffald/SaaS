@@ -494,7 +494,7 @@ export default function ManagerTasksPage() {
         </Stack>
         <Button
           variant="primary"
-          onClick={() => setShowCreateTask(true)}
+          onPress={() => setShowCreateTask(true)}
         >
           Create Task
         </Button>
@@ -1237,14 +1237,14 @@ export default function ManagerTasksPage() {
               <Row gap={12} justifyContent="flex-end" style={{ marginTop: 8 }}>
                 <Button
                   variant="outlined"
-                  onClick={handleCloseCreateTask}
+                  onPress={handleCloseCreateTask}
                   disabled={isCreatingTask}
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={handleCreateTask}
+                  onPress={handleCreateTask}
                   disabled={isCreatingTask}
                   data-testid="submit-create-task-btn"
                 >
