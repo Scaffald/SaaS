@@ -97,16 +97,6 @@ export function Toast({
     ]).start()
   }, [fadeAnim, translateAnim])
 
-  // Auto-dismiss after duration
-  useEffect(() => {
-    if (duration > 0) {
-      const timer = setTimeout(() => {
-        handleDismiss()
-      }, duration)
-      return () => clearTimeout(timer)
-    }
-  }, [duration, handleDismiss])
-
   const handleDismiss = useCallback(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -123,6 +113,16 @@ export function Toast({
       onDismiss()
     })
   }, [fadeAnim, translateAnim, onDismiss])
+
+  // Auto-dismiss after duration
+  useEffect(() => {
+    if (duration > 0) {
+      const timer = setTimeout(() => {
+        handleDismiss()
+      }, duration)
+      return () => clearTimeout(timer)
+    }
+  }, [duration, handleDismiss])
 
   const variantColors = VARIANT_COLORS[variant]
 
