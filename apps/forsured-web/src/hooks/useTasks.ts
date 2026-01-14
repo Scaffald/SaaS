@@ -75,7 +75,9 @@ export function useTasks(options: UseTasksOptions = {}) {
     }
   }
 
-  const createTask = async (task: Omit<Task, 'id' | 'created_at' | 'updated_at'>) => {
+  const createTask = async (
+    task: Omit<Task, 'id' | 'created_at' | 'updated_at'> & { organization_id?: string }
+  ) => {
     try {
       const client = supabaseServiceRole || null
 
@@ -83,8 +85,29 @@ export function useTasks(options: UseTasksOptions = {}) {
         throw new Error('Supabase service role client not configured')
       }
 
+      // Prepare task data for insert - only include fields that exist in the DB
+      const taskData = {
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        priority: task.priority,
+        due_date: task.due_date,
+        project_id: task.project_id,
+        organization_id: task.organization_id,
+        assigned_to_user_id: task.assigned_to_user_id,
+        created_by_user_id: task.created_by_user_id,
+        task_type: task.task_type,
+        origin_role: task.origin_role,
+        source_type: task.source_type,
+        source_requirement_id: task.source_requirement_id,
+        policy_id: task.policy_id,
+        policy_number: task.policy_number,
+        document_link: task.document_link,
+        due_date_source: task.due_date_source,
+      }
+
       const { data, error: insertError } = await forsuredQuery('tasks', client)
-        .insert(task)
+        .insert(taskData)
         .select()
         .single()
 

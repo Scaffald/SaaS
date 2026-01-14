@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, TrendingUp, AlertTriangle, Shield, Users, Mail, Copy, Clock, Loader2 } from 'lucide-react';
 import { Stack, Row, Text, H1, H2, H3, Card, Input, Button } from '@unicornlove/beyond-ui';
@@ -7,11 +7,12 @@ import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
 import { useProjects } from '../../hooks/useProjects';
 import { useCompliance } from '../../hooks/useCompliance';
+import { useClientBrokerCounts } from '../../hooks/useClientBrokerCounts';
 import { useAuth } from '../../contexts/AuthContext';
 import ClientsTable from './ClientsTable';
 import ClientModal from './ClientModal';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
-import { BrokerClient } from '../../types';
+import type { BrokerClient } from '../../types';
 import { toast } from 'sonner';
 import { getUserOrganizationId } from '../../lib/supabase';
 import {
@@ -30,6 +31,12 @@ export default function BrokerClientsPage() {
   const { complianceData, loading: complianceLoading } = useCompliance();
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
   const [organizationId, setOrganizationId] = useState<string | null>(null);
+
+  // Get client organization IDs for broker count lookup
+  const clientOrgIds = useMemo(() => clients.map(c => c.id), [clients]);
+  const { brokerCounts, loading: brokerCountsLoading } = useClientBrokerCounts({
+    organizationIds: clientOrgIds,
+  });
 
   // Invitation state
   const [brokerCode, setBrokerCode] = useState<string>('');
@@ -154,7 +161,7 @@ export default function BrokerClientsPage() {
 
   const stats = getClientStats();
 
-  if (clientsLoading || policiesLoading || projectsLoading || complianceLoading) {
+  if (clientsLoading || policiesLoading || projectsLoading || complianceLoading || brokerCountsLoading) {
     return <DashboardSkeleton />;
   }
 
@@ -615,6 +622,7 @@ export default function BrokerClientsPage() {
           gcOnly={true}
           complianceData={complianceData}
           projects={projects}
+          brokerCounts={brokerCounts}
           onClientClick={(client: BrokerClient) => {
             navigate(`/broker/clients/${client.id}`);
           }}

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Building,
@@ -8,39 +8,93 @@ import {
   Users,
   FileText,
   CheckCircle,
-  Clock,
   AlertCircle,
   AlertTriangle,
-  X,
   ArrowLeft,
   History as HistoryIcon,
   MessageSquare,
   List,
+  Plus,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card, Tabs } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H3, Card, Tabs } from '@unicornlove/beyond-ui';
 import Tooltip from '../../ui/Tooltip';
 import Button from '../Common/Button';
 import { useProjectDetail } from '../../hooks/useProjectDetail';
 import { useComments } from '../../hooks/useComments';
 import { useComplianceIssues } from '../../hooks/useComplianceIssues';
-import { useUser } from '../../contexts/UserContext';
-import { EntityType } from '../../types';
+import { useProjectActivityLog } from '../../hooks/useProjectActivityLog';
+import { useTasks } from '../../hooks/useTasks';
+import { useProjectParticipants } from '../../hooks/useProjectParticipants';
+import { useProjectSubcontractors } from '../../hooks/useProjectSubcontractors';
+import { useAuth } from '../../contexts/AuthContext';
+import ProjectActivityLog from './ProjectActivityLog';
+import ProjectNotesTab from './ProjectNotesTab';
+import ProjectAddTaskModal from './ProjectAddTaskModal';
+import ProjectDocumentsTab from './ProjectDocumentsTab';
+import AddSubcontractorToProjectModal from './AddSubcontractorToProjectModal';
+import type { EntityType, ProjectParticipant } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';
 
 export default function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { currentUser } = useUser();
-  const { project, participants, tasks, compliance, loading, error } =
+  const { user: currentUser } = useAuth();
+  const { project, tasks, compliance, loading, error } =
     useProjectDetail(projectId || '');
-  const { comments: projectComments } = useComments({
+  const {
+    comments: projectComments,
+    createComment,
+    updateComment,
+    deleteComment,
+    loading: commentsLoading,
+  } = useComments({
     entityType: 'project' as EntityType,
     entityId: projectId,
   });
   const { issues: complianceIssues } = useComplianceIssues({
     projectId: projectId,
   });
+
+  // Get the createTask function from useTasks hook
+  const { createTask, fetchTasks } = useTasks({});
+
+  // Get participants with their info for task assignment
+  const { participants: projectParticipants } = useProjectParticipants(projectId);
+
+  // Get project subcontractors
+  const {
+    projectSubcontractors,
+    loading: subcontractorsLoading,
+    fetchProjectSubcontractors,
+  } = useProjectSubcontractors({ projectId });
+
+  // Add Task Modal state
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+
+  // Add Subcontractor Modal state
+  const [isAddSubcontractorModalOpen, setIsAddSubcontractorModalOpen] = useState(false);
+
+  // Handle task creation
+  const handleCreateTask = useCallback(
+    async (taskData: Parameters<typeof createTask>[0]) => {
+      const result = await createTask(taskData);
+      // Refresh the tasks list
+      await fetchTasks();
+      return result;
+    },
+    [createTask, fetchTasks]
+  );
+
+  // Fetch project activity log for History tab
+  const {
+    activities: projectActivities,
+    loading: activitiesLoading,
+    error: activitiesError,
+    hasMore: activitiesHasMore,
+    loadMore: loadMoreActivities,
+    refresh: refreshActivities,
+  } = useProjectActivityLog({ projectId });
 
   // REQ-279: Calculate issue counts for warning indicator and tabs
   const allOpenIssues = useMemo(
@@ -136,6 +190,21 @@ export default function ProjectDetailPage() {
         return { backgroundColor: 'var(--color-red2)', color: 'var(--color-red11)' };
       default:
         return { backgroundColor: 'var(--color-gray2)', color: 'var(--color-gray11)' };
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent':
+        return 'var(--color-red10)';
+      case 'high':
+        return 'var(--color-orange10)';
+      case 'medium':
+        return 'var(--color-blue10)';
+      case 'low':
+        return 'var(--color-green10)';
+      default:
+        return 'var(--color-gray10)';
     }
   };
 
@@ -436,14 +505,40 @@ export default function ProjectDetailPage() {
       id: 'participants',
       label: 'Participants',
       icon: Users,
-      badge: participants.length,
+      badge: projectSubcontractors.length > 0 ? projectSubcontractors.length : undefined,
       content: (
         <Stack style={{ gap: 16 }}>
-          {participants.length > 0 ? (
+          {/* Header with Add Subcontractor button */}
+          <Row
+            style={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
+              Project Subcontractors ({projectSubcontractors.length})
+            </Text>
+            <Button
+              color="primary"
+              size="sm"
+              iconStart={Plus}
+              onPress={() => setIsAddSubcontractorModalOpen(true)}
+              disabled={!currentUser?.id || !project?.organization_id}
+            >
+              Add Subcontractor
+            </Button>
+          </Row>
+
+          {/* Subcontractors List */}
+          {subcontractorsLoading ? (
+            <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32 }}>
+              <Text style={{ color: 'var(--color-10)' }}>Loading subcontractors...</Text>
+            </Stack>
+          ) : projectSubcontractors.length > 0 ? (
             <Stack style={{ gap: 12 }}>
-              {participants.map((participant) => (
+              {projectSubcontractors.map((ps) => (
                 <Row
-                  key={participant.id}
+                  key={ps.id}
                   style={{
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -457,23 +552,24 @@ export default function ProjectDetailPage() {
                       style={{
                         width: 40,
                         height: 40,
-                        backgroundColor: 'var(--color-blue10)',
+                        backgroundColor: 'var(--color-orange9)',
                         borderRadius: 9999,
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
                       <Text style={{ fontSize: 14, fontWeight: 600, color: 'white' }}>
-                        {participant.role.charAt(0).toUpperCase()}
+                        {ps.subcontractor?.company?.charAt(0)?.toUpperCase() || 'S'}
                       </Text>
                     </Row>
                     <Stack>
                       <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
-                        {participant.role}
+                        {ps.subcontractor?.company || 'Unknown Company'}
                       </Text>
                       <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
-                        {participant.status} - Invited{' '}
-                        {formatDate(participant.invited_at)}
+                        {ps.subcontractor?.name}
+                        {ps.subcontractor?.trade_type && ` · ${ps.subcontractor.trade_type}`}
+                        {ps.invited_at && ` · Invited ${formatDate(ps.invited_at)}`}
                       </Text>
                     </Stack>
                   </Row>
@@ -484,11 +580,11 @@ export default function ProjectDetailPage() {
                       paddingTop: 4,
                       paddingBottom: 4,
                       borderRadius: 4,
-                      backgroundColor: participant.status === 'accepted' ? 'var(--color-green2)' : 'var(--color-yellow2)',
+                      backgroundColor: ps.status === 'active' ? 'var(--color-green2)' : 'var(--color-yellow2)',
                     }}
                   >
-                    <Text style={{ fontSize: 12, fontWeight: 500, color: participant.status === 'accepted' ? 'var(--color-green11)' : 'var(--color-yellow11)' }}>
-                      {participant.status}
+                    <Text style={{ fontSize: 12, fontWeight: 500, color: ps.status === 'active' ? 'var(--color-green11)' : 'var(--color-yellow11)' }}>
+                      {ps.status || 'invited'}
                     </Text>
                   </Row>
                 </Row>
@@ -497,7 +593,10 @@ export default function ProjectDetailPage() {
           ) : (
             <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
               <Users size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
-              <Text>No participants yet</Text>
+              <Text>No subcontractors yet</Text>
+              <Text style={{ fontSize: 12, marginTop: 4 }}>
+                Click "Add Subcontractor" to invite subcontractors to this project
+              </Text>
             </Stack>
           )}
         </Stack>
@@ -544,6 +643,7 @@ export default function ProjectDetailPage() {
             <Text style={{ fontSize: 14, color: 'var(--color-blue12)' }}>
               Showing issues assigned to you. View{' '}
               <button
+                type="button"
                 onClick={() => handleTabChange('all-issues')}
                 style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
               >
@@ -759,25 +859,42 @@ export default function ProjectDetailPage() {
       label: 'Documents',
       icon: FileText,
       content: (
-        <Stack style={{ gap: 16 }}>
-          <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
-            <FileText size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
-            <Text>Document management coming soon</Text>
-            <Text style={{ fontSize: 12, marginTop: 4 }}>
-              This will show all project-related documents (COIs, endorsements,
-              contracts)
-            </Text>
-          </Stack>
-        </Stack>
+        <ProjectDocumentsTab
+          projectId={projectId || ''}
+          organizationId={project?.organization_id}
+          currentUserId={currentUser?.id}
+        />
       ),
     },
     {
       id: 'tasks',
       label: 'Tasks',
       icon: CheckCircle,
-      badge: tasks.length,
+      badge: tasks.length > 0 ? tasks.length : undefined,
       content: (
         <Stack style={{ gap: 16 }}>
+          {/* Header with Add Task button */}
+          <Row
+            style={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
+              Project Tasks ({tasks.length})
+            </Text>
+            <Button
+              color="primary"
+              size="sm"
+              iconStart={Plus}
+              onPress={() => setIsAddTaskModalOpen(true)}
+              disabled={!currentUser?.id}
+            >
+              Add Task
+            </Button>
+          </Row>
+
+          {/* Tasks List */}
           {tasks.length > 0 ? (
             <Stack style={{ gap: 12 }}>
               {tasks.map((task) => (
@@ -810,6 +927,22 @@ export default function ProjectDetailPage() {
                           {task.status.replace('_', ' ')}
                         </Text>
                       </Row>
+                      {task.priority && (
+                        <Row
+                          style={{
+                            paddingLeft: 8,
+                            paddingRight: 8,
+                            paddingTop: 2,
+                            paddingBottom: 2,
+                            borderRadius: 4,
+                            backgroundColor: getPriorityColor(task.priority),
+                          }}
+                        >
+                          <Text style={{ fontSize: 12, fontWeight: 500, color: '#ffffff' }}>
+                            {task.priority}
+                          </Text>
+                        </Row>
+                      )}
                     </Row>
                     {task.description && (
                       <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
@@ -829,6 +962,9 @@ export default function ProjectDetailPage() {
             <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
               <CheckCircle size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
               <Text>No tasks yet</Text>
+              <Text style={{ fontSize: 12, marginTop: 4 }}>
+                Click "Add Task" to create the first task for this project
+              </Text>
             </Stack>
           )}
         </Stack>
@@ -838,15 +974,18 @@ export default function ProjectDetailPage() {
       id: 'history',
       label: 'History',
       icon: HistoryIcon,
+      badge: projectActivities.length > 0 ? projectActivities.length : undefined,
       content: (
         <Stack style={{ gap: 16 }}>
-          <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
-            <HistoryIcon size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
-            <Text>Activity log coming soon</Text>
-            <Text style={{ fontSize: 12, marginTop: 4 }}>
-              This will show project activity with timestamps and user actions
-            </Text>
-          </Stack>
+          <ProjectActivityLog
+            activities={projectActivities}
+            loading={activitiesLoading}
+            error={activitiesError}
+            hasMore={activitiesHasMore}
+            onLoadMore={loadMoreActivities}
+            onRefresh={refreshActivities}
+            emptyMessage="No activity recorded for this project yet"
+          />
         </Stack>
       ),
     },
@@ -854,53 +993,18 @@ export default function ProjectDetailPage() {
       id: 'notes',
       label: 'Notes',
       icon: MessageSquare,
-      badge: projectComments.length,
+      badge: projectComments.length > 0 ? projectComments.length : undefined,
       content: (
-        <Stack style={{ gap: 16 }}>
-          {projectComments.length > 0 ? (
-            <Stack style={{ gap: 12 }}>
-              {projectComments.map((comment) => (
-                <Card
-                  key={comment.id}
-                  style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8 }}
-                >
-                  <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <Row
-                      style={{
-                        width: 32,
-                        height: 32,
-                        backgroundColor: 'var(--color-blue10)',
-                        borderRadius: 9999,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Text style={{ fontSize: 12, fontWeight: 600, color: 'white' }}>
-                        {comment.user_id.charAt(0).toUpperCase()}
-                      </Text>
-                    </Row>
-                    <Stack style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
-                        User {comment.user_id.substring(0, 8)}
-                      </Text>
-                      <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
-                        {formatDate(comment.created_at)}
-                      </Text>
-                    </Stack>
-                  </Row>
-                  <Text style={{ fontSize: 14, color: 'var(--color-11)', whiteSpace: 'pre-wrap' }}>
-                    {comment.content}
-                  </Text>
-                </Card>
-              ))}
-            </Stack>
-          ) : (
-            <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
-              <MessageSquare size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
-              <Text>No notes yet</Text>
-            </Stack>
-          )}
-        </Stack>
+        <ProjectNotesTab
+          projectId={projectId || ''}
+          organizationId={project?.organization_id}
+          comments={projectComments}
+          currentUserId={currentUser?.id}
+          onCreateComment={createComment}
+          onUpdateComment={updateComment}
+          onDeleteComment={deleteComment}
+          loading={commentsLoading}
+        />
       ),
     },
   ];
@@ -989,6 +1093,28 @@ export default function ProjectDetailPage() {
           </Tabs.Item>
         ))}
       </Tabs>
+
+      {/* Add Task Modal */}
+      <ProjectAddTaskModal
+        isOpen={isAddTaskModalOpen}
+        onClose={() => setIsAddTaskModalOpen(false)}
+        onSave={handleCreateTask}
+        projectId={projectId || ''}
+        projectName={project?.name}
+        organizationId={project?.organization_id}
+        participants={projectParticipants as ProjectParticipant[]}
+        currentUserId={currentUser?.id}
+      />
+
+      {/* Add Subcontractor Modal */}
+      <AddSubcontractorToProjectModal
+        isOpen={isAddSubcontractorModalOpen}
+        onClose={() => setIsAddSubcontractorModalOpen(false)}
+        projectId={projectId || ''}
+        organizationId={project?.organization_id}
+        currentUserId={currentUser?.id}
+        onSubcontractorAdded={fetchProjectSubcontractors}
+      />
     </Stack>
   );
 }

@@ -5,7 +5,6 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  Loader2,
   UserPlus,
 } from 'lucide-react';
 import { Stack, Row, Text, H1, H3, Card, Input, Button, Spinner } from '@unicornlove/beyond-ui';
@@ -35,7 +34,7 @@ export default function MyBrokerPage() {
   const { forsured } = useDatabase();
   const [loading, setLoading] = useState(true);
   const [organizationId, setOrganizationId] = useState<string | null>(null);
-  const [broker, setBroker] = useState<BrokerInfo | null>(null);
+  const [connectedBrokers, setConnectedBrokers] = useState<BrokerInfo[]>([]);
   const [managerCode, setManagerCode] = useState<string>('');
   const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([]);
 
@@ -76,7 +75,7 @@ export default function MyBrokerPage() {
         const code = generateRelationshipCode('MGR');
         setManagerCode(code);
 
-        // Check for existing broker relationship
+        // Check for existing broker relationships (supports multiple brokers)
         const { data: brokerRelationships, error: brokerError } = await forsured(
           'relationship_invitations'
         )
@@ -84,24 +83,24 @@ export default function MyBrokerPage() {
           .eq('inviter_org_id', organizationId)
           .eq('inviter_type', 'manager')
           .eq('invitee_type', 'broker')
-          .in('status', ['connected', 'pending'])
-          .order('created_at', { ascending: false })
-          .limit(1);
+          .eq('status', 'connected')
+          .order('created_at', { ascending: false });
 
         if (brokerError) throw brokerError;
 
         if (brokerRelationships && brokerRelationships.length > 0) {
-          const relationship = brokerRelationships[0];
-          const metadata = relationship.metadata as Record<string, unknown>;
-
-          setBroker({
-            id: relationship.id,
-            name: (metadata?.name as string) || 'Unknown',
-            company: (metadata?.company as string) || '',
-            email: relationship.invitee_email,
-            phone: (metadata?.phone as string) || undefined,
-            status: relationship.status === 'connected' ? 'connected' : 'pending',
+          const brokers = brokerRelationships.map((relationship) => {
+            const metadata = relationship.metadata as Record<string, unknown>;
+            return {
+              id: relationship.id,
+              name: (metadata?.name as string) || 'Unknown',
+              company: (metadata?.company as string) || '',
+              email: relationship.invitee_email,
+              phone: (metadata?.phone as string) || undefined,
+              status: 'connected' as const,
+            };
           });
+          setConnectedBrokers(brokers);
         }
 
         // Fetch pending broker invitations
@@ -122,9 +121,7 @@ export default function MyBrokerPage() {
   }, [user?.id, organizationId, forsured]);
 
   // Handle invitation submit
-  const handleSendInvitation = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSendInvitation = async () => {
     if (!user?.id || !organizationId) {
       toast.error('Unable to send invitation. Please ensure you are logged in.');
       return;
@@ -132,11 +129,6 @@ export default function MyBrokerPage() {
 
     if (!inviteFormData.email || !inviteFormData.name) {
       toast.error('Broker email and name are required');
-      return;
-    }
-
-    if (broker?.status === 'connected') {
-      toast.error('You already have a connected broker');
       return;
     }
 
@@ -179,9 +171,7 @@ export default function MyBrokerPage() {
   };
 
   // Handle code entry
-  const handleConnectByCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleConnectByCode = async () => {
     if (!user?.id || !organizationId) {
       toast.error('Unable to connect. Please ensure you are logged in.');
       return;
@@ -189,11 +179,6 @@ export default function MyBrokerPage() {
 
     if (!brokerCode.trim()) {
       toast.error('Please enter a broker code');
-      return;
-    }
-
-    if (broker?.status === 'connected') {
-      toast.error('You already have a connected broker');
       return;
     }
 
@@ -267,12 +252,14 @@ export default function MyBrokerPage() {
             marginTop: 'var(--space-1)',
           }}
         >
-          {broker ? 'Manage your insurance broker relationship' : 'Connect with your insurance broker'}
+          {connectedBrokers.length > 0 
+            ? 'Manage your insurance broker relationships' 
+            : 'Connect with your insurance brokers'}
         </Text>
       </Stack>
 
-      {/* Current Broker */}
-      {broker && (
+      {/* Connected Brokers */}
+      {connectedBrokers.length > 0 && (
         <Card
           style={{
             backgroundColor: 'var(--color-background)',
@@ -282,162 +269,87 @@ export default function MyBrokerPage() {
           }}
         >
           <Stack style={{ gap: 'var(--space-4)' }}>
-            <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <H3
-                style={{
-                  fontSize: 'var(--font-size-5)',
-                  fontWeight: 600,
-                  color: 'var(--color-12)',
-                }}
-              >
-                Your Broker
-              </H3>
-              {broker.status === 'connected' ? (
-                <Row
-                  style={{
-                    gap: 'var(--space-2)',
-                    alignItems: 'center',
-                    backgroundColor: 'var(--color-green-2)',
-                    paddingLeft: 'var(--space-3)',
-                    paddingRight: 'var(--space-3)',
-                    paddingTop: 'var(--space-2)',
-                    paddingBottom: 'var(--space-2)',
-                    borderRadius: 'var(--radius-3)',
-                  }}
-                >
-                  <CheckCircle size={16} color="var(--color-green-10)" />
-                  <Text
-                    style={{
-                      fontSize: 'var(--font-size-2)',
-                      fontWeight: 600,
-                      color: 'var(--color-green-10)',
-                    }}
-                  >
-                    Connected
-                  </Text>
-                </Row>
-              ) : (
-                <Row
-                  style={{
-                    gap: 'var(--space-2)',
-                    alignItems: 'center',
-                    backgroundColor: 'var(--color-orange-2)',
-                    paddingLeft: 'var(--space-3)',
-                    paddingRight: 'var(--space-3)',
-                    paddingTop: 'var(--space-2)',
-                    paddingBottom: 'var(--space-2)',
-                    borderRadius: 'var(--radius-3)',
-                  }}
-                >
-                  <Clock size={16} color="var(--color-orange-10)" />
-                  <Text
-                    style={{
-                      fontSize: 'var(--font-size-2)',
-                      fontWeight: 600,
-                      color: 'var(--color-orange-10)',
-                    }}
-                  >
-                    Pending
-                  </Text>
-                </Row>
-              )}
-            </Row>
+            <H3
+              style={{
+                fontSize: 'var(--font-size-5)',
+                fontWeight: 600,
+                color: 'var(--color-12)',
+              }}
+            >
+              Your Brokers ({connectedBrokers.length})
+            </H3>
 
             <Stack style={{ gap: 'var(--space-3)' }}>
-              <Stack style={{ gap: 'var(--space-1)' }}>
-                <Text
+              {connectedBrokers.map((broker) => (
+                <Card
+                  key={broker.id}
                   style={{
-                    fontSize: 'var(--font-size-2)',
-                    fontWeight: 500,
-                    color: 'var(--color-11)',
+                    backgroundColor: 'var(--color-green-2)',
+                    border: '1px solid var(--color-green-6)',
+                    borderRadius: 'var(--radius-3)',
+                    padding: 'var(--space-4)',
                   }}
                 >
-                  Broker Name
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 'var(--font-size-4)',
-                    fontWeight: 600,
-                    color: 'var(--color-12)',
-                  }}
-                >
-                  {broker.name}
-                </Text>
-              </Stack>
-
-              {broker.company && (
-                <Stack style={{ gap: 'var(--space-1)' }}>
-                  <Text
-                    style={{
-                      fontSize: 'var(--font-size-2)',
-                      fontWeight: 500,
-                      color: 'var(--color-11)',
-                    }}
-                  >
-                    Company
-                  </Text>
-                  <Text style={{ fontSize: 'var(--font-size-4)', color: 'var(--color-12)' }}>
-                    {broker.company}
-                  </Text>
-                </Stack>
-              )}
-
-              <Stack style={{ gap: 'var(--space-1)' }}>
-                <Text
-                  style={{
-                    fontSize: 'var(--font-size-2)',
-                    fontWeight: 500,
-                    color: 'var(--color-11)',
-                  }}
-                >
-                  Email
-                </Text>
-                <Text style={{ fontSize: 'var(--font-size-4)', color: 'var(--color-12)' }}>
-                  {broker.email}
-                </Text>
-              </Stack>
-
-              {broker.phone && (
-                <Stack style={{ gap: 'var(--space-1)' }}>
-                  <Text
-                    style={{
-                      fontSize: 'var(--font-size-2)',
-                      fontWeight: 500,
-                      color: 'var(--color-11)',
-                    }}
-                  >
-                    Phone
-                  </Text>
-                  <Text style={{ fontSize: 'var(--font-size-4)', color: 'var(--color-12)' }}>
-                    {broker.phone}
-                  </Text>
-                </Stack>
-              )}
+                  <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                      <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+                        <CheckCircle size={18} color="var(--color-green-10)" />
+                        <Text
+                          style={{
+                            fontSize: 'var(--font-size-4)',
+                            fontWeight: 600,
+                            color: 'var(--color-12)',
+                          }}
+                        >
+                          {broker.name}
+                        </Text>
+                      </Row>
+                      {broker.company && (
+                        <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
+                          {broker.company}
+                        </Text>
+                      )}
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
+                        {broker.email}
+                      </Text>
+                      {broker.phone && (
+                        <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
+                          {broker.phone}
+                        </Text>
+                      )}
+                    </Stack>
+                    <Row
+                      style={{
+                        gap: 'var(--space-2)',
+                        alignItems: 'center',
+                        backgroundColor: 'var(--color-green-3)',
+                        paddingLeft: 'var(--space-2)',
+                        paddingRight: 'var(--space-2)',
+                        paddingTop: 'var(--space-1)',
+                        paddingBottom: 'var(--space-1)',
+                        borderRadius: 'var(--radius-2)',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-1)',
+                          fontWeight: 600,
+                          color: 'var(--color-green-11)',
+                        }}
+                      >
+                        Connected
+                      </Text>
+                    </Row>
+                  </Row>
+                </Card>
+              ))}
             </Stack>
-
-            {broker.status === 'pending' && (
-              <Card
-                style={{
-                  backgroundColor: 'var(--color-blue-2)',
-                  border: '1px solid var(--color-blue-6)',
-                  borderRadius: 'var(--radius-3)',
-                  padding: 'var(--space-3)',
-                }}
-              >
-                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue-11)' }}>
-                  Your broker invitation is pending. They will be able to see your information once
-                  they accept.
-                </Text>
-              </Card>
-            )}
           </Stack>
         </Card>
       )}
 
-      {/* No Broker - Invite Options */}
-      {!broker && (
-        <>
-          {/* Connect by Code */}
+      {/* Invite Options - Always shown (multiple brokers supported) */}
+      {/* Connect by Code */}
           <Card
             style={{
               backgroundColor: 'var(--color-background)',
@@ -499,20 +411,13 @@ export default function MyBrokerPage() {
                     </Stack>
 
                     <Button
-                      type="submit"
+                      color="primary"
                       disabled={connectingByCode || !brokerCode.trim()}
+                      loading={connectingByCode}
+                      iconStart={CheckCircle}
+                      onPress={handleConnectByCode}
                     >
-                      {connectingByCode ? (
-                        <>
-                          <Loader2 size={16} className="animate-spin" />
-                          Connecting...
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle size={16} />
-                          Connect with Broker
-                        </>
-                      )}
+                      {connectingByCode ? 'Connecting...' : 'Connect with Broker'}
                     </Button>
                   </Stack>
                 </form>
@@ -647,28 +552,19 @@ export default function MyBrokerPage() {
                     </Row>
 
                     <Button
-                      type="submit"
+                      color="primary"
                       disabled={sendingInvite || !inviteFormData.email || !inviteFormData.name}
+                      loading={sendingInvite}
+                      iconStart={Mail}
+                      onPress={handleSendInvitation}
                     >
-                      {sendingInvite ? (
-                        <>
-                          <Loader2 size={16} className="animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Mail size={16} />
-                          Send Invitation
-                        </>
-                      )}
+                      {sendingInvite ? 'Sending...' : 'Send Invitation'}
                     </Button>
                   </Stack>
                 </form>
               )}
             </Stack>
           </Card>
-        </>
-      )}
 
       {/* Manager Code - For Contractors */}
       <Card
@@ -717,8 +613,12 @@ export default function MyBrokerPage() {
                 {managerCode || 'Loading...'}
               </Text>
             </Card>
-            <Button onPress={copyManagerCode} disabled={!managerCode}>
-              <Copy size={16} />
+            <Button
+              color="primary"
+              onPress={copyManagerCode}
+              disabled={!managerCode}
+              iconStart={Copy}
+            >
               Copy
             </Button>
           </Row>
@@ -816,8 +716,8 @@ export default function MyBrokerPage() {
             </Text>
           </Row>
           <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-11)' }}>
-            You can only have one insurance broker. Once connected, your broker will be able to
-            manage your insurance policies and compliance requirements.
+            You can connect with multiple insurance brokers if needed. Once connected, your brokers 
+            will be able to manage your insurance policies and compliance requirements.
           </Text>
         </Stack>
       </Card>

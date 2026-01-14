@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Search, Calendar, MessageSquare, Users } from 'lucide-react';
+import { ChevronRight, Search, Calendar, MessageSquare, Users, Shield } from 'lucide-react';
 import { Stack, Row, Text, H2, Card, Input } from '@unicornlove/beyond-ui';
-import { BrokerClient, PolicyData, ComplianceData } from '../../types';
+import type { BrokerClient, PolicyData, ComplianceData } from '../../types';
 import { formatDistanceToNow } from '../../utils/dateHelpers';
+import type { ClientBrokerCount } from '../../hooks/useClientBrokerCounts';
 
 type SortOption = 'default' | 'most-subs' | 'lowest-compliance' | 'recent-activity';
 
@@ -23,6 +24,8 @@ interface ClientsTableProps {
   complianceData?: ComplianceData[];
   /** Projects for mapping GCs to their subcontractors */
   projects?: Array<{ id: string; client_id: string }>;
+  /** Optional map of client organization ID to broker count info */
+  brokerCounts?: Map<string, ClientBrokerCount>;
 }
 
 export default function ClientsTable({
@@ -32,6 +35,7 @@ export default function ClientsTable({
   gcOnly = false,
   complianceData = [],
   projects = [],
+  brokerCounts,
 }: ClientsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [riskFilter, setRiskFilter] = useState<string>('all');
@@ -368,6 +372,7 @@ export default function ClientsTable({
               <th style={thStyle}>Open Items</th>
               <th style={thStyle}>Next Renewal</th>
               <th style={thStyle}>Compliance</th>
+              {brokerCounts && <th style={thStyle}>Brokers</th>}
               <th style={thStyle}>Last Activity</th>
               <th style={thStyle}>Notes</th>
               <th style={{ ...thStyle, textAlign: 'right' }}>Actions</th>
@@ -525,6 +530,47 @@ export default function ClientsTable({
                       </Text>
                     </Row>
                   </td>
+                  {brokerCounts && (
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      {(() => {
+                        const brokerInfo = brokerCounts.get(client.id);
+                        if (!brokerInfo || brokerInfo.brokerCount === 0) {
+                          return (
+                            <Text size="sm" muted>-</Text>
+                          );
+                        }
+                        if (brokerInfo.hasMultipleBrokers) {
+                          return (
+                            <Row
+                              alignItems="center"
+                              gap={4}
+                              style={{
+                                backgroundColor: 'var(--color-orange-2)',
+                                paddingLeft: 8,
+                                paddingRight: 8,
+                                paddingTop: 4,
+                                paddingBottom: 4,
+                                borderRadius: 4,
+                                display: 'inline-flex',
+                              }}
+                              title={`This client works with ${brokerInfo.brokerCount} brokers`}
+                            >
+                              <Shield size={14} style={{ color: 'var(--color-orange-10)' }} />
+                              <Text size="sm" weight="semibold" style={{ color: 'var(--color-orange-11)' }}>
+                                {brokerInfo.brokerCount}
+                              </Text>
+                            </Row>
+                          );
+                        }
+                        return (
+                          <Row alignItems="center" gap={4}>
+                            <Shield size={14} style={{ color: 'var(--color-text-muted)' }} />
+                            <Text size="sm" muted>1</Text>
+                          </Row>
+                        );
+                      })()}
+                    </td>
+                  )}
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: 14, color: 'var(--color-text-muted)' }}>
                     <Row alignItems="center" gap={4}>
                       <MessageSquare size={14} />
