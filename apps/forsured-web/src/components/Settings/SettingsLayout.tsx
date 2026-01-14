@@ -1,8 +1,9 @@
 /**
- * SettingsLayout - Settings layout using Tamagui
+ * SettingsLayout - Settings layout using Beyond UI
  */
+import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { XStack, YStack, Text } from '@unicornlove/ui';
+import { Row, Stack, Text } from '@unicornlove/beyond-ui';
 import { Settings } from 'lucide-react';
 import SettingsNav from './SettingsNav';
 
@@ -19,36 +20,37 @@ const userTypeLabels: Record<string, string> = {
 
 function SettingsLayout({ userType }: SettingsLayoutProps) {
   return (
-    <XStack minHeight="calc(100vh - 4rem)">
+    <Row style={{ minHeight: 'calc(100vh - 4rem)' }}>
       {/* Settings Sidebar */}
-      <YStack
-        as="aside"
-        width={256}
-        backgroundColor="$backgroundHover"
-        borderRightWidth={1}
-        borderRightColor="$borderColor"
-        padding="$6"
-        gap="$6"
+      <aside
+        style={{
+          width: 256,
+          backgroundColor: 'var(--color-backgroundHover)',
+          borderRight: '1px solid var(--color-border)',
+          padding: 24,
+        }}
       >
-        <XStack alignItems="center" gap="$2" mb="$6">
-          <Settings size={24} color="currentColor" />
-          <YStack>
-            <Text fontSize="$5" fontWeight="600" color="$color11">
-              Settings
-            </Text>
-            <Text fontSize="$1" color="$color10">
-              {userTypeLabels[userType]}
-            </Text>
-          </YStack>
-        </XStack>
-        <SettingsNav userType={userType} />
-      </YStack>
+        <Stack style={{ gap: 24 }}>
+          <Row style={{ alignItems: 'center', gap: 8, marginBottom: 24 }}>
+            <Settings size={24} color="currentColor" />
+            <Stack>
+              <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-color11)' }}>
+                Settings
+              </Text>
+              <Text style={{ fontSize: 12, color: 'var(--color-color10)' }}>
+                {userTypeLabels[userType]}
+              </Text>
+            </Stack>
+          </Row>
+          <SettingsNav userType={userType} />
+        </Stack>
+      </aside>
 
       {/* Settings Content */}
-      <YStack as="main" flex={1} padding="$6" backgroundColor="$background">
+      <main style={{ flex: 1, padding: 24, backgroundColor: 'var(--color-background)' }}>
         <Outlet />
-      </YStack>
-    </XStack>
+      </main>
+    </Row>
   );
 }
 

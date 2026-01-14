@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Building, Save } from 'lucide-react';
-import { YStack, XStack, Text, H1, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui';
 import Button from '../Common/Button';
 import { useProjects } from '../../hooks/useProjects';
 import type { Project } from '../../types';
@@ -95,7 +95,7 @@ export default function ProjectCreatePage() {
   const inputStyle = {
     width: '100%',
     padding: '10px 14px',
-    border: '1px solid var(--border-color)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
     backgroundColor: 'var(--background)',
     color: 'var(--color-12)',
@@ -111,9 +111,9 @@ export default function ProjectCreatePage() {
   };
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 24 }}>
       {/* Header */}
-      <XStack alignItems="center" gap="$4">
+      <Row style={{ alignItems: 'center', gap: 16 }}>
         <Button
           variant="ghost"
           onClick={() => navigate('/manager/projects')}
@@ -122,37 +122,37 @@ export default function ProjectCreatePage() {
         >
           Back
         </Button>
-        <YStack>
-          <H1 fontSize="$8" fontWeight="700" color="$color12">
+        <Stack>
+          <H1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--color-12)' }}>
             Create New Project
           </H1>
-          <Text color="$color11" fontSize="$3">
+          <Text style={{ color: 'var(--color-11)', fontSize: 14 }}>
             Set up a new project with insurance requirements
           </Text>
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
       {error && (
-        <Card padding="$4" backgroundColor="$red2" borderColor="$red6" borderWidth={1} borderRadius="$4">
-          <Text color="$red11">{error}</Text>
+        <Card style={{ padding: 16, backgroundColor: 'var(--color-red2)', border: '1px solid var(--color-red6)', borderRadius: 8 }}>
+          <Text style={{ color: 'var(--color-red11)' }}>{error}</Text>
         </Card>
       )}
 
       <form onSubmit={handleSubmit}>
-        <YStack gap="$6">
+        <Stack style={{ gap: 24 }}>
           {/* Basic Info */}
-          <Card padding="$6" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-            <XStack alignItems="center" gap="$2" mb="$4">
+          <Card style={{ padding: 24, border: '1px solid var(--color-border)', borderRadius: 8 }}>
+            <Row style={{ alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <Building size={20} color="var(--color-11)" />
-              <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)' }}>
                 Project Details
               </Text>
-            </XStack>
+            </Row>
 
-            <YStack gap="$4">
-              <YStack>
+            <Stack style={{ gap: 16 }}>
+              <Stack>
                 <label style={labelStyle}>
-                  Project Name <span style={{ color: 'var(--red-10)' }}>*</span>
+                  Project Name <span style={{ color: 'var(--color-red10)' }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -162,9 +162,9 @@ export default function ProjectCreatePage() {
                   style={inputStyle}
                   required
                 />
-              </YStack>
+              </Stack>
 
-              <YStack>
+              <Stack>
                 <label style={labelStyle}>Description</label>
                 <textarea
                   value={formData.description || ''}
@@ -173,10 +173,10 @@ export default function ProjectCreatePage() {
                   rows={3}
                   style={{ ...inputStyle, resize: 'vertical' }}
                 />
-              </YStack>
+              </Stack>
 
-              <XStack gap="$4" flexWrap="wrap">
-                <YStack flex={1} minWidth={200}>
+              <Row style={{ gap: 16, flexWrap: 'wrap' }}>
+                <Stack style={{ flex: 1, minWidth: 200 }}>
                   <label style={labelStyle}>Location</label>
                   <input
                     type="text"
@@ -185,9 +185,9 @@ export default function ProjectCreatePage() {
                     placeholder="Project location"
                     style={inputStyle}
                   />
-                </YStack>
+                </Stack>
 
-                <YStack flex={1} minWidth={200}>
+                <Stack style={{ flex: 1, minWidth: 200 }}>
                   <label style={labelStyle}>Project Manager</label>
                   <input
                     type="text"
@@ -196,13 +196,13 @@ export default function ProjectCreatePage() {
                     placeholder="Project manager name"
                     style={inputStyle}
                   />
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
 
-              <XStack gap="$4" flexWrap="wrap">
-                <YStack flex={1} minWidth={200}>
+              <Row style={{ gap: 16, flexWrap: 'wrap' }}>
+                <Stack style={{ flex: 1, minWidth: 200 }}>
                   <label style={labelStyle}>
-                    Start Date <span style={{ color: 'var(--red-10)' }}>*</span>
+                    Start Date <span style={{ color: 'var(--color-red10)' }}>*</span>
                   </label>
                   <input
                     type="date"
@@ -211,11 +211,11 @@ export default function ProjectCreatePage() {
                     style={inputStyle}
                     required
                   />
-                </YStack>
+                </Stack>
 
-                <YStack flex={1} minWidth={200}>
+                <Stack style={{ flex: 1, minWidth: 200 }}>
                   <label style={labelStyle}>
-                    End Date <span style={{ color: 'var(--red-10)' }}>*</span>
+                    End Date <span style={{ color: 'var(--color-red10)' }}>*</span>
                   </label>
                   <input
                     type="date"
@@ -224,9 +224,9 @@ export default function ProjectCreatePage() {
                     style={inputStyle}
                     required
                   />
-                </YStack>
+                </Stack>
 
-                <YStack flex={1} minWidth={200}>
+                <Stack style={{ flex: 1, minWidth: 200 }}>
                   <label style={labelStyle}>Contract Value</label>
                   <input
                     type="number"
@@ -235,19 +235,19 @@ export default function ProjectCreatePage() {
                     placeholder="0"
                     style={inputStyle}
                   />
-                </YStack>
-              </XStack>
-            </YStack>
+                </Stack>
+              </Row>
+            </Stack>
           </Card>
 
           {/* Insurance Requirements */}
-          <Card padding="$6" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-            <Text fontSize="$5" fontWeight="600" color="$color12" mb="$4">
+          <Card style={{ padding: 24, border: '1px solid var(--color-border)', borderRadius: 8 }}>
+            <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
               Insurance Requirements
             </Text>
 
-            <XStack gap="$4" flexWrap="wrap">
-              <YStack flex={1} minWidth={200}>
+            <Row style={{ gap: 16, flexWrap: 'wrap' }}>
+              <Stack style={{ flex: 1, minWidth: 200 }}>
                 <label style={labelStyle}>General Liability</label>
                 <input
                   type="number"
@@ -256,9 +256,9 @@ export default function ProjectCreatePage() {
                   placeholder="Coverage amount"
                   style={inputStyle}
                 />
-              </YStack>
+              </Stack>
 
-              <YStack flex={1} minWidth={200}>
+              <Stack style={{ flex: 1, minWidth: 200 }}>
                 <label style={labelStyle}>Workers Comp</label>
                 <input
                   type="number"
@@ -267,9 +267,9 @@ export default function ProjectCreatePage() {
                   placeholder="Coverage amount"
                   style={inputStyle}
                 />
-              </YStack>
+              </Stack>
 
-              <YStack flex={1} minWidth={200}>
+              <Stack style={{ flex: 1, minWidth: 200 }}>
                 <label style={labelStyle}>Auto Liability</label>
                 <input
                   type="number"
@@ -278,11 +278,11 @@ export default function ProjectCreatePage() {
                   placeholder="Coverage amount"
                   style={inputStyle}
                 />
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
-            <XStack gap="$4" flexWrap="wrap" mt="$4">
-              <YStack flex={1} minWidth={200}>
+            <Row style={{ gap: 16, flexWrap: 'wrap', marginTop: 16 }}>
+              <Stack style={{ flex: 1, minWidth: 200 }}>
                 <label style={labelStyle}>Umbrella</label>
                 <input
                   type="number"
@@ -291,9 +291,9 @@ export default function ProjectCreatePage() {
                   placeholder="Coverage amount"
                   style={inputStyle}
                 />
-              </YStack>
+              </Stack>
 
-              <YStack flex={1} minWidth={200}>
+              <Stack style={{ flex: 1, minWidth: 200 }}>
                 <label style={labelStyle}>Professional Liability</label>
                 <input
                   type="number"
@@ -302,11 +302,11 @@ export default function ProjectCreatePage() {
                   placeholder="Coverage amount"
                   style={inputStyle}
                 />
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
-            <XStack gap="$6" mt="$4">
-              <XStack alignItems="center" gap="$2">
+            <Row style={{ gap: 24, marginTop: 16 }}>
+              <Row style={{ alignItems: 'center', gap: 8 }}>
                 <input
                   type="checkbox"
                   id="waiver_of_subrogation"
@@ -316,9 +316,9 @@ export default function ProjectCreatePage() {
                 <label htmlFor="waiver_of_subrogation" style={{ fontSize: '14px', color: 'var(--color-12)' }}>
                   Waiver of Subrogation Required
                 </label>
-              </XStack>
+              </Row>
 
-              <XStack alignItems="center" gap="$2">
+              <Row style={{ alignItems: 'center', gap: 8 }}>
                 <input
                   type="checkbox"
                   id="primary_non_contributory"
@@ -328,12 +328,12 @@ export default function ProjectCreatePage() {
                 <label htmlFor="primary_non_contributory" style={{ fontSize: '14px', color: 'var(--color-12)' }}>
                   Primary & Non-Contributory Required
                 </label>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           </Card>
 
           {/* Actions */}
-          <XStack justifyContent="flex-end" gap="$3">
+          <Row style={{ justifyContent: 'flex-end', gap: 12 }}>
             <Button
               variant="outline"
               onClick={() => navigate('/manager/projects')}
@@ -348,9 +348,9 @@ export default function ProjectCreatePage() {
             >
               {saving ? 'Creating...' : 'Create Project'}
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }

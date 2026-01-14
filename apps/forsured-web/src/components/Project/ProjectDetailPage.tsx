@@ -17,8 +17,7 @@ import {
   MessageSquare,
   List,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H2, H3, Card, Spinner, Button as TamaguiButton } from '@unicornlove/ui';
-import { TabsCustom } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H2, H3, Card, Tabs } from '@unicornlove/beyond-ui';
 import Tooltip from '../../ui/Tooltip';
 import Button from '../Common/Button';
 import { useProjectDetail } from '../../hooks/useProjectDetail';
@@ -95,72 +94,72 @@ export default function ProjectDetailPage() {
     }).format(amount);
   };
 
-  const getComplianceStatusColor = (status: string) => {
+  const getComplianceStatusStyle = (status: string) => {
     switch (status) {
       case 'compliant':
-        return { backgroundColor: '$green2', color: '$green11', borderColor: '$green6' };
+        return { backgroundColor: 'var(--color-green2)', color: 'var(--color-green11)', borderColor: 'var(--color-green6)' };
       case 'warning':
-        return { backgroundColor: '$yellow2', color: '$yellow11', borderColor: '$yellow6' };
+        return { backgroundColor: 'var(--color-yellow2)', color: 'var(--color-yellow11)', borderColor: 'var(--color-yellow6)' };
       case 'critical':
-        return { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' };
+        return { backgroundColor: 'var(--color-red2)', color: 'var(--color-red11)', borderColor: 'var(--color-red6)' };
       case 'non_compliant':
-        return { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' };
+        return { backgroundColor: 'var(--color-red2)', color: 'var(--color-red11)', borderColor: 'var(--color-red6)' };
       default:
-        return { backgroundColor: '$gray2', color: '$gray11', borderColor: '$gray6' };
+        return { backgroundColor: 'var(--color-gray2)', color: 'var(--color-gray11)', borderColor: 'var(--color-gray6)' };
     }
   };
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityStyle = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' };
+        return { backgroundColor: 'var(--color-red2)', color: 'var(--color-red11)', borderColor: 'var(--color-red6)' };
       case 'high':
-        return { backgroundColor: '$yellow2', color: '$yellow11', borderColor: '$yellow6' };
+        return { backgroundColor: 'var(--color-yellow2)', color: 'var(--color-yellow11)', borderColor: 'var(--color-yellow6)' };
       case 'medium':
-        return { backgroundColor: '$blue2', color: '$blue11', borderColor: '$blue6' };
+        return { backgroundColor: 'var(--color-blue2)', color: 'var(--color-blue11)', borderColor: 'var(--color-blue6)' };
       case 'low':
-        return { backgroundColor: '$gray2', color: '$gray11', borderColor: '$gray6' };
+        return { backgroundColor: 'var(--color-gray2)', color: 'var(--color-gray11)', borderColor: 'var(--color-gray6)' };
       default:
-        return { backgroundColor: '$gray2', color: '$gray11', borderColor: '$gray6' };
+        return { backgroundColor: 'var(--color-gray2)', color: 'var(--color-gray11)', borderColor: 'var(--color-gray6)' };
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
       case 'completed':
-        return { backgroundColor: '$green2', color: '$green11' };
+        return { backgroundColor: 'var(--color-green2)', color: 'var(--color-green11)' };
       case 'in_progress':
-        return { backgroundColor: '$blue2', color: '$blue11' };
+        return { backgroundColor: 'var(--color-blue2)', color: 'var(--color-blue11)' };
       case 'pending':
-        return { backgroundColor: '$yellow2', color: '$yellow11' };
+        return { backgroundColor: 'var(--color-yellow2)', color: 'var(--color-yellow11)' };
       case 'blocked':
-        return { backgroundColor: '$red2', color: '$red11' };
+        return { backgroundColor: 'var(--color-red2)', color: 'var(--color-red11)' };
       default:
-        return { backgroundColor: '$gray2', color: '$gray11' };
+        return { backgroundColor: 'var(--color-gray2)', color: 'var(--color-gray11)' };
     }
   };
 
   if (loading) {
     return (
-      <YStack gap="$6">
-        <YStack height={32} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
-        <YStack height={256} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
-      </YStack>
+      <Stack style={{ gap: 24 }}>
+        <Stack style={{ height: 32, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, opacity: 0.5 }} />
+        <Stack style={{ height: 256, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, opacity: 0.5 }} />
+      </Stack>
     );
   }
 
   if (error || !project) {
     return (
-      <YStack alignItems="center" paddingVertical="$12">
-        <AlertCircle size={48} color="$red10" mb="$4" />
-        <H3 mb="$2">Project not found</H3>
-        <Text color="$color11" mb="$4">
+      <Stack style={{ alignItems: 'center', paddingTop: 48, paddingBottom: 48 }}>
+        <AlertCircle size={48} color="var(--color-red10)" style={{ marginBottom: 16 }} />
+        <H3 style={{ marginBottom: 8 }}>Project not found</H3>
+        <Text style={{ color: 'var(--color-11)', marginBottom: 16 }}>
           {error?.message || 'The project you are looking for does not exist.'}
         </Text>
         <Button onClick={() => navigate(-1)} leftIcon={ArrowLeft}>
           Go Back
         </Button>
-      </YStack>
+      </Stack>
     );
   }
 
@@ -219,99 +218,104 @@ export default function ProjectDetailPage() {
       label: 'Overview',
       icon: Building,
       content: (
-        <YStack gap="$6">
-          <XStack flexWrap="wrap" gap="$4">
-            <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-              <XStack alignItems="center" gap="$2" mb="$2">
-                <Calendar size={18} color="$color10" />
-                <Text fontSize="$3" fontWeight="500" color="$color11">
+        <Stack style={{ gap: 24 }}>
+          <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+            <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '45%' }}>
+              <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <Calendar size={18} color="var(--color-10)" />
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                   Start Date
                 </Text>
-              </XStack>
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+              </Row>
+              <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
                 {formatDate(project.start_date)}
               </Text>
             </Card>
-            <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-              <XStack alignItems="center" gap="$2" mb="$2">
-                <Calendar size={18} color="$color10" />
-                <Text fontSize="$3" fontWeight="500" color="$color11">
+            <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '45%' }}>
+              <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <Calendar size={18} color="var(--color-10)" />
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                   End Date
                 </Text>
-              </XStack>
-              <Text fontSize="$4" fontWeight="600" color="$color12">
+              </Row>
+              <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
                 {formatDate(project.end_date)}
               </Text>
             </Card>
             {project.location && (
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-                <XStack alignItems="center" gap="$2" mb="$2">
-                  <MapPin size={18} color="$color10" />
-                  <Text fontSize="$3" fontWeight="500" color="$color11">
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '45%' }}>
+                <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <MapPin size={18} color="var(--color-10)" />
+                  <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                     Location
                   </Text>
-                </XStack>
-                <Text fontSize="$4" fontWeight="600" color="$color12">
+                </Row>
+                <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
                   {project.location}
                 </Text>
               </Card>
             )}
             {project.contract_value && (
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-                <XStack alignItems="center" gap="$2" mb="$2">
-                  <Building size={18} color="$color10" />
-                  <Text fontSize="$3" fontWeight="500" color="$color11">
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '45%' }}>
+                <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <Building size={18} color="var(--color-10)" />
+                  <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                     Contract Value
                   </Text>
-                </XStack>
-                <Text fontSize="$4" fontWeight="600" color="$color12">
+                </Row>
+                <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
                   {formatCurrency(project.contract_value)}
                 </Text>
               </Card>
             )}
             {project.project_manager && (
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-                <XStack alignItems="center" gap="$2" mb="$2">
-                  <Users size={18} color="$color10" />
-                  <Text fontSize="$3" fontWeight="500" color="$color11">
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '45%' }}>
+                <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <Users size={18} color="var(--color-10)" />
+                  <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                     Project Manager
                   </Text>
-                </XStack>
-                <Text fontSize="$4" fontWeight="600" color="$color12">
+                </Row>
+                <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
                   {project.project_manager}
                 </Text>
               </Card>
             )}
-            <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
-              <XStack alignItems="center" gap="$2" mb="$2">
-                <Shield size={18} color="$color10" />
-                <Text fontSize="$3" fontWeight="500" color="$color11">
+            <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '45%' }}>
+              <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <Shield size={18} color="var(--color-10)" />
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                   Compliance Status
                 </Text>
-              </XStack>
-              <XStack
-                alignItems="center"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                borderRadius="$2"
-                borderWidth={1}
-                {...getComplianceStatusColor(project.compliance_status)}
+              </Row>
+              <Row
+                style={{
+                  alignItems: 'center',
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  borderRadius: 4,
+                  border: '1px solid',
+                  display: 'inline-flex',
+                  ...getComplianceStatusStyle(project.compliance_status),
+                }}
               >
-                <Text fontSize="$2" fontWeight="500">
-                {project.compliance_status}
+                <Text style={{ fontSize: 12, fontWeight: 500 }}>
+                  {project.compliance_status}
                 </Text>
-              </XStack>
+              </Row>
             </Card>
-          </XStack>
+          </Row>
           {project.description && (
-            <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$2">
+            <Stack>
+              <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>
                 Description
               </H3>
-              <Text color="$color11">{project.description}</Text>
-            </YStack>
+              <Text style={{ color: 'var(--color-11)' }}>{project.description}</Text>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
     {
@@ -319,112 +323,113 @@ export default function ProjectDetailPage() {
       label: 'Requirements',
       icon: Shield,
       content: (
-        <YStack gap="$6">
-          <YStack>
-            <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+        <Stack style={{ gap: 24 }}>
+          <Stack>
+            <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
               Insurance Requirements
             </H3>
             {requiredCoverages.length > 0 ? (
-              <YStack gap="$3">
+              <Stack style={{ gap: 12 }}>
                 {requiredCoverages.map((coverage, index) => (
-                  <XStack
+                  <Row
                     key={index}
-                    alignItems="center"
-                    justifyContent="space-between"
-                    padding="$4"
-                    backgroundColor="$backgroundHover"
-                    borderRadius="$4"
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: 16,
+                      backgroundColor: 'var(--color-backgroundHover)',
+                      borderRadius: 8,
+                    }}
                   >
-                    <YStack>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Stack>
+                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                         {coverage.name}
                       </Text>
-                      <Text fontSize="$2" color="$color10" mt="$1">
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)', marginTop: 4 }}>
                         Type: {coverage.type}
                       </Text>
-                    </YStack>
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
+                    </Stack>
+                    <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}>
                       {formatCurrency(coverage.amount)}
                     </Text>
-                  </XStack>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             ) : (
-              <Text color="$color11">
+              <Text style={{ color: 'var(--color-11)' }}>
                 No insurance requirements specified
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {(project.waiver_of_subrogation_required ||
             project.primary_non_contributory_required ||
             project.additional_insureds?.length ||
             project.certificate_holder) && (
-            <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+            <Stack>
+              <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                 Additional Requirements
               </H3>
-              <YStack gap="$3">
+              <Stack style={{ gap: 12 }}>
                 {project.waiver_of_subrogation_required && (
-                  <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" borderRadius="$4">
-                    <CheckCircle size={16} color="$yellow11" />
-                    <Text fontSize="$3" color="$yellow12">
+                  <Row style={{ alignItems: 'center', gap: 8, padding: 12, backgroundColor: 'var(--color-yellow2)', border: '1px solid var(--color-yellow6)', borderRadius: 8 }}>
+                    <CheckCircle size={16} color="var(--color-yellow11)" />
+                    <Text style={{ fontSize: 14, color: 'var(--color-yellow12)' }}>
                       Waiver of Subrogation Required
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
                 {project.primary_non_contributory_required && (
-                  <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" borderRadius="$4">
-                    <CheckCircle size={16} color="$yellow11" />
-                    <Text fontSize="$3" color="$yellow12">
+                  <Row style={{ alignItems: 'center', gap: 8, padding: 12, backgroundColor: 'var(--color-yellow2)', border: '1px solid var(--color-yellow6)', borderRadius: 8 }}>
+                    <CheckCircle size={16} color="var(--color-yellow11)" />
+                    <Text style={{ fontSize: 14, color: 'var(--color-yellow12)' }}>
                       Primary & Non-Contributory Required
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
                 {project.additional_insureds &&
                   project.additional_insureds.length > 0 && (
-                    <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4">
-                      <Text fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+                    <Card style={{ padding: 12, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8 }}>
+                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)', marginBottom: 8 }}>
                         Additional Insureds:
                       </Text>
-                      <YStack gap="$1">
+                      <Stack style={{ gap: 4 }}>
                         {project.additional_insureds.map((insured, index) => (
                           <Text
                             key={index}
-                            fontSize="$3"
-                            color="$color11"
+                            style={{ fontSize: 14, color: 'var(--color-11)' }}
                           >
-                            • {insured}
+                            - {insured}
                           </Text>
                         ))}
-                      </YStack>
+                      </Stack>
                     </Card>
                   )}
                 {project.certificate_holder && (
-                  <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4">
-                    <Text fontSize="$3" fontWeight="500" color="$color12" mb="$1">
+                  <Card style={{ padding: 12, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)', marginBottom: 4 }}>
                       Certificate Holder:
                     </Text>
-                    <Text fontSize="$3" color="$color11">
+                    <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                       {project.certificate_holder}
                     </Text>
                   </Card>
                 )}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
 
           {project.special_provisions && (
-            <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$2">
+            <Stack>
+              <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>
                 Special Provisions
               </H3>
-              <Text color="$color11" whiteSpace="pre-wrap">
+              <Text style={{ color: 'var(--color-11)', whiteSpace: 'pre-wrap' }}>
                 {project.special_provisions}
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
     {
@@ -433,61 +438,69 @@ export default function ProjectDetailPage() {
       icon: Users,
       badge: participants.length,
       content: (
-        <YStack gap="$4">
+        <Stack style={{ gap: 16 }}>
           {participants.length > 0 ? (
-            <YStack gap="$3">
+            <Stack style={{ gap: 12 }}>
               {participants.map((participant) => (
-                <XStack
+                <Row
                   key={participant.id}
-                  alignItems="center"
-                  justifyContent="space-between"
-                  padding="$4"
-                  backgroundColor="$backgroundHover"
-                  borderRadius="$4"
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 16,
+                    backgroundColor: 'var(--color-backgroundHover)',
+                    borderRadius: 8,
+                  }}
                 >
-                  <XStack alignItems="center" gap="$3">
-                    <XStack
-                      width={40}
-                      height={40}
-                      backgroundColor="$blue10"
-                      borderRadius={9999}
-                      alignItems="center"
-                      justifyContent="center"
+                  <Row style={{ alignItems: 'center', gap: 12 }}>
+                    <Row
+                      style={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: 'var(--color-blue10)',
+                        borderRadius: 9999,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
-                      <Text fontSize="$3" fontWeight="600" color="white">
+                      <Text style={{ fontSize: 14, fontWeight: 600, color: 'white' }}>
                         {participant.role.charAt(0).toUpperCase()}
                       </Text>
-                    </XStack>
-                    <YStack>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                    </Row>
+                    <Stack>
+                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                         {participant.role}
                       </Text>
-                      <Text fontSize="$2" color="$color10">
-                        {participant.status} • Invited{' '}
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
+                        {participant.status} - Invited{' '}
                         {formatDate(participant.invited_at)}
                       </Text>
-                    </YStack>
-                  </XStack>
-                  <XStack
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$2"
-                    backgroundColor={participant.status === 'accepted' ? '$green2' : '$yellow2'}
+                    </Stack>
+                  </Row>
+                  <Row
+                    style={{
+                      paddingLeft: 8,
+                      paddingRight: 8,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      borderRadius: 4,
+                      backgroundColor: participant.status === 'accepted' ? 'var(--color-green2)' : 'var(--color-yellow2)',
+                    }}
                   >
-                    <Text fontSize="$2" fontWeight="500" color={participant.status === 'accepted' ? '$green11' : '$yellow11'}>
-                    {participant.status}
+                    <Text style={{ fontSize: 12, fontWeight: 500, color: participant.status === 'accepted' ? 'var(--color-green11)' : 'var(--color-yellow11)' }}>
+                      {participant.status}
                     </Text>
-                  </XStack>
-                </XStack>
+                  </Row>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           ) : (
-            <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <Users size={32} color="$color10" mb="$2" />
+            <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
+              <Users size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
               <Text>No participants yet</Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
     {
@@ -497,112 +510,119 @@ export default function ProjectDetailPage() {
       icon: Shield,
       badge: userIssuesCount,
       content: (
-        <YStack gap="$6">
+        <Stack style={{ gap: 24 }}>
           {compliance && (
-            <XStack flexWrap="wrap" gap="$4">
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
+            <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '30%' }}>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
                   Overall Score
                 </Text>
-                <Text fontSize="$8" fontWeight="700" color="$color12">
+                <Text style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-12)' }}>
                   {compliance.overall_score}%
                 </Text>
               </Card>
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '30%' }}>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
                   My Issues
                 </Text>
-                <Text fontSize="$8" fontWeight="700" color="$red10">
+                <Text style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-red10)' }}>
                   {userIssuesCount}
                 </Text>
               </Card>
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '30%' }}>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
                   Total Issues
                 </Text>
-                <Text fontSize="$8" fontWeight="700" color="$yellow10">
+                <Text style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-yellow10)' }}>
                   {totalIssuesCount}
                 </Text>
               </Card>
-            </XStack>
+            </Row>
           )}
 
-          <Card padding="$3" backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4">
-            <Text fontSize="$3" color="$blue12">
+          <Card style={{ padding: 12, backgroundColor: 'var(--color-blue2)', border: '1px solid var(--color-blue6)', borderRadius: 8 }}>
+            <Text style={{ fontSize: 14, color: 'var(--color-blue12)' }}>
               Showing issues assigned to you. View{' '}
-              <TamaguiButton
-                unstyled
-                onPress={() => handleTabChange('all-issues')}
-                style={{ textDecorationLine: 'underline' }}
+              <button
+                onClick={() => handleTabChange('all-issues')}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
               >
-                <Text fontSize="$3" fontWeight="500" color="$blue12" textDecorationLine="underline">
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-blue12)', textDecoration: 'underline' }}>
                   All Issues
                 </Text>
-              </TamaguiButton>{' '}
+              </button>{' '}
               to see the complete list.
             </Text>
           </Card>
 
           {userIssues.length > 0 ? (
-            <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+            <Stack>
+              <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                 Your Open Issues
               </H3>
-              <YStack gap="$3">
+              <Stack style={{ gap: 12 }}>
                 {userIssues.map((issue) => (
-                  <Card key={issue.id} padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-                    <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
-                      <YStack flex={1}>
-                        <XStack alignItems="center" gap="$2" mb="$1">
-                          <XStack
-                            paddingHorizontal="$2"
-                            paddingVertical="$0.5"
-                            borderRadius="$2"
-                            borderWidth={1}
-                            {...getSeverityColor(issue.severity)}
+                  <Card key={issue.id} style={{ padding: 16, border: '1px solid var(--color-border)', borderRadius: 8 }}>
+                    <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <Stack style={{ flex: 1 }}>
+                        <Row style={{ alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <Row
+                            style={{
+                              paddingLeft: 8,
+                              paddingRight: 8,
+                              paddingTop: 2,
+                              paddingBottom: 2,
+                              borderRadius: 4,
+                              border: '1px solid',
+                              ...getSeverityStyle(issue.severity),
+                            }}
                           >
-                            <Text fontSize="$2" fontWeight="500">
+                            <Text style={{ fontSize: 12, fontWeight: 500 }}>
                               {issue.severity.toUpperCase()}
                             </Text>
-                          </XStack>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
-                              {issue.title}
+                          </Row>
+                          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
+                            {issue.title}
                           </Text>
-                        </XStack>
-                        <Text fontSize="$3" color="$color11">
-                            {issue.description}
+                        </Row>
+                        <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
+                          {issue.description}
                         </Text>
-                      </YStack>
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={issue.status === 'open' ? '$blue2' : '$yellow2'}
+                      </Stack>
+                      <Row
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 4,
+                          backgroundColor: issue.status === 'open' ? 'var(--color-blue2)' : 'var(--color-yellow2)',
+                        }}
                       >
-                        <Text fontSize="$2" fontWeight="500" color={issue.status === 'open' ? '$blue11' : '$yellow11'}>
+                        <Text style={{ fontSize: 12, fontWeight: 500, color: issue.status === 'open' ? 'var(--color-blue11)' : 'var(--color-yellow11)' }}>
                           {issue.status}
                         </Text>
-                      </XStack>
-                    </XStack>
-                      {issue.due_date && (
-                      <Text fontSize="$2" color="$color10" mt="$2">
-                          Due: {formatDate(issue.due_date)}
+                      </Row>
+                    </Row>
+                    {issue.due_date && (
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)', marginTop: 8 }}>
+                        Due: {formatDate(issue.due_date)}
                       </Text>
                     )}
                   </Card>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           ) : (
-            <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <CheckCircle size={32} color="$green10" mb="$2" />
-              <Text color="$green11" fontWeight="500">No issues assigned to you</Text>
-              <Text fontSize="$2" mt="$1">
+            <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
+              <CheckCircle size={32} color="var(--color-green10)" style={{ marginBottom: 8 }} />
+              <Text style={{ color: 'var(--color-green11)', fontWeight: 500 }}>No issues assigned to you</Text>
+              <Text style={{ fontSize: 12, marginTop: 4 }}>
                 You have no compliance issues to address in this project.
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
     {
@@ -612,117 +632,126 @@ export default function ProjectDetailPage() {
       icon: List,
       badge: totalIssuesCount,
       content: (
-        <YStack gap="$6">
+        <Stack style={{ gap: 24 }}>
           {compliance && (
-            <XStack flexWrap="wrap" gap="$4">
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
+            <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '30%' }}>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
                   Overall Score
                 </Text>
-                <Text fontSize="$8" fontWeight="700" color="$color12">
+                <Text style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-12)' }}>
                   {compliance.overall_score}%
                 </Text>
               </Card>
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '30%' }}>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
                   Total Issues
                 </Text>
-                <Text fontSize="$8" fontWeight="700" color="$red10">
+                <Text style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-red10)' }}>
                   {totalIssuesCount}
                 </Text>
               </Card>
-              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
-                <Text fontSize="$3" fontWeight="500" color="$color11" mb="$1">
+              <Card style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8, flex: 1, minWidth: '30%' }}>
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
                   Your Issues
                 </Text>
-                <Text fontSize="$8" fontWeight="700" color="$yellow10">
+                <Text style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-yellow10)' }}>
                   {userIssuesCount}
                 </Text>
               </Card>
-            </XStack>
+            </Row>
           )}
 
-          <Card padding="$3" backgroundColor="$gray2" borderWidth={1} borderColor="$gray6" borderRadius="$4">
-            <Text fontSize="$3" color="$gray11">
-            Showing all {totalIssuesCount} issue{totalIssuesCount !== 1 ? 's' : ''} across all assignees. {userIssuesCount} assigned to you.
+          <Card style={{ padding: 12, backgroundColor: 'var(--color-gray2)', border: '1px solid var(--color-gray6)', borderRadius: 8 }}>
+            <Text style={{ fontSize: 14, color: 'var(--color-gray11)' }}>
+              Showing all {totalIssuesCount} issue{totalIssuesCount !== 1 ? 's' : ''} across all assignees. {userIssuesCount} assigned to you.
             </Text>
           </Card>
 
           {allOpenIssues.length > 0 ? (
-            <YStack>
-              <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+            <Stack>
+              <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                 All Open Issues ({allOpenIssues.length})
               </H3>
-              <YStack gap="$3">
+              <Stack style={{ gap: 12 }}>
                 {allOpenIssues.map((issue) => (
                   <Card
                     key={issue.id}
-                    padding="$4"
-                    borderWidth={1}
-                    borderColor={issue.assigned_to === currentUser?.id ? '$blue6' : '$borderColor'}
-                    backgroundColor={issue.assigned_to === currentUser?.id ? '$blue2' : undefined}
-                    borderRadius="$4"
-                    opacity={issue.assigned_to === currentUser?.id ? 0.3 : 1}
+                    style={{
+                      padding: 16,
+                      border: `1px solid ${issue.assigned_to === currentUser?.id ? 'var(--color-blue6)' : 'var(--color-border)'}`,
+                      backgroundColor: issue.assigned_to === currentUser?.id ? 'var(--color-blue2)' : undefined,
+                      borderRadius: 8,
+                      opacity: issue.assigned_to === currentUser?.id ? 0.3 : 1,
+                    }}
                   >
-                    <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
-                      <YStack flex={1}>
-                        <XStack alignItems="center" gap="$2" mb="$1">
-                          <XStack
-                            paddingHorizontal="$2"
-                            paddingVertical="$0.5"
-                            borderRadius="$2"
-                            borderWidth={1}
-                            {...getSeverityColor(issue.severity)}
+                    <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <Stack style={{ flex: 1 }}>
+                        <Row style={{ alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <Row
+                            style={{
+                              paddingLeft: 8,
+                              paddingRight: 8,
+                              paddingTop: 2,
+                              paddingBottom: 2,
+                              borderRadius: 4,
+                              border: '1px solid',
+                              ...getSeverityStyle(issue.severity),
+                            }}
                           >
-                            <Text fontSize="$2" fontWeight="500">
+                            <Text style={{ fontSize: 12, fontWeight: 500 }}>
                               {issue.severity.toUpperCase()}
                             </Text>
-                          </XStack>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
-                              {issue.title}
+                          </Row>
+                          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
+                            {issue.title}
                           </Text>
-                            {issue.assigned_to === currentUser?.id && (
-                            <XStack paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" backgroundColor="$blue2">
-                              <Text fontSize="$2" fontWeight="500" color="$blue11">
+                          {issue.assigned_to === currentUser?.id && (
+                            <Row style={{ paddingLeft: 6, paddingRight: 6, paddingTop: 2, paddingBottom: 2, borderRadius: 4, backgroundColor: 'var(--color-blue2)' }}>
+                              <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-blue11)' }}>
                                 Yours
                               </Text>
-                            </XStack>
-                            )}
-                        </XStack>
-                        <Text fontSize="$3" color="$color11">
-                            {issue.description}
+                            </Row>
+                          )}
+                        </Row>
+                        <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
+                          {issue.description}
                         </Text>
-                      </YStack>
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={issue.status === 'open' ? '$blue2' : '$yellow2'}
+                      </Stack>
+                      <Row
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 4,
+                          backgroundColor: issue.status === 'open' ? 'var(--color-blue2)' : 'var(--color-yellow2)',
+                        }}
                       >
-                        <Text fontSize="$2" fontWeight="500" color={issue.status === 'open' ? '$blue11' : '$yellow11'}>
+                        <Text style={{ fontSize: 12, fontWeight: 500, color: issue.status === 'open' ? 'var(--color-blue11)' : 'var(--color-yellow11)' }}>
                           {issue.status}
                         </Text>
-                      </XStack>
-                    </XStack>
-                      {issue.due_date && (
-                      <Text fontSize="$2" color="$color10" mt="$2">
-                          Due: {formatDate(issue.due_date)}
+                      </Row>
+                    </Row>
+                    {issue.due_date && (
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)', marginTop: 8 }}>
+                        Due: {formatDate(issue.due_date)}
                       </Text>
                     )}
                   </Card>
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           ) : (
-            <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <CheckCircle size={32} color="$green10" mb="$2" />
-              <Text color="$green11" fontWeight="500">No compliance issues</Text>
-              <Text fontSize="$2" mt="$1">
+            <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
+              <CheckCircle size={32} color="var(--color-green10)" style={{ marginBottom: 8 }} />
+              <Text style={{ color: 'var(--color-green11)', fontWeight: 500 }}>No compliance issues</Text>
+              <Text style={{ fontSize: 12, marginTop: 4 }}>
                 This project has no open compliance issues.
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
     {
@@ -730,16 +759,16 @@ export default function ProjectDetailPage() {
       label: 'Documents',
       icon: FileText,
       content: (
-        <YStack gap="$4">
-          <YStack alignItems="center" paddingVertical="$8" color="$color10">
-            <FileText size={32} color="$color10" mb="$2" />
+        <Stack style={{ gap: 16 }}>
+          <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
+            <FileText size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
             <Text>Document management coming soon</Text>
-            <Text fontSize="$2" mt="$1">
+            <Text style={{ fontSize: 12, marginTop: 4 }}>
               This will show all project-related documents (COIs, endorsements,
               contracts)
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       ),
     },
     {
@@ -748,55 +777,61 @@ export default function ProjectDetailPage() {
       icon: CheckCircle,
       badge: tasks.length,
       content: (
-        <YStack gap="$4">
+        <Stack style={{ gap: 16 }}>
           {tasks.length > 0 ? (
-            <YStack gap="$3">
+            <Stack style={{ gap: 12 }}>
               {tasks.map((task) => (
-                <XStack
+                <Row
                   key={task.id}
-                  alignItems="center"
-                  justifyContent="space-between"
-                  padding="$4"
-                  backgroundColor="$backgroundHover"
-                  borderRadius="$4"
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 16,
+                    backgroundColor: 'var(--color-backgroundHover)',
+                    borderRadius: 8,
+                  }}
                 >
-                  <YStack flex={1}>
-                    <XStack alignItems="center" gap="$2" mb="$1">
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                  <Stack style={{ flex: 1 }}>
+                    <Row style={{ alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                         {task.title}
                       </Text>
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
-                        {...getStatusColor(task.status)}
+                      <Row
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 2,
+                          paddingBottom: 2,
+                          borderRadius: 4,
+                          ...getStatusStyle(task.status),
+                        }}
                       >
-                        <Text fontSize="$2" fontWeight="500">
-                        {task.status.replace('_', ' ')}
+                        <Text style={{ fontSize: 12, fontWeight: 500 }}>
+                          {task.status.replace('_', ' ')}
                         </Text>
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
                     {task.description && (
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                         {task.description}
                       </Text>
                     )}
                     {task.due_date && (
-                      <Text fontSize="$2" color="$color10" mt="$1">
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)', marginTop: 4 }}>
                         Due: {formatDate(task.due_date)}
                       </Text>
                     )}
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           ) : (
-            <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <CheckCircle size={32} color="$color10" mb="$2" />
+            <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
+              <CheckCircle size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
               <Text>No tasks yet</Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
     {
@@ -804,15 +839,15 @@ export default function ProjectDetailPage() {
       label: 'History',
       icon: HistoryIcon,
       content: (
-        <YStack gap="$4">
-          <YStack alignItems="center" paddingVertical="$8" color="$color10">
-            <HistoryIcon size={32} color="$color10" mb="$2" />
+        <Stack style={{ gap: 16 }}>
+          <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
+            <HistoryIcon size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
             <Text>Activity log coming soon</Text>
-            <Text fontSize="$2" mt="$1">
+            <Text style={{ fontSize: 12, marginTop: 4 }}>
               This will show project activity with timestamps and user actions
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       ),
     },
     {
@@ -821,60 +856,60 @@ export default function ProjectDetailPage() {
       icon: MessageSquare,
       badge: projectComments.length,
       content: (
-        <YStack gap="$4">
+        <Stack style={{ gap: 16 }}>
           {projectComments.length > 0 ? (
-            <YStack gap="$3">
+            <Stack style={{ gap: 12 }}>
               {projectComments.map((comment) => (
                 <Card
                   key={comment.id}
-                  padding="$4"
-                  backgroundColor="$backgroundHover"
-                  borderRadius="$4"
+                  style={{ padding: 16, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 8 }}
                 >
-                  <XStack alignItems="center" gap="$2" mb="$2">
-                    <XStack
-                      width={32}
-                      height={32}
-                      backgroundColor="$blue10"
-                      borderRadius={9999}
-                      alignItems="center"
-                      justifyContent="center"
+                  <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <Row
+                      style={{
+                        width: 32,
+                        height: 32,
+                        backgroundColor: 'var(--color-blue10)',
+                        borderRadius: 9999,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
-                      <Text fontSize="$2" fontWeight="600" color="white">
+                      <Text style={{ fontSize: 12, fontWeight: 600, color: 'white' }}>
                         {comment.user_id.charAt(0).toUpperCase()}
                       </Text>
-                    </XStack>
-                    <YStack flex={1}>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                    </Row>
+                    <Stack style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                         User {comment.user_id.substring(0, 8)}
                       </Text>
-                      <Text fontSize="$2" color="$color10">
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                         {formatDate(comment.created_at)}
                       </Text>
-                    </YStack>
-                  </XStack>
-                  <Text fontSize="$3" color="$color11" whiteSpace="pre-wrap">
+                    </Stack>
+                  </Row>
+                  <Text style={{ fontSize: 14, color: 'var(--color-11)', whiteSpace: 'pre-wrap' }}>
                     {comment.content}
                   </Text>
                 </Card>
               ))}
-            </YStack>
+            </Stack>
           ) : (
-            <YStack alignItems="center" paddingVertical="$8" color="$color10">
-              <MessageSquare size={32} color="$color10" mb="$2" />
+            <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32, color: 'var(--color-10)' }}>
+              <MessageSquare size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
               <Text>No notes yet</Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       ),
     },
   ];
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 24 }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap="$4">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Row style={{ alignItems: 'center', gap: 16 }}>
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
@@ -883,63 +918,77 @@ export default function ProjectDetailPage() {
           >
             Back
           </Button>
-          <YStack>
-            <H1 fontSize="$8" fontWeight="700" color="$color12">
+          <Stack>
+            <H1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--color-12)' }}>
               {project.name}
             </H1>
-            <XStack alignItems="center" gap="$4" mt="$1">
-              <XStack
-                alignItems="center"
-                paddingHorizontal="$2"
-                paddingVertical="$0.5"
-                borderRadius="$2"
-                borderWidth={1}
-                {...getComplianceStatusColor(project.compliance_status)}
+            <Row style={{ alignItems: 'center', gap: 16, marginTop: 4 }}>
+              <Row
+                style={{
+                  alignItems: 'center',
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                  paddingTop: 2,
+                  paddingBottom: 2,
+                  borderRadius: 4,
+                  border: '1px solid',
+                  ...getComplianceStatusStyle(project.compliance_status),
+                }}
               >
-                <Text fontSize="$2" fontWeight="500">
-                {project.compliance_status}
+                <Text style={{ fontSize: 12, fontWeight: 500 }}>
+                  {project.compliance_status}
                 </Text>
-              </XStack>
+              </Row>
               {/* REQ-279: Warning badge with tooltip showing issue breakdown */}
               {totalIssuesCount > 0 && (
                 <Tooltip
                   content={`${totalIssuesCount} total ${totalIssuesCount === 1 ? 'issue' : 'issues'} (${userIssuesCount} yours, ${othersIssuesCount} assigned to others)`}
                   position="bottom"
                 >
-                  <XStack
-                    alignItems="center"
-                    gap="$1"
-                    paddingHorizontal="$2"
-                    paddingVertical="$0.5"
-                    borderRadius="$2"
-                    backgroundColor="$yellow2"
-                    borderWidth={1}
-                    borderColor="$yellow6"
-                    cursor="help"
+                  <Row
+                    style={{
+                      alignItems: 'center',
+                      gap: 4,
+                      paddingLeft: 8,
+                      paddingRight: 8,
+                      paddingTop: 2,
+                      paddingBottom: 2,
+                      borderRadius: 4,
+                      backgroundColor: 'var(--color-yellow2)',
+                      border: '1px solid var(--color-yellow6)',
+                      cursor: 'help',
+                    }}
                     data-testid="warning-badge"
                   >
                     <AlertTriangle size={12} />
-                    <Text fontSize="$2" fontWeight="500" color="$yellow11">
-                    {totalIssuesCount} {totalIssuesCount === 1 ? 'Issue' : 'Issues'}
+                    <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-yellow11)' }}>
+                      {totalIssuesCount} {totalIssuesCount === 1 ? 'Issue' : 'Issues'}
                     </Text>
-                  </XStack>
+                  </Row>
                 </Tooltip>
               )}
               {project.location && (
-                <XStack alignItems="center" gap="$1">
+                <Row style={{ alignItems: 'center', gap: 4 }}>
                   <MapPin size={14} />
-                  <Text fontSize="$3" color="$color11">
+                  <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                     {project.location}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </XStack>
-          </YStack>
-        </XStack>
-      </XStack>
+            </Row>
+          </Stack>
+        </Row>
+      </Row>
 
       {/* Tabs */}
-      <TabsCustom tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
-    </YStack>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        {tabs.map(tab => (
+          <Tabs.Item key={tab.id} value={tab.id}>
+            <Tabs.Trigger>{tab.label}</Tabs.Trigger>
+            <Tabs.Content>{tab.content}</Tabs.Content>
+          </Tabs.Item>
+        ))}
+      </Tabs>
+    </Stack>
   );
 }

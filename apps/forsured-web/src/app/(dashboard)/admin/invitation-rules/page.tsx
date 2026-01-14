@@ -9,7 +9,9 @@
  */
 
 import { useState } from 'react'
-import { YStack, XStack, Text, Button, Card, H2, H3, Switch, Input, TextArea } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Card, Heading, Input, colors, spacing } from '@unicornlove/beyond-ui'
+import Switch from '../../../../ui/Switch'
+import Textarea from '../../../../components/Common/Textarea'
 import { trpc } from '../../../../lib/trpc'
 
 // Types for invitation rules
@@ -39,10 +41,10 @@ const RELATIONSHIP_TYPE_LABELS: Record<RelationshipType, string> = {
 
 // Role badge colors
 const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
-  broker: { bg: '$purple2', text: '$purple11' },
-  manager: { bg: '$blue2', text: '$blue11' },
-  contractor: { bg: '$green2', text: '$green11' },
-  client: { bg: '$orange2', text: '$orange11' },
+  broker: { bg: colors.purple[200], text: colors.purple[600] },
+  manager: { bg: colors.primary[200], text: colors.primary[600] },
+  contractor: { bg: colors.success[200], text: colors.success[600] },
+  client: { bg: colors.warning[200], text: colors.warning[600] },
 }
 
 export default function InvitationRulesAdminPage() {
@@ -90,259 +92,264 @@ export default function InvitationRulesAdminPage() {
 
   if (loading) {
     return (
-      <YStack padding="$6" maxWidth={1120} marginHorizontal="auto">
-        <YStack opacity={0.5}>
-          <YStack height={32} backgroundColor="$gray4" borderRadius="$2" width="40%" marginBottom="$4" />
-          <XStack flexWrap="wrap" gap="$4" marginBottom="$8">
+      <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
+        <Stack style={{ opacity: 0.5 }}>
+          <Stack style={{ height: 32, backgroundColor: colors.gray[200], borderRadius: 8, width: '40%', marginBottom: spacing[16] }} />
+          <Row style={{ flexWrap: 'wrap', gap: spacing[16], marginBottom: spacing[32] }}>
             {[1, 2, 3, 4].map((i) => (
-              <YStack key={i} height={96} backgroundColor="$gray4" borderRadius="$2" flex={1} minWidth={200} />
+              <Stack key={i} style={{ height: 96, backgroundColor: colors.gray[200], borderRadius: 8, flex: 1, minWidth: 200 }} />
             ))}
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </Stack>
     )
   }
 
   if (rulesError) {
     return (
-      <YStack padding="$6" maxWidth={1120} marginHorizontal="auto">
-        <YStack padding="$4" backgroundColor="$red2" borderWidth={1} borderColor="$red6" borderRadius="$4">
-          <Text fontWeight="600" color="$red11">
+      <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
+        <Stack style={{ padding: spacing[16], backgroundColor: colors.error[200], borderWidth: 1, borderColor: colors.error[400], borderRadius: spacing[16] }}>
+          <Text weight="semibold" color={colors.error[600]}>
             Error loading invitation rules
           </Text>
-          <Text color="$red10" fontSize="$2" marginTop="$2">
+          <Text color={colors.error[500]} size="xs" style={{ marginTop: spacing[8] }}>
             {rulesError.message || 'Failed to load data. Please try again.'}
           </Text>
           <Button
-            marginTop="$3"
-            size="$3"
-            backgroundColor="$red9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$red10' }}
+            style={{ marginTop: spacing[12] }}
+            size="sm"
+            color="error"
+            variant="filled"
             onPress={() => window.location.reload()}
           >
             Retry
           </Button>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack padding="$6" maxWidth={1120} marginHorizontal="auto">
+    <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
       {/* Header */}
-      <YStack marginBottom="$8">
-        <H2 marginBottom="$2">Invitation Rules</H2>
-        <Text color="$gray11">
+      <Stack style={{ marginBottom: spacing[32] }}>
+        <Heading level={2} style={{ marginBottom: spacing[8] }}>Invitation Rules</Heading>
+        <Text color={colors.text.light.secondary}>
           Configure which user types can invite others and how relationships are established.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Statistics */}
-      <YStack marginBottom="$8">
-        <H3 marginBottom="$4">Statistics</H3>
-        <XStack flexWrap="wrap" gap="$4">
-          <Card padding="$4" flex={1} minWidth={180}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+      <Stack style={{ marginBottom: spacing[32] }}>
+        <Heading level={3} style={{ marginBottom: spacing[16] }}>Statistics</Heading>
+        <Row style={{ flexWrap: 'wrap', gap: spacing[16] }}>
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Total Invitations
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$gray12">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.text.light.primary}>
               {stats?.totalInvitations ?? 0}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={180}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Pending
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$yellow11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.warning[600]}>
               {stats?.pendingInvitations ?? 0}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={180}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Accepted
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$green11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.success[600]}>
               {stats?.acceptedInvitations ?? 0}
             </Text>
           </Card>
-          <Card padding="$4" flex={1} minWidth={180}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Active Relationships
             </Text>
-            <Text fontSize="$8" fontWeight="700" color="$blue11">
+            <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.primary[600]}>
               {stats?.activeRelationships ?? 0}
             </Text>
           </Card>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Rules Management */}
-      <YStack marginBottom="$8">
-        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
-          <H3>Invitation Rules</H3>
+      <Stack style={{ marginBottom: spacing[32] }}>
+        <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[16] }}>
+          <Heading level={3}>Invitation Rules</Heading>
           <Button
-            backgroundColor="$blue9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            color="primary"
+            variant="filled"
             onPress={() => setShowCreateForm(true)}
           >
             Add New Rule
           </Button>
-        </XStack>
+        </Row>
 
         {/* Rules Table */}
-        <Card overflow="hidden">
-          <YStack>
+        <Card style={{ overflow: 'hidden' }}>
+          <Stack>
             {/* Table Header */}
-            <XStack backgroundColor="$gray2" paddingHorizontal="$4" paddingVertical="$3">
-              <Text flex={2} fontSize="$2" fontWeight="500" color="$gray11">
+            <Row style={{ backgroundColor: colors.gray[100], paddingHorizontal: spacing[16], paddingVertical: spacing[12] }}>
+              <Text style={{ flex: 2 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Rule Name
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Source Role
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Target Role
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
                 Type
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11" textAlign="center">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
                 Active
               </Text>
-              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11" textAlign="center">
+              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
                 Actions
               </Text>
-            </XStack>
+            </Row>
 
             {/* Table Body */}
             {(!rules || rules.length === 0) ? (
-              <YStack padding="$8" alignItems="center">
-                <Text color="$gray11">No invitation rules configured.</Text>
-              </YStack>
+              <Stack style={{ padding: spacing[32], alignItems: 'center' }}>
+                <Text color={colors.text.light.secondary}>No invitation rules configured.</Text>
+              </Stack>
             ) : (
-              <YStack>
+              <Stack>
                 {rules.map((rule) => (
-                  <XStack
+                  <Row
                     key={rule.id}
-                    paddingHorizontal="$4"
-                    paddingVertical="$3"
-                    borderBottomWidth={1}
-                    borderColor="$borderColor"
-                    alignItems="center"
-                    backgroundColor={!rule.is_active ? '$gray1' : 'transparent'}
-                    opacity={rule.is_active ? 1 : 0.7}
+                    style={{
+                      paddingHorizontal: spacing[16],
+                      paddingVertical: spacing[12],
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.border.light.default,
+                      alignItems: 'center',
+                      backgroundColor: !rule.is_active ? colors.gray[50] : 'transparent',
+                      opacity: rule.is_active ? 1 : 0.7,
+                    }}
                   >
                     {/* Rule Name */}
-                    <YStack flex={2}>
-                      <Text fontWeight="500" color="$gray12">
+                    <Stack style={{ flex: 2 }}>
+                      <Text weight="medium" color={colors.text.light.primary}>
                         {rule.name}
                       </Text>
                       {rule.description && (
-                        <Text fontSize="$2" color="$gray11" marginTop="$1">
+                        <Text size="xs" color={colors.text.light.secondary} style={{ marginTop: spacing[4] }}>
                           {rule.description}
                         </Text>
                       )}
-                    </YStack>
+                    </Stack>
 
                     {/* Source Role */}
-                    <YStack flex={1}>
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={ROLE_COLORS[rule.source_role]?.bg ?? '$gray2'}
-                        alignSelf="flex-start"
+                    <Stack style={{ flex: 1 }}>
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor: ROLE_COLORS[rule.source_role]?.bg ?? colors.gray[100],
+                          alignSelf: 'flex-start',
+                        }}
                       >
-                        <Text fontSize="$2" color={ROLE_COLORS[rule.source_role]?.text ?? '$gray11'}>
+                        <Text size="xs" color={ROLE_COLORS[rule.source_role]?.text ?? colors.text.light.secondary}>
                           {rule.source_role}
                         </Text>
-                      </XStack>
-                    </YStack>
+                      </Row>
+                    </Stack>
 
                     {/* Target Role */}
-                    <YStack flex={1}>
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={ROLE_COLORS[rule.target_role]?.bg ?? '$gray2'}
-                        alignSelf="flex-start"
+                    <Stack style={{ flex: 1 }}>
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor: ROLE_COLORS[rule.target_role]?.bg ?? colors.gray[100],
+                          alignSelf: 'flex-start',
+                        }}
                       >
-                        <Text fontSize="$2" color={ROLE_COLORS[rule.target_role]?.text ?? '$gray11'}>
+                        <Text size="xs" color={ROLE_COLORS[rule.target_role]?.text ?? colors.text.light.secondary}>
                           {rule.target_role}
                         </Text>
-                      </XStack>
-                    </YStack>
+                      </Row>
+                    </Stack>
 
                     {/* Relationship Type */}
-                    <YStack flex={1}>
-                      <Text fontSize="$2" color="$gray11">
+                    <Stack style={{ flex: 1 }}>
+                      <Text size="xs" color={colors.text.light.secondary}>
                         {RELATIONSHIP_TYPE_LABELS[rule.relationship_type]}
                       </Text>
                       {rule.requires_project && (
-                        <Text fontSize="$1" color="$gray10" marginTop="$1">
+                        <Text size="xs" color={colors.text.light.tertiary} style={{ marginTop: spacing[4] }}>
                           Requires project
                         </Text>
                       )}
-                    </YStack>
+                    </Stack>
 
                     {/* Active Toggle */}
-                    <YStack flex={1} alignItems="center">
+                    <Stack style={{ flex: 1, alignItems: 'center' }}>
                       <Switch
                         checked={rule.is_active}
                         onCheckedChange={() => handleToggleActive(rule.id, rule.is_active)}
                         disabled={toggleRuleMutation.isPending}
                       />
-                    </YStack>
+                    </Stack>
 
                     {/* Actions */}
-                    <XStack flex={1} justifyContent="center" gap="$2">
+                    <Row style={{ flex: 1, justifyContent: 'center', gap: spacing[8] }}>
                       <Button
-                        size="$2"
-                        backgroundColor="transparent"
-                        color="$blue11"
-                        hoverStyle={{ backgroundColor: '$blue3' }}
+                        size="sm"
+                        variant="text"
+                        color="primary"
                         onPress={() => setEditingRule(rule)}
                       >
                         Edit
                       </Button>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
 
       {/* Info Box */}
-      <YStack
-        padding="$4"
-        backgroundColor="$blue2"
-        borderWidth={1}
-        borderColor="$blue6"
-        borderRadius="$4"
+      <Stack
+        style={{
+          padding: spacing[16],
+          backgroundColor: colors.info[200],
+          borderWidth: 1,
+          borderColor: colors.info[400],
+          borderRadius: spacing[16],
+        }}
       >
-        <Text fontWeight="600" color="$blue11" marginBottom="$2">
+        <Text weight="semibold" color={colors.info[600]} style={{ marginBottom: spacing[8] }}>
           Relationship Types Explained
         </Text>
-        <YStack gap="$2">
-          <Text fontSize="$2" color="$blue11">
-            <Text fontWeight="600">One-to-One:</Text> Target can only have one relationship of this type
+        <Stack gap={spacing[8]}>
+          <Text size="xs" color={colors.info[600]}>
+            <Text weight="semibold">One-to-One:</Text> Target can only have one relationship of this type
             (e.g., one broker per client)
           </Text>
-          <Text fontSize="$2" color="$blue11">
-            <Text fontWeight="600">One-to-Many:</Text> Target can have multiple relationships
+          <Text size="xs" color={colors.info[600]}>
+            <Text weight="semibold">One-to-Many:</Text> Target can have multiple relationships
             (e.g., broker works with many managers)
           </Text>
-          <Text fontSize="$2" color="$blue11">
-            <Text fontWeight="600">One-to-Many (Project):</Text> Relationship tied to a specific project
+          <Text size="xs" color={colors.info[600]}>
+            <Text weight="semibold">One-to-Many (Project):</Text> Relationship tied to a specific project
             (e.g., subcontractor assigned to project)
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Edit Rule Modal */}
       {editingRule && (
@@ -369,7 +376,7 @@ export default function InvitationRulesAdminPage() {
           isCreating={createRuleMutation.isPending}
         />
       )}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -400,23 +407,25 @@ function EditRuleModal({
   }
 
   return (
-    <YStack
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      backgroundColor="rgba(0,0,0,0.5)"
-      justifyContent="center"
-      alignItems="center"
-      zIndex={1000}
+    <Stack
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}
     >
-      <Card padding="$6" width={500} maxWidth="90%">
-        <H3 marginBottom="$4">Edit Rule: {rule.name}</H3>
+      <Card style={{ padding: spacing[24], width: 500, maxWidth: '90%' }}>
+        <Heading level={3} style={{ marginBottom: spacing[16] }}>Edit Rule: {rule.name}</Heading>
 
-        <YStack gap="$4">
-          <YStack gap="$2">
-            <Text fontSize="$2" fontWeight="500">
+        <Stack gap={spacing[16]}>
+          <Stack gap={spacing[8]}>
+            <Text size="xs" weight="medium">
               Rule Name
             </Text>
             <Input
@@ -424,68 +433,68 @@ function EditRuleModal({
               onChangeText={setName}
               placeholder="Enter rule name"
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
-            <Text fontSize="$2" fontWeight="500">
+          <Stack gap={spacing[8]}>
+            <Text size="xs" weight="medium">
               Description
             </Text>
-            <TextArea
+            <Textarea
               value={description}
-              onChangeText={setDescription}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter description (optional)"
-              numberOfLines={2}
+              rows={2}
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
-            <Text fontSize="$2" fontWeight="500">
+          <Stack gap={spacing[8]}>
+            <Text size="xs" weight="medium">
               Constraint Message
             </Text>
-            <TextArea
+            <Textarea
               value={constraintMessage}
-              onChangeText={setConstraintMessage}
+              onChange={(e) => setConstraintMessage(e.target.value)}
               placeholder="Message shown when constraint is violated (optional)"
-              numberOfLines={2}
+              rows={2}
             />
-          </YStack>
+          </Stack>
 
-          <XStack alignItems="center" gap="$3">
+          <Row alignItems="center" gap={spacing[12]}>
             <Switch
               checked={allowReferralOnly}
               onCheckedChange={setAllowReferralOnly}
             />
-            <YStack>
-              <Text fontSize="$2" fontWeight="500">
+            <Stack>
+              <Text size="xs" weight="medium">
                 Allow Referral-Only
               </Text>
-              <Text fontSize="$1" color="$gray11">
+              <Text size="xs" color={colors.text.light.secondary}>
                 If constraint fails, still track referral credit
               </Text>
-            </YStack>
-          </XStack>
-        </YStack>
+            </Stack>
+          </Row>
+        </Stack>
 
-        <XStack justifyContent="flex-end" gap="$3" marginTop="$6">
+        <Row justifyContent="flex-end" gap={spacing[12]} style={{ marginTop: spacing[24] }}>
           <Button
-            variant="outlined"
+            variant="outline"
             onPress={onClose}
             disabled={isSaving}
           >
             Cancel
           </Button>
           <Button
-            backgroundColor="$blue9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            color="primary"
+            variant="filled"
             onPress={handleSubmit}
             disabled={isSaving || !name}
+            loading={isSaving}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </XStack>
+        </Row>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -533,24 +542,26 @@ function CreateRuleModal({
   const isValid = sourceRole && targetRole && name
 
   return (
-    <YStack
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      backgroundColor="rgba(0,0,0,0.5)"
-      justifyContent="center"
-      alignItems="center"
-      zIndex={1000}
+    <Stack
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}
     >
-      <Card padding="$6" width={500} maxWidth="90%">
-        <H3 marginBottom="$4">Create New Rule</H3>
+      <Card style={{ padding: spacing[24], width: 500, maxWidth: '90%' }}>
+        <Heading level={3} style={{ marginBottom: spacing[16] }}>Create New Rule</Heading>
 
-        <YStack gap="$4">
-          <XStack gap="$4">
-            <YStack flex={1} gap="$2">
-              <Text fontSize="$2" fontWeight="500">
+        <Stack gap={spacing[16]}>
+          <Row gap={spacing[16]}>
+            <Stack style={{ flex: 1 }} gap={spacing[8]}>
+              <Text size="xs" weight="medium">
                 Source Role
               </Text>
               <Input
@@ -558,9 +569,9 @@ function CreateRuleModal({
                 onChangeText={setSourceRole}
                 placeholder="e.g., broker"
               />
-            </YStack>
-            <YStack flex={1} gap="$2">
-              <Text fontSize="$2" fontWeight="500">
+            </Stack>
+            <Stack style={{ flex: 1 }} gap={spacing[8]}>
+              <Text size="xs" weight="medium">
                 Target Role
               </Text>
               <Input
@@ -568,11 +579,11 @@ function CreateRuleModal({
                 onChangeText={setTargetRole}
                 placeholder="e.g., client"
               />
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
-          <YStack gap="$2">
-            <Text fontSize="$2" fontWeight="500">
+          <Stack gap={spacing[8]}>
+            <Text size="xs" weight="medium">
               Rule Name
             </Text>
             <Input
@@ -580,23 +591,20 @@ function CreateRuleModal({
               onChangeText={setName}
               placeholder="e.g., Invite Client"
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2">
-            <Text fontSize="$2" fontWeight="500">
+          <Stack gap={spacing[8]}>
+            <Text size="xs" weight="medium">
               Relationship Type
             </Text>
-            <XStack gap="$2" flexWrap="wrap">
+            <Row gap={spacing[8]} style={{ flexWrap: 'wrap' }}>
               {(['one-to-one', 'one-to-many', 'one-to-many-via-project'] as RelationshipType[]).map(
                 (type) => (
                   <Button
                     key={type}
-                    size="$3"
-                    backgroundColor={relationshipType === type ? '$blue9' : '$gray3'}
-                    color={relationshipType === type ? 'white' : '$gray11'}
-                    hoverStyle={{
-                      backgroundColor: relationshipType === type ? '$blue10' : '$gray4',
-                    }}
+                    size="sm"
+                    color={relationshipType === type ? 'primary' : 'gray'}
+                    variant={relationshipType === type ? 'filled' : 'outline'}
                     onPress={() => {
                       setRelationshipType(type)
                       if (type === 'one-to-many-via-project') {
@@ -608,50 +616,50 @@ function CreateRuleModal({
                   </Button>
                 )
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
-          <YStack gap="$2">
-            <Text fontSize="$2" fontWeight="500">
+          <Stack gap={spacing[8]}>
+            <Text size="xs" weight="medium">
               Description
             </Text>
-            <TextArea
+            <Textarea
               value={description}
-              onChangeText={setDescription}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter description (optional)"
-              numberOfLines={2}
+              rows={2}
             />
-          </YStack>
+          </Stack>
 
-          <XStack alignItems="center" gap="$3">
+          <Row alignItems="center" gap={spacing[12]}>
             <Switch
               checked={requiresProject}
               onCheckedChange={setRequiresProject}
               disabled={relationshipType === 'one-to-many-via-project'}
             />
-            <Text fontSize="$2">Requires Project Context</Text>
-          </XStack>
-        </YStack>
+            <Text size="xs">Requires Project Context</Text>
+          </Row>
+        </Stack>
 
-        <XStack justifyContent="flex-end" gap="$3" marginTop="$6">
+        <Row justifyContent="flex-end" gap={spacing[12]} style={{ marginTop: spacing[24] }}>
           <Button
-            variant="outlined"
+            variant="outline"
             onPress={onClose}
             disabled={isCreating}
           >
             Cancel
           </Button>
           <Button
-            backgroundColor="$blue9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            color="primary"
+            variant="filled"
             onPress={handleSubmit}
             disabled={isCreating || !isValid}
+            loading={isCreating}
           >
             {isCreating ? 'Creating...' : 'Create Rule'}
           </Button>
-        </XStack>
+        </Row>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

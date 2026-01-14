@@ -1,10 +1,10 @@
 /**
- * MetricCard - Metric card component using Tamagui
+ * MetricCard - Metric card component using Beyond UI
  * REQ-129: Manager Dashboard - Reusable Metric Card Component
+ * Migrated from Tamagui to Beyond UI
  */
 import React from 'react';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
-import { Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 export interface MetricCardProps {
@@ -22,57 +22,31 @@ export interface MetricCardProps {
   className?: string;
 }
 
-const MetricCardContainer = styled(Card, {
-  name: 'MetricCard',
-  padding: '$6',
-  borderWidth: 1,
-  
-  variants: {
-    status: {
-      success: {
-        borderColor: '$green6',
-        backgroundColor: '$green2',
-      },
-      warning: {
-        borderColor: '$yellow6',
-        backgroundColor: '$yellow2',
-      },
-      danger: {
-        borderColor: '$red6',
-        backgroundColor: '$red2',
-      },
-      info: {
-        borderColor: '$borderColor',
-        backgroundColor: '$background',
-      },
-    },
-    clickable: {
-      true: {
-        cursor: 'pointer',
-        hoverStyle: {
-          shadowRadius: 8,
-          shadowOffset: { width: 0, height: 4 },
-        },
-      },
-    },
-  } as const,
-  
-  defaultVariants: {
-    status: 'info',
-    clickable: false,
-  },
-});
-
-const SkeletonBox = styled(YStack, {
-  name: 'SkeletonBox',
-  height: 32,
-  backgroundColor: '$color4',
-  borderRadius: '$3',
-  width: 96,
-  animation: 'pulse',
-  animationDuration: '2s',
-  animationIterationCount: 'infinite',
-});
+const getStatusStyles = (status: MetricCardProps['status']) => {
+  switch (status) {
+    case 'success':
+      return {
+        borderColor: 'var(--color-green-6)',
+        backgroundColor: 'var(--color-green-2)',
+      };
+    case 'warning':
+      return {
+        borderColor: 'var(--color-yellow-6)',
+        backgroundColor: 'var(--color-yellow-2)',
+      };
+    case 'danger':
+      return {
+        borderColor: 'var(--color-red-6)',
+        backgroundColor: 'var(--color-red-2)',
+      };
+    case 'info':
+    default:
+      return {
+        borderColor: 'var(--color-border)',
+        backgroundColor: 'var(--color-background)',
+      };
+  }
+};
 
 export const MetricCard: React.FC<MetricCardProps> = ({
   title,
@@ -86,33 +60,33 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   className = '',
 }) => {
   const getTrendColor = () => {
-    if (!trend) return '$color10';
+    if (!trend) return 'var(--color-text-muted)';
     switch (trend.direction) {
       case 'up':
-        return '$green9';
+        return 'var(--color-green-9)';
       case 'down':
-        return '$red9';
+        return 'var(--color-red-9)';
       default:
-        return '$color10';
+        return 'var(--color-text-muted)';
     }
   };
 
   const getTrendIcon = () => {
     if (!trend) return null;
     if (trend.direction === 'up') {
-      return <TrendingUp size={16} color="currentColor" />;
+      return <TrendingUp size={16} />;
     }
     if (trend.direction === 'down') {
-      return <TrendingDown size={16} color="currentColor" />;
+      return <TrendingDown size={16} />;
     }
-    return <Minus size={16} color="currentColor" />;
+    return <Minus size={16} />;
   };
 
+  const statusStyles = getStatusStyles(status);
+
   return (
-    <MetricCardContainer
-      status={status}
-      clickable={!!onClick}
-      onPress={onClick}
+    <Card
+      onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={
@@ -125,40 +99,74 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             }
           : undefined
       }
+      style={{
+        padding: 24,
+        border: '1px solid',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'box-shadow 0.15s ease',
+        ...statusStyles,
+      }}
+      className={className}
     >
-      <XStack alignItems="flex-start" justifyContent="space-between">
-        <YStack flex={1} gap="$1">
-          <Text fontSize="$2" fontWeight="500" color="$color10" mb="$1">
+      <Row alignItems="flex-start" justifyContent="space-between">
+        <Stack flex={1} gap={4}>
+          <Text
+            size="sm"
+            weight="medium"
+            muted
+            style={{ marginBottom: 4 }}
+          >
             {title}
           </Text>
           {loading ? (
-            <SkeletonBox />
+            <Stack
+              style={{
+                height: 32,
+                backgroundColor: 'var(--color-text-muted)',
+                borderRadius: 8,
+                width: 96,
+                opacity: 0.3,
+              }}
+            />
           ) : (
             <>
-              <Text fontSize="$9" fontWeight="700" color="$color12" mb="$2">
+              <Text
+                size="2xl"
+                weight="bold"
+                style={{ marginBottom: 8 }}
+              >
                 {value}
               </Text>
               {subtitle && (
-                <Text fontSize="$2" color="$color9">
+                <Text size="sm" muted>
                   {subtitle}
                 </Text>
               )}
               {trend && (
-                <XStack alignItems="center" gap="$1" mt="$2" fontSize="$2" color={getTrendColor()}>
+                <Row
+                  alignItems="center"
+                  gap={4}
+                  style={{
+                    marginTop: 8,
+                    color: getTrendColor(),
+                  }}
+                >
                   {getTrendIcon()}
-                  <Text>{Math.abs(trend.value)}%</Text>
-                  <Text color="$color9">vs last week</Text>
-                </XStack>
+                  <Text size="sm">{Math.abs(trend.value)}%</Text>
+                  <Text size="sm" muted>
+                    vs last week
+                  </Text>
+                </Row>
               )}
             </>
           )}
-        </YStack>
+        </Stack>
         {icon && (
-          <YStack ml="$4" color="$color8">
+          <Stack style={{ marginLeft: 16, color: 'var(--color-text-muted)' }}>
             {icon}
-          </YStack>
+          </Stack>
         )}
-      </XStack>
-    </MetricCardContainer>
+      </Row>
+    </Card>
   );
 };

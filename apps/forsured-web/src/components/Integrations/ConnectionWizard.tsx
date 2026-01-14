@@ -13,7 +13,7 @@ import {
   ArrowLeft,
   Loader,
 } from 'lucide-react';
-import { XStack, YStack, Text, Button as TamaguiButton, Spinner, H3, SizableText } from '@unicornlove/ui';
+import { Stack, Row, Text, Spinner } from '@unicornlove/beyond-ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import Input from '../Common/Input';
@@ -197,141 +197,135 @@ export default function ConnectionWizard({
     switch (currentStep) {
       case 1:
         return (
-          <YStack gap="$6">
-            <YStack>
-              <H3 mb="$2">Authentication Method</H3>
-              <SizableText size="$3" color="$color11" mb="$4">
+          <Stack style={{ gap: 'var(--space-6)' }}>
+            <Stack>
+              <h3 style={{ marginBottom: 'var(--space-2)' }}>Authentication Method</h3>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)', marginBottom: 'var(--space-4)' }}>
                 Choose how you want to authenticate with {integrationName}
-              </SizableText>
-            </YStack>
+              </Text>
+            </Stack>
 
-            <YStack gap="$3">
-              <TamaguiButton
-                unstyled
-                width="100%"
-                padding="$4"
-                borderWidth={2}
-                borderRadius="$4"
-                style={{ textAlign: 'left' }}
-                backgroundColor={
-                  settings.authMethod === 'api_key' ? '$blue2' : 'transparent'
-                }
-                borderColor={
-                  settings.authMethod === 'api_key' ? '$blue9' : '$borderColor'
-                }
-                hoverStyle={{
-                  borderColor: '$blue7',
+            <Stack style={{ gap: 'var(--space-3)' }}>
+              <button
+                style={{
+                  width: '100%',
+                  padding: 'var(--space-4)',
+                  borderWidth: 2,
+                  borderStyle: 'solid',
+                  borderRadius: 'var(--radius-4)',
+                  textAlign: 'left',
+                  backgroundColor:
+                    settings.authMethod === 'api_key' ? 'var(--color-blue-2)' : 'transparent',
+                  borderColor:
+                    settings.authMethod === 'api_key' ? 'var(--color-blue-9)' : 'var(--color-border)',
+                  cursor: 'pointer',
                 }}
-                onPress={() =>
+                onClick={() =>
                   setSettings({ ...settings, authMethod: 'api_key' })
                 }
               >
-                <XStack alignItems="center" gap="$3">
+                <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
                   <Key
                     color={
                       settings.authMethod === 'api_key'
-                        ? '$blue9'
-                        : '$color10'
+                        ? 'var(--color-blue-9)'
+                        : 'var(--color-text-secondary)'
                     }
                     size={20}
                   />
-                  <YStack flex={1}>
-                    <Text fontWeight="500" color="$color12">
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)' }}>
                       API Key
                     </Text>
-                    <SizableText size="$3" color="$color11">
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                       Use an API key for authentication
-                    </SizableText>
-                  </YStack>
-                </XStack>
-              </TamaguiButton>
+                    </Text>
+                  </Stack>
+                </Row>
+              </button>
 
-              <TamaguiButton
-                unstyled
-                width="100%"
-                padding="$4"
-                borderWidth={2}
-                borderRadius="$4"
-                style={{ textAlign: 'left' }}
-                backgroundColor={
-                  settings.authMethod === 'oauth' ? '$blue2' : 'transparent'
-                }
-                borderColor={
-                  settings.authMethod === 'oauth' ? '$blue9' : '$borderColor'
-                }
-                hoverStyle={{
-                  borderColor: '$blue7',
+              <button
+                style={{
+                  width: '100%',
+                  padding: 'var(--space-4)',
+                  borderWidth: 2,
+                  borderStyle: 'solid',
+                  borderRadius: 'var(--radius-4)',
+                  textAlign: 'left',
+                  backgroundColor:
+                    settings.authMethod === 'oauth' ? 'var(--color-blue-2)' : 'transparent',
+                  borderColor:
+                    settings.authMethod === 'oauth' ? 'var(--color-blue-9)' : 'var(--color-border)',
+                  cursor: 'pointer',
                 }}
-                onPress={() =>
+                onClick={() =>
                   setSettings({ ...settings, authMethod: 'oauth' })
                 }
               >
-                <XStack alignItems="center" gap="$3">
+                <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
                   <Lock
                     color={
-                      settings.authMethod === 'oauth' ? '$blue9' : '$color10'
+                      settings.authMethod === 'oauth' ? 'var(--color-blue-9)' : 'var(--color-text-secondary)'
                     }
                     size={20}
                   />
-                  <YStack flex={1}>
-                    <Text fontWeight="500" color="$color12">
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)' }}>
                       OAuth 2.0
                     </Text>
-                    <SizableText size="$3" color="$color11">
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                       Secure OAuth authentication
-                    </SizableText>
-                  </YStack>
-                </XStack>
-              </TamaguiButton>
+                    </Text>
+                  </Stack>
+                </Row>
+              </button>
 
-              <TamaguiButton
-                unstyled
-                width="100%"
-                padding="$4"
-                borderWidth={2}
-                borderRadius="$4"
-                style={{ textAlign: 'left' }}
-                backgroundColor={
-                  settings.authMethod === 'username_password'
-                    ? '$blue2'
-                    : 'transparent'
-                }
-                borderColor={
-                  settings.authMethod === 'username_password'
-                    ? '$blue9'
-                    : '$borderColor'
-                }
-                hoverStyle={{
-                  borderColor: '$blue7',
+              <button
+                style={{
+                  width: '100%',
+                  padding: 'var(--space-4)',
+                  borderWidth: 2,
+                  borderStyle: 'solid',
+                  borderRadius: 'var(--radius-4)',
+                  textAlign: 'left',
+                  backgroundColor:
+                    settings.authMethod === 'username_password'
+                      ? 'var(--color-blue-2)'
+                      : 'transparent',
+                  borderColor:
+                    settings.authMethod === 'username_password'
+                      ? 'var(--color-blue-9)'
+                      : 'var(--color-border)',
+                  cursor: 'pointer',
                 }}
-                onPress={() =>
+                onClick={() =>
                   setSettings({ ...settings, authMethod: 'username_password' })
                 }
               >
-                <XStack alignItems="center" gap="$3">
+                <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
                   <Lock
                     color={
                       settings.authMethod === 'username_password'
-                        ? '$blue9'
-                        : '$color10'
+                        ? 'var(--color-blue-9)'
+                        : 'var(--color-text-secondary)'
                     }
                     size={20}
                   />
-                  <YStack flex={1}>
-                    <Text fontWeight="500" color="$color12">
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)' }}>
                       Username & Password
                     </Text>
-                    <SizableText size="$3" color="$color11">
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                       Use your account credentials
-                    </SizableText>
-                  </YStack>
-                </XStack>
-              </TamaguiButton>
-            </YStack>
+                    </Text>
+                  </Stack>
+                </Row>
+              </button>
+            </Stack>
 
             {/* API Key Input */}
             {settings.authMethod === 'api_key' && (
-              <YStack gap="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <Stack style={{ gap: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
                 <Input
                   label="API Key"
                   type="password"
@@ -343,15 +337,15 @@ export default function ConnectionWizard({
                   fullWidth
                   required
                 />
-                <SizableText size="$1" color="$color10">
+                <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-secondary)' }}>
                   Find your API key in your {integrationName} account settings
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
             )}
 
             {/* Username/Password Inputs */}
             {settings.authMethod === 'username_password' && (
-              <YStack gap="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <Stack style={{ gap: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
                 <Input
                   label="Username"
                   value={settings.username || ''}
@@ -373,45 +367,45 @@ export default function ConnectionWizard({
                   fullWidth
                   required
                 />
-              </YStack>
+              </Stack>
             )}
 
             {/* OAuth Button */}
             {settings.authMethod === 'oauth' && (
-              <YStack paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+              <Stack style={{ paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
                 <Button
                   variant="primary"
-                  onPress={handleOAuthConnect}
+                  onClick={handleOAuthConnect}
                   disabled={loading}
-                  width="100%"
+                  style={{ width: '100%' }}
                 >
                   {loading ? 'Connecting...' : 'Authorize with OAuth'}
                 </Button>
-                <SizableText size="$1" color="$color10" mt="$2" style={{ textAlign: 'center' }}>
+                <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-2)', textAlign: 'center' }}>
                   You will be redirected to {integrationName} to authorize the
                   connection
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         );
 
       case 2:
         return (
-          <YStack gap="$6">
-            <YStack>
-              <H3 mb="$2">Sync Settings</H3>
-              <SizableText size="$3" color="$color11" mb="$4">
+          <Stack style={{ gap: 'var(--space-6)' }}>
+            <Stack>
+              <h3 style={{ marginBottom: 'var(--space-2)' }}>Sync Settings</h3>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)', marginBottom: 'var(--space-4)' }}>
                 Configure what data to sync and how often
-              </SizableText>
-            </YStack>
+              </Text>
+            </Stack>
 
-            <YStack gap="$4">
-              <YStack>
-                <SizableText size="$3" fontWeight="500" color="$color12" mb="$3">
+            <Stack style={{ gap: 'var(--space-4)' }}>
+              <Stack>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-primary)', marginBottom: 'var(--space-3)' }}>
                   Data Types to Sync
-                </SizableText>
-                <YStack gap="$2">
+                </Text>
+                <Stack style={{ gap: 'var(--space-2)' }}>
                   {[
                     { id: 'projects', label: 'Projects', icon: Database },
                     { id: 'documents', label: 'Documents', icon: Database },
@@ -421,26 +415,24 @@ export default function ConnectionWizard({
                     const Icon = type.icon;
                     const isSelected = settings.syncDataTypes.includes(type.id);
                     return (
-                      <TamaguiButton
+                      <button
                         key={type.id}
-                        unstyled
-                        flexDirection="row"
-                        alignItems="center"
-                        gap="$3"
-                        padding="$3"
-                        borderWidth={1}
-                        borderRadius="$4"
-                        cursor="pointer"
-                        backgroundColor={
-                          isSelected ? '$blue2' : 'transparent'
-                        }
-                        borderColor={
-                          isSelected ? '$blue9' : '$borderColor'
-                        }
-                        hoverStyle={{
-                          borderColor: '$blue7',
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 'var(--space-3)',
+                          padding: 'var(--space-3)',
+                          borderWidth: 1,
+                          borderStyle: 'solid',
+                          borderRadius: 'var(--radius-4)',
+                          cursor: 'pointer',
+                          backgroundColor:
+                            isSelected ? 'var(--color-blue-2)' : 'transparent',
+                          borderColor:
+                            isSelected ? 'var(--color-blue-9)' : 'var(--color-border)',
                         }}
-                        onPress={() => {
+                        onClick={() => {
                           if (isSelected) {
                             setSettings({
                               ...settings,
@@ -467,20 +459,22 @@ export default function ConnectionWizard({
                         />
                         <Icon
                           size={18}
-                          color={isSelected ? '$blue9' : '$color10'}
+                          color={isSelected ? 'var(--color-blue-9)' : 'var(--color-text-secondary)'}
                         />
                         <Text
-                          flex={1}
-                          color={isSelected ? '$blue11' : '$color12'}
-                          fontWeight={isSelected ? '500' : 'normal'}
+                          style={{
+                            flex: 1,
+                            color: isSelected ? 'var(--color-blue-11)' : 'var(--color-text-primary)',
+                            fontWeight: isSelected ? '500' : 'normal',
+                          }}
                         >
                           {type.label}
                         </Text>
-                      </TamaguiButton>
+                      </button>
                     );
                   })}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
 
               <Select
                 label="Sync Frequency"
@@ -500,17 +494,21 @@ export default function ConnectionWizard({
                 fullWidth
               />
 
-              <TamaguiButton
-                unstyled
-                flexDirection="row"
-                alignItems="center"
-                gap="$3"
-                padding="$3"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                cursor="pointer"
-                onPress={() =>
+              <button
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 'var(--space-3)',
+                  padding: 'var(--space-3)',
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-border)',
+                  borderRadius: 'var(--radius-4)',
+                  cursor: 'pointer',
+                  backgroundColor: 'transparent',
+                }}
+                onClick={() =>
                   setSettings({
                     ...settings,
                     initialSync: !settings.initialSync,
@@ -523,116 +521,127 @@ export default function ConnectionWizard({
                   onChange={() => {}}
                   style={{ display: 'none' }}
                 />
-                <YStack>
-                  <Text fontWeight="500" color="$color12">
+                <Stack>
+                  <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)' }}>
                     Perform initial sync
                   </Text>
-                  <SizableText size="$3" color="$color11">
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                     Import existing data from {integrationName} now
-                  </SizableText>
-                </YStack>
-              </TamaguiButton>
-            </YStack>
-          </YStack>
+                  </Text>
+                </Stack>
+              </button>
+            </Stack>
+          </Stack>
         );
 
       case 3:
         return (
-          <YStack gap="$6" alignItems="center">
-            <XStack justifyContent="center">
-              <XStack
-                width={64}
-                height={64}
-                backgroundColor="$green2"
-                borderRadius={9999}
-                alignItems="center"
-                justifyContent="center"
+          <Stack style={{ gap: 'var(--space-6)', alignItems: 'center' }}>
+            <Row style={{ justifyContent: 'center' }}>
+              <Row
+                style={{
+                  width: 64,
+                  height: 64,
+                  backgroundColor: 'var(--color-green-2)',
+                  borderRadius: 9999,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
-                <CheckCircle color="$green9" size={32} />
-              </XStack>
-            </XStack>
-            <YStack alignItems="center">
-              <H3 mb="$2">Connection Successful!</H3>
-              <SizableText size="$3" color="$color11">
+                <CheckCircle color="var(--color-green-9)" size={32} />
+              </Row>
+            </Row>
+            <Stack style={{ alignItems: 'center' }}>
+              <h3 style={{ marginBottom: 'var(--space-2)' }}>Connection Successful!</h3>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                 {integrationName} has been successfully connected
-              </SizableText>
-            </YStack>
+              </Text>
+            </Stack>
             {connectionStatus === 'active' && (
-              <YStack
-                backgroundColor="$green2"
-                borderWidth={1}
-                borderColor="$green5"
-                borderRadius="$4"
-                padding="$4"
+              <Stack
+                style={{
+                  backgroundColor: 'var(--color-green-2)',
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-green-5)',
+                  borderRadius: 'var(--radius-4)',
+                  padding: 'var(--space-4)',
+                }}
               >
-                <XStack alignItems="center" justifyContent="center" gap="$2">
-                  <XStack
-                    width={8}
-                    height={8}
-                    backgroundColor="$green9"
-                    borderRadius={9999}
+                <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+                  <div
+                    style={{
+                      width: 8,
+                      height: 8,
+                      backgroundColor: 'var(--color-green-9)',
+                      borderRadius: 9999,
+                    }}
                   />
-                  <SizableText size="$3" fontWeight="500" color="$green11">
+                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-green-11)' }}>
                     Connection Active
-                  </SizableText>
-                </XStack>
-              </YStack>
+                  </Text>
+                </Row>
+              </Stack>
             )}
-            <YStack gap="$2" width="100%">
-              <XStack justifyContent="space-between">
-                <SizableText size="$3" color="$color11">
+            <Stack style={{ gap: 'var(--space-2)', width: '100%' }}>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                   Sync Frequency:
-                </SizableText>
-                <SizableText size="$3" fontWeight="500" color="$color12">
+                </Text>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-primary)' }}>
                   {settings.syncFrequency}
-                </SizableText>
-              </XStack>
-              <XStack justifyContent="space-between">
-                <SizableText size="$3" color="$color11">
+                </Text>
+              </Row>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                   Data Types:
-                </SizableText>
-                <SizableText size="$3" fontWeight="500" color="$color12">
+                </Text>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-primary)' }}>
                   {settings.syncDataTypes.length} selected
-                </SizableText>
-              </XStack>
-            </YStack>
-          </YStack>
+                </Text>
+              </Row>
+            </Stack>
+          </Stack>
         );
 
       case 4:
         return (
-          <YStack gap="$6">
-            <YStack alignItems="center">
-              <H3 mb="$2">Initial Sync in Progress</H3>
-              <SizableText size="$3" color="$color11">
+          <Stack style={{ gap: 'var(--space-6)' }}>
+            <Stack style={{ alignItems: 'center' }}>
+              <h3 style={{ marginBottom: 'var(--space-2)' }}>Initial Sync in Progress</h3>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
                 Importing data from {integrationName}...
-              </SizableText>
-            </YStack>
-            <YStack gap="$2">
-              <YStack
-                width="100%"
-                backgroundColor="$color4"
-                borderRadius={9999}
-                height={12}
-                overflow="hidden"
+              </Text>
+            </Stack>
+            <Stack style={{ gap: 'var(--space-2)' }}>
+              <div
+                style={{
+                  width: '100%',
+                  backgroundColor: 'var(--color-background-tertiary)',
+                  borderRadius: 9999,
+                  height: 12,
+                  overflow: 'hidden',
+                }}
               >
-                <YStack
-                  backgroundColor="$blue9"
-                  height={12}
-                  borderRadius={9999}
-                  width={`${initialSyncProgress}%`}
+                <div
+                  style={{
+                    backgroundColor: 'var(--color-blue-9)',
+                    height: 12,
+                    borderRadius: 9999,
+                    width: `${initialSyncProgress}%`,
+                  }}
                 />
-              </YStack>
-              <XStack justifyContent="space-between">
-                <SizableText size="$1" color="$color11">
+              </div>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-tertiary)' }}>
                   {Math.round(initialSyncProgress)}% complete
-                </SizableText>
-                <SizableText size="$1" color="$color11">
+                </Text>
+                <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-tertiary)' }}>
                   This may take a few minutes
-                </SizableText>
-              </XStack>
-            </YStack>
-          </YStack>
+                </Text>
+              </Row>
+            </Stack>
+          </Stack>
         );
 
       default:
@@ -647,91 +656,102 @@ export default function ConnectionWizard({
       title={`Connect ${integrationName}`}
       size="medium"
     >
-      <YStack gap="$6">
+      <Stack style={{ gap: 'var(--space-6)' }}>
         {/* Progress Steps */}
-        <XStack alignItems="center" justifyContent="space-between">
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
           {[1, 2, 3].map((step) => (
-            <XStack key={step} alignItems="center" flex={1}>
-              <XStack alignItems="center">
-                <XStack
-                  width={32}
-                  height={32}
-                  borderRadius={9999}
-                  alignItems="center"
-                  justifyContent="center"
-                  backgroundColor={
-                    currentStep >= step ? '$blue9' : '$color4'
-                  }
+            <Row key={step} style={{ alignItems: 'center', flex: 1 }}>
+              <Row style={{ alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor:
+                      currentStep >= step ? 'var(--color-blue-9)' : 'var(--color-background-tertiary)',
+                  }}
                 >
                   {currentStep > step ? (
                     <CheckCircle size={16} color="white" />
                   ) : (
                     <Text
-                      size="$3"
-                      fontWeight="500"
-                      color={currentStep >= step ? 'white' : '$color10'}
+                      style={{
+                        fontSize: 'var(--font-size-3)',
+                        fontWeight: '500',
+                        color: currentStep >= step ? 'white' : 'var(--color-text-secondary)',
+                      }}
                     >
                       {step}
                     </Text>
                   )}
-                </XStack>
-                <SizableText
-                  size="$1"
-                  fontWeight="500"
-                  color="$color11"
-                  ml="$2"
-                  $sm={{ display: 'none' }}
+                </div>
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-1)',
+                    fontWeight: '500',
+                    color: 'var(--color-text-tertiary)',
+                    marginLeft: 'var(--space-2)',
+                  }}
                 >
                   {step === 1 ? 'Auth' : step === 2 ? 'Sync' : 'Done'}
-                </SizableText>
-              </XStack>
+                </Text>
+              </Row>
               {step < 3 && (
-                <YStack
-                  flex={1}
-                  height={2}
-                  marginHorizontal="$2"
-                  backgroundColor={
-                    currentStep > step ? '$blue9' : '$color4'
-                  }
+                <div
+                  style={{
+                    flex: 1,
+                    height: 2,
+                    marginLeft: 'var(--space-2)',
+                    marginRight: 'var(--space-2)',
+                    backgroundColor:
+                      currentStep > step ? 'var(--color-blue-9)' : 'var(--color-background-tertiary)',
+                  }}
                 />
               )}
-            </XStack>
+            </Row>
           ))}
-        </XStack>
+        </Row>
 
         {/* Error Message */}
         {error && (
-          <XStack
-            backgroundColor="$red2"
-            borderWidth={1}
-            borderColor="$red5"
-            borderRadius="$4"
-            padding="$4"
-            alignItems="center"
-            gap="$3"
+          <Row
+            style={{
+              backgroundColor: 'var(--color-red-2)',
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'var(--color-red-5)',
+              borderRadius: 'var(--radius-4)',
+              padding: 'var(--space-4)',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+            }}
           >
-            <AlertCircle color="$red9" size={20} />
-            <SizableText size="$3" color="$red11">
+            <AlertCircle color="var(--color-red-9)" size={20} />
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-red-11)' }}>
               {error}
-            </SizableText>
-          </XStack>
+            </Text>
+          </Row>
         )}
 
         {/* Step Content */}
-        <YStack minHeight={300}>{renderStep()}</YStack>
+        <Stack style={{ minHeight: 300 }}>{renderStep()}</Stack>
 
         {/* Actions */}
         {currentStep < 3 && currentStep !== 4 && (
-          <XStack
-            alignItems="center"
-            justifyContent="space-between"
-            paddingTop="$4"
-            borderTopWidth={1}
-            borderColor="$borderColor"
+          <Row
+            style={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingTop: 'var(--space-4)',
+              borderTop: '1px solid var(--color-border)',
+            }}
           >
             <Button
               variant="secondary"
-              onPress={currentStep === 1 ? handleClose : handleBack}
+              onClick={currentStep === 1 ? handleClose : handleBack}
               disabled={loading}
             >
               {currentStep === 1 ? 'Cancel' : 'Back'}
@@ -739,7 +759,7 @@ export default function ConnectionWizard({
             {currentStep === 1 && settings.authMethod !== 'oauth' ? (
               <Button
                 variant="primary"
-                onPress={handleNext}
+                onClick={handleNext}
                 disabled={loading}
               >
                 Next
@@ -747,23 +767,23 @@ export default function ConnectionWizard({
             ) : currentStep === 2 ? (
               <Button
                 variant="primary"
-                onPress={handleConnect}
+                onClick={handleConnect}
                 disabled={loading || settings.syncDataTypes.length === 0}
               >
                 {loading ? 'Connecting...' : 'Connect'}
               </Button>
             ) : null}
-          </XStack>
+          </Row>
         )}
 
         {currentStep === 3 && (
-          <XStack justifyContent="flex-end" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-            <Button variant="primary" onPress={handleClose}>
+          <Row style={{ justifyContent: 'flex-end', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
+            <Button variant="primary" onClick={handleClose}>
               Done
             </Button>
-          </XStack>
+          </Row>
         )}
-      </YStack>
+      </Stack>
     </Modal>
   );
 }

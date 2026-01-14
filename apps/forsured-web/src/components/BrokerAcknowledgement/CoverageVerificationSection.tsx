@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Info } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import {
   AcknowledgementCoverageItem,
   CoverageVerificationStatus,
@@ -100,79 +100,80 @@ export default function CoverageVerificationSection({
   };
 
   return (
-    <Card borderWidth={1} borderColor="$borderColor" padding="$6">
-      <YStack gap="$4">
-        <YStack>
-          <Text fontSize="$6" fontWeight="600" color="$color12">
+    <Card style={{ border: '1px solid var(--color-border)', padding: 'var(--space-6)' }}>
+      <Stack style={{ gap: 'var(--space-4)' }}>
+        <Stack>
+          <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)' }}>
             {title}
           </Text>
           {description && (
-            <Text fontSize="$2" color="$color11" mt="$1">
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)', marginTop: 'var(--space-1)' }}>
               {description}
             </Text>
           )}
           {minLimits && (
-            <Text fontSize="$2" fontWeight="500" color="$blue10" mt="$2">
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-blue-10)', marginTop: 'var(--space-2)' }}>
               Minimum Limits: {minLimits}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {infoNote && (
           <Card
-            backgroundColor="$blue3"
-            borderWidth={1}
-            borderColor="$blue6"
-            borderRadius="$4"
-            padding="$3"
+            style={{
+              backgroundColor: 'var(--color-blue-3)',
+              border: '1px solid var(--color-blue-6)',
+              borderRadius: 'var(--radius-4)',
+              padding: 'var(--space-3)',
+            }}
           >
-            <XStack alignItems="flex-start" gap="$2">
-              <Info size={16} color="$blue10" mt="$0.5" flexShrink={0} />
-              <Text fontSize="$2" color="$blue11">
+            <Row style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
+              <Info size={16} style={{ color: 'var(--color-blue-10)', marginTop: 'var(--space-0-5)', flexShrink: 0 }} />
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue-11)' }}>
                 {infoNote}
               </Text>
-            </XStack>
+            </Row>
           </Card>
         )}
 
-        <YStack overflowX="auto">
-          <table width="100%">
+        <Stack style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%' }}>
             <thead>
               <tr>
                 <th>
-                  <XStack paddingVertical="$3" paddingHorizontal="$2">
-                    <Text style={{ textAlign: 'left' }} fontSize="$2" fontWeight="500" color="$color11">
+                  <Row style={{ paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)' }}>
+                    <Text style={{ textAlign: 'left', fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)' }}>
                       Specification
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingVertical="$3" paddingHorizontal="$2" width={96} justifyContent="center">
-                    <Text style={{ textAlign: 'center' }} fontSize="$2" fontWeight="500" color="$color11">
+                  <Row style={{ paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)', width: 96, justifyContent: 'center' }}>
+                    <Text style={{ textAlign: 'center', fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)' }}>
                       Included
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingVertical="$3" paddingHorizontal="$2" width={96} justifyContent="center">
-                    <Text style={{ textAlign: 'center' }} fontSize="$2" fontWeight="500" color="$color11">
+                  <Row style={{ paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)', width: 96, justifyContent: 'center' }}>
+                    <Text style={{ textAlign: 'center', fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)' }}>
                       Excluded
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingVertical="$3" paddingHorizontal="$2" width={128} justifyContent="center">
-                    <Text style={{ textAlign: 'center' }} fontSize="$2" fontWeight="500" color="$color11">
+                  <Row style={{ paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)', width: 128, justifyContent: 'center' }}>
+                    <Text style={{ textAlign: 'center', fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)' }}>
                       Quote to Add
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingVertical="$3" paddingHorizontal="$2">
-                    <Text style={{ textAlign: 'left' }} fontSize="$2" fontWeight="500" color="$color11">
+                  <Row style={{ paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)' }}>
+                    <Text style={{ textAlign: 'left', fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-11)' }}>
                       Notes
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
               </tr>
             </thead>
@@ -184,19 +185,19 @@ export default function CoverageVerificationSection({
                 return (
                   <tr key={index}>
                     <td>
-                      <YStack paddingVertical="$4" paddingHorizontal="$2">
-                        <Text fontSize="$2" fontWeight="500" color="$color12">
+                      <Stack style={{ paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)' }}>
+                        <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)' }}>
                           {req.name}
                         </Text>
                         {req.description && (
-                          <Text fontSize="$1" color="$color11" mt="$1">
+                          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)', marginTop: 'var(--space-1)' }}>
                             {req.description}
                           </Text>
                         )}
-                      </YStack>
+                      </Stack>
                     </td>
                     <td>
-                      <XStack paddingVertical="$4" paddingHorizontal="$2" justifyContent="center">
+                      <Row style={{ paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)', justifyContent: 'center' }}>
                         <input
                           type="radio"
                           name={`${coverageCategory}-${index}`}
@@ -204,10 +205,10 @@ export default function CoverageVerificationSection({
                           onChange={() => handleStatusChange(req.name, 'included')}
                           disabled={disabled}
                         />
-                      </XStack>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingVertical="$4" paddingHorizontal="$2" justifyContent="center">
+                      <Row style={{ paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)', justifyContent: 'center' }}>
                         <input
                           type="radio"
                           name={`${coverageCategory}-${index}`}
@@ -215,10 +216,10 @@ export default function CoverageVerificationSection({
                           onChange={() => handleStatusChange(req.name, 'excluded')}
                           disabled={disabled}
                         />
-                      </XStack>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingVertical="$4" paddingHorizontal="$2" justifyContent="center">
+                      <Row style={{ paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)', justifyContent: 'center' }}>
                         <input
                           type="radio"
                           name={`${coverageCategory}-${index}`}
@@ -228,10 +229,10 @@ export default function CoverageVerificationSection({
                           }
                           disabled={disabled}
                         />
-                      </XStack>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingVertical="$4" paddingHorizontal="$2">
+                      <Row style={{ paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', paddingLeft: 'var(--space-2)', paddingRight: 'var(--space-2)' }}>
                         {status === 'excluded' && (
                           <textarea
                             rows={2}
@@ -270,15 +271,15 @@ export default function CoverageVerificationSection({
                             }}
                           />
                         )}
-                      </XStack>
+                      </Row>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </Card>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TestTube, MessageSquare } from 'lucide-react';
-import { XStack, YStack, Text, H1, H2, SizableText, Card, Button as TamaguiButton } from '@unicornlove/ui';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 import Accordion, { AccordionItem } from '../../ui/Accordion';
 import NavigationDrawer, { DrawerToggle } from '../DesignSystem/NavigationDrawer';
 import Modal from '../Common/Modal';
@@ -115,41 +115,41 @@ export default function TestingPage() {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   const formatJTBDContent = (item: JTBDItem) => (
-    <YStack gap="$4">
-      <YStack>
-        <Text fontWeight="600" color="$color12" mb="$2">Functional Job</Text>
-        <SizableText color="$color11">{item.functionalJob}</SizableText>
-      </YStack>
+    <Stack style={{ gap: 16 }}>
+      <Stack>
+        <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>Functional Job</Text>
+        <Text style={{ color: 'var(--color-11)' }}>{item.functionalJob}</Text>
+      </Stack>
 
-      <YStack>
-        <Text fontWeight="600" color="$color12" mb="$2">Emotional & Social Jobs</Text>
-        <SizableText color="$color11" mb="$1"><Text fontWeight="600">Emotional:</Text> {item.emotionalJob}</SizableText>
-        <SizableText color="$color11"><Text fontWeight="600">Social:</Text> {item.socialJob}</SizableText>
-      </YStack>
+      <Stack>
+        <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>Emotional & Social Jobs</Text>
+        <Text style={{ color: 'var(--color-11)', marginBottom: 4 }}><Text style={{ fontWeight: 600 }}>Emotional:</Text> {item.emotionalJob}</Text>
+        <Text style={{ color: 'var(--color-11)' }}><Text style={{ fontWeight: 600 }}>Social:</Text> {item.socialJob}</Text>
+      </Stack>
 
-      <YStack>
-        <Text fontWeight="600" color="$color12" mb="$2">Key Struggles</Text>
-        <YStack gap="$1" paddingLeft="$4">
+      <Stack>
+        <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>Key Struggles</Text>
+        <Stack style={{ gap: 4, paddingLeft: 16 }}>
           {item.struggles.map((struggle, idx) => (
-            <SizableText key={idx} color="$color11">• {struggle}</SizableText>
+            <Text key={idx} style={{ color: 'var(--color-11)' }}>* {struggle}</Text>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
-      <YStack>
-        <Text fontWeight="600" color="$color12" mb="$2">Desired Outcomes</Text>
-        <YStack gap="$1" paddingLeft="$4">
+      <Stack>
+        <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>Desired Outcomes</Text>
+        <Stack style={{ gap: 4, paddingLeft: 16 }}>
           {item.outcomes.map((outcome, idx) => (
-            <SizableText key={idx} color="$color11">• {outcome}</SizableText>
+            <Text key={idx} style={{ color: 'var(--color-11)' }}>* {outcome}</Text>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
-      <Card backgroundColor="$blue2" borderLeftWidth={4} borderLeftColor="$blue9" padding="$4" borderRadius="$4">
-        <Text fontWeight="600" color="$blue11" mb="$2">JTBD Statement</Text>
-        <SizableText color="$blue12" fontStyle="italic">{item.statement}</SizableText>
-      </Card>
-    </YStack>
+      <div style={{ backgroundColor: 'var(--color-blue-2)', borderLeftWidth: 4, borderLeftStyle: 'solid', borderLeftColor: 'var(--color-blue-9)', padding: 16, borderRadius: 8 }}>
+        <Text style={{ fontWeight: 600, color: 'var(--color-blue-11)', marginBottom: 8 }}>JTBD Statement</Text>
+        <Text style={{ color: 'var(--color-blue-12)', fontStyle: 'italic' }}>{item.statement}</Text>
+      </div>
+    </Stack>
   );
 
   const accordionItems: AccordionItem[] = jtbdData.map(item => ({
@@ -159,73 +159,78 @@ export default function TestingPage() {
   }));
 
   return (
-    <YStack minHeight="100vh" backgroundColor="$color2">
+    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-2)' }}>
       <NavigationDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <YStack $gtLg={{ marginLeft: 288 }}>
+      <Stack style={{ marginLeft: 288 }}>
         <DrawerToggle onClick={() => setDrawerOpen(true)} />
 
-        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $sm={{ paddingHorizontal: '$6' }} $lg={{ paddingHorizontal: '$8' }} paddingVertical="$8">
-          <YStack gap="$6">
-            <Card
-              borderRadius="$6"
-              padding="$8"
-              backgroundColor="$blue9"
-              elevation={10}
+        <Stack style={{ maxWidth: 1280, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 16, paddingRight: 16, paddingTop: 32, paddingBottom: 32 }}>
+          <Stack style={{ gap: 24 }}>
+            <div
+              style={{
+                borderRadius: 12,
+                padding: 32,
+                backgroundColor: 'var(--color-blue-9)',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+              }}
             >
-              <XStack alignItems="center" gap="$4">
-                <XStack backgroundColor="rgba(255,255,255,0.2)" padding="$4" borderRadius="$6" backdropFilter="blur(10px)">
+              <Row style={{ alignItems: 'center', gap: 16 }}>
+                <Row style={{ backgroundColor: 'rgba(255,255,255,0.2)', padding: 16, borderRadius: 12, backdropFilter: 'blur(10px)' }}>
                   <TestTube size={32} color="white" />
-                </XStack>
-                <YStack>
-                  <H1 color="white">Testing & Feedback</H1>
-                  <SizableText size="$6" color="rgba(255,255,255,0.9)" mt="$1">
+                </Row>
+                <Stack>
+                  <Text style={{ fontSize: 28, fontWeight: 700, color: 'white' }}>Testing & Feedback</Text>
+                  <Text style={{ fontSize: 18, color: 'rgba(255,255,255,0.9)', marginTop: 4 }}>
                     Help us build a better product for you. We've identified five key jobs that insurance professionals need to accomplish. Review these and share your feedback to help us prioritize what matters most.
-                  </SizableText>
-                </YStack>
-              </XStack>
-            </Card>
+                  </Text>
+                </Stack>
+              </Row>
+            </div>
 
-            <Card backgroundColor="$background" borderRadius="$6" elevation={5} borderWidth={1} borderColor="$borderColor" padding="$6">
-              <H2 mb="$4">Jobs-to-be-Done</H2>
-              <SizableText color="$color11" mb="$6">
+            <div style={{ backgroundColor: 'var(--color-background)', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', borderWidth: 1, borderStyle: 'solid', borderColor: 'var(--color-border)', padding: 24 }}>
+              <Text style={{ fontSize: 24, fontWeight: 600, marginBottom: 16 }}>Jobs-to-be-Done</Text>
+              <Text style={{ color: 'var(--color-11)', marginBottom: 24 }}>
                 Below are five key jobs that insurance professionals need to accomplish. Click on each to learn more about the functional, emotional, and social aspects of these jobs, along with the struggles and desired outcomes.
-              </SizableText>
-              <YStack maxWidth={896} marginHorizontal="auto">
+              </Text>
+              <Stack style={{ maxWidth: 896, marginLeft: 'auto', marginRight: 'auto' }}>
                 <Accordion
                   items={accordionItems}
                   allowMultiple={false}
                   defaultOpen={[]}
                 />
-              </YStack>
-            </Card>
-          </YStack>
-        </YStack>
-      </YStack>
+              </Stack>
+            </div>
+          </Stack>
+        </Stack>
+      </Stack>
 
       {/* Floating Feedback Button */}
-      <TamaguiButton
-        position="fixed"
-        bottom="$6"
-        right="$6"
-        backgroundColor="$blue9"
-        color="white"
-        paddingHorizontal="$6"
-        paddingVertical="$3"
-        borderRadius={9999}
-        elevation={5}
-        hoverStyle={{
-          backgroundColor: '$blue10',
-          scale: 1.05,
+      <button
+        style={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          backgroundColor: 'var(--color-blue-9)',
+          color: 'white',
+          paddingLeft: 24,
+          paddingRight: 24,
+          paddingTop: 12,
+          paddingBottom: 12,
+          borderRadius: 9999,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
         }}
-        onPress={() => setShowFeedbackModal(true)}
+        onClick={() => setShowFeedbackModal(true)}
         aria-label="Share feedback"
       >
-        <XStack alignItems="center" gap="$2">
-          <MessageSquare size={20} />
-          <Text>Share Feedback</Text>
-        </XStack>
-      </TamaguiButton>
+        <MessageSquare size={20} />
+        <Text style={{ color: 'white' }}>Share Feedback</Text>
+      </button>
 
       {/* Feedback Modal */}
       <Modal
@@ -234,7 +239,7 @@ export default function TestingPage() {
         title="Share Your Feedback"
         size="xl"
       >
-        <YStack width="100%" height={600}>
+        <Stack style={{ width: '100%', height: 600 }}>
           <iframe
             src="https://docs.google.com/forms/d/e/placeholder/viewform?embedded=true"
             width="100%"
@@ -243,13 +248,12 @@ export default function TestingPage() {
             marginHeight={0}
             marginWidth={0}
             title="Feedback Form"
-            style={{ borderRadius: 'var(--radius4)' }}
+            style={{ borderRadius: 8 }}
           >
-            Loading…
+            Loading...
           </iframe>
-        </YStack>
+        </Stack>
       </Modal>
-    </YStack>
+    </Stack>
   );
 }
-

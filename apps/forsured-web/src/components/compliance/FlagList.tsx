@@ -4,7 +4,7 @@
  */
 
 import { CheckCircle, AlertTriangle, AlertCircle, Info } from 'lucide-react';
-import { YStack, XStack, Text, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { FlagBadge, getEntityTypeLabel } from './FlagBadge';
 import { FlagComplianceIssue } from '../../lib/compliance/evaluator';
 import { FlaggableEntityType, FlagSeverity } from '../../types';
@@ -50,25 +50,25 @@ function groupFlagsBySeverity(
 function getSeverityIcon(severity: FlagSeverity) {
   switch (severity) {
     case 'critical':
-      return <AlertTriangle color="$red10" size={18} />;
+      return <AlertTriangle style={{ color: 'var(--color-red-10)' }} size={18} />;
     case 'warning':
-      return <AlertCircle color="$yellow10" size={18} />;
+      return <AlertCircle style={{ color: 'var(--color-yellow-10)' }} size={18} />;
     case 'info':
-      return <Info color="$blue10" size={18} />;
+      return <Info style={{ color: 'var(--color-blue-10)' }} size={18} />;
   }
 }
 
 /**
  * Get severity header color
  */
-function getSeverityHeaderColor(severity: FlagSeverity) {
+function getSeverityHeaderColor(severity: FlagSeverity): React.CSSProperties {
   switch (severity) {
     case 'critical':
-      return '$red11';
+      return { color: 'var(--color-red-11)' };
     case 'warning':
-      return '$yellow11';
+      return { color: 'var(--color-yellow-11)' };
     case 'info':
-      return '$blue11';
+      return { color: 'var(--color-blue-11)' };
   }
 }
 
@@ -88,17 +88,19 @@ export const FlagList = ({
   if (flags.length === 0) {
     return (
       <Card
-        backgroundColor="$green2"
-        borderColor="$green6"
-        borderRadius="$4"
-        padding="$6"
-        alignItems="center"
+        style={{
+          backgroundColor: 'var(--color-green-2)',
+          borderColor: 'var(--color-green-6)',
+          borderRadius: 'var(--radius-4)',
+          padding: 'var(--space-6)',
+          alignItems: 'center',
+        }}
       >
-        <CheckCircle color="$green10" size={32} mb="$2" />
-        <Text color="$green11" fontWeight="500" mb="$1">
+        <CheckCircle style={{ color: 'var(--color-green-10)', marginBottom: 8 }} size={32} />
+        <Text style={{ color: 'var(--color-green-11)', fontWeight: 500, marginBottom: 4 }}>
           {emptyMessage}
         </Text>
-        <Text color="$green10" fontSize="$2" mt="$1">
+        <Text style={{ color: 'var(--color-green-10)', fontSize: 'var(--font-size-2)', marginTop: 4 }}>
           All compliance requirements are met
         </Text>
       </Card>
@@ -110,7 +112,7 @@ export const FlagList = ({
     const grouped = groupFlagsByLevel(flags);
 
     return (
-      <YStack gap="$6">
+      <Stack style={{ gap: 'var(--space-6)' }}>
         {/* Policy Flags */}
         {grouped.policy.length > 0 && (
           <FlagSection
@@ -140,7 +142,7 @@ export const FlagList = ({
             compact={compact}
           />
         )}
-      </YStack>
+      </Stack>
     );
   }
 
@@ -149,17 +151,17 @@ export const FlagList = ({
     const grouped = groupFlagsBySeverity(flags);
 
     return (
-      <YStack gap="$6">
+      <Stack style={{ gap: 'var(--space-6)' }}>
         {/* Critical Flags */}
         {grouped.critical.length > 0 && (
-          <YStack>
-            <XStack alignItems="center" gap="$2" mb="$3">
+          <Stack>
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
               {getSeverityIcon('critical')}
-              <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('critical')}>
+              <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, margin: 0, ...getSeverityHeaderColor('critical') }}>
                 Critical Issues ({grouped.critical.length})
-              </H3>
-            </XStack>
-            <YStack gap="$3">
+              </h3>
+            </Row>
+            <Stack style={{ gap: 'var(--space-3)' }}>
               {grouped.critical.map((flag) => (
                 <FlagBadge
                   key={flag.flagId}
@@ -172,20 +174,20 @@ export const FlagList = ({
                   compact={compact}
                 />
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
         {/* Warning Flags */}
         {grouped.warning.length > 0 && (
-          <YStack>
-            <XStack alignItems="center" gap="$2" mb="$3">
+          <Stack>
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
               {getSeverityIcon('warning')}
-              <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('warning')}>
+              <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, margin: 0, ...getSeverityHeaderColor('warning') }}>
                 Warnings ({grouped.warning.length})
-              </H3>
-            </XStack>
-            <YStack gap="$3">
+              </h3>
+            </Row>
+            <Stack style={{ gap: 'var(--space-3)' }}>
               {grouped.warning.map((flag) => (
                 <FlagBadge
                   key={flag.flagId}
@@ -198,20 +200,20 @@ export const FlagList = ({
                   compact={compact}
                 />
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
         {/* Info Flags */}
         {grouped.info.length > 0 && (
-          <YStack>
-            <XStack alignItems="center" gap="$2" mb="$3">
+          <Stack>
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
               {getSeverityIcon('info')}
-              <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('info')}>
+              <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, margin: 0, ...getSeverityHeaderColor('info') }}>
                 Information ({grouped.info.length})
-              </H3>
-            </XStack>
-            <YStack gap="$3">
+              </h3>
+            </Row>
+            <Stack style={{ gap: 'var(--space-3)' }}>
               {grouped.info.map((flag) => (
                 <FlagBadge
                   key={flag.flagId}
@@ -224,16 +226,16 @@ export const FlagList = ({
                   compact={compact}
                 />
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     );
   }
 
   // Default: flat list
   return (
-    <YStack gap="$3">
+    <Stack style={{ gap: 'var(--space-3)' }}>
       {flags.map((flag) => (
         <FlagBadge
           key={flag.flagId}
@@ -246,7 +248,7 @@ export const FlagList = ({
           compact={compact}
         />
       ))}
-    </YStack>
+    </Stack>
   );
 };
 
@@ -267,11 +269,11 @@ const FlagSection = ({
   compact = false,
 }: FlagSectionProps) => {
   return (
-    <YStack>
-      <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$3">
+    <Stack>
+      <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-3)', margin: 0 }}>
         {title} ({flags.length})
-      </H3>
-      <YStack gap="$3">
+      </h3>
+      <Stack style={{ gap: 'var(--space-3)' }}>
         {flags.map((flag) => (
           <FlagBadge
             key={flag.flagId}
@@ -284,8 +286,8 @@ const FlagSection = ({
             compact={compact}
           />
         ))}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 };
 

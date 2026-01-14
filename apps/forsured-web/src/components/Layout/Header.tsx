@@ -1,32 +1,33 @@
 /**
- * Header - Application header component using Tamagui
+ * Header - Application header component using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
 import React from 'react';
-import { XStack, Button } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
+import { Row, Button } from '@unicornlove/beyond-ui';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function Header() {
   const { logout } = useAuth();
 
   return (
-    <XStack
+    <Row
       as="header"
-      backgroundColor="$backgroundHover"
-      borderBottomWidth={1}
-      borderBottomColor="$borderColor"
-      paddingHorizontal="$6"
-      paddingVertical="$4"
-      shadowColor="$shadowColor"
-      shadowRadius={4}
-      shadowOffset={{ width: 0, height: 2 }}
       alignItems="center"
       justifyContent="space-between"
+      style={{
+        backgroundColor: 'var(--color-background-hover)',
+        borderBottom: '1px solid var(--color-border)',
+        paddingLeft: 24,
+        paddingRight: 24,
+        paddingTop: 16,
+        paddingBottom: 16,
+        boxShadow: '0 2px 4px var(--color-shadow)',
+      }}
     >
-      <XStack flex={1} />
-      <CoreButton onClick={logout} variant="primary">
+      <Row flex={1} />
+      <Button onClick={logout} variant="primary">
         Logout
-      </CoreButton>
-    </XStack>
+      </Button>
+    </Row>
   );
 }

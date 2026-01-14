@@ -8,7 +8,7 @@ import {
   Eye,
   Plus,
 } from 'lucide-react';
-import { XStack, YStack, Text, H1, SizableText, Card } from '@unicornlove/ui';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 import Button from '../Common/Button';
 import IconButton from '../Common/IconButton';
 
@@ -111,54 +111,58 @@ export default function InsuranceMarketplace() {
   });
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 24 }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1>Insurance Marketplace</H1>
-          <SizableText color="$color11">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack>
+          <Text style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-12)' }}>Insurance Marketplace</Text>
+          <Text style={{ color: 'var(--color-11)' }}>
             Find and purchase insurance coverage for your projects
-          </SizableText>
-        </YStack>
-        <XStack position="relative">
+          </Text>
+        </Stack>
+        <Row style={{ position: 'relative' }}>
           <Button
-            onPress={() => setShowCart(!showCart)}
+            onClick={() => setShowCart(!showCart)}
             variant="primary"
           >
-            <XStack alignItems="center" gap="$2">
+            <Row style={{ alignItems: 'center', gap: 8 }}>
               <ShoppingCart size={16} />
               <Text>Cart</Text>
-            </XStack>
+            </Row>
           </Button>
-          <XStack
-            position="absolute"
-            top={-8}
-            right={-8}
-            backgroundColor="$red9"
-            width={20}
-            height={20}
-            borderRadius={9999}
-            alignItems="center"
-            justifyContent="center"
+          <Row
+            style={{
+              position: 'absolute',
+              top: -8,
+              right: -8,
+              backgroundColor: 'var(--color-red-9)',
+              width: 20,
+              height: 20,
+              borderRadius: 9999,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <SizableText size="$1" color="white">
+            <Text style={{ fontSize: 12, color: 'white' }}>
               2
-            </SizableText>
-          </XStack>
-        </XStack>
-      </XStack>
+            </Text>
+          </Row>
+        </Row>
+      </Row>
 
       {/* Search and Filters */}
-      <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-        <YStack gap="$4" $gtMd={{ flexDirection: 'row' }}>
-          <XStack flex={1} position="relative" alignItems="center">
-            <XStack
-              position="absolute"
-              left="$3"
-              zIndex={1}
+      <div style={{ padding: 16, borderWidth: 1, borderStyle: 'solid', borderColor: 'var(--color-border)', borderRadius: 8, backgroundColor: 'var(--color-background)' }}>
+        <Stack style={{ gap: 16 }}>
+          <Row style={{ flex: 1, position: 'relative', alignItems: 'center' }}>
+            <Row
+              style={{
+                position: 'absolute',
+                left: 12,
+                zIndex: 1,
+              }}
             >
-              <Search color="$color10" size={20} />
-            </XStack>
+              <Search color="var(--color-10)" size={20} />
+            </Row>
             <input
               type="text"
               placeholder="Search insurance types or providers..."
@@ -169,176 +173,189 @@ export default function InsuranceMarketplace() {
                 paddingTop: '0.5rem',
                 paddingBottom: '0.5rem',
                 borderWidth: 1,
-                borderColor: 'var(--borderColor)',
-                borderRadius: 'var(--radius4)',
+                borderStyle: 'solid',
+                borderColor: 'var(--color-border)',
+                borderRadius: 8,
               }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </XStack>
-          <XStack flexWrap="wrap" gap="$2">
+          </Row>
+          <Row style={{ flexWrap: 'wrap', gap: 8 }}>
             {categories.map((category) => (
               <Button
                 key={category.id}
-                onPress={() => setSelectedCategory(category.id)}
+                onClick={() => setSelectedCategory(category.id)}
                 variant={selectedCategory === category.id ? 'primary' : 'ghost'}
               >
                 {category.name}
               </Button>
             ))}
-          </XStack>
-        </YStack>
-      </Card>
+          </Row>
+        </Stack>
+      </div>
 
       {/* Featured Recommendations */}
-      <Card
-        padding="$6"
-        borderWidth={1}
-        borderColor="$blue5"
-        borderRadius="$4"
-        backgroundColor="$blue2"
+      <div
+        style={{
+          padding: 24,
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'var(--color-blue-5)',
+          borderRadius: 8,
+          backgroundColor: 'var(--color-blue-2)',
+        }}
       >
-        <XStack alignItems="center" gap="$2" mb="$4">
-          <Award color="$blue9" size={20} />
-          <Text fontSize="$6" fontWeight="600" color="$color12">
+        <Row style={{ alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <Award color="var(--color-blue-9)" size={20} />
+          <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)' }}>
             Recommended for Construction Projects
           </Text>
-        </XStack>
-        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
+        </Row>
+        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
           {insuranceProducts
             .filter((p) => p.recommended)
             .map((product) => (
-              <Card
+              <div
                 key={product.id}
-                backgroundColor="$background"
-                padding="$4"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$blue5"
-                flex={1}
-                minWidth="200px"
+                style={{
+                  backgroundColor: 'var(--color-background)',
+                  padding: 16,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-blue-5)',
+                  flex: 1,
+                  minWidth: 200,
+                }}
               >
-                <XStack alignItems="center" justifyContent="space-between" mb="$2">
-                  <Text fontWeight="500" color="$color12">
+                <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                     {product.type}
                   </Text>
-                  <XStack alignItems="center" gap="$1">
-                    <Star color="$yellow9" fill="currentColor" size={14} />
-                    <SizableText size="$3" color="$color11">
+                  <Row style={{ alignItems: 'center', gap: 4 }}>
+                    <Star color="var(--color-yellow-9)" fill="currentColor" size={14} />
+                    <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                       {product.rating}
-                    </SizableText>
-                  </XStack>
-                </XStack>
-                <SizableText size="$3" color="$color11" mb="$3">
+                    </Text>
+                  </Row>
+                </Row>
+                <Text style={{ fontSize: 14, color: 'var(--color-11)', marginBottom: 12 }}>
                   {product.provider}
-                </SizableText>
-                <XStack alignItems="center" justifyContent="space-between">
-                  <YStack>
-                    <Text fontSize="$6" fontWeight="700" color="$color12">
+                </Text>
+                <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Stack>
+                    <Text style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-12)' }}>
                       ${product.price.toLocaleString()}/yr
                     </Text>
-                    <SizableText size="$1" color="$color11">
+                    <Text style={{ fontSize: 12, color: 'var(--color-11)' }}>
                       ${product.coverage.toLocaleString()} coverage
-                    </SizableText>
-                  </YStack>
-                  <Button size="$3" variant="primary">
+                    </Text>
+                  </Stack>
+                  <Button size="sm" variant="primary">
                     Add to Cart
                   </Button>
-                </XStack>
-              </Card>
+                </Row>
+              </div>
             ))}
-        </XStack>
-      </Card>
+        </Row>
+      </div>
 
       {/* Product Grid */}
-      <XStack flexWrap="wrap" gap="$6" $gtLg={{ flexDirection: 'row' }}>
+      <Row style={{ flexWrap: 'wrap', gap: 24 }}>
         {filteredProducts.map((product) => (
-          <Card
+          <div
             key={product.id}
-            backgroundColor="$background"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-            hoverStyle={{
-              elevation: 2,
+            style={{
+              backgroundColor: 'var(--color-background)',
+              borderRadius: 8,
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'var(--color-border)',
+              flex: 1,
+              minWidth: 300,
+              maxWidth: 400,
             }}
-            flex={1}
-            minWidth="300px"
-            maxWidth="400px"
           >
-            <YStack padding="$6">
+            <Stack style={{ padding: 24 }}>
               {/* Header */}
-              <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
-                <YStack>
-                  <XStack alignItems="center" gap="$2" mb="$1">
-                    <Text fontSize="$6" fontWeight="600" color="$color12">
+              <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+                <Stack>
+                  <Row style={{ alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)' }}>
                       {product.type}
                     </Text>
                     {product.popular && (
-                      <XStack
-                        backgroundColor="$green2"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius={9999}
+                      <Row
+                        style={{
+                          backgroundColor: 'var(--color-green-2)',
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 9999,
+                        }}
                       >
-                        <SizableText size="$1" color="$green11">
+                        <Text style={{ fontSize: 12, color: 'var(--color-green-11)' }}>
                           Popular
-                        </SizableText>
-                      </XStack>
+                        </Text>
+                      </Row>
                     )}
-                  </XStack>
-                  <SizableText color="$color11">{product.provider}</SizableText>
-                </YStack>
-                <XStack alignItems="center" gap="$1">
-                  <Star color="$yellow9" fill="currentColor" size={16} />
-                  <SizableText size="$3" fontWeight="500">
+                  </Row>
+                  <Text style={{ color: 'var(--color-11)' }}>{product.provider}</Text>
+                </Stack>
+                <Row style={{ alignItems: 'center', gap: 4 }}>
+                  <Star color="var(--color-yellow-9)" fill="currentColor" size={16} />
+                  <Text style={{ fontSize: 14, fontWeight: 500 }}>
                     {product.rating}
-                  </SizableText>
-                </XStack>
-              </XStack>
+                  </Text>
+                </Row>
+              </Row>
 
               {/* Pricing */}
-              <YStack mb="$4">
-                <XStack alignItems="baseline" gap="$2">
-                  <Text fontSize="$9" fontWeight="700" color="$color12">
+              <Stack style={{ marginBottom: 16 }}>
+                <Row style={{ alignItems: 'baseline', gap: 8 }}>
+                  <Text style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-12)' }}>
                     ${product.price.toLocaleString()}
                   </Text>
-                  <SizableText color="$color11">/year</SizableText>
-                </XStack>
-                <SizableText size="$3" color="$color11">
+                  <Text style={{ color: 'var(--color-11)' }}>/year</Text>
+                </Row>
+                <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                   Up to ${product.coverage.toLocaleString()} coverage
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
 
               {/* Features */}
-              <YStack mb="$6">
-                <YStack gap="$2">
+              <Stack style={{ marginBottom: 24 }}>
+                <Stack style={{ gap: 8 }}>
                   {product.features.map((feature, index) => (
-                    <XStack key={index} alignItems="center" gap="$2">
-                      <XStack
-                        width={6}
-                        height={6}
-                        backgroundColor="$green9"
-                        borderRadius={9999}
+                    <Row key={index} style={{ alignItems: 'center', gap: 8 }}>
+                      <div
+                        style={{
+                          width: 6,
+                          height: 6,
+                          backgroundColor: 'var(--color-green-9)',
+                          borderRadius: 9999,
+                        }}
                       />
-                      <SizableText size="$3" color="$color11">
+                      <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                         {feature}
-                      </SizableText>
-                    </XStack>
+                      </Text>
+                    </Row>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
 
               {/* Actions */}
-              <XStack gap="$2">
+              <Row style={{ gap: 8 }}>
                 <Button
-                  flex={1}
+                  style={{ flex: 1 }}
                   variant="primary"
                 >
-                  <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
                     <Plus size={16} />
                     <Text>Add to Cart</Text>
-                  </XStack>
+                  </Row>
                 </Button>
                 <IconButton
                   icon={Eye}
@@ -346,123 +363,137 @@ export default function InsuranceMarketplace() {
                   variant="outline"
                   tooltip="View details"
                 />
-              </XStack>
-            </YStack>
-          </Card>
+              </Row>
+            </Stack>
+          </div>
         ))}
-      </XStack>
+      </Row>
 
       {/* Shopping Cart Sidebar */}
       {showCart && (
-        <XStack
-          position="fixed"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          zIndex={50}
+        <Row
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 50,
+          }}
         >
-          <XStack
-            position="absolute"
-            right={0}
-            top={0}
-            height="100%"
-            width={384}
-            backgroundColor="$background"
-            elevation={10}
+          <Row
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              height: '100%',
+              width: 384,
+              backgroundColor: 'var(--color-background)',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+            }}
           >
-            <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-              <XStack alignItems="center" justifyContent="space-between">
-                <Text fontSize="$6" fontWeight="600" color="$color12">
+            <Stack style={{ padding: 24, borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
+              <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)' }}>
                   Shopping Cart
                 </Text>
                 <Button
-                  onPress={() => setShowCart(false)}
+                  onClick={() => setShowCart(false)}
                   variant="ghost"
-                  size="$3"
+                  size="sm"
                 >
-                  ×
+                  x
                 </Button>
-              </XStack>
-            </YStack>
-            <YStack padding="$6" flex={1}>
-              <YStack gap="$4">
-                <XStack
-                  alignItems="center"
-                  justifyContent="space-between"
-                  padding="$3"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
+              </Row>
+            </Stack>
+            <Stack style={{ padding: 24, flex: 1 }}>
+              <Stack style={{ gap: 16 }}>
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 12,
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 8,
+                  }}
                 >
-                  <YStack>
-                    <Text fontWeight="500">General Liability</Text>
-                    <SizableText size="$3" color="$color11">
+                  <Stack>
+                    <Text style={{ fontWeight: 500 }}>General Liability</Text>
+                    <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                       State Farm
-                    </SizableText>
-                  </YStack>
-                  <Text fontWeight="700">$2,400/yr</Text>
-                </XStack>
-                <XStack
-                  alignItems="center"
-                  justifyContent="space-between"
-                  padding="$3"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
+                    </Text>
+                  </Stack>
+                  <Text style={{ fontWeight: 700 }}>$2,400/yr</Text>
+                </Row>
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 12,
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 8,
+                  }}
                 >
-                  <YStack>
-                    <Text fontWeight="500">Workers Compensation</Text>
-                    <SizableText size="$3" color="$color11">
+                  <Stack>
+                    <Text style={{ fontWeight: 500 }}>Workers Compensation</Text>
+                    <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                       Travelers
-                    </SizableText>
-                  </YStack>
-                  <Text fontWeight="700">$3,200/yr</Text>
-                </XStack>
-              </YStack>
-              <YStack mt="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-                <XStack alignItems="center" justifyContent="space-between">
-                  <Text fontSize="$6" fontWeight="700">
+                    </Text>
+                  </Stack>
+                  <Text style={{ fontWeight: 700 }}>$3,200/yr</Text>
+                </Row>
+              </Stack>
+              <Stack style={{ marginTop: 24, paddingTop: 16, borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: 'var(--color-border)' }}>
+                <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text style={{ fontSize: 18, fontWeight: 700 }}>
                     Total:
                   </Text>
-                  <Text fontSize="$6" fontWeight="700">
+                  <Text style={{ fontSize: 18, fontWeight: 700 }}>
                     $5,600/yr
                   </Text>
-                </XStack>
+                </Row>
                 <Button
-                  flex={1}
-                  size="$5"
+                  style={{ flex: 1, marginTop: 16 }}
+                  size="lg"
                   variant="primary"
-                  mt="$4"
                 >
                   Proceed to Checkout
                 </Button>
-              </YStack>
-            </YStack>
-          </XStack>
-        </XStack>
+              </Stack>
+            </Stack>
+          </Row>
+        </Row>
       )}
 
       {/* Empty State */}
       {filteredProducts.length === 0 && (
-        <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$12"
-          alignItems="center"
+        <div
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 8,
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            padding: 48,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
         >
-          <Search size={48} color="$color6" mb="$4" />
-          <Text fontSize="$6" fontWeight="500" color="$color12" mb="$2">
+          <Search size={48} color="var(--color-6)" style={{ marginBottom: 16 }} />
+          <Text style={{ fontSize: 18, fontWeight: 500, color: 'var(--color-12)', marginBottom: 8 }}>
             No insurance products found
           </Text>
-          <SizableText color="$color11">
+          <Text style={{ color: 'var(--color-11)' }}>
             Try adjusting your search terms or category filters
-          </SizableText>
-        </Card>
+          </Text>
+        </div>
       )}
-    </YStack>
+    </Stack>
   );
 }

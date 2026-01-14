@@ -1,7 +1,6 @@
 // src/pages/contractor/settings/DocumentSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2 } from '@unicornlove/ui';
-import Checkbox from '../../../ui/Checkbox';
+import { Stack, Text, Button, H2, Checkbox } from '@unicornlove/beyond-ui';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -42,38 +41,54 @@ function ContractorDocumentSettings() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Document Settings</H2>
-        <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
-      </YStack>
+        <Stack
+          style={{
+            height: 40,
+            backgroundColor: 'var(--color-3)',
+            borderRadius: 'var(--radius-4)',
+          }}
+        />
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Document Settings</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-6)' }}>
         Configure how your documents are shared with General Contractors.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
-          <Checkbox
-            checked={autoShareWithGCs}
-            onChange={(e) => setAutoShareWithGCs(e.target.checked)}
-            label="Automatically share documents with General Contractors"
-            helperText="When enabled, uploaded COIs and insurance documents will automatically be shared with GCs you work with."
-          />
+        <Stack style={{ gap: 'var(--space-4)' }}>
+          <Stack style={{ gap: 'var(--space-1)' }}>
+            <Checkbox
+              checked={autoShareWithGCs}
+              onChange={(checked) => setAutoShareWithGCs(checked)}
+              label="Automatically share documents with General Contractors"
+            />
+            <Text
+              style={{
+                fontSize: 'var(--font-size-2)',
+                color: 'var(--color-10)',
+                marginLeft: 'var(--space-6)',
+              }}
+            >
+              When enabled, uploaded COIs and insurance documents will automatically be shared with GCs you work with.
+            </Text>
+          </Stack>
           <Button
             type="submit"
             disabled={!isDirty || isSaving}
             variant="primary"
-            marginTop="$6"
+            style={{ marginTop: 'var(--space-6)' }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

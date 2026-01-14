@@ -9,7 +9,7 @@ import {
   Eye,
   RefreshCw,
 } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button, H1, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, Button, H1, Spinner } from '@unicornlove/beyond-ui';
 import CommonButton from '../Common/Button';
 import DocumentDetailModal from '../Document/DocumentDetailModal';
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
@@ -34,6 +34,20 @@ interface DocumentItem {
   uploadedBy: string;
 }
 
+const getStatusIconStyle = (status: string): React.CSSProperties => {
+  switch (status) {
+    case 'verified':
+      return { color: 'var(--color-green-10)' };
+    case 'expiring':
+    case 'expired':
+      return { color: 'var(--color-orange-10)' };
+    case 'pending':
+      return { color: 'var(--color-blue-10)' };
+    default:
+      return {};
+  }
+};
+
 export default function DocumentsPage() {
   const { currentUser } = useUser();
   const { user, profile } = useAuth();
@@ -49,14 +63,14 @@ export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  
+
   // Use useRef to maintain a stable DocumentService instance
   const documentServiceRef = useRef<DocumentService | null>(null);
   if (!documentServiceRef.current) {
     documentServiceRef.current = new DocumentService();
   }
   const documentService = documentServiceRef.current;
-  
+
   // Use ref to track loading state to prevent infinite loops
   const isLoadingRef = useRef(false);
 
@@ -133,14 +147,15 @@ export default function DocumentsPage() {
   };
 
   const getStatusIcon = (status: string) => {
+    const iconStyle = getStatusIconStyle(status);
     switch (status) {
       case 'verified':
-        return <CheckCircle color="$green10" size={20} />;
+        return <CheckCircle style={iconStyle} size={20} />;
       case 'expiring':
       case 'expired':
-        return <AlertTriangle color="$orange10" size={20} />;
+        return <AlertTriangle style={iconStyle} size={20} />;
       case 'pending':
-        return <Calendar color="$blue10" size={20} />;
+        return <Calendar style={iconStyle} size={20} />;
       default:
         return null;
     }
@@ -181,7 +196,7 @@ export default function DocumentsPage() {
       });
 
       console.log('[DocumentsPage] Loaded documents:', response.documents?.length || 0);
-      
+
       // Map Scaffald documents to our Document type
       const mappedDocs: Document[] = (response.documents || []).map((doc) => ({
         id: doc.id,
@@ -231,7 +246,7 @@ export default function DocumentsPage() {
   const handleUploadDocument = useCallback(async (document: Document) => {
     console.log('[DocumentsPage] Document uploaded successfully:', document.id);
     setUploadSuccess('Document uploaded successfully!');
-    
+
     // Clear success message after 3 seconds
     setTimeout(() => {
       setUploadSuccess(null);
@@ -244,7 +259,7 @@ export default function DocumentsPage() {
   const handleUploadError = useCallback((error: string) => {
     setUploadError(error);
     console.error('[DocumentsPage] Upload error:', error);
-    
+
     // Clear error after 5 seconds
     setTimeout(() => {
       setUploadError(null);
@@ -257,20 +272,42 @@ export default function DocumentsPage() {
     setUploadError(null);
   }, []);
 
+  const getFilterButtonStyle = (isActive: boolean): React.CSSProperties => ({
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+    fontSize: 14,
+    fontWeight: 500,
+    borderRadius: 8,
+    backgroundColor: isActive ? 'var(--color-blue-9)' : 'var(--color-gray-3)',
+    color: isActive ? 'white' : 'var(--color-gray-11)',
+    border: 'none',
+    cursor: 'pointer',
+  });
+
+  const getActionButtonStyle = (): React.CSSProperties => ({
+    padding: 4,
+    backgroundColor: 'transparent',
+    color: 'var(--color-blue-10)',
+    border: 'none',
+    cursor: 'pointer',
+  });
+
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1 fontSize="$8" fontWeight="bold" color="$color12">
+    <Stack gap={24}>
+      <Row alignItems="center" justifyContent="space-between" style={{ flexWrap: 'wrap' }}>
+        <Stack>
+          <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
             Documents
           </H1>
-          <Text color="$color11">
+          <Text style={{ color: 'var(--color-gray-11)' }}>
             Manage your certificates, licenses, and compliance documents
           </Text>
-        </YStack>
-        <XStack gap="$2">
-          <CommonButton 
-            onPress={() => {
+        </Stack>
+        <Row gap={8}>
+          <CommonButton
+            onClick={() => {
               console.log('[DocumentsPage] Upload button clicked');
               // Use startTransition to prevent blocking the UI
               startTransition(() => {
@@ -280,278 +317,235 @@ export default function DocumentsPage() {
               });
             }}
           >
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap={8}>
               <Upload size={18} />
               <Text>Upload Document</Text>
-            </XStack>
+            </Row>
           </CommonButton>
-          <CommonButton 
-            variant="ghost" 
-            onPress={loadDocuments}
+          <CommonButton
+            variant="ghost"
+            onClick={loadDocuments}
             disabled={loading}
           >
-            <XStack alignItems="center" gap="$2">
+            <Row alignItems="center" gap={8}>
               <RefreshCw size={18} />
-              {loading && <Spinner size="small" />}
+              {loading && <Spinner size="sm" />}
               {!loading && <Text>Refresh</Text>}
-            </XStack>
+            </Row>
           </CommonButton>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Success message */}
       {uploadSuccess && (
         <Card
-          backgroundColor="$green2"
-          borderColor="$green6"
-          borderWidth={1}
-          borderRadius="$4"
-          padding="$4"
+          style={{
+            backgroundColor: 'var(--color-green-2)',
+            borderColor: 'var(--color-green-6)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderRadius: 8,
+            padding: 16,
+          }}
         >
-          <XStack alignItems="center" gap="$2">
-            <CheckCircle color="$green10" size={20} />
-            <Text color="$green11" fontSize="$3" fontWeight="500">
+          <Row alignItems="center" gap={8}>
+            <CheckCircle style={{ color: 'var(--color-green-10)' }} size={20} />
+            <Text style={{ color: 'var(--color-green-11)', fontSize: 14, fontWeight: 500 }}>
               {uploadSuccess}
             </Text>
-          </XStack>
+          </Row>
         </Card>
       )}
 
       {/* Load error message */}
       {loadError && (
         <Card
-          backgroundColor="$red2"
-          borderColor="$red6"
-          borderWidth={1}
-          borderRadius="$4"
-          padding="$4"
+          style={{
+            backgroundColor: 'var(--color-red-2)',
+            borderColor: 'var(--color-red-6)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderRadius: 8,
+            padding: 16,
+          }}
         >
-          <Text color="$red11" fontSize="$3">
+          <Text style={{ color: 'var(--color-red-11)', fontSize: 14 }}>
             Error loading documents: {loadError}
           </Text>
         </Card>
       )}
 
-      <XStack
-        flexWrap="wrap"
-        gap="$6"
-        // Use media query hook or conditional rendering instead of $gtMd prop
-        // $gtMd responsive props can leak to DOM in some Tamagui versions
-      >
+      <Row style={{ flexWrap: 'wrap', gap: 16 }}>
         <Card
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="200px"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 12,
+            border: '1px solid var(--color-border)',
+            padding: 20,
+            flex: 1,
+            minWidth: 'calc(25% - 12px)',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$2">Total Documents</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
-                {stats.total}
-              </Text>
-            </YStack>
-            <Card backgroundColor="$blue3" padding="$3" borderRadius="$4">
-              <FileText color="$blue10" size={24} />
-            </Card>
-          </XStack>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Text size="3xl" weight="bold" style={{ marginBottom: 12 }}>
+              {stats.total}
+            </Text>
+            <Text size="sm" style={{ fontWeight: 500, color: 'var(--color-text-muted)' }}>
+              Total Documents
+            </Text>
+          </div>
         </Card>
 
         <Card
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="200px"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 12,
+            border: '1px solid var(--color-border)',
+            padding: 20,
+            flex: 1,
+            minWidth: 'calc(25% - 12px)',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$2">Verified</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$green10" mt="$1">
-                {stats.verified}
-              </Text>
-            </YStack>
-            <Card backgroundColor="$green3" padding="$3" borderRadius="$4">
-              <CheckCircle color="$green10" size={24} />
-            </Card>
-          </XStack>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Text size="3xl" weight="bold" style={{ marginBottom: 12 }}>
+              {stats.verified}
+            </Text>
+            <Text size="sm" style={{ fontWeight: 500, color: 'var(--color-text-muted)' }}>
+              Verified
+            </Text>
+          </div>
         </Card>
 
         <Card
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="200px"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 12,
+            border: '1px solid var(--color-border)',
+            padding: 20,
+            flex: 1,
+            minWidth: 'calc(25% - 12px)',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$2">Pending Review</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
-                {stats.pending}
-              </Text>
-            </YStack>
-            <Card backgroundColor="$blue3" padding="$3" borderRadius="$4">
-              <Calendar color="$blue10" size={24} />
-            </Card>
-          </XStack>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Text size="3xl" weight="bold" style={{ marginBottom: 12 }}>
+              {stats.pending}
+            </Text>
+            <Text size="sm" style={{ fontWeight: 500, color: 'var(--color-text-muted)' }}>
+              Pending
+            </Text>
+          </div>
         </Card>
 
         <Card
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="200px"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 12,
+            border: '1px solid var(--color-border)',
+            padding: 20,
+            flex: 1,
+            minWidth: 'calc(25% - 12px)',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$2">Expiring Soon</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$orange10" mt="$1">
-                {stats.expiring}
-              </Text>
-            </YStack>
-            <Card backgroundColor="$orange3" padding="$3" borderRadius="$4">
-              <AlertTriangle color="$orange10" size={24} />
-            </Card>
-          </XStack>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Text size="3xl" weight="bold" style={{ marginBottom: 12 }}>
+              {stats.expiring}
+            </Text>
+            <Text size="sm" style={{ fontWeight: 500, color: 'var(--color-text-muted)' }}>
+              Expiring Soon
+            </Text>
+          </div>
         </Card>
-      </XStack>
+      </Row>
 
       <Card
-        elevation={1}
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding="$6"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          border: '1px solid var(--color-border)',
+          padding: 16,
+        }}
       >
-        <XStack alignItems="center" gap="$2">
-          <Button
-            onPress={() => setFilter('all')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$2"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={filter === 'all' ? '$blue9' : '$gray3'}
-            color={filter === 'all' ? 'white' : '$color11'}
-            hoverStyle={{
-              backgroundColor: filter === 'all' ? '$blue9' : '$gray4',
-            }}
-          >
-            All ({displayDocuments.length})
-          </Button>
-          <Button
-            onPress={() => setFilter('verified')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$2"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={filter === 'verified' ? '$blue9' : '$gray3'}
-            color={filter === 'verified' ? 'white' : '$color11'}
-            hoverStyle={{
-              backgroundColor: filter === 'verified' ? '$blue9' : '$gray4',
-            }}
+        <Row alignItems="center" gap={8}>
+          <button
+            onClick={() => setFilter('verified')}
+            style={getFilterButtonStyle(filter === 'verified')}
           >
             Verified ({stats.verified})
-          </Button>
-          <Button
-            onPress={() => setFilter('pending')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$2"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={filter === 'pending' ? '$blue9' : '$gray3'}
-            color={filter === 'pending' ? 'white' : '$color11'}
-            hoverStyle={{
-              backgroundColor: filter === 'pending' ? '$blue9' : '$gray4',
-            }}
+          </button>
+          <button
+            onClick={() => setFilter('pending')}
+            style={getFilterButtonStyle(filter === 'pending')}
           >
             Pending ({stats.pending})
-          </Button>
-          <Button
-            onPress={() => setFilter('expiring')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$2"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={filter === 'expiring' ? '$blue9' : '$gray3'}
-            color={filter === 'expiring' ? 'white' : '$color11'}
-            hoverStyle={{
-              backgroundColor: filter === 'expiring' ? '$blue9' : '$gray4',
-            }}
+          </button>
+          <button
+            onClick={() => setFilter('expiring')}
+            style={getFilterButtonStyle(filter === 'expiring')}
           >
             Expiring ({stats.expiring})
-          </Button>
-        </XStack>
+          </button>
+        </Row>
       </Card>
 
-      <Card elevation={1} borderWidth={1} borderColor="$borderColor">
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 12, border: '1px solid var(--color-border)' }}>
         {loading && (
-          <YStack alignItems="center" paddingVertical="$8">
-            <Spinner size="large" />
-            <Text color="$color11" mt="$4">Loading documents...</Text>
-          </YStack>
+          <Stack alignItems="center" style={{ paddingTop: 32, paddingBottom: 32 }}>
+            <Spinner size="lg" />
+            <Text style={{ color: 'var(--color-gray-11)', marginTop: 16 }}>Loading documents...</Text>
+          </Stack>
         )}
-        {!loading && <YStack overflowX="auto">
-          <table width="100%">
+        {!loading && <Stack style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%' }}>
             <thead>
               <tr>
                 <th>
-                  <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
+                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
                       Document
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
+                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
                       Type
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
+                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
                       Status
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
+                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
                       Upload Date
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
+                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
                       Expiry
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingHorizontal="$6" paddingVertical="$3">
-                    <Text style={{ textAlign: 'left' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
+                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
                       Size
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
                 <th>
-                  <XStack paddingHorizontal="$6" paddingVertical="$3" justifyContent="flex-end">
-                    <Text style={{ textAlign: 'right' }} fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12, justifyContent: 'flex-end' }}>
+                    <Text style={{ textAlign: 'right', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
                       Actions
                     </Text>
-                  </XStack>
+                  </Row>
                 </th>
               </tr>
             </thead>
@@ -561,99 +555,93 @@ export default function DocumentsPage() {
                 return (
                   <tr key={doc.id}>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center" gap="$3">
-                        <FileText color="$blue10" size={20} />
-                        <YStack>
-                          <Text fontSize="$2" fontWeight="500" color="$color12">
+                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }} alignItems="center" gap={12}>
+                        <FileText style={{ color: 'var(--color-blue-10)' }} size={20} />
+                        <Stack>
+                          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-12)' }}>
                             {doc.name}
                           </Text>
-                          <Text fontSize="$1" color="$color11">
+                          <Text style={{ fontSize: 11, color: 'var(--color-gray-11)' }}>
                             Uploaded by {doc.uploadedBy}
                           </Text>
-                        </YStack>
-                      </XStack>
+                        </Stack>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4">
-                        <XStack
-                          display="inline-flex"
+                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }}>
+                        <Row
                           alignItems="center"
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
-                          backgroundColor="$blue3"
+                          style={{
+                            display: 'inline-flex',
+                            paddingLeft: 8,
+                            paddingRight: 8,
+                            paddingTop: 4,
+                            paddingBottom: 4,
+                            borderRadius: 4,
+                            backgroundColor: 'var(--color-blue-3)',
+                          }}
                         >
-                          <Text fontSize="$1" fontWeight="500" color="$blue11">
+                          <Text style={{ fontSize: 11, fontWeight: 500, color: 'var(--color-blue-11)' }}>
                             {getTypeLabel(doc.type)}
                           </Text>
-                        </XStack>
-                      </XStack>
+                        </Row>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center" gap="$2">
+                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }} alignItems="center" gap={8}>
                         {getStatusIcon(doc.status)}
-                        <Text fontSize="$2" color="$color12" textTransform="capitalize">
+                        <Text style={{ fontSize: 14, color: 'var(--color-gray-12)', textTransform: 'capitalize' }}>
                           {doc.status}
                         </Text>
-                      </XStack>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4">
-                        <Text fontSize="$2" color="$color11">
+                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }}>
+                        <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
                           {new Date(doc.uploadDate).toLocaleDateString()}
                         </Text>
-                      </XStack>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4">
+                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }}>
                         {doc.expiryDate ? (
-                          <YStack>
-                            <Text fontSize="$2" color="$color12">
+                          <Stack>
+                            <Text style={{ fontSize: 14, color: 'var(--color-gray-12)' }}>
                               {new Date(doc.expiryDate).toLocaleDateString()}
                             </Text>
                             {daysUntilExpiry !== null &&
                               daysUntilExpiry <= 30 && (
-                                <Text fontSize="$1" color="$orange10">
+                                <Text style={{ fontSize: 11, color: 'var(--color-orange-10)' }}>
                                   {daysUntilExpiry} days left
                                 </Text>
                               )}
-                          </YStack>
+                          </Stack>
                         ) : (
-                          <Text fontSize="$2" color="$color11">N/A</Text>
+                          <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>N/A</Text>
                         )}
-                      </XStack>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4">
-                        <Text fontSize="$2" color="$color11">
+                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }}>
+                        <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
                           {doc.fileSize}
                         </Text>
-                      </XStack>
+                      </Row>
                     </td>
                     <td>
-                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center" justifyContent="flex-end" gap="$2">
-                        <Button
-                          onPress={() => setSelectedDocument(doc)}
-                          padding="$1"
-                          backgroundColor="transparent"
-                          color="$blue10"
-                          hoverStyle={{
-                            color: '$blue12',
-                          }}
+                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16, justifyContent: 'flex-end' }} alignItems="center" gap={8}>
+                        <button
+                          onClick={() => setSelectedDocument(doc)}
+                          style={getActionButtonStyle()}
                         >
                           <Eye size={16} />
-                        </Button>
-                        <Button
-                          padding="$1"
-                          backgroundColor="transparent"
-                          color="$blue10"
-                          hoverStyle={{
-                            color: '$blue12',
-                          }}
+                        </button>
+                        <button
+                          style={getActionButtonStyle()}
                         >
                           <Download size={16} />
-                        </Button>
-                      </XStack>
+                        </button>
+                      </Row>
                     </td>
                   </tr>
                 );
@@ -662,19 +650,19 @@ export default function DocumentsPage() {
           </table>
 
           {filteredDocuments.length === 0 && (
-            <YStack alignItems="center" paddingVertical="$12" gap="$4">
-              <FileText color="$color10" size={48} />
-              <YStack alignItems="center" gap="$2">
-                <Text color="$color12" fontWeight="500">
+            <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }} gap={16}>
+              <FileText style={{ color: 'var(--color-gray-10)' }} size={48} />
+              <Stack alignItems="center" gap={8}>
+                <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
                 No documents found
               </Text>
-                <Text color="$color11" fontSize="$2">
+                <Text style={{ color: 'var(--color-gray-11)', fontSize: 14 }}>
                   Upload documents to get started
                 </Text>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
-        </YStack>}
+        </Stack>}
       </Card>
 
       {/* Document Detail Modal */}
@@ -708,39 +696,44 @@ export default function DocumentsPage() {
           onClick={handleModalClose}
         >
           <Card
-            backgroundColor="$background"
-            padding="$6"
-            borderRadius="$4"
-            width={560}
-            maxHeight="90vh"
-            overflow="auto"
+            style={{
+              backgroundColor: 'var(--color-background)',
+              padding: 24,
+              borderRadius: 8,
+              width: 560,
+              maxHeight: '90vh',
+              overflow: 'auto',
+            }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
             data-testid="upload-modal"
           >
-            <YStack gap="$4">
-              <Text fontSize="$6" fontWeight="bold" color="$color12">
+            <Stack gap={16}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
                 Upload Document
               </Text>
-              <Text color="$color11">
+              <Text style={{ color: 'var(--color-gray-11)' }}>
                 Upload your compliance documents, certificates, licenses, or other required files.
               </Text>
 
               {uploadError && (
                 <Card
-                  backgroundColor="$red2"
-                  borderColor="$red6"
-                  borderWidth={1}
-                  borderRadius="$4"
-                  padding="$4"
+                  style={{
+                    backgroundColor: 'var(--color-red-2)',
+                    borderColor: 'var(--color-red-6)',
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderRadius: 8,
+                    padding: 16,
+                  }}
                 >
-                  <Text color="$red11" fontSize="$3">
+                  <Text style={{ color: 'var(--color-red-11)', fontSize: 14 }}>
                     {uploadError}
                   </Text>
                 </Card>
               )}
 
               {organizationId && userId ? (
-                <Suspense fallback={<Spinner size="large" />}>
+                <Suspense fallback={<Spinner size="lg" />}>
                   <FileUploadZone
                     projectId="general"
                     uploaderId={userId}
@@ -756,36 +749,39 @@ export default function DocumentsPage() {
                 </Suspense>
               ) : (
                 <Card
-                  backgroundColor="$yellow2"
-                  borderColor="$yellow6"
-                  borderWidth={1}
-                  borderRadius="$4"
-                  padding="$4"
+                  style={{
+                    backgroundColor: 'var(--color-yellow-2)',
+                    borderColor: 'var(--color-yellow-6)',
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderRadius: 8,
+                    padding: 16,
+                  }}
                 >
-                  <Text color="$yellow11" fontSize="$3">
+                  <Text style={{ color: 'var(--color-yellow-11)', fontSize: 14 }}>
                     Unable to upload documents. Please ensure you are logged in and have a valid organization.
                   </Text>
-                  <Text color="$yellow11" fontSize="$2" mt="$2">
+                  <Text style={{ color: 'var(--color-yellow-11)', fontSize: 12, marginTop: 8 }}>
                     Organization ID: {organizationId || 'Not available'}
                   </Text>
-                  <Text color="$yellow11" fontSize="$2">
+                  <Text style={{ color: 'var(--color-yellow-11)', fontSize: 12 }}>
                     User ID: {userId || 'Not available'}
                   </Text>
                 </Card>
               )}
 
-              <XStack justifyContent="flex-end" paddingTop="$4">
+              <Row justifyContent="flex-end" style={{ paddingTop: 16 }}>
                 <Button
                   variant="ghost"
                   onPress={handleModalClose}
                 >
                   Close
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           </Card>
         </div>
       )}
-    </YStack>
+    </Stack>
   );
 }

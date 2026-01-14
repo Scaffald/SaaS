@@ -1,8 +1,8 @@
 /**
- * BeyondUIProvider - Wrapper for Beyond UI components
+ * BeyondUIProvider - Provider for Beyond UI components
  *
- * This provider sets up the Beyond UI theme context for gradual migration
- * from Tamagui to Beyond UI. During migration, both UI libraries coexist.
+ * Sets up the Beyond UI theme context for the application.
+ * Migration from Tamagui to Beyond UI is complete for forsured-web.
  *
  * Note: The ThemeProvider is currently in beyond-ui's playground folder.
  * It will be moved to a proper location in a future update.
@@ -22,15 +22,13 @@ interface BeyondUIProviderProps {
 }
 
 /**
- * Provider for Beyond UI components during Tamagui migration
+ * Provider for Beyond UI components
  *
  * Usage:
  * ```tsx
- * <TamaguiProvider>
- *   <BeyondUIProvider>
- *     <App />
- *   </BeyondUIProvider>
- * </TamaguiProvider>
+ * <BeyondUIProvider>
+ *   <App />
+ * </BeyondUIProvider>
  * ```
  */
 export function BeyondUIProvider({

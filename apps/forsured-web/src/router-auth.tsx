@@ -13,8 +13,7 @@ import { Permission } from './lib/auth/types';
 // Layout
 import Layout from './components/Layout/Layout';
 
-// Design System & Marketing
-import DesignSystemHome from './components/DesignSystem/DesignSystemHome';
+// Marketing
 import Colors from './components/Features/Colors';
 
 // Dashboards
@@ -99,8 +98,7 @@ const AuthenticatedAppRoutes = () => {
       <Route path="/auth/callback" element={<CallbackPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* Public Design System Routes */}
-      <Route path="/" element={<DesignSystemHome />} />
+      {/* Public Routes */}
       <Route path="/colors" element={<Colors />} />
 
       {/* Protected Routes */}

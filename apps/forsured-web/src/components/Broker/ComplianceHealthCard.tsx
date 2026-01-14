@@ -1,5 +1,5 @@
 import { Shield, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 
 interface ComplianceHealthCardProps {
   score: number;
@@ -14,98 +14,107 @@ export default function ComplianceHealthCard({
   lastUpdated,
   onClick,
 }: ComplianceHealthCardProps) {
-  const getScoreColor = (score: number) => {
+  const getScoreColors = (score: number) => {
     if (score >= 90) {
       return {
-        backgroundColor: '$green2',
-        color: '$green11',
-        borderColor: '$green6',
-        iconBg: '$green3',
-        iconColor: '$green10',
-        textColor: '$green11',
-        progressColor: '$green10',
+        backgroundColor: 'var(--color-green-2)',
+        borderColor: 'var(--color-green-6)',
+        iconBg: 'var(--color-green-3)',
+        iconColor: 'var(--color-green-10)',
+        textColor: 'var(--color-green-11)',
+        progressColor: 'var(--color-green-10)',
       };
     }
     if (score >= 70) {
       return {
-        backgroundColor: '$yellow2',
-        color: '$yellow11',
-        borderColor: '$yellow6',
-        iconBg: '$yellow3',
-        iconColor: '$yellow10',
-        textColor: '$yellow11',
-        progressColor: '$yellow10',
+        backgroundColor: 'var(--color-yellow-2)',
+        borderColor: 'var(--color-yellow-6)',
+        iconBg: 'var(--color-yellow-3)',
+        iconColor: 'var(--color-yellow-10)',
+        textColor: 'var(--color-yellow-11)',
+        progressColor: 'var(--color-yellow-10)',
       };
     }
     return {
-      backgroundColor: '$red2',
-      color: '$red11',
-      borderColor: '$red6',
-      iconBg: '$red3',
-      iconColor: '$red10',
-      textColor: '$red11',
-      progressColor: '$red10',
+      backgroundColor: 'var(--color-red-2)',
+      borderColor: 'var(--color-red-6)',
+      iconBg: 'var(--color-red-3)',
+      iconColor: 'var(--color-red-10)',
+      textColor: 'var(--color-red-11)',
+      progressColor: 'var(--color-red-10)',
     };
   };
 
-  const colors = getScoreColor(score);
+  const colors = getScoreColors(score);
 
   return (
     <Card
-      backgroundColor={colors.backgroundColor}
-      borderRadius="$4"
-      borderWidth={2}
-      borderColor={colors.borderColor}
-      padding="$6"
-      cursor="pointer"
-      hoverStyle={{ elevation: 2 }}
       onClick={onClick}
+      style={{
+        backgroundColor: colors.backgroundColor,
+        borderRadius: 12,
+        border: `2px solid ${colors.borderColor}`,
+        padding: 24,
+        cursor: 'pointer',
+      }}
     >
-      <XStack alignItems="center" justifyContent="space-between" mb="$4">
-        <XStack alignItems="center" gap="$3">
-          <YStack padding="$3" borderRadius="$4" backgroundColor={colors.iconBg}>
-            <Shield color={colors.iconColor} size={24} />
-          </YStack>
-          <YStack>
-            <Text fontSize="$3" fontWeight="500" color="$color11">
+      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+        <Row alignItems="center" gap={12}>
+          <Stack
+            style={{
+              padding: 12,
+              borderRadius: 8,
+              backgroundColor: colors.iconBg,
+            }}
+          >
+            <Shield size={24} style={{ color: colors.iconColor }} />
+          </Stack>
+          <Stack>
+            <Text size="sm" weight="medium" muted>
               Overall Compliance
             </Text>
-            <XStack alignItems="center" gap="$2" mt="$1">
-              <Text fontSize="$9" fontWeight="bold" color={colors.textColor}>
+            <Row alignItems="center" gap={8} style={{ marginTop: 4 }}>
+              <Text size="2xl" weight="bold" style={{ color: colors.textColor }}>
                 {score}%
               </Text>
               {trend !== 'stable' && (
-                <YStack
-                  alignItems="center"
-                  color={trend === 'up' ? '$green10' : '$red10'}
-                >
+                <Stack>
                   {trend === 'up' ? (
-                    <TrendingUp size={16} color="$green10" />
+                    <TrendingUp size={16} style={{ color: 'var(--color-green-10)' }} />
                   ) : (
-                    <TrendingDown size={16} color="$red10" />
+                    <TrendingDown size={16} style={{ color: 'var(--color-red-10)' }} />
                   )}
-                </YStack>
+                </Stack>
               )}
-            </XStack>
-          </YStack>
-        </XStack>
-        <ChevronRight color="$color10" size={20} />
-      </XStack>
+            </Row>
+          </Stack>
+        </Row>
+        <ChevronRight size={20} style={{ color: 'var(--color-text-muted)' }} />
+      </Row>
 
-      <YStack gap="$2">
-        <XStack justifyContent="space-between">
-          <Text fontSize="$1" color="$color11">Across all clients and policies</Text>
-          {lastUpdated && <Text fontSize="$1" color="$color11">Updated {lastUpdated}</Text>}
-        </XStack>
-        <YStack width="100%" backgroundColor="$gray6" borderRadius={9999} height={8}>
-          <YStack
-            height={8}
-            borderRadius={9999}
-            backgroundColor={colors.progressColor}
-            width={`${score}%`}
+      <Stack gap={8}>
+        <Row justifyContent="space-between">
+          <Text size="xs" muted>Across all clients and policies</Text>
+          {lastUpdated && <Text size="xs" muted>Updated {lastUpdated}</Text>}
+        </Row>
+        <Stack
+          style={{
+            width: '100%',
+            backgroundColor: 'var(--color-gray-6)',
+            borderRadius: 9999,
+            height: 8,
+          }}
+        >
+          <Stack
+            style={{
+              height: 8,
+              borderRadius: 9999,
+              backgroundColor: colors.progressColor,
+              width: `${score}%`,
+            }}
           />
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </Card>
   );
 }

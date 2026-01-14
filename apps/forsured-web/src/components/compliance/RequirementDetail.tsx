@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { YStack, XStack, Text, Button, Card, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
 import {
   ComplianceRequirement,
   CoverageType,
@@ -77,24 +77,29 @@ export default function RequirementDetail({
     return labels[type];
   }
 
-  function getStatusBadge(status: RequirementStatus) {
+  function getStatusBadgeStyles(status: RequirementStatus): React.CSSProperties {
     const badgeConfig = {
-      [RequirementStatus.ACTIVE]: { bg: '$green3', color: '$green11' },
-      [RequirementStatus.DRAFT]: { bg: '$yellow3', color: '$yellow11' },
-      [RequirementStatus.ARCHIVED]: { bg: '$gray3', color: '$gray11' }
+      [RequirementStatus.ACTIVE]: { backgroundColor: 'var(--color-green-3)', color: 'var(--color-green-11)' },
+      [RequirementStatus.DRAFT]: { backgroundColor: 'var(--color-yellow-3)', color: 'var(--color-yellow-11)' },
+      [RequirementStatus.ARCHIVED]: { backgroundColor: 'var(--color-gray-3)', color: 'var(--color-gray-11)' }
     };
 
-    const config = badgeConfig[status] || badgeConfig[RequirementStatus.DRAFT];
+    return badgeConfig[status] || badgeConfig[RequirementStatus.DRAFT];
+  }
 
+  function getStatusBadge(status: RequirementStatus) {
     return (
       <Text
-        paddingHorizontal="$3"
-        paddingVertical="$1"
-        fontSize="$3"
-        fontWeight="500"
-        borderRadius={9999}
-        backgroundColor={config.bg}
-        color={config.color}
+        style={{
+          paddingLeft: 'var(--space-3)',
+          paddingRight: 'var(--space-3)',
+          paddingTop: 4,
+          paddingBottom: 4,
+          fontSize: 'var(--font-size-3)',
+          fontWeight: 500,
+          borderRadius: 9999,
+          ...getStatusBadgeStyles(status),
+        }}
       >
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Text>
@@ -103,27 +108,30 @@ export default function RequirementDetail({
 
   if (loading) {
     return (
-      <YStack alignItems="center" justifyContent="center" height={256}>
-        <Text color="$gray9">Loading requirement details...</Text>
-      </YStack>
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', height: 256 }}>
+        <Text style={{ color: 'var(--color-gray-9)' }}>Loading requirement details...</Text>
+      </Stack>
     );
   }
 
   if (error || !requirement) {
     return (
-      <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$2" padding="$4">
-        <Text color="$red11">Error: {error || 'Requirement not found'}</Text>
+      <Card style={{ backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-5)', borderRadius: 'var(--radius-2)', padding: 'var(--space-4)' }}>
+        <Text style={{ color: 'var(--color-red-11)' }}>Error: {error || 'Requirement not found'}</Text>
         {onClose && (
-          <Button
-            unstyled
-            mt="$2"
-            fontSize="$3"
-            color="$red9"
-            hoverStyle={{ color: '$red10' }}
-            onPress={onClose}
+          <button
+            style={{
+              marginTop: 8,
+              fontSize: 'var(--font-size-3)',
+              color: 'var(--color-red-9)',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onClick={onClose}
           >
             Close
-          </Button>
+          </button>
         )}
       </Card>
     );
@@ -132,198 +140,209 @@ export default function RequirementDetail({
   const { requirement_definition } = requirement;
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
       {/* Header */}
-      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <XStack alignItems="flex-start" justifyContent="space-between">
-          <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" mb="$2">
-              <H2 fontSize="$9" fontWeight="700" color="$gray12">{requirement.name}</H2>
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+        <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <Stack style={{ flex: 1 }}>
+            <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 8 }}>
+              <h2 style={{ fontSize: 'var(--font-size-9)', fontWeight: 700, color: 'var(--color-gray-12)', margin: 0 }}>{requirement.name}</h2>
               {getStatusBadge(requirement.status)}
               {requirement.is_template && (
                 <Text
-                  paddingHorizontal="$3"
-                  paddingVertical="$1"
-                  fontSize="$3"
-                  fontWeight="500"
-                  borderRadius={9999}
-                  backgroundColor="$purple3"
-                  color="$purple11"
+                  style={{
+                    paddingLeft: 'var(--space-3)',
+                    paddingRight: 'var(--space-3)',
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: 500,
+                    borderRadius: 9999,
+                    backgroundColor: 'var(--color-purple-3)',
+                    color: 'var(--color-purple-11)',
+                  }}
                 >
                   Template
                 </Text>
               )}
-            </XStack>
-            <YStack gap="$1">
-              <Text fontSize="$3" color="$gray9">Type: {getTypeLabel(requirement.type)}</Text>
-              <Text fontSize="$3" color="$gray9">Version: {requirement.version}</Text>
-              <Text fontSize="$3" color="$gray9">
+            </Row>
+            <Stack style={{ gap: 4 }}>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-9)' }}>Type: {getTypeLabel(requirement.type)}</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-9)' }}>Version: {requirement.version}</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-9)' }}>
                 Effective Date: {new Date(requirement.effective_date).toLocaleDateString()}
               </Text>
               {requirement.superseded_date && (
-                <Text fontSize="$3" color="$orange9">
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-orange-9)' }}>
                   Superseded: {new Date(requirement.superseded_date).toLocaleDateString()}
                 </Text>
               )}
-            </YStack>
+            </Stack>
             {requirement.description && (
-              <Text mt="$4" color="$gray11">{requirement.description}</Text>
+              <Text style={{ marginTop: 'var(--space-4)', color: 'var(--color-gray-11)' }}>{requirement.description}</Text>
             )}
-          </YStack>
-          <XStack gap="$2">
+          </Stack>
+          <Row style={{ gap: 'var(--space-2)' }}>
             {onEdit && requirement.status !== RequirementStatus.ARCHIVED && (
-              <Button variant="solid" onPress={onEdit}>
+              <Button variant="solid" onClick={onEdit}>
                 Edit
               </Button>
             )}
             {onClose && (
-              <Button variant="outlined" onPress={onClose}>
+              <Button variant="outlined" onClick={onClose}>
                 Close
               </Button>
             )}
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       </Card>
 
       {/* Coverage Limits */}
-      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12" mb="$4">Coverage Limits</H3>
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+        <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)', margin: 0 }}>Coverage Limits</h3>
         {Object.keys(requirement_definition.coverage_limits).length === 0 ? (
-          <Text color="$gray9">Statutory or per policy</Text>
+          <Text style={{ color: 'var(--color-gray-9)' }}>Statutory or per policy</Text>
         ) : (
-          <XStack flexWrap="wrap" gap="$4">
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
             {Object.entries(requirement_definition.coverage_limits).map(([key, value]) => {
               if (value === undefined) return null;
               return (
-                <YStack key={key} flex={1} minWidth="200px">
-                  <Text fontSize="$3" fontWeight="500" color="$gray9" textTransform="capitalize">
+                <Stack key={key} style={{ flex: 1, minWidth: 200 }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-9)', textTransform: 'capitalize' }}>
                     {key.replace(/_/g, ' ')}
                   </Text>
-                  <Text fontSize="$6" fontWeight="600" color="$gray12">{formatCurrency(value)}</Text>
-                </YStack>
+                  <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)' }}>{formatCurrency(value)}</Text>
+                </Stack>
               );
             })}
-          </XStack>
+          </Row>
         )}
       </Card>
 
       {/* Required Endorsements */}
-      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12" mb="$4">Required Endorsements</H3>
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+        <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)', margin: 0 }}>Required Endorsements</h3>
         {requirement_definition.required_endorsements.length === 0 ? (
-          <Text color="$gray9">No endorsements required</Text>
+          <Text style={{ color: 'var(--color-gray-9)' }}>No endorsements required</Text>
         ) : (
-          <YStack gap="$4">
+          <Stack style={{ gap: 'var(--space-4)' }}>
             {requirement_definition.required_endorsements.map((endorsement, index) => (
-              <YStack key={index} borderLeftWidth={4} borderColor="$blue9" paddingLeft="$4">
-                <Text fontWeight="500" color="$gray12">{endorsement.endorsement_type}</Text>
-                <Text fontSize="$3" color="$gray10" mt="$1">{endorsement.description}</Text>
-              </YStack>
+              <Stack key={index} style={{ borderLeftWidth: 4, borderLeftStyle: 'solid', borderColor: 'var(--color-blue-9)', paddingLeft: 'var(--space-4)' }}>
+                <Text style={{ fontWeight: 500, color: 'var(--color-gray-12)' }}>{endorsement.endorsement_type}</Text>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-10)', marginTop: 4 }}>{endorsement.description}</Text>
+              </Stack>
             ))}
-          </YStack>
+          </Stack>
         )}
       </Card>
 
       {/* Policy Conditions */}
-      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12" mb="$4">Policy Conditions</H3>
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+        <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)', margin: 0 }}>Policy Conditions</h3>
         {requirement_definition.policy_conditions.length === 0 ? (
-          <Text color="$gray9">No special conditions</Text>
+          <Text style={{ color: 'var(--color-gray-9)' }}>No special conditions</Text>
         ) : (
-          <YStack gap="$4">
+          <Stack style={{ gap: 'var(--space-4)' }}>
             {requirement_definition.policy_conditions.map((condition, index) => (
-              <YStack key={index} borderLeftWidth={4} borderColor="$green9" paddingLeft="$4">
-                <Text fontWeight="500" color="$gray12">{condition.condition_type}</Text>
-                <Text fontSize="$3" color="$gray10" mt="$1">{condition.description}</Text>
-              </YStack>
+              <Stack key={index} style={{ borderLeftWidth: 4, borderLeftStyle: 'solid', borderColor: 'var(--color-green-9)', paddingLeft: 'var(--space-4)' }}>
+                <Text style={{ fontWeight: 500, color: 'var(--color-gray-12)' }}>{condition.condition_type}</Text>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-10)', marginTop: 4 }}>{condition.description}</Text>
+              </Stack>
             ))}
-          </YStack>
+          </Stack>
         )}
       </Card>
 
       {/* Documentation Requirements */}
-      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-        <H3 fontSize="$6" fontWeight="600" color="$gray12" mb="$4">Documentation Requirements</H3>
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+        <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', marginBottom: 'var(--space-4)', margin: 0 }}>Documentation Requirements</h3>
         {requirement_definition.documentation_requirements.length === 0 ? (
-          <Text color="$gray9">No documentation specified</Text>
+          <Text style={{ color: 'var(--color-gray-9)' }}>No documentation specified</Text>
         ) : (
-          <YStack gap="$2">
+          <Stack style={{ gap: 'var(--space-2)' }}>
             {requirement_definition.documentation_requirements.map((doc, index) => (
-              <XStack key={index} alignItems="center" gap="$2">
-                <Text color={doc.is_required ? '$red9' : '$gray7'} fontWeight={doc.is_required ? '700' : '400'}>
+              <Row key={index} style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+                <Text style={{ color: doc.is_required ? 'var(--color-red-9)' : 'var(--color-gray-7)', fontWeight: doc.is_required ? 700 : 400 }}>
                   {doc.is_required ? '* Required' : 'Optional'}
                 </Text>
-                <Text color="$gray12">{doc.document_type}</Text>
-              </XStack>
+                <Text style={{ color: 'var(--color-gray-12)' }}>{doc.document_type}</Text>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
         )}
       </Card>
 
       {/* Version History */}
       {versions.length > 1 && (
-        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
-          <XStack alignItems="center" justifyContent="space-between" mb="$4">
-            <H3 fontSize="$6" fontWeight="600" color="$gray12">Version History</H3>
-            <Button
-              unstyled
-              fontSize="$3"
-              color="$blue9"
-              hoverStyle={{ color: '$blue10' }}
-              onPress={() => setShowVersions(!showVersions)}
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 2px 8px var(--color-shadow)', padding: 'var(--space-6)' }}>
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
+            <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600, color: 'var(--color-gray-12)', margin: 0 }}>Version History</h3>
+            <button
+              style={{
+                fontSize: 'var(--font-size-3)',
+                color: 'var(--color-blue-9)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              onClick={() => setShowVersions(!showVersions)}
             >
               {showVersions ? 'Hide' : 'Show'} Versions ({versions.length})
-            </Button>
-          </XStack>
+            </button>
+          </Row>
           {showVersions && (
-            <YStack gap="$2">
+            <Stack style={{ gap: 'var(--space-2)' }}>
               {versions.map((version) => (
                 <Card
                   key={version.id}
-                  padding="$3"
-                  borderColor={version.id === requirement.id ? '$blue9' : '$gray5'}
-                  backgroundColor={version.id === requirement.id ? '$blue2' : '$background'}
-                  borderRadius="$2"
-                  hoverStyle={{ backgroundColor: '$gray2' }}
+                  style={{
+                    padding: 'var(--space-3)',
+                    borderColor: version.id === requirement.id ? 'var(--color-blue-9)' : 'var(--color-gray-5)',
+                    backgroundColor: version.id === requirement.id ? 'var(--color-blue-2)' : 'var(--color-background)',
+                    borderRadius: 'var(--radius-2)',
+                  }}
                 >
-                  <XStack alignItems="center" justifyContent="space-between">
-                    <YStack>
-                      <XStack alignItems="center" gap="$2">
-                        <Text fontWeight="500">Version {version.version}</Text>
+                  <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Stack>
+                      <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+                        <Text style={{ fontWeight: 500 }}>Version {version.version}</Text>
                         {version.id === requirement.id && (
-                          <Text fontSize="$3" color="$blue9">(Current)</Text>
+                          <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-9)' }}>(Current)</Text>
                         )}
                         {version.superseded_date && (
-                          <Text fontSize="$3" color="$gray9">
+                          <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-9)' }}>
                             (Superseded {new Date(version.superseded_date).toLocaleDateString()})
                           </Text>
                         )}
-                      </XStack>
+                      </Row>
                       {version.change_summary && (
-                        <Text fontSize="$3" color="$gray10" mt="$1">{version.change_summary}</Text>
+                        <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-10)', marginTop: 4 }}>{version.change_summary}</Text>
                       )}
-                      <Text fontSize="$2" color="$gray9" mt="$1">
+                      <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-9)', marginTop: 4 }}>
                         Effective: {new Date(version.effective_date).toLocaleDateString()}
                       </Text>
-                    </YStack>
+                    </Stack>
                     {onViewVersion && version.id !== requirement.id && (
-                      <Button
-                        unstyled
-                        fontSize="$3"
-                        color="$blue9"
-                        hoverStyle={{ color: '$blue10' }}
-                        onPress={() => onViewVersion(version.id)}
+                      <button
+                        style={{
+                          fontSize: 'var(--font-size-3)',
+                          color: 'var(--color-blue-9)',
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => onViewVersion(version.id)}
                       >
                         View
-                      </Button>
+                      </button>
                     )}
-                  </XStack>
+                  </Row>
                 </Card>
               ))}
-            </YStack>
+            </Stack>
           )}
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 }

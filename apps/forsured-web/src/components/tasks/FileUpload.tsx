@@ -1,10 +1,10 @@
 /**
- * FileUpload - File upload component using Tamagui
+ * FileUpload - File upload component using Beyond UI
  * REQ-166: Task Management Workflow & UI
  */
 import type React from 'react'
 import { useState, useRef } from 'react'
-import { YStack, Text, styled } from '@unicornlove/ui'
+import { Stack, Text } from '@unicornlove/beyond-ui'
 import { Upload, CloudUpload } from 'lucide-react'
 
 interface FileUploadProps {
@@ -14,49 +14,17 @@ interface FileUploadProps {
   acceptedTypes?: string[]
 }
 
-const UploadZone = styled(YStack, {
-  name: 'UploadZone',
-  borderWidth: 2,
+const getUploadZoneStyle = (dragging: boolean, uploading: boolean): React.CSSProperties => ({
+  borderWidth: '2px',
   borderStyle: 'dashed',
-  borderRadius: '$3',
-  padding: '$8',
-  cursor: 'pointer',
-  borderColor: '$borderColor',
-  hoverStyle: {
-    borderColor: '$borderColorHover',
-  },
-
-  variants: {
-    dragging: {
-      true: {
-        borderColor: '$blue9',
-        backgroundColor: '$blue2',
-      },
-    },
-    uploading: {
-      true: {
-        pointerEvents: 'none',
-        opacity: 0.5,
-      },
-    },
-  } as const,
-})
-
-const ProgressBar = styled(YStack, {
-  name: 'ProgressBar',
-  width: '100%',
-  backgroundColor: '$color4',
-  borderRadius: '$10',
-  height: 8,
-  overflow: 'hidden',
-})
-
-const ProgressFill = styled(YStack, {
-  name: 'ProgressFill',
-  height: 8,
-  backgroundColor: '$blue9',
-  borderRadius: '$10',
-  transition: 'width 300ms',
+  borderRadius: '8px',
+  padding: '32px',
+  cursor: uploading ? 'default' : 'pointer',
+  borderColor: dragging ? 'var(--color-blue9)' : 'var(--color-border)',
+  backgroundColor: dragging ? 'var(--color-blue2)' : 'transparent',
+  pointerEvents: uploading ? 'none' : 'auto',
+  opacity: uploading ? 0.5 : 1,
+  textAlign: 'center' as const,
 })
 
 export const FileUpload: React.FC<FileUploadProps> = ({
@@ -146,15 +114,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   }
 
   return (
-    <YStack gap="$2">
-      <UploadZone
-        dragging={isDragging}
-        uploading={uploading}
+    <Stack style={{ gap: '8px' }}>
+      <div
+        style={getUploadZoneStyle(isDragging, uploading)}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onPress={() => fileInputRef.current?.click()}
-        style={{ textAlign: 'center' }}
+        onClick={() => fileInputRef.current?.click()}
       >
         <input
           ref={fileInputRef}
@@ -165,47 +131,66 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         />
 
         {uploading ? (
-          <YStack gap="$4" alignItems="center">
+          <Stack style={{ gap: '16px', alignItems: 'center' }}>
             <CloudUpload size={48} color="currentColor" />
-            <YStack gap="$2" width="100%">
-              <Text fontSize="$2" fontWeight="500" color="$color11">
+            <Stack style={{ gap: '8px', width: '100%' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color11)' }}>
                 Uploading...
               </Text>
-              <ProgressBar>
-                <ProgressFill width={`${progress}%`} />
-              </ProgressBar>
-              <Text fontSize="$1" color="$color9" mt="$1">
+              <div
+                style={{
+                  width: '100%',
+                  backgroundColor: 'var(--color-color4)',
+                  borderRadius: '9999px',
+                  height: '8px',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    height: '8px',
+                    backgroundColor: 'var(--color-blue9)',
+                    borderRadius: '9999px',
+                    transition: 'width 300ms',
+                    width: `${progress}%`,
+                  }}
+                />
+              </div>
+              <Text style={{ fontSize: '12px', color: 'var(--color-color9)', marginTop: '4px' }}>
                 {progress}%
               </Text>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         ) : (
-          <YStack gap="$2" alignItems="center">
+          <Stack style={{ gap: '8px', alignItems: 'center' }}>
             <Upload size={48} color="currentColor" />
-            <Text fontSize="$2" fontWeight="500" color="$color11" mt="$2">
+            <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color11)', marginTop: '8px' }}>
               Drag and drop your file here, or click to browse
             </Text>
-            <Text fontSize="$1" color="$color9" mt="$1">
+            <Text style={{ fontSize: '12px', color: 'var(--color-color9)', marginTop: '4px' }}>
               Max file size: {maxSizeMB}MB. Accepted types: {acceptedTypes.join(', ')}
             </Text>
-          </YStack>
+          </Stack>
         )}
-      </UploadZone>
+      </div>
 
       {error && (
-        <YStack
-          mt="$2"
-          padding="$3"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$3"
+        <Stack
+          style={{
+            marginTop: '8px',
+            padding: '12px',
+            backgroundColor: 'var(--color-red2)',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'var(--color-red6)',
+            borderRadius: '8px',
+          }}
         >
-          <Text fontSize="$2" color="$red11">
+          <Text style={{ fontSize: '14px', color: 'var(--color-red11)' }}>
             {error}
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

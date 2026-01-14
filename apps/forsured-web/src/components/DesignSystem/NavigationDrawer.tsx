@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { YStack, XStack, View, Text } from '@unicornlove/ui';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 import {
   X,
   ChevronDown,
@@ -116,163 +116,170 @@ export default function NavigationDrawer({
   return (
     <>
       {isOpen && (
-        <View
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          zIndex={40}
-          $gtLg={{ display: 'none' }}
-          onPress={onClose}
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        <div
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 40,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+          className="lg:hidden"
         />
       )}
 
-      <View
-        tag="aside"
-        position="absolute"
-        top={0}
-        left={0}
-        height="100vh"
-        width={288}
-        backgroundColor="$background"
-        borderRightWidth={1}
-        borderRightColor="$borderColor"
-        zIndex={50}
-        overflow="scroll"
+      <aside
         style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          height: '100vh',
+          width: 288,
+          backgroundColor: 'var(--color-background)',
+          borderRight: '1px solid var(--color-border)',
+          zIndex: 50,
+          overflow: 'auto',
           transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 300ms ease-in-out',
         }}
-        $gtLg={{
-          position: 'fixed',
-          transform: 'translateX(0)',
-        }}
+        className="lg:fixed lg:transform-none"
       >
-        <XStack padding="$6" borderBottomWidth={1} borderBottomColor="$borderColor" alignItems="center" justifyContent="space-between">
+        <Row style={{ padding: 'var(--space-6)', borderBottom: '1px solid var(--color-border)', alignItems: 'center', justifyContent: 'space-between' }}>
           <ForsuredLogo height={24} />
-          <View
-            tag="button"
-            onPress={onClose}
-            padding="$2"
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: '$backgroundSecondary' }}
-            $gtLg={{ display: 'none' }}
+          <button
+            onClick={onClose}
+            style={{
+              padding: 'var(--space-2)',
+              borderRadius: 'var(--radius-4)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            className="lg:hidden hover:bg-[var(--color-background-secondary)]"
           >
-            <X size={20} color="var(--color11)" />
-          </View>
-        </XStack>
+            <X size={20} color="var(--color-11)" />
+          </button>
+        </Row>
 
-        <View tag="nav" padding="$4">
-          <YStack gap="$1">
+        <nav style={{ padding: 'var(--space-4)' }}>
+          <Stack style={{ gap: 'var(--space-1)' }}>
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isExpanded = expandedSections.includes(item.id);
               const hasChildren = item.children && item.children.length > 0;
 
               return (
-                <YStack key={item.id}>
+                <Stack key={item.id}>
                   {hasChildren ? (
                     <>
-                      <XStack
-                        tag="button"
-                        onPress={() => toggleSection(item.id)}
-                        width="100%"
-                        alignItems="center"
-                        justifyContent="space-between"
-                        paddingHorizontal="$3"
-                        paddingVertical="$2"
-                        borderRadius="$4"
-                        hoverStyle={{ backgroundColor: '$backgroundSecondary' }}
-                        cursor="pointer"
+                      <button
+                        onClick={() => toggleSection(item.id)}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: 'var(--space-2) var(--space-3)',
+                          borderRadius: 'var(--radius-4)',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                        className="hover:bg-[var(--color-background-secondary)]"
                       >
-                        <XStack alignItems="center" gap="$2">
+                        <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                           {Icon && <Icon size={18} />}
-                          <Text fontWeight="500" color="$color12">{item.label}</Text>
-                        </XStack>
-                        <View
+                          <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>{item.label}</Text>
+                        </Row>
+                        <div
                           style={{
                             transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
                             transition: 'transform 200ms',
                           }}
                         >
                           <ChevronDown size={16} />
-                        </View>
-                      </XStack>
+                        </div>
+                      </button>
                       {isExpanded && (
-                        <YStack ml="$4" mt="$1" gap="$1">
+                        <Stack style={{ marginLeft: 'var(--space-4)', marginTop: 'var(--space-1)', gap: 'var(--space-1)' }}>
                           {item.children.map((child) => (
-                            <View
+                            <button
                               key={child.id}
-                              tag="button"
-                              onPress={() =>
+                              onClick={() =>
                                 child.href && handleNavigate(child.href)
                               }
-                              width="100%"
-                              paddingHorizontal="$3"
-                              paddingVertical="$2"
-                              borderRadius="$4"
-                              hoverStyle={{ backgroundColor: '$backgroundSecondary' }}
-                              cursor="pointer"
+                              style={{
+                                width: '100%',
+                                padding: 'var(--space-2) var(--space-3)',
+                                borderRadius: 'var(--radius-4)',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                textAlign: 'left',
+                              }}
+                              className="hover:bg-[var(--color-background-secondary)]"
                             >
-                              <Text fontSize="$3" color="$color11" hoverStyle={{ color: '$color12' }}>
+                              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                                 {child.label}
                               </Text>
-                            </View>
+                            </button>
                           ))}
-                        </YStack>
+                        </Stack>
                       )}
                     </>
                   ) : (
-                    <XStack
-                      tag="button"
-                      onPress={() => item.href && handleNavigate(item.href)}
-                      width="100%"
-                      alignItems="center"
-                      gap="$2"
-                      paddingHorizontal="$3"
-                      paddingVertical="$2"
-                      borderRadius="$4"
-                      hoverStyle={{ backgroundColor: '$backgroundSecondary' }}
-                      cursor="pointer"
+                    <button
+                      onClick={() => item.href && handleNavigate(item.href)}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-2)',
+                        padding: 'var(--space-2) var(--space-3)',
+                        borderRadius: 'var(--radius-4)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                      className="hover:bg-[var(--color-background-secondary)]"
                     >
                       {Icon && <Icon size={18} />}
-                      <Text fontWeight="500" color="$color12">{item.label}</Text>
-                    </XStack>
+                      <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>{item.label}</Text>
+                    </button>
                   )}
-                </YStack>
+                </Stack>
               );
             })}
-          </YStack>
-        </View>
-      </View>
+          </Stack>
+        </nav>
+      </aside>
     </>
   );
 }
 
 export function DrawerToggle({ onClick }: { onClick: () => void }) {
   return (
-    <View
-      tag="button"
-      onPress={onClick}
-      position="absolute"
-      top="$4"
-      left="$4"
-      zIndex={30}
-      padding="$2"
-      backgroundColor="$background"
-      borderWidth={1}
-      borderColor="$borderColor"
-      borderRadius="$4"
-      shadowRadius={8}
-      shadowColor="$shadowColor"
-      shadowOffset={{ width: 0, height: 2 }}
-      hoverStyle={{ backgroundColor: '$backgroundHover' }}
-      $gtLg={{ display: 'none' }}
+    <button
+      onClick={onClick}
       aria-label="Toggle navigation"
+      style={{
+        position: 'absolute',
+        top: 'var(--space-4)',
+        left: 'var(--space-4)',
+        zIndex: 30,
+        padding: 'var(--space-2)',
+        backgroundColor: 'var(--color-background)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius-4)',
+        boxShadow: '0 2px 8px var(--color-shadow)',
+        cursor: 'pointer',
+      }}
+      className="lg:hidden hover:bg-[var(--color-background-hover)]"
     >
-      <Menu size={24} color="var(--color12)" />
-    </View>
+      <Menu size={24} color="var(--color-12)" />
+    </button>
   );
 }

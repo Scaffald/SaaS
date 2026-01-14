@@ -11,9 +11,9 @@
 
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { Search, FileText, AlertCircle, RefreshCw } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button, Spinner } from '@unicornlove/ui';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { Search, FileText, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
+import { Stack, Row, Text, Card, Button } from '@unicornlove/beyond-ui';
 import Input from '../Common/Input';
 import { DocumentFilterPanel } from './DocumentFilterPanel';
 import type {
@@ -28,8 +28,6 @@ import {
 } from '../../types/document-filters';
 import type { DocumentListItem } from '../../types/document';
 import { trpc } from '../../lib/trpc';
-
-// Status badge color mapping - now using inline Tamagui props
 
 interface DocumentListProps {
   /** Organization ID for data fetching */
@@ -56,6 +54,22 @@ function useDebounce<T>(value: T, delay: number): T {
 
   return debouncedValue;
 }
+
+// Get status badge styles
+const getStatusBadgeStyles = (status: string): React.CSSProperties => {
+  const color = DOCUMENT_STATUS_COLORS[status as keyof typeof DOCUMENT_STATUS_COLORS] || 'gray';
+  const colorMap: Record<string, { bg: string; text: string }> = {
+    green: { bg: 'var(--color-green-2)', text: 'var(--color-green-11)' },
+    yellow: { bg: 'var(--color-yellow-2)', text: 'var(--color-yellow-11)' },
+    orange: { bg: 'var(--color-orange-2)', text: 'var(--color-orange-11)' },
+    red: { bg: 'var(--color-red-2)', text: 'var(--color-red-11)' },
+  };
+  const styles = colorMap[color] || { bg: 'var(--color-gray-2)', text: 'var(--color-gray-11)' };
+  return {
+    backgroundColor: styles.bg,
+    color: styles.text,
+  };
+};
 
 export function DocumentList({ organizationId, onDocumentClick }: DocumentListProps) {
   // Filter state
@@ -155,24 +169,12 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
     });
   };
 
-  // Get status badge props for Tamagui
-  const getStatusBadgeProps = (status: string) => {
-    const color = DOCUMENT_STATUS_COLORS[status as keyof typeof DOCUMENT_STATUS_COLORS] || 'gray';
-    const colorMap: Record<string, { bg: string; text: string }> = {
-      green: { bg: '$green2', text: '$green11' },
-      yellow: { bg: '$yellow2', text: '$yellow11' },
-      orange: { bg: '$orange2', text: '$orange11' },
-      red: { bg: '$red2', text: '$red11' },
-    };
-    return colorMap[color] || { bg: '$gray2', text: '$gray11' };
-  };
-
   const isLoading = clientsLoading || projectsLoading || documentsLoading;
   const documents = documentsData?.documents || [];
   const totalCount = documentsData?.total || 0;
 
   return (
-    <YStack gap="$4">
+    <Stack gap="md">
       {/* Filter Panel */}
       <DocumentFilterPanel
         filters={filters}
@@ -183,17 +185,19 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
       />
 
       {/* Search Bar */}
-      <XStack position="relative" alignItems="center">
-        <XStack
-          position="absolute"
-          left="$3"
-          alignItems="center"
-          justifyContent="center"
-          pointerEvents="none"
-          zIndex={1}
+      <Row style={{ position: 'relative', alignItems: 'center' }}>
+        <Row
+          style={{
+            position: 'absolute',
+            left: '12px',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
         >
-          <Search size={16} color="$color10" />
-        </XStack>
+          <Search size={16} color="var(--color-gray-10)" />
+        </Row>
         <Input
           type="text"
           placeholder="Search by filename..."
@@ -208,10 +212,10 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
             paddingBottom: '8px',
           }}
         />
-      </XStack>
+      </Row>
 
       {/* Results Summary */}
-      <XStack alignItems="center" justifyContent="space-between" fontSize="$3" color="$color10">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between', fontSize: '14px', color: 'var(--color-gray-10)' }}>
         <Text>
           {isLoading ? (
             'Loading documents...'
@@ -222,51 +226,61 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
           )}
         </Text>
         {!isLoading && !documentsError && (
-          <XStack
-            as="button"
-            alignItems="center"
-            color="$teal9"
-            hoverStyle={{ color: '$teal11' }}
+          <button
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: 'var(--color-teal-9)',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+            }}
             onClick={handleRetry}
-            cursor="pointer"
           >
             <RefreshCw size={16} />
-            <Text ml="$1">Refresh</Text>
-          </XStack>
+            <Text style={{ marginLeft: '4px' }}>Refresh</Text>
+          </button>
         )}
-      </XStack>
+      </Row>
 
       {/* Error State */}
       {documentsError && (
         <Card
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
-          padding="$4"
+          style={{
+            backgroundColor: 'var(--color-red-2)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-red-6)',
+            borderRadius: '8px',
+            padding: '16px',
+          }}
         >
-          <XStack alignItems="center" mb="$3">
-            <AlertCircle size={20} color="$red10" mr="$2" />
-            <YStack>
-              <Text fontSize="$3" fontWeight="500" color="$red12">
+          <Row style={{ alignItems: 'center', marginBottom: '12px' }}>
+            <AlertCircle size={20} color="var(--color-red-10)" style={{ marginRight: '8px' }} />
+            <Stack>
+              <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-red-12)' }}>
                 Failed to load documents
               </Text>
-              <Text fontSize="$3" color="$red11" mt="$1">
+              <Text style={{ fontSize: '14px', color: 'var(--color-red-11)', marginTop: '4px' }}>
                 {documentsError.message || 'An unexpected error occurred'}
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
           <Button
             onClick={handleRetry}
-            mt="$3"
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            backgroundColor="$red3"
-            color="$red11"
-            hoverStyle={{ backgroundColor: '$red4' }}
-            fontSize="$3"
-            fontWeight="500"
-            borderRadius="$4"
+            style={{
+              marginTop: '12px',
+              paddingLeft: '16px',
+              paddingRight: '16px',
+              paddingTop: '8px',
+              paddingBottom: '8px',
+              backgroundColor: 'var(--color-red-3)',
+              color: 'var(--color-red-11)',
+              fontSize: '14px',
+              fontWeight: 500,
+              borderRadius: '8px',
+            }}
           >
             Try Again
           </Button>
@@ -276,55 +290,61 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
       {/* Loading State */}
       {isLoading && !documentsError && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$8"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '8px',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            padding: '32px',
+          }}
         >
-          <YStack alignItems="center" justifyContent="center" gap="$3">
-            <Spinner size="large" color="$teal9" />
-            <Text fontSize="$3" color="$color10">
+          <Stack style={{ alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+            <Loader2 size={32} color="var(--color-teal-9)" className="animate-spin" />
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray-10)' }}>
               Loading documents...
             </Text>
-          </YStack>
+          </Stack>
         </Card>
       )}
 
       {/* Empty State */}
       {!isLoading && !documentsError && documents.length === 0 && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$8"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '8px',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            padding: '32px',
+          }}
         >
-          <YStack alignItems="center" justifyContent="center" gap="$3">
-            <FileText size={48} color="$color10" />
-            <Text color="$color12" fontWeight="500">
+          <Stack style={{ alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+            <FileText size={48} color="var(--color-gray-10)" />
+            <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
               No documents found
             </Text>
-            <Text fontSize="$3" color="$color10" mt="$1">
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray-10)', marginTop: '4px' }}>
               {Object.keys(filters).length > 0 || searchTerm
                 ? 'Try adjusting your filters or search term'
                 : 'No documents have been uploaded yet'}
             </Text>
-          </YStack>
+          </Stack>
         </Card>
       )}
 
       {/* Document List */}
       {!isLoading && !documentsError && documents.length > 0 && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          overflow="hidden"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '8px',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            overflow: 'hidden',
+          }}
         >
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
@@ -417,7 +437,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
             </thead>
             <tbody>
               {documents.map((document) => {
-                const badgeProps = getStatusBadgeProps(document.status);
+                const badgeStyles = getStatusBadgeStyles(document.status);
                 return (
                   <tr
                     key={document.id}
@@ -434,46 +454,49 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
                     }}
                   >
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <XStack alignItems="center">
-                        <FileText size={20} color="$color10" mr="$3" />
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                      <Row style={{ alignItems: 'center' }}>
+                        <FileText size={20} color="var(--color-gray-10)" style={{ marginRight: '12px' }} />
+                        <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray-12)' }}>
                           {document.filename}
                         </Text>
-                      </XStack>
+                      </Row>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-gray-11)' }}>
                         {DOCUMENT_TYPE_LABELS[document.docType as keyof typeof DOCUMENT_TYPE_LABELS] ||
                           document.docType}
                       </Text>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
                       <Text
-                        display="inline-flex"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        fontSize="$1"
-                        fontWeight="500"
-                        borderRadius={9999}
-                        backgroundColor={badgeProps.bg}
-                        color={badgeProps.text}
+                        style={{
+                          display: 'inline-flex',
+                          paddingLeft: '8px',
+                          paddingRight: '8px',
+                          paddingTop: '4px',
+                          paddingBottom: '4px',
+                          fontSize: '11px',
+                          fontWeight: 500,
+                          borderRadius: '9999px',
+                          ...badgeStyles,
+                        }}
                       >
                         {DOCUMENT_STATUS_LABELS[document.status as keyof typeof DOCUMENT_STATUS_LABELS] ||
                           document.status}
                       </Text>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-gray-11)' }}>
                         {document.clientName}
                       </Text>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-gray-11)' }}>
                         {document.projectName || '-'}
                       </Text>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-gray-11)' }}>
                         {formatDate(document.updatedAt)}
                       </Text>
                     </td>
@@ -484,7 +507,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
           </table>
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

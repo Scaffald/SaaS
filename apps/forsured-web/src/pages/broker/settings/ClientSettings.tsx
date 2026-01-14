@@ -1,6 +1,6 @@
 // src/pages/broker/settings/ClientSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2 } from '@unicornlove/ui';
+import { Stack, Text, Button, H2 } from '@unicornlove/beyond-ui';
 import Checkbox from '../../../ui/Checkbox';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
@@ -40,23 +40,29 @@ function BrokerClientSettings() {
     }
   }, [autoAssignClients, updateBrokerSettings]);
 
+  const skeletonStyle: React.CSSProperties = {
+    height: 40,
+    backgroundColor: 'var(--color-3)',
+    borderRadius: 'var(--radius-4)',
+  };
+
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Client Management Settings</H2>
-        <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
-      </YStack>
+        <div style={skeletonStyle} />
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Client Management Settings</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text muted style={{ marginBottom: 'var(--space-6)' }}>
         Configure how new clients are assigned to you.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Checkbox
             checked={autoAssignClients}
             onChange={(e) => setAutoAssignClients(e.target.checked)}
@@ -66,14 +72,14 @@ function BrokerClientSettings() {
           <Button
             type="submit"
             disabled={!isDirty || isSaving}
-            variant="primary"
-            marginTop="$6"
+            color="primary"
+            style={{ marginTop: 'var(--space-6)' }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

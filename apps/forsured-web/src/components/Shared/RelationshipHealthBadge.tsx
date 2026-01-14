@@ -1,9 +1,9 @@
 /**
- * RelationshipHealthBadge - Relationship health badge using Tamagui
+ * RelationshipHealthBadge - Relationship health badge using Beyond UI
  */
 import React from 'react';
-import { XStack, Text } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Row, Text } from '@unicornlove/beyond-ui';
+import { Chip as Badge } from '@unicornlove/beyond-ui';
 import { TrendingUp, TrendingDown, Minus, CheckCircle } from 'lucide-react';
 
 interface RelationshipHealthBadgeProps {
@@ -56,10 +56,10 @@ export default function RelationshipHealthBadge({
 
   return (
     <Badge variant={variant} size={size}>
-      <XStack alignItems="center" gap="$1">
+      <Row style={{ alignItems: 'center', gap: 4 }}>
         {showIcon && <Icon size={iconSizes[size]} />}
         <Text>{label}</Text>
-      </XStack>
+      </Row>
     </Badge>
   );
 }

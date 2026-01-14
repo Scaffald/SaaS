@@ -1,6 +1,7 @@
 // src/pages/gc/GCContractors.tsx
 import { Users } from 'lucide-react';
-import { YStack, H1, EmptyState } from '@unicornlove/ui';
+import { Stack, H1 } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
 import { useLexicon } from '../../contexts/LexiconContext';
 
 function GCContractors() {
@@ -15,7 +16,7 @@ function GCContractors() {
   const hasContractors = false;
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
       <H1>{getContractorLabel(true)}</H1>
       {!hasContractors ? (
         <EmptyState
@@ -29,9 +30,9 @@ function GCContractors() {
         />
       ) : (
         // Render contractors list here
-        <YStack>{getContractorLabel(true)} List</YStack>
+        <Stack>{getContractorLabel(true)} List</Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

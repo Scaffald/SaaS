@@ -1,10 +1,10 @@
 /**
- * MyManagersPage - My managers page using Tamagui
+ * MyManagersPage - My managers page using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
 import React, { useState } from 'react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
-import { Card } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Button } from '@unicornlove/beyond-ui';
 import { Building, Users, TrendingUp, CheckCircle } from 'lucide-react';
 import RelationshipCard from '../Shared/RelationshipCard';
 
@@ -85,84 +85,87 @@ export default function MyManagersPage() {
   };
 
   return (
-    <YStack gap="$6">
+    <Stack gap={24}>
       {/* Header */}
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="700" color="$color12">
+      <Stack gap={8}>
+        <Text size="2xl" weight="bold">
           My Managers
         </Text>
-        <Text fontSize="$3" color="$color10">
+        <Text size="sm" muted>
           Manage your relationships with general contractors
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Stats Cards */}
-      <XStack flexWrap="wrap" gap="$4">
-        <Card padding="$4" flex={1} minWidth={200}>
-          <XStack alignItems="center" gap="$2" mb="$2">
+      <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+        <Card style={{ padding: 16, flex: 1, minWidth: 200 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <Building size={20} color="currentColor" />
-            <Text fontSize="$2" color="$color10">Total Managers</Text>
-          </XStack>
-          <Text fontSize="$8" fontWeight="700" color="$color12">
+            <Text size="xs" muted>Total Managers</Text>
+          </Row>
+          <Text size="2xl" weight="bold">
             {stats.total}
           </Text>
         </Card>
 
-        <Card padding="$4" flex={1} minWidth={200}>
-          <XStack alignItems="center" gap="$2" mb="$2">
+        <Card style={{ padding: 16, flex: 1, minWidth: 200 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <CheckCircle size={20} color="currentColor" />
-            <Text fontSize="$2" color="$color10">Active</Text>
-          </XStack>
-          <Text fontSize="$8" fontWeight="700" color="$color12">
+            <Text size="xs" muted>Active</Text>
+          </Row>
+          <Text size="2xl" weight="bold">
             {stats.active}
           </Text>
         </Card>
 
-        <Card padding="$4" flex={1} minWidth={200}>
-          <XStack alignItems="center" gap="$2" mb="$2">
+        <Card style={{ padding: 16, flex: 1, minWidth: 200 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <Users size={20} color="currentColor" />
-            <Text fontSize="$2" color="$color10">Total Projects</Text>
-          </XStack>
-          <Text fontSize="$8" fontWeight="700" color="$color12">
+            <Text size="xs" muted>Total Projects</Text>
+          </Row>
+          <Text size="2xl" weight="bold">
             {stats.totalProjects}
           </Text>
         </Card>
 
-        <Card padding="$4" flex={1} minWidth={200}>
-          <XStack alignItems="center" gap="$2" mb="$2">
+        <Card style={{ padding: 16, flex: 1, minWidth: 200 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <TrendingUp size={20} color="currentColor" />
-            <Text fontSize="$2" color="$color10">Avg Compliance</Text>
-          </XStack>
-          <Text fontSize="$8" fontWeight="700" color="$color12">
+            <Text size="xs" muted>Avg Compliance</Text>
+          </Row>
+          <Text size="2xl" weight="bold">
             {stats.avgCompliance}%
           </Text>
         </Card>
-      </XStack>
+      </Row>
 
       {/* Filter Buttons */}
-      <XStack gap="$2">
-        <CoreButton
-          variant={filter === 'all' ? 'primary' : 'outlined'}
+      <Row gap={8}>
+        <Button
+          color={filter === 'all' ? 'primary' : 'gray'}
+          variant={filter === 'all' ? 'filled' : 'outline'}
           onPress={() => setFilter('all')}
         >
           All ({stats.total})
-        </CoreButton>
-        <CoreButton
-          variant={filter === 'active' ? 'primary' : 'outlined'}
+        </Button>
+        <Button
+          color={filter === 'active' ? 'primary' : 'gray'}
+          variant={filter === 'active' ? 'filled' : 'outline'}
           onPress={() => setFilter('active')}
         >
           Active ({stats.active})
-        </CoreButton>
-        <CoreButton
-          variant={filter === 'pending' ? 'primary' : 'outlined'}
+        </Button>
+        <Button
+          color={filter === 'pending' ? 'primary' : 'gray'}
+          variant={filter === 'pending' ? 'filled' : 'outline'}
           onPress={() => setFilter('pending')}
         >
           Pending ({mockRelationships.filter((r) => r.status === 'pending').length})
-        </CoreButton>
-      </XStack>
+        </Button>
+      </Row>
 
       {/* Relationship Cards */}
-      <XStack flexWrap="wrap" gap="$4">
+      <Row style={{ flexWrap: 'wrap', gap: 16 }}>
         {filteredRelationships.map((relationship) => (
           <RelationshipCard
             key={relationship.id}
@@ -178,7 +181,7 @@ export default function MyManagersPage() {
             }}
           />
         ))}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   );
 }

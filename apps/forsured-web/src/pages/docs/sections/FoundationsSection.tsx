@@ -1,5 +1,6 @@
 import React from 'react';
-import { YStack, XStack, View, Text, H1, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Box, Text, H1, H2, H3 } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize, borderRadius, shadows, fontFamily } from '@unicornlove/beyond-ui';
 import ComponentShowcase from '../../../components/DesignSystem/ComponentShowcase';
 import { Palette, Box as BoxIcon, Sun } from 'lucide-react';
 
@@ -33,172 +34,196 @@ export default function FoundationsSection() {
   ];
 
   return (
-    <YStack gap="$8" marginBottom="$12">
-      <XStack alignItems="center" gap="$3" marginBottom="$6">
-        <Palette color="var(--blue10)" size={32} />
-        <H2 fontSize="$9" fontWeight="bold" color="$color12">
+    <Stack style={{ gap: spacing[32], marginBottom: spacing[48] }}>
+      <Row style={{ alignItems: 'center', gap: spacing[12], marginBottom: spacing[24] }}>
+        <Palette color={colors.primary[600]} size={32} />
+        <H2 style={{ fontSize: fontSize.h3, fontWeight: 'bold', color: colors.text.light.primary }}>
           Foundations
         </H2>
-      </XStack>
+      </Row>
 
       <ComponentShowcase
         title="Colors"
         description="Complete color palette with 100-900 weight scales for all brand colors"
       >
-        <XStack width="100%" flexWrap="wrap" gap="$6">
-          {colorRamps.map((color) => (
-            <YStack key={color.var} gap="$2" flex={1} minWidth={200}>
-              <XStack fontWeight="600" color="$color12" marginBottom="$3" alignItems="center" gap="$2">
-                <View
-                  width={24}
-                  height={24}
-                  borderRadius="$2"
-                  shadowRadius={2}
-                  style={{ backgroundColor: color.base }}
-                />
-                <Text>{color.name}</Text>
-              </XStack>
-              <YStack gap="$1">
-                {[100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
-                  <XStack key={weight} alignItems="center" gap="$2">
-                    <View
-                      width={64}
-                      height={32}
-                      borderRadius="$2"
-                      shadowRadius={2}
-                      borderWidth={1}
-                      borderColor="$borderColor"
-                      style={{
-                        backgroundColor: `rgb(var(--color-${color.var}-${weight}))`,
-                      }}
-                    />
-                    <Text fontSize="$2" fontFamily="$mono" color="$color11">
-                      {weight}
-                    </Text>
-                  </XStack>
-                ))}
-              </YStack>
-            </YStack>
-          ))}
-        </XStack>
+        <Row style={{ width: '100%', flexWrap: 'wrap', gap: spacing[24] }}>
+          {colorRamps.map((color) => {
+            const colorMap: Record<string, any> = {
+              primary: colors.primary,
+              secondary: colors.secondary,
+              tertiary: colors.tertiary,
+              success: colors.success,
+              warning: colors.warning,
+              error: colors.error,
+            };
+            const colorScale = colorMap[color.var] || colors.primary;
+            
+            return (
+              <Stack key={color.var} style={{ gap: spacing[8], flex: 1, minWidth: 200 }}>
+                <Row style={{ fontWeight: 600, color: colors.text.light.primary, marginBottom: spacing[12], alignItems: 'center', gap: spacing[8] }}>
+                  <Box
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: borderRadius.xxs,
+                      boxShadow: shadows.s.boxShadow,
+                      backgroundColor: color.base,
+                    }}
+                  />
+                  <Text>{color.name}</Text>
+                </Row>
+                <Stack style={{ gap: spacing[4] }}>
+                  {[100, 200, 300, 400, 500, 600, 700, 800, 900].map((weight) => (
+                    <Row key={weight} style={{ alignItems: 'center', gap: spacing[8] }}>
+                      <Box
+                        style={{
+                          width: 64,
+                          height: 32,
+                          borderRadius: borderRadius.xxs,
+                          boxShadow: shadows.s.boxShadow,
+                          border: `1px solid ${colors.border.light.default}`,
+                          backgroundColor: colorScale[weight as keyof typeof colorScale] || colorScale[500],
+                        }}
+                      />
+                      <Text style={{ fontSize: fontSize.xs, fontFamily: fontFamily.mono, color: colors.text.light.secondary }}>
+                        {weight}
+                      </Text>
+                    </Row>
+                  ))}
+                </Stack>
+              </Stack>
+            );
+          })}
+        </Row>
       </ComponentShowcase>
 
       <ComponentShowcase
         title="Typography"
         description="Font families, sizes, and weights used throughout the system"
       >
-        <YStack width="100%" gap="$6">
-          <View>
-            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$3">
-              Display Font (Rokkitt)
+        <Stack style={{ width: '100%', gap: spacing[24] }}>
+          <Box>
+            <Text style={{ fontSize: fontSize.sm, fontWeight: 600, color: colors.text.light.secondary, marginBottom: spacing[12] }}>
+              Display Font (Roboto Serif)
             </Text>
-            <H1 fontFamily="$display" fontSize="$10" fontWeight="bold" color="$color12">
+            <H1 style={{ fontFamily: fontFamily.serif, fontSize: fontSize.h1, fontWeight: 'bold', color: colors.text.light.primary }}>
               The quick brown fox
             </H1>
-            <H2 fontFamily="$display" fontSize="$9" fontWeight="bold" color="$color12" marginTop="$2">
+            <H2 style={{ fontFamily: fontFamily.serif, fontSize: fontSize.h3, fontWeight: 'bold', color: colors.text.light.primary, marginTop: spacing[8] }}>
               The quick brown fox
             </H2>
-            <H3 fontFamily="$display" fontSize="$8" fontWeight="bold" color="$color12" marginTop="$2">
+            <H3 style={{ fontFamily: fontFamily.serif, fontSize: fontSize.h4, fontWeight: 'bold', color: colors.text.light.primary, marginTop: spacing[8] }}>
               The quick brown fox
             </H3>
-          </View>
-          <View>
-            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$3">
-              Body Font (Inter)
+          </Box>
+          <Box>
+            <Text style={{ fontSize: fontSize.sm, fontWeight: 600, color: colors.text.light.secondary, marginBottom: spacing[12] }}>
+              Body Font (Roboto)
             </Text>
-            <Text fontSize="$6" color="$color12">
+            <Text style={{ fontSize: fontSize.h6, color: colors.text.light.primary }}>
               The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontSize="$4" color="$color12" marginTop="$2">
+            <Text style={{ fontSize: fontSize.lg, color: colors.text.light.primary, marginTop: spacing[8] }}>
               The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontSize="$3" color="$color12" marginTop="$2">
+            <Text style={{ fontSize: fontSize.sm, color: colors.text.light.primary, marginTop: spacing[8] }}>
               The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontSize="$2" color="$color12" marginTop="$2">
+            <Text style={{ fontSize: fontSize.xs, color: colors.text.light.primary, marginTop: spacing[8] }}>
               The quick brown fox jumps over the lazy dog
             </Text>
-          </View>
-        </YStack>
+          </Box>
+        </Stack>
       </ComponentShowcase>
 
       <ComponentShowcase
         title="Spacing System"
         description="8px-based spacing scale for consistent layouts"
       >
-        <YStack width="100%" gap="$2">
-          {spacingScale.map((space) => (
-            <XStack key={space.size} alignItems="center" gap="$4">
-              <Text fontSize="$3" fontFamily="$mono" color="$color11" width={48}>
-                {space.class}
-              </Text>
-              <View
-                backgroundColor="$blue4"
-                style={{ width: space.value, height: 32 }}
-              />
-              <Text fontSize="$3" color="$color10">{space.value}</Text>
-            </XStack>
-          ))}
-        </YStack>
+        <Stack style={{ width: '100%', gap: spacing[8] }}>
+          {spacingScale.map((space) => {
+            const spacingValue = spacing[parseInt(space.size) * 4 as keyof typeof spacing] || 0;
+            return (
+              <Row key={space.size} style={{ alignItems: 'center', gap: spacing[16] }}>
+                <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.mono, color: colors.text.light.secondary, width: 48 }}>
+                  {space.class}
+                </Text>
+                <Box
+                  style={{
+                    backgroundColor: colors.primary[100],
+                    width: spacingValue,
+                    height: 32,
+                  }}
+                />
+                <Text style={{ fontSize: fontSize.sm, color: colors.text.light.tertiary }}>{space.value}</Text>
+              </Row>
+            );
+          })}
+        </Stack>
       </ComponentShowcase>
 
       <ComponentShowcase
         title="Shadows"
         description="Elevation system using box shadows"
       >
-        <XStack width="100%" flexWrap="wrap" gap="$6">
-          {shadows.map((shadow, index) => (
-            <YStack key={shadow.name} alignItems="center" flex={1} minWidth={140}>
-              <View
-                width="100%"
-                height={96}
-                backgroundColor="$background"
-                borderRadius="$4"
-                shadowRadius={index === 0 ? 2 : index === 1 ? 4 : index === 2 ? 8 : 12}
-                shadowColor="$shadowColor"
-                shadowOffset={{ width: 0, height: index + 1 }}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Text fontSize="$3" fontWeight="500" color="$color12">
-                  {shadow.name}
+        <Row style={{ width: '100%', flexWrap: 'wrap', gap: spacing[24] }}>
+          {shadows.map((shadow, index) => {
+            const shadowMap = [shadows.xs, shadows.s, shadows.m, shadows.l];
+            const currentShadow = shadowMap[index] || shadows.s;
+            return (
+              <Stack key={shadow.name} style={{ alignItems: 'center', flex: 1, minWidth: 140 }}>
+                <Box
+                  style={{
+                    width: '100%',
+                    height: 96,
+                    backgroundColor: colors.bg.light.default,
+                    borderRadius: borderRadius.s,
+                    boxShadow: currentShadow.boxShadow,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text style={{ fontSize: fontSize.sm, fontWeight: 500, color: colors.text.light.primary }}>
+                    {shadow.name}
+                  </Text>
+                </Box>
+                <Text style={{ fontSize: fontSize.xs, color: colors.text.light.secondary, marginTop: spacing[8], fontFamily: fontFamily.mono }}>
+                  {shadow.class}
                 </Text>
-              </View>
-              <Text fontSize="$2" color="$color11" marginTop="$2" fontFamily="$mono">
-                {shadow.class}
-              </Text>
-            </YStack>
-          ))}
-        </XStack>
+              </Stack>
+            );
+          })}
+        </Row>
       </ComponentShowcase>
 
       <ComponentShowcase
         title="Themes"
         description="Light, Dark, and Earth theme variations"
       >
-        <YStack width="100%" gap="$4">
-          <XStack flexWrap="wrap" gap="$4">
-            <View flex={1} minWidth={180} backgroundColor="white" borderWidth={1} borderColor="$gray6" borderRadius="$4" padding="$4" alignItems="center">
+        <Stack style={{ width: '100%', gap: spacing[16] }}>
+          <Row style={{ flexWrap: 'wrap', gap: spacing[16] }}>
+            <Box style={{ flex: 1, minWidth: 180, backgroundColor: colors.bg.light.default, border: `1px solid ${colors.gray[300]}`, borderRadius: borderRadius.s, padding: spacing[16], display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Sun color="#eab308" size={32} />
-              <Text fontWeight="600" color="$gray12" marginTop="$2">Light Theme</Text>
-              <Text fontSize="$2" color="$gray11" marginTop="$1">Clean and bright</Text>
-            </View>
-            <View flex={1} minWidth={180} backgroundColor="$gray12" borderWidth={1} borderColor="$gray10" borderRadius="$4" padding="$4" alignItems="center">
+              <Text style={{ fontWeight: 600, color: colors.gray[900], marginTop: spacing[8] }}>Light Theme</Text>
+              <Text style={{ fontSize: fontSize.xs, color: colors.gray[700], marginTop: spacing[4] }}>Clean and bright</Text>
+            </Box>
+            <Box style={{ flex: 1, minWidth: 180, backgroundColor: colors.gray[900], border: `1px solid ${colors.gray[600]}`, borderRadius: borderRadius.s, padding: spacing[16], display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Sun color="#60a5fa" size={32} />
-              <Text fontWeight="600" color="white" marginTop="$2">Dark Theme</Text>
-              <Text fontSize="$2" color="$gray8" marginTop="$1">Low-light optimized</Text>
-            </View>
-            <View flex={1} minWidth={180} backgroundColor="$orange2" borderWidth={1} borderColor="$orange6" borderRadius="$4" padding="$4" alignItems="center">
+              <Text style={{ fontWeight: 600, color: 'white', marginTop: spacing[8] }}>Dark Theme</Text>
+              <Text style={{ fontSize: fontSize.xs, color: colors.gray[400], marginTop: spacing[4] }}>Low-light optimized</Text>
+            </Box>
+            <Box style={{ flex: 1, minWidth: 180, backgroundColor: colors.secondary[50], border: `1px solid ${colors.secondary[300]}`, borderRadius: borderRadius.s, padding: spacing[16], display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Sun color="#ea580c" size={32} />
-              <Text fontWeight="600" color="$orange12" marginTop="$2">Earth Theme</Text>
-              <Text fontSize="$2" color="$orange11" marginTop="$1">Warm and natural</Text>
-            </View>
-          </XStack>
-          <Text fontSize="$3" color="$color11" textAlign="center">
+              <Text style={{ fontWeight: 600, color: colors.secondary[900], marginTop: spacing[8] }}>Earth Theme</Text>
+              <Text style={{ fontSize: fontSize.xs, color: colors.secondary[700], marginTop: spacing[4] }}>Warm and natural</Text>
+            </Box>
+          </Row>
+          <Text style={{ fontSize: fontSize.sm, color: colors.text.light.secondary, textAlign: 'center' }}>
             Use the theme switcher in the top right to preview all themes
           </Text>
-        </YStack>
+        </Stack>
       </ComponentShowcase>
-    </YStack>
+    </Stack>
   );
 }

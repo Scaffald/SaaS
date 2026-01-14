@@ -1,51 +1,44 @@
 /**
- * Login Page Component - Using Tamagui
+ * Login Page Component - Using Beyond UI
  * REQ-126: OAuth 2.0 + RBAC Authentication System
  * REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
  */
 import type React from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { YStack, XStack, Text, styled } from '@unicornlove/ui'
-import { Button as CoreButton } from '@unicornlove/ui'
-import { Spinner } from '@unicornlove/ui'
+import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui'
+import { colors, spacing, fontSize, borderRadius, shadows } from '@unicornlove/beyond-ui'
+import { Loader2 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 import type { AuthError } from '../../lib/auth/types'
 
-const PageContainer = styled(YStack, {
-  name: 'LoginPageContainer',
+const pageContainerStyle: React.CSSProperties = {
   minHeight: '100vh',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: '$background',
-})
+  backgroundColor: colors.bg.light.default,
+}
 
-const CardContainer = styled(YStack, {
-  name: 'LoginCardContainer',
-  maxWidth: 448,
+const cardContainerStyle: React.CSSProperties = {
+  maxWidth: '448px',
   width: '100%',
-  gap: '$8',
-  padding: '$10',
-  backgroundColor: '$backgroundHover',
-  borderRadius: '$5',
-  shadowColor: '$shadowColor',
-  shadowRadius: 20,
-  shadowOffset: { width: 0, height: 10 },
-})
+  gap: spacing[32],
+  padding: spacing[40],
+  backgroundColor: colors.bg.light.hover,
+  borderRadius: borderRadius.l,
+  boxShadow: shadows.l.boxShadow,
+}
 
-const LogoContainer = styled(YStack, {
-  name: 'LogoContainer',
+const logoContainerStyle: React.CSSProperties = {
   width: 64,
   height: 64,
-  backgroundColor: '$blue9',
-  borderRadius: '$5',
+  backgroundColor: colors.primary[500],
+  borderRadius: borderRadius.l,
   alignItems: 'center',
   justifyContent: 'center',
-  shadowColor: '$shadowColor',
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 4 },
-})
+  boxShadow: shadows.m.boxShadow,
+}
 
 /**
  * Test user credentials (seeded in database via migration 248)
@@ -131,186 +124,200 @@ export const LoginPage: React.FC = () => {
   }
 
   return (
-    <PageContainer>
-      <CardContainer>
+    <Stack style={pageContainerStyle}>
+      <Stack style={cardContainerStyle}>
         {/* Logo and Header */}
-        <YStack alignItems="center" gap="$6">
-          <LogoContainer>
-            <Text fontSize="$10" fontWeight="700" color="$color1">
+        <Stack style={{ alignItems: 'center', gap: spacing[24] }}>
+          <Stack style={logoContainerStyle}>
+            <Text style={{ fontSize: fontSize.h4, fontWeight: 700, color: colors.bg.light.default }}>
               F
             </Text>
-          </LogoContainer>
-          <Text fontSize="$9" fontWeight="700" color="$color12">
+          </Stack>
+          <Text style={{ fontSize: fontSize.h4, fontWeight: 700, color: colors.text.light.primary }}>
             Welcome to ForSured
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ fontSize: fontSize.xs, color: colors.text.light.tertiary }}>
             Construction compliance made simple
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Error Message */}
         {error && (
-          <YStack
-            backgroundColor="$red2"
-            borderWidth={1}
-            borderColor="$red6"
-            borderRadius="$3"
-            padding="$4"
-            gap="$3"
+          <Stack
+            style={{
+              backgroundColor: colors.error[50],
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: colors.error[300],
+              borderRadius: borderRadius.s,
+              padding: spacing[16],
+              gap: spacing[12],
+            }}
           >
-            <XStack gap="$3">
-              <YStack flexShrink={0}>
-                <Text fontSize="$4" color="$red9">
+            <Row style={{ gap: spacing[12] }}>
+              <Stack style={{ flexShrink: 0 }}>
+                <Text style={{ fontSize: fontSize.md, color: colors.error[500] }}>
                   ✕
                 </Text>
-              </YStack>
-              <YStack flex={1} gap="$1">
-                <Text fontSize="$2" fontWeight="500" color="$red11">
+              </Stack>
+              <Stack style={{ flex: 1, gap: spacing[4] }}>
+                <Text style={{ fontSize: fontSize.xs, fontWeight: 500, color: colors.error[700] }}>
                   Authentication Failed
                 </Text>
-                <Text fontSize="$2" color="$red10">
+                <Text style={{ fontSize: fontSize.xs, color: colors.error[600] }}>
                   {error?.message || 'An unknown error occurred'}
                 </Text>
-              </YStack>
-            </XStack>
-          </YStack>
+              </Stack>
+            </Row>
+          </Stack>
         )}
 
         {/* Login Button */}
-        <YStack gap="$4">
-          <CoreButton
+        <Stack style={{ gap: spacing[16] }}>
+          <Button
             onPress={handleLogin}
             disabled={isLoggingIn || isLoading}
-            variant="primary"
+            variant="filled"
+            color="primary"
             fullWidth
-            size="$4"
+            size="lg"
           >
             {isLoggingIn || isLoading ? (
-              <XStack alignItems="center" gap="$2">
-                <Spinner size="small" color="$color1" />
+              <Row style={{ alignItems: 'center', gap: spacing[8] }}>
+                <Loader2 className="animate-spin" size={16} color={colors.bg.light.default} />
                 <Text>Signing in...</Text>
-              </XStack>
+              </Row>
             ) : (
-              <XStack alignItems="center" gap="$2">
+              <Row style={{ alignItems: 'center', gap: spacing[8] }}>
                 <Text>→</Text>
                 <Text>Sign in with Scaffald</Text>
-              </XStack>
+              </Row>
             )}
-          </CoreButton>
+          </Button>
 
           {/* Information */}
-          <YStack
-            backgroundColor="$blue2"
-            borderWidth={1}
-            borderColor="$blue6"
-            borderRadius="$3"
-            padding="$4"
-            gap="$3"
+          <Stack
+            style={{
+              backgroundColor: colors.primary[50],
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: colors.primary[300],
+              borderRadius: borderRadius.s,
+              padding: spacing[16],
+              gap: spacing[12],
+            }}
           >
-            <XStack gap="$3">
-              <YStack flexShrink={0}>
-                <Text fontSize="$4" color="$blue9">
+            <Row style={{ gap: spacing[12] }}>
+              <Stack style={{ flexShrink: 0 }}>
+                <Text style={{ fontSize: fontSize.md, color: colors.primary[500] }}>
                   ℹ
                 </Text>
-              </YStack>
-              <Text fontSize="$2" color="$blue11" flex={1}>
+              </Stack>
+              <Text style={{ fontSize: fontSize.xs, color: colors.primary[700], flex: 1 }}>
                 You'll be redirected to Scaffald to sign in with your existing credentials.
               </Text>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {/* TEMPORARY: Test Login Buttons */}
-          <YStack
-            mt="$4"
-            padding="$4"
-            backgroundColor="$yellow2"
-            borderWidth={1}
-            borderColor="$yellow6"
-            borderRadius="$3"
-            gap="$3"
+          <Stack
+            style={{
+              marginTop: spacing[16],
+              padding: spacing[16],
+              backgroundColor: colors.warning[50],
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: colors.warning[300],
+              borderRadius: borderRadius.s,
+              gap: spacing[12],
+            }}
           >
-            <Text fontSize="$3" fontWeight="600" color="$yellow11">
+            <Text style={{ fontSize: fontSize.sm, fontWeight: 600, color: colors.warning[700] }}>
               🧪 Temporary Test Login
             </Text>
-            <Text fontSize="$2" color="$yellow10">
+            <Text style={{ fontSize: fontSize.xs, color: colors.warning[600] }}>
               Real Supabase login with seeded test users. Run migrations first.
             </Text>
-            <YStack gap="$2" mt="$2">
-              <CoreButton
+            <Stack style={{ gap: spacing[8], marginTop: spacing[8] }}>
+              <Button
                 onPress={() => handleTestLogin('gc')}
-                variant="secondary"
+                variant="outline"
+                color="gray"
                 fullWidth
-                size="$3"
+                size="md"
                 disabled={testLoginLoading !== null}
               >
                 {testLoginLoading === 'gc' ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Spinner size="small" />
+                  <Row style={{ gap: spacing[8], alignItems: 'center' }}>
+                    <Loader2 className="animate-spin" size={16} />
                     <Text>Signing in...</Text>
-                  </XStack>
+                  </Row>
                 ) : (
                   <Text>Test as GC / Manager</Text>
                 )}
-              </CoreButton>
-              <CoreButton
+              </Button>
+              <Button
                 onPress={() => handleTestLogin('contractor')}
-                variant="secondary"
+                variant="outline"
+                color="gray"
                 fullWidth
-                size="$3"
+                size="md"
                 disabled={testLoginLoading !== null}
               >
                 {testLoginLoading === 'contractor' ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Spinner size="small" />
+                  <Row style={{ gap: spacing[8], alignItems: 'center' }}>
+                    <Loader2 className="animate-spin" size={16} />
                     <Text>Signing in...</Text>
-                  </XStack>
+                  </Row>
                 ) : (
                   <Text>Test as Contractor / Subcontractor</Text>
                 )}
-              </CoreButton>
-              <CoreButton
+              </Button>
+              <Button
                 onPress={() => handleTestLogin('broker')}
-                variant="secondary"
+                variant="outline"
+                color="gray"
                 fullWidth
-                size="$3"
+                size="md"
                 disabled={testLoginLoading !== null}
               >
                 {testLoginLoading === 'broker' ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Spinner size="small" />
+                  <Row style={{ gap: spacing[8], alignItems: 'center' }}>
+                    <Loader2 className="animate-spin" size={16} />
                     <Text>Signing in...</Text>
-                  </XStack>
+                  </Row>
                 ) : (
                   <Text>Test as Broker</Text>
                 )}
-              </CoreButton>
-              <CoreButton
+              </Button>
+              <Button
                 onPress={() => handleTestLogin('admin')}
-                variant="secondary"
+                variant="outline"
+                color="gray"
                 fullWidth
-                size="$3"
+                size="md"
                 disabled={testLoginLoading !== null}
               >
                 {testLoginLoading === 'admin' ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Spinner size="small" />
+                  <Row style={{ gap: spacing[8], alignItems: 'center' }}>
+                    <Loader2 className="animate-spin" size={16} />
                     <Text>Signing in...</Text>
-                  </XStack>
+                  </Row>
                 ) : (
                   <Text>Test as Admin</Text>
                 )}
-              </CoreButton>
-            </YStack>
-          </YStack>
-        </YStack>
+              </Button>
+            </Stack>
+          </Stack>
+        </Stack>
 
         {/* Security Notice */}
-        <YStack mt="$6">
-          <Text fontSize="$1" style={{ textAlign: 'center' }} color="$color9">
+        <Stack style={{ marginTop: spacing[24] }}>
+          <Text style={{ fontSize: fontSize.xs, textAlign: 'center', color: colors.text.light.tertiary }}>
             Secured with OAuth 2.0 + PKCE
           </Text>
-        </YStack>
-      </CardContainer>
-    </PageContainer>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

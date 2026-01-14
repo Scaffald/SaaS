@@ -7,7 +7,7 @@
  * - Export: Format selection, filters, download
  */
 
-import { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import {
   X,
   Upload,
@@ -19,13 +19,13 @@ import {
   Loader2,
 } from 'lucide-react'
 import {
-  YStack,
-  XStack,
+  Stack,
+  Row,
   Text,
   Input,
   Button,
   H2,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import { trpc } from '../../../lib/trpc'
 import { LoadingSpinner } from '../../Common/LoadingSpinner'
 
@@ -254,117 +254,128 @@ export function BulkOperationsModal({
   if (!isOpen) return null
 
   return (
-    <YStack
-      position="fixed"
-      inset={0}
-      zIndex={50}
-      alignItems="center"
-      justifyContent="center"
+    <Stack
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
     >
       {/* Backdrop */}
-      <YStack
-        position="absolute"
-        inset={0}
-        backgroundColor="rgba(0,0,0,0.5)"
-        onPress={handleClose}
+      <Stack
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        }}
+        onClick={handleClose}
       />
 
       {/* Modal */}
-      <YStack
-        position="relative"
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={4}
-        width="100%"
-        maxWidth="42rem"
-        maxHeight="90vh"
-        overflow="scroll"
+      <Stack
+        style={{
+          position: 'relative',
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          width: '100%',
+          maxWidth: '42rem',
+          maxHeight: '90vh',
+          overflow: 'auto',
+        }}
       >
         {/* Header */}
-        <XStack
-          position="sticky"
-          top={0}
-          backgroundColor="$background"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
-          paddingHorizontal="$6"
-          paddingVertical="$4"
-          alignItems="center"
-          justifyContent="space-between"
+        <Row
+          style={{
+            position: 'sticky',
+            top: 0,
+            backgroundColor: 'var(--color-background)',
+            borderBottom: '1px solid var(--color-border)',
+            paddingLeft: 24,
+            paddingRight: 24,
+            paddingTop: 16,
+            paddingBottom: 16,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
-          <XStack alignItems="center" gap="$2">
+          <Row style={{ alignItems: 'center', gap: 8 }}>
             {mode === 'import' ? (
               <Upload size={20} style={{ color: 'var(--color-blue-10)' }} />
             ) : (
               <Download size={20} style={{ color: 'var(--color-green-10)' }} />
             )}
-            <H2 fontWeight="600">
+            <H2 style={{ fontWeight: 600 }}>
               {mode === 'import' ? 'Import Requirements' : 'Export Requirements'}
             </H2>
-          </XStack>
+          </Row>
           <Button
-            unstyled
-            padding="$2"
-            color="$gray10"
-            hoverStyle={{ color: '$gray12', backgroundColor: '$gray2' }}
-            borderRadius="$2"
-            onPress={handleClose}
+            variant="ghost"
+            style={{ padding: 8, color: 'var(--color-gray-10)', borderRadius: 6 }}
+            onClick={handleClose}
           >
             <X size={20} />
           </Button>
-        </XStack>
+        </Row>
 
         {/* Content */}
-        <YStack padding="$6">
+        <Stack style={{ padding: 24 }}>
           {mode === 'import' ? (
             /* Import Mode */
-            <YStack gap="$6">
+            <Stack style={{ gap: 24 }}>
               {importSuccess ? (
                 /* Success State */
-                <YStack alignItems="center" paddingVertical="$8">
-                  <YStack
-                    width={64}
-                    height={64}
-                    backgroundColor="$green2"
-                    borderRadius={9999}
-                    alignItems="center"
-                    justifyContent="center"
-                    mb="$4"
+                <Stack style={{ alignItems: 'center', paddingTop: 32, paddingBottom: 32 }}>
+                  <Stack
+                    style={{
+                      width: 64,
+                      height: 64,
+                      backgroundColor: 'var(--color-green-2)',
+                      borderRadius: '50%',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 16,
+                    }}
                   >
                     <Check size={32} style={{ color: 'var(--color-green-10)' }} />
-                  </YStack>
-                  <Text fontSize="$5" fontWeight="600" color="$green10" mb="$2">
+                  </Stack>
+                  <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-green-10)', marginBottom: 8 }}>
                     Import Successful!
                   </Text>
-                  <Text color="$gray11" mb="$4">
+                  <Text style={{ color: 'var(--color-gray-11)', marginBottom: 16 }}>
                     {importPreview?.validRows} requirements have been imported.
                   </Text>
-                  <Button onPress={handleClose}>Done</Button>
-                </YStack>
+                  <Button onClick={handleClose}>Done</Button>
+                </Stack>
               ) : (
                 <>
                   {/* Format Selection */}
-                  <YStack>
-                    <Text fontSize="$3" fontWeight="600" color="$color11" mb="$2">
+                  <Stack>
+                    <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 8 }}>
                       File Format
                     </Text>
-                    <XStack gap="$4">
+                    <Row style={{ gap: 16 }}>
                       {(['csv', 'json'] as ImportFormat[]).map((format) => (
                         <Button
                           key={format}
-                          unstyled
-                          flexDirection="row"
-                          alignItems="center"
-                          gap="$2"
-                          paddingHorizontal="$4"
-                          paddingVertical="$2"
-                          borderWidth={1}
-                          borderRadius="$4"
-                          borderColor={importFormat === format ? '$blue8' : '$gray8'}
-                          backgroundColor={importFormat === format ? '$blue2' : 'transparent'}
-                          hoverStyle={{ backgroundColor: '$gray2' }}
-                          cursor="pointer"
-                          onPress={() => setImportFormat(format)}
+                          variant="ghost"
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 8,
+                            paddingLeft: 16,
+                            paddingRight: 16,
+                            paddingTop: 8,
+                            paddingBottom: 8,
+                            borderWidth: 1,
+                            borderRadius: 12,
+                            borderColor: importFormat === format ? 'var(--color-blue-8)' : 'var(--color-gray-8)',
+                            backgroundColor: importFormat === format ? 'var(--color-blue-2)' : 'transparent',
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => setImportFormat(format)}
                         >
                           <input
                             type="radio"
@@ -375,43 +386,43 @@ export function BulkOperationsModal({
                             style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
                           />
                           <FileText size={18} />
-                          <Text fontWeight="600" textTransform="uppercase">{format}</Text>
+                          <Text style={{ fontWeight: 600, textTransform: 'uppercase' }}>{format}</Text>
                         </Button>
                       ))}
-                    </XStack>
-                  </YStack>
+                    </Row>
+                  </Stack>
 
                   {/* Template Download */}
-                  <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$blue2" borderRadius="$4">
+                  <Row style={{ alignItems: 'center', gap: 8, padding: 12, backgroundColor: 'var(--color-blue-2)', borderRadius: 12 }}>
                     <FileText size={18} style={{ color: 'var(--color-blue-10)' }} />
-                    <Text fontSize="$3" color="$blue11">
+                    <Text style={{ fontSize: 14, color: 'var(--color-blue-11)' }}>
                       Need a template?{' '}
                       <Button
-                        unstyled
-                        textDecorationLine="underline"
-                        hoverStyle={{ textDecorationLine: 'none' }}
-                        onPress={handleDownloadTemplate}
+                        variant="ghost"
+                        style={{ textDecoration: 'underline', padding: 0 }}
+                        onClick={handleDownloadTemplate}
                       >
                         <Text>Download {importFormat.toUpperCase()} template</Text>
                       </Button>
                     </Text>
-                  </XStack>
+                  </Row>
 
                   {/* File Upload */}
-                  <YStack>
-                    <Text fontSize="$3" fontWeight="600" color="$color11" mb="$2">
+                  <Stack>
+                    <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 8 }}>
                       Upload File
                     </Text>
-                    <YStack
-                      borderWidth={2}
-                      borderStyle="dashed"
-                      borderColor="$gray8"
-                      borderRadius="$4"
-                      padding="$8"
-                      alignItems="center"
-                      cursor="pointer"
-                      hoverStyle={{ borderColor: '$blue8', backgroundColor: '$blue2' }}
-                      onPress={() => fileInputRef.current?.click()}
+                    <Stack
+                      style={{
+                        borderWidth: 2,
+                        borderStyle: 'dashed',
+                        borderColor: 'var(--color-gray-8)',
+                        borderRadius: 12,
+                        padding: 32,
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => fileInputRef.current?.click()}
                     >
                       <input
                         ref={fileInputRef}
@@ -424,147 +435,153 @@ export function BulkOperationsModal({
                         style={{ display: 'none' }}
                       />
                       {importFile ? (
-                        <XStack alignItems="center" justifyContent="center" gap="$2">
+                        <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                           <FileText size={24} style={{ color: 'var(--color-blue-10)' }} />
-                          <Text fontWeight="600">{importFile.name}</Text>
-                        </XStack>
+                          <Text style={{ fontWeight: 600 }}>{importFile.name}</Text>
+                        </Row>
                       ) : (
-                        <YStack alignItems="center">
-                          <YStack mb="$2">
+                        <Stack style={{ alignItems: 'center' }}>
+                          <Stack style={{ marginBottom: 8 }}>
                             <Upload size={32} style={{ color: 'var(--color-gray-10)' }} />
-                          </YStack>
-                          <Text color="$gray11">Click to select a file or drag and drop</Text>
-                          <Text fontSize="$2" color="$gray10" mt="$1">
+                          </Stack>
+                          <Text style={{ color: 'var(--color-gray-11)' }}>Click to select a file or drag and drop</Text>
+                          <Text style={{ fontSize: 12, color: 'var(--color-gray-10)', marginTop: 4 }}>
                             {importFormat.toUpperCase()} files only
                           </Text>
-                        </YStack>
+                        </Stack>
                       )}
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
 
                   {/* Validation Progress */}
                   {isValidating && (
-                    <XStack alignItems="center" gap="$2" color="$gray11">
-                      <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                    <Row style={{ alignItems: 'center', gap: 8, color: 'var(--color-gray-11)' }}>
+                      <Loader2 size={18} className="animate-spin" />
                       <Text>Validating file...</Text>
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Error */}
                   {importError && (
-                    <XStack
-                      alignItems="flex-start"
-                      gap="$3"
-                      padding="$4"
-                      backgroundColor="$red2"
-                      borderWidth={1}
-                      borderColor="$red6"
-                      borderRadius="$4"
-                      color="$red10"
+                    <Row
+                      style={{
+                        alignItems: 'flex-start',
+                        gap: 12,
+                        padding: 16,
+                        backgroundColor: 'var(--color-red-2)',
+                        borderWidth: 1,
+                        borderColor: 'var(--color-red-6)',
+                        borderRadius: 12,
+                        color: 'var(--color-red-10)',
+                      }}
                     >
-                      <YStack flexShrink={0} mt="$0.5">
+                      <Stack style={{ flexShrink: 0, marginTop: 2 }}>
                         <AlertCircle size={20} style={{ color: 'var(--color-red-10)' }} />
-                      </YStack>
-                      <YStack>
-                        <Text fontWeight="600">Validation Error</Text>
-                        <Text fontSize="$3">{importError}</Text>
-                      </YStack>
-                    </XStack>
+                      </Stack>
+                      <Stack>
+                        <Text style={{ fontWeight: 600 }}>Validation Error</Text>
+                        <Text style={{ fontSize: 14 }}>{importError}</Text>
+                      </Stack>
+                    </Row>
                   )}
 
                   {/* Preview */}
                   {importPreview && (
-                    <YStack gap="$4">
-                      <Text fontWeight="600">Preview</Text>
+                    <Stack style={{ gap: 16 }}>
+                      <Text style={{ fontWeight: 600 }}>Preview</Text>
 
                       {/* Summary */}
-                      <XStack gap="$4" flexWrap="wrap">
-                        <YStack flex={1} minWidth="120px" padding="$3" backgroundColor="$gray2" borderRadius="$4" alignItems="center">
-                          <Text fontSize="$9" fontWeight="700">{importPreview.totalRows}</Text>
-                          <Text fontSize="$3" color="$gray11">Total Rows</Text>
-                        </YStack>
-                        <YStack flex={1} minWidth="120px" padding="$3" backgroundColor="$green2" borderRadius="$4" alignItems="center">
-                          <Text fontSize="$9" fontWeight="700" color="$green10">
+                      <Row style={{ gap: 16, flexWrap: 'wrap' }}>
+                        <Stack style={{ flex: 1, minWidth: 120, padding: 12, backgroundColor: 'var(--color-gray-2)', borderRadius: 12, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 28, fontWeight: 700 }}>{importPreview.totalRows}</Text>
+                          <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>Total Rows</Text>
+                        </Stack>
+                        <Stack style={{ flex: 1, minWidth: 120, padding: 12, backgroundColor: 'var(--color-green-2)', borderRadius: 12, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-green-10)' }}>
                             {importPreview.validRows}
                           </Text>
-                          <Text fontSize="$3" color="$green10">Valid</Text>
-                        </YStack>
-                        <YStack flex={1} minWidth="120px" padding="$3" backgroundColor="$yellow2" borderRadius="$4" alignItems="center">
-                          <Text fontSize="$9" fontWeight="700" color="$yellow10">
+                          <Text style={{ fontSize: 14, color: 'var(--color-green-10)' }}>Valid</Text>
+                        </Stack>
+                        <Stack style={{ flex: 1, minWidth: 120, padding: 12, backgroundColor: 'var(--color-yellow-2)', borderRadius: 12, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-yellow-10)' }}>
                             {importPreview.warningRows}
                           </Text>
-                          <Text fontSize="$3" color="$yellow10">Warnings</Text>
-                        </YStack>
-                        <YStack flex={1} minWidth="120px" padding="$3" backgroundColor="$red2" borderRadius="$4" alignItems="center">
-                          <Text fontSize="$9" fontWeight="700" color="$red10">
+                          <Text style={{ fontSize: 14, color: 'var(--color-yellow-10)' }}>Warnings</Text>
+                        </Stack>
+                        <Stack style={{ flex: 1, minWidth: 120, padding: 12, backgroundColor: 'var(--color-red-2)', borderRadius: 12, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-red-10)' }}>
                             {importPreview.errorRows}
                           </Text>
-                          <Text fontSize="$3" color="$red10">Errors</Text>
-                        </YStack>
-                      </XStack>
+                          <Text style={{ fontSize: 14, color: 'var(--color-red-10)' }}>Errors</Text>
+                        </Stack>
+                      </Row>
 
                       {/* Row Details */}
                       {importPreview.rows.filter(
                         (r) => r.errors.length > 0 || r.warnings.length > 0
                       ).length > 0 && (
-                        <YStack maxHeight="12rem" overflow="scroll" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
+                        <Stack style={{ maxHeight: '12rem', overflow: 'auto', borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 12 }}>
                           {importPreview.rows
                             .filter((r) => r.errors.length > 0 || r.warnings.length > 0)
                             .map((row) => (
-                              <YStack
+                              <Stack
                                 key={row.row}
-                                padding="$3"
-                                borderBottomWidth={1}
-                                borderColor="$borderColor"
-                                backgroundColor={row.errors.length > 0 ? '$red2' : '$yellow2'}
+                                style={{
+                                  padding: 12,
+                                  borderBottom: '1px solid var(--color-border)',
+                                  backgroundColor: row.errors.length > 0 ? 'var(--color-red-2)' : 'var(--color-yellow-2)',
+                                }}
                               >
-                                <Text fontWeight="600" fontSize="$3">Row {row.row}</Text>
+                                <Text style={{ fontWeight: 600, fontSize: 14 }}>Row {row.row}</Text>
                                 {row.errors.map((err, i) => (
-                                  <XStack key={i} alignItems="center" gap="$1" mt="$1">
+                                  <Row key={i} style={{ alignItems: 'center', gap: 4, marginTop: 4 }}>
                                     <AlertCircle size={14} style={{ color: 'var(--color-red-10)' }} />
-                                    <Text fontSize="$3" color="$red10">{err}</Text>
-                                  </XStack>
+                                    <Text style={{ fontSize: 14, color: 'var(--color-red-10)' }}>{err}</Text>
+                                  </Row>
                                 ))}
                                 {row.warnings.map((warn, i) => (
-                                  <XStack key={i} alignItems="center" gap="$1" mt="$1">
+                                  <Row key={i} style={{ alignItems: 'center', gap: 4, marginTop: 4 }}>
                                     <AlertTriangle size={14} style={{ color: 'var(--color-yellow-10)' }} />
-                                    <Text fontSize="$3" color="$yellow10">{warn}</Text>
-                                  </XStack>
+                                    <Text style={{ fontSize: 14, color: 'var(--color-yellow-10)' }}>{warn}</Text>
+                                  </Row>
                                 ))}
-                              </YStack>
+                              </Stack>
                             ))}
-                        </YStack>
+                        </Stack>
                       )}
-                    </YStack>
+                    </Stack>
                   )}
                 </>
               )}
-            </YStack>
+            </Stack>
           ) : (
             /* Export Mode */
-            <YStack gap="$6">
+            <Stack style={{ gap: 24 }}>
               {/* Format Selection */}
-              <YStack>
-                <Text fontSize="$3" fontWeight="600" color="$color11" mb="$2">
+              <Stack>
+                <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)', marginBottom: 8 }}>
                   Export Format
                 </Text>
-                <XStack gap="$4">
+                <Row style={{ gap: 16 }}>
                   {(['csv', 'json', 'excel'] as ExportFormat[]).map((format) => (
                     <Button
                       key={format}
-                      unstyled
-                      flexDirection="row"
-                      alignItems="center"
-                      gap="$2"
-                      paddingHorizontal="$4"
-                      paddingVertical="$2"
-                      borderWidth={1}
-                      borderRadius="$4"
-                      borderColor={exportFormat === format ? '$green8' : '$gray8'}
-                      backgroundColor={exportFormat === format ? '$green2' : 'transparent'}
-                      hoverStyle={{ backgroundColor: '$gray2' }}
-                      cursor="pointer"
-                      onPress={() => setExportFormat(format)}
+                      variant="ghost"
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 8,
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        paddingTop: 8,
+                        paddingBottom: 8,
+                        borderWidth: 1,
+                        borderRadius: 12,
+                        borderColor: exportFormat === format ? 'var(--color-green-8)' : 'var(--color-gray-8)',
+                        backgroundColor: exportFormat === format ? 'var(--color-green-2)' : 'transparent',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => setExportFormat(format)}
                     >
                       <input
                         type="radio"
@@ -575,130 +592,138 @@ export function BulkOperationsModal({
                         style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
                       />
                       <FileText size={18} />
-                      <Text fontWeight="600" textTransform="uppercase">{format}</Text>
+                      <Text style={{ fontWeight: 600, textTransform: 'uppercase' }}>{format}</Text>
                     </Button>
                   ))}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
 
               {/* Options */}
-              <YStack gap="$3">
-                <XStack alignItems="center" gap="$2" cursor="pointer">
+              <Stack style={{ gap: 12 }}>
+                <Row style={{ alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                   <input
                     type="checkbox"
                     checked={includeArchived}
                     onChange={(e) => setIncludeArchived(e.target.checked)}
                     style={{
-                      width: '16px',
-                      height: '16px',
-                      borderRadius: '4px',
+                      width: 16,
+                      height: 16,
+                      borderRadius: 4,
                       border: '1px solid var(--color-gray-8)',
                     }}
                   />
-                  <Text fontSize="$3" color="$color11">Include archived requirements</Text>
-                </XStack>
-                <XStack alignItems="center" gap="$2" cursor="pointer">
+                  <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>Include archived requirements</Text>
+                </Row>
+                <Row style={{ alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                   <input
                     type="checkbox"
                     checked={includeDependencies}
                     onChange={(e) => setIncludeDependencies(e.target.checked)}
                     style={{
-                      width: '16px',
-                      height: '16px',
-                      borderRadius: '4px',
+                      width: 16,
+                      height: 16,
+                      borderRadius: 4,
                       border: '1px solid var(--color-gray-8)',
                     }}
                   />
-                  <Text fontSize="$3" color="$color11">Include dependency relationships</Text>
-                </XStack>
-              </YStack>
+                  <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>Include dependency relationships</Text>
+                </Row>
+              </Stack>
 
               {/* Error */}
               {exportError && (
-                <XStack
-                  alignItems="flex-start"
-                  gap="$3"
-                  padding="$4"
-                  backgroundColor="$red2"
-                  borderWidth={1}
-                  borderColor="$red6"
-                  borderRadius="$4"
-                  color="$red10"
+                <Row
+                  style={{
+                    alignItems: 'flex-start',
+                    gap: 12,
+                    padding: 16,
+                    backgroundColor: 'var(--color-red-2)',
+                    borderWidth: 1,
+                    borderColor: 'var(--color-red-6)',
+                    borderRadius: 12,
+                    color: 'var(--color-red-10)',
+                  }}
                 >
-                  <YStack flexShrink={0} mt="$0.5">
+                  <Stack style={{ flexShrink: 0, marginTop: 2 }}>
                     <AlertCircle size={20} style={{ color: 'var(--color-red-10)' }} />
-                  </YStack>
-                  <YStack>
-                    <Text fontWeight="600">Export Error</Text>
-                    <Text fontSize="$3">{exportError}</Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                  <Stack>
+                    <Text style={{ fontWeight: 600 }}>Export Error</Text>
+                    <Text style={{ fontSize: 14 }}>{exportError}</Text>
+                  </Stack>
+                </Row>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Footer */}
         {!importSuccess && (
-          <XStack
-            position="sticky"
-            bottom={0}
-            backgroundColor="$background"
-            borderTopWidth={1}
-            borderColor="$borderColor"
-            paddingHorizontal="$6"
-            paddingVertical="$4"
-            alignItems="center"
-            justifyContent="flex-end"
-            gap="$3"
+          <Row
+            style={{
+              position: 'sticky',
+              bottom: 0,
+              backgroundColor: 'var(--color-background)',
+              borderTop: '1px solid var(--color-border)',
+              paddingLeft: 24,
+              paddingRight: 24,
+              paddingTop: 16,
+              paddingBottom: 16,
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: 12,
+            }}
           >
             <Button
-              unstyled
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              color="$gray12"
-              hoverStyle={{ backgroundColor: '$gray2' }}
-              borderRadius="$4"
-              onPress={handleClose}
+              variant="ghost"
+              style={{
+                paddingLeft: 16,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+                color: 'var(--color-gray-12)',
+                borderRadius: 12,
+              }}
+              onClick={handleClose}
             >
               <Text>Cancel</Text>
             </Button>
             {mode === 'import' ? (
               <Button
-                onPress={handleImport}
+                onClick={handleImport}
                 disabled={!importPreview || importPreview.errorRows > 0 || isImporting}
               >
                 {isImporting ? (
-                  <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
                     <LoadingSpinner size="sm" />
                     <Text>Importing...</Text>
-                  </XStack>
+                  </Row>
                 ) : (
-                  <XStack alignItems="center" gap="$1">
+                  <Row style={{ alignItems: 'center', gap: 4 }}>
                     <Upload size={16} />
                     <Text>Import {importPreview?.validRows ?? 0} Requirements</Text>
-                  </XStack>
+                  </Row>
                 )}
               </Button>
             ) : (
-              <Button onPress={handleExport} disabled={isExporting}>
+              <Button onClick={handleExport} disabled={isExporting}>
                 {isExporting ? (
-                  <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
                     <LoadingSpinner size="sm" />
                     <Text>Exporting...</Text>
-                  </XStack>
+                  </Row>
                 ) : (
-                  <XStack alignItems="center" gap="$1">
+                  <Row style={{ alignItems: 'center', gap: 4 }}>
                     <Download size={16} />
                     <Text>Export Requirements</Text>
-                  </XStack>
+                  </Row>
                 )}
               </Button>
             )}
-          </XStack>
+          </Row>
         )}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }
 

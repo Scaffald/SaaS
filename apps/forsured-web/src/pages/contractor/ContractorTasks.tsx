@@ -1,6 +1,7 @@
 // src/pages/contractor/ContractorTasks.tsx
 import { CheckCircle } from 'lucide-react';
-import { YStack, H1, EmptyState } from '@unicornlove/ui';
+import { Stack, H1 } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
 
 function ContractorTasks() {
   const handleRefreshTasks = () => {
@@ -11,7 +12,7 @@ function ContractorTasks() {
   const hasPendingTasks = false;
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
       <H1>My Tasks</H1>
       {!hasPendingTasks ? (
         <EmptyState
@@ -22,9 +23,9 @@ function ContractorTasks() {
         />
       ) : (
         // Render tasks list here
-        <YStack>Contractor Tasks List</YStack>
+        <Stack>Contractor Tasks List</Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

@@ -1,10 +1,10 @@
 /**
- * FlagBadge - Flag badge component using Tamagui
+ * FlagBadge - Flag badge component using Beyond UI
  * REQ-269: Policy & Endorsement Level Flags
  */
 import React from 'react';
-import { XStack, YStack, Text } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Row, Stack, Text } from '@unicornlove/beyond-ui';
+import { Chip as Badge } from '@unicornlove/beyond-ui';
 import { AlertTriangle, AlertCircle, Info, FileText, Layers, ScrollText } from 'lucide-react';
 import { FlaggableEntityType, FlagSeverity, FLAG_SEVERITY_CONFIG } from '../../types';
 
@@ -65,6 +65,27 @@ const severityVariantMap: Record<FlagSeverity, 'default' | 'success' | 'warning'
   info: 'info',
 };
 
+function getSeverityStyles(severity: FlagSeverity): React.CSSProperties {
+  switch (severity) {
+    case 'critical':
+      return {
+        borderColor: 'var(--color-red-6)',
+        backgroundColor: 'var(--color-red-2)',
+      };
+    case 'warning':
+      return {
+        borderColor: 'var(--color-yellow-6)',
+        backgroundColor: 'var(--color-yellow-2)',
+      };
+    case 'info':
+    default:
+      return {
+        borderColor: 'var(--color-blue-6)',
+        backgroundColor: 'var(--color-blue-2)',
+      };
+  }
+}
+
 export const FlagBadge: React.FC<FlagBadgeProps> = ({
   entityType,
   severity,
@@ -86,35 +107,37 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
         aria-label={`${label}: ${config.label} severity`}
         title={title || `${label} - ${config.label}`}
       >
-        <XStack alignItems="center" gap="$1">
+        <Row style={{ alignItems: 'center', gap: 4 }}>
           {getSeverityIcon(severity)}
           <Text>{label}</Text>
-        </XStack>
+        </Row>
       </Badge>
     );
   }
 
   return (
-    <YStack
-      borderRadius="$3"
-      borderWidth={1}
-      borderColor={severity === 'critical' ? '$red6' : severity === 'warning' ? '$yellow6' : '$blue6'}
-      backgroundColor={severity === 'critical' ? '$red2' : severity === 'warning' ? '$yellow2' : '$blue2'}
-      padding="$3"
+    <Stack
+      style={{
+        borderRadius: 'var(--radius-3)',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        padding: 'var(--space-3)',
+        ...getSeverityStyles(severity),
+      }}
       aria-label={`${label}: ${config.label} severity`}
     >
-      <XStack alignItems="flex-start" gap="$3">
-        <YStack flexShrink={0}>
+      <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+        <Stack style={{ flexShrink: 0 }}>
           {getSeverityIcon(severity)}
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} minWidth={0} gap="$1">
-          <XStack alignItems="center" gap="$2" flexWrap="wrap">
+        <Stack style={{ flex: 1, minWidth: 0, gap: 4 }}>
+          <Row style={{ alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
             <Badge variant="default" size="$2">
-              <XStack alignItems="center" gap="$1">
+              <Row style={{ alignItems: 'center', gap: 4 }}>
                 {getEntityTypeIcon(entityType)}
                 <Text>{label}</Text>
-              </XStack>
+              </Row>
             </Badge>
 
             <Badge variant={variant} size="$2">
@@ -122,26 +145,26 @@ export const FlagBadge: React.FC<FlagBadgeProps> = ({
             </Badge>
 
             {flagType && (
-              <Text fontSize="$1" color="$color9" fontWeight="500">
+              <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-9)', fontWeight: 500 }}>
                 {flagType.replace(/_/g, ' ')}
               </Text>
             )}
-          </XStack>
+          </Row>
 
           {title && (
-            <Text fontSize="$2" fontWeight="500" color="$color11" mt="$1">
+            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)', marginTop: 4 }}>
               {title}
             </Text>
           )}
 
           {showDescription && description && (
-            <Text fontSize="$2" color="$color10" mt="$1">
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)', marginTop: 4 }}>
               {description}
             </Text>
           )}
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   );
 };
 

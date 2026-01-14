@@ -3,8 +3,9 @@
  * Side-by-side document viewer for OCR review
  */
 
+import React from 'react';
 import { FileText } from 'lucide-react';
-import { YStack, XStack, Text, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H3 } from '@unicornlove/beyond-ui';
 
 interface DocumentPreviewProps {
   documentUrl?: string;
@@ -21,31 +22,46 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const isImage = fileType.startsWith('image/');
 
   return (
-    <YStack
-      height="100%"
-      flexDirection="column"
-      backgroundColor="$gray2"
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="$gray6"
+    <Stack
+      style={{
+        height: '100%',
+        flexDirection: 'column',
+        backgroundColor: 'var(--color-gray-2)',
+        borderRadius: '8px',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: 'var(--color-gray-6)',
+      }}
     >
-      <YStack
-        padding="$4"
-        borderBottomWidth={1}
-        borderBottomColor="$gray6"
-        backgroundColor="$background"
-        borderTopLeftRadius="$4"
-        borderTopRightRadius="$4"
+      <Stack
+        style={{
+          padding: '16px',
+          borderBottomWidth: 1,
+          borderBottomStyle: 'solid',
+          borderBottomColor: 'var(--color-gray-6)',
+          backgroundColor: 'var(--color-background)',
+          borderTopLeftRadius: '8px',
+          borderTopRightRadius: '8px',
+        }}
       >
-        <XStack alignItems="center">
-          <FileText size={20} color="$color10" mr="$2" />
-          <H3 fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
+        <Row style={{ alignItems: 'center' }}>
+          <FileText size={20} color="var(--color-gray-10)" style={{ marginRight: '8px' }} />
+          <H3
+            style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'var(--color-gray-12)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {fileName}
           </H3>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
-      <YStack flex={1} overflow="auto" padding="$4">
+      <Stack style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
         {documentUrl ? (
           <>
             {isPDF && (
@@ -75,20 +91,34 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               />
             )}
             {!isPDF && !isImage && (
-              <YStack alignItems="center" justifyContent="center" height="100%" color="$color10">
+              <Stack
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  color: 'var(--color-gray-10)',
+                }}
+              >
                 <Text>Preview not available for this file type</Text>
-              </YStack>
+              </Stack>
             )}
           </>
         ) : (
-          <YStack alignItems="center" justifyContent="center" height="100%" color="$color10">
-            <YStack alignItems="center" gap="$4">
-              <FileText size={64} color="$color9" />
+          <Stack
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              color: 'var(--color-gray-10)',
+            }}
+          >
+            <Stack style={{ alignItems: 'center', gap: '16px' }}>
+              <FileText size={64} color="var(--color-gray-9)" />
               <Text>Document preview not available</Text>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 };

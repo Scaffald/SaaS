@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building, Briefcase, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import { YStack, XStack, Text, Card, Button, H1, Spinner } from '@unicornlove/ui';
+import { Building, Briefcase, CheckCircle, Clock, AlertCircle, Loader2 } from 'lucide-react';
+import { Stack, Row, Text, Card, H1 } from '@unicornlove/beyond-ui';
 import ProjectCard from '../Shared/ProjectCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase, getUserOrganizationId } from '../../lib/supabase';
@@ -23,6 +23,22 @@ interface SubcontractorProject {
   created_at: string;
   updated_at: string;
 }
+
+const getFilterButtonStyle = (isActive: boolean): React.CSSProperties => {
+  return {
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+    fontSize: 14,
+    fontWeight: 500,
+    borderRadius: 8,
+    border: 'none',
+    cursor: 'pointer',
+    backgroundColor: isActive ? 'var(--color-blue9)' : 'var(--color-gray3)',
+    color: isActive ? 'white' : 'var(--color-11)',
+  };
+};
 
 export default function SubcontractorProjectsPage() {
   const navigate = useNavigate();
@@ -162,209 +178,238 @@ export default function SubcontractorProjectsPage() {
   // Loading state
   if (loading) {
     return (
-      <YStack gap="$6" flex={1} alignItems="center" justifyContent="center" padding="$10">
-        <Spinner size="large" color="$blue10" />
-        <Text color="$color11">Loading projects...</Text>
-      </YStack>
+      <Stack
+        style={{
+          gap: 24,
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 40,
+        }}
+      >
+        <Loader2 size={32} color="var(--color-blue10)" className="animate-spin" />
+        <Text style={{ color: 'var(--color-11)' }}>Loading projects...</Text>
+      </Stack>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <YStack gap="$6" flex={1} alignItems="center" justifyContent="center" padding="$10">
-        <Card backgroundColor="$red3" padding="$3" borderRadius="$4">
-          <AlertCircle color="$red10" size={48} />
-        </Card>
-        <Text color="$color12" fontWeight="500">{error}</Text>
-        <Text color="$color11" fontSize="$2">Please try again later</Text>
-      </YStack>
+      <Stack
+        style={{
+          gap: 24,
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 40,
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: 'var(--color-red3)',
+            padding: 12,
+            borderRadius: 8,
+          }}
+        >
+          <AlertCircle color="var(--color-red10)" size={48} />
+        </div>
+        <Text style={{ color: 'var(--color-12)', fontWeight: 500 }}>{error}</Text>
+        <Text style={{ color: 'var(--color-11)', fontSize: 14 }}>Please try again later</Text>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$6">
-      <YStack>
+    <Stack style={{ gap: 24 }}>
+      <Stack>
         <H1>My Projects</H1>
-        <Text color="$color11">
+        <Text style={{ color: 'var(--color-11)' }}>
           Track your active and completed projects
         </Text>
-      </YStack>
+      </Stack>
 
-      <XStack
-        flexWrap="wrap"
-        gap="$6"
-        $gtMd={{
-          flexWrap: 'nowrap',
-        }}
-      >
+      <Row style={{ flexWrap: 'wrap', gap: 24 }}>
         <Card
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="200px"
+          variant="outlined"
+          style={{
+            padding: 24,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            flex: 1,
+            minWidth: 200,
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$2">Total Projects</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$color12" mt="$1">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ color: 'var(--color-11)', fontSize: 14 }}>Total Projects</Text>
+              <Text style={{ fontSize: 32, fontWeight: 'bold', color: 'var(--color-12)', marginTop: 4 }}>
                 {stats.total}
               </Text>
-            </YStack>
-            <Card backgroundColor="$blue3" padding="$3" borderRadius="$4">
-              <Building color="$blue10" size={24} />
-            </Card>
-          </XStack>
+            </Stack>
+            <div
+              style={{
+                backgroundColor: 'var(--color-blue3)',
+                padding: 12,
+                borderRadius: 8,
+              }}
+            >
+              <Building color="var(--color-blue10)" size={24} />
+            </div>
+          </Row>
         </Card>
 
         <Card
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="200px"
+          variant="outlined"
+          style={{
+            padding: 24,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            flex: 1,
+            minWidth: 200,
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$2">Active Projects</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$blue10" mt="$1">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ color: 'var(--color-11)', fontSize: 14 }}>Active Projects</Text>
+              <Text style={{ fontSize: 32, fontWeight: 'bold', color: 'var(--color-blue10)', marginTop: 4 }}>
                 {stats.active}
               </Text>
-            </YStack>
-            <Card backgroundColor="$blue3" padding="$3" borderRadius="$4">
-              <Clock color="$blue10" size={24} />
-            </Card>
-          </XStack>
+            </Stack>
+            <div
+              style={{
+                backgroundColor: 'var(--color-blue3)',
+                padding: 12,
+                borderRadius: 8,
+              }}
+            >
+              <Clock color="var(--color-blue10)" size={24} />
+            </div>
+          </Row>
         </Card>
 
         <Card
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="200px"
+          variant="outlined"
+          style={{
+            padding: 24,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            flex: 1,
+            minWidth: 200,
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$2">Completed</Text>
-              <Text fontSize="$9" fontWeight="bold" color="$green10" mt="$1">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ color: 'var(--color-11)', fontSize: 14 }}>Completed</Text>
+              <Text style={{ fontSize: 32, fontWeight: 'bold', color: 'var(--color-green10)', marginTop: 4 }}>
                 {stats.completed}
               </Text>
-            </YStack>
-            <Card backgroundColor="$green3" padding="$3" borderRadius="$4">
-              <CheckCircle color="$green10" size={24} />
-            </Card>
-          </XStack>
+            </Stack>
+            <div
+              style={{
+                backgroundColor: 'var(--color-green3)',
+                padding: 12,
+                borderRadius: 8,
+              }}
+            >
+              <CheckCircle color="var(--color-green10)" size={24} />
+            </div>
+          </Row>
         </Card>
 
         <Card
-          padding="$6"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          flex={1}
-          minWidth="200px"
+          variant="outlined"
+          style={{
+            padding: 24,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            flex: 1,
+            minWidth: 200,
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <Text color="$color11" fontSize="$2">Active Value</Text>
-              <Text fontSize="$8" fontWeight="bold" color="$color12" mt="$1">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ color: 'var(--color-11)', fontSize: 14 }}>Active Value</Text>
+              <Text style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-12)', marginTop: 4 }}>
                 {formatCurrency(stats.totalValue)}
               </Text>
-            </YStack>
-            <Card backgroundColor="$gray3" padding="$3" borderRadius="$4">
-              <Briefcase color="$gray10" size={24} />
-            </Card>
-          </XStack>
+            </Stack>
+            <div
+              style={{
+                backgroundColor: 'var(--color-gray3)',
+                padding: 12,
+                borderRadius: 8,
+              }}
+            >
+              <Briefcase color="var(--color-gray10)" size={24} />
+            </div>
+          </Row>
         </Card>
-      </XStack>
+      </Row>
 
-      <Card elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
-        <XStack alignItems="center" gap="$2">
-          <Button
-            onPress={() => setFilter('all')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$2"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={filter === 'all' ? '$blue9' : '$gray3'}
-            color={filter === 'all' ? 'white' : '$color11'}
-            hoverStyle={{
-              backgroundColor: filter === 'all' ? '$blue9' : '$gray4',
-            }}
-          >
-            All ({projects.length})
-          </Button>
-          <Button
-            onPress={() => setFilter('active')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$2"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={filter === 'active' ? '$blue9' : '$gray3'}
-            color={filter === 'active' ? 'white' : '$color11'}
-            hoverStyle={{
-              backgroundColor: filter === 'active' ? '$blue9' : '$gray4',
-            }}
-          >
-            Active ({stats.active})
-          </Button>
-          <Button
-            onPress={() => setFilter('completed')}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            fontSize="$2"
-            fontWeight="500"
-            borderRadius="$4"
-            backgroundColor={filter === 'completed' ? '$blue9' : '$gray3'}
-            color={filter === 'completed' ? 'white' : '$color11'}
-            hoverStyle={{
-              backgroundColor: filter === 'completed' ? '$blue9' : '$gray4',
-            }}
-          >
-            Completed ({stats.completed})
-          </Button>
-        </XStack>
-      </Card>
-
-      <XStack
-        flexWrap="wrap"
-        gap="$6"
-        $gtLg={{
-          flexWrap: 'nowrap',
+      <Card
+        variant="outlined"
+        style={{
+          borderWidth: 1,
+          borderColor: 'var(--color-border)',
+          padding: 24,
         }}
       >
+        <Row style={{ alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={() => setFilter('all')}
+            style={getFilterButtonStyle(filter === 'all')}
+          >
+            All ({projects.length})
+          </button>
+          <button
+            onClick={() => setFilter('active')}
+            style={getFilterButtonStyle(filter === 'active')}
+          >
+            Active ({stats.active})
+          </button>
+          <button
+            onClick={() => setFilter('completed')}
+            style={getFilterButtonStyle(filter === 'completed')}
+          >
+            Completed ({stats.completed})
+          </button>
+        </Row>
+      </Card>
+
+      <Row style={{ flexWrap: 'wrap', gap: 24 }}>
         {filteredProjects.map((project) => (
-          <YStack key={project.id} flex={1} minWidth="300px">
+          <Stack key={project.id} style={{ flex: 1, minWidth: 300 }}>
             <ProjectCard
               project={project}
               userRole="subcontractor"
               showActions={false}
               onClick={() => navigate(`/subcontractor/projects/${project.id}`)}
             />
-          </YStack>
+          </Stack>
         ))}
-      </XStack>
+      </Row>
 
       {filteredProjects.length === 0 && (
-        <Card elevation={1} borderWidth={1} borderColor="$borderColor" padding="$12">
-          <YStack alignItems="center">
-            <Building color="$color10" size={48} mb="$4" />
-            <Text color="$color12" fontWeight="500" mb="$2">
+        <Card
+          variant="outlined"
+          style={{
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            padding: 48,
+          }}
+        >
+          <Stack style={{ alignItems: 'center' }}>
+            <Building color="var(--color-10)" size={48} style={{ marginBottom: 16 }} />
+            <Text style={{ color: 'var(--color-12)', fontWeight: 500, marginBottom: 8 }}>
               No projects found
             </Text>
-            <Text color="$color11" fontSize="$2">
+            <Text style={{ color: 'var(--color-11)', fontSize: 14 }}>
               Adjust your filters or wait for project invitations
             </Text>
-          </YStack>
+          </Stack>
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 }

@@ -26,7 +26,7 @@ test.describe('Broker Clients Page - Invitations', () => {
     expect(page.url()).toContain('/broker/clients');
 
     // Check for page heading - may be in empty state or with clients
-    // Use more flexible selector since Tamagui Text components don't have semantic tags
+    // Use more flexible selector since Beyond UI Text components don't have semantic tags
     const clientsHeading = page.getByText('Clients', { exact: true }).first();
     await expect(clientsHeading).toBeVisible({ timeout: 10000 });
     

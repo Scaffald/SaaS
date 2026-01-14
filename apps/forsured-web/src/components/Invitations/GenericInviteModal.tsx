@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from 'react'
 import { UserPlus, AlertTriangle, Check } from 'lucide-react'
-import { YStack, XStack, Text, Button, Input, TextArea, SizableText } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Input } from '@unicornlove/beyond-ui'
 import Modal from '../Common/Modal'
 import { trpc } from '../../lib/trpc'
 import type { InvitationRule } from '../../lib/invitations/types'
@@ -145,88 +145,91 @@ export function GenericInviteModal({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Send Invitation" size="medium">
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         {/* Success Message */}
         {successMessage && (
-          <YStack
-            backgroundColor="$green2"
-            borderWidth={1}
-            borderColor="$green6"
-            borderRadius="$4"
-            padding="$3"
+          <Stack
+            style={{
+              backgroundColor: 'var(--color-green2)',
+              border: '1px solid var(--color-green6)',
+              borderRadius: 'var(--radius-4)',
+              padding: 'var(--space-3)',
+            }}
           >
-            <XStack alignItems="center" gap="$2">
-              <Check size={16} color="var(--green11)" />
-              <SizableText fontSize="$3" color="$green11">
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+              <Check size={16} color="var(--color-green11)" />
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-green11)' }}>
                 {successMessage}
-              </SizableText>
-            </XStack>
-          </YStack>
+              </Text>
+            </Row>
+          </Stack>
         )}
 
         {/* Error Message */}
         {error && (
-          <YStack
-            backgroundColor="$red2"
-            borderWidth={1}
-            borderColor="$red6"
-            borderRadius="$4"
-            padding="$3"
+          <Stack
+            style={{
+              backgroundColor: 'var(--color-red2)',
+              border: '1px solid var(--color-red6)',
+              borderRadius: 'var(--radius-4)',
+              padding: 'var(--space-3)',
+            }}
           >
-            <SizableText fontSize="$3" color="$red11">
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-red11)' }}>
               {error}
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
         )}
 
         {/* Constraint Warning */}
         {constraintCheck && !constraintCheck.allowed && (
-          <YStack
-            backgroundColor="$yellow2"
-            borderWidth={1}
-            borderColor="$yellow6"
-            borderRadius="$4"
-            padding="$3"
+          <Stack
+            style={{
+              backgroundColor: 'var(--color-yellow2)',
+              border: '1px solid var(--color-yellow6)',
+              borderRadius: 'var(--radius-4)',
+              padding: 'var(--space-3)',
+            }}
           >
-            <XStack alignItems="flex-start" gap="$2">
-              <AlertTriangle size={16} color="var(--yellow11)" style={{ marginTop: 2 }} />
-              <YStack flex={1}>
-                <SizableText fontSize="$3" fontWeight="500" color="$yellow11">
+            <Row style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
+              <AlertTriangle size={16} color="var(--color-yellow11)" style={{ marginTop: 2 }} />
+              <Stack style={{ flex: 1 }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-yellow11)' }}>
                   Relationship Constraint
-                </SizableText>
-                <SizableText fontSize="$2" color="$yellow11" marginTop="$1">
+                </Text>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow11)', marginTop: 'var(--space-1)' }}>
                   {constraintCheck.reason}
-                </SizableText>
+                </Text>
                 {selectedRule?.allow_referral_only && (
-                  <SizableText fontSize="$2" color="$yellow10" marginTop="$2">
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow10)', marginTop: 'var(--space-2)' }}>
                     The invitation will still be sent, but no relationship will be created.
-                  </SizableText>
+                  </Text>
                 )}
-              </YStack>
-            </XStack>
-          </YStack>
+              </Stack>
+            </Row>
+          </Stack>
         )}
 
         {/* Rule Selection (if multiple rules available) */}
         {availableRules.length > 1 && !preSelectedRuleId && (
-          <YStack gap="$2">
-            <SizableText fontSize="$3" fontWeight="500" color="$color12">
+          <Stack style={{ gap: 'var(--space-2)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
               Invitation Type
-            </SizableText>
-            <YStack gap="$2">
+            </Text>
+            <Stack style={{ gap: 'var(--space-2)' }}>
               {availableRules.map((rule) => (
-                <XStack
+                <Row
                   key={rule.id}
-                  padding="$3"
-                  borderWidth={1}
-                  borderColor={selectedRuleId === rule.id ? '$blue8' : '$borderColor'}
-                  borderRadius="$4"
-                  backgroundColor={selectedRuleId === rule.id ? '$blue2' : 'transparent'}
-                  cursor="pointer"
-                  hoverStyle={{ backgroundColor: '$color2' }}
-                  onPress={() => setSelectedRuleId(rule.id)}
-                  alignItems="center"
-                  gap="$3"
+                  style={{
+                    padding: 'var(--space-3)',
+                    border: `1px solid ${selectedRuleId === rule.id ? 'var(--color-blue8)' : 'var(--color-border)'}`,
+                    borderRadius: 'var(--radius-4)',
+                    backgroundColor: selectedRuleId === rule.id ? 'var(--color-blue2)' : 'transparent',
+                    cursor: 'pointer',
+                    alignItems: 'center',
+                    gap: 'var(--space-3)',
+                  }}
+                  onClick={() => setSelectedRuleId(rule.id)}
                 >
                   <input
                     type="radio"
@@ -234,131 +237,151 @@ export function GenericInviteModal({
                     onChange={() => setSelectedRuleId(rule.id)}
                     style={{ cursor: 'pointer' }}
                   />
-                  <YStack flex={1}>
-                    <SizableText fontSize="$3" fontWeight="500" color="$color12">
+                  <Stack style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
                       {rule.name}
-                    </SizableText>
+                    </Text>
                     {rule.description && (
-                      <SizableText fontSize="$2" color="$color11" marginTop="$1">
+                      <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)', marginTop: 'var(--space-1)' }}>
                         {rule.description}
-                      </SizableText>
+                      </Text>
                     )}
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
         {/* Selected Rule Display (if preselected) */}
         {selectedRule && preSelectedRuleId && (
-          <YStack
-            padding="$3"
-            backgroundColor="$blue2"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$blue6"
+          <Stack
+            style={{
+              padding: 'var(--space-3)',
+              backgroundColor: 'var(--color-blue2)',
+              borderRadius: 'var(--radius-4)',
+              border: '1px solid var(--color-blue6)',
+            }}
           >
-            <SizableText fontSize="$3" fontWeight="500" color="$blue11">
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-blue11)' }}>
               {selectedRule.name}
-            </SizableText>
+            </Text>
             {selectedRule.description && (
-              <SizableText fontSize="$2" color="$blue10" marginTop="$1">
+              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue10)', marginTop: 'var(--space-1)' }}>
                 {selectedRule.description}
-              </SizableText>
+              </Text>
             )}
-          </YStack>
+          </Stack>
         )}
 
         {/* Project Context */}
         {projectName && (
-          <YStack gap="$1">
-            <SizableText fontSize="$2" color="$color11">
+          <Stack style={{ gap: 'var(--space-1)' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
               Project
-            </SizableText>
-            <SizableText fontSize="$3" fontWeight="500" color="$color12">
+            </Text>
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
               {projectName}
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
         )}
 
         {/* Email Input */}
-        <YStack gap="$2">
-          <SizableText fontSize="$3" fontWeight="500" color="$color12">
+        <Stack style={{ gap: 'var(--space-2)' }}>
+          <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
             Email Address *
-          </SizableText>
+          </Text>
           <Input
             value={email}
-            onChangeText={setEmail}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="user@example.com"
-            keyboardType="email-address"
-            autoCapitalize="none"
+            type="email"
             disabled={isLoading}
           />
-        </YStack>
+        </Stack>
 
         {/* Name Input (Optional) */}
-        <YStack gap="$2">
-          <SizableText fontSize="$3" fontWeight="500" color="$color12">
+        <Stack style={{ gap: 'var(--space-2)' }}>
+          <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
             Name (Optional)
-          </SizableText>
+          </Text>
           <Input
             value={name}
-            onChangeText={setName}
+            onChange={(e) => setName(e.target.value)}
             placeholder="John Doe"
             disabled={isLoading}
           />
-        </YStack>
+        </Stack>
 
         {/* Personal Message */}
-        <YStack gap="$2">
-          <SizableText fontSize="$3" fontWeight="500" color="$color12">
+        <Stack style={{ gap: 'var(--space-2)' }}>
+          <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
             Personal Message (Optional)
-          </SizableText>
-          <TextArea
+          </Text>
+          <textarea
             value={personalMessage}
-            onChangeText={setPersonalMessage}
+            onChange={(e) => setPersonalMessage(e.target.value)}
             placeholder="Add a personal note to your invitation..."
-            numberOfLines={3}
+            rows={3}
             disabled={isLoading}
+            style={{
+              width: '100%',
+              padding: 'var(--space-3)',
+              borderRadius: 'var(--radius-3)',
+              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-color12)',
+              fontSize: 'var(--font-size-3)',
+              fontFamily: 'inherit',
+              resize: 'vertical',
+            }}
           />
-          <SizableText fontSize="$1" color="$color10">
+          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-color10)' }}>
             This message will be included in the invitation email
-          </SizableText>
-        </YStack>
+          </Text>
+        </Stack>
 
         {/* Info Box */}
-        <YStack
-          backgroundColor="$blue2"
-          borderWidth={1}
-          borderColor="$blue6"
-          borderRadius="$4"
-          padding="$3"
+        <Stack
+          style={{
+            backgroundColor: 'var(--color-blue2)',
+            border: '1px solid var(--color-blue6)',
+            borderRadius: 'var(--radius-4)',
+            padding: 'var(--space-3)',
+          }}
         >
-          <SizableText fontSize="$2" color="$blue11">
+          <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue11)' }}>
             An invitation email will be sent with a unique link. If they don't have an account,
             they'll be prompted to create one when they accept.
-          </SizableText>
-        </YStack>
+          </Text>
+        </Stack>
 
         {/* Actions */}
-        <XStack gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-          <Button variant="outlined" onPress={handleClose} flex={1} disabled={isLoading}>
+        <Row
+          style={{
+            gap: 'var(--space-3)',
+            paddingTop: 'var(--space-4)',
+            borderTop: '1px solid var(--color-border)',
+          }}
+        >
+          <Button variant="outline" onClick={handleClose} style={{ flex: 1 }} disabled={isLoading}>
             Cancel
           </Button>
           <Button
-            onPress={handleSubmit}
-            flex={1}
+            onClick={handleSubmit}
+            style={{
+              flex: 1,
+              opacity: isLoading || !email.trim() || !selectedRuleId ? 0.5 : 1,
+            }}
             disabled={isLoading || !email.trim() || !selectedRuleId}
-            opacity={isLoading || !email.trim() || !selectedRuleId ? 0.5 : 1}
           >
-            <XStack alignItems="center" gap="$2">
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
               <UserPlus size={16} />
               <Text>{isLoading ? 'Sending...' : 'Send Invitation'}</Text>
-            </XStack>
+            </Row>
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Modal>
   )
 }

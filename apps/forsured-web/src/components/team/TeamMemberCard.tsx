@@ -12,9 +12,9 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MoreVertical, Edit, Trash2 } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, SizableText } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
 
 export interface TeamMember {
   id: string;
@@ -37,19 +37,19 @@ interface TeamMemberCardProps {
 /**
  * Get role badge color based on role type
  */
-function getRoleBadgeColor(role: TeamMember['role']): { bg: string; text: string } {
+function getRoleBadgeColor(role: TeamMember['role']): React.CSSProperties {
   switch (role) {
     case 'admin':
-      return { bg: '$purple2', text: '$purple11' };
+      return { backgroundColor: 'var(--color-purple-2)', color: 'var(--color-purple-11)' };
     case 'manager':
-      return { bg: '$blue2', text: '$blue11' };
+      return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-11)' };
     case 'broker':
-      return { bg: '$green2', text: '$green11' };
+      return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-11)' };
     case 'subcontractor':
-      return { bg: '$orange2', text: '$orange11' };
+      return { backgroundColor: 'var(--color-orange-2)', color: 'var(--color-orange-11)' };
     case 'user':
     default:
-      return { bg: '$color2', text: '$color11' };
+      return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)' };
   }
 }
 
@@ -118,15 +118,14 @@ export function TeamMemberCard({
 
   return (
     <Card
-      backgroundColor="$background"
-      borderRadius="$4"
-      elevation={1}
-      borderWidth={1}
-      borderColor="$borderColor"
-      padding="$4"
-      cursor="pointer"
-      hoverStyle={{ elevation: 2 }}
-      onPress={handleCardClick}
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: 8,
+        border: '1px solid var(--color-border)',
+        padding: 16,
+        cursor: 'pointer',
+      }}
+      onClick={handleCardClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -136,78 +135,88 @@ export function TeamMemberCard({
       }}
       aria-label={`View ${member.name}'s profile`}
     >
-      <XStack alignItems="flex-start" justifyContent="space-between">
+      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
         {/* Avatar and Info */}
-        <XStack alignItems="center" gap="$3">
+        <Row style={{ alignItems: 'center', gap: 12 }}>
           {/* Avatar */}
           {member.avatar ? (
-            <YStack
-              width={48}
-              height={48}
-              borderRadius={9999}
-              overflow="hidden"
-              backgroundColor="$color3"
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                overflow: 'hidden',
+                backgroundColor: 'var(--color-gray-3)',
+              }}
             >
               <img
                 src={member.avatar}
                 alt={member.name}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
-            </YStack>
+            </div>
           ) : (
-            <YStack
-              width={48}
-              height={48}
-              borderRadius={9999}
-              backgroundColor="$color3"
-              alignItems="center"
-              justifyContent="center"
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                backgroundColor: 'var(--color-gray-3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <SizableText fontSize="$3" fontWeight="500" color="$color11">
+              <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-11)' }}>
                 {getInitials(member.name)}
-              </SizableText>
-            </YStack>
+              </Text>
+            </div>
           )}
 
           {/* Name and Email */}
-          <YStack>
-            <Text fontSize="$4" fontWeight="500" color="$color12">
+          <Stack>
+            <Text style={{ fontSize: 16, fontWeight: 500, color: 'var(--color-gray-12)' }}>
               {member.name}
             </Text>
-            <SizableText fontSize="$3" color="$color10">
+            <Text style={{ fontSize: 14, color: 'var(--color-gray-10)' }}>
               {member.email}
-            </SizableText>
+            </Text>
             {member.company && (
-              <SizableText fontSize="$1" color="$color10" mt="$0.5">
+              <Text style={{ fontSize: 12, color: 'var(--color-gray-10)', marginTop: 2 }}>
                 {member.company}
-              </SizableText>
+              </Text>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
         {/* Role Badge and Menu */}
-        <XStack alignItems="center" gap="$2">
+        <Row style={{ alignItems: 'center', gap: 8 }}>
           {/* Role Badge */}
-          <YStack
-            alignItems="center"
-            paddingHorizontal="$2.5"
-            paddingVertical="$0.5"
-            borderRadius={9999}
-            backgroundColor={badgeColors.bg as any}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: 10,
+              paddingRight: 10,
+              paddingTop: 2,
+              paddingBottom: 2,
+              borderRadius: 9999,
+              ...badgeColors,
+            }}
           >
-            <SizableText fontSize="$1" fontWeight="500" color={badgeColors.text as any}>
+            <Text style={{ fontSize: 12, fontWeight: 500, color: badgeColors.color }}>
               {formatRole(member.role)}
-            </SizableText>
-          </YStack>
+            </Text>
+          </div>
 
           {/* Action Menu */}
           {(onEdit || onRemove) && (
-            <YStack position="relative" ref={menuRef}>
+            <div style={{ position: 'relative' }} ref={menuRef}>
               <Button
-                onPress={handleMenuClick}
-                variant="outlined"
-                size="$2"
-                padding="$1"
+                onClick={handleMenuClick}
+                variant="outline"
+                size="sm"
+                style={{ padding: 4 }}
                 aria-label="More options"
                 aria-expanded={showMenu}
                 aria-haspopup="menu"
@@ -218,62 +227,71 @@ export function TeamMemberCard({
               {/* Dropdown Menu */}
               {showMenu && (
                 <Card
-                  position="absolute"
-                  right={0}
-                  mt="$1"
-                  width={144}
-                  backgroundColor="$background"
-                  borderRadius="$2"
-                  elevation={4}
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  zIndex={10}
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    marginTop: 4,
+                    width: 144,
+                    backgroundColor: 'var(--color-background)',
+                    borderRadius: 4,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    border: '1px solid var(--color-border)',
+                    zIndex: 10,
+                  }}
                   role="menu"
                 >
                   {onEdit && (
                     <Button
-                      onPress={handleEdit}
-                      variant="outlined"
-                      size="$2"
-                      width="100%"
-                      justifyContent="flex-start"
-                      paddingHorizontal="$4"
-                      paddingVertical="$2"
+                      onClick={handleEdit}
+                      variant="ghost"
+                      size="sm"
+                      style={{
+                        width: '100%',
+                        justifyContent: 'flex-start',
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        paddingTop: 8,
+                        paddingBottom: 8,
+                      }}
                       role="menuitem"
                     >
-                      <XStack alignItems="center" gap="$2">
+                      <Row style={{ alignItems: 'center', gap: 8 }}>
                         <Edit size={16} />
-                        <SizableText fontSize="$3" color="$color11">
+                        <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
                           Edit Member
-                        </SizableText>
-                      </XStack>
+                        </Text>
+                      </Row>
                     </Button>
                   )}
                   {onRemove && (
                     <Button
-                      onPress={handleRemove}
-                      variant="outlined"
-                      size="$2"
-                      width="100%"
-                      justifyContent="flex-start"
-                      paddingHorizontal="$4"
-                      paddingVertical="$2"
+                      onClick={handleRemove}
+                      variant="ghost"
+                      size="sm"
+                      style={{
+                        width: '100%',
+                        justifyContent: 'flex-start',
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        paddingTop: 8,
+                        paddingBottom: 8,
+                      }}
                       role="menuitem"
                     >
-                      <XStack alignItems="center" gap="$2">
+                      <Row style={{ alignItems: 'center', gap: 8 }}>
                         <Trash2 size={16} />
-                        <SizableText fontSize="$3" color="$red10">
+                        <Text style={{ fontSize: 14, color: 'var(--color-red-10)' }}>
                           Remove
-                        </SizableText>
-                      </XStack>
+                        </Text>
+                      </Row>
                     </Button>
                   )}
                 </Card>
               )}
-            </YStack>
+            </div>
           )}
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
     </Card>
   );
 }

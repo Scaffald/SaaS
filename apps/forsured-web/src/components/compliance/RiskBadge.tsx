@@ -1,5 +1,5 @@
 /**
- * RiskBadge - Risk level badge component using Tamagui
+ * RiskBadge - Risk level badge component using Beyond UI
  * REQ: Phase 5 - Risk Level Algorithm Implementation
  *
  * Displays risk level with appropriate color coding:
@@ -9,8 +9,8 @@
  *   CRITICAL (red): Major violations
  */
 import React from 'react';
-import { XStack, Text } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Row, Text } from '@unicornlove/beyond-ui';
+import { Chip as Badge } from '@unicornlove/beyond-ui';
 import { CheckCircle, AlertCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { RiskLevel, riskCalculationService } from '../../lib/compliance/riskCalculationService';
 
@@ -80,12 +80,12 @@ export const RiskBadge: React.FC<RiskBadgeProps> = ({
       aria-label={ariaLabel || `Risk level: ${level} - ${description}`}
       title={description}
     >
-      <XStack alignItems="center" gap="$1">
+      <Row style={{ alignItems: 'center', gap: 4 }}>
         {showIcon && getRiskIcon(level, iconSize)}
-        <Text fontSize={size === 'sm' ? '$1' : size === 'lg' ? '$3' : '$2'}>
+        <Text style={{ fontSize: size === 'sm' ? 'var(--font-size-1)' : size === 'lg' ? 'var(--font-size-3)' : 'var(--font-size-2)' }}>
           {fullLabel}
         </Text>
-      </XStack>
+      </Row>
     </Badge>
   );
 };
@@ -101,18 +101,20 @@ export const RiskIndicator: React.FC<{
   const color = riskCalculationService.getRiskColor(level);
 
   return (
-    <XStack
-      width={size}
-      height={size}
-      borderRadius={size / 2}
-      backgroundColor={color}
-      alignItems="center"
-      justifyContent="center"
+    <Row
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: color,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
       aria-label={`Risk: ${level}`}
       title={description}
     >
       {getRiskIcon(level, size * 0.6)}
-    </XStack>
+    </Row>
   );
 };
 

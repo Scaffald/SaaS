@@ -22,17 +22,16 @@ import {
   FileText,
   Copy,
   Archive,
-  RotateCcw,
   MoreHorizontal,
   CheckCircle,
   Download,
   Upload,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H1, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
 import { useComplianceRequirements, type CoverageType, type RequirementStatus } from '../../hooks/useComplianceRequirements';
 import { useUser } from '../../contexts/UserContext';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
-import { EmptyState } from '@unicornlove/ui';
+import { EmptyState } from '../../ui/EmptyState';
 import RequirementStatusBadge from './RequirementStatusBadge';
 import RequirementTypeBadge from './RequirementTypeBadge';
 
@@ -239,7 +238,7 @@ export function ComplianceRequirementsPage() {
 
   // Format date for display
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -259,9 +258,9 @@ export function ComplianceRequirementsPage() {
 
   if (!organizationId) {
     return (
-      <YStack padding="$8" alignItems="center">
-        <Text color="$color11">Please select an organization to manage compliance requirements.</Text>
-      </YStack>
+      <Stack style={{ padding: 'var(--space-8)', alignItems: 'center' }}>
+        <Text style={{ color: 'var(--color-11)' }}>Please select an organization to manage compliance requirements.</Text>
+      </Stack>
     );
   }
 
@@ -271,117 +270,148 @@ export function ComplianceRequirementsPage() {
 
   if (error) {
     return (
-      <YStack padding="$8" alignItems="center">
-        <Text color="$red9">Error loading requirements: {error.message}</Text>
-        <Button variant="outlined" mt="$4" onPress={() => window.location.reload()}>
+      <Stack style={{ padding: 'var(--space-8)', alignItems: 'center' }}>
+        <Text style={{ color: 'var(--color-red-9)' }}>Error loading requirements: {error.message}</Text>
+        <Button variant="outlined" style={{ marginTop: 'var(--space-4)' }} onClick={() => window.location.reload()}>
           Retry
         </Button>
-      </YStack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1 fontSize="$10" fontWeight="700" color="$color12">
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack>
+          <h1 style={{ fontSize: 'var(--font-size-10)', fontWeight: 700, color: 'var(--color-12)', margin: 0 }}>
             Compliance Requirements
-          </H1>
-          <Text fontSize="$6" color="$color11" mt="$1">
+          </h1>
+          <Text style={{ fontSize: 'var(--font-size-6)', color: 'var(--color-11)', marginTop: 4 }}>
             Manage insurance compliance requirements and templates
           </Text>
-        </YStack>
-        <XStack alignItems="center" gap="$3">
-          <Button variant="outlined" onPress={() => navigate('/admin/compliance/requirements/import')}>
-            <Upload size={18} style={{ marginRight: '8px' }} />
-            Import
+        </Stack>
+        <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+          <Button variant="outlined" onClick={() => navigate('/admin/compliance/requirements/import')}>
+            <Row style={{ alignItems: 'center', gap: 8 }}>
+              <Upload size={18} />
+              Import
+            </Row>
           </Button>
-          <Button variant="outlined" onPress={() => navigate('/admin/compliance/requirements/export')}>
-            <Download size={18} style={{ marginRight: '8px' }} />
-            Export
+          <Button variant="outlined" onClick={() => navigate('/admin/compliance/requirements/export')}>
+            <Row style={{ alignItems: 'center', gap: 8 }}>
+              <Download size={18} />
+              Export
+            </Row>
           </Button>
-          <Button variant="solid" onPress={handleCreateRequirement}>
-            <Plus size={18} style={{ marginRight: '8px' }} />
-            Create {view === 'templates' ? 'Template' : 'Requirement'}
+          <Button variant="solid" onClick={handleCreateRequirement}>
+            <Row style={{ alignItems: 'center', gap: 8 }}>
+              <Plus size={18} />
+              Create {view === 'templates' ? 'Template' : 'Requirement'}
+            </Row>
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* View Tabs */}
-      <XStack alignItems="center" borderBottomWidth={1} borderColor="$borderColor">
-        <Button
-          unstyled
-          flexDirection="row"
-          alignItems="center"
-          gap="$2"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
-          fontSize="$3"
-          fontWeight="500"
-          borderBottomWidth={2}
-          borderColor={view === 'all' ? '$blue9' : 'transparent'}
-          color={view === 'all' ? '$blue9' : '$color11'}
-          hoverStyle={{ color: '$color12', borderColor: '$borderColor' }}
-          onPress={() => { setView('all'); setPage(1); }}
+      <Row style={{ alignItems: 'center', borderBottomWidth: 1, borderBottomStyle: 'solid', borderColor: 'var(--color-border)' }}>
+        <button
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+            paddingTop: 'var(--space-3)',
+            paddingBottom: 'var(--space-3)',
+            fontSize: 'var(--font-size-3)',
+            fontWeight: 500,
+            borderBottomWidth: 2,
+            borderBottomStyle: 'solid',
+            borderBottomColor: view === 'all' ? 'var(--color-blue-9)' : 'transparent',
+            color: view === 'all' ? 'var(--color-blue-9)' : 'var(--color-11)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+          onClick={() => { setView('all'); setPage(1); }}
         >
           <FileText size={18} />
           <Text>All</Text>
           <Text
-            ml="$1"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            fontSize="$2"
-            borderRadius={9999}
-            backgroundColor={view === 'all' ? '$blue3' : '$gray3'}
-            color={view === 'all' ? '$blue10' : '$color11'}
+            style={{
+              marginLeft: 4,
+              paddingLeft: 8,
+              paddingRight: 8,
+              paddingTop: 4,
+              paddingBottom: 4,
+              fontSize: 'var(--font-size-2)',
+              borderRadius: 9999,
+              backgroundColor: view === 'all' ? 'var(--color-blue-3)' : 'var(--color-gray-3)',
+              color: view === 'all' ? 'var(--color-blue-10)' : 'var(--color-11)',
+            }}
           >
             {viewCounts.all}
           </Text>
-        </Button>
-        <Button
-          unstyled
-          flexDirection="row"
-          alignItems="center"
-          gap="$2"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
-          fontSize="$3"
-          fontWeight="500"
-          borderBottomWidth={2}
-          borderColor={view === 'templates' ? '$blue9' : 'transparent'}
-          color={view === 'templates' ? '$blue9' : '$color11'}
-          hoverStyle={{ color: '$color12', borderColor: '$borderColor' }}
-          onPress={() => { setView('templates'); setPage(1); }}
+        </button>
+        <button
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+            paddingTop: 'var(--space-3)',
+            paddingBottom: 'var(--space-3)',
+            fontSize: 'var(--font-size-3)',
+            fontWeight: 500,
+            borderBottomWidth: 2,
+            borderBottomStyle: 'solid',
+            borderBottomColor: view === 'templates' ? 'var(--color-blue-9)' : 'transparent',
+            color: view === 'templates' ? 'var(--color-blue-9)' : 'var(--color-11)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+          onClick={() => { setView('templates'); setPage(1); }}
         >
           <Copy size={18} />
           <Text>Templates</Text>
-        </Button>
-        <Button
-          unstyled
-          flexDirection="row"
-          alignItems="center"
-          gap="$2"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
-          fontSize="$3"
-          fontWeight="500"
-          borderBottomWidth={2}
-          borderColor={view === 'requirements' ? '$blue9' : 'transparent'}
-          color={view === 'requirements' ? '$blue9' : '$color11'}
-          hoverStyle={{ color: '$color12', borderColor: '$borderColor' }}
-          onPress={() => { setView('requirements'); setPage(1); }}
+        </button>
+        <button
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            paddingLeft: 'var(--space-4)',
+            paddingRight: 'var(--space-4)',
+            paddingTop: 'var(--space-3)',
+            paddingBottom: 'var(--space-3)',
+            fontSize: 'var(--font-size-3)',
+            fontWeight: 500,
+            borderBottomWidth: 2,
+            borderBottomStyle: 'solid',
+            borderBottomColor: view === 'requirements' ? 'var(--color-blue-9)' : 'transparent',
+            color: view === 'requirements' ? 'var(--color-blue-9)' : 'var(--color-11)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+          onClick={() => { setView('requirements'); setPage(1); }}
         >
           <CheckCircle size={18} />
           <Text>Requirements</Text>
-        </Button>
-      </XStack>
+        </button>
+      </Row>
 
       {/* Search and Filters */}
-      <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderColor="$borderColor" padding="$4">
-        <YStack gap="$4">
-          <XStack alignItems="center" gap="$3">
-            <XStack flex={1} position="relative">
+      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 1px 2px var(--color-shadow)', borderColor: 'var(--color-border)', padding: 'var(--space-4)' }}>
+        <Stack style={{ gap: 'var(--space-4)' }}>
+          <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+            <Row style={{ flex: 1, position: 'relative' }}>
               <Search
                 style={{
                   position: 'absolute',
@@ -403,111 +433,130 @@ export function ComplianceRequirementsPage() {
                   paddingRight: '16px',
                   paddingTop: '10px',
                   paddingBottom: '10px',
-                  backgroundColor: 'var(--background)',
-                  border: '1px solid var(--borderColor)',
+                  backgroundColor: 'var(--color-background)',
+                  border: '1px solid var(--color-border)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  color: 'var(--color12)',
+                  color: 'var(--color-12)',
                 }}
               />
-            </XStack>
-            <Button
-              variant={showFilters ? 'solid' : 'outlined'}
-              onPress={() => setShowFilters(!showFilters)}
-              flexDirection="row"
-              alignItems="center"
-              gap="$2"
-              paddingHorizontal="$4"
-              paddingVertical="$2.5"
-              fontSize="$3"
-              fontWeight="500"
-              backgroundColor={showFilters ? '$blue2' : '$background'}
-              borderColor={showFilters ? '$blue9' : '$borderColor'}
-              color={showFilters ? '$blue10' : '$color11'}
-              hoverStyle={{ backgroundColor: '$gray2' }}
+            </Row>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+                paddingLeft: 'var(--space-4)',
+                paddingRight: 'var(--space-4)',
+                paddingTop: 10,
+                paddingBottom: 10,
+                fontSize: 'var(--font-size-3)',
+                fontWeight: 500,
+                backgroundColor: showFilters ? 'var(--color-blue-2)' : 'var(--color-background)',
+                borderColor: showFilters ? 'var(--color-blue-9)' : 'var(--color-border)',
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderRadius: 'var(--radius-4)',
+                color: showFilters ? 'var(--color-blue-10)' : 'var(--color-11)',
+                cursor: 'pointer',
+              }}
             >
               <Filter size={18} />
               <Text>Filters</Text>
               {activeFilterCount > 0 && (
                 <Text
-                  ml="$1"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  backgroundColor="$blue9"
-                  color="$background"
-                  fontSize="$2"
-                  borderRadius={9999}
+                  style={{
+                    marginLeft: 4,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    backgroundColor: 'var(--color-blue-9)',
+                    color: 'var(--color-background)',
+                    fontSize: 'var(--font-size-2)',
+                    borderRadius: 9999,
+                  }}
                 >
                   {activeFilterCount}
                 </Text>
               )}
-            </Button>
-          </XStack>
+            </button>
+          </Row>
 
           {/* Expanded Filters */}
           {showFilters && (
-            <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" gap="$4">
-              <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }} $gtLg={{ flexDirection: 'row' }}>
+            <Stack style={{ borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)', gap: 'var(--space-4)' }}>
+              <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
                 {/* Coverage Type Filter */}
-                <YStack flex={1} minWidth="200px">
-                  <Text fontSize="$2" fontWeight="500" color="$color11" mb="$2">
+                <Stack style={{ flex: 1, minWidth: 200 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)', marginBottom: 8 }}>
                     Coverage Type
                   </Text>
-                  <XStack flexWrap="wrap" gap="$2">
+                  <Row style={{ flexWrap: 'wrap', gap: 8 }}>
                     {coverageTypes.map((type) => (
-                      <Button
+                      <button
                         key={type.value}
-                        unstyled
-                        onPress={() => handleTypeToggle(type.value)}
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        fontSize="$2"
-                        borderRadius="$2"
-                        borderWidth={1}
-                        backgroundColor={filters.types.includes(type.value) ? '$blue2' : '$background'}
-                        borderColor={filters.types.includes(type.value) ? '$blue9' : '$borderColor'}
-                        color={filters.types.includes(type.value) ? '$blue10' : '$color11'}
-                        hoverStyle={{ borderColor: '$blue7' }}
+                        onClick={() => handleTypeToggle(type.value)}
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          fontSize: 'var(--font-size-2)',
+                          borderRadius: 'var(--radius-2)',
+                          borderWidth: 1,
+                          borderStyle: 'solid',
+                          backgroundColor: filters.types.includes(type.value) ? 'var(--color-blue-2)' : 'var(--color-background)',
+                          borderColor: filters.types.includes(type.value) ? 'var(--color-blue-9)' : 'var(--color-border)',
+                          color: filters.types.includes(type.value) ? 'var(--color-blue-10)' : 'var(--color-11)',
+                          cursor: 'pointer',
+                        }}
                       >
                         {type.label}
-                      </Button>
+                      </button>
                     ))}
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
 
                 {/* Status Filter */}
-                <YStack flex={1} minWidth="200px">
-                  <Text fontSize="$2" fontWeight="500" color="$color11" mb="$2">
+                <Stack style={{ flex: 1, minWidth: 200 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)', marginBottom: 8 }}>
                     Status
                   </Text>
-                  <XStack flexWrap="wrap" gap="$2">
+                  <Row style={{ flexWrap: 'wrap', gap: 8 }}>
                     {requirementStatuses.map((status) => (
-                      <Button
+                      <button
                         key={status.value}
-                        unstyled
-                        onPress={() => handleStatusToggle(status.value)}
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        fontSize="$2"
-                        borderRadius="$2"
-                        borderWidth={1}
-                        backgroundColor={filters.statuses.includes(status.value) ? '$blue2' : '$background'}
-                        borderColor={filters.statuses.includes(status.value) ? '$blue9' : '$borderColor'}
-                        color={filters.statuses.includes(status.value) ? '$blue10' : '$color11'}
-                        hoverStyle={{ borderColor: '$blue7' }}
+                        onClick={() => handleStatusToggle(status.value)}
+                        style={{
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          fontSize: 'var(--font-size-2)',
+                          borderRadius: 'var(--radius-2)',
+                          borderWidth: 1,
+                          borderStyle: 'solid',
+                          backgroundColor: filters.statuses.includes(status.value) ? 'var(--color-blue-2)' : 'var(--color-background)',
+                          borderColor: filters.statuses.includes(status.value) ? 'var(--color-blue-9)' : 'var(--color-border)',
+                          color: filters.statuses.includes(status.value) ? 'var(--color-blue-10)' : 'var(--color-11)',
+                          cursor: 'pointer',
+                        }}
                       >
                         {status.label}
-                      </Button>
+                      </button>
                     ))}
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
 
                 {/* Include Archived Toggle */}
-                <YStack flex={1} minWidth="200px">
-                  <Text fontSize="$2" fontWeight="500" color="$color11" mb="$2">
+                <Stack style={{ flex: 1, minWidth: 200 }}>
+                  <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-11)', marginBottom: 8 }}>
                     Options
                   </Text>
-                  <XStack alignItems="center" gap="$2" cursor="pointer">
+                  <Row style={{ alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                     <input
                       type="checkbox"
                       checked={filters.includeArchived}
@@ -517,55 +566,61 @@ export function ComplianceRequirementsPage() {
                       }}
                       style={{
                         borderRadius: '4px',
-                        border: '1px solid var(--borderColor)',
-                        accentColor: 'var(--blue9)',
+                        border: '1px solid var(--color-border)',
+                        accentColor: 'var(--color-blue-9)',
                       }}
                     />
-                    <Text fontSize="$3" color="$color11">Include archived</Text>
-                  </XStack>
-                </YStack>
-              </XStack>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Include archived</Text>
+                  </Row>
+                </Stack>
+              </Row>
 
               {activeFilterCount > 0 && (
-                <Button
-                  unstyled
-                  flexDirection="row"
-                  alignItems="center"
-                  gap="$2"
-                  fontSize="$3"
-                  color="$color11"
-                  hoverStyle={{ color: '$color12' }}
-                  onPress={clearFilters}
+                <button
+                  onClick={clearFilters}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 'var(--font-size-3)',
+                    color: 'var(--color-11)',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
                   <X size={16} />
                   <Text>Clear all filters</Text>
-                </Button>
+                </button>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {/* Results count */}
-          <XStack alignItems="center" justifyContent="space-between" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-            <Text fontSize="$3" color="$color11">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopStyle: 'solid', borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
               Showing{' '}
-              <Text fontWeight="600" color="$color12">
+              <Text style={{ fontWeight: 600, color: 'var(--color-12)' }}>
                 {requirements.length}
               </Text>{' '}
               of {totalCount} requirements
             </Text>
             {selectedIds.length > 0 && (
-              <XStack alignItems="center" gap="$2">
-                <Text fontSize="$3" color="$color11">
+              <Row style={{ alignItems: 'center', gap: 8 }}>
+                <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                   {selectedIds.length} selected
                 </Text>
                 <Button size="$3" variant="outlined">
-                  <Archive size={14} style={{ marginRight: '4px' }} />
-                  Archive Selected
+                  <Row style={{ alignItems: 'center', gap: 4 }}>
+                    <Archive size={14} />
+                    Archive Selected
+                  </Row>
                 </Button>
-              </XStack>
+              </Row>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Card>
 
       {/* Requirements Table */}
@@ -585,10 +640,10 @@ export function ComplianceRequirementsPage() {
           }
         />
       ) : (
-        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderColor="$borderColor" overflow="hidden">
-          <YStack overflowX="auto">
+        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 1px 2px var(--color-shadow)', borderColor: 'var(--color-border)', overflow: 'hidden' }}>
+          <Stack style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%' }}>
-              <thead style={{ backgroundColor: 'var(--gray2)', borderBottom: '1px solid var(--borderColor)' }}>
+              <thead style={{ backgroundColor: 'var(--color-gray-2)', borderBottom: '1px solid var(--color-border)' }}>
                 <tr>
                   <th style={{ width: '40px', padding: '12px 16px' }}>
                     <input
@@ -597,8 +652,8 @@ export function ComplianceRequirementsPage() {
                       onChange={handleSelectAll}
                       style={{
                         borderRadius: '4px',
-                        border: '1px solid var(--borderColor)',
-                        accentColor: 'var(--blue9)',
+                        border: '1px solid var(--color-border)',
+                        accentColor: 'var(--color-blue-9)',
                       }}
                     />
                   </th>
@@ -608,19 +663,17 @@ export function ComplianceRequirementsPage() {
                       textAlign: 'left',
                       fontSize: '12px',
                       fontWeight: '500',
-                      color: 'var(--color11)',
+                      color: 'var(--color-11)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--background)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     onClick={() => handleSort('code')}
                   >
-                    <XStack alignItems="center">
+                    <Row style={{ alignItems: 'center' }}>
                       <Text>Code</Text>
                       <SortIndicator field="code" />
-                    </XStack>
+                    </Row>
                   </th>
                   <th
                     style={{
@@ -628,19 +681,17 @@ export function ComplianceRequirementsPage() {
                       textAlign: 'left',
                       fontSize: '12px',
                       fontWeight: '500',
-                      color: 'var(--color11)',
+                      color: 'var(--color-11)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--background)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     onClick={() => handleSort('name')}
                   >
-                    <XStack alignItems="center">
+                    <Row style={{ alignItems: 'center' }}>
                       <Text>Name</Text>
                       <SortIndicator field="name" />
-                    </XStack>
+                    </Row>
                   </th>
                   <th
                     style={{
@@ -648,19 +699,17 @@ export function ComplianceRequirementsPage() {
                       textAlign: 'left',
                       fontSize: '12px',
                       fontWeight: '500',
-                      color: 'var(--color11)',
+                      color: 'var(--color-11)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--background)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     onClick={() => handleSort('type')}
                   >
-                    <XStack alignItems="center">
+                    <Row style={{ alignItems: 'center' }}>
                       <Text>Type</Text>
                       <SortIndicator field="type" />
-                    </XStack>
+                    </Row>
                   </th>
                   <th
                     style={{
@@ -668,19 +717,17 @@ export function ComplianceRequirementsPage() {
                       textAlign: 'left',
                       fontSize: '12px',
                       fontWeight: '500',
-                      color: 'var(--color11)',
+                      color: 'var(--color-11)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--background)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     onClick={() => handleSort('status')}
                   >
-                    <XStack alignItems="center">
+                    <Row style={{ alignItems: 'center' }}>
                       <Text>Status</Text>
                       <SortIndicator field="status" />
-                    </XStack>
+                    </Row>
                   </th>
                   <th
                     style={{
@@ -688,26 +735,24 @@ export function ComplianceRequirementsPage() {
                       textAlign: 'left',
                       fontSize: '12px',
                       fontWeight: '500',
-                      color: 'var(--color11)',
+                      color: 'var(--color-11)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--background)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     onClick={() => handleSort('effective_date')}
                   >
-                    <XStack alignItems="center">
+                    <Row style={{ alignItems: 'center' }}>
                       <Text>Effective Date</Text>
                       <SortIndicator field="effective_date" />
-                    </XStack>
+                    </Row>
                   </th>
                   <th style={{
                     padding: '12px 16px',
                     textAlign: 'left',
                     fontSize: '12px',
                     fontWeight: '500',
-                    color: 'var(--color11)',
+                    color: 'var(--color-11)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                   }}>
@@ -721,10 +766,10 @@ export function ComplianceRequirementsPage() {
                   <tr
                     key={requirement.id}
                     style={{
-                      borderBottom: idx < requirements.length - 1 ? '1px solid var(--borderColor)' : 'none',
+                      borderBottom: idx < requirements.length - 1 ? '1px solid var(--color-border)' : 'none',
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--gray2)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-gray-2)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     onClick={() => handleRowClick(requirement.id)}
                   >
@@ -735,47 +780,55 @@ export function ComplianceRequirementsPage() {
                         onChange={() => handleSelectRow(requirement.id)}
                         style={{
                           borderRadius: '4px',
-                          border: '1px solid var(--borderColor)',
-                          accentColor: 'var(--blue9)',
+                          border: '1px solid var(--color-border)',
+                          accentColor: 'var(--color-blue-9)',
                         }}
                       />
                     </td>
                     <td style={{ padding: '16px' }}>
-                      <XStack alignItems="center" gap="$2">
-                        <Text fontFamily="$mono" fontSize="$3" fontWeight="500" color="$color12">
+                      <Row style={{ alignItems: 'center', gap: 8 }}>
+                        <Text style={{ fontFamily: 'monospace', fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-12)' }}>
                           {requirement.code}
                         </Text>
                         {requirement.is_template && (
                           <Text
-                            paddingHorizontal="$1.5"
-                            paddingVertical="$1"
-                            fontSize="$2"
-                            backgroundColor="$purple2"
-                            color="$purple10"
-                            borderRadius="$2"
+                            style={{
+                              paddingLeft: 6,
+                              paddingRight: 6,
+                              paddingTop: 4,
+                              paddingBottom: 4,
+                              fontSize: 'var(--font-size-2)',
+                              backgroundColor: 'var(--color-purple-2)',
+                              color: 'var(--color-purple-10)',
+                              borderRadius: 'var(--radius-2)',
+                            }}
                           >
                             Template
                           </Text>
                         )}
-                      </XStack>
+                      </Row>
                     </td>
                     <td style={{ padding: '16px' }}>
-                      <YStack>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                      <Stack>
+                        <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-12)' }}>
                           {requirement.name}
                         </Text>
                         {requirement.description && (
                           <Text
-                            fontSize="$2"
-                            color="$color10"
-                            mt="$0.5"
-                            numberOfLines={1}
-                            maxWidth="300px"
+                            style={{
+                              fontSize: 'var(--font-size-2)',
+                              color: 'var(--color-10)',
+                              marginTop: 2,
+                              maxWidth: '300px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
                           >
                             {requirement.description}
                           </Text>
                         )}
-                      </YStack>
+                      </Stack>
                     </td>
                     <td style={{ padding: '16px' }}>
                       <RequirementTypeBadge type={requirement.type} size="xs" />
@@ -784,50 +837,58 @@ export function ComplianceRequirementsPage() {
                       <RequirementStatusBadge status={requirement.status} size="xs" />
                     </td>
                     <td style={{ padding: '16px' }}>
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                         {formatDate(requirement.effective_date)}
                       </Text>
                     </td>
                     <td style={{ padding: '16px' }}>
-                      <Text fontSize="$3" color="$color10">
+                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
                         v{requirement.current_version}
                       </Text>
                     </td>
                     <td style={{ padding: '16px' }} onClick={(e) => e.stopPropagation()}>
-                      <Button
-                        unstyled
-                        padding="$1"
-                        borderRadius="$2"
-                        hoverStyle={{ backgroundColor: '$background' }}
+                      <button
+                        style={{
+                          padding: 4,
+                          borderRadius: 'var(--radius-2)',
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
                       >
-                        <MoreHorizontal size={16} color="var(--color10)" />
-                      </Button>
+                        <MoreHorizontal size={16} style={{ color: 'var(--color-10)' }} />
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </YStack>
+          </Stack>
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <XStack
-              alignItems="center"
-              justifyContent="space-between"
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              backgroundColor="$gray2"
-              borderTopWidth={1}
-              borderColor="$borderColor"
+            <Row
+              style={{
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingLeft: 'var(--space-4)',
+                paddingRight: 'var(--space-4)',
+                paddingTop: 'var(--space-3)',
+                paddingBottom: 'var(--space-3)',
+                backgroundColor: 'var(--color-gray-2)',
+                borderTopWidth: 1,
+                borderTopStyle: 'solid',
+                borderColor: 'var(--color-border)',
+              }}
             >
-              <Text fontSize="$3" color="$color11">
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                 Page {page} of {totalPages}
               </Text>
-              <XStack alignItems="center" gap="$2">
+              <Row style={{ alignItems: 'center', gap: 8 }}>
                 <Button
                   size="$3"
                   variant="outlined"
-                  onPress={() => setPage((p) => Math.max(1, p - 1))}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                 >
                   Previous
@@ -835,17 +896,17 @@ export function ComplianceRequirementsPage() {
                 <Button
                   size="$3"
                   variant="outlined"
-                  onPress={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                 >
                   Next
                 </Button>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           )}
         </Card>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

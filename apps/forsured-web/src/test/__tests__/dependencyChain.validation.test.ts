@@ -6,7 +6,7 @@
  *
  * 1. The Vite shims for react-native internal paths work
  * 2. The esbuild optimizeDeps configuration is correct
- * 3. @unicornlove/ui exports can be resolved
+ * 3. @unicornlove/beyond-ui exports can be resolved
  *
  * If these tests pass, the unit tests can safely use mocks knowing the
  * dependency chain is valid up to the mock boundary.

@@ -11,7 +11,7 @@ import {
   Clock,
   Search,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H1, H2, SizableText, Input } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, Input } from '@unicornlove/beyond-ui';
 import { useUsers } from '../../hooks/useUsers';
 import { useUserInvitations } from '../../hooks/useUserInvitations';
 import { useProjects } from '../../hooks/useProjects';
@@ -63,24 +63,24 @@ export default function UserManagementPage() {
   const getRoleBadgeColor = (role: string): { bg: string; text: string } => {
     switch (role) {
       case 'admin':
-        return { bg: '$red2', text: '$red11' };
+        return { bg: 'var(--color-red-2)', text: 'var(--color-red-11)' };
       case 'manager':
-        return { bg: '$blue2', text: '$blue11' };
+        return { bg: 'var(--color-blue-2)', text: 'var(--color-blue-11)' };
       case 'user':
-        return { bg: '$green2', text: '$green11' };
+        return { bg: 'var(--color-green-2)', text: 'var(--color-green-11)' };
       default:
-        return { bg: '$color2', text: '$color11' };
+        return { bg: 'var(--color-2)', text: 'var(--color-11)' };
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'active':
-        return <CheckCircle color="var(--green10)" size={16} />;
+        return <CheckCircle color="var(--color-green-10)" size={16} />;
       case 'inactive':
-        return <XCircle color="var(--red10)" size={16} />;
+        return <XCircle color="var(--color-red-10)" size={16} />;
       default:
-        return <Clock color="var(--yellow10)" size={16} />;
+        return <Clock color="var(--color-yellow-10)" size={16} />;
     }
   };
 
@@ -109,166 +109,160 @@ export default function UserManagementPage() {
   }
 
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1 fontSize="$9" fontWeight="700" color="$color12">
+    <Stack style={{ gap: '24px' }}>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack>
+          <h1 style={{ fontSize: '32px', fontWeight: 700, color: 'var(--color-12)', margin: 0 }}>
             User Management
-          </H1>
-          <SizableText fontSize="$4" color="$color11">
+          </h1>
+          <Text style={{ fontSize: '16px', color: 'var(--color-11)' }}>
             Manage users, roles, and permissions
-          </SizableText>
-        </YStack>
-        <Button onPress={() => setShowInviteModal(true)}>
-          <XStack alignItems="center" gap="$2">
+          </Text>
+        </Stack>
+        <Button onClick={() => setShowInviteModal(true)}>
+          <Row style={{ alignItems: 'center', gap: '8px' }}>
             <UserPlus size={16} />
             <Text>Invite User</Text>
-          </XStack>
+          </Row>
         </Button>
-      </XStack>
+      </Row>
 
       {/* Stats */}
-      <XStack flexWrap="wrap" gap="$6">
+      <Row style={{ flexWrap: 'wrap', gap: '24px' }}>
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$6"
-          flex={1}
-          minWidth={200}
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '8px',
+            border: '1px solid var(--color-border)',
+            padding: '24px',
+            flex: 1,
+            minWidth: '200px',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <SizableText fontSize="$3" color="$color11">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                 Total Users
-              </SizableText>
-              <Text fontSize="$10" fontWeight="700" color="$color12">
+              </Text>
+              <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-12)' }}>
                 {users.length}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$blue2" padding="$3" borderRadius="$4">
-              <Users size={24} color="var(--blue10)" />
-            </YStack>
-          </XStack>
+            </Stack>
+            <Stack style={{ backgroundColor: 'var(--color-blue-2)', padding: '12px', borderRadius: '8px' }}>
+              <Users size={24} color="var(--color-blue-10)" />
+            </Stack>
+          </Row>
         </Card>
 
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$6"
-          flex={1}
-          minWidth={200}
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '8px',
+            border: '1px solid var(--color-border)',
+            padding: '24px',
+            flex: 1,
+            minWidth: '200px',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <SizableText fontSize="$3" color="$color11">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                 Active Users
-              </SizableText>
-              <Text fontSize="$10" fontWeight="700" color="$green10">
+              </Text>
+              <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-green-10)' }}>
                 {users.filter((u) => u.status === 'active').length}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$green2" padding="$3" borderRadius="$4">
-              <CheckCircle size={24} color="var(--green10)" />
-            </YStack>
-          </XStack>
+            </Stack>
+            <Stack style={{ backgroundColor: 'var(--color-green-2)', padding: '12px', borderRadius: '8px' }}>
+              <CheckCircle size={24} color="var(--color-green-10)" />
+            </Stack>
+          </Row>
         </Card>
 
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$6"
-          flex={1}
-          minWidth={200}
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '8px',
+            border: '1px solid var(--color-border)',
+            padding: '24px',
+            flex: 1,
+            minWidth: '200px',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <SizableText fontSize="$3" color="$color11">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                 Pending Invites
-              </SizableText>
-              <Text fontSize="$10" fontWeight="700" color="$yellow10">
+              </Text>
+              <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-yellow-10)' }}>
                 {pendingInvitations.length}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$yellow2" padding="$3" borderRadius="$4">
-              <Clock size={24} color="var(--yellow10)" />
-            </YStack>
-          </XStack>
+            </Stack>
+            <Stack style={{ backgroundColor: 'var(--color-yellow-2)', padding: '12px', borderRadius: '8px' }}>
+              <Clock size={24} color="var(--color-yellow-10)" />
+            </Stack>
+          </Row>
         </Card>
 
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$6"
-          flex={1}
-          minWidth={200}
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '8px',
+            border: '1px solid var(--color-border)',
+            padding: '24px',
+            flex: 1,
+            minWidth: '200px',
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <YStack>
-              <SizableText fontSize="$3" color="$color11">
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack>
+              <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                 Admins
-              </SizableText>
-              <Text fontSize="$10" fontWeight="700" color="$red10">
+              </Text>
+              <Text style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-red-10)' }}>
                 {users.filter((u) => u.role === 'admin').length}
               </Text>
-            </YStack>
-            <YStack backgroundColor="$red2" padding="$3" borderRadius="$4">
-              <Shield size={24} color="var(--red10)" />
-            </YStack>
-          </XStack>
+            </Stack>
+            <Stack style={{ backgroundColor: 'var(--color-red-2)', padding: '12px', borderRadius: '8px' }}>
+              <Shield size={24} color="var(--color-red-10)" />
+            </Stack>
+          </Row>
         </Card>
-      </XStack>
+      </Row>
 
       {/* Filters */}
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={1}
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding="$4"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: '8px',
+          border: '1px solid var(--color-border)',
+          padding: '16px',
+        }}
       >
-        <XStack
-          flexDirection="column"
-          $gtMd={{ flexDirection: 'row' }}
-          gap="$4"
-        >
-          <XStack flex={1} position="relative" alignItems="center">
+        <Row style={{ flexDirection: 'column', gap: '16px' }}>
+          <Row style={{ flex: 1, position: 'relative', alignItems: 'center' }}>
             <Search
               size={18}
               style={{ position: 'absolute', left: 12, zIndex: 1 }}
-              color="var(--color10)"
+              color="var(--color-10)"
             />
             <Input
               type="text"
               value={searchTerm}
-              onChangeText={setSearchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search users..."
-              width="100%"
-              paddingLeft="$10"
+              style={{ width: '100%', paddingLeft: '40px' }}
             />
-          </XStack>
+          </Row>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             style={{
               flex: 1,
               padding: '8px 12px',
-              border: '1px solid var(--borderColor)',
+              border: '1px solid var(--color-border)',
               borderRadius: '8px',
-              backgroundColor: 'var(--background)',
+              backgroundColor: 'var(--color-background)',
             }}
           >
             <option value="all">All Roles</option>
@@ -282,115 +276,118 @@ export default function UserManagementPage() {
             style={{
               flex: 1,
               padding: '8px 12px',
-              border: '1px solid var(--borderColor)',
+              border: '1px solid var(--color-border)',
               borderRadius: '8px',
-              backgroundColor: 'var(--background)',
+              backgroundColor: 'var(--color-background)',
             }}
           >
             <option value="all">All Statuses</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-        </XStack>
+        </Row>
       </Card>
 
       {/* Pending Invitations */}
       {pendingInvitations.length > 0 && (
         <Card
-          backgroundColor="$background"
-          borderRadius="$4"
-          elevation={1}
-          borderWidth={1}
-          borderColor="$borderColor"
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: '8px',
+            border: '1px solid var(--color-border)',
+          }}
         >
-          <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
-            <H2 fontSize="$6" fontWeight="600" color="$color12">
+          <Stack style={{ padding: '24px', borderBottom: '1px solid var(--color-border)' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-12)', margin: 0 }}>
               Pending Invitations
-            </H2>
-          </YStack>
-          <YStack>
+            </h2>
+          </Stack>
+          <Stack>
             {pendingInvitations.map((invitation, index) => (
-              <YStack
+              <Stack
                 key={invitation.id}
-                padding="$6"
-                borderTopWidth={index > 0 ? 1 : 0}
-                borderColor="$borderColor"
+                style={{
+                  padding: '24px',
+                  borderTop: index > 0 ? '1px solid var(--color-border)' : 'none',
+                }}
               >
-                <XStack alignItems="center" justifyContent="space-between">
-                  <XStack alignItems="center" gap="$4">
-                    <YStack
-                      width={40}
-                      height={40}
-                      backgroundColor="$blue2"
-                      borderRadius={9999}
-                      alignItems="center"
-                      justifyContent="center"
+                <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Row style={{ alignItems: 'center', gap: '16px' }}>
+                    <Stack
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        backgroundColor: 'var(--color-blue-2)',
+                        borderRadius: '9999px',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                      }}
                     >
-                      <Mail size={20} color="var(--blue10)" />
-                    </YStack>
-                    <YStack>
-                      <SizableText fontSize="$4" fontWeight="500" color="$color12">
+                      <Mail size={20} color="var(--color-blue-10)" />
+                    </Stack>
+                    <Stack>
+                      <Text style={{ fontSize: '16px', fontWeight: 500, color: 'var(--color-12)' }}>
                         {invitation.name}
-                      </SizableText>
-                      <SizableText fontSize="$3" color="$color11">
+                      </Text>
+                      <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                         {invitation.email}
-                      </SizableText>
-                      <SizableText fontSize="$1" color="$color10" mt="$1">
-                        Invited {formatDate(invitation.invited_at)} • Role:{' '}
+                      </Text>
+                      <Text style={{ fontSize: '12px', color: 'var(--color-10)', marginTop: '4px' }}>
+                        Invited {formatDate(invitation.invited_at)} - Role:{' '}
                         {invitation.role}
-                      </SizableText>
-                    </YStack>
-                  </XStack>
-                  <XStack alignItems="center" gap="$2">
+                      </Text>
+                    </Stack>
+                  </Row>
+                  <Row style={{ alignItems: 'center', gap: '8px' }}>
                     <Button
                       variant="outlined"
-                      size="$2"
-                      onPress={() => handleResendInvitation(invitation.id)}
+                      size="sm"
+                      onClick={() => handleResendInvitation(invitation.id)}
                     >
                       Resend
                     </Button>
                     <Button
                       variant="outlined"
-                      size="$2"
-                      backgroundColor="$red10"
-                      color="white"
-                      onPress={() => handleCancelInvitation(invitation.id)}
+                      size="sm"
+                      style={{ backgroundColor: 'var(--color-red-10)', color: 'white' }}
+                      onClick={() => handleCancelInvitation(invitation.id)}
                     >
                       Cancel
                     </Button>
-                  </XStack>
-                </XStack>
-              </YStack>
+                  </Row>
+                </Row>
+              </Stack>
             ))}
-          </YStack>
+          </Stack>
         </Card>
       )}
 
       {/* Users Table */}
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={1}
-        borderWidth={1}
-        borderColor="$borderColor"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: '8px',
+          border: '1px solid var(--color-border)',
+        }}
       >
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ backgroundColor: 'var(--color3)' }}>
+            <thead style={{ backgroundColor: 'var(--color-3)' }}>
               <tr>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   User
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Role
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Status
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Last Active
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: 500, color: 'var(--color-11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Actions
                 </th>
               </tr>
@@ -402,73 +399,80 @@ export default function UserManagementPage() {
                   <tr
                     key={user.id}
                     style={{
-                      borderTop: index > 0 ? '1px solid var(--borderColor)' : 'none',
+                      borderTop: index > 0 ? '1px solid var(--color-border)' : 'none',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--color2)';
+                      e.currentTarget.style.backgroundColor = 'var(--color-2)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--background)';
+                      e.currentTarget.style.backgroundColor = 'var(--color-background)';
                     }}
                   >
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <XStack alignItems="center">
-                        <YStack
-                          width={40}
-                          height={40}
-                          backgroundColor="$blue2"
-                          borderRadius={9999}
-                          alignItems="center"
-                          justifyContent="center"
-                          mr="$3"
+                      <Row style={{ alignItems: 'center' }}>
+                        <Stack
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            backgroundColor: 'var(--color-blue-2)',
+                            borderRadius: '9999px',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: '12px',
+                            display: 'flex',
+                          }}
                         >
-                          <SizableText fontSize="$3" fontWeight="500" color="$blue10">
+                          <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-blue-10)' }}>
                             {user.name.charAt(0).toUpperCase()}
-                          </SizableText>
-                        </YStack>
-                        <YStack>
-                          <SizableText fontSize="$3" fontWeight="500" color="$color12">
+                          </Text>
+                        </Stack>
+                        <Stack>
+                          <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-12)' }}>
                             {user.name}
-                          </SizableText>
-                          <SizableText fontSize="$3" color="$color11">
+                          </Text>
+                          <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                             {user.email}
-                          </SizableText>
-                        </YStack>
-                      </XStack>
+                          </Text>
+                        </Stack>
+                      </Row>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <YStack
-                        alignItems="center"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={roleColors.bg as any}
-                        alignSelf="flex-start"
+                      <Stack
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          paddingLeft: '8px',
+                          paddingRight: '8px',
+                          paddingTop: '4px',
+                          paddingBottom: '4px',
+                          borderRadius: '4px',
+                          backgroundColor: roleColors.bg,
+                        }}
                       >
-                        <SizableText fontSize="$1" fontWeight="500" color={roleColors.text as any}>
+                        <Text style={{ fontSize: '12px', fontWeight: 500, color: roleColors.text }}>
                           {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                        </SizableText>
-                      </YStack>
+                        </Text>
+                      </Stack>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <XStack alignItems="center" gap="$2">
+                      <Row style={{ alignItems: 'center', gap: '8px' }}>
                         {getStatusIcon(user.status)}
-                        <SizableText fontSize="$3" color="$color12" textTransform="capitalize">
+                        <Text style={{ fontSize: '14px', color: 'var(--color-12)', textTransform: 'capitalize' }}>
                           {user.status}
-                        </SizableText>
-                      </XStack>
+                        </Text>
+                      </Row>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      <SizableText fontSize="$3" color="$color11">
+                      <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                         {user.last_active ? formatDate(user.last_active) : 'Never'}
-                      </SizableText>
+                      </Text>
                     </td>
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right' }}>
-                      <XStack alignItems="center" justifyContent="flex-end" gap="$2">
+                      <Row style={{ alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
                         <Button
                           variant="outlined"
-                          size="$2"
-                          onPress={() =>
+                          size="sm"
+                          onClick={() =>
                             setSelectedUser({
                               id: user.id,
                               name: user.name,
@@ -478,10 +482,10 @@ export default function UserManagementPage() {
                         >
                           <Edit size={14} />
                         </Button>
-                        <Button variant="outlined" size="$2">
+                        <Button variant="outlined" size="sm">
                           <Trash2 size={14} />
                         </Button>
-                      </XStack>
+                      </Row>
                     </td>
                   </tr>
                 );
@@ -491,15 +495,15 @@ export default function UserManagementPage() {
         </div>
 
         {filteredUsers.length === 0 && (
-          <YStack alignItems="center" paddingVertical="$12">
-            <Users size={48} color="var(--color10)" />
-            <Text fontSize="$4" fontWeight="500" color="$color12" mt="$4" mb="$2">
+          <Stack style={{ alignItems: 'center', paddingTop: '48px', paddingBottom: '48px' }}>
+            <Users size={48} color="var(--color-10)" />
+            <Text style={{ fontSize: '16px', fontWeight: 500, color: 'var(--color-12)', marginTop: '16px', marginBottom: '8px' }}>
               No users found
             </Text>
-            <SizableText fontSize="$3" color="$color11">
+            <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
               Try adjusting your filters
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
         )}
       </Card>
 
@@ -511,6 +515,6 @@ export default function UserManagementPage() {
           // Refresh would happen automatically via hooks
         }}
       />
-    </YStack>
+    </Stack>
   );
 }

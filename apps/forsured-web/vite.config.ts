@@ -151,7 +151,6 @@ export default defineConfig({
       // Note: react-native-gifted-charts needs to be included for gradient shim to work
     ],
     include: [
-      'tamagui',
       'react-native-web',
       // CJS modules that need ESM conversion
       'hoist-non-react-statics',
@@ -242,11 +241,7 @@ export default defineConfig({
     // Dependencies that need to be transformed for tests
     deps: {
       inline: [
-        'tamagui',
-        '@tamagui/core',
-        '@tamagui/web',
-        '@tamagui/animations-moti',
-        'moti',
+        '@unicornlove/beyond-ui',
         'react-native-reanimated',
       ],
     },

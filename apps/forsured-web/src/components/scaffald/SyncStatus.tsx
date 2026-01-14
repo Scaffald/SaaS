@@ -1,9 +1,9 @@
 /**
- * SyncStatus - Sync status indicator using Tamagui
+ * SyncStatus - Sync status indicator using Beyond UI
  */
-import { useState, useEffect } from 'react';
-import { XStack, Text, View } from '@unicornlove/ui';
+import { Row, Text } from '@unicornlove/beyond-ui';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import type React from 'react';
 
 interface SyncStatusProps {
   entityType: string;
@@ -13,27 +13,12 @@ interface SyncStatusProps {
 }
 
 function SyncStatus({ entityType, status, lastSyncedAt, errorMessage }: SyncStatusProps) {
-  const [rotation, setRotation] = useState(0);
-
-  useEffect(() => {
-    if (status === 'pending') {
-      const interval = setInterval(() => {
-        setRotation((prev) => (prev + 30) % 360);
-      }, 50);
-      return () => clearInterval(interval);
-    }
-  }, [status]);
-
   const renderIcon = () => {
     switch (status) {
       case 'synced':
         return <CheckCircle size={16} color="currentColor" />;
       case 'pending':
-        return (
-          <View animation="quick" rotate={`${rotation}deg`}>
-            <Loader2 size={16} color="currentColor" />
-          </View>
-        );
+        return <Loader2 size={16} color="currentColor" className="animate-spin" />;
       case 'error':
         return <XCircle size={16} color="currentColor" />;
       default:
@@ -54,25 +39,25 @@ function SyncStatus({ entityType, status, lastSyncedAt, errorMessage }: SyncStat
     }
   };
 
-  const getColor = () => {
+  const getColor = (): React.CSSProperties => {
     switch (status) {
       case 'synced':
-        return '$green9';
+        return { color: 'var(--color-green-9)' };
       case 'pending':
-        return '$blue9';
+        return { color: 'var(--color-blue-9)' };
       case 'error':
-        return '$red9';
+        return { color: 'var(--color-red-9)' };
       default:
-        return '$color10';
+        return { color: 'var(--color-10)' };
     }
   };
 
   return (
-    <XStack alignItems="center" gap="$2" fontSize="$2" color={getColor()}>
+    <Row style={{ alignItems: 'center', gap: '8px', fontSize: '14px', ...getColor() }}>
       {renderIcon()}
-      <Text fontWeight="500">{entityType}:</Text>
+      <Text style={{ fontWeight: 500 }}>{entityType}:</Text>
       <Text>{renderMessage()}</Text>
-    </XStack>
+    </Row>
   );
 }
 

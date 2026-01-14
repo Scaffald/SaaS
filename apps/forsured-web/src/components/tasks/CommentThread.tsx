@@ -6,7 +6,9 @@
 import { useState, useEffect } from 'react'
 import type { User } from '../../types'
 import type { TaskComment } from '../../lib/api/taskService'
-import { YStack, XStack, Button, Card, SizableText, TextArea, Spinner } from '@unicornlove/ui'
+import { Stack, Row, Button, Card, Text } from '@unicornlove/beyond-ui'
+import Textarea from '../Common/Textarea'
+import { Loader2 } from 'lucide-react'
 
 interface CommentThreadProps {
   taskId: string
@@ -137,198 +139,224 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
   }
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: '24px' }}>
       {/* Comment List */}
-      <YStack gap="$4">
+      <Stack style={{ gap: '16px' }}>
         {comments.length === 0 ? (
-          <YStack alignItems="center" paddingVertical="$8">
-            <SizableText fontSize="$3" color="$color10" style={{ textAlign: 'center' }}>
+          <Stack style={{ alignItems: 'center', paddingTop: '32px', paddingBottom: '32px' }}>
+            <Text style={{ fontSize: '14px', color: 'var(--color-color10)', textAlign: 'center' }}>
               No comments yet. Be the first to comment!
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
         ) : (
           comments.map((comment) => {
             const user = getUserById(comment.user_id)
             return (
-              <XStack key={comment.id} gap="$3">
-                <YStack
-                  width={32}
-                  height={32}
-                  borderRadius={9999}
-                  backgroundColor="$blue10"
-                  alignItems="center"
-                  justifyContent="center"
-                  flexShrink={0}
+              <Row key={comment.id} style={{ gap: '12px' }}>
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--color-blue10)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
                 >
-                  <SizableText fontSize="$3" fontWeight="500" color="white">
+                  <Text style={{ fontSize: '14px', fontWeight: 500, color: 'white' }}>
                     {user?.name.charAt(0) || '?'}
-                  </SizableText>
-                </YStack>
-                <YStack flex={1}>
-                  <XStack alignItems="baseline" gap="$2">
-                    <SizableText fontSize="$3" fontWeight="500" color="$color12">
+                  </Text>
+                </div>
+                <Stack style={{ flex: 1 }}>
+                  <Row style={{ alignItems: 'baseline', gap: '8px' }}>
+                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)' }}>
                       {user?.name || 'Unknown User'}
-                    </SizableText>
-                    <SizableText fontSize="$1" color="$color10">
+                    </Text>
+                    <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
                       {formatTimestamp(comment.created_at)}
-                    </SizableText>
-                  </XStack>
-                  <SizableText fontSize="$3" color="$color11" mt="$1" whiteSpace="pre-wrap">
+                    </Text>
+                  </Row>
+                  <Text style={{ fontSize: '14px', color: 'var(--color-color11)', marginTop: '4px', whiteSpace: 'pre-wrap' }}>
                     {comment.content}
-                  </SizableText>
+                  </Text>
                   {comment.mentions.length > 0 && (
-                    <XStack mt="$2" flexWrap="wrap" gap="$1">
+                    <Row style={{ marginTop: '8px', flexWrap: 'wrap', gap: '4px' }}>
                       {comment.mentions.map((mentionId) => {
                         const mentionedUser = getUserById(mentionId)
                         return (
-                          <YStack
+                          <Stack
                             key={mentionId}
-                            alignItems="center"
-                            paddingHorizontal="$2"
-                            paddingVertical="$0.5"
-                            borderRadius="$2"
-                            backgroundColor="$blue2"
+                            style={{
+                              alignItems: 'center',
+                              paddingLeft: '8px',
+                              paddingRight: '8px',
+                              paddingTop: '2px',
+                              paddingBottom: '2px',
+                              borderRadius: '6px',
+                              backgroundColor: 'var(--color-blue2)',
+                            }}
                           >
-                            <SizableText fontSize="$1" fontWeight="500" color="$blue11">
+                            <Text style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-blue11)' }}>
                               @{mentionedUser?.name || 'Unknown'}
-                            </SizableText>
-                          </YStack>
+                            </Text>
+                          </Stack>
                         )
                       })}
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             )
           })
         )}
-      </YStack>
+      </Stack>
 
       {/* New Comment Form */}
-      <YStack as="form" onSubmit={handleSubmit} position="relative">
+      <form onSubmit={handleSubmit} style={{ position: 'relative' }}>
         <Card
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          overflow="hidden"
-          focusWithinStyle={{
-            borderColor: '$blue10',
-            outlineWidth: 2,
-            outlineColor: '$blue10',
+          style={{
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            borderRadius: '12px',
+            overflow: 'hidden',
           }}
         >
-          <TextArea
+          <Textarea
             value={newComment}
-            onChangeText={handleTextChange}
+            onChange={(e) => handleTextChange(e.target.value)}
             placeholder="Add a comment... Use @ to mention someone"
             rows={4}
-            width="100%"
-            padding="$3"
-            paddingHorizontal="$4"
-            fontSize="$3"
-            borderWidth={0}
-            resize="none"
+            style={{
+              width: '100%',
+              padding: '12px',
+              paddingLeft: '16px',
+              paddingRight: '16px',
+              fontSize: '14px',
+              borderWidth: 0,
+              resize: 'none',
+            }}
           />
 
           {/* Mention Dropdown */}
           {showMentions && filteredUsers.length > 0 && (
             <Card
-              position="absolute"
-              zIndex={10}
-              bottom="100%"
-              mb="$2"
-              backgroundColor="$background"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              elevation={4}
-              maxHeight={192}
-              overflow="scroll"
-              width={256}
+              style={{
+                position: 'absolute',
+                zIndex: 10,
+                bottom: '100%',
+                marginBottom: '8px',
+                backgroundColor: 'var(--color-background)',
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderColor: 'var(--color-border)',
+                borderRadius: '12px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                maxHeight: '192px',
+                overflow: 'auto',
+                width: '256px',
+              }}
             >
               {filteredUsers.map((user) => (
-                <Button
+                <button
                   key={user.id}
                   type="button"
-                  onPress={() => insertMention(user)}
-                  variant="outlined"
-                  width="100%"
-                  justifyContent="flex-start"
-                  paddingHorizontal="$4"
-                  paddingVertical="$2"
+                  onClick={() => insertMention(user)}
+                  style={{
+                    display: 'flex',
+                    width: '100%',
+                    justifyContent: 'flex-start',
+                    paddingLeft: '16px',
+                    paddingRight: '16px',
+                    paddingTop: '8px',
+                    paddingBottom: '8px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
-                  <XStack alignItems="center" gap="$2" width="100%">
-                    <YStack
-                      width={24}
-                      height={24}
-                      borderRadius={9999}
-                      backgroundColor="$blue10"
-                      alignItems="center"
-                      justifyContent="center"
+                  <Row style={{ alignItems: 'center', gap: '8px', width: '100%' }}>
+                    <div
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--color-blue10)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
-                      <SizableText fontSize="$1" color="white">
+                      <Text style={{ fontSize: '12px', color: 'white' }}>
                         {user.name.charAt(0)}
-                      </SizableText>
-                    </YStack>
-                    <YStack>
-                      <SizableText fontSize="$3" fontWeight="500" color="$color12">
+                      </Text>
+                    </div>
+                    <Stack>
+                      <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)' }}>
                         {user.name}
-                      </SizableText>
-                      <SizableText fontSize="$1" color="$color10">
+                      </Text>
+                      <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
                         {user.email}
-                      </SizableText>
-                    </YStack>
-                  </XStack>
-                </Button>
+                      </Text>
+                    </Stack>
+                  </Row>
+                </button>
               ))}
             </Card>
           )}
 
-          <XStack
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            backgroundColor="$color2"
-            borderTopWidth={1}
-            borderColor="$borderColor"
-            alignItems="center"
-            justifyContent="space-between"
+          <Row
+            style={{
+              paddingLeft: '16px',
+              paddingRight: '16px',
+              paddingTop: '8px',
+              paddingBottom: '8px',
+              backgroundColor: 'var(--color-color2)',
+              borderTop: '1px solid var(--color-border)',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
-            <XStack alignItems="center" gap="$4">
-              <SizableText fontSize="$1" color="$color10">
+            <Row style={{ alignItems: 'center', gap: '16px' }}>
+              <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
                 {newComment.length} / {CHARACTER_LIMIT}
-              </SizableText>
+              </Text>
               {newComment.trim() && (
-                <SizableText fontSize="$1" color="$color10">
+                <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
                   Draft auto-saved
-                </SizableText>
+                </Text>
               )}
-            </XStack>
+            </Row>
             <Button
               type="submit"
               disabled={!newComment.trim() || submitting}
-              backgroundColor="$blue10"
-              color="white"
-              size="$2"
-              opacity={!newComment.trim() || submitting ? 0.5 : 1}
+              style={{
+                backgroundColor: 'var(--color-blue10)',
+                color: 'white',
+                opacity: !newComment.trim() || submitting ? 0.5 : 1,
+              }}
+              size="sm"
             >
               {submitting ? (
-                <XStack alignItems="center" gap="$2">
-                  <Spinner size="small" color="white" />
-                  <SizableText fontSize="$3" color="white">
+                <Row style={{ alignItems: 'center', gap: '8px' }}>
+                  <Loader2 size={16} className="animate-spin" style={{ color: 'white' }} />
+                  <Text style={{ fontSize: '14px', color: 'white' }}>
                     Posting...
-                  </SizableText>
-                </XStack>
+                  </Text>
+                </Row>
               ) : (
                 'Post Comment'
               )}
             </Button>
-          </XStack>
+          </Row>
         </Card>
 
-        <SizableText fontSize="$1" color="$color10" mt="$2">
+        <Text style={{ fontSize: '12px', color: 'var(--color-color10)', marginTop: '8px' }}>
           Markdown formatting supported: **bold**, *italic*, - lists
-        </SizableText>
-      </YStack>
-    </YStack>
+        </Text>
+      </form>
+    </Stack>
   )
 }

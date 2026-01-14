@@ -1,6 +1,7 @@
 // src/pages/contractor/ContractorDocuments.tsx
 import { FileText } from 'lucide-react';
-import { YStack, H1, EmptyState } from '@unicornlove/ui';
+import { Stack, H1 } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
 
 function ContractorDocuments() {
   const handleUploadCOI = () => {
@@ -11,7 +12,7 @@ function ContractorDocuments() {
   const hasDocuments = false;
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
       <H1>My Documents</H1>
       {!hasDocuments ? (
         <EmptyState
@@ -25,9 +26,9 @@ function ContractorDocuments() {
         />
       ) : (
         // Render documents list here
-        <YStack>Contractor Documents List</YStack>
+        <Stack>Contractor Documents List</Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

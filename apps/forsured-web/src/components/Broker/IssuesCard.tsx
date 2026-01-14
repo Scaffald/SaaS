@@ -1,5 +1,5 @@
 import { XCircle, ChevronRight } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 
 interface IssuesCardProps {
   count: number;
@@ -9,34 +9,40 @@ interface IssuesCardProps {
 export default function IssuesCard({ count, onClick }: IssuesCardProps) {
   return (
     <Card
-      backgroundColor="$red2"
-      borderRadius="$4"
-      borderWidth={2}
-      borderColor="$red6"
-      padding="$6"
-      cursor="pointer"
-      hoverStyle={{ elevation: 2 }}
       onClick={onClick}
+      style={{
+        backgroundColor: 'var(--color-red-2)',
+        borderRadius: 12,
+        border: '2px solid var(--color-red-6)',
+        padding: 24,
+        cursor: 'pointer',
+      }}
     >
-      <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap="$3">
-          <YStack padding="$3" borderRadius="$4" backgroundColor="$red3">
-            <XCircle color="$red10" size={24} />
-          </YStack>
-          <YStack>
-            <Text fontSize="$3" fontWeight="500" color="$color11">
+      <Row alignItems="center" justifyContent="space-between">
+        <Row alignItems="center" gap={12}>
+          <Stack
+            style={{
+              padding: 12,
+              borderRadius: 8,
+              backgroundColor: 'var(--color-red-3)',
+            }}
+          >
+            <XCircle size={24} style={{ color: 'var(--color-red-10)' }} />
+          </Stack>
+          <Stack>
+            <Text size="sm" weight="medium" muted>
               Critical Issues
             </Text>
-            <XStack alignItems="center" gap="$2" mt="$1">
-              <Text fontSize="$9" fontWeight="bold" color="$red10">{count}</Text>
-            </XStack>
-          </YStack>
-        </XStack>
-        <ChevronRight color="$color10" size={20} />
-      </XStack>
-      <YStack mt="$4">
-        <Text fontSize="$1" color="$color11">Policy issues to address</Text>
-      </YStack>
+            <Row alignItems="center" gap={8} style={{ marginTop: 4 }}>
+              <Text size="2xl" weight="bold" style={{ color: 'var(--color-red-10)' }}>{count}</Text>
+            </Row>
+          </Stack>
+        </Row>
+        <ChevronRight size={20} style={{ color: 'var(--color-text-muted)' }} />
+      </Row>
+      <Stack style={{ marginTop: 16 }}>
+        <Text size="xs" muted>Policy issues to address</Text>
+      </Stack>
     </Card>
   );
 }

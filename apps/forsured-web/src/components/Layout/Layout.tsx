@@ -1,14 +1,20 @@
 /**
- * Layout - Main application layout using Tamagui
+ * Layout - Main application layout using Beyond UI
+ * Migrated from Tamagui to Beyond UI
  */
+import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Navigate } from 'react-router-dom';
-import { XStack, YStack, Text } from '@unicornlove/ui';
+import { Row, Stack, Text } from '@unicornlove/beyond-ui';
 import Sidebar from './Sidebar';
 import ClientsDropdown from './ClientsDropdown';
 import { useAuth } from '../../contexts/AuthContext';
 import { useApprovals } from '../../hooks/useApprovals';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import { PageViewTracker } from '../../hooks/usePageView';
+
+// Sidebar widths from beyond-ui design system
+const SIDEBAR_WIDTH_EXPANDED = 272;
+const SIDEBAR_WIDTH_COLLAPSED = 80;
 
 /**
  * Map database user types to UI user types
@@ -33,6 +39,21 @@ export default function Layout() {
   const navigate = useNavigate();
   const { approvals } = useApprovals({ status: 'pending' });
   const pendingApprovalsCount = approvals.length;
+
+  // Sidebar collapse state with localStorage persistence
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('forsured-sidebar-collapsed') === 'true';
+    }
+    return false;
+  });
+
+  // Sync to localStorage when collapse state changes
+  useEffect(() => {
+    localStorage.setItem('forsured-sidebar-collapsed', String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
+  const sidebarWidth = sidebarCollapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED;
 
   // Show loading while auth state is being determined
   if (isLoading) {
@@ -61,7 +82,12 @@ export default function Layout() {
   };
 
   return (
-    <XStack height="100vh" backgroundColor="$backgroundHover">
+    <Row
+      style={{
+        height: '100vh',
+        backgroundColor: 'var(--color-background-hover)',
+      }}
+    >
       {/* Track page views for audit logging */}
       <PageViewTracker excludePaths={['/api', '/health']} />
       <Sidebar
@@ -69,37 +95,52 @@ export default function Layout() {
         user={profile}
         onNotificationsClick={() => navigate(getNotificationsPath())}
         alertCount={pendingApprovalsCount}
+        collapsed={sidebarCollapsed}
+        onCollapseChange={setSidebarCollapsed}
       />
 
-      <YStack flex={1} flexDirection="column" overflow="hidden">
+      <Stack
+        flex={1}
+        style={{
+          flexDirection: 'column',
+          overflow: 'hidden',
+          marginLeft: sidebarWidth,
+          transition: 'margin-left 0.2s ease-in-out',
+        }}
+      >
         {/* Header Bar for Broker - shows Clients dropdown */}
         {uiUserType === 'broker' && (
-          <XStack
+          <Row
             as="header"
-            backgroundColor="$backgroundHover"
-            borderBottomWidth={1}
-            borderBottomColor="$borderColor"
-            paddingHorizontal="$6"
-            paddingVertical="$3"
             alignItems="center"
             justifyContent="space-between"
+            style={{
+              backgroundColor: 'var(--color-background-hover)',
+              borderBottom: '1px solid var(--color-border)',
+              paddingLeft: 24,
+              paddingRight: 24,
+              paddingTop: 12,
+              paddingBottom: 12,
+            }}
           >
             <ClientsDropdown />
-            <Text fontSize="$2" color="$color10">
+            <Text size="sm" muted>
               Quick Jump to Client
             </Text>
-          </XStack>
+          </Row>
         )}
-        <YStack
+        <Stack
           as="main"
           flex={1}
-          overflowX="hidden"
-          overflowY="scroll"
-          padding="$6"
+          style={{
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            padding: 24,
+          }}
         >
           <Outlet />
-        </YStack>
-      </YStack>
-    </XStack>
+        </Stack>
+      </Stack>
+    </Row>
   );
 }

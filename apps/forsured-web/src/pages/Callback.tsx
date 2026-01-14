@@ -1,11 +1,11 @@
 /**
- * Callback Page - OAuth callback handler using Tamagui
+ * Callback Page - OAuth callback handler using Beyond UI
  * REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
  */
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { YStack, Text } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
+import { Stack, Text, Button, H2 } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize } from '@unicornlove/beyond-ui';
 import LoadingSpinner from '../components/Common/LoadingSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { getProfile, createProfile } from '../services/userProfileService';
@@ -227,25 +227,38 @@ function CallbackPage() {
 
   if (error) {
     return (
-      <YStack
-        minHeight="100vh"
-        alignItems="center"
-        justifyContent="center"
-        padding="$4"
-        gap="$4"
+      <Stack
+        style={{
+          minHeight: '100vh',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: spacing[16],
+          gap: spacing[16],
+        }}
       >
-        <YStack gap="$4" alignItems="center">
-          <Text fontSize="$8" fontWeight="700" color="$color12">
+        <Stack style={{ gap: spacing[16], alignItems: 'center' }}>
+          <H2
+            style={{
+              fontSize: fontSize.h4,
+              fontWeight: 700,
+              color: colors.text.light.primary,
+            }}
+          >
             Authentication Error
-          </Text>
-          <Text fontSize="$4" color="$color11">
+          </H2>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              color: colors.text.light.secondary,
+            }}
+          >
             {error}
           </Text>
-          <CoreButton onClick={() => navigate('/')}>
+          <Button onPress={() => navigate('/')}>
             Try Again
-          </CoreButton>
-        </YStack>
-      </YStack>
+          </Button>
+        </Stack>
+      </Stack>
     );
   }
 

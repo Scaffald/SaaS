@@ -10,7 +10,7 @@
  * - Row actions (edit, view, archive)
  */
 
-import { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -35,14 +35,14 @@ import {
   X,
 } from 'lucide-react'
 import {
-  YStack,
-  XStack,
+  Stack,
+  Row,
   Text,
   Input,
   Button,
   H2,
   Card,
-} from '@unicornlove/ui'
+} from '@unicornlove/beyond-ui'
 import {
   useComplianceRequirements,
   useArchiveComplianceRequirement,
@@ -84,10 +84,17 @@ const STATUS_OPTIONS: { value: RequirementStatus; label: string }[] = [
   { value: 'archived', label: 'Archived' },
 ]
 
-const STATUS_COLORS: Record<RequirementStatus, { bg: string; color: string }> = {
-  active: { bg: '$green2', color: '$green10' },
-  draft: { bg: '$yellow2', color: '$yellow10' },
-  archived: { bg: '$gray2', color: '$gray10' },
+function getStatusColors(status: RequirementStatus): { bg: string; color: string } {
+  switch (status) {
+    case 'active':
+      return { bg: 'var(--color-green-2)', color: 'var(--color-green-10)' }
+    case 'draft':
+      return { bg: 'var(--color-yellow-2)', color: 'var(--color-yellow-10)' }
+    case 'archived':
+      return { bg: 'var(--color-gray-2)', color: 'var(--color-gray-10)' }
+    default:
+      return { bg: 'var(--color-gray-2)', color: 'var(--color-gray-10)' }
+  }
 }
 
 const TYPE_LABELS: Record<CoverageType, string> = {
@@ -156,7 +163,7 @@ export function RequirementsList({
         accessorKey: 'code',
         header: 'Code',
         cell: ({ row }) => (
-          <Text fontFamily="$mono" fontSize="$3" fontWeight="600">
+          <Text style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 600 }}>
             {row.original.code}
           </Text>
         ),
@@ -165,42 +172,50 @@ export function RequirementsList({
         accessorKey: 'name',
         header: 'Name',
         cell: ({ row }) => (
-          <XStack alignItems="center" gap="$2">
-            <Text fontWeight="600">{row.original.name}</Text>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontWeight: 600 }}>{row.original.name}</Text>
             {row.original.is_template && (
               <Text
-                fontSize="$1"
-                backgroundColor="$purple2"
-                color="$purple10"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                borderRadius="$2"
+                style={{
+                  fontSize: 11,
+                  backgroundColor: 'var(--color-purple-2)',
+                  color: 'var(--color-purple-10)',
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  borderRadius: 6,
+                }}
               >
                 Template
               </Text>
             )}
-          </XStack>
+          </Row>
         ),
       },
       {
         accessorKey: 'type',
         header: 'Type',
-        cell: ({ row }) => <Text fontSize="$3">{TYPE_LABELS[row.original.type]}</Text>,
+        cell: ({ row }) => <Text style={{ fontSize: 14 }}>{TYPE_LABELS[row.original.type]}</Text>,
       },
       {
         accessorKey: 'status',
         header: 'Status',
         cell: ({ row }) => {
-          const statusColors = STATUS_COLORS[row.original.status]
+          const statusColors = getStatusColors(row.original.status)
           return (
             <Text
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius={9999}
-              fontSize="$1"
-              fontWeight="600"
-              backgroundColor={statusColors.bg}
-              color={statusColors.color}
+              style={{
+                paddingLeft: 8,
+                paddingRight: 8,
+                paddingTop: 4,
+                paddingBottom: 4,
+                borderRadius: 9999,
+                fontSize: 11,
+                fontWeight: 600,
+                backgroundColor: statusColors.bg,
+                color: statusColors.color,
+              }}
             >
               {row.original.status}
             </Text>
@@ -211,7 +226,7 @@ export function RequirementsList({
         accessorKey: 'effective_date',
         header: 'Effective',
         cell: ({ row }) => (
-          <Text fontSize="$3" color="$gray11">
+          <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
             {new Date(row.original.effective_date).toLocaleDateString()}
           </Text>
         ),
@@ -220,61 +235,49 @@ export function RequirementsList({
         accessorKey: 'current_version',
         header: 'Version',
         cell: ({ row }) => (
-          <Text fontSize="$3" color="$gray10">v{row.original.current_version}</Text>
+          <Text style={{ fontSize: 14, color: 'var(--color-gray-10)' }}>v{row.original.current_version}</Text>
         ),
       },
       {
         id: 'actions',
         header: '',
         cell: ({ row }) => (
-          <XStack alignItems="center" gap="$1">
+          <Row style={{ alignItems: 'center', gap: 4 }}>
             <Button
-              unstyled
-              padding="$1.5"
-              color="$gray11"
-              hoverStyle={{ color: '$blue10', backgroundColor: '$blue2' }}
-              borderRadius="$2"
-              onPress={() => onEdit(row.original)}
+              variant="ghost"
+              style={{ padding: 6, color: 'var(--color-gray-11)', borderRadius: 6 }}
+              onClick={() => onEdit(row.original)}
               title="Edit"
             >
               <Edit size={16} />
             </Button>
             <Button
-              unstyled
-              padding="$1.5"
-              color="$gray11"
-              hoverStyle={{ color: '$green10', backgroundColor: '$green2' }}
-              borderRadius="$2"
-              onPress={() => onViewDependencies(row.original)}
+              variant="ghost"
+              style={{ padding: 6, color: 'var(--color-gray-11)', borderRadius: 6 }}
+              onClick={() => onViewDependencies(row.original)}
               title="View Dependencies"
             >
               <Eye size={16} />
             </Button>
             <Button
-              unstyled
-              padding="$1.5"
-              color="$gray11"
-              hoverStyle={{ color: '$purple10', backgroundColor: '$purple2' }}
-              borderRadius="$2"
-              onPress={() => onViewVersions(row.original)}
+              variant="ghost"
+              style={{ padding: 6, color: 'var(--color-gray-11)', borderRadius: 6 }}
+              onClick={() => onViewVersions(row.original)}
               title="Version History"
             >
               <MoreVertical size={16} />
             </Button>
             {row.original.status !== 'archived' && (
               <Button
-                unstyled
-                padding="$1.5"
-                color="$gray11"
-                hoverStyle={{ color: '$red10', backgroundColor: '$red2' }}
-                borderRadius="$2"
-                onPress={() => handleArchive(row.original)}
+                variant="ghost"
+                style={{ padding: 6, color: 'var(--color-gray-11)', borderRadius: 6 }}
+                onClick={() => handleArchive(row.original)}
                 title="Archive"
               >
                 <Archive size={16} />
               </Button>
             )}
-          </XStack>
+          </Row>
         ),
       },
     ],
@@ -305,54 +308,57 @@ export function RequirementsList({
   }, [])
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 16 }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between">
-        <XStack alignItems="center" gap="$2">
-          <H2 fontWeight="600">Compliance Requirements</H2>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Row style={{ alignItems: 'center', gap: 8 }}>
+          <H2 style={{ fontWeight: 600 }}>Compliance Requirements</H2>
           {isFetching && <LoadingSpinner size="sm" />}
-        </XStack>
-        <XStack alignItems="center" gap="$2">
+        </Row>
+        <Row style={{ alignItems: 'center', gap: 8 }}>
           <Button
-            unstyled
-            padding="$2"
-            color="$gray11"
-            hoverStyle={{ color: '$gray12', backgroundColor: '$gray2' }}
-            borderRadius="$2"
-            onPress={() => refetch()}
+            variant="ghost"
+            style={{ padding: 8, color: 'var(--color-gray-11)', borderRadius: 6 }}
+            onClick={() => refetch()}
             title="Refresh"
           >
             <RefreshCcw size={18} />
           </Button>
-          <Button onPress={onCreateNew}>
-            <XStack alignItems="center" gap="$1">
+          <Button onClick={onCreateNew}>
+            <Row style={{ alignItems: 'center', gap: 4 }}>
               <Plus size={16} />
               <Text>New Requirement</Text>
-            </XStack>
+            </Row>
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Search and Filters */}
-      <XStack alignItems="center" gap="$4">
-        <XStack position="relative" flex={1} maxWidth="28rem">
-          <YStack
-            position="absolute"
-            left="$3"
-            top="50%"
-            zIndex={1}
-            pointerEvents="none"
+      <Row style={{ alignItems: 'center', gap: 16 }}>
+        <Row style={{ position: 'relative', flex: 1, maxWidth: '28rem' }}>
+          <Stack
+            style={{
+              position: 'absolute',
+              left: 12,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 1,
+              pointerEvents: 'none',
+            }}
           >
             <Search size={18} style={{ color: 'var(--color-gray-10)' }} />
-          </YStack>
+          </Stack>
           <Input
-            flex={1}
-            paddingLeft="$10"
-            paddingRight="$4"
-            paddingVertical="$2"
-            borderWidth={1}
-            borderColor="$gray8"
-            borderRadius="$4"
+            style={{
+              flex: 1,
+              paddingLeft: 40,
+              paddingRight: 16,
+              paddingTop: 8,
+              paddingBottom: 8,
+              borderWidth: 1,
+              borderColor: 'var(--color-gray-8)',
+              borderRadius: 12,
+            }}
             placeholder="Search by code, name, or description..."
             value={search}
             onChange={(e) => {
@@ -360,33 +366,40 @@ export function RequirementsList({
               setPage(1)
             }}
           />
-        </XStack>
+        </Row>
 
         <Button
-          unstyled
-          flexDirection="row"
-          alignItems="center"
-          gap="$2"
-          paddingHorizontal="$3"
-          paddingVertical="$2"
-          borderWidth={1}
-          borderRadius="$4"
-          borderColor={hasFilters ? '$blue8' : '$gray8'}
-          backgroundColor={hasFilters ? '$blue2' : 'transparent'}
-          color={hasFilters ? '$blue11' : '$color12'}
-          hoverStyle={{ backgroundColor: '$gray2' }}
-          onPress={() => setShowFilters(!showFilters)}
+          variant="ghost"
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            paddingLeft: 12,
+            paddingRight: 12,
+            paddingTop: 8,
+            paddingBottom: 8,
+            borderWidth: 1,
+            borderRadius: 12,
+            borderColor: hasFilters ? 'var(--color-blue-8)' : 'var(--color-gray-8)',
+            backgroundColor: hasFilters ? 'var(--color-blue-2)' : 'transparent',
+            color: hasFilters ? 'var(--color-blue-11)' : 'var(--color-12)',
+          }}
+          onClick={() => setShowFilters(!showFilters)}
         >
           <Filter size={18} />
           <Text>Filters</Text>
           {hasFilters && (
             <Text
-              backgroundColor="$blue10"
-              color="white"
-              fontSize="$1"
-              paddingHorizontal="$1.5"
-              paddingVertical="$1"
-              borderRadius={9999}
+              style={{
+                backgroundColor: 'var(--color-blue-10)',
+                color: 'white',
+                fontSize: 11,
+                paddingLeft: 6,
+                paddingRight: 6,
+                paddingTop: 4,
+                paddingBottom: 4,
+                borderRadius: 9999,
+              }}
             >
               {[typeFilter, statusFilter].filter(Boolean).length}
             </Text>
@@ -395,26 +408,27 @@ export function RequirementsList({
 
         {hasFilters && (
           <Button
-            unstyled
-            flexDirection="row"
-            alignItems="center"
-            gap="$1"
-            fontSize="$3"
-            color="$gray11"
-            hoverStyle={{ color: '$gray12' }}
-            onPress={clearFilters}
+            variant="ghost"
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              fontSize: 14,
+              color: 'var(--color-gray-11)',
+            }}
+            onClick={clearFilters}
           >
             <X size={14} />
             <Text>Clear</Text>
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {/* Filter Panel */}
       {showFilters && (
-        <XStack alignItems="center" gap="$4" padding="$4" backgroundColor="$gray2" borderRadius="$4">
-          <XStack alignItems="center" gap="$2">
-            <Text fontSize="$3" fontWeight="600" color="$color11">Type:</Text>
+        <Row style={{ alignItems: 'center', gap: 16, padding: 16, backgroundColor: 'var(--color-gray-2)', borderRadius: 12 }}>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)' }}>Type:</Text>
             <select
               value={typeFilter}
               onChange={(e) => {
@@ -424,8 +438,8 @@ export function RequirementsList({
               style={{
                 padding: '6px 12px',
                 border: '1px solid var(--color-gray-8)',
-                borderRadius: '6px',
-                fontSize: '14px',
+                borderRadius: 6,
+                fontSize: 14,
               }}
             >
               <option value="">All Types</option>
@@ -435,10 +449,10 @@ export function RequirementsList({
                 </option>
               ))}
             </select>
-          </XStack>
+          </Row>
 
-          <XStack alignItems="center" gap="$2">
-            <Text fontSize="$3" fontWeight="600" color="$color11">Status:</Text>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-11)' }}>Status:</Text>
             <select
               value={statusFilter}
               onChange={(e) => {
@@ -448,8 +462,8 @@ export function RequirementsList({
               style={{
                 padding: '6px 12px',
                 border: '1px solid var(--color-gray-8)',
-                borderRadius: '6px',
-                fontSize: '14px',
+                borderRadius: 6,
+                fontSize: 14,
               }}
             >
               <option value="">All Statuses</option>
@@ -459,18 +473,18 @@ export function RequirementsList({
                 </option>
               ))}
             </select>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       )}
 
       {/* Table */}
       {isLoading ? (
-        <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
+        <Row style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 48, paddingBottom: 48 }}>
           <LoadingSpinner />
-          <Text ml="$2" color="$gray11">Loading requirements...</Text>
-        </XStack>
+          <Text style={{ marginLeft: 8, color: 'var(--color-gray-11)' }}>Loading requirements...</Text>
+        </Row>
       ) : (
-        <YStack borderWidth={1} borderColor="$gray6" borderRadius="$4" overflow="hidden">
+        <Stack style={{ borderWidth: 1, borderColor: 'var(--color-gray-6)', borderRadius: 12, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead style={{ backgroundColor: 'var(--color-gray-2)', borderBottom: '1px solid var(--color-gray-6)' }}>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -481,29 +495,19 @@ export function RequirementsList({
                       style={{
                         padding: '12px 16px',
                         textAlign: 'left',
-                        fontSize: '14px',
+                        fontSize: 14,
                         fontWeight: 600,
                         color: 'var(--color-gray-12)',
                         cursor: header.column.getCanSort() ? 'pointer' : 'default',
                         userSelect: header.column.getCanSort() ? 'none' : 'auto',
                       }}
                       onClick={header.column.getToggleSortingHandler()}
-                      onMouseEnter={(e) => {
-                        if (header.column.getCanSort()) {
-                          e.currentTarget.style.backgroundColor = 'var(--color-gray-3)'
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (header.column.getCanSort()) {
-                          e.currentTarget.style.backgroundColor = 'var(--color-gray-2)'
-                        }
-                      }}
                     >
-                      <XStack alignItems="center" gap="$1">
+                      <Row style={{ alignItems: 'center', gap: 4 }}>
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {header.column.getIsSorted() === 'asc' && <ChevronUp size={14} />}
                         {header.column.getIsSorted() === 'desc' && <ChevronDown size={14} />}
-                      </XStack>
+                      </Row>
                     </th>
                   ))}
                 </tr>
@@ -525,12 +529,6 @@ export function RequirementsList({
                     style={{
                       borderBottom: '1px solid var(--color-gray-4)',
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--color-gray-2)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} style={{ padding: '12px 16px' }}>
@@ -542,52 +540,54 @@ export function RequirementsList({
               )}
             </tbody>
           </table>
-        </YStack>
+        </Stack>
       )}
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <XStack alignItems="center" justifyContent="space-between">
-          <Text fontSize="$3" color="$gray11">
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
             Showing {(page - 1) * 20 + 1} to {Math.min(page * 20, pagination.total)} of{' '}
             {pagination.total} requirements
           </Text>
-          <XStack alignItems="center" gap="$2">
+          <Row style={{ alignItems: 'center', gap: 8 }}>
             <Button
-              unstyled
-              padding="$2"
-              borderWidth={1}
-              borderColor="$gray8"
-              borderRadius="$2"
-              hoverStyle={{ backgroundColor: '$gray2' }}
-              opacity={page === 1 ? 0.5 : 1}
-              cursor={page === 1 ? 'not-allowed' : 'pointer'}
+              variant="ghost"
+              style={{
+                padding: 8,
+                borderWidth: 1,
+                borderColor: 'var(--color-gray-8)',
+                borderRadius: 6,
+                opacity: page === 1 ? 0.5 : 1,
+                cursor: page === 1 ? 'not-allowed' : 'pointer',
+              }}
               disabled={page === 1}
-              onPress={() => setPage((p) => Math.max(1, p - 1))}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
               <ChevronLeft size={18} />
             </Button>
-            <Text fontSize="$3" color="$gray11">
+            <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
               Page {page} of {pagination.totalPages}
             </Text>
             <Button
-              unstyled
-              padding="$2"
-              borderWidth={1}
-              borderColor="$gray8"
-              borderRadius="$2"
-              hoverStyle={{ backgroundColor: '$gray2' }}
-              opacity={page === pagination.totalPages ? 0.5 : 1}
-              cursor={page === pagination.totalPages ? 'not-allowed' : 'pointer'}
+              variant="ghost"
+              style={{
+                padding: 8,
+                borderWidth: 1,
+                borderColor: 'var(--color-gray-8)',
+                borderRadius: 6,
+                opacity: page === pagination.totalPages ? 0.5 : 1,
+                cursor: page === pagination.totalPages ? 'not-allowed' : 'pointer',
+              }}
               disabled={page === pagination.totalPages}
-              onPress={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
             >
               <ChevronRight size={18} />
             </Button>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 }
 

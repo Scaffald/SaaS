@@ -1,8 +1,8 @@
 /**
- * UserTypeCard - User type selection card using Tamagui
+ * UserTypeCard - User type selection card using Beyond UI
  */
 import { useState, useEffect } from 'react';
-import { YStack, XStack, Text, Button, View, styled } from '@unicornlove/ui';
+import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
 import { Loader2 } from 'lucide-react';
 
 interface UserTypeCardProps {
@@ -15,32 +15,20 @@ interface UserTypeCardProps {
   loading?: boolean;
 }
 
-const CardButton = styled(Button, {
-  name: 'UserTypeCard',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '$2',
-  padding: '$4',
-  backgroundColor: '$background',
-  borderWidth: 2,
-  borderColor: 'transparent',
-  borderRadius: '$3',
-  
-  variants: {
-    selected: {
-      true: {
-        borderColor: '$blue9',
-        backgroundColor: '$blue2',
-      },
-      false: {
-        hoverStyle: {
-          borderColor: '$borderColorHover',
-          backgroundColor: '$backgroundHover',
-        },
-      },
-    },
-  } as const,
-});
+function getCardStyle(selected: boolean): React.CSSProperties {
+  return {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 8,
+    padding: 16,
+    backgroundColor: selected ? 'var(--color-blue2)' : 'var(--color-background)',
+    borderWidth: 2,
+    borderStyle: 'solid',
+    borderColor: selected ? 'var(--color-blue9)' : 'transparent',
+    borderRadius: 12,
+    cursor: 'pointer',
+  };
+}
 
 function UserTypeCard({
   type,
@@ -63,36 +51,36 @@ function UserTypeCard({
   }, [loading]);
 
   return (
-    <CardButton
+    <Button
       onPress={onSelect}
       disabled={loading}
-      selected={selected}
       aria-pressed={selected}
+      style={getCardStyle(selected)}
     >
-      <YStack alignItems="center" gap="$2">
-        <YStack>{icon}</YStack>
-        <Text fontSize="$5" fontWeight="600">
+      <Stack style={{ alignItems: 'center', gap: 8 }}>
+        <Stack>{icon}</Stack>
+        <Text size="lg" weight="semibold">
           {title}
         </Text>
-        <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
+        <Text size="sm" color="secondary" style={{ textAlign: 'center' }}>
           {description}
         </Text>
-        <YStack mt="$2">
+        <Stack style={{ marginTop: 8 }}>
           {loading ? (
-            <XStack alignItems="center" gap="$2">
-              <View animation="quick" rotate={`${rotation}deg`}>
-                <Loader2 size={16} />
-              </View>
-              <Text fontSize="$2">Loading...</Text>
-            </XStack>
+            <Row style={{ alignItems: 'center', gap: 8 }}>
+              <div style={{ transform: `rotate(${rotation}deg)` }}>
+                <Loader2 size={16} className="animate-spin" />
+              </div>
+              <Text size="sm">Loading...</Text>
+            </Row>
           ) : (
-            <Text fontSize="$2" color="$blue9">
+            <Text size="sm" color="var(--color-blue9)">
               Select {title.split(' ')[0]}
             </Text>
           )}
-        </YStack>
-      </YStack>
-    </CardButton>
+        </Stack>
+      </Stack>
+    </Button>
   );
 }
 

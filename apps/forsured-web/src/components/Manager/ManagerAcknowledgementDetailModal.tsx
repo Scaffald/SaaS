@@ -10,7 +10,7 @@ import {
   Download,
   Building,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
 import { useManagerAcknowledgements } from '../../hooks/useManagerAcknowledgements';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
@@ -31,10 +31,10 @@ export default function ManagerAcknowledgementDetailModal({
   if (loading || !currentPacket) {
     return (
       <Modal isOpen={true} onClose={onClose} title="Loading..." size="xl">
-        <YStack gap="$4">
-          <YStack height={128} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
-          <YStack height={128} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
-        </YStack>
+        <Stack gap={16}>
+          <div style={{ height: 128, backgroundColor: 'var(--color-gray-2)', borderRadius: 8, opacity: 0.5 }} />
+          <div style={{ height: 128, backgroundColor: 'var(--color-gray-2)', borderRadius: 8, opacity: 0.5 }} />
+        </Stack>
       </Modal>
     );
   }
@@ -63,35 +63,35 @@ export default function ManagerAcknowledgementDetailModal({
   const getSignerStatusIcon = (status: string) => {
     switch (status) {
       case 'SIGNED':
-        return <CheckCircle size={18} color="$green10" />;
+        return <CheckCircle size={18} color="var(--color-green-10)" />;
       case 'DECLINED':
-        return <X size={18} color="$red10" />;
+        return <X size={18} color="var(--color-red-10)" />;
       case 'VIEWED':
-        return <Clock size={18} color="$blue10" />;
+        return <Clock size={18} color="var(--color-blue-10)" />;
       case 'SENT':
-        return <Clock size={18} color="$blue10" />;
+        return <Clock size={18} color="var(--color-blue-10)" />;
       case 'PENDING':
       default:
-        return <Clock size={18} color="$gray10" />;
+        return <Clock size={18} color="var(--color-text-muted)" />;
     }
   };
 
   const getEventIcon = (event: string) => {
     switch (event) {
       case 'created':
-        return <FileText size={14} color="$gray10" />;
+        return <FileText size={14} color="var(--color-text-muted)" />;
       case 'sent':
-        return <Users size={14} color="$blue10" />;
+        return <Users size={14} color="var(--color-blue-10)" />;
       case 'viewed':
-        return <Clock size={14} color="$blue10" />;
+        return <Clock size={14} color="var(--color-blue-10)" />;
       case 'signed':
-        return <CheckCircle size={14} color="$green10" />;
+        return <CheckCircle size={14} color="var(--color-green-10)" />;
       case 'declined':
-        return <X size={14} color="$red10" />;
+        return <X size={14} color="var(--color-red-10)" />;
       case 'expired':
-        return <AlertTriangle size={14} color="$orange10" />;
+        return <AlertTriangle size={14} color="var(--color-orange-10)" />;
       default:
-        return <FileText size={14} color="$gray10" />;
+        return <FileText size={14} color="var(--color-text-muted)" />;
     }
   };
 
@@ -102,41 +102,22 @@ export default function ManagerAcknowledgementDetailModal({
       .join(' ');
   };
 
-  const getStatusBgColor = (status: string) => {
+  const getStatusColorProps = (status: string): React.CSSProperties => {
     switch (status) {
       case 'DRAFT':
-        return '$gray2';
+        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-text-muted)' };
       case 'SENT':
-        return '$blue2';
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' };
       case 'VIEWED':
-        return '$blue2';
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' };
       case 'SIGNED':
-        return '$green2';
+        return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-10)' };
       case 'DECLINED':
-        return '$red2';
+        return { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-10)' };
       case 'EXPIRED':
-        return '$orange2';
+        return { backgroundColor: 'var(--color-orange-2)', color: 'var(--color-orange-10)' };
       default:
-        return '$gray2';
-    }
-  };
-
-  const getStatusTextColor = (status: string) => {
-    switch (status) {
-      case 'DRAFT':
-        return '$gray10';
-      case 'SENT':
-        return '$blue10';
-      case 'VIEWED':
-        return '$blue10';
-      case 'SIGNED':
-        return '$green10';
-      case 'DECLINED':
-        return '$red10';
-      case 'EXPIRED':
-        return '$orange10';
-      default:
-        return '$gray10';
+        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-text-muted)' };
     }
   };
 
@@ -147,124 +128,99 @@ export default function ManagerAcknowledgementDetailModal({
       title="Broker Acknowledgement Details"
       size="xl"
     >
-      <YStack gap="$6">
-        <XStack alignItems="flex-start" justifyContent="space-between" paddingBottom="$4" borderBottomWidth={1} borderColor="$borderColor">
-          <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" mb="$2">
-              <H2 fontSize="$9" fontWeight="700" color="$color12">
+      <Stack gap={24}>
+        <Row alignItems="flex-start" justifyContent="space-between" style={{ paddingBottom: 16, borderBottom: '1px solid var(--color-border)' }}>
+          <Stack style={{ flex: 1 }}>
+            <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
+              <H2 style={{ fontSize: 28, fontWeight: 700 }}>
                 {getProjectName(currentPacket.project_id)}
               </H2>
-              <Text
-                paddingHorizontal="$3"
-                paddingVertical="$1"
-                fontSize="$3"
-                fontWeight="500"
-                borderRadius={9999}
-                backgroundColor={getStatusBgColor(currentPacket.status)}
-                color={getStatusTextColor(currentPacket.status)}
+              <span
+                style={{
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  fontSize: 14,
+                  fontWeight: 500,
+                  borderRadius: 9999,
+                  ...getStatusColorProps(currentPacket.status),
+                }}
               >
                 {currentPacket.status}
-              </Text>
-            </XStack>
-            <XStack alignItems="center" gap="$4" fontSize="$3" color="$color11">
-              <XStack alignItems="center" gap="$1">
-                <Shield size={16} />
-                <Text fontSize="$3" color="$color11">
+              </span>
+            </Row>
+            <Row alignItems="center" gap={16} style={{ fontSize: 14 }}>
+              <Row alignItems="center" gap={4}>
+                <Shield size={16} color="var(--color-text-muted)" />
+                <Text size="sm" muted>
                   {getBrokerName(currentPacket.broker_company_id)}
                 </Text>
-              </XStack>
-              <Text fontSize="$3" color="$color11">•</Text>
-              <XStack alignItems="center" gap="$1">
-                <Building size={16} />
-                <Text fontSize="$3" color="$color11">
+              </Row>
+              <Text size="sm" muted>•</Text>
+              <Row alignItems="center" gap={4}>
+                <Building size={16} color="var(--color-text-muted)" />
+                <Text size="sm" muted>
                   {getGCName(currentPacket.gc_company_id)}
                 </Text>
-              </XStack>
-              <Text fontSize="$3" color="$color11">•</Text>
-              <Text fontSize="$3" color="$color11">Version {currentPacket.version}</Text>
-            </XStack>
-          </YStack>
-          <XStack gap="$2">
+              </Row>
+              <Text size="sm" muted>•</Text>
+              <Text size="sm" muted>Version {currentPacket.version}</Text>
+            </Row>
+          </Stack>
+          <Row gap={8}>
             {currentPacket.pdf_artifacts.length > 0 && (
-              <Button variant="outline" size="$2">
-                <XStack alignItems="center" gap="$2">
+              <Button variant="outlined" size="sm">
+                <Row alignItems="center" gap={8}>
                   <Download size={16} />
-                  <Text>Download PDF</Text>
-                </XStack>
+                  <span>Download PDF</span>
+                </Row>
               </Button>
             )}
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
-        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
-          <Card
-            backgroundColor="$backgroundHover"
-            borderRadius="$4"
-            padding="$4"
-            flex={1}
-            minWidth="calc(50% - 8px)"
-            $gtMd={{ minWidth: 'calc(50% - 8px)' }}
-          >
-            <XStack alignItems="center" gap="$2" mb="$2">
-              <Calendar size={18} color="$color11" />
-              <H3 fontSize="$4" fontWeight="600" color="$color12">
+        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+          <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16, flex: 1, minWidth: 'calc(50% - 8px)' }}>
+            <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
+              <Calendar size={18} color="var(--color-text-muted)" />
+              <H3 style={{ fontSize: 14, fontWeight: 600 }}>
                 Effective Date
               </H3>
-            </XStack>
-            <Text fontSize="$3" color="$color11">
+            </Row>
+            <Text size="sm" muted>
               {formatDate(currentPacket.effective_at)}
             </Text>
           </Card>
 
-          <Card
-            backgroundColor="$backgroundHover"
-            borderRadius="$4"
-            padding="$4"
-            flex={1}
-            minWidth="calc(50% - 8px)"
-            $gtMd={{ minWidth: 'calc(50% - 8px)' }}
-          >
-            <XStack alignItems="center" gap="$2" mb="$2">
-              <Calendar size={18} color="$color11" />
-              <H3 fontSize="$4" fontWeight="600" color="$color12">
+          <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16, flex: 1, minWidth: 'calc(50% - 8px)' }}>
+            <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
+              <Calendar size={18} color="var(--color-text-muted)" />
+              <H3 style={{ fontSize: 14, fontWeight: 600 }}>
                 Expiration Date
               </H3>
-            </XStack>
-            <Text fontSize="$3" color="$color11">
+            </Row>
+            <Text size="sm" muted>
               {formatDate(currentPacket.expires_at)}
             </Text>
           </Card>
 
-          <Card
-            backgroundColor="$backgroundHover"
-            borderRadius="$4"
-            padding="$4"
-            flex={1}
-            minWidth="calc(50% - 8px)"
-            $gtMd={{ minWidth: 'calc(50% - 8px)' }}
-          >
-            <XStack alignItems="center" gap="$2" mb="$2">
-              <Building size={18} color="$color11" />
-              <H3 fontSize="$4" fontWeight="600" color="$color12">Jurisdiction</H3>
-            </XStack>
-            <Text fontSize="$3" color="$color11">
+          <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16, flex: 1, minWidth: 'calc(50% - 8px)' }}>
+            <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
+              <Building size={18} color="var(--color-text-muted)" />
+              <H3 style={{ fontSize: 14, fontWeight: 600 }}>Jurisdiction</H3>
+            </Row>
+            <Text size="sm" muted>
               {currentPacket.jurisdiction}
             </Text>
           </Card>
 
-          <Card
-            backgroundColor="$backgroundHover"
-            borderRadius="$4"
-            padding="$4"
-            flex={1}
-            minWidth="calc(50% - 8px)"
-            $gtMd={{ minWidth: 'calc(50% - 8px)' }}
-          >
-            <XStack alignItems="center" gap="$2" mb="$2">
-              <Shield size={18} color="$color11" />
-              <H3 fontSize="$4" fontWeight="600" color="$color12">Liability Cap</H3>
-            </XStack>
-            <Text fontSize="$3" color="$color11">
+          <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16, flex: 1, minWidth: 'calc(50% - 8px)' }}>
+            <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
+              <Shield size={18} color="var(--color-text-muted)" />
+              <H3 style={{ fontSize: 14, fontWeight: 600 }}>Liability Cap</H3>
+            </Row>
+            <Text size="sm" muted>
               {currentPacket.limits_liability.cap_type === 'EO_LIMITS'
                 ? 'E&O Limits'
                 : currentPacket.limits_liability.cap_type === 'CUSTOM'
@@ -274,370 +230,328 @@ export default function ManagerAcknowledgementDetailModal({
                   : 'Uncapped'}
             </Text>
           </Card>
-        </XStack>
+        </Row>
 
-        <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" mb="$4">
+        <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 16 }}>
             <CheckCircle size={18} />
-            <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <H3 style={{ fontSize: 14, fontWeight: 600 }}>
               Attestations
             </H3>
-          </XStack>
-          <XStack flexWrap="wrap" gap="$3" $gtMd={{ flexWrap: 'wrap' }}>
-            <XStack alignItems="flex-start" gap="$2" flex={1} minWidth="calc(50% - 6px)" $gtMd={{ minWidth: 'calc(50% - 6px)' }}>
+          </Row>
+          <Row style={{ flexWrap: 'wrap', gap: 12 }}>
+            <Row alignItems="flex-start" gap={8} style={{ flex: 1, minWidth: 'calc(50% - 6px)' }}>
               {currentPacket.attestations.is_licensed_for_project_state ? (
-                <CheckCircle
-                  size={16}
-                  color="$green10"
-                  mt="$0.5"
-                  flexShrink={0}
-                />
+                <CheckCircle size={16} color="var(--color-green-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               ) : (
-                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
+                <X size={16} color="var(--color-red-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               )}
-              <Text fontSize="$3" color="$color12">
+              <Text size="sm">
                 Licensed for project state
               </Text>
-            </XStack>
-            <XStack alignItems="flex-start" gap="$2" flex={1} minWidth="calc(50% - 6px)" $gtMd={{ minWidth: 'calc(50% - 6px)' }}>
+            </Row>
+            <Row alignItems="flex-start" gap={8} style={{ flex: 1, minWidth: 'calc(50% - 6px)' }}>
               {currentPacket.attestations.has_active_eo ? (
-                <CheckCircle
-                  size={16}
-                  color="$green10"
-                  mt="$0.5"
-                  flexShrink={0}
-                />
+                <CheckCircle size={16} color="var(--color-green-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               ) : (
-                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
+                <X size={16} color="var(--color-red-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               )}
-              <Text fontSize="$3" color="$color12">
+              <Text size="sm">
                 Active E&O policy
               </Text>
-            </XStack>
-            <XStack alignItems="flex-start" gap="$2" flex={1} minWidth="calc(50% - 6px)" $gtMd={{ minWidth: 'calc(50% - 6px)' }}>
+            </Row>
+            <Row alignItems="flex-start" gap={8} style={{ flex: 1, minWidth: 'calc(50% - 6px)' }}>
               {currentPacket.attestations.documents_are_accurate ? (
-                <CheckCircle
-                  size={16}
-                  color="$green10"
-                  mt="$0.5"
-                  flexShrink={0}
-                />
+                <CheckCircle size={16} color="var(--color-green-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               ) : (
-                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
+                <X size={16} color="var(--color-red-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               )}
-              <Text fontSize="$3" color="$color12">
+              <Text size="sm">
                 Documents are accurate
               </Text>
-            </XStack>
-            <XStack alignItems="flex-start" gap="$2" flex={1} minWidth="calc(50% - 6px)" $gtMd={{ minWidth: 'calc(50% - 6px)' }}>
-              {currentPacket.attestations
-                .will_maintain_required_endorsements ? (
-                <CheckCircle
-                  size={16}
-                  color="$green10"
-                  mt="$0.5"
-                  flexShrink={0}
-                />
+            </Row>
+            <Row alignItems="flex-start" gap={8} style={{ flex: 1, minWidth: 'calc(50% - 6px)' }}>
+              {currentPacket.attestations.will_maintain_required_endorsements ? (
+                <CheckCircle size={16} color="var(--color-green-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               ) : (
-                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
+                <X size={16} color="var(--color-red-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               )}
-              <Text fontSize="$3" color="$color12">
+              <Text size="sm">
                 Will maintain required endorsements
               </Text>
-            </XStack>
-            <XStack alignItems="flex-start" gap="$2" flex={1} minWidth="calc(50% - 6px)" $gtMd={{ minWidth: 'calc(50% - 6px)' }}>
+            </Row>
+            <Row alignItems="flex-start" gap={8} style={{ flex: 1, minWidth: 'calc(50% - 6px)' }}>
               {currentPacket.attestations.agrees_to_platform_terms ? (
-                <CheckCircle
-                  size={16}
-                  color="$green10"
-                  mt="$0.5"
-                  flexShrink={0}
-                />
+                <CheckCircle size={16} color="var(--color-green-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               ) : (
-                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
+                <X size={16} color="var(--color-red-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               )}
-              <Text fontSize="$3" color="$color12">
+              <Text size="sm">
                 Agrees to platform terms
               </Text>
-            </XStack>
-            <XStack alignItems="flex-start" gap="$2" flex={1} minWidth="calc(50% - 6px)" $gtMd={{ minWidth: 'calc(50% - 6px)' }}>
+            </Row>
+            <Row alignItems="flex-start" gap={8} style={{ flex: 1, minWidth: 'calc(50% - 6px)' }}>
               {currentPacket.attestations.fraud_reporting_enabled ? (
-                <CheckCircle
-                  size={16}
-                  color="$green10"
-                  mt="$0.5"
-                  flexShrink={0}
-                />
+                <CheckCircle size={16} color="var(--color-green-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               ) : (
-                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
+                <X size={16} color="var(--color-red-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               )}
-              <Text fontSize="$3" color="$color12">
+              <Text size="sm">
                 Fraud reporting enabled
               </Text>
-            </XStack>
-            <XStack alignItems="flex-start" gap="$2" flex={1} minWidth="calc(50% - 6px)" $gtMd={{ minWidth: 'calc(50% - 6px)' }}>
+            </Row>
+            <Row alignItems="flex-start" gap={8} style={{ flex: 1, minWidth: 'calc(50% - 6px)' }}>
               {currentPacket.attestations.data_use_agreed ? (
-                <CheckCircle
-                  size={16}
-                  color="$green10"
-                  mt="$0.5"
-                  flexShrink={0}
-                />
+                <CheckCircle size={16} color="var(--color-green-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               ) : (
-                <X size={16} color="$red10" mt="$0.5" flexShrink={0} />
+                <X size={16} color="var(--color-red-10)" style={{ marginTop: 2, flexShrink: 0 }} />
               )}
-              <Text fontSize="$3" color="$color12">Data use agreed</Text>
-            </XStack>
-            <XStack alignItems="flex-start" gap="$2" flex={1} minWidth="calc(50% - 6px)" $gtMd={{ minWidth: 'calc(50% - 6px)' }}>
-              <CheckCircle
-                size={16}
-                color="$blue10"
-                mt="$0.5"
-                flexShrink={0}
-              />
-              <Text fontSize="$3" color="$color12">
+              <Text size="sm">Data use agreed</Text>
+            </Row>
+            <Row alignItems="flex-start" gap={8} style={{ flex: 1, minWidth: 'calc(50% - 6px)' }}>
+              <CheckCircle size={16} color="var(--color-blue-10)" style={{ marginTop: 2, flexShrink: 0 }} />
+              <Text size="sm">
                 Will notify changes within{' '}
                 {currentPacket.attestations.will_notify_material_change_days}{' '}
                 days
               </Text>
-            </XStack>
-          </XStack>
+            </Row>
+          </Row>
         </Card>
 
-        <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" mb="$4">
+        <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 16 }}>
             <Shield size={18} />
-            <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <H3 style={{ fontSize: 14, fontWeight: 600 }}>
               E&O Insurance Policy
             </H3>
-          </XStack>
-          <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
-            <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" mb="$1">Carrier</Text>
-              <Text fontSize="$3" fontWeight="500" color="$color12">
+          </Row>
+          <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+            <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+              <Text size="xs" muted style={{ marginBottom: 4 }}>Carrier</Text>
+              <Text size="sm" weight="medium">
                 {currentPacket.eo_policy.carrier}
               </Text>
-            </YStack>
-            <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" mb="$1">Policy Number</Text>
-              <Text fontSize="$3" fontWeight="500" color="$color12">
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+              <Text size="xs" muted style={{ marginBottom: 4 }}>Policy Number</Text>
+              <Text size="sm" weight="medium">
                 {currentPacket.eo_policy.policy_number}
               </Text>
-            </YStack>
-            <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" mb="$1">
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+              <Text size="xs" muted style={{ marginBottom: 4 }}>
                 Each Claim Limit
               </Text>
-              <Text fontSize="$3" fontWeight="500" color="$color12">
+              <Text size="sm" weight="medium">
                 {formatCurrency(currentPacket.eo_policy.limits_each_claim)}
               </Text>
-            </YStack>
-            <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" mb="$1">
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+              <Text size="xs" muted style={{ marginBottom: 4 }}>
                 Aggregate Limit
               </Text>
-              <Text fontSize="$3" fontWeight="500" color="$color12">
+              <Text size="sm" weight="medium">
                 {formatCurrency(currentPacket.eo_policy.limits_aggregate)}
               </Text>
-            </YStack>
-            <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" mb="$1">Effective Date</Text>
-              <Text fontSize="$3" fontWeight="500" color="$color12">
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+              <Text size="xs" muted style={{ marginBottom: 4 }}>Effective Date</Text>
+              <Text size="sm" weight="medium">
                 {formatDate(currentPacket.eo_policy.effective)}
               </Text>
-            </YStack>
-            <YStack flex={1} minWidth="calc(50% - 8px)" $gtMd={{ minWidth: 'calc(50% - 8px)' }}>
-              <Text fontSize="$1" color="$color11" mb="$1">
+            </Stack>
+            <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+              <Text size="xs" muted style={{ marginBottom: 4 }}>
                 Expiration Date
               </Text>
-              <Text fontSize="$3" fontWeight="500" color="$color12">
+              <Text size="sm" weight="medium">
                 {formatDate(currentPacket.eo_policy.expires)}
               </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
         </Card>
 
-        <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" mb="$4">
+        <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 16 }}>
             <FileText size={18} />
-            <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <H3 style={{ fontSize: 14, fontWeight: 600 }}>
               Licensing Information
             </H3>
-          </XStack>
-          <YStack gap="$3">
-            <YStack>
-              <Text fontSize="$1" color="$color11" mb="$2">
+          </Row>
+          <Stack gap={12}>
+            <Stack>
+              <Text size="xs" muted style={{ marginBottom: 8 }}>
                 Licensed States
               </Text>
-              <XStack flexWrap="wrap" gap="$2">
+              <Row style={{ flexWrap: 'wrap', gap: 8 }}>
                 {currentPacket.licensing.states.map((state) => (
                   <Badge key={state} variant="info">
                     {state}
                   </Badge>
                 ))}
-              </XStack>
-            </YStack>
-            <YStack>
-              <Text fontSize="$1" color="$color11" mb="$2">
+              </Row>
+            </Stack>
+            <Stack>
+              <Text size="xs" muted style={{ marginBottom: 8 }}>
                 License Details
               </Text>
-              <YStack gap="$2">
+              <Stack gap={8}>
                 {currentPacket.licensing.license_numbers.map((license, idx) => (
-                  <XStack
+                  <Row
                     key={idx}
                     alignItems="center"
                     justifyContent="space-between"
-                    padding="$2"
-                    backgroundColor="$background"
-                    borderRadius="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
+                    style={{
+                      padding: 8,
+                      backgroundColor: 'var(--color-background)',
+                      borderRadius: 8,
+                      border: '1px solid var(--color-border)',
+                    }}
                   >
-                    <XStack alignItems="center" gap="$3">
+                    <Row alignItems="center" gap={12}>
                       <Badge variant="info">{license.state}</Badge>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                      <Text size="sm" weight="medium">
                         {license.number}
                       </Text>
-                    </XStack>
-                    <Text fontSize="$1" color="$color11">
+                    </Row>
+                    <Text size="xs" muted>
                       Expires: {formatDate(license.expires)}
                     </Text>
-                  </XStack>
+                  </Row>
                 ))}
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         </Card>
 
-        <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" mb="$4">
+        <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 16 }}>
             <Users size={18} />
-            <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <H3 style={{ fontSize: 14, fontWeight: 600 }}>
               Broker Responsibilities
             </H3>
-          </XStack>
-          <XStack flexWrap="wrap" gap="$2" $gtMd={{ flexWrap: 'wrap' }}>
+          </Row>
+          <Row style={{ flexWrap: 'wrap', gap: 8 }}>
             {currentPacket.responsibilities.map((resp, idx) => (
-              <XStack
+              <Row
                 key={idx}
                 alignItems="center"
-                gap="$2"
-                fontSize="$3"
-                color="$color12"
-                flex={1}
-                minWidth="calc(50% - 4px)"
-                $gtMd={{ minWidth: 'calc(50% - 4px)' }}
+                gap={8}
+                style={{ flex: 1, minWidth: 'calc(50% - 4px)' }}
               >
-                <CheckCircle
-                  size={14}
-                  color="$blue10"
-                  flexShrink={0}
-                />
-                <Text fontSize="$3" color="$color12">{formatResponsibility(resp)}</Text>
-              </XStack>
+                <CheckCircle size={14} color="var(--color-blue-10)" style={{ flexShrink: 0 }} />
+                <Text size="sm">{formatResponsibility(resp)}</Text>
+              </Row>
             ))}
-          </XStack>
+          </Row>
         </Card>
 
-        <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" mb="$4">
+        <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 16 }}>
             <Users size={18} />
-            <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <H3 style={{ fontSize: 14, fontWeight: 600 }}>
               Signers
             </H3>
-          </XStack>
-          <YStack gap="$3">
+          </Row>
+          <Stack gap={12}>
             {currentPacket.signers.map((signer, idx) => (
-              <XStack
+              <Row
                 key={idx}
                 alignItems="center"
                 justifyContent="space-between"
-                padding="$3"
-                backgroundColor="$background"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$borderColor"
+                style={{
+                  padding: 12,
+                  backgroundColor: 'var(--color-background)',
+                  borderRadius: 8,
+                  border: '1px solid var(--color-border)',
+                }}
               >
-                <XStack alignItems="center" gap="$3">
+                <Row alignItems="center" gap={12}>
                   {getSignerStatusIcon(signer.status)}
-                  <YStack>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                  <Stack>
+                    <Text size="sm" weight="medium">
                       {signer.email}
                     </Text>
-                    <Text fontSize="$1" color="$color11">
+                    <Text size="xs" muted>
                       Role: {signer.role}
                     </Text>
-                  </YStack>
-                </XStack>
-                <YStack alignItems="flex-end">
-                  <Text
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    fontSize="$1"
-                    fontWeight="500"
-                    borderRadius="$2"
-                    backgroundColor={getStatusBgColor(signer.status)}
-                    color={getStatusTextColor(signer.status)}
+                  </Stack>
+                </Row>
+                <Stack alignItems="flex-end">
+                  <span
+                    style={{
+                      paddingLeft: 8,
+                      paddingRight: 8,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      borderRadius: 4,
+                      ...getStatusColorProps(signer.status),
+                    }}
                   >
                     {signer.status}
-                  </Text>
+                  </span>
                   {signer.acted_at && (
-                    <Text fontSize="$1" color="$color11" mt="$1">
+                    <Text size="xs" muted style={{ marginTop: 4 }}>
                       {formatDate(signer.acted_at)}
                     </Text>
                   )}
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
         </Card>
 
-        <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4">
-          <XStack alignItems="center" gap="$2" mb="$4">
+        <Card style={{ backgroundColor: 'var(--color-gray-2)', borderRadius: 8, padding: 16 }}>
+          <Row alignItems="center" gap={8} style={{ marginBottom: 16 }}>
             <Clock size={18} />
-            <H3 fontSize="$4" fontWeight="600" color="$color12">
+            <H3 style={{ fontSize: 14, fontWeight: 600 }}>
               Audit Log
             </H3>
-          </XStack>
-          <YStack gap="$2">
+          </Row>
+          <Stack gap={8}>
             {currentPacket.audit_log.map((entry, idx) => (
-              <XStack
+              <Row
                 key={idx}
                 alignItems="flex-start"
-                gap="$3"
-                padding="$2"
-                backgroundColor="$background"
-                borderRadius="$4"
+                gap={12}
+                style={{
+                  padding: 8,
+                  backgroundColor: 'var(--color-background)',
+                  borderRadius: 8,
+                }}
               >
-                <YStack mt="$1">{getEventIcon(entry.event)}</YStack>
-                <YStack flex={1}>
-                  <XStack alignItems="center" justifyContent="space-between">
-                    <Text fontSize="$3" fontWeight="500" color="$color12" textTransform="capitalize">
+                <div style={{ marginTop: 4 }}>{getEventIcon(entry.event)}</div>
+                <Stack style={{ flex: 1 }}>
+                  <Row alignItems="center" justifyContent="space-between">
+                    <Text size="sm" weight="medium" style={{ textTransform: 'capitalize' }}>
                       {entry.event}
                     </Text>
-                    <Text fontSize="$1" color="$color11">
+                    <Text size="xs" muted>
                       {formatDate(entry.at)}
                     </Text>
-                  </XStack>
-                  <Text fontSize="$1" color="$color11">
+                  </Row>
+                  <Text size="xs" muted>
                     by {entry.actor}
                   </Text>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
         </Card>
 
-        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
-          <Button variant="outline" onClick={onClose}>
+        <Row justifyContent="flex-end" gap={12} style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
+          <Button variant="outlined" onClick={onClose}>
             Close
           </Button>
           {currentPacket.status === 'SENT' ||
             (currentPacket.status === 'VIEWED' && (
               <Button variant="primary">Send Reminder</Button>
             ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Modal>
   );
 }

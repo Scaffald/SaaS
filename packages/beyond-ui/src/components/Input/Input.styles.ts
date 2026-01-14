@@ -30,8 +30,11 @@ export function getInputStyles(
   // Base container styles
   const baseContainer: ViewStyle = {
     width: '100%',
+    minWidth: '100%',
+    maxWidth: '100%',
     flexDirection: 'column',
     gap: spacing[4],
+    flexShrink: 0,
   }
 
   // Base input container styles
@@ -110,6 +113,9 @@ export function getInputStyles(
 
   const inputContainer: ViewStyle = {
     ...baseInputContainer,
+    flex: hasExternalAddon ? undefined : 1, // Fill available space when no external addon
+    width: hasExternalAddon ? undefined : '100%', // Full width when no external addon
+    minWidth: hasExternalAddon ? undefined : '100%', // Ensure minimum width matches
     backgroundColor,
     borderColor,
     borderRadius: hasExternalAddon && type === 'classic' ? undefined : inputBorderRadius,

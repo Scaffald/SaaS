@@ -6,9 +6,9 @@
  * overdue or approaching deadline requests.
  */
 
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { YStack, XStack, Text, Button, Card } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui'
 import { trpc } from '../../../lib/trpc'
 import {
   generateSLASummary,
@@ -20,25 +20,33 @@ import {
 /**
  * Color scheme based on warning level
  */
-const ALERT_COLORS = {
-  critical: {
-    bg: '$red3',
-    border: '$red8',
-    text: '$red11',
-    badge: '$red9',
-  },
-  warning: {
-    bg: '$orange3',
-    border: '$orange8',
-    text: '$orange11',
-    badge: '$orange9',
-  },
-  info: {
-    bg: '$yellow3',
-    border: '$yellow8',
-    text: '$yellow11',
-    badge: '$yellow9',
-  },
+function getAlertColors(level: 'critical' | 'warning' | 'info'): {
+  bg: React.CSSProperties
+  border: React.CSSProperties
+  text: React.CSSProperties
+  badge: React.CSSProperties
+} {
+  const colors = {
+    critical: {
+      bg: { backgroundColor: 'var(--color-red-3)' },
+      border: { borderColor: 'var(--color-red-8)' },
+      text: { color: 'var(--color-red-11)' },
+      badge: { backgroundColor: 'var(--color-red-9)' },
+    },
+    warning: {
+      bg: { backgroundColor: 'var(--color-orange-3)' },
+      border: { borderColor: 'var(--color-orange-8)' },
+      text: { color: 'var(--color-orange-11)' },
+      badge: { backgroundColor: 'var(--color-orange-9)' },
+    },
+    info: {
+      bg: { backgroundColor: 'var(--color-yellow-3)' },
+      border: { borderColor: 'var(--color-yellow-8)' },
+      text: { color: 'var(--color-yellow-11)' },
+      badge: { backgroundColor: 'var(--color-yellow-9)' },
+    },
+  }
+  return colors[level]
 }
 
 /**
@@ -120,7 +128,7 @@ export function SLANotificationBanner({ onDismiss, compact = false }: SLANotific
   const hasUrgent = slaSummary.urgentCount > 0
 
   const alertLevel = hasEscalated || hasOverdue ? 'critical' : hasUrgent ? 'warning' : 'info'
-  const colors = ALERT_COLORS[alertLevel]
+  const colors = getAlertColors(alertLevel)
 
   // Build alert message
   const getAlertMessage = (): string => {
@@ -144,101 +152,112 @@ export function SLANotificationBanner({ onDismiss, compact = false }: SLANotific
 
   if (compact) {
     return (
-      <XStack
-        backgroundColor={colors.bg}
-        borderWidth={1}
-        borderColor={colors.border}
-        borderRadius="$3"
-        paddingHorizontal="$3"
-        paddingVertical="$2"
-        alignItems="center"
-        justifyContent="space-between"
-        gap="$2"
+      <Row
+        style={{
+          ...colors.bg,
+          borderWidth: 1,
+          ...colors.border,
+          borderRadius: 8,
+          paddingLeft: 12,
+          paddingRight: 12,
+          paddingTop: 8,
+          paddingBottom: 8,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+        }}
       >
-        <XStack alignItems="center" gap="$2" flex={1}>
-          <XStack
-            backgroundColor={colors.badge}
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+        <Row style={{ alignItems: 'center', gap: 8, flex: 1 }}>
+          <Row
+            style={{
+              ...colors.badge,
+              paddingLeft: 8,
+              paddingRight: 8,
+              paddingTop: 4,
+              paddingBottom: 4,
+              borderRadius: 6,
+            }}
           >
-            <Text fontSize="$2" fontWeight="700" color="white">
+            <Text style={{ fontSize: 12, fontWeight: 700, color: 'white' }}>
               {slaSummary.escalatedCount + slaSummary.overdueCount}
             </Text>
-          </XStack>
-          <Text fontSize="$2" color={colors.text} fontWeight="500">
+          </Row>
+          <Text style={{ fontSize: 12, ...colors.text, fontWeight: 500 }}>
             {hasEscalated || hasOverdue ? 'Overdue' : 'Approaching deadline'}
           </Text>
-        </XStack>
+        </Row>
         <Button
-          size="$2"
-          backgroundColor="transparent"
-          color={colors.text}
-          hoverStyle={{ backgroundColor: colors.border }}
-          onPress={handleViewOverdue}
+          size="sm"
+          style={{ backgroundColor: 'transparent', ...colors.text }}
+          onClick={handleViewOverdue}
         >
           View
         </Button>
-      </XStack>
+      </Row>
     )
   }
 
   return (
     <Card
-      backgroundColor={colors.bg}
-      borderWidth={1}
-      borderColor={colors.border}
-      padding="$4"
-      mb="$4"
+      style={{
+        ...colors.bg,
+        borderWidth: 1,
+        ...colors.border,
+        padding: 16,
+        marginBottom: 16,
+      }}
     >
-      <XStack alignItems="center" justifyContent="space-between" gap="$4">
-        <YStack flex={1} gap="$1">
-          <XStack alignItems="center" gap="$2">
-            <XStack
-              backgroundColor={colors.badge}
-              paddingHorizontal="$3"
-              paddingVertical="$1"
-              borderRadius="$3"
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <Stack style={{ flex: 1, gap: 4 }}>
+          <Row style={{ alignItems: 'center', gap: 8 }}>
+            <Row
+              style={{
+                ...colors.badge,
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 4,
+                paddingBottom: 4,
+                borderRadius: 8,
+              }}
             >
-              <Text fontSize="$4" fontWeight="700" color="white">
+              <Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
                 {slaSummary.totalAlerts}
               </Text>
-            </XStack>
-            <Text fontSize="$5" fontWeight="600" color={colors.text}>
+            </Row>
+            <Text style={{ fontSize: 16, fontWeight: 600, ...colors.text }}>
               {hasEscalated
                 ? 'CCPA Requests Require Immediate Action'
                 : hasOverdue
                   ? 'CCPA Requests Are Overdue'
                   : 'CCPA Deadlines Approaching'}
             </Text>
-          </XStack>
+          </Row>
 
-          <Text fontSize="$3" color={colors.text}>
+          <Text style={{ fontSize: 14, ...colors.text }}>
             {getAlertMessage()}
           </Text>
-        </YStack>
+        </Stack>
 
-        <XStack gap="$2">
+        <Row style={{ gap: 8 }}>
           <Button
-            backgroundColor={colors.badge}
-            color="white"
-            hoverStyle={{ opacity: 0.9 }}
-            onPress={handleViewOverdue}
+            style={{ ...colors.badge, color: 'white' }}
+            onClick={handleViewOverdue}
           >
             View Requests
           </Button>
           <Button
-            backgroundColor="transparent"
-            color={colors.text}
-            borderWidth={1}
-            borderColor={colors.border}
-            hoverStyle={{ backgroundColor: colors.border }}
-            onPress={handleDismiss}
+            style={{
+              backgroundColor: 'transparent',
+              ...colors.text,
+              borderWidth: 1,
+              ...colors.border,
+            }}
+            onClick={handleDismiss}
           >
             Dismiss
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
     </Card>
   )
 }

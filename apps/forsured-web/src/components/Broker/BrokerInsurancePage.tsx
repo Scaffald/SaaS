@@ -11,11 +11,11 @@ import {
   ChevronRight,
   Plus,
 } from 'lucide-react';
-import { YStack, XStack, Text, H1, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H3, Card } from '@unicornlove/beyond-ui';
+import { Tabs as TabsCustom } from '../../ui/Tabs';
 import { usePolicies } from '../../hooks/usePolicies';
 import { useClients } from '../../hooks/useClients';
 import { Button } from '../Common/Button';
-import { TabsCustom } from '@unicornlove/ui';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 
 export default function BrokerInsurancePage() {
@@ -56,18 +56,33 @@ export default function BrokerInsurancePage() {
   const totalCoverage = policies.reduce((sum, p) => sum + (p.coverage_limit || 0), 0);
   const totalPremium = policies.reduce((sum, p) => sum + (p.premium || 0), 0);
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string): React.CSSProperties => {
     switch (status) {
       case 'active':
-        return { backgroundColor: '$green2', color: '$green11' };
+        return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-11)' };
       case 'expiring':
-        return { backgroundColor: '$yellow2', color: '$yellow11' };
+        return { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)' };
       case 'expired':
-        return { backgroundColor: '$red2', color: '$red11' };
+        return { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)' };
       default:
-        return { backgroundColor: '$gray2', color: '$gray11' };
+        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)' };
     }
   };
+
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: 'var(--color-background)',
+    borderRadius: 12,
+    border: '1px solid var(--color-border)',
+    padding: 24,
+    flex: 1,
+    minWidth: '20%',
+  };
+
+  const iconBoxStyle = (color: string): React.CSSProperties => ({
+    padding: 8,
+    backgroundColor: `var(--color-${color}-2)`,
+    borderRadius: 8,
+  });
 
   const getClientName = (clientId: string) => {
     const client = clients.find((c) => c.id === clientId);
@@ -80,234 +95,179 @@ export default function BrokerInsurancePage() {
       label: 'Overview',
       icon: Shield,
       content: (
-        <YStack gap="$6">
-          <XStack
-            flexDirection="column"
-            $gtMd={{ flexDirection: 'row' }}
-            $gtLg={{ flexDirection: 'row' }}
-            gap="$4"
-            flexWrap="wrap"
-          >
-            <Card
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$6"
-              flex={1}
-              minWidth="20%"
-            >
-              <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                <YStack padding="$2" backgroundColor="$green2" borderRadius="$4">
-                  <CheckCircle color="$green10" size={24} />
-                </YStack>
-                <Text fontSize="$1" color="$green10" fontWeight="500">Active</Text>
-              </XStack>
-              <Text fontSize="$9" fontWeight="bold" color="$color12">{activePolicies.length}</Text>
-              <Text fontSize="$3" color="$color11" mt="$1">Active Policies</Text>
+        <Stack gap={24}>
+          <Row gap={16} style={{ flexWrap: 'wrap' }}>
+            <Card style={cardStyle}>
+              <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+                <div style={iconBoxStyle('green')}>
+                  <CheckCircle color="var(--color-green-10)" size={24} />
+                </div>
+                <Text size="xs" weight="medium" style={{ color: 'var(--color-green-10)' }}>Active</Text>
+              </Row>
+              <Text size="2xl" weight="bold">{activePolicies.length}</Text>
+              <Text size="sm" muted style={{ marginTop: 4 }}>Active Policies</Text>
             </Card>
 
-            <Card
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$6"
-              flex={1}
-              minWidth="20%"
-            >
-              <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                <YStack padding="$2" backgroundColor="$yellow2" borderRadius="$4">
-                  <Clock color="$yellow10" size={24} />
-                </YStack>
-                <Text fontSize="$1" color="$yellow10" fontWeight="500">Attention</Text>
-              </XStack>
-              <Text fontSize="$9" fontWeight="bold" color="$color12">{expiringPolicies.length}</Text>
-              <Text fontSize="$3" color="$color11" mt="$1">Expiring Soon</Text>
+            <Card style={cardStyle}>
+              <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+                <div style={iconBoxStyle('yellow')}>
+                  <Clock color="var(--color-yellow-10)" size={24} />
+                </div>
+                <Text size="xs" weight="medium" style={{ color: 'var(--color-yellow-10)' }}>Attention</Text>
+              </Row>
+              <Text size="2xl" weight="bold">{expiringPolicies.length}</Text>
+              <Text size="sm" muted style={{ marginTop: 4 }}>Expiring Soon</Text>
             </Card>
 
-            <Card
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$6"
-              flex={1}
-              minWidth="20%"
-            >
-              <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                <YStack padding="$2" backgroundColor="$blue2" borderRadius="$4">
-                  <DollarSign color="$blue10" size={24} />
-                </YStack>
-              </XStack>
-              <Text fontSize="$9" fontWeight="bold" color="$color12">
+            <Card style={cardStyle}>
+              <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+                <div style={iconBoxStyle('blue')}>
+                  <DollarSign color="var(--color-blue-10)" size={24} />
+                </div>
+              </Row>
+              <Text size="2xl" weight="bold">
                 ${(totalCoverage / 1000000).toFixed(1)}M
               </Text>
-              <Text fontSize="$3" color="$color11" mt="$1">Total Coverage</Text>
+              <Text size="sm" muted style={{ marginTop: 4 }}>Total Coverage</Text>
             </Card>
 
-            <Card
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$6"
-              flex={1}
-              minWidth="20%"
-            >
-              <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                <YStack padding="$2" backgroundColor="$purple2" borderRadius="$4">
-                  <TrendingUp color="$purple10" size={24} />
-                </YStack>
-              </XStack>
-              <Text fontSize="$9" fontWeight="bold" color="$color12">
+            <Card style={cardStyle}>
+              <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+                <div style={iconBoxStyle('purple')}>
+                  <TrendingUp color="var(--color-purple-10)" size={24} />
+                </div>
+              </Row>
+              <Text size="2xl" weight="bold">
                 ${totalPremium.toLocaleString()}
               </Text>
-              <Text fontSize="$3" color="$color11" mt="$1">Annual Premium</Text>
+              <Text size="sm" muted style={{ marginTop: 4 }}>Annual Premium</Text>
             </Card>
-          </XStack>
+          </Row>
 
           {expiringPolicies.length > 0 && (
             <Card
-              backgroundColor="$yellow2"
-              borderWidth={1}
-              borderColor="$yellow6"
-              borderRadius="$4"
-              padding="$6"
+              style={{
+                backgroundColor: 'var(--color-yellow-2)',
+                border: '1px solid var(--color-yellow-6)',
+                borderRadius: 12,
+                padding: 24,
+              }}
             >
-              <XStack alignItems="center" gap="$3" mb="$4">
-                <AlertTriangle color="$yellow10" size={24} />
-                <H3 fontSize="$6" fontWeight="600" color="$yellow12">
+              <Row alignItems="center" gap={12} style={{ marginBottom: 16 }}>
+                <AlertTriangle color="var(--color-yellow-10)" size={24} />
+                <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-yellow-12)' }}>
                   Policies Requiring Attention
                 </H3>
-              </XStack>
-              <YStack gap="$3">
+              </Row>
+              <Stack gap={12}>
                 {expiringPolicies.slice(0, 3).map((policy) => (
                   <Card
                     key={policy.id}
-                    backgroundColor="white"
-                    borderRadius="$4"
-                    padding="$4"
-                    borderWidth={1}
-                    borderColor="$yellow6"
-                    cursor="pointer"
-                    hoverStyle={{ borderColor: '$yellow8' }}
                     onClick={() => navigate(`/broker/insurance/policies/${policy.id}`)}
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: 8,
+                      padding: 16,
+                      border: '1px solid var(--color-yellow-6)',
+                      cursor: 'pointer',
+                    }}
                   >
-                    <XStack alignItems="center" justifyContent="space-between">
-                      <YStack>
-                        <Text fontWeight="500" color="$color12">{policy.policy_type}</Text>
-                        <Text fontSize="$3" color="$color11">
+                    <Row alignItems="center" justifyContent="space-between">
+                      <Stack>
+                        <Text weight="medium">{policy.policy_type}</Text>
+                        <Text size="sm" muted>
                           {getClientName(policy.client_id)} - Expires{' '}
                           {new Date(policy.end_date).toLocaleDateString()}
                         </Text>
-                      </YStack>
-                      <ChevronRight color="$yellow10" size={20} />
-                    </XStack>
+                      </Stack>
+                      <ChevronRight color="var(--color-yellow-10)" size={20} />
+                    </Row>
                   </Card>
                 ))}
-              </YStack>
+              </Stack>
             </Card>
           )}
 
-          <XStack
-            flexDirection="column"
-            $gtLg={{ flexDirection: 'row' }}
-            gap="$6"
-            flexWrap="wrap"
-          >
-            <Card
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$6"
-              flex={1}
-              minWidth="45%"
-            >
-              <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                <H3 fontSize="$6" fontWeight="600" color="$color12">Recent Policies</H3>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleTabChange('policies')}
-                >
-                  <Button.Text>View All</Button.Text>
+          <Row gap={24} style={{ flexWrap: 'wrap' }}>
+            <Card style={{ ...cardStyle, minWidth: '45%' }}>
+              <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+                <H3 style={{ fontSize: 18, fontWeight: 600 }}>Recent Policies</H3>
+                <Button variant="ghost" onClick={() => handleTabChange('policies')}>
+                  View All
                 </Button>
-              </XStack>
-              <YStack gap="$3">
+              </Row>
+              <Stack gap={12}>
                 {policies.slice(0, 5).map((policy) => {
-                  const statusColors = getStatusColor(policy.status);
+                  const statusStyle = getStatusStyle(policy.status);
                   return (
                     <Card
                       key={policy.id}
-                      backgroundColor="$gray2"
-                      borderRadius="$4"
-                      padding="$3"
-                      cursor="pointer"
-                      hoverStyle={{ backgroundColor: '$gray3' }}
                       onClick={() => navigate(`/broker/insurance/policies/${policy.id}`)}
+                      style={{
+                        backgroundColor: 'var(--color-gray-2)',
+                        borderRadius: 8,
+                        padding: 12,
+                        cursor: 'pointer',
+                      }}
                     >
-                      <XStack alignItems="center" justifyContent="space-between">
-                        <YStack>
-                          <Text fontWeight="500" color="$color12">{policy.policy_type}</Text>
-                          <Text fontSize="$3" color="$color11">{policy.carrier}</Text>
-                        </YStack>
-                        <XStack
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          fontSize="$1"
-                          fontWeight="500"
-                          borderRadius="$2"
-                          {...statusColors}
+                      <Row alignItems="center" justifyContent="space-between">
+                        <Stack>
+                          <Text weight="medium">{policy.policy_type}</Text>
+                          <Text size="sm" muted>{policy.carrier}</Text>
+                        </Stack>
+                        <span
+                          style={{
+                            paddingLeft: 8,
+                            paddingRight: 8,
+                            paddingTop: 4,
+                            paddingBottom: 4,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            borderRadius: 4,
+                            backgroundColor: statusStyle.backgroundColor,
+                            color: statusStyle.color,
+                          }}
                         >
-                          <Text fontSize="$1" fontWeight="500" color={statusColors.color}>
-                            {policy.status}
-                          </Text>
-                        </XStack>
-                      </XStack>
+                          {policy.status}
+                        </span>
+                      </Row>
                     </Card>
                   );
                 })}
-              </YStack>
+              </Stack>
             </Card>
 
-            <Card
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              padding="$6"
-              flex={1}
-              minWidth="45%"
-            >
-              <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                <H3 fontSize="$6" fontWeight="600" color="$color12">Coverage by Type</H3>
-              </XStack>
-              <YStack gap="$4">
+            <Card style={{ ...cardStyle, minWidth: '45%' }}>
+              <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
+                <H3 style={{ fontSize: 18, fontWeight: 600 }}>Coverage by Type</H3>
+              </Row>
+              <Stack gap={16}>
                 {['General Liability', 'Workers Compensation', 'Commercial Auto', 'Professional Liability'].map((type) => {
                   const count = policies.filter((p) => p.policy_type === type).length;
                   const percentage = policies.length > 0 ? (count / policies.length) * 100 : 0;
                   return (
-                    <YStack key={type}>
-                      <XStack alignItems="center" justifyContent="space-between" mb="$1">
-                        <Text fontSize="$3" color="$color12">{type}</Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">{count}</Text>
-                      </XStack>
-                      <YStack width="100%" backgroundColor="$gray6" borderRadius={9999} height={8}>
-                        <YStack
-                          backgroundColor="$blue9"
-                          height={8}
-                          borderRadius={9999}
-                          width={`${percentage}%`}
+                    <Stack key={type}>
+                      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 4 }}>
+                        <Text size="sm">{type}</Text>
+                        <Text size="sm" weight="medium">{count}</Text>
+                      </Row>
+                      <div style={{ width: '100%', backgroundColor: 'var(--color-gray-6)', borderRadius: 9999, height: 8 }}>
+                        <div
+                          style={{
+                            backgroundColor: 'var(--color-blue-9)',
+                            height: 8,
+                            borderRadius: 9999,
+                            width: `${percentage}%`,
+                          }}
                         />
-                      </YStack>
-                    </YStack>
+                      </div>
+                    </Stack>
                   );
                 })}
-              </YStack>
+              </Stack>
             </Card>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       ),
     },
     {
@@ -316,103 +276,105 @@ export default function BrokerInsurancePage() {
       icon: FileText,
       badge: policies.length,
       content: (
-        <YStack gap="$4">
-          <XStack alignItems="center" justifyContent="space-between">
-            <Text color="$color11">
+        <Stack gap={16}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Text muted>
               Showing {policies.length} policies
             </Text>
             <Button variant="primary">
-              <Button.Icon><Plus size={16} /></Button.Icon>
-              <Button.Text>Add Policy</Button.Text>
+              <Row alignItems="center" gap={8}>
+                <Plus size={16} />
+                <span>Add Policy</span>
+              </Row>
             </Button>
-          </XStack>
+          </Row>
           {policies.length > 0 ? (
-            <YStack gap="$4">
+            <Stack gap={16}>
               {policies.map((policy) => {
-                const statusColors = getStatusColor(policy.status);
+                const statusStyle = getStatusStyle(policy.status);
                 return (
                   <Card
                     key={policy.id}
-                    backgroundColor="$background"
-                    borderRadius="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    padding="$6"
-                    hoverStyle={{ borderColor: '$blue8' }}
-                    cursor="pointer"
                     onClick={() => navigate(`/broker/insurance/policies/${policy.id}`)}
+                    style={{
+                      backgroundColor: 'var(--color-background)',
+                      borderRadius: 12,
+                      border: '1px solid var(--color-border)',
+                      padding: 24,
+                      cursor: 'pointer',
+                    }}
                   >
-                    <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
-                      <YStack>
-                        <Text fontSize="$4" fontWeight="600" color="$color12">{policy.policy_type}</Text>
-                        <Text fontSize="$3" color="$color11">{policy.carrier}</Text>
-                      </YStack>
-                      <XStack
-                        paddingHorizontal="$3"
-                        paddingVertical="$1"
-                        borderRadius={9999}
-                        fontSize="$1"
-                        fontWeight="500"
-                        {...statusColors}
+                    <Row alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: 16 }}>
+                      <Stack>
+                        <Text size="md" weight="semibold">{policy.policy_type}</Text>
+                        <Text size="sm" muted>{policy.carrier}</Text>
+                      </Stack>
+                      <span
+                        style={{
+                          paddingLeft: 12,
+                          paddingRight: 12,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          borderRadius: 9999,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          backgroundColor: statusStyle.backgroundColor,
+                          color: statusStyle.color,
+                        }}
                       >
-                        <Text fontSize="$1" fontWeight="500" color={statusColors.color}>
-                          {policy.status}
-                        </Text>
-                      </XStack>
-                    </XStack>
-                    <XStack
-                      flexDirection="column"
-                      $gtMd={{ flexDirection: 'row' }}
-                      gap="$4"
-                      flexWrap="wrap"
-                      fontSize="$3"
-                    >
-                      <YStack flex={1} minWidth="18%">
-                        <Text color="$color11">Client</Text>
-                        <Text fontWeight="500" color="$color12">{getClientName(policy.client_id)}</Text>
-                      </YStack>
-                      <YStack flex={1} minWidth="18%">
-                        <Text color="$color11">Policy Number</Text>
-                        <Text fontWeight="500" color="$color12">{policy.policy_number}</Text>
-                      </YStack>
-                      <YStack flex={1} minWidth="18%">
-                        <Text color="$color11">Coverage</Text>
-                        <Text fontWeight="500" color="$color12">
+                        {policy.status}
+                      </span>
+                    </Row>
+                    <Row gap={16} style={{ flexWrap: 'wrap' }}>
+                      <Stack style={{ flex: 1, minWidth: '18%' }}>
+                        <Text size="sm" muted>Client</Text>
+                        <Text weight="medium">{getClientName(policy.client_id)}</Text>
+                      </Stack>
+                      <Stack style={{ flex: 1, minWidth: '18%' }}>
+                        <Text size="sm" muted>Policy Number</Text>
+                        <Text weight="medium">{policy.policy_number}</Text>
+                      </Stack>
+                      <Stack style={{ flex: 1, minWidth: '18%' }}>
+                        <Text size="sm" muted>Coverage</Text>
+                        <Text weight="medium">
                           ${(policy.coverage_limit / 1000000).toFixed(1)}M
                         </Text>
-                      </YStack>
-                      <YStack flex={1} minWidth="18%">
-                        <Text color="$color11">Start Date</Text>
-                        <Text fontWeight="500" color="$color12">
+                      </Stack>
+                      <Stack style={{ flex: 1, minWidth: '18%' }}>
+                        <Text size="sm" muted>Start Date</Text>
+                        <Text weight="medium">
                           {new Date(policy.start_date).toLocaleDateString()}
                         </Text>
-                      </YStack>
-                      <YStack flex={1} minWidth="18%">
-                        <Text color="$color11">End Date</Text>
-                        <Text fontWeight="500" color="$color12">
+                      </Stack>
+                      <Stack style={{ flex: 1, minWidth: '18%' }}>
+                        <Text size="sm" muted>End Date</Text>
+                        <Text weight="medium">
                           {new Date(policy.end_date).toLocaleDateString()}
                         </Text>
-                      </YStack>
-                    </XStack>
+                      </Stack>
+                    </Row>
                   </Card>
                 );
               })}
-            </YStack>
+            </Stack>
           ) : (
             <Card
-              alignItems="center"
-              paddingVertical="$12"
-              backgroundColor="$background"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderRadius: 12,
+                border: '1px solid var(--color-border)',
+                padding: 48,
+                textAlign: 'center',
+              }}
             >
-              <FileText color="$color10" size={48} mb="$4" />
-              <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">No Policies Found</H3>
-              <Text color="$color11">No policies have been added yet.</Text>
+              <Stack alignItems="center">
+                <FileText color="var(--color-text-muted)" size={48} style={{ marginBottom: 16 }} />
+                <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>No Policies Found</H3>
+                <Text muted>No policies have been added yet.</Text>
+              </Stack>
             </Card>
           )}
-        </YStack>
+        </Stack>
       ),
     },
     {
@@ -420,56 +382,63 @@ export default function BrokerInsurancePage() {
       label: 'Coverage Requests',
       icon: Shield,
       content: (
-        <YStack gap="$4">
-          <XStack alignItems="center" justifyContent="space-between">
-            <Text color="$color11">Pending coverage requests</Text>
+        <Stack gap={16}>
+          <Row alignItems="center" justifyContent="space-between">
+            <Text muted>Pending coverage requests</Text>
             <Button variant="primary">
-              <Button.Icon><Plus size={16} /></Button.Icon>
-              <Button.Text>New Request</Button.Text>
+              <Row alignItems="center" gap={8}>
+                <Plus size={16} />
+                <span>New Request</span>
+              </Row>
             </Button>
-          </XStack>
+          </Row>
           <Card
-            alignItems="center"
-            paddingVertical="$12"
-            backgroundColor="$background"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
+            style={{
+              backgroundColor: 'var(--color-background)',
+              borderRadius: 12,
+              border: '1px solid var(--color-border)',
+              padding: 48,
+              textAlign: 'center',
+            }}
           >
-            <Shield color="$color10" size={48} mb="$4" />
-            <H3 fontSize="$6" fontWeight="600" color="$color12" mb="$2">
-              Coverage Requests Coming Soon
-            </H3>
-            <Text color="$color11">
-              Coverage request management will be available in a future update.
-            </Text>
+            <Stack alignItems="center">
+              <Shield color="var(--color-text-muted)" size={48} style={{ marginBottom: 16 }} />
+              <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
+                Coverage Requests Coming Soon
+              </H3>
+              <Text muted>
+                Coverage request management will be available in a future update.
+              </Text>
+            </Stack>
           </Card>
-        </YStack>
+        </Stack>
       ),
     },
   ];
 
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between">
-        <YStack>
-          <H1 fontSize="$8" fontWeight="bold" color="$color12">Insurance Management</H1>
-          <Text color="$color11">
+    <Stack gap={24}>
+      <Row alignItems="center" justifyContent="space-between">
+        <Stack>
+          <H1 style={{ fontSize: 24, fontWeight: 'bold' }}>Insurance Management</H1>
+          <Text muted>
             Manage policies, coverage requirements, and renewals
           </Text>
-        </YStack>
-        <XStack alignItems="center" gap="$3">
+        </Stack>
+        <Row alignItems="center" gap={12}>
           <Button variant="outlined">
-            <Button.Text>Export Report</Button.Text>
+            Export Report
           </Button>
           <Button variant="primary">
-            <Button.Icon><Plus size={16} /></Button.Icon>
-            <Button.Text>Add Policy</Button.Text>
+            <Row alignItems="center" gap={8}>
+              <Plus size={16} />
+              <span>Add Policy</span>
+            </Row>
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       <TabsCustom tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
-    </YStack>
+    </Stack>
   );
 }

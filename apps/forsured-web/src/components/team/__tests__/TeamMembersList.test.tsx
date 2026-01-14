@@ -85,8 +85,8 @@ describe('TeamMembersList', () => {
     it('shows loading skeleton when loading', () => {
       const { container } = render(<TeamMembersList members={[]} loading={true} />);
 
-      // Should show skeleton cards (now using Tamagui styling)
-      // The skeleton renders YStack elements with backgroundColor
+      // Should show skeleton cards (using Beyond UI styling)
+      // The skeleton renders div elements with backgroundColor
       const skeletonElements = container.querySelectorAll('div');
       // Should have multiple divs for the skeleton structure
       expect(skeletonElements.length).toBeGreaterThan(5);

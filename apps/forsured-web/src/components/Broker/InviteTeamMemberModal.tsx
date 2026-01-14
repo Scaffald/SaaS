@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { UserPlus, X } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H2, SizableText, Input } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, H2, Input } from '@unicornlove/beyond-ui';
 import { useUserInvitations } from '../../hooks/useUserInvitations';
 import { useUser } from '../../contexts/UserContext';
 import { toast } from 'sonner';
@@ -131,8 +131,6 @@ export default function InviteTeamMemberModal({
         invited_by: currentUser?.id || '',
         status: 'pending',
         invited_at: new Date().toISOString(),
-        // Store broker_role in metadata or handle separately
-        // This would need backend support to properly handle broker_role
       });
 
       toast.success('Invitation sent successfully', {
@@ -165,114 +163,140 @@ export default function InviteTeamMemberModal({
 
   const selectedRoleConfig = BROKER_ROLE_CONFIG.find((r) => r.value === brokerRole);
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    backgroundColor: 'var(--color-background)',
+    color: 'var(--color-text)',
+    fontSize: 14,
+  };
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    backgroundColor: 'var(--color-background)',
+    color: 'var(--color-text)',
+    fontSize: 14,
+    cursor: loading ? 'not-allowed' : 'pointer',
+    opacity: loading ? 0.5 : 1,
+  };
+
   return (
-    <YStack
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      zIndex={50}
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="rgba(0,0,0,0.5)"
+    <Stack
+      onClick={handleBackdropClick}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="invite-member-modal-title"
-      onClick={handleBackdropClick}
     >
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={4}
-        width="100%"
-        maxWidth={480}
-        marginHorizontal="$4"
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          width: '100%',
+          maxWidth: 480,
+          marginLeft: 16,
+          marginRight: 16,
+        }}
       >
         {/* Header */}
-        <XStack
+        <Row
           alignItems="center"
           justifyContent="space-between"
-          padding="$4"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
+          padding={16}
+          style={{ borderBottom: '1px solid var(--color-border)' }}
         >
-          <XStack alignItems="center" gap="$3">
-            <YStack
-              width={40}
-              height={40}
-              borderRadius={9999}
-              backgroundColor="$blue2"
-              alignItems="center"
-              justifyContent="center"
+          <Row alignItems="center" gap={12}>
+            <Stack
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 9999,
+                backgroundColor: 'var(--color-blue-2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <UserPlus size={20} color="var(--blue10)" />
-            </YStack>
-            <YStack>
+              <UserPlus size={20} style={{ color: 'var(--color-blue-10)' }} />
+            </Stack>
+            <Stack>
               <H2
                 id="invite-member-modal-title"
-                fontSize="$6"
-                fontWeight="600"
-                color="$color12"
+                style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}
               >
                 Invite Team Member
               </H2>
-              <SizableText fontSize="$3" color="$color10">
+              <Text size="sm" muted>
                 Send an invitation to join your broker team
-              </SizableText>
-            </YStack>
-          </XStack>
+              </Text>
+            </Stack>
+          </Row>
 
           {/* Close Button */}
           <Button
-            onPress={handleClose}
+            onClick={handleClose}
             disabled={loading}
-            variant="outlined"
-            size="$2"
-            padding="$1"
-            opacity={loading ? 0.5 : 1}
+            variant="ghost"
+            style={{ padding: 4, opacity: loading ? 0.5 : 1 }}
             aria-label="Close modal"
           >
             <X size={20} />
           </Button>
-        </XStack>
+        </Row>
 
         {/* Form Content */}
-        <YStack padding="$4" gap="$4">
+        <Stack padding={16} gap={16}>
           {/* Error Message */}
           {error && (
-            <YStack
-              backgroundColor="$red2"
-              borderWidth={1}
-              borderColor="$red6"
-              borderRadius="$4"
-              padding="$3"
+            <Stack
+              style={{
+                backgroundColor: 'var(--color-red-2)',
+                border: '1px solid var(--color-red-6)',
+                borderRadius: 8,
+                padding: 12,
+              }}
             >
-              <SizableText fontSize="$3" color="$red11">
+              <Text size="sm" style={{ color: 'var(--color-red-11)' }}>
                 {error}
-              </SizableText>
-            </YStack>
+              </Text>
+            </Stack>
           )}
 
           {/* Name Field */}
-          <YStack gap="$2">
-            <Text fontSize="$3" fontWeight="500" color="$color11">
-              Full Name <Text color="$red10">*</Text>
+          <Stack gap={8}>
+            <Text size="sm" weight="medium" muted>
+              Full Name <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter full name"
               disabled={loading}
-              width="100%"
+              style={inputStyle}
             />
-          </YStack>
+          </Stack>
 
           {/* Email Field */}
-          <YStack gap="$2">
-            <Text fontSize="$3" fontWeight="500" color="$color11">
-              Email Address <Text color="$red10">*</Text>
+          <Stack gap={8}>
+            <Text size="sm" weight="medium" muted>
+              Email Address <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <Input
               type="email"
@@ -280,30 +304,20 @@ export default function InviteTeamMemberModal({
               onChange={(e) => setEmail(e.target.value)}
               placeholder="user@example.com"
               disabled={loading}
-              width="100%"
+              style={inputStyle}
             />
-          </YStack>
+          </Stack>
 
           {/* Broker Role Selector */}
-          <YStack gap="$2">
-            <Text fontSize="$3" fontWeight="500" color="$color11">
-              Role <Text color="$red10">*</Text>
+          <Stack gap={8}>
+            <Text size="sm" weight="medium" muted>
+              Role <span style={{ color: 'var(--color-red-10)' }}>*</span>
             </Text>
             <select
               value={brokerRole}
               onChange={(e) => setBrokerRole(e.target.value as BrokerRole)}
               disabled={loading}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                backgroundColor: 'var(--background)',
-                color: 'var(--color12)',
-                fontSize: '14px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.5 : 1,
-              }}
+              style={selectStyle}
             >
               {BROKER_ROLE_CONFIG.map((role) => (
                 <option key={role.value} value={role.value}>
@@ -314,55 +328,63 @@ export default function InviteTeamMemberModal({
 
             {/* Role Description */}
             {selectedRoleConfig && (
-              <YStack backgroundColor="$blue2" borderRadius="$3" padding="$2">
-                <SizableText fontSize="$2" color="$blue11">
+              <Stack
+                style={{
+                  backgroundColor: 'var(--color-blue-2)',
+                  borderRadius: 6,
+                  padding: 8,
+                }}
+              >
+                <Text size="xs" style={{ color: 'var(--color-blue-11)' }}>
                   {selectedRoleConfig.description}
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           {/* Info Message */}
-          <YStack
-            backgroundColor="$blue2"
-            borderWidth={1}
-            borderColor="$blue6"
-            borderRadius="$4"
-            padding="$3"
+          <Stack
+            style={{
+              backgroundColor: 'var(--color-blue-2)',
+              border: '1px solid var(--color-blue-6)',
+              borderRadius: 8,
+              padding: 12,
+            }}
           >
-            <SizableText fontSize="$2" color="$blue11">
+            <Text size="xs" style={{ color: 'var(--color-blue-11)' }}>
               An invitation email will be sent to the user with instructions to join your broker team.
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
 
           {/* Action Buttons */}
-          <XStack gap="$3" paddingTop="$2">
+          <Row gap={12} style={{ paddingTop: 8 }}>
             <Button
               variant="outlined"
-              onPress={handleClose}
-              flex={1}
+              onClick={handleClose}
               disabled={loading}
-              opacity={loading ? 0.5 : 1}
+              style={{ flex: 1, opacity: loading ? 0.5 : 1 }}
             >
               Cancel
             </Button>
             <Button
-              onPress={handleSubmit}
-              flex={1}
+              onClick={handleSubmit}
               disabled={loading || !email.trim() || !name.trim()}
-              opacity={loading || !email.trim() || !name.trim() ? 0.5 : 1}
-              backgroundColor="$blue10"
+              style={{
+                flex: 1,
+                opacity: loading || !email.trim() || !name.trim() ? 0.5 : 1,
+                backgroundColor: 'var(--color-blue-10)',
+              }}
             >
-              <XStack alignItems="center" gap="$2">
+              <Row alignItems="center" gap={8}>
                 <UserPlus size={16} />
-                <Text color="white">
+                <Text style={{ color: 'white' }}>
                   {loading ? 'Sending...' : 'Send Invitation'}
                 </Text>
-              </XStack>
+              </Row>
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   );
 }

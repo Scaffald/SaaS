@@ -5,8 +5,8 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react'
 import type { User, UserRole } from '../../types'
-import { User as UserIcon, ChevronDown, Check } from 'lucide-react'
-import { YStack, XStack, Text, Input, Button, Card, SizableText, Spinner } from '@unicornlove/ui'
+import { User as UserIcon, ChevronDown, Check, Loader2 } from 'lucide-react'
+import { Stack, Row, Text, Input, Button, Card } from '@unicornlove/beyond-ui'
 
 interface TaskAssignmentProps {
   users: User[]
@@ -88,168 +88,205 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
   }
 
   return (
-    <YStack ref={dropdownRef} position="relative">
+    <Stack ref={dropdownRef} style={{ position: 'relative' }}>
       <Button
         type="button"
-        onPress={handleToggle}
+        onClick={handleToggle}
         onKeyDown={handleKeyDown}
         disabled={loading}
-        variant="outlined"
-        size="$3"
-        paddingHorizontal="$4"
-        paddingVertical="$2"
-        backgroundColor="$background"
-        borderWidth={1}
-        borderColor="$borderColor"
-        borderRadius="$4"
-        opacity={loading ? 0.5 : 1}
+        variant="outline"
+        size="md"
+        style={{
+          paddingLeft: '16px',
+          paddingRight: '16px',
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          backgroundColor: 'var(--color-background)',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: 'var(--color-border)',
+          borderRadius: '12px',
+          opacity: loading ? 0.5 : 1,
+        }}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <XStack alignItems="center" gap="$2" width="100%">
+        <Row style={{ alignItems: 'center', gap: '8px', width: '100%' }}>
           {loading ? (
             <>
-              <Spinner size="small" />
-              <SizableText fontSize="$3" color="$color10">
+              <Loader2 size={16} className="animate-spin" />
+              <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
                 Loading...
-              </SizableText>
+              </Text>
             </>
           ) : assignedUser ? (
             <>
-              <XStack alignItems="center" gap="$2" flex={1}>
-                <YStack
-                  width={32}
-                  height={32}
-                  borderRadius={9999}
-                  backgroundColor="$blue10"
-                  alignItems="center"
-                  justifyContent="center"
+              <Row style={{ alignItems: 'center', gap: '8px', flex: 1 }}>
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--color-blue10)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
-                  <SizableText fontSize="$3" fontWeight="500" color="white">
+                  <Text style={{ fontSize: '14px', fontWeight: 500, color: 'white' }}>
                     {assignedUser.name.charAt(0)}
-                  </SizableText>
-                </YStack>
-                <YStack alignItems="flex-start">
-                  <SizableText fontSize="$3" fontWeight="500" color="$color12">
+                  </Text>
+                </div>
+                <Stack style={{ alignItems: 'flex-start' }}>
+                  <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)' }}>
                     {assignedUser.name}
-                  </SizableText>
-                  <SizableText fontSize="$1" color="$color10">
+                  </Text>
+                  <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
                     {assignedUser.role}
-                  </SizableText>
-                </YStack>
-              </XStack>
-              <ChevronDown size={16} color="var(--color10)" />
-              <Text position="absolute" opacity={0} width={0} height={0}>
+                  </Text>
+                </Stack>
+              </Row>
+              <ChevronDown size={16} color="var(--color-color10)" />
+              <span style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}>
                 Reassign task
-              </Text>
+              </span>
             </>
           ) : (
             <>
-              <UserIcon size={20} color="var(--color10)" />
-              <SizableText fontSize="$3" color="$color10">
+              <UserIcon size={20} color="var(--color-color10)" />
+              <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
                 Unassigned
-              </SizableText>
-              <ChevronDown size={16} color="var(--color10)" />
-              <Text position="absolute" opacity={0} width={0} height={0}>
-                Assign task
               </Text>
+              <ChevronDown size={16} color="var(--color-color10)" />
+              <span style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}>
+                Assign task
+              </span>
             </>
           )}
-        </XStack>
+        </Row>
       </Button>
 
       {isOpen && (
         <Card
-          position="absolute"
-          zIndex={10}
-          mt="$2"
-          width={320}
-          backgroundColor="$background"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          elevation={4}
+          style={{
+            position: 'absolute',
+            zIndex: 10,
+            marginTop: '8px',
+            width: '320px',
+            backgroundColor: 'var(--color-background)',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          }}
         >
-          <YStack padding="$2" borderBottomWidth={1} borderColor="$borderColor">
+          <Stack style={{ padding: '8px', borderBottom: '1px solid var(--color-border)' }}>
             <Input
               type="text"
               placeholder="Search users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              width="100%"
-              padding="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$2"
-              fontSize="$3"
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderColor: 'var(--color-border)',
+                borderRadius: '6px',
+                fontSize: '14px',
+              }}
               autoFocus
             />
-          </YStack>
+          </Stack>
 
-          <YStack maxHeight={256} overflow="scroll" role="listbox">
+          <Stack style={{ maxHeight: '256px', overflow: 'auto' }} role="listbox">
             {users.length === 0 ? (
-              <YStack padding="$4" alignItems="center">
-                <SizableText fontSize="$3" color="$color10">
+              <Stack style={{ padding: '16px', alignItems: 'center' }}>
+                <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
                   No users available
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
             ) : filteredUsers.length === 0 ? (
-              <YStack padding="$4" alignItems="center">
-                <SizableText fontSize="$3" color="$color10">
+              <Stack style={{ padding: '16px', alignItems: 'center' }}>
+                <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
                   No users found
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
             ) : (
               filteredUsers.map((user) => (
-                <Button
+                <button
                   key={user.id}
                   type="button"
-                  onPress={() => handleUserSelect(user.id)}
-                  variant="outlined"
-                  width="100%"
-                  justifyContent="flex-start"
-                  paddingHorizontal="$4"
-                  paddingVertical="$3"
+                  onClick={() => handleUserSelect(user.id)}
+                  style={{
+                    display: 'flex',
+                    width: '100%',
+                    justifyContent: 'flex-start',
+                    paddingLeft: '16px',
+                    paddingRight: '16px',
+                    paddingTop: '12px',
+                    paddingBottom: '12px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                   role="option"
                   aria-selected={user.id === assignedUserId}
                 >
-                  <XStack alignItems="center" gap="$3" width="100%">
-                    <YStack
-                      width={40}
-                      height={40}
-                      borderRadius={9999}
-                      backgroundColor="$blue10"
-                      alignItems="center"
-                      justifyContent="center"
+                  <Row style={{ alignItems: 'center', gap: '12px', width: '100%' }}>
+                    <div
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--color-blue10)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
                     >
-                      <SizableText fontSize="$3" fontWeight="500" color="white">
+                      <Text style={{ fontSize: '14px', fontWeight: 500, color: 'white' }}>
                         {user.name.charAt(0)}
-                      </SizableText>
-                    </YStack>
-                    <YStack flex={1} minWidth={0}>
-                      <SizableText
-                        fontSize="$3"
-                        fontWeight="500"
-                        color="$color12"
-                        numberOfLines={1}
+                      </Text>
+                    </div>
+                    <Stack style={{ flex: 1, minWidth: 0 }}>
+                      <Text
+                        style={{
+                          fontSize: '14px',
+                          fontWeight: 500,
+                          color: 'var(--color-color12)',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
                       >
                         {user.name}
-                      </SizableText>
-                      <SizableText fontSize="$1" color="$color10" numberOfLines={1}>
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--color-color10)',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
                         {user.email}
-                      </SizableText>
-                      <SizableText fontSize="$1" color="$color10" textTransform="capitalize">
+                      </Text>
+                      <Text style={{ fontSize: '12px', color: 'var(--color-color10)', textTransform: 'capitalize' }}>
                         {user.role}
-                      </SizableText>
-                    </YStack>
-                    {user.id === assignedUserId && <Check size={20} color="var(--blue10)" />}
-                  </XStack>
-                </Button>
+                      </Text>
+                    </Stack>
+                    {user.id === assignedUserId && <Check size={20} color="var(--color-blue10)" />}
+                  </Row>
+                </button>
               ))
             )}
-          </YStack>
+          </Stack>
         </Card>
       )}
-    </YStack>
+    </Stack>
   )
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { UserPlus } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, SizableText, Input, Checkbox } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, Input } from '@unicornlove/beyond-ui';
 import Modal from '../Common/Modal';
 import { useUserInvitations } from '../../hooks/useUserInvitations';
 import { useProjects } from '../../hooks/useProjects';
@@ -114,39 +114,38 @@ export default function UserInvitationModal({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Invite User" size="medium">
-      <YStack gap="$4">
+      <Stack style={{ gap: '16px' }}>
         {error && (
-          <YStack
-            backgroundColor="$red2"
-            borderWidth={1}
-            borderColor="$red6"
-            borderRadius="$4"
-            padding="$3"
+          <Stack
+            style={{
+              backgroundColor: 'var(--color-red-2)',
+              border: '1px solid var(--color-red-6)',
+              borderRadius: '8px',
+              padding: '12px',
+            }}
           >
-            <SizableText fontSize="$3" color="$red11">
+            <Text style={{ fontSize: '14px', color: 'var(--color-red-11)' }}>
               {error}
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
         )}
 
         <Input
           label="Email Address"
           type="email"
           value={email}
-          onChangeText={setEmail}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="user@example.com"
-          width="100%"
+          style={{ width: '100%' }}
           required
         />
 
         <Input
           label="Full Name"
           value={name}
-          onChangeText={setName}
           onChange={(e) => setName(e.target.value)}
           placeholder="John Doe"
-          width="100%"
+          style={{ width: '100%' }}
           required
         />
 
@@ -156,9 +155,9 @@ export default function UserInvitationModal({
           style={{
             width: '100%',
             padding: '8px 12px',
-            border: '1px solid var(--borderColor)',
+            border: '1px solid var(--color-border)',
             borderRadius: '8px',
-            backgroundColor: 'var(--background)',
+            backgroundColor: 'var(--color-background)',
           }}
         >
           <option value="admin">Admin</option>
@@ -167,132 +166,142 @@ export default function UserInvitationModal({
         </select>
 
         {/* Role Description */}
-        <YStack backgroundColor="$color2" borderRadius="$4" padding="$3">
-          <SizableText fontSize="$3" fontWeight="500" color="$color12" mb="$1">
+        <Stack style={{ backgroundColor: 'var(--color-2)', borderRadius: '8px', padding: '12px' }}>
+          <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-12)', marginBottom: '4px' }}>
             {role === 'admin' &&
               'Admin: Full access to all features and settings'}
             {role === 'manager' &&
               'Manager: Can manage projects, approve documents, invite users'}
             {role === 'user' &&
               'User: Can view assigned projects, upload documents, complete tasks'}
-          </SizableText>
-        </YStack>
+          </Text>
+        </Stack>
 
         {/* Project Assignment */}
         {projects.length > 0 && (
-          <YStack>
-            <SizableText fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+          <Stack>
+            <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-12)', marginBottom: '8px' }}>
               Assign to Projects (Optional)
-            </SizableText>
+            </Text>
             <Card
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              maxHeight={192}
-              overflow="scroll"
-              padding="$2"
+              style={{
+                border: '1px solid var(--color-border)',
+                borderRadius: '8px',
+                maxHeight: '192px',
+                overflow: 'auto',
+                padding: '8px',
+              }}
             >
-              <YStack gap="$2">
+              <Stack style={{ gap: '8px' }}>
                 {projects.map((project) => (
-                  <XStack
+                  <Row
                     key={project.id}
-                    alignItems="center"
-                    gap="$2"
-                    padding="$2"
-                    borderRadius="$2"
-                    cursor="pointer"
-                    hoverStyle={{ backgroundColor: '$color2' }}
-                    onPress={() => toggleProject(project.id)}
+                    style={{
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => toggleProject(project.id)}
                   >
                     <input
                       type="checkbox"
                       checked={selectedProjects.includes(project.id)}
                       onChange={() => toggleProject(project.id)}
-                      style={{ borderRadius: '4px', border: '1px solid var(--borderColor)' }}
+                      style={{ borderRadius: '4px', border: '1px solid var(--color-border)' }}
                       onClick={(e) => e.stopPropagation()}
                     />
-                    <SizableText fontSize="$3" color="$color12">
+                    <Text style={{ fontSize: '14px', color: 'var(--color-12)' }}>
                       {project.name}
-                    </SizableText>
-                  </XStack>
+                    </Text>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             </Card>
-          </YStack>
+          </Stack>
         )}
 
         {/* Client Assignment (for brokers) */}
         {isBroker && clients.length > 0 && (
-          <YStack>
-            <SizableText fontSize="$3" fontWeight="500" color="$color12" mb="$2">
+          <Stack>
+            <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-12)', marginBottom: '8px' }}>
               Assign to Clients (Optional)
-            </SizableText>
+            </Text>
             <Card
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              maxHeight={192}
-              overflow="scroll"
-              padding="$2"
+              style={{
+                border: '1px solid var(--color-border)',
+                borderRadius: '8px',
+                maxHeight: '192px',
+                overflow: 'auto',
+                padding: '8px',
+              }}
             >
-              <YStack gap="$2">
+              <Stack style={{ gap: '8px' }}>
                 {clients.map((client) => (
-                  <XStack
+                  <Row
                     key={client.id}
-                    alignItems="center"
-                    gap="$2"
-                    padding="$2"
-                    borderRadius="$2"
-                    cursor="pointer"
-                    hoverStyle={{ backgroundColor: '$color2' }}
-                    onPress={() => toggleClient(client.id)}
+                    style={{
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => toggleClient(client.id)}
                   >
                     <input
                       type="checkbox"
                       checked={selectedClients.includes(client.id)}
                       onChange={() => toggleClient(client.id)}
-                      style={{ borderRadius: '4px', border: '1px solid var(--borderColor)' }}
+                      style={{ borderRadius: '4px', border: '1px solid var(--color-border)' }}
                       onClick={(e) => e.stopPropagation()}
                     />
-                    <SizableText fontSize="$3" color="$color12">
+                    <Text style={{ fontSize: '14px', color: 'var(--color-12)' }}>
                       {client.name}
-                    </SizableText>
-                  </XStack>
+                    </Text>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             </Card>
-          </YStack>
+          </Stack>
         )}
 
-        <YStack backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$3">
-          <SizableText fontSize="$1" color="$blue11">
+        <Stack
+          style={{
+            backgroundColor: 'var(--color-blue-2)',
+            border: '1px solid var(--color-blue-6)',
+            borderRadius: '8px',
+            padding: '12px',
+          }}
+        >
+          <Text style={{ fontSize: '12px', color: 'var(--color-blue-11)' }}>
             An invitation email will be sent to the user with instructions to
             join and complete onboarding.
-          </SizableText>
-        </YStack>
+          </Text>
+        </Stack>
 
-        <XStack gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+        <Row style={{ gap: '12px', paddingTop: '16px', borderTop: '1px solid var(--color-border)' }}>
           <Button
             variant="outlined"
-            onPress={handleClose}
-            flex={1}
+            onClick={handleClose}
+            style={{ flex: 1 }}
             disabled={loading}
           >
             Cancel
           </Button>
           <Button
-            onPress={handleSubmit}
-            flex={1}
+            onClick={handleSubmit}
+            style={{ flex: 1, opacity: loading || !email.trim() || !name.trim() ? 0.5 : 1 }}
             disabled={loading || !email.trim() || !name.trim()}
-            opacity={loading || !email.trim() || !name.trim() ? 0.5 : 1}
           >
-            <XStack alignItems="center" gap="$2">
+            <Row style={{ alignItems: 'center', gap: '8px' }}>
               <UserPlus size={16} />
               <Text>{loading ? 'Sending...' : 'Send Invitation'}</Text>
-            </XStack>
+            </Row>
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Modal>
   );
 }

@@ -1,6 +1,6 @@
 // src/pages/broker/settings/NotificationSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2, Select } from '@unicornlove/ui';
+import { Stack, Text, Button, H2 } from '@unicornlove/beyond-ui';
 import Checkbox from '../../../ui/Checkbox';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
@@ -70,27 +70,50 @@ function BrokerNotificationSettings() {
     setPreferences(prev => ({ ...prev, [key]: value }));
   }, []);
 
+  const skeletonStyle: React.CSSProperties = {
+    height: 40,
+    backgroundColor: 'var(--color-3)',
+    borderRadius: 'var(--radius-4)',
+  };
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    backgroundColor: 'var(--color-background)',
+    fontSize: 14,
+    cursor: 'pointer',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 14,
+    fontWeight: 500,
+    color: 'var(--color-text)',
+    marginBottom: 4,
+  };
+
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Notification Settings</H2>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {[1, 2, 3].map(i => (
-            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
+            <div key={i} style={skeletonStyle} />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Notification Settings</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text muted style={{ marginBottom: 'var(--space-6)' }}>
         Configure how and when you receive notifications about your clients.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Checkbox
             checked={preferences.emailOnClientExpiringPolicy}
             onChange={(e) => updatePreference('emailOnClientExpiringPolicy', e.target.checked)}
@@ -101,24 +124,30 @@ function BrokerNotificationSettings() {
             onChange={(e) => updatePreference('emailOnClientComplianceIssue', e.target.checked)}
             label="Email me on client compliance issues"
           />
-          <YStack gap="$1" marginBottom="$6">
-            <Select
-              label="Email Digest Frequency"
+          <Stack style={{ gap: 4, marginBottom: 'var(--space-6)' }}>
+            <Text style={labelStyle}>Email Digest Frequency</Text>
+            <select
               value={preferences.emailDigestFrequency}
-              onValueChange={(value) => updatePreference('emailDigestFrequency', value)}
-              options={frequencyOptions}
-            />
-          </YStack>
+              onChange={(e) => updatePreference('emailDigestFrequency', e.target.value)}
+              style={selectStyle}
+            >
+              {frequencyOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </Stack>
           <Button
             type="submit"
             disabled={!isDirty || isSaving}
-            variant="primary"
+            color="primary"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

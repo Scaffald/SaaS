@@ -1,6 +1,6 @@
 // src/pages/docs/Components.tsx
 import React from 'react';
-import { YStack, XStack, View, Text, H1, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Box, Text, H1, H2, H3 } from '@unicornlove/beyond-ui';
 
 interface ComponentDocProps {
   name: string;
@@ -11,76 +11,93 @@ interface ComponentDocProps {
 
 function ComponentDocumentationTemplate({ name, description, props, examples }: ComponentDocProps) {
   return (
-    <View padding="$6">
-      <H1 fontSize="$9" fontWeight="bold" marginBottom="$4" color="$color12">{name}</H1>
-      <Text fontSize="$5" color="$color11" marginBottom="$6">{description}</Text>
+    <Box style={{ padding: 'var(--space-6)' }}>
+      <H1 style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', marginBottom: 'var(--space-4)', color: 'var(--color-12)' }}>{name}</H1>
+      <Text style={{ fontSize: 'var(--font-size-5)', color: 'var(--color-11)', marginBottom: 'var(--space-6)' }}>{description}</Text>
 
-      <H2 fontSize="$7" fontWeight="600" marginBottom="$3" color="$color12">Props</H2>
-      <View
-        backgroundColor="$background"
-        borderWidth={1}
-        borderColor="$borderColor"
-        borderRadius="$4"
-        marginBottom="$6"
-        overflow="hidden"
+      <H2 style={{ fontSize: 'var(--font-size-7)', fontWeight: 600, marginBottom: 'var(--space-3)', color: 'var(--color-12)' }}>Props</H2>
+      <Box
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'var(--color-border)',
+          borderRadius: 'var(--radius-4)',
+          marginBottom: 'var(--space-6)',
+          overflow: 'hidden',
+        }}
       >
-        <XStack
-          backgroundColor="$backgroundSecondary"
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
+        <Row
+          style={{
+            backgroundColor: 'var(--color-background-secondary)',
+            borderBottomWidth: 1,
+            borderBottomStyle: 'solid',
+            borderBottomColor: 'var(--color-border)',
+          }}
         >
-          <Text flex={1} paddingVertical="$2" paddingHorizontal="$4" fontWeight="600" color="$color12">Name</Text>
-          <Text flex={1} paddingVertical="$2" paddingHorizontal="$4" fontWeight="600" color="$color12">Type</Text>
-          <Text flex={2} paddingVertical="$2" paddingHorizontal="$4" fontWeight="600" color="$color12">Description</Text>
-          <Text flex={1} paddingVertical="$2" paddingHorizontal="$4" fontWeight="600" color="$color12">Default</Text>
-        </XStack>
+          <Text style={{ flex: 1, paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', fontWeight: 600, color: 'var(--color-12)' }}>Name</Text>
+          <Text style={{ flex: 1, paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', fontWeight: 600, color: 'var(--color-12)' }}>Type</Text>
+          <Text style={{ flex: 2, paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', fontWeight: 600, color: 'var(--color-12)' }}>Description</Text>
+          <Text style={{ flex: 1, paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', fontWeight: 600, color: 'var(--color-12)' }}>Default</Text>
+        </Row>
         {props.map((prop, index) => (
-          <XStack
+          <Row
             key={index}
-            borderBottomWidth={index < props.length - 1 ? 1 : 0}
-            borderBottomColor="$borderColor"
+            style={{
+              borderBottomWidth: index < props.length - 1 ? 1 : 0,
+              borderBottomStyle: 'solid',
+              borderBottomColor: 'var(--color-border)',
+            }}
           >
-            <Text flex={1} paddingVertical="$2" paddingHorizontal="$4" color="$color12">{prop.name}</Text>
-            <Text flex={1} paddingVertical="$2" paddingHorizontal="$4" color="$color11" fontFamily="$mono" fontSize="$2">{prop.type}</Text>
-            <Text flex={2} paddingVertical="$2" paddingHorizontal="$4" color="$color11">{prop.description}</Text>
-            <Text flex={1} paddingVertical="$2" paddingHorizontal="$4" color="$color10">{prop.default || '-'}</Text>
-          </XStack>
+            <Text style={{ flex: 1, paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', color: 'var(--color-12)' }}>{prop.name}</Text>
+            <Text style={{ flex: 1, paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', color: 'var(--color-11)', fontFamily: 'var(--font-mono)', fontSize: 'var(--font-size-2)' }}>{prop.type}</Text>
+            <Text style={{ flex: 2, paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', color: 'var(--color-11)' }}>{prop.description}</Text>
+            <Text style={{ flex: 1, paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', color: 'var(--color-10)' }}>{prop.default || '-'}</Text>
+          </Row>
         ))}
-      </View>
+      </Box>
 
-      <H2 fontSize="$7" fontWeight="600" marginBottom="$3" color="$color12">Examples</H2>
+      <H2 style={{ fontSize: 'var(--font-size-7)', fontWeight: 600, marginBottom: 'var(--space-3)', color: 'var(--color-12)' }}>Examples</H2>
       {examples.map((example, index) => (
-        <View
+        <Box
           key={index}
-          marginBottom="$6"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
-          backgroundColor="$background"
+          style={{
+            marginBottom: 'var(--space-6)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            borderRadius: 'var(--radius-4)',
+            padding: 'var(--space-4)',
+            backgroundColor: 'var(--color-background)',
+          }}
         >
-          <H3 fontSize="$6" fontWeight="500" marginBottom="$3" color="$color12">{example.title}</H3>
-          <View
-            backgroundColor="$backgroundSecondary"
-            padding="$3"
-            borderRadius="$3"
-            marginBottom="$3"
+          <H3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 500, marginBottom: 'var(--space-3)', color: 'var(--color-12)' }}>{example.title}</H3>
+          <Box
+            style={{
+              backgroundColor: 'var(--color-background-secondary)',
+              padding: 'var(--space-3)',
+              borderRadius: 'var(--radius-3)',
+              marginBottom: 'var(--space-3)',
+            }}
           >
-            <Text fontFamily="$mono" fontSize="$2" color="$color11" style={{ whiteSpace: 'pre-wrap' }}>
+            <Text style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--font-size-2)', color: 'var(--color-11)', whiteSpace: 'pre-wrap' }}>
               {example.code}
             </Text>
-          </View>
-          <View
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$4"
-            borderRadius="$3"
+          </Box>
+          <Box
+            style={{
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'var(--color-border)',
+              padding: 'var(--space-4)',
+              borderRadius: 'var(--radius-3)',
+            }}
           >
             {example.render}
-          </View>
-        </View>
+          </Box>
+        </Box>
       ))}
-    </View>
+    </Box>
   );
 }
 

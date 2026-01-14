@@ -4,9 +4,8 @@
  *
  * Displays the user's Scaffald company and allows connection toggle
  */
-import { YStack, XStack, Text, Spinner } from '@unicornlove/ui'
-import { Checkbox } from '@unicornlove/ui'
-import { Building2 } from 'lucide-react'
+import { Stack, Row, Text, Checkbox } from '@unicornlove/beyond-ui'
+import { Building2, Loader2 } from 'lucide-react'
 
 export interface Address {
   street: string
@@ -28,6 +27,14 @@ export interface ScaffaldCompanyCardProps {
   onToggleConnect: (connect: boolean) => void
 }
 
+const cardStyle: React.CSSProperties = {
+  backgroundColor: 'var(--color-background)',
+  borderRadius: '8px',
+  boxShadow: '0 2px 4px var(--color-shadow)',
+  padding: '24px',
+  gap: '16px',
+}
+
 export function ScaffaldCompanyCard({
   company,
   isLoading,
@@ -36,20 +43,12 @@ export function ScaffaldCompanyCard({
 }: ScaffaldCompanyCardProps) {
   if (isLoading) {
     return (
-      <YStack
-        backgroundColor="$background"
-        borderRadius="$3"
-        shadowColor="$shadowColor"
-        shadowRadius={4}
-        shadowOffset={{ width: 0, height: 2 }}
-        padding="$6"
-        gap="$3"
-      >
-        <XStack alignItems="center" gap="$3">
-          <Spinner size="small" />
-          <Text color="$color10">Checking for existing company...</Text>
-        </XStack>
-      </YStack>
+      <Stack style={{ ...cardStyle, gap: '12px' }}>
+        <Row style={{ alignItems: 'center', gap: '12px' }}>
+          <Loader2 className="animate-spin" size={16} />
+          <Text style={{ color: 'var(--color-color10)' }}>Checking for existing company...</Text>
+        </Row>
+      </Stack>
     )
   }
 
@@ -58,39 +57,31 @@ export function ScaffaldCompanyCard({
   }
 
   return (
-    <YStack
-      backgroundColor="$background"
-      borderRadius="$3"
-      shadowColor="$shadowColor"
-      shadowRadius={4}
-      shadowOffset={{ width: 0, height: 2 }}
-      padding="$6"
-      gap="$4"
-    >
-      <XStack alignItems="flex-start" gap="$4">
+    <Stack style={cardStyle}>
+      <Row style={{ alignItems: 'flex-start', gap: '16px' }}>
         <Building2 size={32} color="currentColor" />
-        <YStack flex={1} gap="$1">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
+        <Stack style={{ flex: 1, gap: '4px' }}>
+          <Text style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-color12)' }}>
             {company.name}
           </Text>
           {company.address && (
-            <Text fontSize="$2" color="$color10" mt="$1">
+            <Text style={{ fontSize: '12px', color: 'var(--color-color10)', marginTop: '4px' }}>
               {company.address.street}, {company.address.city}, {company.address.state}{' '}
               {company.address.zip}
             </Text>
           )}
-          <XStack alignItems="center" mt="$4" gap="$2">
+          <Row style={{ alignItems: 'center', marginTop: '16px', gap: '8px' }}>
             <Checkbox
               checked={connectCompany}
               onCheckedChange={(checked) => onToggleConnect(!!checked)}
               data-testid="connect-company-checkbox"
             />
-            <Text fontSize="$2" color="$color11">
+            <Text style={{ fontSize: '12px', color: 'var(--color-color11)' }}>
               Connect this company to ForSured
             </Text>
-          </XStack>
-        </YStack>
-      </XStack>
-    </YStack>
+          </Row>
+        </Stack>
+      </Row>
+    </Stack>
   )
 }

@@ -14,19 +14,20 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import {
-  YStack,
-  XStack,
+  Stack,
+  Row,
   Text,
   Button,
   Card,
-  H2,
-  H3,
+  Heading,
   Input,
-  TextArea,
-  Checkbox,
   Spinner,
   Switch,
-} from '@unicornlove/ui'
+  colors,
+  spacing,
+} from '@unicornlove/beyond-ui'
+import Checkbox from '../../../../../../ui/Checkbox'
+import Textarea from '../../../../../../components/Common/Textarea'
 import { useRouter, useParams } from 'next/navigation'
 import { trpc } from '../../../../../../lib/trpc'
 
@@ -259,241 +260,250 @@ export default function CCPAAppConfigPage() {
   // Loading state
   if (isLoading) {
     return (
-      <YStack padding="$6" maxWidth={1200} marginHorizontal="auto">
-        <YStack alignItems="center" justifyContent="center" minHeight={400}>
-          <Spinner size="large" />
-          <Text color="$gray11" marginTop="$4">
+      <Stack style={{ padding: spacing[24], maxWidth: 1200, marginHorizontal: 'auto' }}>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+          <Spinner size="lg" />
+          <Text color={colors.text.light.secondary} style={{ marginTop: spacing[16] }}>
             Loading app configuration...
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   // Error state
   if (error || !app) {
     return (
-      <YStack padding="$6" maxWidth={1200} marginHorizontal="auto">
-        <YStack
-          padding="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
+      <Stack style={{ padding: spacing[24], maxWidth: 1200, marginHorizontal: 'auto' }}>
+        <Stack
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
         >
-          <Text fontWeight="600" color="$red11">
+          <Text weight="semibold" color={colors.error[600]}>
             Error loading app configuration
           </Text>
-          <Text color="$red10" fontSize="$2" marginTop="$2">
+          <Text color={colors.error[500]} size="xs" style={{ marginTop: spacing[8] }}>
             {error?.message || 'App not found'}
           </Text>
-          <XStack gap="$2" marginTop="$3">
+          <Row gap={spacing[8]} style={{ marginTop: spacing[12] }}>
             <Button
-              size="$3"
-              backgroundColor="$red9"
-              color="white"
-              hoverStyle={{ backgroundColor: '$red10' }}
+              size="sm"
+              color="error"
+              variant="filled"
               onPress={() => refetch()}
             >
               Retry
             </Button>
             <Button
-              size="$3"
-              backgroundColor="$gray3"
-              color="$gray11"
-              hoverStyle={{ backgroundColor: '$gray4' }}
+              size="sm"
+              variant="outline"
+              color="gray"
               onPress={() => router.push('/admin/ccpa/apps')}
             >
               Back to List
             </Button>
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack padding="$6" maxWidth={1200} marginHorizontal="auto">
+    <Stack style={{ padding: spacing[24], maxWidth: 1200, marginHorizontal: 'auto' }}>
       {/* Header */}
-      <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$6">
-        <YStack>
-          <H2 marginBottom="$2">{app.displayName} - CCPA Configuration</H2>
-          <Text color="$gray11">{app.description || app.name}</Text>
+      <Row alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: spacing[24] }}>
+        <Stack>
+          <Heading level={2} style={{ marginBottom: spacing[8] }}>{app.displayName} - CCPA Configuration</Heading>
+          <Text color={colors.text.light.secondary}>{app.description || app.name}</Text>
           {ccpaConfig && (
-            <XStack
-              marginTop="$2"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$2"
-              backgroundColor="$green2"
-              alignSelf="flex-start"
+            <Row
+              style={{
+                marginTop: spacing[8],
+                paddingHorizontal: spacing[8],
+                paddingVertical: spacing[4],
+                borderRadius: 8,
+                backgroundColor: colors.success[200],
+                alignSelf: 'flex-start',
+              }}
             >
-              <Text fontSize="$2" color="$green11">
+              <Text size="xs" color={colors.success[600]}>
                 Configuration exists - Last updated: {new Date(ccpaConfig.updatedAt).toLocaleDateString()}
               </Text>
-            </XStack>
+            </Row>
           )}
-        </YStack>
-        <XStack gap="$2">
+        </Stack>
+        <Row gap={spacing[8]}>
           <Button
-            backgroundColor="$gray3"
-            color="$gray11"
-            hoverStyle={{ backgroundColor: '$gray4' }}
+            variant="outline"
+            color="gray"
             onPress={() => router.push('/admin/ccpa/apps')}
           >
             Back to List
           </Button>
           <Button
-            backgroundColor="$blue9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$blue10' }}
+            color="primary"
+            variant="filled"
             onPress={handleSave}
             disabled={!formDirty || updateConfig.isPending}
+            loading={updateConfig.isPending}
           >
             {updateConfig.isPending ? 'Saving...' : 'Save Configuration'}
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Success/Error Messages */}
       {updateConfig.isSuccess && (
         <Card
-          padding="$3"
-          marginBottom="$4"
-          backgroundColor="$green2"
-          borderWidth={1}
-          borderColor="$green6"
+          style={{
+            padding: spacing[12],
+            marginBottom: spacing[16],
+            backgroundColor: colors.success[200],
+            borderWidth: 1,
+            borderColor: colors.success[400],
+          }}
         >
-          <Text color="$green11">Configuration saved successfully!</Text>
+          <Text color={colors.success[600]}>Configuration saved successfully!</Text>
         </Card>
       )}
       {updateConfig.isError && (
         <Card
-          padding="$3"
-          marginBottom="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
+          style={{
+            padding: spacing[12],
+            marginBottom: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+          }}
         >
-          <Text color="$red11">
+          <Text color={colors.error[600]}>
             Failed to save: {updateConfig.error?.message || 'Unknown error'}
           </Text>
         </Card>
       )}
 
-      <XStack gap="$6" flexWrap="wrap">
+      <Row gap={spacing[24]} style={{ flexWrap: 'wrap' }}>
         {/* Left Column */}
-        <YStack flex={2} minWidth={400} gap="$6">
+        <Stack style={{ flex: 2, minWidth: 400 }} gap={spacing[24]}>
           {/* Section 1: Data Mapping */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">Data Categories</H3>
-            <Text color="$gray11" marginBottom="$4">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>Data Categories</Heading>
+            <Text color={colors.text.light.secondary} style={{ marginBottom: spacing[16] }}>
               Select the data categories this application handles.
             </Text>
-            <YStack gap="$3">
+            <Stack gap={spacing[12]}>
               {dataCategories.map((category) => (
-                <XStack
+                <Row
                   key={category.name}
-                  padding="$3"
-                  backgroundColor={category.selected ? '$blue2' : '$gray2'}
-                  borderRadius="$2"
-                  alignItems="center"
-                  gap="$3"
-                  pressStyle={{ opacity: 0.9 }}
+                  style={{
+                    padding: spacing[12],
+                    backgroundColor: category.selected ? colors.primary[200] : colors.gray[100],
+                    borderRadius: 8,
+                    alignItems: 'center',
+                    gap: spacing[12],
+                    cursor: 'pointer',
+                  }}
                   onPress={() => toggleCategory(category.name)}
-                  cursor="pointer"
                 >
                   <Checkbox
                     checked={category.selected}
                     onCheckedChange={() => toggleCategory(category.name)}
                   />
-                  <YStack flex={1}>
-                    <Text fontWeight="500" color="$gray12">
+                  <Stack style={{ flex: 1 }}>
+                    <Text weight="medium" color={colors.text.light.primary}>
                       {category.name.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
                     </Text>
-                    <Text fontSize="$2" color="$gray11">
+                    <Text size="xs" color={colors.text.light.secondary}>
                       {category.description}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
 
             {selectedCategories.size > 0 && (
-              <YStack marginTop="$4">
-                <Text fontWeight="500" color="$gray12" marginBottom="$2">
+              <Stack style={{ marginTop: spacing[16] }}>
+                <Text weight="medium" color={colors.text.light.primary} style={{ marginBottom: spacing[8] }}>
                   PII Types Stored
                 </Text>
-                <XStack gap="$2" flexWrap="wrap">
+                <Row gap={spacing[8]} style={{ flexWrap: 'wrap' }}>
                   {PII_TYPES.map((piiType) => (
-                    <XStack
+                    <Row
                       key={piiType}
-                      padding="$2"
-                      backgroundColor={selectedPiiTypes.has(piiType) ? '$orange2' : '$gray2'}
-                      borderRadius="$2"
-                      alignItems="center"
-                      gap="$2"
-                      pressStyle={{ opacity: 0.9 }}
+                      style={{
+                        padding: spacing[8],
+                        backgroundColor: selectedPiiTypes.has(piiType) ? colors.warning[200] : colors.gray[100],
+                        borderRadius: 8,
+                        alignItems: 'center',
+                        gap: spacing[8],
+                        cursor: 'pointer',
+                      }}
                       onPress={() => togglePiiType(piiType)}
-                      cursor="pointer"
                     >
                       <Checkbox
                         checked={selectedPiiTypes.has(piiType)}
                         onCheckedChange={() => togglePiiType(piiType)}
-                        size="$2"
+                        size="sm"
                       />
-                      <Text fontSize="$2" color="$gray11">
+                      <Text size="xs" color={colors.text.light.secondary}>
                         {piiType.replace(/_/g, ' ')}
                       </Text>
-                    </XStack>
+                    </Row>
                   ))}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
           </Card>
 
           {/* Section 2: Request Type Support */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">Request Type Support</H3>
-            <Text color="$gray11" marginBottom="$4">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>Request Type Support</Heading>
+            <Text color={colors.text.light.secondary} style={{ marginBottom: spacing[16] }}>
               Configure which CCPA request types this application supports.
             </Text>
-            <YStack gap="$3">
+            <Stack gap={spacing[12]}>
               {REQUEST_TYPES.map((reqType) => (
-                <XStack
+                <Row
                   key={reqType.key}
-                  padding="$3"
-                  backgroundColor={requestTypeSupport[reqType.key] ? '$green2' : '$gray2'}
-                  borderRadius="$2"
-                  alignItems="center"
-                  justifyContent="space-between"
+                  style={{
+                    padding: spacing[12],
+                    backgroundColor: requestTypeSupport[reqType.key] ? colors.success[200] : colors.gray[100],
+                    borderRadius: 8,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
                 >
-                  <YStack flex={1}>
-                    <Text fontWeight="500" color="$gray12">
+                  <Stack style={{ flex: 1 }}>
+                    <Text weight="medium" color={colors.text.light.primary}>
                       {reqType.label}
                     </Text>
-                    <Text fontSize="$2" color="$gray11">
+                    <Text size="xs" color={colors.text.light.secondary}>
                       {reqType.description}
                     </Text>
-                  </YStack>
+                  </Stack>
                   <Switch
                     checked={requestTypeSupport[reqType.key]}
                     onCheckedChange={() => toggleRequestType(reqType.key)}
                   />
-                </XStack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           </Card>
 
           {/* Section 3: Integration Hooks */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">Integration Hooks</H3>
-            <Text color="$gray11" marginBottom="$4">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>Integration Hooks</Heading>
+            <Text color={colors.text.light.secondary} style={{ marginBottom: spacing[16] }}>
               Configure the webhook endpoint for receiving CCPA requests.
             </Text>
-            <YStack gap="$4">
-              <YStack gap="$2">
-                <Text fontWeight="500" color="$gray12">
+            <Stack gap={spacing[16]}>
+              <Stack gap={spacing[8]}>
+                <Text weight="medium" color={colors.text.light.primary}>
                   Webhook URL
                 </Text>
                 <Input
@@ -504,12 +514,12 @@ export default function CCPAAppConfigPage() {
                     setFormDirty(true)
                   }}
                 />
-                <Text fontSize="$1" color="$gray10">
+                <Text size="xs" color={colors.text.light.tertiary}>
                   POST requests will be sent to this URL for CCPA operations
                 </Text>
-              </YStack>
-              <YStack gap="$2">
-                <Text fontWeight="500" color="$gray12">
+              </Stack>
+              <Stack gap={spacing[8]}>
+                <Text weight="medium" color={colors.text.light.primary}>
                   Webhook Secret (optional)
                 </Text>
                 <Input
@@ -521,11 +531,11 @@ export default function CCPAAppConfigPage() {
                   }}
                   secureTextEntry
                 />
-                <Text fontSize="$1" color="$gray10">
+                <Text size="xs" color={colors.text.light.tertiary}>
                   Used to sign webhook payloads for verification
                 </Text>
-              </YStack>
-              <XStack alignItems="center" gap="$3">
+              </Stack>
+              <Row alignItems="center" gap={spacing[12]}>
                 <Switch
                   checked={isActive}
                   onCheckedChange={(checked) => {
@@ -533,30 +543,30 @@ export default function CCPAAppConfigPage() {
                     setFormDirty(true)
                   }}
                 />
-                <YStack>
-                  <Text fontWeight="500" color="$gray12">
+                <Stack>
+                  <Text weight="medium" color={colors.text.light.primary}>
                     Integration Active
                   </Text>
-                  <Text fontSize="$2" color="$gray11">
+                  <Text size="xs" color={colors.text.light.secondary}>
                     When disabled, CCPA requests will not be sent to this app
                   </Text>
-                </YStack>
-              </XStack>
-            </YStack>
+                </Stack>
+              </Row>
+            </Stack>
           </Card>
-        </YStack>
+        </Stack>
 
         {/* Right Column */}
-        <YStack flex={1} minWidth={300} gap="$6">
+        <Stack style={{ flex: 1, minWidth: 300 }} gap={spacing[24]}>
           {/* Section 4: SLA Overrides */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">SLA Overrides</H3>
-            <Text color="$gray11" marginBottom="$4">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>SLA Overrides</Heading>
+            <Text color={colors.text.light.secondary} style={{ marginBottom: spacing[16] }}>
               Configure custom SLA deadlines (defaults: 10 day acknowledgment, 45 day completion).
             </Text>
-            <YStack gap="$4">
-              <YStack gap="$2">
-                <Text fontWeight="500" color="$gray12">
+            <Stack gap={spacing[16]}>
+              <Stack gap={spacing[8]}>
+                <Text weight="medium" color={colors.text.light.primary}>
                   Acknowledgment Deadline (days)
                 </Text>
                 <Input
@@ -568,9 +578,9 @@ export default function CCPAAppConfigPage() {
                   }}
                   keyboardType="numeric"
                 />
-              </YStack>
-              <YStack gap="$2">
-                <Text fontWeight="500" color="$gray12">
+              </Stack>
+              <Stack gap={spacing[8]}>
+                <Text weight="medium" color={colors.text.light.primary}>
                   Completion Deadline (days)
                 </Text>
                 <Input
@@ -582,170 +592,173 @@ export default function CCPAAppConfigPage() {
                   }}
                   keyboardType="numeric"
                 />
-              </YStack>
+              </Stack>
               {(slaAcknowledgmentDays || slaCompletionDays) && (
-                <YStack gap="$2">
-                  <Text fontWeight="500" color="$gray12">
+                <Stack gap={spacing[8]}>
+                  <Text weight="medium" color={colors.text.light.primary}>
                     Justification (required for custom SLAs)
                   </Text>
-                  <TextArea
+                  <Textarea
                     placeholder="Explain why custom SLA deadlines are needed..."
                     value={slaJustification}
-                    onChangeText={(text) => {
-                      setSlaJustification(text)
+                    onChange={(e) => {
+                      setSlaJustification(e.target.value)
                       setFormDirty(true)
                     }}
                     rows={3}
                   />
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           </Card>
 
           {/* Section 5: Testing Tools */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">Testing Tools</H3>
-            <Text color="$gray11" marginBottom="$4">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>Testing Tools</Heading>
+            <Text color={colors.text.light.secondary} style={{ marginBottom: spacing[16] }}>
               Send test requests to verify webhook integration.
             </Text>
-            <YStack gap="$3">
+            <Stack gap={spacing[12]}>
               {ccpaConfig?.webhookUrl ? (
                 <>
-                  <XStack gap="$2" flexWrap="wrap">
+                  <Row gap={spacing[8]} style={{ flexWrap: 'wrap' }}>
                     <Button
-                      size="$3"
-                      backgroundColor="$blue9"
-                      color="white"
-                      hoverStyle={{ backgroundColor: '$blue10' }}
+                      size="sm"
+                      color="primary"
+                      variant="filled"
                       onPress={() => handleTest('access')}
                       disabled={testIntegration.isPending}
                     >
                       Test Export
                     </Button>
                     <Button
-                      size="$3"
-                      backgroundColor="$red9"
-                      color="white"
-                      hoverStyle={{ backgroundColor: '$red10' }}
+                      size="sm"
+                      color="error"
+                      variant="filled"
                       onPress={() => handleTest('deletion')}
                       disabled={testIntegration.isPending}
                     >
                       Test Deletion
                     </Button>
                     <Button
-                      size="$3"
-                      backgroundColor="$green9"
-                      color="white"
-                      hoverStyle={{ backgroundColor: '$green10' }}
+                      size="sm"
+                      color="success"
+                      variant="filled"
                       onPress={() => handleTest('opt_out')}
                       disabled={testIntegration.isPending}
                     >
                       Test Opt-Out
                     </Button>
-                  </XStack>
+                  </Row>
 
                   {testIntegration.isPending && (
-                    <XStack alignItems="center" gap="$2">
-                      <Spinner size="small" />
-                      <Text color="$gray11">Sending test request...</Text>
-                    </XStack>
+                    <Row alignItems="center" gap={spacing[8]}>
+                      <Spinner size="sm" />
+                      <Text color={colors.text.light.secondary}>Sending test request...</Text>
+                    </Row>
                   )}
 
                   {testResult && (
-                    <YStack
-                      padding="$3"
-                      backgroundColor={testResult.success ? '$green2' : '$red2'}
-                      borderRadius="$2"
-                      gap="$2"
+                    <Stack
+                      style={{
+                        padding: spacing[12],
+                        backgroundColor: testResult.success ? colors.success[200] : colors.error[200],
+                        borderRadius: 8,
+                        gap: spacing[8],
+                      }}
                     >
-                      <XStack justifyContent="space-between">
-                        <Text fontWeight="500" color={testResult.success ? '$green11' : '$red11'}>
+                      <Row justifyContent="space-between">
+                        <Text weight="medium" color={testResult.success ? colors.success[600] : colors.error[600]}>
                           {testResult.success ? 'Test Passed' : 'Test Failed'}
                         </Text>
-                        <Text fontSize="$2" color="$gray11">
+                        <Text size="xs" color={colors.text.light.secondary}>
                           {testResult.duration}ms
                         </Text>
-                      </XStack>
-                      <Text fontSize="$2" color="$gray11">
+                      </Row>
+                      <Text size="xs" color={colors.text.light.secondary}>
                         Status: {testResult.status}
                       </Text>
                       {testResult.error && (
-                        <Text fontSize="$2" color="$red11">
+                        <Text size="xs" color={colors.error[600]}>
                           Error: {testResult.error}
                         </Text>
                       )}
                       {testResult.response && (
-                        <YStack>
-                          <Text fontSize="$2" color="$gray11">
+                        <Stack>
+                          <Text size="xs" color={colors.text.light.secondary}>
                             Response:
                           </Text>
                           <Text
-                            fontSize="$1"
-                            color="$gray10"
-                            fontFamily="monospace"
-                            backgroundColor="$gray3"
-                            padding="$2"
-                            borderRadius="$1"
+                            size="xs"
+                            color={colors.text.light.tertiary}
+                            style={{
+                              fontFamily: 'monospace',
+                              backgroundColor: colors.gray[150],
+                              padding: spacing[8],
+                              borderRadius: 4,
+                            }}
                           >
                             {testResult.response.substring(0, 200)}
                             {testResult.response.length > 200 ? '...' : ''}
                           </Text>
-                        </YStack>
+                        </Stack>
                       )}
-                    </YStack>
+                    </Stack>
                   )}
                 </>
               ) : (
-                <YStack
-                  padding="$4"
-                  backgroundColor="$gray2"
-                  borderRadius="$2"
-                  alignItems="center"
+                <Stack
+                  style={{
+                    padding: spacing[16],
+                    backgroundColor: colors.gray[100],
+                    borderRadius: 8,
+                    alignItems: 'center',
+                  }}
                 >
-                  <Text color="$gray11" textAlign="center">
+                  <Text color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
                     Save configuration with a webhook URL to enable testing.
                   </Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           </Card>
 
           {/* App Info */}
-          <Card padding="$4">
-            <H3 marginBottom="$4">App Information</H3>
-            <YStack gap="$2">
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Name</Text>
-                <Text fontWeight="500" color="$gray12">
+          <Card style={{ padding: spacing[16] }}>
+            <Heading level={3} style={{ marginBottom: spacing[16] }}>App Information</Heading>
+            <Stack gap={spacing[8]}>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Name</Text>
+                <Text weight="medium" color={colors.text.light.primary}>
                   {app.name}
                 </Text>
-              </XStack>
-              <XStack justifyContent="space-between">
-                <Text color="$gray11">Status</Text>
-                <Text fontWeight="500" color="$gray12">
+              </Row>
+              <Row justifyContent="space-between">
+                <Text color={colors.text.light.secondary}>Status</Text>
+                <Text weight="medium" color={colors.text.light.primary}>
                   {app.status}
                 </Text>
-              </XStack>
+              </Row>
               {app.ownerEmail && (
-                <XStack justifyContent="space-between">
-                  <Text color="$gray11">Owner</Text>
-                  <Text fontWeight="500" color="$gray12">
+                <Row justifyContent="space-between">
+                  <Text color={colors.text.light.secondary}>Owner</Text>
+                  <Text weight="medium" color={colors.text.light.primary}>
                     {app.ownerEmail}
                   </Text>
-                </XStack>
+                </Row>
               )}
               {app.homepageUrl && (
-                <XStack justifyContent="space-between">
-                  <Text color="$gray11">Homepage</Text>
-                  <Text fontWeight="500" color="$blue11" fontSize="$2">
+                <Row justifyContent="space-between">
+                  <Text color={colors.text.light.secondary}>Homepage</Text>
+                  <Text weight="medium" color={colors.primary[600]} size="xs">
                     {app.homepageUrl}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </YStack>
+            </Stack>
           </Card>
-        </YStack>
-      </XStack>
-    </YStack>
+        </Stack>
+      </Row>
+    </Stack>
   )
 }

@@ -1,10 +1,9 @@
 /**
- * AccessLevelSelector - Access level selector using Tamagui
+ * AccessLevelSelector - Access level selector using Beyond UI
  * REQ-283: Team Member Management UI
  */
 import React from 'react';
-import { YStack, Text } from '@unicornlove/ui';
-import { Select } from '@unicornlove/ui';
+import { Stack, Text } from '@unicornlove/beyond-ui';
 
 export type AccessLevel = 'admin' | 'manager' | 'user' | 'broker' | 'subcontractor';
 
@@ -42,12 +41,6 @@ const ACCESS_LEVEL_CONFIG: AccessLevelOptionConfig[] = [
   },
 ];
 
-// Convert to Select options format
-const SELECT_OPTIONS = ACCESS_LEVEL_CONFIG.map((opt) => ({
-  value: opt.value,
-  label: opt.label,
-}));
-
 interface AccessLevelSelectorProps {
   value: AccessLevel;
   onChange: (level: AccessLevel) => void;
@@ -61,32 +54,54 @@ export function AccessLevelSelector({
   disabled = false,
   loading = false,
 }: AccessLevelSelectorProps) {
-  const handleChange = (newValue: string) => {
-    onChange(newValue as AccessLevel);
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onChange(e.target.value as AccessLevel);
   };
 
   const selectedConfig = ACCESS_LEVEL_CONFIG.find((opt) => opt.value === value);
 
   return (
-    <YStack gap="$1">
-      <Select
-        label="Access Level"
+    <Stack style={{ gap: 4 }}>
+      <label htmlFor="access-level-select">
+        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-11)' }}>
+          Access Level
+        </Text>
+      </label>
+      <select
+        id="access-level-select"
         value={value}
-        onValueChange={handleChange}
-        options={SELECT_OPTIONS}
+        onChange={handleChange}
         disabled={disabled || loading}
-      />
+        style={{
+          width: '100%',
+          padding: '8px 12px',
+          border: '1px solid var(--color-border)',
+          borderRadius: 8,
+          backgroundColor: 'var(--color-background)',
+          fontSize: 14,
+          color: 'var(--color-gray-12)',
+          cursor: disabled || loading ? 'not-allowed' : 'pointer',
+          opacity: disabled || loading ? 0.5 : 1,
+        }}
+        aria-describedby="access-level-description"
+      >
+        {ACCESS_LEVEL_CONFIG.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
       {selectedConfig && (
-        <Text id="access-level-description" fontSize="$1" color="$color9">
+        <Text id="access-level-description" style={{ fontSize: 12, color: 'var(--color-gray-9)' }}>
           {selectedConfig.description}
         </Text>
       )}
       {loading && (
-        <Text fontSize="$1" color="$blue9" aria-live="polite">
+        <Text style={{ fontSize: 12, color: 'var(--color-blue-9)' }} aria-live="polite">
           Saving...
         </Text>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

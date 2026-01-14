@@ -1,90 +1,73 @@
 // src/pages/admin/Dashboard.tsx
-import { YStack, XStack, Text, H1, H2, Card, styled } from '@unicornlove/ui';
-
-const StatCard = styled(Card, {
-  name: 'StatCard',
-  backgroundColor: '$background',
-  padding: '$6',
-  borderRadius: '$4',
-  elevation: 1,
-});
-
-const ActivityList = styled(YStack, {
-  name: 'ActivityList',
-  backgroundColor: '$background',
-  padding: '$6',
-  borderRadius: '$4',
-  elevation: 1,
-});
-
-const ActivityItem = styled(XStack, {
-  name: 'ActivityItem',
-  paddingVertical: '$2',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  variants: {
-    last: {
-      true: {
-        borderBottomWidth: 0,
-      },
-    },
-  },
-});
+import { Stack, Row, Text, H1, H2, Card } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui';
 
 function AdminDashboard() {
   return (
-    <YStack>
-      <H1 fontSize="$8" fontWeight="bold" marginBottom="$6">Admin Dashboard</H1>
-      <XStack flexWrap="wrap" gap="$6">
-        <StatCard
-          width="100%"
-          $gtMd={{ width: 'calc(50% - 12px)' }}
-          $gtLg={{ width: 'calc(25% - 18px)' }}
+    <Stack>
+      <H1 style={{ fontSize: fontSize.h4, fontWeight: 'bold', marginBottom: spacing[24] }}>Admin Dashboard</H1>
+      <Row style={{ flexWrap: 'wrap', gap: spacing[24] }}>
+        <Card
+          style={{
+            width: '100%',
+            padding: spacing[24],
+            borderRadius: borderRadius.s,
+            backgroundColor: colors.bg.light.default
+          }}
         >
-          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Total Users</H2>
-          <Text fontSize="$9" fontWeight="bold">142</Text>
-        </StatCard>
-        <StatCard
-          width="100%"
-          $gtMd={{ width: 'calc(50% - 12px)' }}
-          $gtLg={{ width: 'calc(25% - 18px)' }}
+          <H2 style={{ fontSize: fontSize.h5, fontWeight: 600, marginBottom: spacing[8] }}>Total Users</H2>
+          <Text style={{ fontSize: fontSize.h3, fontWeight: 'bold' }}>142</Text>
+        </Card>
+        <Card
+          style={{
+            width: '100%',
+            padding: spacing[24],
+            borderRadius: borderRadius.s,
+            backgroundColor: colors.bg.light.default
+          }}
         >
-          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Active Brokers</H2>
-          <Text fontSize="$9" fontWeight="bold">23</Text>
-        </StatCard>
-        <StatCard
-          width="100%"
-          $gtMd={{ width: 'calc(50% - 12px)' }}
-          $gtLg={{ width: 'calc(25% - 18px)' }}
+          <H2 style={{ fontSize: fontSize.h5, fontWeight: 600, marginBottom: spacing[8] }}>Active Brokers</H2>
+          <Text style={{ fontSize: fontSize.h3, fontWeight: 'bold' }}>23</Text>
+        </Card>
+        <Card
+          style={{
+            width: '100%',
+            padding: spacing[24],
+            borderRadius: borderRadius.s,
+            backgroundColor: colors.bg.light.default
+          }}
         >
-          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Projects</H2>
-          <Text fontSize="$9" fontWeight="bold">89</Text>
-        </StatCard>
-        <StatCard
-          width="100%"
-          $gtMd={{ width: 'calc(50% - 12px)' }}
-          $gtLg={{ width: 'calc(25% - 18px)' }}
+          <H2 style={{ fontSize: fontSize.h5, fontWeight: 600, marginBottom: spacing[8] }}>Projects</H2>
+          <Text style={{ fontSize: fontSize.h3, fontWeight: 'bold' }}>89</Text>
+        </Card>
+        <Card
+          style={{
+            width: '100%',
+            padding: spacing[24],
+            borderRadius: borderRadius.s,
+            backgroundColor: colors.bg.light.default
+          }}
         >
-          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Tasks Created</H2>
-          <Text fontSize="$9" fontWeight="bold">1,234</Text>
-        </StatCard>
-      </XStack>
+          <H2 style={{ fontSize: fontSize.h5, fontWeight: 600, marginBottom: spacing[8] }}>Tasks Created</H2>
+          <Text style={{ fontSize: fontSize.h3, fontWeight: 'bold' }}>1,234</Text>
+        </Card>
+      </Row>
 
-      <YStack marginTop="$8">
-        <H2 fontSize="$7" fontWeight="600" marginBottom="$4">Recent Activity</H2>
-        <ActivityList>
-          <ActivityItem>
+      <Stack style={{ marginTop: spacing[32] }}>
+        <H2 style={{ fontSize: fontSize.h4, fontWeight: 600, marginBottom: spacing[16] }}>Recent Activity</H2>
+        <Card style={{ backgroundColor: colors.bg.light.default, padding: spacing[24], borderRadius: borderRadius.s }}>
+          <Row style={{ paddingTop: spacing[8], paddingBottom: spacing[8], borderBottomWidth: 1, borderBottomColor: colors.border.light.default }}>
             <Text>New GC signup: Acme Construction</Text>
-          </ActivityItem>
-          <ActivityItem>
+          </Row>
+          <Row style={{ paddingTop: spacing[8], paddingBottom: spacing[8], borderBottomWidth: 1, borderBottomColor: colors.border.light.default }}>
             <Text>Broker invitation sent to jane@insurance.com</Text>
-          </ActivityItem>
-          <ActivityItem last>
+          </Row>
+          <Row style={{ paddingTop: spacing[8], paddingBottom: spacing[8] }}>
             <Text>New project created: Downtown Tower</Text>
-          </ActivityItem>
-        </ActivityList>
-      </YStack>
-    </YStack>
+          </Row>
+        </Card>
+      </Stack>
+    </Stack>
   );
 }
 

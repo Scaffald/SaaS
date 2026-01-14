@@ -1,8 +1,9 @@
 /**
- * SettingsNav - Settings navigation using Tamagui
+ * SettingsNav - Settings navigation using Beyond UI
  */
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 import {
   User,
   Building,
@@ -33,34 +34,23 @@ const routePrefixMap: Record<string, string> = {
   admin: 'admin',
 };
 
-const NavItem = styled(XStack, {
-  name: 'SettingsNavItem',
+const getNavItemStyle = (isActive: boolean): React.CSSProperties => ({
+  display: 'flex',
   alignItems: 'center',
-  gap: '$3',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$3',
-  fontSize: '$2',
-  fontWeight: '500',
-  borderLeftWidth: 0,
-  
-  variants: {
-    active: {
-      true: {
-        backgroundColor: '$blue3',
-        color: '$blue11',
-        borderLeftWidth: 4,
-        borderLeftColor: '$blue9',
-      },
-      false: {
-        color: '$color10',
-        hoverStyle: {
-          backgroundColor: '$backgroundHover',
-          color: '$color11',
-        },
-      },
-    },
-  } as const,
+  gap: 12,
+  paddingLeft: 12,
+  paddingRight: 12,
+  paddingTop: 8,
+  paddingBottom: 8,
+  borderRadius: 6,
+  fontSize: 14,
+  fontWeight: 500,
+  borderLeftWidth: isActive ? 4 : 0,
+  borderLeftStyle: 'solid',
+  borderLeftColor: isActive ? 'var(--color-blue9)' : 'transparent',
+  backgroundColor: isActive ? 'var(--color-blue3)' : 'transparent',
+  color: isActive ? 'var(--color-blue11)' : 'var(--color-color10)',
+  textDecoration: 'none',
 });
 
 function SettingsNav({ userType }: SettingsNavProps) {
@@ -117,21 +107,23 @@ function SettingsNav({ userType }: SettingsNavProps) {
   }
 
   return (
-    <YStack as="nav" gap="$1">
-      {navLinks.map((link) => {
-        const Icon = link.icon;
-        return (
-          <NavLink key={link.path} to={link.path}>
-            {({ isActive }) => (
-              <NavItem active={isActive}>
-                <Icon size={18} />
-                <Text>{link.label}</Text>
-              </NavItem>
-            )}
-          </NavLink>
-        );
-      })}
-    </YStack>
+    <nav>
+      <Stack style={{ gap: 4 }}>
+        {navLinks.map((link) => {
+          const Icon = link.icon;
+          return (
+            <NavLink key={link.path} to={link.path} style={{ textDecoration: 'none' }}>
+              {({ isActive }) => (
+                <Row style={getNavItemStyle(isActive)}>
+                  <Icon size={18} />
+                  <Text>{link.label}</Text>
+                </Row>
+              )}
+            </NavLink>
+          );
+        })}
+      </Stack>
+    </nav>
   );
 }
 

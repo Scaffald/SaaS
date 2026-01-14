@@ -1,6 +1,6 @@
 // src/pages/docs/components/Modal.tsx
 import React from 'react';
-import { View, Text } from '@unicornlove/ui';
+import { Box, Text } from '@unicornlove/beyond-ui';
 import ComponentDocumentationTemplate from '../Components';
 
 function ModalDoc() {
@@ -28,15 +28,18 @@ return (
 );
       `,
       render: (
-        <View
-          padding="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          backgroundColor="$background"
+        <Box
+          style={{
+            padding: 'var(--space-4)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'var(--color-border)',
+            borderRadius: 'var(--radius-4)',
+            backgroundColor: 'var(--color-background)',
+          }}
         >
-          <Text color="$color11">Modal content would be here (simulated open).</Text>
-        </View>
+          <Text style={{ color: 'var(--color-11)' }}>Modal content would be here (simulated open).</Text>
+        </Box>
       ),
     },
   ];

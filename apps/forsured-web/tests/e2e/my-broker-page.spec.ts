@@ -25,7 +25,7 @@ test.describe('Subcontractor My Broker Page', () => {
     // Verify we're on the right page
     await expect(page).toHaveURL(/\/subcontractor\/broker/);
 
-    // Check for page heading - Tamagui uses Text components, not semantic h1
+    // Check for page heading - Beyond UI uses Text components, not semantic h1
     // The page shows "My Broker" as the main title
     await expect(page.getByText('My Broker', { exact: true }).first()).toBeVisible();
 

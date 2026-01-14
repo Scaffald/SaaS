@@ -1,6 +1,6 @@
 // src/components/settings/SettingsForm.tsx
 import React from 'react';
-import { YStack, XStack, Button } from '@unicornlove/ui';
+import { Stack, Row, Button } from '@unicornlove/beyond-ui';
 
 interface SettingsFormProps {
   children: React.ReactNode;
@@ -17,14 +17,14 @@ function SettingsForm({ children, onSubmit, isLoading = false, isDirty = false }
 
   return (
     <form onSubmit={handleSubmit}>
-      <YStack gap="$6">
+      <Stack style={{ gap: 24 }}>
         {children}
-        <XStack justifyContent="flex-end">
+        <Row style={{ justifyContent: 'flex-end' }}>
           <Button type="submit" disabled={isLoading || !isDirty}>
             Save Changes
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </form>
   );
 }

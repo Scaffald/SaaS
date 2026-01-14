@@ -1,8 +1,8 @@
 /**
- * HelpCenterLayout - Help center layout using Tamagui
+ * HelpCenterLayout - Help center layout using Beyond UI
  */
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { XStack, YStack, Text } from '@unicornlove/ui';
+import { Row, Stack, Text } from '@unicornlove/beyond-ui';
 
 interface HelpCenterLayoutProps {
   userType: 'gc' | 'contractor' | 'broker' | 'admin';
@@ -10,7 +10,7 @@ interface HelpCenterLayoutProps {
 
 function HelpCenterLayout({ userType }: HelpCenterLayoutProps) {
   const location = useLocation();
-  
+
   const helpLinks = [
     { path: `/${userType}/help/getting-started`, label: 'Getting Started' },
     { path: `/${userType}/help/dashboard`, label: 'Dashboard Overview' },
@@ -18,24 +18,27 @@ function HelpCenterLayout({ userType }: HelpCenterLayoutProps) {
   ];
 
   return (
-    <XStack minH="100vh" backgroundColor="$gray1">
-      <YStack
+    <Row minHeight="100vh" backgroundColor="var(--color-gray-1)">
+      <Stack
         width={280}
-        backgroundColor="$gray2"
-        borderRightWidth={1}
-        borderRightColor="$gray4"
-        padding="$6"
-        gap="$6"
+        backgroundColor="var(--color-gray-2)"
+        padding={24}
+        gap={24}
+        style={{
+          borderRightWidth: 1,
+          borderRightStyle: 'solid',
+          borderRightColor: 'var(--color-gray-4)',
+        }}
       >
-        <YStack gap="$1">
-          <Text fontSize="$7" fontWeight="700" color="$gray12">
+        <Stack gap={4}>
+          <Text size="xl" weight="bold" color="primary">
             Help Center
           </Text>
-          <Text fontSize="$3" color="$gray10">
+          <Text size="sm" color="secondary">
             Find answers and guides
           </Text>
-        </YStack>
-        <YStack gap="$1">
+        </Stack>
+        <Stack gap={4}>
           {helpLinks.map((link) => {
             const isActive = location.pathname === link.path;
             return (
@@ -68,18 +71,18 @@ function HelpCenterLayout({ userType }: HelpCenterLayoutProps) {
               </NavLink>
             );
           })}
-        </YStack>
-      </YStack>
-      <YStack 
-        flex={1} 
-        padding="$8"
-        paddingHorizontal="$10"
+        </Stack>
+      </Stack>
+      <Stack
+        flex={1}
+        padding={32}
+        paddingHorizontal={40}
         maxWidth={1200}
         width="100%"
       >
         <Outlet />
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   );
 }
 

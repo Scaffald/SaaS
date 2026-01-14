@@ -1,11 +1,10 @@
 /**
- * ProjectCard - Project card using Tamagui
+ * ProjectCard - Project card using Beyond UI
  */
 import React from 'react';
-import { XStack, YStack, Text } from '@unicornlove/ui';
-import { Card } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
+import { Row, Stack, Text, Card } from '@unicornlove/beyond-ui';
+import { Chip as Badge } from '@unicornlove/beyond-ui';
+import { Button as CoreButton } from '@unicornlove/beyond-ui';
 import {
   Building,
   MapPin,
@@ -98,156 +97,222 @@ export default function ProjectCard({
 
   return (
     <Card
-      onPress={onClick}
-      cursor={onClick ? 'pointer' : 'default'}
-      hoverStyle={onClick ? { shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, borderColor: '$blue9' } : undefined}
-      padding="$6"
+      onClick={onClick}
+      style={{
+        cursor: onClick ? 'pointer' : 'default',
+        padding: 24,
+      }}
     >
-      <XStack alignItems="flex-start" justifyContent="space-between" mb="$4">
-        <XStack alignItems="flex-start" gap="$3" flex={1}>
-          <YStack
-            width={48}
-            height={48}
-            backgroundColor="$orange3"
-            borderRadius="$3"
-            alignItems="center"
-            justifyContent="center"
-            flexShrink={0}
+      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+        <Row style={{ alignItems: 'flex-start', gap: 12, flex: 1 }}>
+          <Stack
+            style={{
+              width: 48,
+              height: 48,
+              backgroundColor: 'var(--color-orange3)',
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
           >
             <Building size={24} color="currentColor" />
-          </YStack>
-          <YStack flex={1} minWidth={0} gap="$1">
-            <Text fontSize="$5" fontWeight="600" color="$color11" numberOfLines={1}>
+          </Stack>
+          <Stack style={{ flex: 1, minWidth: 0, gap: 4 }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: 600,
+                color: 'var(--color-color11)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {project.name}
             </Text>
             {project.description && (
-              <Text fontSize="$2" color="$color10" numberOfLines={2} mt="$1">
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: 'var(--color-color10)',
+                  marginTop: 4,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                }}
+              >
                 {project.description}
               </Text>
             )}
-          </YStack>
-        </XStack>
-        <YStack alignItems="flex-end" ml="$4">
-          <Badge variant={getComplianceVariant()} size="$2">
+          </Stack>
+        </Row>
+        <Stack style={{ alignItems: 'flex-end', marginLeft: 16 }}>
+          <Badge variant={getComplianceVariant()} size="sm">
             {project.compliance_status}
           </Badge>
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <YStack gap="$3" mb="$4">
-        <XStack flexWrap="wrap" gap="$4">
+      <Stack style={{ gap: 12, marginBottom: 16 }}>
+        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
           {project.location && (
-            <XStack alignItems="center" gap="$2" color="$color10">
+            <Row style={{ alignItems: 'center', gap: 8, color: 'var(--color-color10)' }}>
               <MapPin size={14} />
-              <Text fontSize="$2" numberOfLines={1}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 {project.location}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {project.project_manager && (
-            <XStack alignItems="center" gap="$2" color="$color10">
+            <Row style={{ alignItems: 'center', gap: 8, color: 'var(--color-color10)' }}>
               <Users size={14} />
-              <Text fontSize="$2" numberOfLines={1}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 {project.project_manager}
               </Text>
-            </XStack>
+            </Row>
           )}
 
-          <XStack alignItems="center" gap="$2" color="$color10" flexBasis="100%">
+          <Row style={{ alignItems: 'center', gap: 8, color: 'var(--color-color10)', flexBasis: '100%' }}>
             <Calendar size={14} />
-            <Text fontSize="$2">
+            <Text style={{ fontSize: 14 }}>
               {formatDate(project.start_date)} - {formatDate(project.end_date)}
             </Text>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
         {requiredCoverages.length > 0 && (
-          <YStack paddingTop="$3" borderTopWidth={1} borderTopColor="$borderColor" gap="$2">
-            <XStack alignItems="flex-start" gap="$2" mb="$2">
+          <Stack
+            style={{
+              paddingTop: 12,
+              borderTopWidth: 1,
+              borderTopStyle: 'solid',
+              borderTopColor: 'var(--color-border)',
+              gap: 8,
+            }}
+          >
+            <Row style={{ alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
               <Shield size={14} color="currentColor" style={{ marginTop: 2 }} />
-              <Text fontSize="$1" fontWeight="500" color="$color10">
+              <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-color10)' }}>
                 Required Insurance:
               </Text>
-            </XStack>
-            <XStack flexWrap="wrap" gap="$2">
+            </Row>
+            <Row style={{ flexWrap: 'wrap', gap: 8 }}>
               {requiredCoverages.map((coverage, index) => (
-                <Badge key={index} variant="info" size="$2">
+                <Badge key={index} variant="info" size="sm">
                   {coverage.name}: {formatCurrency(coverage.amount)}
                 </Badge>
               ))}
-            </XStack>
+            </Row>
             {project.waiver_of_subrogation_required && (
-              <YStack mt="$2">
-                <Badge variant="warning" size="$2">
+              <Stack style={{ marginTop: 8 }}>
+                <Badge variant="warning" size="sm">
                   Waiver of Subrogation Required
                 </Badge>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {participantCount !== undefined && (
-        <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
-          <XStack alignItems="center" justifyContent="space-between" fontSize="$2">
-            <Text color="$color10">
+        <Stack
+          style={{
+            paddingTop: 16,
+            borderTopWidth: 1,
+            borderTopStyle: 'solid',
+            borderTopColor: 'var(--color-border)',
+          }}
+        >
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between', fontSize: 14 }}>
+            <Text style={{ color: 'var(--color-color10)' }}>
               {userRole === 'manager' ? 'Subcontractors' : 'Participants'}
             </Text>
-            <Text fontWeight="600" color="$color11">
+            <Text style={{ fontWeight: 600, color: 'var(--color-color11)' }}>
               {participantCount}
             </Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {showActions &&
         userRole === 'manager' &&
         (onInviteUser || onCreateTask) && (
-          <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor" mt="$4">
-            <XStack gap="$2">
+          <Stack
+            style={{
+              paddingTop: 16,
+              borderTopWidth: 1,
+              borderTopStyle: 'solid',
+              borderTopColor: 'var(--color-border)',
+              marginTop: 16,
+            }}
+          >
+            <Row style={{ gap: 8 }}>
               {onInviteUser && (
                 <CoreButton
                   variant="outlined"
-                  onPress={(e: React.MouseEvent) => {
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onInviteUser(project.id);
                   }}
-                  fontSize="$2"
-                  flex={1}
+                  style={{ fontSize: 14, flex: 1 }}
                 >
-                  <XStack alignItems="center" gap="$1">
+                  <Row style={{ alignItems: 'center', gap: 4 }}>
                     <UserPlus size={14} />
                     <Text>Invite User</Text>
-                  </XStack>
+                  </Row>
                 </CoreButton>
               )}
               {onCreateTask && (
                 <CoreButton
                   variant="outlined"
-                  onPress={(e: React.MouseEvent) => {
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     onCreateTask(project.id);
                   }}
-                  fontSize="$2"
-                  flex={1}
+                  style={{ fontSize: 14, flex: 1 }}
                 >
-                  <XStack alignItems="center" gap="$1">
+                  <Row style={{ alignItems: 'center', gap: 4 }}>
                     <ListTodo size={14} />
                     <Text>Create Task</Text>
-                  </XStack>
+                  </Row>
                 </CoreButton>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
       {userRole === 'subcontractor' && project.notes && (
-        <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor" mt="$4">
-          <Text fontSize="$1" color="$color10">
+        <Stack
+          style={{
+            paddingTop: 16,
+            borderTopWidth: 1,
+            borderTopStyle: 'solid',
+            borderTopColor: 'var(--color-border)',
+            marginTop: 16,
+          }}
+        >
+          <Text style={{ fontSize: 12, color: 'var(--color-color10)' }}>
             {project.notes}
           </Text>
-        </YStack>
+        </Stack>
       )}
     </Card>
   );

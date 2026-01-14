@@ -11,15 +11,15 @@
 'use client'
 
 import { useCallback } from 'react'
-import { YStack, XStack, Text, Button, Card, H2, Spinner } from '@unicornlove/ui'
+import { Stack, Row, Text, Button, Card, Heading, Spinner, colors, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'
 
 // Status badge colors
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  not_configured: { bg: '$gray2', text: '$gray11' },
-  partially_configured: { bg: '$yellow2', text: '$yellow11' },
-  compliant: { bg: '$green2', text: '$green11' },
+  not_configured: { bg: colors.gray[100], text: colors.text.light.secondary },
+  partially_configured: { bg: colors.warning[200], text: colors.warning[600] },
+  compliant: { bg: colors.success[200], text: colors.success[600] },
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -29,9 +29,9 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const APP_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  active: { bg: '$green2', text: '$green11' },
-  suspended: { bg: '$orange2', text: '$orange11' },
-  revoked: { bg: '$red2', text: '$red11' },
+  active: { bg: colors.success[200], text: colors.success[600] },
+  suspended: { bg: colors.warning[200], text: colors.warning[600] },
+  revoked: { bg: colors.error[200], text: colors.error[600] },
 }
 
 export default function CCPAAppsListPage() {
@@ -62,46 +62,47 @@ export default function CCPAAppsListPage() {
   // Loading state
   if (isLoading) {
     return (
-      <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
-        <YStack alignItems="center" justifyContent="center" minHeight={400}>
-          <Spinner size="large" />
-          <Text color="$gray11" marginTop="$4">
+      <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+          <Spinner size="lg" />
+          <Text color={colors.text.light.secondary} style={{ marginTop: spacing[16] }}>
             Loading OAuth apps...
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
-        <YStack
-          padding="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
+      <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
+        <Stack
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
         >
-          <Text fontWeight="600" color="$red11">
+          <Text weight="semibold" color={colors.error[600]}>
             Error loading OAuth apps
           </Text>
-          <Text color="$red10" fontSize="$2" marginTop="$2">
+          <Text color={colors.error[500]} size="xs" style={{ marginTop: spacing[8] }}>
             {error.message || 'Failed to load data. Please try again.'}
           </Text>
           <Button
-            marginTop="$3"
-            size="$3"
-            backgroundColor="$red9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$red10' }}
+            style={{ marginTop: spacing[12] }}
+            size="sm"
+            color="error"
+            variant="filled"
             onPress={() => refetch()}
           >
             Retry
           </Button>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
@@ -112,181 +113,184 @@ export default function CCPAAppsListPage() {
   const totalApps = apps?.length ?? 0
 
   return (
-    <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
+    <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <YStack>
-          <H2 marginBottom="$2">OAuth App CCPA Configuration</H2>
-          <Text color="$gray11">
+      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[24] }}>
+        <Stack>
+          <Heading level={2} style={{ marginBottom: spacing[8] }}>OAuth App CCPA Configuration</Heading>
+          <Text color={colors.text.light.secondary}>
             Configure CCPA compliance settings for registered OAuth applications
           </Text>
-        </YStack>
+        </Stack>
         <Button
-          backgroundColor="$gray3"
-          color="$gray11"
-          hoverStyle={{ backgroundColor: '$gray4' }}
+          variant="outline"
+          color="gray"
           onPress={() => router.push('/admin/ccpa')}
         >
           Back to Dashboard
         </Button>
-      </XStack>
+      </Row>
 
       {/* Summary Stats */}
-      <XStack gap="$4" marginBottom="$6" flexWrap="wrap">
-        <Card padding="$4" flex={1} minWidth={200}>
-          <Text color="$gray11" fontSize="$2" marginBottom="$1">
+      <Row gap={spacing[16]} style={{ marginBottom: spacing[24], flexWrap: 'wrap' }}>
+        <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+          <Text color={colors.text.light.secondary} size="xs" style={{ marginBottom: spacing[4] }}>
             Total Apps
           </Text>
-          <Text fontSize="$8" fontWeight="700" color="$gray12">
+          <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.text.light.primary}>
             {totalApps}
           </Text>
         </Card>
-        <Card padding="$4" flex={1} minWidth={200}>
-          <Text color="$gray11" fontSize="$2" marginBottom="$1">
+        <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+          <Text color={colors.text.light.secondary} size="xs" style={{ marginBottom: spacing[4] }}>
             Compliant
           </Text>
-          <Text fontSize="$8" fontWeight="700" color="$green11">
+          <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.success[600]}>
             {compliantCount}
           </Text>
         </Card>
-        <Card padding="$4" flex={1} minWidth={200}>
-          <Text color="$gray11" fontSize="$2" marginBottom="$1">
+        <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+          <Text color={colors.text.light.secondary} size="xs" style={{ marginBottom: spacing[4] }}>
             Partially Configured
           </Text>
-          <Text fontSize="$8" fontWeight="700" color="$yellow11">
+          <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.warning[600]}>
             {partialCount}
           </Text>
         </Card>
-        <Card padding="$4" flex={1} minWidth={200}>
-          <Text color="$gray11" fontSize="$2" marginBottom="$1">
+        <Card style={{ padding: spacing[16], flex: 1, minWidth: 200 }}>
+          <Text color={colors.text.light.secondary} size="xs" style={{ marginBottom: spacing[4] }}>
             Not Configured
           </Text>
-          <Text fontSize="$8" fontWeight="700" color="$gray11">
+          <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.text.light.secondary}>
             {notConfiguredCount}
           </Text>
         </Card>
-      </XStack>
+      </Row>
 
       {/* Apps Table */}
-      <Card overflow="hidden">
-        <YStack>
+      <Card style={{ overflow: 'hidden' }}>
+        <Stack>
           {/* Table Header */}
-          <XStack backgroundColor="$gray2" paddingHorizontal="$4" paddingVertical="$3">
-            <Text flex={2} fontSize="$2" fontWeight="500" color="$gray11">
+          <Row style={{ backgroundColor: colors.gray[100], paddingHorizontal: spacing[16], paddingVertical: spacing[12] }}>
+            <Text style={{ flex: 2 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Application
             </Text>
-            <Text width={120} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 120 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Status
             </Text>
-            <Text width={150} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 150 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               CCPA Status
             </Text>
-            <Text width={180} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 180 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Last Verified
             </Text>
-            <Text width={120} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 120 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Actions
             </Text>
-          </XStack>
+          </Row>
 
           {/* Table Body */}
           {!apps || apps.length === 0 ? (
-            <YStack padding="$8" alignItems="center">
-              <Text fontSize="$6" color="$gray8" marginBottom="$2">
+            <Stack style={{ padding: spacing[32], alignItems: 'center' }}>
+              <Text style={{ fontSize: 24 }} color={colors.gray[300]} style={{ marginBottom: spacing[8] }}>
                 No OAuth apps registered
               </Text>
-              <Text color="$gray11" textAlign="center">
+              <Text color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
                 Register OAuth applications to enable CCPA compliance integration.
               </Text>
-            </YStack>
+            </Stack>
           ) : (
-            <YStack>
+            <Stack>
               {apps.map((app) => (
-                <XStack
+                <Row
                   key={app.id}
-                  paddingHorizontal="$4"
-                  paddingVertical="$3"
-                  borderBottomWidth={1}
-                  borderColor="$borderColor"
-                  hoverStyle={{ backgroundColor: '$gray2' }}
-                  alignItems="center"
+                  style={{
+                    paddingHorizontal: spacing[16],
+                    paddingVertical: spacing[12],
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border.light.default,
+                    alignItems: 'center',
+                  }}
                 >
                   {/* Application */}
-                  <YStack flex={2}>
-                    <Text fontWeight="500" color="$gray12">
+                  <Stack style={{ flex: 2 }}>
+                    <Text weight="medium" color={colors.text.light.primary}>
                       {app.displayName}
                     </Text>
-                    <Text fontSize="$2" color="$gray11">
+                    <Text size="xs" color={colors.text.light.secondary}>
                       {app.description || app.name}
                     </Text>
-                  </YStack>
+                  </Stack>
 
                   {/* Status */}
-                  <XStack width={120} alignItems="center">
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={APP_STATUS_COLORS[app.status]?.bg ?? '$gray2'}
+                  <Row style={{ width: 120, alignItems: 'center' }}>
+                    <Row
+                      style={{
+                        paddingHorizontal: spacing[8],
+                        paddingVertical: spacing[4],
+                        borderRadius: 8,
+                        backgroundColor: APP_STATUS_COLORS[app.status]?.bg ?? colors.gray[100],
+                      }}
                     >
-                      <Text fontSize="$2" color={APP_STATUS_COLORS[app.status]?.text ?? '$gray11'}>
+                      <Text size="xs" color={APP_STATUS_COLORS[app.status]?.text ?? colors.text.light.secondary}>
                         {app.status}
                       </Text>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {/* CCPA Status */}
-                  <XStack width={150} alignItems="center">
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={STATUS_COLORS[app.ccpaStatus]?.bg ?? '$gray2'}
+                  <Row style={{ width: 150, alignItems: 'center' }}>
+                    <Row
+                      style={{
+                        paddingHorizontal: spacing[8],
+                        paddingVertical: spacing[4],
+                        borderRadius: 8,
+                        backgroundColor: STATUS_COLORS[app.ccpaStatus]?.bg ?? colors.gray[100],
+                      }}
                     >
-                      <Text fontSize="$2" color={STATUS_COLORS[app.ccpaStatus]?.text ?? '$gray11'}>
+                      <Text size="xs" color={STATUS_COLORS[app.ccpaStatus]?.text ?? colors.text.light.secondary}>
                         {STATUS_LABELS[app.ccpaStatus] ?? app.ccpaStatus}
                       </Text>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {/* Last Verified */}
-                  <XStack width={180} alignItems="center">
-                    <Text fontSize="$2" color="$gray11">
+                  <Row style={{ width: 180, alignItems: 'center' }}>
+                    <Text size="xs" color={colors.text.light.secondary}>
                       {formatDate(app.lastVerifiedAt)}
                     </Text>
-                  </XStack>
+                  </Row>
 
                   {/* Actions */}
-                  <XStack width={120} alignItems="center">
+                  <Row style={{ width: 120, alignItems: 'center' }}>
                     <Button
-                      size="$2"
-                      backgroundColor="$blue9"
-                      color="white"
-                      hoverStyle={{ backgroundColor: '$blue10' }}
+                      size="xs"
+                      color="primary"
+                      variant="filled"
                       onPress={() => router.push(`/admin/ccpa/apps/${app.id}`)}
                     >
                       Configure
                     </Button>
-                  </XStack>
-                </XStack>
+                  </Row>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Help Text */}
-      <Card padding="$4" marginTop="$6" backgroundColor="$blue2" borderWidth={1} borderColor="$blue6">
-        <Text fontWeight="500" color="$blue11" marginBottom="$2">
+      <Card style={{ padding: spacing[16], marginTop: spacing[24], backgroundColor: colors.info[200], borderWidth: 1, borderColor: colors.info[400] }}>
+        <Text weight="medium" color={colors.info[600]} style={{ marginBottom: spacing[8] }}>
           About CCPA Configuration
         </Text>
-        <Text color="$blue10" fontSize="$2">
+        <Text color={colors.info[500]} size="xs">
           Each OAuth application that handles personal data must be configured for CCPA compliance.
           This includes defining data categories, webhook endpoints for processing requests, and
           testing the integration to ensure proper handling of access, deletion, and opt-out
           requests.
         </Text>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

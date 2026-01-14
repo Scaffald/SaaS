@@ -3,7 +3,7 @@
  * REQ-2, TASK-13: Visual status indicator for compliance requirements
  */
 
-import { XStack, Text } from '@unicornlove/ui';
+import { Row, Text } from '@unicornlove/beyond-ui';
 import type { RequirementStatus } from '../../server/schemas/forsured/compliance-requirements.schema';
 
 interface RequirementStatusBadgeProps {
@@ -11,54 +11,67 @@ interface RequirementStatusBadgeProps {
   size?: 'xs' | 'sm' | 'md';
 }
 
-const statusConfig: Record<RequirementStatus, { label: string; backgroundColor: string; textColor: string; borderColor: string }> = {
+interface StatusConfig {
+  label: string;
+  backgroundColor: string;
+  textColor: string;
+  borderColor: string;
+}
+
+const statusConfig: Record<RequirementStatus, StatusConfig> = {
   draft: {
     label: 'Draft',
-    backgroundColor: '$gray4',
-    textColor: '$gray11',
-    borderColor: '$gray6',
+    backgroundColor: 'var(--color-gray-4)',
+    textColor: 'var(--color-gray-11)',
+    borderColor: 'var(--color-gray-6)',
   },
   active: {
     label: 'Active',
-    backgroundColor: '$green4',
-    textColor: '$green11',
-    borderColor: '$green6',
+    backgroundColor: 'var(--color-green-4)',
+    textColor: 'var(--color-green-11)',
+    borderColor: 'var(--color-green-6)',
   },
   pending_approval: {
     label: 'Pending Approval',
-    backgroundColor: '$yellow4',
-    textColor: '$yellow11',
-    borderColor: '$yellow6',
+    backgroundColor: 'var(--color-yellow-4)',
+    textColor: 'var(--color-yellow-11)',
+    borderColor: 'var(--color-yellow-6)',
   },
   deprecated: {
     label: 'Deprecated',
-    backgroundColor: '$orange4',
-    textColor: '$orange11',
-    borderColor: '$orange6',
+    backgroundColor: 'var(--color-orange-4)',
+    textColor: 'var(--color-orange-11)',
+    borderColor: 'var(--color-orange-6)',
   },
   archived: {
     label: 'Archived',
-    backgroundColor: '$gray4',
-    textColor: '$gray10',
-    borderColor: '$gray6',
+    backgroundColor: 'var(--color-gray-4)',
+    textColor: 'var(--color-gray-10)',
+    borderColor: 'var(--color-gray-6)',
   },
 };
 
-const sizeConfig = {
+interface SizeConfig {
+  paddingHorizontal: string;
+  paddingVertical: string;
+  fontSize: string;
+}
+
+const sizeConfig: Record<'xs' | 'sm' | 'md', SizeConfig> = {
   xs: {
-    paddingHorizontal: '$1.5',
-    paddingVertical: '$0.5',
-    fontSize: '$2',
+    paddingHorizontal: '6px',
+    paddingVertical: '2px',
+    fontSize: 'var(--font-size-2)',
   },
   sm: {
-    paddingHorizontal: '$2',
-    paddingVertical: '$0.5',
-    fontSize: '$2',
+    paddingHorizontal: '8px',
+    paddingVertical: '2px',
+    fontSize: 'var(--font-size-2)',
   },
   md: {
-    paddingHorizontal: '$2.5',
-    paddingVertical: '$1',
-    fontSize: '$3',
+    paddingHorizontal: '10px',
+    paddingVertical: '4px',
+    fontSize: 'var(--font-size-3)',
   },
 };
 
@@ -67,19 +80,24 @@ export function RequirementStatusBadge({ status, size = 'sm' }: RequirementStatu
   const sizeProps = sizeConfig[size];
 
   return (
-    <XStack
-      alignItems="center"
-      borderRadius="$2"
-      borderWidth={1}
-      backgroundColor={config.backgroundColor}
-      borderColor={config.borderColor}
-      paddingHorizontal={sizeProps.paddingHorizontal}
-      paddingVertical={sizeProps.paddingVertical}
+    <Row
+      style={{
+        alignItems: 'center',
+        borderRadius: 'var(--radius-2)',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        backgroundColor: config.backgroundColor,
+        borderColor: config.borderColor,
+        paddingLeft: sizeProps.paddingHorizontal,
+        paddingRight: sizeProps.paddingHorizontal,
+        paddingTop: sizeProps.paddingVertical,
+        paddingBottom: sizeProps.paddingVertical,
+      }}
     >
-      <Text fontSize={sizeProps.fontSize} fontWeight="500" color={config.textColor}>
+      <Text style={{ fontSize: sizeProps.fontSize, fontWeight: 500, color: config.textColor }}>
         {config.label}
       </Text>
-    </XStack>
+    </Row>
   );
 }
 

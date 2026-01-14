@@ -12,7 +12,7 @@ import {
   History as HistoryIcon,
   FileCheck,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import {
@@ -179,6 +179,36 @@ export default function DocumentDetailModal({
     documentUrl ||
     'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
 
+  const getStatusStyles = () => {
+    switch (status) {
+      case 'verified':
+        return {
+          backgroundColor: 'var(--color-green-2)',
+          color: 'var(--color-green-11)',
+          borderColor: 'var(--color-green-6)',
+        };
+      case 'pending':
+      case 'expiring':
+        return {
+          backgroundColor: 'var(--color-yellow-2)',
+          color: 'var(--color-yellow-11)',
+          borderColor: 'var(--color-yellow-6)',
+        };
+      case 'expired':
+        return {
+          backgroundColor: 'var(--color-red-2)',
+          color: 'var(--color-red-11)',
+          borderColor: 'var(--color-red-6)',
+        };
+      default:
+        return {
+          backgroundColor: 'var(--color-gray-2)',
+          color: 'var(--color-gray-11)',
+          borderColor: 'var(--color-gray-6)',
+        };
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -186,65 +216,46 @@ export default function DocumentDetailModal({
       title=""
       size={viewMode === 'split-screen' ? 'xl' : 'lg'}
     >
-      <YStack gap="$6">
+      <Stack style={{ gap: 24 }}>
         {/* Header */}
-        <XStack alignItems="flex-start" justifyContent="space-between">
-          <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" mb="$2">
-              <FileText color="$teal9" size={24} />
-              <H2 fontSize="$8" fontWeight="bold" color="$color12">
+        <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <Stack style={{ flex: 1 }}>
+            <Row style={{ alignItems: 'center', gap: 12, marginBottom: 8 }}>
+              <FileText color="var(--color-teal-9)" size={24} />
+              <H2 style={{ fontSize: 24, fontWeight: 'bold', color: 'var(--color-12)' }}>
                 {documentName}
               </H2>
               <Text
-                paddingHorizontal="$2.5"
-                paddingVertical="$1"
-                fontSize="$1"
-                fontWeight="500"
-                borderRadius="$2"
-                borderWidth={1}
-                {...(status === 'verified' && {
-                  backgroundColor: '$green2',
-                  color: '$green11',
-                  borderColor: '$green6',
-                })}
-                {...(status === 'pending' && {
-                  backgroundColor: '$yellow2',
-                  color: '$yellow11',
-                  borderColor: '$yellow6',
-                })}
-                {...(status === 'expired' && {
-                  backgroundColor: '$red2',
-                  color: '$red11',
-                  borderColor: '$red6',
-                })}
-                {...(status === 'expiring' && {
-                  backgroundColor: '$yellow2',
-                  color: '$yellow11',
-                  borderColor: '$yellow6',
-                })}
-                {...(!['verified', 'pending', 'expired', 'expiring'].includes(status) && {
-                  backgroundColor: '$gray2',
-                  color: '$gray11',
-                  borderColor: '$gray6',
-                })}
+                style={{
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  borderRadius: 4,
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  ...getStatusStyles(),
+                }}
               >
                 {status.toUpperCase()}
               </Text>
-            </XStack>
-            <XStack alignItems="center" gap="$4" fontSize="$3" color="$color11">
-              <XStack alignItems="center" gap="$1">
+            </Row>
+            <Row style={{ alignItems: 'center', gap: 16, fontSize: 14, color: 'var(--color-11)' }}>
+              <Row style={{ alignItems: 'center', gap: 4 }}>
                 <Calendar size={14} />
                 <Text>Uploaded {formatDate(uploadDate)}</Text>
-              </XStack>
+              </Row>
               {expiryDate && (
-                <XStack
-                  alignItems="center"
-                  gap="$1"
-                  color={
-                    daysUntilExpiry !== null && daysUntilExpiry <= 30
-                      ? '$yellow10'
-                      : '$color11'
-                  }
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    gap: 4,
+                    color: daysUntilExpiry !== null && daysUntilExpiry <= 30
+                      ? 'var(--color-yellow-10)'
+                      : 'var(--color-11)',
+                  }}
                 >
                   <Clock size={14} />
                   <Text>
@@ -253,28 +264,30 @@ export default function DocumentDetailModal({
                       daysUntilExpiry <= 30 &&
                       ` (${daysUntilExpiry} days)`}
                   </Text>
-                </XStack>
+                </Row>
               )}
               {fileSize && <Text>{formatFileSize(fileSize)}</Text>}
-            </XStack>
-          </YStack>
-        </XStack>
+            </Row>
+          </Stack>
+        </Row>
 
         {/* View Mode Toggle */}
-        <XStack
-          alignItems="center"
-          justifyContent="space-between"
-          padding="$3"
-          backgroundColor="$background"
-          borderRadius="$4"
+        <Row
+          style={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: 12,
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 8,
+          }}
         >
-          <Text fontSize="$3" fontWeight="500" color="$color11">
+          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
             View Mode:
           </Text>
-          <XStack alignItems="center" gap="$2">
+          <Row style={{ alignItems: 'center', gap: 8 }}>
             <Button
               variant={viewMode === 'inline' ? 'primary' : 'ghost'}
-              size="$2"
+              size="sm"
               onClick={() => handleViewModeChange('inline')}
               leftIcon={Maximize2}
             >
@@ -282,7 +295,7 @@ export default function DocumentDetailModal({
             </Button>
             <Button
               variant={viewMode === 'modal' ? 'primary' : 'ghost'}
-              size="$2"
+              size="sm"
               onClick={() => handleViewModeChange('modal')}
               leftIcon={Minimize2}
             >
@@ -290,14 +303,14 @@ export default function DocumentDetailModal({
             </Button>
             <Button
               variant={viewMode === 'split-screen' ? 'primary' : 'ghost'}
-              size="$2"
+              size="sm"
               onClick={() => handleViewModeChange('split-screen')}
               leftIcon={Layout}
             >
               Split
             </Button>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
         {/* AI Processing Indicator */}
         {aiProcessingState && (
@@ -320,48 +333,57 @@ export default function DocumentDetailModal({
 
         {/* Main Content Area */}
         {viewMode === 'split-screen' ? (
-          <XStack gap="$6">
+          <Row style={{ gap: 24 }}>
             {/* PDF Viewer */}
-            <YStack flex={1}>
+            <Stack style={{ flex: 1 }}>
               <Card
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                overflow="hidden"
-                backgroundColor="$background"
+                style={{
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-border)',
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                  backgroundColor: 'var(--color-background)',
+                }}
               >
-                <XStack
-                  alignItems="center"
-                  justifyContent="space-between"
-                  padding="$3"
-                  backgroundColor="$backgroundHover"
-                  borderBottomWidth={1}
-                  borderBottomColor="$borderColor"
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 12,
+                    backgroundColor: 'var(--color-background-hover)',
+                    borderBottomWidth: 1,
+                    borderBottomStyle: 'solid',
+                    borderBottomColor: 'var(--color-border)',
+                  }}
                 >
-                  <Text fontSize="$3" fontWeight="500" color="$color11">
+                  <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                     {documentType}
                   </Text>
-                  <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
                     {pdfUrl && (
-                      <XStack
-                        as="a"
+                      <a
                         href={pdfUrl}
                         download={documentName}
-                        padding="$2"
-                        color="$teal9"
-                        hoverStyle={{ backgroundColor: '$teal2' }}
-                        borderRadius="$2"
-                        cursor="pointer"
+                        style={{
+                          padding: 8,
+                          color: 'var(--color-teal-9)',
+                          borderRadius: 4,
+                          cursor: 'pointer',
+                          display: 'flex',
+                        }}
                       >
                         <Download size={16} />
-                      </XStack>
+                      </a>
                     )}
-                  </XStack>
-                </XStack>
-                <YStack
-                  position="relative"
-                  height={viewMode === 'inline' ? 600 : 400}
-                  minHeight={400}
+                  </Row>
+                </Row>
+                <Stack
+                  style={{
+                    position: 'relative',
+                    height: viewMode === 'inline' ? 600 : 400,
+                    minHeight: 400,
+                  }}
                 >
                   {pdfUrl ? (
                     <iframe
@@ -372,345 +394,378 @@ export default function DocumentDetailModal({
                       title={documentName}
                     />
                   ) : (
-                    <YStack
-                      alignItems="center"
-                      justifyContent="center"
-                      height="100%"
+                    <Stack
+                      style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                      }}
                     >
-                      <YStack alignItems="center" gap="$2">
-                        <FileText color="$color10" size={48} />
-                        <Text color="$color11">No preview available</Text>
-                      </YStack>
-                    </YStack>
+                      <Stack style={{ alignItems: 'center', gap: 8 }}>
+                        <FileText color="var(--color-10)" size={48} />
+                        <Text style={{ color: 'var(--color-11)' }}>No preview available</Text>
+                      </Stack>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
               </Card>
-            </YStack>
+            </Stack>
 
             {/* AI Extracted Fields & Details */}
             {(viewMode === 'split-screen' || viewMode === 'modal') && (
-              <YStack flex={1} gap="$6">
+              <Stack style={{ flex: 1, gap: 24 }}>
                 {/* AI Extracted Fields */}
                 {currentExtraction && (
                   <Card
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    borderRadius="$4"
-                    padding="$4"
-                    backgroundColor="$background"
+                    style={{
+                      borderWidth: 1,
+                      borderStyle: 'solid',
+                      borderColor: 'var(--color-border)',
+                      borderRadius: 8,
+                      padding: 16,
+                      backgroundColor: 'var(--color-background)',
+                    }}
                   >
-                    <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                      <XStack alignItems="center" gap="$2">
+                    <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                      <Row style={{ alignItems: 'center', gap: 8 }}>
                         <FileCheck size={16} />
-                        <H3 fontSize="$3" fontWeight="600" color="$color12">
+                        <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}>
                           AI-Extracted Fields
                         </H3>
-                      </XStack>
+                      </Row>
                       <Text
-                        fontSize="$1"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        backgroundColor="$teal2"
-                        color="$teal11"
-                        borderRadius="$2"
+                        style={{
+                          fontSize: 12,
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          paddingTop: 4,
+                          paddingBottom: 4,
+                          backgroundColor: 'var(--color-teal-2)',
+                          color: 'var(--color-teal-11)',
+                          borderRadius: 4,
+                        }}
                       >
                         {currentExtraction.confidence}% confidence
                       </Text>
-                    </XStack>
+                    </Row>
 
-                    <YStack gap="$3">
+                    <Stack style={{ gap: 12 }}>
                       {currentExtraction.policy_number && (
-                        <YStack>
-                          <Text fontSize="$1" color="$color10">
+                        <Stack>
+                          <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                             Policy Number
                           </Text>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                             {currentExtraction.policy_number}
                           </Text>
-                        </YStack>
+                        </Stack>
                       )}
                       {currentExtraction.carrier && (
-                        <YStack>
-                          <Text fontSize="$1" color="$color10">
+                        <Stack>
+                          <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                             Carrier
                           </Text>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                             {currentExtraction.carrier}
                           </Text>
-                        </YStack>
+                        </Stack>
                       )}
                       {currentExtraction.coverage_amounts &&
                         currentExtraction.coverage_amounts.length > 0 && (
-                          <YStack>
-                            <Text fontSize="$1" color="$color10">
+                          <Stack>
+                            <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                               Coverage Amounts
                             </Text>
-                            <YStack gap="$1" mt="$1">
+                            <Stack style={{ gap: 4, marginTop: 4 }}>
                               {currentExtraction.coverage_amounts.map(
                                 (coverage, index) => (
-                                  <XStack
+                                  <Row
                                     key={index}
-                                    justifyContent="space-between"
-                                    fontSize="$3"
+                                    style={{
+                                      justifyContent: 'space-between',
+                                      fontSize: 14,
+                                    }}
                                   >
-                                    <Text color="$color11">{coverage.type}:</Text>
-                                    <Text fontWeight="500" color="$color12">
+                                    <Text style={{ color: 'var(--color-11)' }}>{coverage.type}:</Text>
+                                    <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                                       ${coverage.amount.toLocaleString()}
                                     </Text>
-                                  </XStack>
+                                  </Row>
                                 )
                               )}
-                            </YStack>
-                          </YStack>
+                            </Stack>
+                          </Stack>
                         )}
                       {currentExtraction.effective_date && (
-                        <YStack>
-                          <Text fontSize="$1" color="$color10">
+                        <Stack>
+                          <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                             Effective Date
                           </Text>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                             {formatDate(currentExtraction.effective_date)}
                           </Text>
-                        </YStack>
+                        </Stack>
                       )}
                       {currentExtraction.expiry_date && (
-                        <YStack>
-                          <Text fontSize="$1" color="$color10">
+                        <Stack>
+                          <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                             Expiry Date
                           </Text>
-                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                             {formatDate(currentExtraction.expiry_date)}
                           </Text>
-                        </YStack>
+                        </Stack>
                       )}
                       {currentExtraction.named_insureds &&
                         currentExtraction.named_insureds.length > 0 && (
-                          <YStack>
-                            <Text fontSize="$1" color="$color10">
+                          <Stack>
+                            <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                               Named Insureds
                             </Text>
-                            <YStack gap="$1" mt="$1">
+                            <Stack style={{ gap: 4, marginTop: 4 }}>
                               {currentExtraction.named_insureds.map(
                                 (insured, index) => (
                                   <Text
                                     key={index}
-                                    fontSize="$3"
-                                    color="$color12"
+                                    style={{
+                                      fontSize: 14,
+                                      color: 'var(--color-12)',
+                                    }}
                                   >
-                                    • {insured}
+                                    {insured}
                                   </Text>
                                 )
                               )}
-                            </YStack>
-                          </YStack>
+                            </Stack>
+                          </Stack>
                         )}
-                    </YStack>
+                    </Stack>
 
-                    <YStack mt="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+                    <Stack style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: 'var(--color-border)' }}>
                       <Button
                         variant="secondary"
-                        size="$2"
+                        size="sm"
                         onClick={handleExtractFields}
                         fullWidth
                       >
                         Re-extract Fields
                       </Button>
-                    </YStack>
+                    </Stack>
                   </Card>
                 )}
 
                 {/* Metadata */}
                 <Card
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
-                  padding="$4"
-                  backgroundColor="$background"
+                  style={{
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 8,
+                    padding: 16,
+                    backgroundColor: 'var(--color-background)',
+                  }}
                 >
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+                  <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                     Metadata
                   </H3>
-                  <YStack gap="$3">
-                    <YStack>
-                      <Text fontSize="$1" color="$color10">
+                  <Stack style={{ gap: 12 }}>
+                    <Stack>
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                         Document Type
                       </Text>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                         {documentType}
                       </Text>
-                    </YStack>
-                    <YStack>
-                      <Text fontSize="$1" color="$color10">
+                    </Stack>
+                    <Stack>
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                         Uploaded By
                       </Text>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                         {uploadedBy}
                       </Text>
-                    </YStack>
-                    <YStack>
-                      <Text fontSize="$1" color="$color10">
+                    </Stack>
+                    <Stack>
+                      <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                         Upload Date
                       </Text>
-                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                      <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                         {formatDate(uploadDate)}
                       </Text>
-                    </YStack>
+                    </Stack>
                     {fileSize && (
-                      <YStack>
-                        <Text fontSize="$1" color="$color10">
+                      <Stack>
+                        <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                           File Size
                         </Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {formatFileSize(fileSize)}
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
                     {expiryDate && (
-                      <YStack>
-                        <Text fontSize="$1" color="$color10">
+                      <Stack>
+                        <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                           Expiry Date
                         </Text>
                         <Text
-                          fontSize="$3"
-                          fontWeight="500"
-                          color={
-                            daysUntilExpiry !== null && daysUntilExpiry <= 30
-                              ? '$yellow10'
-                              : '$color12'
-                          }
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: daysUntilExpiry !== null && daysUntilExpiry <= 30
+                              ? 'var(--color-yellow-10)'
+                              : 'var(--color-12)',
+                          }}
                         >
                           {formatDate(expiryDate)}
                           {daysUntilExpiry !== null && daysUntilExpiry <= 30 && (
-                            <Text ml="$2" display="inline">
-                              ⚠️ {daysUntilExpiry} days left
-                            </Text>
+                            <span style={{ marginLeft: 8 }}>
+                              {daysUntilExpiry} days left
+                            </span>
                           )}
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
-                  </YStack>
+                  </Stack>
                 </Card>
 
                 {/* Version History */}
                 {versions.length > 0 && (
                   <Card
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    borderRadius="$4"
-                    padding="$4"
-                    backgroundColor="$background"
+                    style={{
+                      borderWidth: 1,
+                      borderStyle: 'solid',
+                      borderColor: 'var(--color-border)',
+                      borderRadius: 8,
+                      padding: 16,
+                      backgroundColor: 'var(--color-background)',
+                    }}
                   >
-                    <XStack alignItems="center" gap="$2" mb="$4">
+                    <Row style={{ alignItems: 'center', gap: 8, marginBottom: 16 }}>
                       <HistoryIcon size={16} />
-                      <H3 fontSize="$3" fontWeight="600" color="$color12">
+                      <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}>
                         Version History
                       </H3>
-                    </XStack>
-                    <YStack gap="$2">
+                    </Row>
+                    <Stack style={{ gap: 8 }}>
                       {versions.map((version) => (
-                        <XStack
+                        <Row
                           key={version.id}
-                          alignItems="center"
-                          justifyContent="space-between"
-                          padding="$2"
-                          backgroundColor="$backgroundHover"
-                          borderRadius="$2"
+                          style={{
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: 8,
+                            backgroundColor: 'var(--color-background-hover)',
+                            borderRadius: 4,
+                          }}
                         >
-                          <YStack>
-                            <Text fontSize="$3" fontWeight="500" color="$color12">
+                          <Stack>
+                            <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                               Version {version.version_number}
                             </Text>
-                            <Text fontSize="$1" color="$color10">
+                            <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                               {formatDate(version.uploaded_at)} by{' '}
                               {version.uploaded_by}
                             </Text>
-                          </YStack>
-                          <Text fontSize="$1" color="$color10">
+                          </Stack>
+                          <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                             {formatFileSize(version.file_size)}
                           </Text>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
+                    </Stack>
                   </Card>
                 )}
 
                 {/* Related Items */}
                 {(projectId || documentComments.length > 0) && (
                   <Card
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    borderRadius="$4"
-                    padding="$4"
-                    backgroundColor="$background"
+                    style={{
+                      borderWidth: 1,
+                      borderStyle: 'solid',
+                      borderColor: 'var(--color-border)',
+                      borderRadius: 8,
+                      padding: 16,
+                      backgroundColor: 'var(--color-background)',
+                    }}
                   >
-                    <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+                    <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                       Related Items
                     </H3>
-                    <YStack gap="$2">
+                    <Stack style={{ gap: 8 }}>
                       {projectId && (
-                        <XStack alignItems="center" gap="$2" fontSize="$3">
-                          <Building size={14} color="$color10" />
-                          <Text color="$color11">Project: </Text>
-                          <Text color="$color12" fontWeight="500">
+                        <Row style={{ alignItems: 'center', gap: 8, fontSize: 14 }}>
+                          <Building size={14} color="var(--color-10)" />
+                          <Text style={{ color: 'var(--color-11)' }}>Project: </Text>
+                          <Text style={{ color: 'var(--color-12)', fontWeight: 500 }}>
                             {projectId}
                           </Text>
-                        </XStack>
+                        </Row>
                       )}
                       {documentComments.length > 0 && (
-                        <XStack alignItems="center" gap="$2" fontSize="$3">
-                          <FileText size={14} color="$color10" />
-                          <Text color="$color11">
+                        <Row style={{ alignItems: 'center', gap: 8, fontSize: 14 }}>
+                          <FileText size={14} color="var(--color-10)" />
+                          <Text style={{ color: 'var(--color-11)' }}>
                             {documentComments.length} comments
                           </Text>
-                        </XStack>
+                        </Row>
                       )}
-                    </YStack>
+                    </Stack>
                   </Card>
                 )}
-              </YStack>
+              </Stack>
             )}
-          </XStack>
+          </Row>
         ) : (
-          <YStack mb="$6">
+          <Stack style={{ marginBottom: 24 }}>
             <Card
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              overflow="hidden"
-              backgroundColor="$background"
+              style={{
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'var(--color-border)',
+                borderRadius: 8,
+                overflow: 'hidden',
+                backgroundColor: 'var(--color-background)',
+              }}
             >
-              <XStack
-                alignItems="center"
-                justifyContent="space-between"
-                padding="$3"
-                backgroundColor="$backgroundHover"
-                borderBottomWidth={1}
-                borderBottomColor="$borderColor"
+              <Row
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: 12,
+                  backgroundColor: 'var(--color-background-hover)',
+                  borderBottomWidth: 1,
+                  borderBottomStyle: 'solid',
+                  borderBottomColor: 'var(--color-border)',
+                }}
               >
-                <Text fontSize="$3" fontWeight="500" color="$color11">
+                <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                   {documentType}
                 </Text>
-                <XStack alignItems="center" gap="$2">
+                <Row style={{ alignItems: 'center', gap: 8 }}>
                   {pdfUrl && (
-                    <XStack
-                      as="a"
+                    <a
                       href={pdfUrl}
                       download={documentName}
-                      padding="$2"
-                      color="$teal9"
-                      hoverStyle={{ backgroundColor: '$teal2' }}
-                      borderRadius="$2"
-                      cursor="pointer"
+                      style={{
+                        padding: 8,
+                        color: 'var(--color-teal-9)',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        display: 'flex',
+                      }}
                     >
                       <Download size={16} />
-                    </XStack>
+                    </a>
                   )}
-                </XStack>
-              </XStack>
-              <YStack
-                position="relative"
-                height={viewMode === 'inline' ? 600 : 400}
-                minHeight={400}
+                </Row>
+              </Row>
+              <Stack
+                style={{
+                  position: 'relative',
+                  height: viewMode === 'inline' ? 600 : 400,
+                  minHeight: 400,
+                }}
               >
                 {pdfUrl ? (
                   <iframe
@@ -721,123 +776,134 @@ export default function DocumentDetailModal({
                     title={documentName}
                   />
                 ) : (
-                  <YStack
-                    alignItems="center"
-                    justifyContent="center"
-                    height="100%"
+                  <Stack
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                    }}
                   >
-                    <YStack alignItems="center" gap="$2">
-                      <FileText color="$color10" size={48} />
-                      <Text color="$color11">No preview available</Text>
-                    </YStack>
-                  </YStack>
+                    <Stack style={{ alignItems: 'center', gap: 8 }}>
+                      <FileText color="var(--color-10)" size={48} />
+                      <Text style={{ color: 'var(--color-11)' }}>No preview available</Text>
+                    </Stack>
+                  </Stack>
                 )}
-              </YStack>
+              </Stack>
             </Card>
-          </YStack>
+          </Stack>
         )}
 
           {/* Inline Mode: Show extracted fields below PDF */}
           {viewMode === 'inline' && currentExtraction && (
             <Card
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              padding="$4"
-              backgroundColor="$background"
+              style={{
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'var(--color-border)',
+                borderRadius: 8,
+                padding: 16,
+                backgroundColor: 'var(--color-background)',
+              }}
             >
-              <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                <XStack alignItems="center" gap="$2">
+              <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <Row style={{ alignItems: 'center', gap: 8 }}>
                   <FileCheck size={16} />
-                  <H3 fontSize="$3" fontWeight="600" color="$color12">
+                  <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}>
                     AI-Extracted Fields
                   </H3>
-                </XStack>
+                </Row>
                 <Text
-                  fontSize="$1"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  backgroundColor="$teal2"
-                  color="$teal11"
-                  borderRadius="$2"
+                  style={{
+                    fontSize: 12,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    backgroundColor: 'var(--color-teal-2)',
+                    color: 'var(--color-teal-11)',
+                    borderRadius: 4,
+                  }}
                 >
                   {currentExtraction.confidence}% confidence
                 </Text>
-              </XStack>
+              </Row>
 
-              <XStack flexWrap="wrap" gap="$4">
+              <Row style={{ flexWrap: 'wrap', gap: 16 }}>
                 {currentExtraction.policy_number && (
-                  <YStack flex={1} minWidth="50%">
-                    <Text fontSize="$1" color="$color10">
+                  <Stack style={{ flex: 1, minWidth: '50%' }}>
+                    <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                       Policy Number
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                       {currentExtraction.policy_number}
                     </Text>
-                  </YStack>
+                  </Stack>
                 )}
                 {currentExtraction.carrier && (
-                  <YStack flex={1} minWidth="50%">
-                    <Text fontSize="$1" color="$color10">Carrier</Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                  <Stack style={{ flex: 1, minWidth: '50%' }}>
+                    <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>Carrier</Text>
+                    <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                       {currentExtraction.carrier}
                     </Text>
-                  </YStack>
+                  </Stack>
                 )}
                 {currentExtraction.effective_date && (
-                  <YStack flex={1} minWidth="50%">
-                    <Text fontSize="$1" color="$color10">
+                  <Stack style={{ flex: 1, minWidth: '50%' }}>
+                    <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                       Effective Date
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                       {formatDate(currentExtraction.effective_date)}
                     </Text>
-                  </YStack>
+                  </Stack>
                 )}
                 {currentExtraction.expiry_date && (
-                  <YStack flex={1} minWidth="50%">
-                    <Text fontSize="$1" color="$color10">
+                  <Stack style={{ flex: 1, minWidth: '50%' }}>
+                    <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                       Expiry Date
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                       {formatDate(currentExtraction.expiry_date)}
                     </Text>
-                  </YStack>
+                  </Stack>
                 )}
-              </XStack>
+              </Row>
 
               {currentExtraction.coverage_amounts &&
                 currentExtraction.coverage_amounts.length > 0 && (
-                  <YStack mt="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
-                    <Text fontSize="$1" color="$color10">
+                  <Stack style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: 'var(--color-border)' }}>
+                    <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                       Coverage Amounts
                     </Text>
-                    <XStack flexWrap="wrap" gap="$2" mt="$2">
+                    <Row style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
                       {currentExtraction.coverage_amounts.map(
                         (coverage, index) => (
-                          <YStack
+                          <Stack
                             key={index}
-                            padding="$2"
-                            backgroundColor="$backgroundHover"
-                            borderRadius="$2"
-                            flex={1}
-                            minWidth="50%"
+                            style={{
+                              padding: 8,
+                              backgroundColor: 'var(--color-background-hover)',
+                              borderRadius: 4,
+                              flex: 1,
+                              minWidth: '50%',
+                            }}
                           >
-                            <Text fontSize="$1" color="$color11">
+                            <Text style={{ fontSize: 12, color: 'var(--color-11)' }}>
                               {coverage.type}:
                             </Text>
-                            <Text fontSize="$3" fontWeight="500" color="$color12">
+                            <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                               ${coverage.amount.toLocaleString()}
                             </Text>
-                          </YStack>
+                          </Stack>
                         )
                       )}
-                    </XStack>
-                  </YStack>
+                    </Row>
+                  </Stack>
                 )}
             </Card>
           )}
-        </YStack>
+        </Stack>
 
       {/* AI Summary Modal */}
       {showAISummary && currentExtraction && (

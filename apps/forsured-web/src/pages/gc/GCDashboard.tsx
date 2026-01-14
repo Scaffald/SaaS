@@ -1,13 +1,10 @@
 /**
- * GCDashboard - GC dashboard page using Tamagui
+ * GCDashboard - GC dashboard page using Beyond UI
  */
 import React from 'react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
-import { Card } from '@unicornlove/ui';
-import { Button as CoreButton } from '@unicornlove/ui';
-import { Chip as Badge } from '@unicornlove/ui';
+import { Stack, Row, Text, Card, Button, Chip } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
 import { Archive, Building2, Users, CheckCircle } from 'lucide-react';
-import { EmptyState } from '@unicornlove/ui';
 import { useLexicon } from '../../contexts/LexiconContext';
 
 // Mock projects for testing
@@ -41,8 +38,8 @@ function GCDashboard() {
   const hasProjects = mockProjects.length > 0;
 
   return (
-    <YStack gap="$6">
-      <Text fontSize="$8" fontWeight="700" marginBottom="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
+      <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, marginBottom: 'var(--space-6)' }}>
         {t('nav.dashboard')}
       </Text>
       {!hasProjects ? (
@@ -57,70 +54,73 @@ function GCDashboard() {
           ]}
         />
       ) : (
-        <YStack gap="$6">
-          <XStack alignItems="center" justifyContent="space-between">
-            <Text fontSize="$5" fontWeight="600">
+        <Stack style={{ gap: 'var(--space-6)' }}>
+          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: 'var(--font-size-5)', fontWeight: 600 }}>
               Active Projects
             </Text>
-            <CoreButton
+            <Button
               data-testid="new-project-button"
-              onPress={handleCreateProject}
+              onClick={handleCreateProject}
               variant="primary"
             >
               New Project
-            </CoreButton>
-          </XStack>
-          <XStack flexWrap="wrap" gap="$4">
+            </Button>
+          </Row>
+          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
             {mockProjects.map((project) => (
               <Card
                 key={project.id}
                 data-testid="project-card"
-                padding="$6"
-                hoverStyle={{ shadowRadius: 8, shadowOffset: { width: 0, height: 4 } }}
-                cursor="pointer"
-                flex={1}
-                minWidth={300}
+                style={{
+                  padding: 'var(--space-6)',
+                  cursor: 'pointer',
+                  flex: 1,
+                  minWidth: 300,
+                }}
               >
-                <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
-                  <XStack alignItems="center" gap="$3">
-                    <YStack
-                      padding="$2"
-                      backgroundColor="$blue3"
-                      borderRadius="$3"
+                <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+                    <Stack
+                      style={{
+                        padding: 'var(--space-2)',
+                        backgroundColor: 'var(--color-blue-3)',
+                        borderRadius: 'var(--radius-3)',
+                      }}
                     >
                       <Building2 size={24} color="currentColor" />
-                    </YStack>
-                    <YStack>
-                      <Text fontSize="$5" fontWeight="600">
+                    </Stack>
+                    <Stack>
+                      <Text style={{ fontSize: 'var(--font-size-5)', fontWeight: 600 }}>
                         {project.name}
                       </Text>
-                      <Text fontSize="$2" color="$color10">
+                      <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
                         {project.address}
                       </Text>
-                    </YStack>
-                  </XStack>
-                  <Badge variant="success" size="$2">
+                    </Stack>
+                  </Row>
+                  <Chip type="success" size="sm">
                     {project.status}
-                  </Badge>
-                </XStack>
-                <XStack alignItems="center" justifyContent="space-between" fontSize="$2">
-                  <XStack alignItems="center" gap="$1" color="$color10">
+                  </Chip>
+                </Row>
+                <Row style={{ alignItems: 'center', justifyContent: 'space-between', fontSize: 'var(--font-size-2)' }}>
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-1)', color: 'var(--color-10)' }}>
                     <Users size={16} />
                     <Text>{project.contractorCount} contractors</Text>
-                  </XStack>
-                  <XStack alignItems="center" gap="$1">
+                  </Row>
+                  <Row style={{ alignItems: 'center', gap: 'var(--space-1)' }}>
                     <CheckCircle size={16} color="currentColor" />
-                    <Text fontWeight="500" data-testid="compliance-score">
+                    <Text style={{ fontWeight: 500 }} data-testid="compliance-score">
                       {project.complianceScore}% compliant
                     </Text>
-                  </XStack>
-                </XStack>
+                  </Row>
+                </Row>
               </Card>
             ))}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 }
 

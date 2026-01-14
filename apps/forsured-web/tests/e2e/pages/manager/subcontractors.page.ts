@@ -14,7 +14,7 @@ export class ManagerSubcontractorsPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.table = new DataTableComponent(page);
-    // Use role-based selector - most reliable for accessibility and works with Tamagui
+    // Use role-based selector - most reliable for accessibility and works with Beyond UI
     // Verified via Playwright MCP browser inspection
     this.addButton = page.getByRole('button', { name: 'Add Subcontractor' });
     this.searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');

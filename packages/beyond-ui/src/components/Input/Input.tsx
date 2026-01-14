@@ -134,7 +134,18 @@ export function Input({
   const focusShadowStyle = getFocusShadowStyle(actualState || 'default')
 
   return (
-    <View style={[styles.container, fullWidth && { width: '100%' }, containerStyle]}>
+    <View style={[
+      styles.container, 
+      fullWidth && { 
+        width: '100%', 
+        minWidth: '100%', 
+        maxWidth: '100%',
+        alignSelf: 'stretch',
+        flexShrink: 0,
+        flexGrow: 1,
+      }, 
+      containerStyle
+    ]}>
       {/* Label */}
       {label && (
         <InputLabel
@@ -152,6 +163,9 @@ export function Input({
           flexDirection: 'row',
           alignItems: 'stretch',
           width: '100%',
+          minWidth: '100%',
+          maxWidth: '100%',
+          flexShrink: 0,
         }}
       >
         {/* External Addon (Prefix) */}
@@ -170,6 +184,12 @@ export function Input({
         <View
           style={[
             styles.input,
+            !hasExternalAddon && {
+              flex: 1,
+              width: '100%',
+              minWidth: '100%',
+              maxWidth: '100%',
+            },
             focusBoxShadow && Platform.OS === 'web' && { boxShadow: focusBoxShadow },
             focusShadowStyle,
           ]}

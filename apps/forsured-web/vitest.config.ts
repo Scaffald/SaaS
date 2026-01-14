@@ -6,11 +6,50 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
+import type { Plugin } from 'vite';
 
 const packageRoot = fileURLToPath(new URL('.', import.meta.url));
 
+/**
+ * Plugin to handle type-only exports and prevent SSR transform issues
+ * This prevents Rollup from trying to parse type exports during SSR transform
+ */
+function handleTypeExportsForSSR(): Plugin {
+  return {
+    name: 'handle-type-exports-ssr',
+    enforce: 'pre',
+    transform(code, id, options) {
+      // Skip SSR transformation entirely for test files
+      // Tests don't need SSR, and this prevents Rollup parsing errors
+      if (options?.ssr && (id.includes('.test.') || id.includes('.spec.'))) {
+        return null; // Let regular transform handle it
+      }
+      
+      // For SSR transforms, strip type-only exports to prevent parsing errors
+      if (options?.ssr) {
+        // Remove type-only export statements that Rollup can't parse
+        const stripped = code.replace(/^export\s+type\s+.*from\s+['"][^'"]+['"];?\s*$/gm, '');
+        if (stripped !== code) {
+          return { code: stripped, map: null };
+        }
+      }
+      return null;
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    handleTypeExportsForSSR(),
+    react({
+      // Use SWC for faster transforms and better TypeScript support
+      jsxRuntime: 'automatic',
+    }),
+  ],
+  // Disable SSR for tests - tests run in jsdom, not SSR environment
+  ssr: {
+    noExternal: ['@unicornlove/beyond-ui'],
+  },
   resolve: {
     alias: {
       // Local app alias
@@ -35,6 +74,12 @@ export default defineConfig({
       'tests/performance/**/*.{test,spec}.{ts,tsx}',
     ],
     exclude: ['**/node_modules/**', '**/dist/**'],
+    // Configure dependency handling for tests
+    server: {
+      deps: {
+        inline: ['@unicornlove/beyond-ui'],
+      },
+    },
     setupFiles: [resolve(packageRoot, 'src/test/setup.ts')],
     globalSetup: resolve(packageRoot, 'src/test/globalSetup.ts'),
     globalTeardown: resolve(packageRoot, 'src/test/globalTeardown.ts'),

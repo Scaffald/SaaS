@@ -1,7 +1,8 @@
 // src/pages/gc/settings/NotificationSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { YStack, Text, Button, H2, Select } from '@unicornlove/ui';
+import { Stack, Text, Button, H2 } from '@unicornlove/beyond-ui';
 import Checkbox from '../../../ui/Checkbox';
+import Select from '../../../components/Common/Select';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -75,25 +76,25 @@ function GCNotificationSettings() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4">
+      <Stack style={{ gap: 'var(--space-4)' }}>
         <H2>Notification Settings</H2>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           {[1, 2, 3, 4].map(i => (
-            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
+            <Stack key={i} style={{ height: 40, backgroundColor: 'var(--color-3)', borderRadius: 'var(--radius-4)' }} />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$4">
+    <Stack style={{ gap: 'var(--space-4)' }}>
       <H2>Notification Settings</H2>
-      <Text color="$color10" marginBottom="$6">
+      <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-6)' }}>
         Configure how and when you receive notifications about your projects and subcontractors.
       </Text>
       <form onSubmit={handleSubmit}>
-        <YStack gap="$4">
+        <Stack style={{ gap: 'var(--space-4)' }}>
           <Checkbox
             checked={preferences.emailOnNewDocument}
             onChange={(e) => updatePreference('emailOnNewDocument', e.target.checked)}
@@ -109,14 +110,14 @@ function GCNotificationSettings() {
             onChange={(e) => updatePreference('emailOnComplianceChange', e.target.checked)}
             label="Email me on compliance status changes"
           />
-          <YStack gap="$1" marginBottom="$6">
+          <Stack style={{ gap: 'var(--space-1)', marginBottom: 'var(--space-6)' }}>
             <Select
               label="Email Digest Frequency"
               value={preferences.emailDigestFrequency}
-              onValueChange={(value) => updatePreference('emailDigestFrequency', value)}
+              onChange={(value) => updatePreference('emailDigestFrequency', value)}
               options={frequencyOptions}
             />
-          </YStack>
+          </Stack>
           <Button
             type="submit"
             disabled={!isDirty || isSaving}
@@ -124,9 +125,9 @@ function GCNotificationSettings() {
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
-        </YStack>
+        </Stack>
       </form>
-    </YStack>
+    </Stack>
   );
 }
 

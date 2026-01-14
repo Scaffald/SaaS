@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Calendar, AlertTriangle } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
 import { PolicyData } from '../../types';
 
 interface RenewalForecastWidgetProps {
@@ -75,163 +75,172 @@ export default function RenewalForecastWidget({
 
   const getPolicyTypeColor = (index: number) => {
     const colors = [
-      '$blue9',
-      '$purple9',
-      '$green9',
-      '$yellow9',
-      '$red9',
-      '$gray9',
+      'var(--color-blue-9)',
+      'var(--color-purple-9)',
+      'var(--color-green-9)',
+      'var(--color-yellow-9)',
+      'var(--color-red-9)',
+      'var(--color-gray-9)',
     ];
     return colors[index % colors.length];
   };
 
+  const getBarColor = (index: number) => {
+    if (index === 0) return 'var(--color-red-9)';
+    if (index === 1) return 'var(--color-yellow-9)';
+    return 'var(--color-blue-9)';
+  };
+
   return (
     <Card
-      backgroundColor="$background"
-      borderRadius="$4"
-      elevation={1}
-      borderWidth={1}
-      borderColor="$borderColor"
-      padding="$6"
+      style={{
+        backgroundColor: 'var(--color-background)',
+        borderRadius: 12,
+        border: '1px solid var(--color-border)',
+        padding: 24,
+      }}
     >
-      <XStack alignItems="center" justifyContent="space-between" mb="$6">
-        <YStack>
-          <H2 fontSize="$6" fontWeight="600" color="$color12">
+      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 24 }}>
+        <Stack>
+          <H2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}>
             Renewal Forecast
           </H2>
-          <Text fontSize="$3" color="$color11">
+          <Text size="sm" muted>
             Policy expirations over next 6 months
           </Text>
-        </YStack>
-        <XStack alignItems="center" gap="$2">
-          <AlertTriangle color="$yellow10" size={18} />
-          <Text fontSize="$3" color="$color11">
+        </Stack>
+        <Row alignItems="center" gap={8}>
+          <AlertTriangle size={18} style={{ color: 'var(--color-yellow-10)' }} />
+          <Text size="sm" muted>
             {expiringThisMonth} expiring this month
           </Text>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
-      <XStack
-        flexDirection="column"
-        $gtLg={{ flexDirection: 'row' }}
-        gap="$6"
-      >
-        <YStack flex={1}>
-          <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$4">
+      <Row gap={24} style={{ flexWrap: 'wrap' }}>
+        <Stack style={{ flex: 1 }}>
+          <H3 style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 16 }}>
             Monthly Expirations
           </H3>
-          <YStack gap="$3">
+          <Stack gap={12}>
             {forecastData.map((data, index) => (
-              <XStack key={data.month} alignItems="center" gap="$3">
-                <Text width={64} fontSize="$3" fontWeight="500" color="$color11">
+              <Row key={data.month} alignItems="center" gap={12}>
+                <Text size="sm" weight="medium" muted style={{ width: 64 }}>
                   {data.month}
                 </Text>
-                <YStack flex={1}>
-                  <XStack alignItems="center" gap="$2">
-                    <YStack
-                      flex={1}
-                      backgroundColor="$gray6"
-                      borderRadius={9999}
-                      height={24}
-                      position="relative"
-                      overflow="hidden"
+                <Stack style={{ flex: 1 }}>
+                  <Row alignItems="center" gap={8}>
+                    <Stack
+                      style={{
+                        flex: 1,
+                        backgroundColor: 'var(--color-gray-6)',
+                        borderRadius: 9999,
+                        height: 24,
+                        position: 'relative',
+                        overflow: 'hidden',
+                      }}
                     >
-                      <YStack
-                        height={24}
-                        borderRadius={9999}
-                        backgroundColor={
-                          index === 0
-                            ? '$red9'
-                            : index === 1
-                              ? '$yellow9'
-                              : '$blue9'
-                        }
-                        width={`${(data.count / maxCount) * 100}%`}
-                        alignItems="center"
-                        justifyContent="center"
+                      <Stack
+                        style={{
+                          height: 24,
+                          borderRadius: 9999,
+                          backgroundColor: getBarColor(index),
+                          width: `${(data.count / maxCount) * 100}%`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
                       >
                         {data.count > 0 && (
-                          <Text fontSize="$1" fontWeight="500" color="white" paddingHorizontal="$2">
+                          <Text size="xs" weight="medium" style={{ color: 'white', paddingLeft: 8, paddingRight: 8 }}>
                             {data.count}
                           </Text>
                         )}
-                      </YStack>
-                    </YStack>
-                    <Text fontSize="$3" color="$color11" width={80} style={{ textAlign: 'right' }}>
+                      </Stack>
+                    </Stack>
+                    <Text size="sm" muted style={{ width: 80, textAlign: 'right' }}>
                       ${(data.value / 1000).toFixed(0)}K
                     </Text>
-                  </XStack>
-                </YStack>
-              </XStack>
+                  </Row>
+                </Stack>
+              </Row>
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
-        <YStack flex={1}>
-          <H3 fontSize="$3" fontWeight="500" color="$color12" mb="$4">
+        <Stack style={{ flex: 1 }}>
+          <H3 style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 16 }}>
             Next 30 Days by Type
           </H3>
           {policyTypeBreakdown.length > 0 ? (
-            <YStack gap="$4">
+            <Stack gap={16}>
               {policyTypeBreakdown.map((item, index) => (
-                <YStack key={item.type}>
-                  <XStack alignItems="center" justifyContent="space-between" mb="$1">
-                    <Text fontSize="$3" textTransform="capitalize" color="$color12">
+                <Stack key={item.type}>
+                  <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 4 }}>
+                    <Text size="sm" style={{ textTransform: 'capitalize', color: 'var(--color-text)' }}>
                       {item.type}
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color11">
+                    <Text size="sm" weight="medium" muted>
                       {item.count} ({item.percentage.toFixed(0)}%)
                     </Text>
-                  </XStack>
-                  <YStack width="100%" backgroundColor="$gray6" borderRadius={9999} height={8}>
-                    <YStack
-                      height={8}
-                      borderRadius={9999}
-                      backgroundColor={getPolicyTypeColor(index)}
-                      width={`${item.percentage}%`}
+                  </Row>
+                  <Stack
+                    style={{
+                      width: '100%',
+                      backgroundColor: 'var(--color-gray-6)',
+                      borderRadius: 9999,
+                      height: 8,
+                    }}
+                  >
+                    <Stack
+                      style={{
+                        height: 8,
+                        borderRadius: 9999,
+                        backgroundColor: getPolicyTypeColor(index),
+                        width: `${item.percentage}%`,
+                      }}
                     />
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
               ))}
-            </YStack>
+            </Stack>
           ) : (
-            <YStack
+            <Stack
               alignItems="center"
               justifyContent="center"
-              paddingVertical="$8"
-              alignItems="center"
+              style={{ paddingTop: 32, paddingBottom: 32 }}
             >
-              <Calendar color="$color10" size={48} mb="$3" />
-              <Text fontSize="$3" color="$color11">
+              <Calendar size={48} style={{ color: 'var(--color-text-muted)', marginBottom: 12 }} />
+              <Text size="sm" muted>
                 No policies expiring in next 30 days
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <YStack mt="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
-        <XStack gap="$4" flexWrap="wrap">
-          <YStack flex={1} minWidth="30%" alignItems="center">
-            <Text fontSize="$8" fontWeight="bold" color="$color12">
+      <Stack style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}>
+        <Row gap={16} style={{ flexWrap: 'wrap' }}>
+          <Stack style={{ flex: 1, minWidth: '30%', alignItems: 'center' }}>
+            <Text size="xl" weight="bold">
               {expiringThisMonth}
             </Text>
-            <Text fontSize="$3" color="$color11">This Month</Text>
-          </YStack>
-          <YStack flex={1} minWidth="30%" alignItems="center">
-            <Text fontSize="$8" fontWeight="bold" color="$color12">
+            <Text size="sm" muted>This Month</Text>
+          </Stack>
+          <Stack style={{ flex: 1, minWidth: '30%', alignItems: 'center' }}>
+            <Text size="xl" weight="bold">
               {expiringNextMonth}
             </Text>
-            <Text fontSize="$3" color="$color11">Next Month</Text>
-          </YStack>
-          <YStack flex={1} minWidth="30%" alignItems="center">
-            <Text fontSize="$8" fontWeight="bold" color="$color12">
+            <Text size="sm" muted>Next Month</Text>
+          </Stack>
+          <Stack style={{ flex: 1, minWidth: '30%', alignItems: 'center' }}>
+            <Text size="xl" weight="bold">
               {forecastData.reduce((sum, d) => sum + d.count, 0)}
             </Text>
-            <Text fontSize="$3" color="$color11">6 Months Total</Text>
-          </YStack>
-        </XStack>
-      </YStack>
+            <Text size="sm" muted>6 Months Total</Text>
+          </Stack>
+        </Row>
+      </Stack>
     </Card>
   );
 }

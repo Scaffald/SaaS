@@ -33,8 +33,7 @@ describe('AddTeamMemberForm', () => {
     it('renders with default "user" access level selected', () => {
       render(<AddTeamMemberForm {...defaultProps} />);
 
-      // Tamagui Select shows "Member" text for default value "user"
-      // The Select displays the label for the selected value
+      // The select shows "Member" text for default value "user"
       expect(screen.getByText('Member')).toBeInTheDocument();
     });
 
@@ -157,7 +156,6 @@ describe('AddTeamMemberForm', () => {
       await userEvent.type(nameInput, 'Jane Admin');
       await userEvent.type(emailInput, 'jane@example.com');
 
-      // Note: Tamagui Select doesn't support userEvent.selectOptions
       // Testing with default role value ('user')
       const submitButton = screen.getByRole('button', { name: /send invitation/i });
       fireEvent.click(submitButton);

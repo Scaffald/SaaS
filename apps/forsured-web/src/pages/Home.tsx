@@ -1,26 +1,41 @@
 /**
- * Home Page - Landing page using Tamagui
+ * Home Page - Landing page using Beyond UI
  */
 import React from "react";
-import { YStack, Text } from '@unicornlove/ui';
+import { Stack, Text, H1 } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize } from '@unicornlove/beyond-ui';
 
 const Home: React.FC = () => {
   return (
-    <YStack
-      minHeight="100vh"
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="$backgroundHover"
+    <Stack
+      style={{
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.bg.light.hover,
+      }}
     >
-      <YStack alignItems="center" gap="$4">
-        <Text fontSize="$10" fontWeight="700" color="$color11" marginBottom="$4">
+      <Stack style={{ alignItems: 'center', gap: spacing[16] }}>
+        <H1
+          style={{
+            fontSize: fontSize.h1,
+            fontWeight: 700,
+            color: colors.text.light.primary,
+            marginBottom: spacing[16],
+          }}
+        >
           Welcome to ForSured
-        </Text>
-        <Text fontSize="$5" color="$color10">
+        </H1>
+        <Text
+          style={{
+            fontSize: fontSize.h5,
+            color: colors.text.light.secondary,
+          }}
+        >
           Modern insurance management for construction projects
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 };
 

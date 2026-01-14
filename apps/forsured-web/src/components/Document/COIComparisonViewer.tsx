@@ -13,7 +13,7 @@ import {
   UserCheck,
   AlertOctagon,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import Textarea from '../Common/Textarea';
@@ -256,76 +256,117 @@ export default function COIComparisonViewer({
 
   const getGapStatusIcon = (gap: CoverageGap) => {
     if (gap.actual >= gap.required) {
-      return <CheckCircle color="$green10" size={20} />;
+      return <CheckCircle color="var(--color-green-10)" size={20} />;
     }
     const percentage = (gap.actual / gap.required) * 100;
     if (percentage >= 80) {
-      return <AlertTriangle color="$yellow10" size={20} />;
+      return <AlertTriangle color="var(--color-yellow-10)" size={20} />;
     }
-    return <XCircle color="$red10" size={20} />;
+    return <XCircle color="var(--color-red-10)" size={20} />;
   };
 
   const pdfUrl =
     documentUrl ||
     'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
 
+  const getOverallMatchColor = () => {
+    if (!comparisonResult) return 'var(--color-10)';
+    if (comparisonResult.overallMatch >= 100) return 'var(--color-green-10)';
+    if (comparisonResult.overallMatch >= 80) return 'var(--color-yellow-10)';
+    return 'var(--color-red-10)';
+  };
+
+  const getProgressBarColor = () => {
+    if (!comparisonResult) return 'var(--color-9)';
+    if (comparisonResult.overallMatch >= 100) return 'var(--color-green-9)';
+    if (comparisonResult.overallMatch >= 80) return 'var(--color-yellow-9)';
+    return 'var(--color-red-9)';
+  };
+
+  const getGapCardStyles = (gap: CoverageGap) => {
+    if (gap.actual >= gap.required) {
+      return {
+        backgroundColor: 'var(--color-green-2)',
+        borderColor: 'var(--color-green-6)',
+      };
+    }
+    const percentage = (gap.actual / gap.required) * 100;
+    if (percentage >= 80) {
+      return {
+        backgroundColor: 'var(--color-yellow-2)',
+        borderColor: 'var(--color-yellow-6)',
+      };
+    }
+    return {
+      backgroundColor: 'var(--color-red-2)',
+      borderColor: 'var(--color-red-6)',
+    };
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
-        <YStack gap="$6">
+        <Stack style={{ gap: 24 }}>
           {/* Header */}
-          <XStack alignItems="flex-start" justifyContent="space-between">
-            <YStack>
-              <H2 fontSize="$8" fontWeight="bold" color="$color12" mb="$2">
+          <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <Stack>
+              <H2 style={{ fontSize: 24, fontWeight: 'bold', color: 'var(--color-12)', marginBottom: 8 }}>
                 COI Comparison
               </H2>
-              <Text color="$color11">{documentName}</Text>
+              <Text style={{ color: 'var(--color-11)' }}>{documentName}</Text>
               {project && (
-                <Text fontSize="$3" color="$color10" mt="$1">
+                <Text style={{ fontSize: 14, color: 'var(--color-10)', marginTop: 4 }}>
                   Project: {project.name}
                 </Text>
               )}
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           {/* Main Content: Split Screen */}
-          <XStack gap="$6">
+          <Row style={{ gap: 24 }}>
             {/* Left: PDF Viewer */}
-            <YStack flex={1}>
+            <Stack style={{ flex: 1 }}>
               <Card
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                overflow="hidden"
-                backgroundColor="$background"
+                style={{
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-border)',
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                  backgroundColor: 'var(--color-background)',
+                }}
               >
-                <XStack
-                  alignItems="center"
-                  justifyContent="space-between"
-                  padding="$3"
-                  backgroundColor="$backgroundHover"
-                  borderBottomWidth={1}
-                  borderBottomColor="$borderColor"
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 12,
+                    backgroundColor: 'var(--color-background-hover)',
+                    borderBottomWidth: 1,
+                    borderBottomStyle: 'solid',
+                    borderBottomColor: 'var(--color-border)',
+                  }}
                 >
-                  <Text fontSize="$3" fontWeight="500" color="$color11">
+                  <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-11)' }}>
                     Document Preview
                   </Text>
                   {pdfUrl && (
-                    <XStack
-                      as="a"
+                    <a
                       href={pdfUrl}
                       download={documentName}
-                      padding="$2"
-                      color="$teal9"
-                      hoverStyle={{ backgroundColor: '$teal2' }}
-                      borderRadius="$2"
-                      cursor="pointer"
+                      style={{
+                        padding: 8,
+                        color: 'var(--color-teal-9)',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        display: 'flex',
+                      }}
                     >
                       <Download size={16} />
-                    </XStack>
+                    </a>
                   )}
-                </XStack>
-                <YStack position="relative" height={600}>
+                </Row>
+                <Stack style={{ position: 'relative', height: 600 }}>
                   {pdfUrl ? (
                     <iframe
                       src={pdfUrl}
@@ -335,19 +376,19 @@ export default function COIComparisonViewer({
                       title={documentName}
                     />
                   ) : (
-                    <YStack alignItems="center" justifyContent="center" height="100%">
-                      <YStack alignItems="center" gap="$2">
-                        <FileText color="$color10" size={48} />
-                        <Text color="$color11">No preview available</Text>
-                      </YStack>
-                    </YStack>
+                    <Stack style={{ alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                      <Stack style={{ alignItems: 'center', gap: 8 }}>
+                        <FileText color="var(--color-10)" size={48} />
+                        <Text style={{ color: 'var(--color-11)' }}>No preview available</Text>
+                      </Stack>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
               </Card>
-            </YStack>
+            </Stack>
 
             {/* Right: Comparison Panel */}
-            <YStack flex={1} gap="$6">
+            <Stack style={{ flex: 1, gap: 24 }}>
               {/* AI Processing Indicator */}
               {aiProcessingState && (
                 <AIProcessingIndicator
@@ -370,48 +411,43 @@ export default function COIComparisonViewer({
               {/* Overall Match Score */}
               {comparisonResult && !aiProcessingState && (
                 <Card
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
-                  padding="$4"
-                  backgroundColor="$background"
+                  style={{
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 8,
+                    padding: 16,
+                    backgroundColor: 'var(--color-background)',
+                  }}
                 >
-                  <XStack alignItems="center" justifyContent="space-between" mb="$4">
-                    <XStack alignItems="center" gap="$2">
+                  <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                    <Row style={{ alignItems: 'center', gap: 8 }}>
                       <Shield size={16} />
-                      <H3 fontSize="$3" fontWeight="600" color="$color12">
+                      <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}>
                         Overall Match
                       </H3>
-                    </XStack>
+                    </Row>
                     <Text
-                      fontSize="$9"
-                      fontWeight="bold"
-                      color={
-                        comparisonResult.overallMatch >= 100
-                          ? '$green10'
-                          : comparisonResult.overallMatch >= 80
-                            ? '$yellow10'
-                            : '$red10'
-                      }
+                      style={{
+                        fontSize: 32,
+                        fontWeight: 'bold',
+                        color: getOverallMatchColor(),
+                      }}
                     >
                       {comparisonResult.overallMatch}%
                     </Text>
-                  </XStack>
-                  <YStack width="100%" backgroundColor="$backgroundHover" borderRadius={9999} height={12}>
-                    <YStack
-                      height={12}
-                      borderRadius={9999}
-                      backgroundColor={
-                        comparisonResult.overallMatch >= 100
-                          ? '$green9'
-                          : comparisonResult.overallMatch >= 80
-                            ? '$yellow9'
-                            : '$red9'
-                      }
-                      width={`${comparisonResult.overallMatch}%`}
+                  </Row>
+                  <Stack style={{ width: '100%', backgroundColor: 'var(--color-background-hover)', borderRadius: 9999, height: 12 }}>
+                    <Stack
+                      style={{
+                        height: 12,
+                        borderRadius: 9999,
+                        backgroundColor: getProgressBarColor(),
+                        width: `${comparisonResult.overallMatch}%`,
+                      }}
                     />
-                  </YStack>
-                  <Text fontSize="$1" color="$color10" mt="$2">
+                  </Stack>
+                  <Text style={{ fontSize: 12, color: 'var(--color-10)', marginTop: 8 }}>
                     AI Confidence: {comparisonResult.confidence}%
                   </Text>
                 </Card>
@@ -420,226 +456,237 @@ export default function COIComparisonViewer({
               {/* AI Extracted Fields */}
               {currentExtraction && (
                 <Card
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
-                  padding="$4"
-                  backgroundColor="$background"
+                  style={{
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 8,
+                    padding: 16,
+                    backgroundColor: 'var(--color-background)',
+                  }}
                 >
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+                  <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                     Extracted Fields
                   </H3>
-                  <YStack gap="$3">
+                  <Stack style={{ gap: 12 }}>
                     {currentExtraction.policy_number && (
-                      <YStack>
-                        <Text fontSize="$1" color="$color10">
+                      <Stack>
+                        <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                           Policy Number
                         </Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {currentExtraction.policy_number}
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
                     {currentExtraction.carrier && (
-                      <YStack>
-                        <Text fontSize="$1" color="$color10">Carrier</Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                      <Stack>
+                        <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>Carrier</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {currentExtraction.carrier}
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
                     {currentExtraction.effective_date && (
-                      <YStack>
-                        <Text fontSize="$1" color="$color10">
+                      <Stack>
+                        <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                           Effective Date
                         </Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {formatDate(currentExtraction.effective_date)}
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
                     {currentExtraction.expiry_date && (
-                      <YStack>
-                        <Text fontSize="$1" color="$color10">
+                      <Stack>
+                        <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                           Expiry Date
                         </Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {formatDate(currentExtraction.expiry_date)}
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
-                  </YStack>
+                  </Stack>
                 </Card>
               )}
 
               {/* Requirements vs Extracted */}
               {project && (
                 <Card
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
-                  padding="$4"
-                  backgroundColor="$background"
+                  style={{
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 8,
+                    padding: 16,
+                    backgroundColor: 'var(--color-background)',
+                  }}
                 >
-                  <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+                  <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                     Project Requirements
                   </H3>
-                  <YStack gap="$3">
+                  <Stack style={{ gap: 12 }}>
                     {project.general_liability_required && (
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <Text fontSize="$3" color="$color11">
+                      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                           General Liability
                         </Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {formatCurrency(project.general_liability_required)}
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
                     {project.workers_comp_required && (
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <Text fontSize="$3" color="$color11">
+                      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                           Workers Comp
                         </Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {formatCurrency(project.workers_comp_required)}
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
                     {project.auto_liability_required && (
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <Text fontSize="$3" color="$color11">
+                      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                           Auto Liability
                         </Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {formatCurrency(project.auto_liability_required)}
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
                     {project.umbrella_required && (
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <Text fontSize="$3" color="$color11">Umbrella</Text>
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>Umbrella</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                           {formatCurrency(project.umbrella_required)}
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
-                  </YStack>
+                  </Stack>
                 </Card>
               )}
 
               {/* Gap Analysis */}
               {loadingComparison ? (
                 <Card
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
-                  padding="$8"
-                  backgroundColor="$background"
-                  alignItems="center"
+                  style={{
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 8,
+                    padding: 32,
+                    backgroundColor: 'var(--color-background)',
+                    alignItems: 'center',
+                  }}
                 >
-                  <YStack alignItems="center" gap="$2">
-                    <YStack
-                      width={32}
-                      height={32}
-                      borderRadius={9999}
-                      borderWidth={2}
-                      borderColor="$teal9"
-                      borderBottomColor="transparent"
-                      animation="spin"
+                  <Stack style={{ alignItems: 'center', gap: 8 }}>
+                    <Stack
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 9999,
+                        borderWidth: 2,
+                        borderStyle: 'solid',
+                        borderColor: 'var(--color-teal-9)',
+                        borderBottomColor: 'transparent',
+                        animation: 'spin 1s linear infinite',
+                      }}
                     />
-                    <Text fontSize="$3" color="$color11">
+                    <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                       Analyzing coverage...
                     </Text>
-                  </YStack>
+                  </Stack>
                 </Card>
               ) : comparisonResult && comparisonResult.gaps.length > 0 ? (
                 <Card
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
-                  padding="$4"
-                  backgroundColor="$background"
+                  style={{
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 8,
+                    padding: 16,
+                    backgroundColor: 'var(--color-background)',
+                  }}
                 >
-                  <XStack alignItems="center" gap="$2" mb="$4">
-                    <AlertOctagon color="$red10" size={16} />
-                    <H3 fontSize="$3" fontWeight="600" color="$color12">
+                  <Row style={{ alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                    <AlertOctagon color="var(--color-red-10)" size={16} />
+                    <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}>
                       Coverage Gaps ({comparisonResult.gaps.length})
                     </H3>
-                  </XStack>
-                  <YStack gap="$3">
+                  </Row>
+                  <Stack style={{ gap: 12 }}>
                     {comparisonResult.gaps.map((gap, index) => (
                       <Card
                         key={index}
-                        padding="$3"
-                        borderRadius="$4"
-                        borderWidth={1}
-                        backgroundColor={
-                          gap.actual >= gap.required
-                            ? '$green2'
-                            : (gap.actual / gap.required) * 100 >= 80
-                              ? '$yellow2'
-                              : '$red2'
-                        }
-                        borderColor={
-                          gap.actual >= gap.required
-                            ? '$green6'
-                            : (gap.actual / gap.required) * 100 >= 80
-                              ? '$yellow6'
-                              : '$red6'
-                        }
+                        style={{
+                          padding: 12,
+                          borderRadius: 8,
+                          borderWidth: 1,
+                          borderStyle: 'solid',
+                          ...getGapCardStyles(gap),
+                        }}
                       >
-                        <XStack alignItems="flex-start" justifyContent="space-between" mb="$2">
-                          <XStack alignItems="center" gap="$2">
+                        <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+                          <Row style={{ alignItems: 'center', gap: 8 }}>
                             {getGapStatusIcon(gap)}
-                            <Text fontSize="$3" fontWeight="500" color="$color12">
+                            <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
                               {gap.type}
                             </Text>
-                          </XStack>
-                        </XStack>
-                        <YStack gap="$1" ml="$7">
-                          <XStack justifyContent="space-between" fontSize="$1">
-                            <Text color="$color11">Required:</Text>
-                            <Text fontWeight="500" color="$color12">
+                          </Row>
+                        </Row>
+                        <Stack style={{ gap: 4, marginLeft: 28 }}>
+                          <Row style={{ justifyContent: 'space-between', fontSize: 12 }}>
+                            <Text style={{ color: 'var(--color-11)' }}>Required:</Text>
+                            <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                               {formatCurrency(gap.required)}
                             </Text>
-                          </XStack>
-                          <XStack justifyContent="space-between" fontSize="$1">
-                            <Text color="$color11">Actual:</Text>
-                            <Text fontWeight="500" color="$color12">
+                          </Row>
+                          <Row style={{ justifyContent: 'space-between', fontSize: 12 }}>
+                            <Text style={{ color: 'var(--color-11)' }}>Actual:</Text>
+                            <Text style={{ fontWeight: 500, color: 'var(--color-12)' }}>
                               {formatCurrency(gap.actual)}
                             </Text>
-                          </XStack>
-                          <XStack
-                            justifyContent="space-between"
-                            fontSize="$1"
-                            paddingTop="$1"
-                            borderTopWidth={1}
-                            borderTopColor="$borderColor"
+                          </Row>
+                          <Row
+                            style={{
+                              justifyContent: 'space-between',
+                              fontSize: 12,
+                              paddingTop: 4,
+                              borderTopWidth: 1,
+                              borderTopStyle: 'solid',
+                              borderTopColor: 'var(--color-border)',
+                            }}
                           >
-                            <Text color="$color11">Gap:</Text>
-                            <Text fontWeight="500" color="$red10">
+                            <Text style={{ color: 'var(--color-11)' }}>Gap:</Text>
+                            <Text style={{ fontWeight: 500, color: 'var(--color-red-10)' }}>
                               {formatCurrency(gap.required - gap.actual)}
                             </Text>
-                          </XStack>
-                        </YStack>
+                          </Row>
+                        </Stack>
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
                 </Card>
               ) : comparisonResult && comparisonResult.gaps.length === 0 ? (
                 <Card
-                  borderWidth={1}
-                  borderColor="$green6"
-                  borderRadius="$4"
-                  padding="$4"
-                  backgroundColor="$green2"
+                  style={{
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-green-6)',
+                    borderRadius: 8,
+                    padding: 16,
+                    backgroundColor: 'var(--color-green-2)',
+                  }}
                 >
-                  <XStack alignItems="center" gap="$2">
-                    <CheckCircle color="$green10" size={20} />
-                    <Text fontSize="$3" fontWeight="500" color="$green12">
+                  <Row style={{ alignItems: 'center', gap: 8 }}>
+                    <CheckCircle color="var(--color-green-10)" size={20} />
+                    <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-green-12)' }}>
                       All coverage requirements are met
                     </Text>
-                  </XStack>
+                  </Row>
                 </Card>
               ) : null}
 
@@ -647,46 +694,54 @@ export default function COIComparisonViewer({
               {comparisonResult &&
                 comparisonResult.recommendations.length > 0 && (
                   <Card
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                    borderRadius="$4"
-                    padding="$4"
-                    backgroundColor="$background"
+                    style={{
+                      borderWidth: 1,
+                      borderStyle: 'solid',
+                      borderColor: 'var(--color-border)',
+                      borderRadius: 8,
+                      padding: 16,
+                      backgroundColor: 'var(--color-background)',
+                    }}
                   >
-                    <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+                    <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                       Recommendations
                     </H3>
-                    <YStack gap="$2">
+                    <Stack style={{ gap: 8 }}>
                       {comparisonResult.recommendations.map((rec, index) => (
-                        <XStack
+                        <Row
                           key={index}
-                          alignItems="flex-start"
-                          gap="$2"
-                          fontSize="$3"
-                          color="$color11"
+                          style={{
+                            alignItems: 'flex-start',
+                            gap: 8,
+                            fontSize: 14,
+                            color: 'var(--color-11)',
+                          }}
                         >
-                          <Text color="$teal9" mt="$0.5">
-                            •
+                          <Text style={{ color: 'var(--color-teal-9)', marginTop: 2 }}>
+                            *
                           </Text>
                           <Text>{rec}</Text>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
+                    </Stack>
                   </Card>
                 )}
 
               {/* Actions */}
               <Card
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                padding="$4"
-                backgroundColor="$background"
+                style={{
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderColor: 'var(--color-border)',
+                  borderRadius: 8,
+                  padding: 16,
+                  backgroundColor: 'var(--color-background)',
+                }}
               >
-                <H3 fontSize="$3" fontWeight="600" color="$color12" mb="$4">
+                <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)', marginBottom: 16 }}>
                   Actions
                 </H3>
-                <YStack gap="$2">
+                <Stack style={{ gap: 8 }}>
                   <Button
                     variant="success"
                     onClick={handleApprove}
@@ -713,11 +768,11 @@ export default function COIComparisonViewer({
                       Override with Exception
                     </Button>
                   )}
-                </YStack>
+                </Stack>
               </Card>
-            </YStack>
-          </XStack>
-        </YStack>
+            </Stack>
+          </Row>
+        </Stack>
       </Modal>
 
       {/* Request Changes Modal */}
@@ -730,7 +785,7 @@ export default function COIComparisonViewer({
         title="Request Changes"
         size="sm"
       >
-        <YStack gap="$4">
+        <Stack style={{ gap: 16 }}>
           <Textarea
             label="Specify required changes"
             value={requestChangesComment}
@@ -740,7 +795,7 @@ export default function COIComparisonViewer({
             fullWidth
             required
           />
-          <XStack gap="$3">
+          <Row style={{ gap: 12 }}>
             <Button
               variant="secondary"
               onClick={() => {
@@ -759,8 +814,8 @@ export default function COIComparisonViewer({
             >
               Send Request
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Modal>
 
       {/* Override Modal */}
@@ -773,15 +828,18 @@ export default function COIComparisonViewer({
         title="Override Approval"
         size="sm"
       >
-        <YStack gap="$4">
+        <Stack style={{ gap: 16 }}>
           <Card
-            padding="$3"
-            backgroundColor="$yellow2"
-            borderWidth={1}
-            borderColor="$yellow6"
-            borderRadius="$4"
+            style={{
+              padding: 12,
+              backgroundColor: 'var(--color-yellow-2)',
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'var(--color-yellow-6)',
+              borderRadius: 8,
+            }}
           >
-            <Text fontSize="$1" color="$yellow12">
+            <Text style={{ fontSize: 12, color: 'var(--color-yellow-12)' }}>
               This will approve the document despite coverage gaps. Please
               provide a reason for the exception.
             </Text>
@@ -795,7 +853,7 @@ export default function COIComparisonViewer({
             fullWidth
             required
           />
-          <XStack gap="$3">
+          <Row style={{ gap: 12 }}>
             <Button
               variant="secondary"
               onClick={() => {
@@ -814,8 +872,8 @@ export default function COIComparisonViewer({
             >
               Override & Approve
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Modal>
 
       {/* AI Summary Modal */}

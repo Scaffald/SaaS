@@ -4,7 +4,7 @@
  */
 
 import { ChevronDown, ChevronRight, Shield, Calendar, DollarSign, Layers } from 'lucide-react';
-import { YStack, XStack, Text, Button } from '@unicornlove/ui';
+import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
 import { InsurancePolicy } from '../../types';
 import Card from '../Common/Card';
 import StatusBadge from '../Common/StatusBadge';
@@ -77,139 +77,142 @@ export default function PolicyCard({
   return (
     <Card padding="none">
       {/* Main Policy Header */}
-      <YStack padding="$4">
-        <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
+      <Stack style={{ padding: '16px' }}>
+        <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' }}>
           {/* Left: Policy Info */}
-          <YStack flex={1}>
-            <XStack alignItems="center" gap="$3" mb="$2">
-              <Shield color="$blue10" size={24} />
-              <YStack>
-                <Text fontSize="$6" fontWeight="600" color="$color12">
+          <Stack style={{ flex: 1 }}>
+            <Row style={{ alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <Shield color="var(--color-blue-10)" size={24} />
+              <Stack>
+                <Text style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-12)' }}>
                   {getPolicyTypeLabel(policy.policy_type)}
                 </Text>
                 {policy.policy_number && (
-                  <Text fontSize="$3" color="$color11">
+                  <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                     Policy #{policy.policy_number}
                   </Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
             {/* Policy Details Grid */}
-            <XStack
-              flexWrap="wrap"
-              gap="$4"
-              mt="$3"
-              $gtMd={{ flexDirection: 'row' }}
-            >
+            <Row style={{ flexWrap: 'wrap', gap: '16px', marginTop: '12px' }}>
               {/* Aggregate Limit */}
               {policy.aggregate_limit && (
-                <XStack alignItems="center" gap="$2">
-                  <DollarSign size={16} color="$color11" />
-                  <YStack>
-                    <Text fontSize="$1" color="$color11">
+                <Row style={{ alignItems: 'center', gap: '8px' }}>
+                  <DollarSign size={16} color="var(--color-11)" />
+                  <Stack>
+                    <Text style={{ fontSize: '12px', color: 'var(--color-11)' }}>
                       Aggregate Limit
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-12)' }}>
                       {formatCurrency(policy.aggregate_limit)}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               )}
 
               {/* Each Occurrence Limit */}
               {policy.each_occurrence_limit && (
-                <XStack alignItems="center" gap="$2">
-                  <DollarSign size={16} color="$color11" />
-                  <YStack>
-                    <Text fontSize="$1" color="$color11">
+                <Row style={{ alignItems: 'center', gap: '8px' }}>
+                  <DollarSign size={16} color="var(--color-11)" />
+                  <Stack>
+                    <Text style={{ fontSize: '12px', color: 'var(--color-11)' }}>
                       Per Occurrence
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-12)' }}>
                       {formatCurrency(policy.each_occurrence_limit)}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               )}
 
               {/* Deductible */}
               {policy.deductible && (
-                <XStack alignItems="center" gap="$2">
-                  <DollarSign size={16} color="$color11" />
-                  <YStack>
-                    <Text fontSize="$1" color="$color11">
+                <Row style={{ alignItems: 'center', gap: '8px' }}>
+                  <DollarSign size={16} color="var(--color-11)" />
+                  <Stack>
+                    <Text style={{ fontSize: '12px', color: 'var(--color-11)' }}>
                       Deductible
                     </Text>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-12)' }}>
                       {formatCurrency(policy.deductible)}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               )}
-            </XStack>
+            </Row>
 
             {/* Dates and Carrier */}
-            <XStack flexWrap="wrap" alignItems="center" gap="$4" mt="$3">
+            <Row style={{ flexWrap: 'wrap', alignItems: 'center', gap: '16px', marginTop: '12px' }}>
               {policy.carrier_name && (
-                <Text fontSize="$3" color="$color11">
-                  <Text fontWeight="500">Carrier:</Text> {policy.carrier_name}
+                <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
+                  <span style={{ fontWeight: 500 }}>Carrier:</span> {policy.carrier_name}
                 </Text>
               )}
               {(policy.effective_date || policy.expiration_date) && (
-                <XStack alignItems="center" gap="$2">
-                  <Calendar size={14} color="$color11" />
-                  <Text fontSize="$3" color="$color11">
+                <Row style={{ alignItems: 'center', gap: '8px' }}>
+                  <Calendar size={14} color="var(--color-11)" />
+                  <Text style={{ fontSize: '14px', color: 'var(--color-11)' }}>
                     {formatDate(policy.effective_date)} -{' '}
                     {formatDate(policy.expiration_date)}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </XStack>
+            </Row>
 
             {/* REQ-270: Umbrella Coverage Display */}
             {policy.policy_type === 'Umbrella' &&
               policy.underlying_coverages &&
               policy.underlying_coverages.length > 0 && (
-                <XStack
-                  mt="$3"
-                  alignItems="center"
-                  gap="$2"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  backgroundColor="$blue2"
-                  borderWidth={1}
-                  borderColor="$blue6"
-                  borderRadius="$2"
+                <Row
+                  style={{
+                    marginTop: '12px',
+                    alignItems: 'center',
+                    gap: '8px',
+                    paddingLeft: '12px',
+                    paddingRight: '12px',
+                    paddingTop: '8px',
+                    paddingBottom: '8px',
+                    backgroundColor: 'var(--color-blue-2)',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: 'var(--color-blue-6)',
+                    borderRadius: '4px',
+                  }}
                 >
-                  <Layers size={16} color="$blue10" />
-                  <Text fontSize="$3" color="$blue11">
-                    <Text fontWeight="500">Umbrella covers:</Text>{' '}
+                  <Layers size={16} color="var(--color-blue-10)" />
+                  <Text style={{ fontSize: '14px', color: 'var(--color-blue-11)' }}>
+                    <span style={{ fontWeight: 500 }}>Umbrella covers:</span>{' '}
                     {formatUnderlyingCoverages(policy.underlying_coverages)}
                   </Text>
-                </XStack>
+                </Row>
               )}
-          </YStack>
+          </Stack>
 
           {/* Right: Status and Expand Button */}
-          <YStack alignItems="flex-end" gap="$2">
+          <Stack style={{ alignItems: 'flex-end', gap: '8px' }}>
             <StatusBadge
               status={policy.status}
               variant={getStatusColor(policy.status)}
             />
 
             {hasChildren && (
-              <XStack
-                alignItems="center"
-                gap="$1"
-                paddingHorizontal="$3"
-                paddingVertical="$1.5"
-                fontSize="$3"
-                fontWeight="500"
-                color="$blue10"
-                hoverStyle={{ backgroundColor: '$blue2' }}
-                borderRadius="$2"
-                cursor="pointer"
-                onPress={(e) => {
+              <Row
+                style={{
+                  alignItems: 'center',
+                  gap: '4px',
+                  paddingLeft: '12px',
+                  paddingRight: '12px',
+                  paddingTop: '6px',
+                  paddingBottom: '6px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: 'var(--color-blue-10)',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+                onClick={(e) => {
                   e?.stopPropagation?.();
                   onToggleExpand();
                 }}
@@ -217,61 +220,66 @@ export default function PolicyCard({
                 {isExpanded ? (
                   <>
                     <ChevronDown size={16} />
-                    <Text fontSize="$3" fontWeight="500" color="$blue10">
+                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-blue-10)' }}>
                       Hide Details
                     </Text>
                   </>
                 ) : (
                   <>
                     <ChevronRight size={16} />
-                    <Text fontSize="$3" fontWeight="500" color="$blue10">
+                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-blue-10)' }}>
                       Show Details
                     </Text>
                   </>
                 )}
-              </XStack>
+              </Row>
             )}
-          </YStack>
-        </XStack>
-      </YStack>
+          </Stack>
+        </Row>
+      </Stack>
 
       {/* Expanded: Provisions and Endorsements */}
       {isExpanded && hasChildren && (
-        <YStack
-          borderTopWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color2"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
+        <Stack
+          style={{
+            borderTopWidth: '1px',
+            borderTopStyle: 'solid',
+            borderTopColor: 'var(--color-border)',
+            backgroundColor: 'var(--color-2)',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+            paddingTop: '12px',
+            paddingBottom: '12px',
+          }}
         >
           {/* Provisions */}
           {policy.provisions && policy.provisions.length > 0 && (
-            <YStack mb="$4">
-              <Text fontSize="$3" fontWeight="600" color="$color12" mb="$2">
+            <Stack style={{ marginBottom: '16px' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-12)', marginBottom: '8px' }}>
                 Coverage Provisions
               </Text>
-              <YStack gap="$2">
+              <Stack style={{ gap: '8px' }}>
                 {policy.provisions.map((provision) => (
                   <ProvisionItem key={provision.id} provision={provision} />
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
 
           {/* Endorsements */}
           {policy.endorsements && policy.endorsements.length > 0 && (
-            <YStack>
-              <Text fontSize="$3" fontWeight="600" color="$color12" mb="$2">
+            <Stack>
+              <Text style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-12)', marginBottom: '8px' }}>
                 Policy Endorsements
               </Text>
-              <YStack gap="$2">
+              <Stack style={{ gap: '8px' }}>
                 {policy.endorsements.map((endorsement) => (
                   <EndorsementItem key={endorsement.id} endorsement={endorsement} />
                 ))}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       )}
     </Card>
   );

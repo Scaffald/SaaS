@@ -1,6 +1,6 @@
 // src/pages/gc/settings/TeamSettings.tsx
 import { useState } from 'react';
-import { YStack, XStack, Text, Button, Card, H2 } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, H2 } from '@unicornlove/beyond-ui';
 import { PlusCircle, UserX, Edit } from 'lucide-react';
 
 interface TeamMember {
@@ -42,61 +42,62 @@ function GCTeamSettings() {
   };
 
   return (
-    <YStack gap="$6">
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
         <H2>Team Management</H2>
-        <Button variant="primary" onPress={handleInviteMember} icon={<PlusCircle size={16} />}>
+        <Button variant="primary" onClick={handleInviteMember} leftIcon={<PlusCircle size={16} />}>
           Invite Member
         </Button>
-      </XStack>
+      </Row>
 
-      <Card padding="$6" marginBottom="$6">
-        <YStack gap="$2">
+      <Card style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+        <Stack style={{ gap: 'var(--space-2)' }}>
           {/* Table Header */}
-          <XStack paddingVertical="$2" paddingHorizontal="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
-            <Text flex={1} fontWeight="600" fontSize="$4">Name</Text>
-            <Text flex={1} fontWeight="600" fontSize="$4">Email</Text>
-            <Text flex={1} fontWeight="600" fontSize="$4">Role</Text>
-            <Text flex={1} fontWeight="600" fontSize="$4">Status</Text>
-            <Text flex={1} fontWeight="600" fontSize="$4">Actions</Text>
-          </XStack>
+          <Row style={{ paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', borderBottom: '1px solid var(--color-border)' }}>
+            <Text style={{ flex: 1, fontWeight: 600, fontSize: 'var(--font-size-4)' }}>Name</Text>
+            <Text style={{ flex: 1, fontWeight: 600, fontSize: 'var(--font-size-4)' }}>Email</Text>
+            <Text style={{ flex: 1, fontWeight: 600, fontSize: 'var(--font-size-4)' }}>Role</Text>
+            <Text style={{ flex: 1, fontWeight: 600, fontSize: 'var(--font-size-4)' }}>Status</Text>
+            <Text style={{ flex: 1, fontWeight: 600, fontSize: 'var(--font-size-4)' }}>Actions</Text>
+          </Row>
           {/* Table Rows */}
           {teamMembers.map(member => (
-            <XStack
+            <Row
               key={member.id}
-              paddingVertical="$2"
-              paddingHorizontal="$4"
-              borderBottomWidth={1}
-              borderBottomColor="$borderColor"
-              alignItems="center"
+              style={{
+                paddingTop: 'var(--space-2)',
+                paddingBottom: 'var(--space-2)',
+                paddingLeft: 'var(--space-4)',
+                paddingRight: 'var(--space-4)',
+                borderBottom: '1px solid var(--color-border)',
+                alignItems: 'center',
+              }}
             >
-              <Text flex={1} fontSize="$4">{member.name}</Text>
-              <Text flex={1} fontSize="$4">{member.email}</Text>
-              <Text flex={1} fontSize="$4">{member.role}</Text>
-              <Text flex={1} fontSize="$4">{member.status}</Text>
-              <XStack flex={1} gap="$2">
+              <Text style={{ flex: 1, fontSize: 'var(--font-size-4)' }}>{member.name}</Text>
+              <Text style={{ flex: 1, fontSize: 'var(--font-size-4)' }}>{member.email}</Text>
+              <Text style={{ flex: 1, fontSize: 'var(--font-size-4)' }}>{member.role}</Text>
+              <Text style={{ flex: 1, fontSize: 'var(--font-size-4)' }}>{member.status}</Text>
+              <Row style={{ flex: 1, gap: 'var(--space-2)' }}>
                 <Button
                   variant="ghost"
-                  size="$3"
-                  onPress={() => handleEditMember(member.id)}
-                  color="$blue10"
-                  icon={<Edit size={16} />}
+                  size="sm"
+                  onClick={() => handleEditMember(member.id)}
+                  leftIcon={<Edit size={16} />}
                 />
                 <Button
                   variant="ghost"
-                  size="$3"
-                  onPress={() => handleToggleMemberStatus(member.id, member.status)}
-                  color="$red10"
-                  icon={<UserX size={16} />}
+                  size="sm"
+                  onClick={() => handleToggleMemberStatus(member.id, member.status)}
+                  leftIcon={<UserX size={16} />}
                 >
                   {member.status === 'active' ? 'Deactivate' : 'Activate'}
                 </Button>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           ))}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   );
 }
 

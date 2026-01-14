@@ -13,19 +13,20 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import {
-  YStack,
-  XStack,
+  Stack,
+  Row,
   Text,
   Button,
   Card,
-  H2,
-  H3,
+  Heading,
   Input,
-  Checkbox,
   Spinner,
-  Dialog,
-  ResponsiveSelect,
-} from '@unicornlove/ui'
+  Modal,
+  Select,
+  colors,
+  spacing,
+} from '@unicornlove/beyond-ui'
+import Checkbox from '../../../../../ui/Checkbox'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'
 
@@ -57,27 +58,27 @@ type CCPARequest = {
 
 // Color mappings
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  pending: { bg: '$yellow2', text: '$yellow11' },
-  in_progress: { bg: '$blue2', text: '$blue11' },
-  completed: { bg: '$green2', text: '$green11' },
-  denied: { bg: '$red2', text: '$red11' },
-  cancelled: { bg: '$gray2', text: '$gray11' },
+  pending: { bg: colors.warning[200], text: colors.warning[600] },
+  in_progress: { bg: colors.primary[200], text: colors.primary[600] },
+  completed: { bg: colors.success[200], text: colors.success[600] },
+  denied: { bg: colors.error[200], text: colors.error[600] },
+  cancelled: { bg: colors.gray[100], text: colors.text.light.secondary },
 }
 
 const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
-  low: { bg: '$gray2', text: '$gray11' },
-  medium: { bg: '$blue2', text: '$blue11' },
-  high: { bg: '$orange2', text: '$orange11' },
-  urgent: { bg: '$red2', text: '$red11' },
+  low: { bg: colors.gray[100], text: colors.text.light.secondary },
+  medium: { bg: colors.primary[200], text: colors.primary[600] },
+  high: { bg: colors.warning[200], text: colors.warning[600] },
+  urgent: { bg: colors.error[200], text: colors.error[600] },
 }
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  access: { bg: '$blue2', text: '$blue11' },
-  deletion: { bg: '$red2', text: '$red11' },
-  correction: { bg: '$purple2', text: '$purple11' },
-  portability: { bg: '$cyan2', text: '$cyan11' },
-  opt_out: { bg: '$green2', text: '$green11' },
-  opt_in: { bg: '$teal2', text: '$teal11' },
+  access: { bg: colors.primary[200], text: colors.primary[600] },
+  deletion: { bg: colors.error[200], text: colors.error[600] },
+  correction: { bg: colors.purple[200], text: colors.purple[600] },
+  portability: { bg: colors.info[200], text: colors.info[600] },
+  opt_out: { bg: colors.success[200], text: colors.success[600] },
+  opt_in: { bg: colors.success[200], text: colors.success[600] },
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -227,11 +228,11 @@ export default function CCPARequestListPage() {
   }, [])
 
   const getSLAColor = useCallback((daysRemaining: number, status: string) => {
-    if (!['pending', 'in_progress'].includes(status)) return '$gray11'
-    if (daysRemaining < 0) return '$red11'
-    if (daysRemaining <= 7) return '$red11'
-    if (daysRemaining <= 14) return '$orange11'
-    return '$green11'
+    if (!['pending', 'in_progress'].includes(status)) return colors.text.light.secondary
+    if (daysRemaining < 0) return colors.error[600]
+    if (daysRemaining <= 7) return colors.error[600]
+    if (daysRemaining <= 14) return colors.warning[600]
+    return colors.success[600]
   }, [])
 
   // Selection handlers
@@ -339,221 +340,217 @@ export default function CCPARequestListPage() {
   // Loading state
   if (isLoading) {
     return (
-      <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
-        <YStack alignItems="center" justifyContent="center" minHeight={400}>
-          <Spinner size="large" />
-          <Text color="$gray11" marginTop="$4">
+      <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+          <Spinner size="lg" />
+          <Text color={colors.text.light.secondary} style={{ marginTop: spacing[16] }}>
             Loading requests...
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
-        <YStack
-          padding="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
+      <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
+        <Stack
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
         >
-          <Text fontWeight="600" color="$red11">
+          <Text weight="semibold" color={colors.error[600]}>
             Error loading requests
           </Text>
-          <Text color="$red10" fontSize="$2" marginTop="$2">
+          <Text color={colors.error[500]} size="xs" style={{ marginTop: spacing[8] }}>
             {error.message || 'Failed to load data. Please try again.'}
           </Text>
           <Button
-            marginTop="$3"
-            size="$3"
-            backgroundColor="$red9"
-            color="white"
-            hoverStyle={{ backgroundColor: '$red10' }}
+            style={{ marginTop: spacing[12] }}
+            size="sm"
+            color="error"
+            variant="filled"
             onPress={() => refetch()}
           >
             Retry
           </Button>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack padding="$6" maxWidth={1400} marginHorizontal="auto">
+    <Stack style={{ padding: spacing[24], maxWidth: 1400, marginHorizontal: 'auto' }}>
       {/* Header */}
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <YStack>
-          <H2 marginBottom="$2">CCPA Requests</H2>
-          <Text color="$gray11">
+      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[24] }}>
+        <Stack>
+          <Heading level={2} style={{ marginBottom: spacing[8] }}>CCPA Requests</Heading>
+          <Text color={colors.text.light.secondary}>
             {totalCount} total request{totalCount !== 1 ? 's' : ''} • {displayRequests.length}{' '}
             showing
           </Text>
-        </YStack>
+        </Stack>
         <Button
-          backgroundColor="$gray3"
-          color="$gray11"
-          hoverStyle={{ backgroundColor: '$gray4' }}
+          variant="outline"
+          color="gray"
           onPress={() => router.push('/admin/ccpa')}
         >
           Back to Dashboard
         </Button>
-      </XStack>
+      </Row>
 
       {/* Filters and Search */}
-      <Card padding="$4" marginBottom="$4">
-        <XStack flexWrap="wrap" gap="$4" alignItems="flex-end">
+      <Card style={{ padding: spacing[16], marginBottom: spacing[16] }}>
+        <Row style={{ flexWrap: 'wrap', gap: spacing[16], alignItems: 'flex-end' }}>
           {/* Search */}
-          <YStack flex={1} minWidth={250}>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Stack style={{ flex: 1, minWidth: 250 }}>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Search
             </Text>
             <Input
               placeholder="Search by email, name, or request ID..."
               value={searchQuery}
               onChangeText={setSearchQuery}
-              size="$3"
+              size="sm"
             />
-          </YStack>
+          </Stack>
 
           {/* Status Filter */}
-          <YStack>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Stack>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Status
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               {['all', 'pending', 'in_progress', 'completed', 'denied'].map((status) => (
                 <Button
                   key={status}
                   onPress={() => handleFilterChange('status', status)}
-                  size="$2"
-                  backgroundColor={statusFilter === status ? '$blue9' : '$gray3'}
-                  color={statusFilter === status ? 'white' : '$gray11'}
-                  hoverStyle={{ backgroundColor: statusFilter === status ? '$blue10' : '$gray4' }}
+                  size="xs"
+                  color={statusFilter === status ? 'primary' : 'gray'}
+                  variant={statusFilter === status ? 'filled' : 'outline'}
                 >
                   {status === 'in_progress'
                     ? 'Processing'
                     : status.charAt(0).toUpperCase() + status.slice(1)}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {/* Type Filter */}
-          <YStack>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Stack>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Type
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               {['all', 'access', 'deletion', 'correction'].map((type) => (
                 <Button
                   key={type}
                   onPress={() => handleFilterChange('type', type)}
-                  size="$2"
-                  backgroundColor={typeFilter === type ? '$blue9' : '$gray3'}
-                  color={typeFilter === type ? 'white' : '$gray11'}
-                  hoverStyle={{ backgroundColor: typeFilter === type ? '$blue10' : '$gray4' }}
+                  size="xs"
+                  color={typeFilter === type ? 'primary' : 'gray'}
+                  variant={typeFilter === type ? 'filled' : 'outline'}
                 >
                   {type === 'all'
                     ? 'All'
                     : (TYPE_LABELS[type] ?? type.charAt(0).toUpperCase() + type.slice(1))}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {/* Priority Filter */}
-          <YStack>
-            <Text fontSize="$2" color="$gray11" marginBottom="$1">
+          <Stack>
+            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
               Priority
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               {['all', 'urgent', 'high'].map((priority) => (
                 <Button
                   key={priority}
                   onPress={() => handleFilterChange('priority', priority)}
-                  size="$2"
-                  backgroundColor={priorityFilter === priority ? '$blue9' : '$gray3'}
-                  color={priorityFilter === priority ? 'white' : '$gray11'}
-                  hoverStyle={{
-                    backgroundColor: priorityFilter === priority ? '$blue10' : '$gray4',
-                  }}
+                  size="xs"
+                  color={priorityFilter === priority ? 'primary' : 'gray'}
+                  variant={priorityFilter === priority ? 'filled' : 'outline'}
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
-        </XStack>
+            </Row>
+          </Stack>
+        </Row>
       </Card>
 
       {/* Bulk Operation Result Notification */}
       {bulkOperationResult && (
         <Card
-          padding="$3"
-          marginBottom="$4"
-          backgroundColor={bulkOperationResult.success ? '$green2' : '$red2'}
-          borderWidth={1}
-          borderColor={bulkOperationResult.success ? '$green6' : '$red6'}
+          style={{
+            padding: spacing[12],
+            marginBottom: spacing[16],
+            backgroundColor: bulkOperationResult.success ? colors.success[200] : colors.error[200],
+            borderWidth: 1,
+            borderColor: bulkOperationResult.success ? colors.success[400] : colors.error[400],
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <Text color={bulkOperationResult.success ? '$green11' : '$red11'} fontWeight="500">
+          <Row alignItems="center" justifyContent="space-between">
+            <Text color={bulkOperationResult.success ? colors.success[600] : colors.error[600]} weight="medium">
               {bulkOperationResult.message}
             </Text>
             <Button
-              size="$2"
-              backgroundColor="transparent"
-              color={bulkOperationResult.success ? '$green11' : '$red11'}
-              hoverStyle={{ backgroundColor: bulkOperationResult.success ? '$green3' : '$red3' }}
+              size="xs"
+              variant="text"
+              color={bulkOperationResult.success ? 'success' : 'error'}
               onPress={dismissResultNotification}
             >
               Dismiss
             </Button>
-          </XStack>
+          </Row>
         </Card>
       )}
 
       {/* Bulk Actions Bar */}
       {selectedIds.size > 0 && (
         <Card
-          padding="$3"
-          marginBottom="$4"
-          backgroundColor="$blue2"
-          borderWidth={1}
-          borderColor="$blue6"
+          style={{
+            padding: spacing[12],
+            marginBottom: spacing[16],
+            backgroundColor: colors.info[200],
+            borderWidth: 1,
+            borderColor: colors.info[400],
+          }}
         >
-          <XStack alignItems="center" justifyContent="space-between">
-            <Text color="$blue11" fontWeight="500">
+          <Row alignItems="center" justifyContent="space-between">
+            <Text color={colors.info[600]} weight="medium">
               {selectedIds.size} request{selectedIds.size !== 1 ? 's' : ''} selected
             </Text>
-            <XStack gap="$2">
+            <Row gap={spacing[8]}>
               <Button
-                size="$2"
-                backgroundColor="$blue9"
-                color="white"
-                hoverStyle={{ backgroundColor: '$blue10' }}
+                size="xs"
+                color="primary"
+                variant="filled"
                 onPress={() => setShowAssignModal(true)}
               >
                 Assign All
               </Button>
               <Button
-                size="$2"
-                backgroundColor="$purple9"
-                color="white"
-                hoverStyle={{ backgroundColor: '$purple10' }}
+                size="xs"
+                color="gray"
+                variant="filled"
                 onPress={() => setShowStatusModal(true)}
               >
                 Change Status
               </Button>
               <Button
-                size="$2"
-                backgroundColor="$green9"
-                color="white"
-                hoverStyle={{ backgroundColor: '$green10' }}
+                size="xs"
+                color="success"
+                variant="filled"
                 disabled={bulkUpdateStatus.isPending}
+                loading={bulkUpdateStatus.isPending}
                 onPress={() => {
                   // Quick action: Start processing all selected pending requests
                   const pendingIds = Array.from(selectedIds).filter((id) => {
@@ -572,394 +569,355 @@ export default function CCPARequestListPage() {
                 {bulkUpdateStatus.isPending ? 'Processing...' : 'Start Processing'}
               </Button>
               <Button
-                size="$2"
-                backgroundColor="$gray3"
-                color="$gray11"
-                hoverStyle={{ backgroundColor: '$gray4' }}
+                size="xs"
+                variant="outline"
+                color="gray"
                 onPress={clearSelection}
               >
                 Clear Selection
               </Button>
-            </XStack>
-          </XStack>
+            </Row>
+          </Row>
         </Card>
       )}
 
       {/* Assign Modal */}
-      <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
-        <Dialog.Portal>
-          <Dialog.Overlay
-            key="overlay"
-            animation="quick"
-            opacity={0.5}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-          <Dialog.Content
-            bordered
-            elevate
-            key="content"
-            animation={['quick', { opacity: { overshootClamping: true } }]}
-            enterStyle={{ opacity: 0, scale: 0.9, y: -20 }}
-            exitStyle={{ opacity: 0, scale: 0.95, y: 10 }}
-            gap="$4"
-            padding="$6"
-            maxWidth={500}
-          >
-            <Dialog.Title>
-              <H3>
-                Assign {selectedIds.size} Request{selectedIds.size !== 1 ? 's' : ''}
-              </H3>
-            </Dialog.Title>
+      <Modal open={showAssignModal} onOpenChange={setShowAssignModal}>
+        <Modal.Header>
+          <Heading level={3}>
+            Assign {selectedIds.size} Request{selectedIds.size !== 1 ? 's' : ''}
+          </Heading>
+        </Modal.Header>
+        <Modal.Content>
+          <Stack gap={spacing[16]}>
+            <Select
+              label="Select Team Member"
+              value={selectedAssignee}
+              onValueChange={setSelectedAssignee}
+              placeholder="Choose assignee..."
+              options={(teamMembers ?? []).map((member) => ({
+                value: member.id,
+                label: `${member.name} (${member.email})`,
+              }))}
+            />
 
-            <YStack gap="$4">
-              <ResponsiveSelect
-                label="Select Team Member"
-                value={selectedAssignee}
-                onValueChange={setSelectedAssignee}
-                placeholder="Choose assignee..."
-                options={(teamMembers ?? []).map((member) => ({
-                  value: member.id,
-                  label: `${member.name} (${member.email})`,
-                }))}
+            <Stack gap={spacing[8]}>
+              <Text size="xs" color={colors.text.light.secondary}>
+                Notes (optional)
+              </Text>
+              <Input
+                placeholder="Add notes for the assignment..."
+                value={bulkOperationNotes}
+                onChangeText={setBulkOperationNotes}
+                size="sm"
               />
-
-              <YStack gap="$2">
-                <Text fontSize="$2" color="$gray11">
-                  Notes (optional)
-                </Text>
-                <Input
-                  placeholder="Add notes for the assignment..."
-                  value={bulkOperationNotes}
-                  onChangeText={setBulkOperationNotes}
-                  size="$3"
-                />
-              </YStack>
-            </YStack>
-
-            <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
-              <Button
-                backgroundColor="$gray3"
-                color="$gray11"
-                hoverStyle={{ backgroundColor: '$gray4' }}
-                onPress={() => {
-                  setShowAssignModal(false)
-                  setSelectedAssignee('')
-                  setBulkOperationNotes('')
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                backgroundColor="$blue9"
-                color="white"
-                hoverStyle={{ backgroundColor: '$blue10' }}
-                disabled={!selectedAssignee || bulkAssign.isPending}
-                onPress={handleBulkAssign}
-              >
-                {bulkAssign.isPending ? 'Assigning...' : 'Assign Requests'}
-              </Button>
-            </XStack>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog>
+            </Stack>
+          </Stack>
+        </Modal.Content>
+        <Modal.Footer>
+          <Row gap={spacing[12]} justifyContent="flex-end">
+            <Button
+              variant="outline"
+              color="gray"
+              onPress={() => {
+                setShowAssignModal(false)
+                setSelectedAssignee('')
+                setBulkOperationNotes('')
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              variant="filled"
+              disabled={!selectedAssignee || bulkAssign.isPending}
+              loading={bulkAssign.isPending}
+              onPress={handleBulkAssign}
+            >
+              {bulkAssign.isPending ? 'Assigning...' : 'Assign Requests'}
+            </Button>
+          </Row>
+        </Modal.Footer>
+      </Modal>
 
       {/* Status Change Modal */}
-      <Dialog open={showStatusModal} onOpenChange={setShowStatusModal}>
-        <Dialog.Portal>
-          <Dialog.Overlay
-            key="overlay"
-            animation="quick"
-            opacity={0.5}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-          <Dialog.Content
-            bordered
-            elevate
-            key="content"
-            animation={['quick', { opacity: { overshootClamping: true } }]}
-            enterStyle={{ opacity: 0, scale: 0.9, y: -20 }}
-            exitStyle={{ opacity: 0, scale: 0.95, y: 10 }}
-            gap="$4"
-            padding="$6"
-            maxWidth={500}
-          >
-            <Dialog.Title>
-              <H3>
-                Change Status for {selectedIds.size} Request{selectedIds.size !== 1 ? 's' : ''}
-              </H3>
-            </Dialog.Title>
+      <Modal open={showStatusModal} onOpenChange={setShowStatusModal}>
+        <Modal.Header>
+          <Heading level={3}>
+            Change Status for {selectedIds.size} Request{selectedIds.size !== 1 ? 's' : ''}
+          </Heading>
+        </Modal.Header>
+        <Modal.Content>
+          <Stack gap={spacing[16]}>
+            <Stack gap={spacing[8]}>
+              <Text size="xs" color={colors.text.light.secondary}>
+                New Status
+              </Text>
+              <Row gap={spacing[8]} style={{ flexWrap: 'wrap' }}>
+                {BULK_STATUS_OPTIONS.map((option) => (
+                  <Button
+                    key={option.value}
+                    size="sm"
+                    color={selectedBulkStatus === option.value ? 'primary' : 'gray'}
+                    variant={selectedBulkStatus === option.value ? 'filled' : 'outline'}
+                    onPress={() => setSelectedBulkStatus(option.value)}
+                  >
+                    {option.label}
+                  </Button>
+                ))}
+              </Row>
+            </Stack>
 
-            <YStack gap="$4">
-              <YStack gap="$2">
-                <Text fontSize="$2" color="$gray11">
-                  New Status
-                </Text>
-                <XStack gap="$2" flexWrap="wrap">
-                  {BULK_STATUS_OPTIONS.map((option) => (
-                    <Button
-                      key={option.value}
-                      size="$3"
-                      backgroundColor={selectedBulkStatus === option.value ? '$blue9' : '$gray3'}
-                      color={selectedBulkStatus === option.value ? 'white' : '$gray11'}
-                      hoverStyle={{
-                        backgroundColor: selectedBulkStatus === option.value ? '$blue10' : '$gray4',
-                      }}
-                      onPress={() => setSelectedBulkStatus(option.value)}
-                    >
-                      {option.label}
-                    </Button>
-                  ))}
-                </XStack>
-              </YStack>
+            <Stack gap={spacing[8]}>
+              <Text size="xs" color={colors.text.light.secondary}>
+                Notes (optional)
+              </Text>
+              <Input
+                placeholder="Add notes for the status change..."
+                value={bulkOperationNotes}
+                onChangeText={setBulkOperationNotes}
+                size="sm"
+              />
+            </Stack>
 
-              <YStack gap="$2">
-                <Text fontSize="$2" color="$gray11">
-                  Notes (optional)
-                </Text>
-                <Input
-                  placeholder="Add notes for the status change..."
-                  value={bulkOperationNotes}
-                  onChangeText={setBulkOperationNotes}
-                  size="$3"
-                />
-              </YStack>
-
-              <Card padding="$3" backgroundColor="$orange2" borderWidth={1} borderColor="$orange6">
-                <Text fontSize="$2" color="$orange11">
-                  Note: Status changes follow workflow rules. Invalid transitions (e.g., completed →
-                  pending) will be skipped and reported in the results.
-                </Text>
-              </Card>
-            </YStack>
-
-            <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
-              <Button
-                backgroundColor="$gray3"
-                color="$gray11"
-                hoverStyle={{ backgroundColor: '$gray4' }}
-                onPress={() => {
-                  setShowStatusModal(false)
-                  setSelectedBulkStatus('')
-                  setBulkOperationNotes('')
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                backgroundColor="$blue9"
-                color="white"
-                hoverStyle={{ backgroundColor: '$blue10' }}
-                disabled={!selectedBulkStatus || bulkUpdateStatus.isPending}
-                onPress={handleBulkStatusChange}
-              >
-                {bulkUpdateStatus.isPending ? 'Updating...' : 'Update Status'}
-              </Button>
-            </XStack>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog>
+            <Card style={{ padding: spacing[12], backgroundColor: colors.warning[200], borderWidth: 1, borderColor: colors.warning[400] }}>
+              <Text size="xs" color={colors.warning[600]}>
+                Note: Status changes follow workflow rules. Invalid transitions (e.g., completed →
+                pending) will be skipped and reported in the results.
+              </Text>
+            </Card>
+          </Stack>
+        </Modal.Content>
+        <Modal.Footer>
+          <Row gap={spacing[12]} justifyContent="flex-end">
+            <Button
+              variant="outline"
+              color="gray"
+              onPress={() => {
+                setShowStatusModal(false)
+                setSelectedBulkStatus('')
+                setBulkOperationNotes('')
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              variant="filled"
+              disabled={!selectedBulkStatus || bulkUpdateStatus.isPending}
+              loading={bulkUpdateStatus.isPending}
+              onPress={handleBulkStatusChange}
+            >
+              {bulkUpdateStatus.isPending ? 'Updating...' : 'Update Status'}
+            </Button>
+          </Row>
+        </Modal.Footer>
+      </Modal>
 
       {/* Requests Table */}
-      <Card overflow="hidden">
-        <YStack>
+      <Card style={{ overflow: 'hidden' }}>
+        <Stack>
           {/* Table Header */}
-          <XStack backgroundColor="$gray2" paddingHorizontal="$4" paddingVertical="$3">
-            <XStack width={40} alignItems="center">
+          <Row style={{ backgroundColor: colors.gray[100], paddingHorizontal: spacing[16], paddingVertical: spacing[12] }}>
+            <Row style={{ width: 40, alignItems: 'center' }}>
               <Checkbox
                 checked={selectedIds.size === displayRequests.length && displayRequests.length > 0}
                 onCheckedChange={toggleSelectAll}
               />
-            </XStack>
-            <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">
+            </Row>
+            <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               User
             </Text>
-            <Text width={100} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 100 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Type
             </Text>
-            <Text width={100} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 100 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Status
             </Text>
-            <Text width={80} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 80 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Priority
             </Text>
-            <Text width={120} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 120 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               SLA Clock
             </Text>
-            <Text width={100} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 100 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Submitted
             </Text>
-            <Text width={150} fontSize="$2" fontWeight="500" color="$gray11">
+            <Text style={{ width: 150 }} size="xs" weight="medium" color={colors.text.light.secondary}>
               Actions
             </Text>
-          </XStack>
+          </Row>
 
           {/* Table Body */}
           {displayRequests.length === 0 ? (
-            <YStack padding="$8" alignItems="center">
-              <Text fontSize="$6" color="$gray8" marginBottom="$2">
+            <Stack style={{ padding: spacing[32], alignItems: 'center' }}>
+              <Text style={{ fontSize: 24 }} color={colors.gray[300]} style={{ marginBottom: spacing[8] }}>
                 No requests found
               </Text>
-              <Text color="$gray11" textAlign="center">
+              <Text color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
                 {searchQuery
                   ? 'Try adjusting your search or filters'
                   : 'No CCPA requests match your current filters'}
               </Text>
-            </YStack>
+            </Stack>
           ) : (
-            <YStack>
+            <Stack>
               {displayRequests.map((req) => (
-                <XStack
+                <Row
                   key={req.id}
-                  backgroundColor={
-                    req.is_overdue ? '$red2' : selectedIds.has(req.id) ? '$blue2' : 'transparent'
-                  }
-                  paddingHorizontal="$4"
-                  paddingVertical="$3"
-                  borderBottomWidth={1}
-                  borderColor="$borderColor"
-                  hoverStyle={{ backgroundColor: selectedIds.has(req.id) ? '$blue3' : '$gray2' }}
+                  style={{
+                    backgroundColor:
+                      req.is_overdue ? colors.error[200] : selectedIds.has(req.id) ? colors.primary[200] : 'transparent',
+                    paddingHorizontal: spacing[16],
+                    paddingVertical: spacing[12],
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border.light.default,
+                  }}
                 >
                   {/* Checkbox */}
-                  <XStack width={40} alignItems="center">
+                  <Row style={{ width: 40, alignItems: 'center' }}>
                     <Checkbox
                       checked={selectedIds.has(req.id)}
                       onCheckedChange={() => toggleSelection(req.id)}
                     />
-                  </XStack>
+                  </Row>
 
                   {/* User */}
-                  <YStack flex={1}>
-                    <Text fontWeight="500" color="$gray12">
+                  <Stack style={{ flex: 1 }}>
+                    <Text weight="medium" color={colors.text.light.primary}>
                       {req.user_name}
                     </Text>
-                    <Text fontSize="$2" color="$gray11">
+                    <Text size="xs" color={colors.text.light.secondary}>
                       {req.user_email}
                     </Text>
-                  </YStack>
+                  </Stack>
 
                   {/* Type */}
-                  <XStack width={100} alignItems="center">
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={TYPE_COLORS[req.type]?.bg ?? '$gray2'}
+                  <Row style={{ width: 100, alignItems: 'center' }}>
+                    <Row
+                      style={{
+                        paddingHorizontal: spacing[8],
+                        paddingVertical: spacing[4],
+                        borderRadius: 8,
+                        backgroundColor: TYPE_COLORS[req.type]?.bg ?? colors.gray[100],
+                      }}
                     >
-                      <Text fontSize="$2" color={TYPE_COLORS[req.type]?.text ?? '$gray11'}>
+                      <Text size="xs" color={TYPE_COLORS[req.type]?.text ?? colors.text.light.secondary}>
                         {TYPE_LABELS[req.type] ?? req.type}
                       </Text>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {/* Status */}
-                  <XStack width={100} alignItems="center">
-                    <YStack gap="$1">
-                      <XStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
-                        backgroundColor={STATUS_COLORS[req.status]?.bg ?? '$gray2'}
+                  <Row style={{ width: 100, alignItems: 'center' }}>
+                    <Stack gap={spacing[4]}>
+                      <Row
+                        style={{
+                          paddingHorizontal: spacing[8],
+                          paddingVertical: spacing[4],
+                          borderRadius: 8,
+                          backgroundColor: STATUS_COLORS[req.status]?.bg ?? colors.gray[100],
+                        }}
                       >
-                        <Text fontSize="$2" color={STATUS_COLORS[req.status]?.text ?? '$gray11'}>
+                        <Text size="xs" color={STATUS_COLORS[req.status]?.text ?? colors.text.light.secondary}>
                           {req.status === 'in_progress' ? 'processing' : req.status}
                         </Text>
-                      </XStack>
+                      </Row>
                       {req.is_overdue && (
-                        <XStack
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          backgroundColor="$red9"
-                          borderRadius="$2"
+                        <Row
+                          style={{
+                            paddingHorizontal: spacing[8],
+                            paddingVertical: spacing[4],
+                            backgroundColor: colors.error[500],
+                            borderRadius: 8,
+                          }}
                         >
-                          <Text fontSize="$1" color="white">
+                          <Text size="xs" color="white">
                             OVERDUE
                           </Text>
-                        </XStack>
+                        </Row>
                       )}
-                    </YStack>
-                  </XStack>
+                    </Stack>
+                  </Row>
 
                   {/* Priority */}
-                  <XStack width={80} alignItems="center">
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={PRIORITY_COLORS[req.priority]?.bg ?? '$gray2'}
+                  <Row style={{ width: 80, alignItems: 'center' }}>
+                    <Row
+                      style={{
+                        paddingHorizontal: spacing[8],
+                        paddingVertical: spacing[4],
+                        borderRadius: 8,
+                        backgroundColor: PRIORITY_COLORS[req.priority]?.bg ?? colors.gray[100],
+                      }}
                     >
-                      <Text fontSize="$2" color={PRIORITY_COLORS[req.priority]?.text ?? '$gray11'}>
+                      <Text size="xs" color={PRIORITY_COLORS[req.priority]?.text ?? colors.text.light.secondary}>
                         {req.priority}
                       </Text>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {/* SLA Clock */}
-                  <XStack width={120} alignItems="center">
+                  <Row style={{ width: 120, alignItems: 'center' }}>
                     <Text
-                      fontSize="$2"
-                      fontWeight="500"
+                      size="xs"
+                      weight="medium"
                       color={getSLAColor(req.days_remaining, req.status)}
                     >
                       {['pending', 'in_progress'].includes(req.status)
                         ? formatSLAClock(req.days_remaining, req.is_overdue)
                         : '-'}
                     </Text>
-                  </XStack>
+                  </Row>
 
                   {/* Submitted */}
-                  <XStack width={100} alignItems="center">
-                    <Text fontSize="$2" color="$gray11">
+                  <Row style={{ width: 100, alignItems: 'center' }}>
+                    <Text size="xs" color={colors.text.light.secondary}>
                       {formatDate(req.created_at)}
                     </Text>
-                  </XStack>
+                  </Row>
 
                   {/* Actions */}
-                  <XStack width={150} gap="$2" alignItems="center">
+                  <Row style={{ width: 150, gap: spacing[8], alignItems: 'center' }}>
                     <Button
-                      size="$2"
-                      backgroundColor="transparent"
-                      color="$blue11"
-                      hoverStyle={{ backgroundColor: '$blue3' }}
+                      size="xs"
+                      variant="text"
+                      color="primary"
                       onPress={() => handleViewRequest(req.id)}
                     >
                       View
                     </Button>
                     {req.status === 'pending' && (
                       <Button
-                        size="$2"
-                        backgroundColor="transparent"
-                        color="$green11"
-                        hoverStyle={{ backgroundColor: '$green3' }}
+                        size="xs"
+                        variant="text"
+                        color="success"
                         onPress={() => handleProcessRequest(req.id)}
                         disabled={approveRequest.isPending}
                       >
                         Process
                       </Button>
                     )}
-                  </XStack>
-                </XStack>
+                  </Row>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <XStack marginTop="$4" alignItems="center" justifyContent="space-between">
-          <XStack gap="$2" alignItems="center">
-            <Text fontSize="$2" color="$gray11">
+        <Row style={{ marginTop: spacing[16], alignItems: 'center', justifyContent: 'space-between' }}>
+          <Row gap={spacing[8]} alignItems="center">
+            <Text size="xs" color={colors.text.light.secondary}>
               Rows per page:
             </Text>
             {PAGE_SIZES.map((size) => (
               <Button
                 key={size}
-                size="$2"
-                backgroundColor={pageSize === size ? '$blue9' : '$gray3'}
-                color={pageSize === size ? 'white' : '$gray11'}
-                hoverStyle={{ backgroundColor: pageSize === size ? '$blue10' : '$gray4' }}
+                size="xs"
+                color={pageSize === size ? 'primary' : 'gray'}
+                variant={pageSize === size ? 'filled' : 'outline'}
                 onPress={() => {
                   setPageSize(size)
                   setCurrentPage(0)
@@ -968,35 +926,33 @@ export default function CCPARequestListPage() {
                 {size}
               </Button>
             ))}
-          </XStack>
+          </Row>
 
-          <XStack gap="$2" alignItems="center">
-            <Text fontSize="$2" color="$gray11">
+          <Row gap={spacing[8]} alignItems="center">
+            <Text size="xs" color={colors.text.light.secondary}>
               Page {currentPage + 1} of {totalPages}
             </Text>
             <Button
-              size="$2"
-              backgroundColor="$gray3"
-              color="$gray11"
-              hoverStyle={{ backgroundColor: '$gray4' }}
+              size="xs"
+              variant="outline"
+              color="gray"
               disabled={currentPage === 0}
               onPress={() => setCurrentPage((p) => p - 1)}
             >
               Previous
             </Button>
             <Button
-              size="$2"
-              backgroundColor="$gray3"
-              color="$gray11"
-              hoverStyle={{ backgroundColor: '$gray4' }}
+              size="xs"
+              variant="outline"
+              color="gray"
               disabled={currentPage >= totalPages - 1}
               onPress={() => setCurrentPage((p) => p + 1)}
             >
               Next
             </Button>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 }

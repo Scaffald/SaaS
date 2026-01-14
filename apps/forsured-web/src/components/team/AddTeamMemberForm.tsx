@@ -12,9 +12,9 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
-import { YStack, XStack, Text, Input, Button, SizableText, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Text, Input, Button } from '@unicornlove/beyond-ui';
 import { AccessLevelSelector, type AccessLevel } from './AccessLevelSelector';
 
 interface AddTeamMemberFormProps {
@@ -132,126 +132,125 @@ export function AddTeamMemberForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <YStack gap="$4">
-      {/* General Error */}
-      {errors.general && (
-        <YStack
-          padding="$3"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
-        >
-          <SizableText fontSize="$3" color="$red11">
-            {errors.general}
-          </SizableText>
-        </YStack>
-      )}
-
-      {/* Name Field */}
-      <YStack gap="$1">
-        <label htmlFor="member-name">
-          <SizableText fontSize="$3" fontWeight="500" color="$color11">
-            Full Name <Text color="$red10">*</Text>
-          </SizableText>
-        </label>
-        <Input
-          id="member-name"
-          type="text"
-          value={name}
-          onChange={handleNameChange}
-          onBlur={handleNameBlur}
-          placeholder="Enter full name"
-          width="100%"
-          padding="$2"
-          borderWidth={1}
-          borderColor={errors.name && touched.name ? '$red6' : '$borderColor'}
-          backgroundColor={errors.name && touched.name ? '$red2' : '$background'}
-          borderRadius="$4"
-          disabled={loading}
-          aria-invalid={!!(errors.name && touched.name)}
-          aria-describedby={errors.name ? 'name-error' : undefined}
-        />
-        {errors.name && touched.name && (
-          <SizableText id="name-error" fontSize="$1" color="$red10">
-            {errors.name}
-          </SizableText>
+      <Stack style={{ gap: 16 }}>
+        {/* General Error */}
+        {errors.general && (
+          <div
+            style={{
+              padding: 12,
+              backgroundColor: 'var(--color-red-2)',
+              border: '1px solid var(--color-red-6)',
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ fontSize: 14, color: 'var(--color-red-11)' }}>
+              {errors.general}
+            </Text>
+          </div>
         )}
-      </YStack>
 
-      {/* Email Field */}
-      <YStack gap="$1">
-        <label htmlFor="member-email">
-          <SizableText fontSize="$3" fontWeight="500" color="$color11">
-            Email Address <Text color="$red10">*</Text>
-          </SizableText>
-        </label>
-        <Input
-          id="member-email"
-          type="email"
-          value={email}
-          onChange={handleEmailChange}
-          onBlur={handleEmailBlur}
-          placeholder="Enter email address"
-          width="100%"
-          padding="$2"
-          borderWidth={1}
-          borderColor={errors.email && touched.email ? '$red6' : '$borderColor'}
-          backgroundColor={errors.email && touched.email ? '$red2' : '$background'}
-          borderRadius="$4"
-          disabled={loading}
-          aria-invalid={!!(errors.email && touched.email)}
-          aria-describedby={errors.email ? 'email-error' : undefined}
-        />
-        {errors.email && touched.email && (
-          <SizableText id="email-error" fontSize="$1" color="$red10">
-            {errors.email}
-          </SizableText>
-        )}
-      </YStack>
-
-      {/* Access Level Field */}
-      <AccessLevelSelector value={role} onChange={setRole} disabled={loading} />
-
-      {/* Action Buttons */}
-      <XStack gap="$3" paddingTop="$4">
-        <Button
-          type="submit"
-          disabled={loading}
-          flex={1}
-          backgroundColor="$blue10"
-          color="white"
-          size="$3"
-          opacity={loading ? 0.5 : 1}
-        >
-          {loading ? (
-            <XStack alignItems="center" justifyContent="center" gap="$2">
-              <Spinner size="small" color="white" />
-              <SizableText fontSize="$3" color="white">
-                Sending Invitation...
-              </SizableText>
-            </XStack>
-          ) : (
-            'Send Invitation'
+        {/* Name Field */}
+        <Stack style={{ gap: 4 }}>
+          <label htmlFor="member-name">
+            <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-11)' }}>
+              Full Name <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
+            </Text>
+          </label>
+          <Input
+            id="member-name"
+            type="text"
+            value={name}
+            onChange={handleNameChange}
+            onBlur={handleNameBlur}
+            placeholder="Enter full name"
+            disabled={loading}
+            aria-invalid={!!(errors.name && touched.name)}
+            aria-describedby={errors.name ? 'name-error' : undefined}
+            style={{
+              width: '100%',
+              borderColor: errors.name && touched.name ? 'var(--color-red-6)' : undefined,
+              backgroundColor: errors.name && touched.name ? 'var(--color-red-2)' : undefined,
+            }}
+          />
+          {errors.name && touched.name && (
+            <Text id="name-error" style={{ fontSize: 12, color: 'var(--color-red-10)' }}>
+              {errors.name}
+            </Text>
           )}
-        </Button>
-        <Button
-          type="button"
-          onPress={onCancel}
-          disabled={loading}
-          variant="outlined"
-          size="$3"
-          opacity={loading ? 0.5 : 1}
-        >
-          Cancel
-        </Button>
-      </XStack>
+        </Stack>
 
-      {/* Help Text */}
-      <SizableText fontSize="$1" color="$color10" style={{ textAlign: 'center' }}>
-        An invitation email will be sent to the provided email address.
-      </SizableText>
-      </YStack>
+        {/* Email Field */}
+        <Stack style={{ gap: 4 }}>
+          <label htmlFor="member-email">
+            <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-11)' }}>
+              Email Address <Text style={{ color: 'var(--color-red-10)' }}>*</Text>
+            </Text>
+          </label>
+          <Input
+            id="member-email"
+            type="email"
+            value={email}
+            onChange={handleEmailChange}
+            onBlur={handleEmailBlur}
+            placeholder="Enter email address"
+            disabled={loading}
+            aria-invalid={!!(errors.email && touched.email)}
+            aria-describedby={errors.email ? 'email-error' : undefined}
+            style={{
+              width: '100%',
+              borderColor: errors.email && touched.email ? 'var(--color-red-6)' : undefined,
+              backgroundColor: errors.email && touched.email ? 'var(--color-red-2)' : undefined,
+            }}
+          />
+          {errors.email && touched.email && (
+            <Text id="email-error" style={{ fontSize: 12, color: 'var(--color-red-10)' }}>
+              {errors.email}
+            </Text>
+          )}
+        </Stack>
+
+        {/* Access Level Field */}
+        <AccessLevelSelector value={role} onChange={setRole} disabled={loading} />
+
+        {/* Action Buttons */}
+        <Row style={{ gap: 12, paddingTop: 16 }}>
+          <Button
+            type="submit"
+            disabled={loading}
+            style={{
+              flex: 1,
+              backgroundColor: 'var(--color-blue-10)',
+              color: 'white',
+              opacity: loading ? 0.5 : 1,
+            }}
+          >
+            {loading ? (
+              <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <Loader2 size={16} className="animate-spin" />
+                <Text style={{ fontSize: 14, color: 'white' }}>
+                  Sending Invitation...
+                </Text>
+              </Row>
+            ) : (
+              'Send Invitation'
+            )}
+          </Button>
+          <Button
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
+            variant="outline"
+            style={{ opacity: loading ? 0.5 : 1 }}
+          >
+            Cancel
+          </Button>
+        </Row>
+
+        {/* Help Text */}
+        <Text style={{ fontSize: 12, color: 'var(--color-gray-10)', textAlign: 'center' }}>
+          An invitation email will be sent to the provided email address.
+        </Text>
+      </Stack>
     </form>
   );
 }

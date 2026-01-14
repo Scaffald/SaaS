@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { YStack, XStack, View, Text, H2, H3, Spinner } from '@unicornlove/ui';
+import { Stack, Row, Box, Text, H2, H3, Spinner, Alert } from '@unicornlove/beyond-ui';
 import ComponentShowcase from '../../../components/DesignSystem/ComponentShowcase';
 import Button from '../../../components/Common/Button';
 import Badge from '../../../components/Common/Badge';
@@ -14,18 +14,17 @@ import IconButton from '../../../components/Common/IconButton';
 import Checkbox from '../../../ui/Checkbox';
 import Radio from '../../../ui/Radio';
 import Switch from '../../../ui/Switch';
-import { Alert } from '@unicornlove/ui';
 import Tooltip from '../../../ui/Tooltip';
 import Progress, { CircularProgress } from '../../../ui/Progress';
 import Avatar, { AvatarGroup } from '../../../ui/Avatar';
-import { TabsCustom as Tabs } from '@unicornlove/ui';
+import Tabs from '../../../ui/Tabs';
 import Accordion from '../../../ui/Accordion';
 import Divider from '../../../ui/Divider';
-import { EmptyState } from '@unicornlove/ui';
+import { EmptyState } from '../../../ui/EmptyState';
 import Breadcrumbs from '../../../ui/Breadcrumbs';
 import Pagination from '../../../ui/Pagination';
 import {
-  Box,
+  Box as BoxIcon,
   Play,
   Star,
   Settings,
@@ -40,15 +39,15 @@ export default function ComponentsSection() {
   const [currentPage, setCurrentPage] = useState(1);
 
   return (
-    <YStack gap="$8" marginBottom="$12">
-      <XStack alignItems="center" gap="$3" marginBottom="$6">
-        <Box color="var(--blue10)" size={32} />
-        <H2 fontSize="$9" fontWeight="bold" color="$color12">
+    <Stack style={{ gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
+      <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
+        <BoxIcon color="var(--color-blue-10)" size={32} />
+        <H2 style={{ fontSize: 'var(--font-size-9)', fontWeight: 'bold', color: 'var(--color-12)' }}>
           Components
         </H2>
-      </XStack>
+      </Row>
 
-      <View id="buttons">
+      <Box id="buttons">
         <ComponentShowcase
           title="Buttons"
           description="Buttons with multiple variants, sizes, and states"
@@ -62,22 +61,22 @@ export default function ComponentsSection() {
           <Button size="$2">Small</Button>
           <Button size="$4">Large</Button>
           <Button leftIcon={Play}>With Icon</Button>
-          <Button disabled><Spinner size="small" color="$color11" /> Loading</Button>
+          <Button disabled><Spinner size="small" color="var(--color-11)" /> Loading</Button>
           <Button disabled>Disabled</Button>
         </ComponentShowcase>
-      </View>
+      </Box>
 
-      <View id="forms">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+      <Box id="forms">
+        <H3 style={{ fontSize: 'var(--font-size-8)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>
           Form Controls
         </H3>
 
-        <YStack gap="$6">
+        <Stack style={{ gap: 'var(--space-6)' }}>
           <ComponentShowcase
             title="Input Fields"
             description="Text inputs with labels, errors, and helper text"
           >
-            <YStack width="100%" maxWidth={448} gap="$4">
+            <Stack style={{ width: '100%', maxWidth: 448, gap: 'var(--space-4)' }}>
               <Input
                 label="Email"
                 type="email"
@@ -94,14 +93,14 @@ export default function ComponentsSection() {
                 helperText="Optional helper text"
               />
               <Input label="Required Field" required placeholder="Required" />
-            </YStack>
+            </Stack>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Select Dropdowns"
             description="Dropdown select with options"
           >
-            <View width="100%" maxWidth={448}>
+            <Box style={{ width: '100%', maxWidth: 448 }}>
               <Select
                 label="Choose an option"
                 options={[
@@ -111,27 +110,27 @@ export default function ComponentsSection() {
                   { value: 'option3', label: 'Option 3' },
                 ]}
               />
-            </View>
+            </Box>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Textarea"
             description="Multi-line text input"
           >
-            <View width="100%" maxWidth={448}>
+            <Box style={{ width: '100%', maxWidth: 448 }}>
               <Textarea
                 label="Description"
                 rows={4}
                 placeholder="Enter a description..."
               />
-            </View>
+            </Box>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Checkboxes"
             description="Single and grouped checkboxes"
           >
-            <YStack width="100%" maxWidth={448} gap="$3">
+            <Stack style={{ width: '100%', maxWidth: 448, gap: 'var(--space-3)' }}>
               <Checkbox label="Default checkbox" />
               <Checkbox label="Checked checkbox" defaultChecked />
               <Checkbox label="Small size" size="sm" />
@@ -140,40 +139,40 @@ export default function ComponentsSection() {
                 label="With helper text"
                 helperText="This is helper text"
               />
-            </YStack>
+            </Stack>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Radio Buttons"
             description="Single-choice radio buttons"
           >
-            <YStack width="100%" maxWidth={448} gap="$3">
+            <Stack style={{ width: '100%', maxWidth: 448, gap: 'var(--space-3)' }}>
               <Radio name="demo" label="Option 1" />
               <Radio name="demo" label="Option 2" defaultChecked />
               <Radio name="demo" label="Option 3" />
-            </YStack>
+            </Stack>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Switches"
             description="Toggle switches for binary choices"
           >
-            <YStack width="100%" maxWidth={448} gap="$3">
+            <Stack style={{ width: '100%', maxWidth: 448, gap: 'var(--space-3)' }}>
               <Switch label="Enable notifications" />
               <Switch label="Auto-save" defaultChecked />
               <Switch label="Small size" size="sm" />
               <Switch label="Large size" size="lg" />
-            </YStack>
+            </Stack>
           </ComponentShowcase>
-        </YStack>
-      </View>
+        </Stack>
+      </Box>
 
-      <View id="display">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+      <Box id="display">
+        <H3 style={{ fontSize: 'var(--font-size-8)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>
           Display Components
         </H3>
 
-        <YStack gap="$6">
+        <Stack style={{ gap: 'var(--space-6)' }}>
           <ComponentShowcase
             title="Badges"
             description="Small status indicators and labels"
@@ -238,22 +237,22 @@ export default function ComponentsSection() {
             description="Container components with shadow and padding options"
           >
             <Card padding="sm" width={192}>
-              <Text fontWeight="600" color="$color12" marginBottom="$1">
+              <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-1)' }}>
                 Small Padding
               </Text>
-              <Text fontSize="$3" color="$color11">Card content</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Card content</Text>
             </Card>
             <Card padding="md" width={192}>
-              <Text fontWeight="600" color="$color12" marginBottom="$1">
+              <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-1)' }}>
                 Medium Padding
               </Text>
-              <Text fontSize="$3" color="$color11">Card content</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Card content</Text>
             </Card>
-            <Card padding="lg" hoverStyle={{ backgroundColor: '$backgroundHover' }} width={192}>
-              <Text fontWeight="600" color="$color12" marginBottom="$1">
+            <Card padding="lg" width={192}>
+              <Text style={{ fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-1)' }}>
                 With Hover
               </Text>
-              <Text fontSize="$3" color="$color11">Hover over me</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>Hover over me</Text>
             </Card>
           </ComponentShowcase>
 
@@ -270,38 +269,38 @@ export default function ComponentsSection() {
             <IconButton icon={Bell} badge badgeContent="3" />
             <IconButton icon={Settings} shape="round" />
           </ComponentShowcase>
-        </YStack>
-      </View>
+        </Stack>
+      </Box>
 
-      <View id="feedback">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+      <Box id="feedback">
+        <H3 style={{ fontSize: 'var(--font-size-8)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>
           Feedback Components
         </H3>
 
-        <YStack gap="$6">
+        <Stack style={{ gap: 'var(--space-6)' }}>
           <ComponentShowcase
             title="Alerts"
             description="Informational messages with variants"
           >
-            <YStack width="100%" gap="$4">
-              <Alert variant="info" title="Information">
+            <Stack style={{ width: '100%', gap: 'var(--space-4)' }}>
+              <Alert type="info" title="Information">
                 This is an informational message.
               </Alert>
               <Alert
-                variant="success"
+                type="success"
                 title="Success"
-                closable
-                onClose={() => {}}
+                dismissible
+                onDismiss={() => {}}
               >
                 Your changes have been saved successfully.
               </Alert>
-              <Alert variant="warning" title="Warning">
+              <Alert type="warning" title="Warning">
                 Please review your information before submitting.
               </Alert>
-              <Alert variant="error" title="Error" closable onClose={() => {}}>
+              <Alert type="error" title="Error" dismissible onDismiss={() => {}}>
                 An error occurred while processing your request.
               </Alert>
-            </YStack>
+            </Stack>
           </ComponentShowcase>
 
           <ComponentShowcase
@@ -315,18 +314,18 @@ export default function ComponentsSection() {
               title="Example Modal"
               size="medium"
             >
-              <Text color="$color11">
+              <Text style={{ color: 'var(--color-11)' }}>
                 This is an example modal dialog. It can contain any content you
                 need.
               </Text>
-              <XStack marginTop="$4" justifyContent="flex-end" gap="$3">
+              <Row style={{ marginTop: 'var(--space-4)', justifyContent: 'flex-end', gap: 'var(--space-3)' }}>
                 <Button variant="ghost" onClick={() => setModalOpen(false)}>
                   Cancel
                 </Button>
                 <Button variant="primary" onClick={() => setModalOpen(false)}>
                   Confirm
                 </Button>
-              </XStack>
+              </Row>
             </Modal>
           </ComponentShowcase>
 
@@ -352,7 +351,7 @@ export default function ComponentsSection() {
             title="Progress Bars"
             description="Linear and circular progress indicators"
           >
-            <YStack width="100%" gap="$4">
+            <Stack style={{ width: '100%', gap: 'var(--space-4)' }}>
               <Progress value={25} variant="primary" showLabel />
               <Progress
                 value={50}
@@ -362,13 +361,13 @@ export default function ComponentsSection() {
               />
               <Progress value={75} variant="warning" showLabel />
               <Progress value={90} variant="error" showLabel />
-              <XStack justifyContent="center" gap="$4" paddingTop="$4">
+              <Row style={{ justifyContent: 'center', gap: 'var(--space-4)', paddingTop: 'var(--space-4)' }}>
                 <CircularProgress value={25} variant="primary" size={80} />
                 <CircularProgress value={50} variant="success" size={80} />
                 <CircularProgress value={75} variant="warning" size={80} />
                 <CircularProgress value={90} variant="error" size={80} />
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           </ComponentShowcase>
 
           <ComponentShowcase
@@ -383,20 +382,20 @@ export default function ComponentsSection() {
               secondaryAction={{ label: 'Learn More', onClick: () => {} }}
             />
           </ComponentShowcase>
-        </YStack>
-      </View>
+        </Stack>
+      </Box>
 
-      <View id="navigation">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+      <Box id="navigation">
+        <H3 style={{ fontSize: 'var(--font-size-8)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>
           Navigation Components
         </H3>
 
-        <YStack gap="$6">
+        <Stack style={{ gap: 'var(--space-6)' }}>
           <ComponentShowcase
             title="Tabs"
             description="Tabbed navigation with multiple variants"
           >
-            <YStack width="100%" gap="$6">
+            <Stack style={{ width: '100%', gap: 'var(--space-6)' }}>
               <Tabs
                 variant="line"
                 tabs={[
@@ -404,27 +403,27 @@ export default function ComponentsSection() {
                     id: 'overview',
                     label: 'Overview',
                     content: (
-                      <View padding="$4">
-                        <Text color="$color11">Overview content</Text>
-                      </View>
+                      <Box style={{ padding: 'var(--space-4)' }}>
+                        <Text style={{ color: 'var(--color-11)' }}>Overview content</Text>
+                      </Box>
                     ),
                   },
                   {
                     id: 'details',
                     label: 'Details',
                     content: (
-                      <View padding="$4">
-                        <Text color="$color11">Details content</Text>
-                      </View>
+                      <Box style={{ padding: 'var(--space-4)' }}>
+                        <Text style={{ color: 'var(--color-11)' }}>Details content</Text>
+                      </Box>
                     ),
                   },
                   {
                     id: 'settings',
                     label: 'Settings',
                     content: (
-                      <View padding="$4">
-                        <Text color="$color11">Settings content</Text>
-                      </View>
+                      <Box style={{ padding: 'var(--space-4)' }}>
+                        <Text style={{ color: 'var(--color-11)' }}>Settings content</Text>
+                      </Box>
                     ),
                     badge: '3',
                   },
@@ -437,18 +436,18 @@ export default function ComponentsSection() {
                     id: 'all',
                     label: 'All',
                     content: (
-                      <View padding="$4">
-                        <Text color="$color11">All items</Text>
-                      </View>
+                      <Box style={{ padding: 'var(--space-4)' }}>
+                        <Text style={{ color: 'var(--color-11)' }}>All items</Text>
+                      </Box>
                     ),
                   },
                   {
                     id: 'active',
                     label: 'Active',
                     content: (
-                      <View padding="$4">
-                        <Text color="$color11">Active items</Text>
-                      </View>
+                      <Box style={{ padding: 'var(--space-4)' }}>
+                        <Text style={{ color: 'var(--color-11)' }}>Active items</Text>
+                      </Box>
                     ),
                     badge: '12',
                   },
@@ -456,21 +455,21 @@ export default function ComponentsSection() {
                     id: 'archived',
                     label: 'Archived',
                     content: (
-                      <View padding="$4">
-                        <Text color="$color11">Archived items</Text>
-                      </View>
+                      <Box style={{ padding: 'var(--space-4)' }}>
+                        <Text style={{ color: 'var(--color-11)' }}>Archived items</Text>
+                      </Box>
                     ),
                   },
                 ]}
               />
-            </YStack>
+            </Stack>
           </ComponentShowcase>
 
           <ComponentShowcase
             title="Breadcrumbs"
             description="Hierarchical navigation trail"
           >
-            <View width="100%">
+            <Box style={{ width: '100%' }}>
               <Breadcrumbs
                 showHome
                 items={[
@@ -479,7 +478,7 @@ export default function ComponentsSection() {
                   { label: 'Details' },
                 ]}
               />
-            </View>
+            </Box>
           </ComponentShowcase>
 
           <ComponentShowcase
@@ -498,14 +497,14 @@ export default function ComponentsSection() {
             title="Accordion"
             description="Collapsible content panels"
           >
-            <View width="100%" maxWidth={672}>
+            <Box style={{ width: '100%', maxWidth: 672 }}>
               <Accordion
                 items={[
                   {
                     id: '1',
                     title: 'What is included?',
                     content: (
-                      <Text color="$color11">
+                      <Text style={{ color: 'var(--color-11)' }}>
                         All features are included in every plan.
                       </Text>
                     ),
@@ -514,7 +513,7 @@ export default function ComponentsSection() {
                     id: '2',
                     title: 'How does billing work?',
                     content: (
-                      <Text color="$color11">
+                      <Text style={{ color: 'var(--color-11)' }}>
                         You are billed monthly based on your usage.
                       </Text>
                     ),
@@ -523,7 +522,7 @@ export default function ComponentsSection() {
                     id: '3',
                     title: 'Can I cancel anytime?',
                     content: (
-                      <Text color="$color11">
+                      <Text style={{ color: 'var(--color-11)' }}>
                         Yes, you can cancel your subscription at any time.
                       </Text>
                     ),
@@ -531,13 +530,13 @@ export default function ComponentsSection() {
                 ]}
                 defaultOpen={['1']}
               />
-            </View>
+            </Box>
           </ComponentShowcase>
-        </YStack>
-      </View>
+        </Stack>
+      </Box>
 
-      <View id="layout">
-        <H3 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$4">
+      <Box id="layout">
+        <H3 style={{ fontSize: 'var(--font-size-8)', fontWeight: 600, color: 'var(--color-12)', marginBottom: 'var(--space-4)' }}>
           Layout Components
         </H3>
 
@@ -545,22 +544,24 @@ export default function ComponentsSection() {
           title="Dividers"
           description="Visual separators for content"
         >
-          <YStack width="100%" gap="$6">
+          <Stack style={{ width: '100%', gap: 'var(--space-6)' }}>
             <Divider />
             <Divider label="OR" />
             <Divider label="Section Break" />
-            <XStack
-              alignItems="center"
-              gap="$4"
-              height={100}
+            <Row
+              style={{
+                alignItems: 'center',
+                gap: 'var(--space-4)',
+                height: 100,
+              }}
             >
-              <View flex={1} backgroundColor="$backgroundTertiary" borderRadius="$4" height="100%" />
+              <Box style={{ flex: 1, backgroundColor: 'var(--color-background-tertiary)', borderRadius: 'var(--radius-4)', height: '100%' }} />
               <Divider orientation="vertical" />
-              <View flex={1} backgroundColor="$backgroundTertiary" borderRadius="$4" height="100%" />
-            </XStack>
-          </YStack>
+              <Box style={{ flex: 1, backgroundColor: 'var(--color-background-tertiary)', borderRadius: 'var(--radius-4)', height: '100%' }} />
+            </Row>
+          </Stack>
         </ComponentShowcase>
-      </View>
-    </YStack>
+      </Box>
+    </Stack>
   );
 }

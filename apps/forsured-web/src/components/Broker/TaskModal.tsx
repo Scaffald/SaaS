@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Info } from 'lucide-react';
-import { YStack, XStack, Text, H2, Input, TextArea, Card, Label } from '@unicornlove/ui';
+import { Stack, Row, Text, H2, Input, Card } from '@unicornlove/beyond-ui';
+import Textarea from '../Common/Textarea';
 import { Task, BrokerClient, PolicyData, Project, User, TaskType, TaskTypeCategory } from '../../types';
 import Button from '../Common/Button';
 import { getActiveTaskTypes } from '../../lib/tasks/taskTypeService';
@@ -206,397 +207,350 @@ export default function TaskModal({
 
   if (!isOpen) return null;
 
+  const labelStyle: React.CSSProperties = {
+    fontSize: 14,
+    fontWeight: 500,
+    color: 'var(--color-text)',
+    marginBottom: 8,
+    display: 'block',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '8px 16px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    fontSize: 14,
+  };
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '8px 16px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 8,
+    fontSize: 14,
+    backgroundColor: 'var(--color-background)',
+  };
+
   return (
-    <YStack
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      backgroundColor="rgba(0,0,0,0.5)"
-      alignItems="center"
-      justifyContent="center"
-      zIndex={50}
-      padding="$4"
+    <Stack
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 50,
+        padding: 16,
+      }}
     >
       <Card
-        backgroundColor="$background"
-        borderRadius="$4"
-        elevation={5}
-        maxWidth={672}
-        width="100%"
-        maxHeight="90vh"
-        overflowY="auto"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          maxWidth: 672,
+          width: '100%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
       >
-        <XStack
-          position="sticky"
-          top={0}
-          backgroundColor="$background"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
-          padding="$6"
+        <Row
           alignItems="center"
           justifyContent="space-between"
+          style={{
+            position: 'sticky',
+            top: 0,
+            backgroundColor: 'var(--color-background)',
+            borderBottom: '1px solid var(--color-border)',
+            padding: 24,
+            zIndex: 1,
+          }}
         >
-          <H2 fontSize="$7" fontWeight="600" color="$color12">
+          <H2 style={{ fontSize: 24, fontWeight: 600, color: 'var(--color-text)' }}>
             {task ? 'Edit Task' : 'Create New Task'}
           </H2>
-          <XStack
-            cursor="pointer"
-            color="$color11"
-            hoverStyle={{ color: '$color12' }}
+          <button
             onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--color-text-muted)',
+              padding: 4,
+            }}
           >
             <X size={24} />
-          </XStack>
-        </XStack>
+          </button>
+        </Row>
 
-        <YStack component="form" onSubmit={handleSubmit} padding="$6" gap="$6">
-          {error && (
-            <YStack
-              backgroundColor="$red2"
-              borderWidth={1}
-              borderColor="$red6"
-              color="$red11"
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              borderRadius="$2"
-            >
-              <Text color="$red11">{error}</Text>
-            </YStack>
-          )}
+        <form onSubmit={handleSubmit} style={{ padding: 24 }}>
+          <Stack gap={24}>
+            {error && (
+              <Stack
+                style={{
+                  backgroundColor: 'var(--color-red-2)',
+                  border: '1px solid var(--color-red-6)',
+                  padding: '12px 16px',
+                  borderRadius: 8,
+                }}
+              >
+                <Text style={{ color: 'var(--color-red-11)' }}>{error}</Text>
+              </Stack>
+            )}
 
-          <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-              Task Title *
-            </Label>
-            <Input
-              type="text"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              width="100%"
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              placeholder="Enter task title"
-              required
-            />
-          </YStack>
+            <Stack>
+              <label style={labelStyle}>Task Title *</label>
+              <Input
+                type="text"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                placeholder="Enter task title"
+                required
+                style={inputStyle}
+              />
+            </Stack>
 
-          <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-              Description
-            </Label>
-            <TextArea
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              width="100%"
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              minHeight={80}
-              placeholder="Provide additional details about the task"
-            />
-          </YStack>
+            <Stack>
+              <label style={labelStyle}>Description</label>
+              <Textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Provide additional details about the task"
+                style={{ ...inputStyle, minHeight: 80 }}
+              />
+            </Stack>
 
-          {/* REQ-261: Task Type selection with descriptions */}
-          <YStack gap="$2">
-            <Label fontSize="$3" fontWeight="500" color="$color12">
-              Task Type
-            </Label>
-            <select
-              value={selectedTaskType?.id || ''}
-              onChange={(e) => handleTaskTypeChange(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 16px',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
-              }}
-              disabled={taskTypesLoading}
-            >
-              <option value="">
-                {taskTypesLoading ? 'Loading task types...' : 'Select task type (optional)'}
-              </option>
-              {Object.entries(taskTypesByCategory).map(([category, types]) => (
-                <optgroup key={category} label={CATEGORY_LABELS[category as TaskTypeCategory]}>
-                  {types.map((tt) => (
-                    <option key={tt.id} value={tt.id}>
-                      {tt.name}
+            {/* REQ-261: Task Type selection with descriptions */}
+            <Stack gap={8}>
+              <label style={labelStyle}>Task Type</label>
+              <select
+                value={selectedTaskType?.id || ''}
+                onChange={(e) => handleTaskTypeChange(e.target.value)}
+                style={selectStyle}
+                disabled={taskTypesLoading}
+              >
+                <option value="">
+                  {taskTypesLoading ? 'Loading task types...' : 'Select task type (optional)'}
+                </option>
+                {Object.entries(taskTypesByCategory).map(([category, types]) => (
+                  <optgroup key={category} label={CATEGORY_LABELS[category as TaskTypeCategory]}>
+                    {types.map((tt) => (
+                      <option key={tt.id} value={tt.id}>
+                        {tt.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              {selectedTaskType?.description && (
+                <Row
+                  alignItems="flex-start"
+                  gap={8}
+                  style={{
+                    padding: 12,
+                    backgroundColor: 'var(--color-blue-2)',
+                    border: '1px solid var(--color-blue-4)',
+                    borderRadius: 8,
+                  }}
+                >
+                  <Info size={16} style={{ color: 'var(--color-blue-10)', marginTop: 2, flexShrink: 0 }} />
+                  <Text size="sm" style={{ color: 'var(--color-blue-12)' }}>{selectedTaskType.description}</Text>
+                </Row>
+              )}
+              {selectedTaskType && (
+                <Text size="xs" muted>
+                  Defaults applied: Priority = {selectedTaskType.default_priority}, Due in {selectedTaskType.default_due_date_offset} days
+                </Text>
+              )}
+            </Stack>
+
+            <Row gap={16} style={{ flexWrap: 'wrap' }}>
+              <Stack style={{ flex: 1, minWidth: '45%' }}>
+                <label style={labelStyle}>Priority</label>
+                <select
+                  value={formData.priority}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      priority: e.target.value as Task['priority'],
+                    })
+                  }
+                  style={selectStyle}
+                >
+                  <option value="urgent">Urgent</option>
+                  <option value="high">High</option>
+                  <option value="normal">Normal</option>
+                  <option value="low">Low</option>
+                </select>
+              </Stack>
+            </Row>
+
+            <Row gap={16} style={{ flexWrap: 'wrap' }}>
+              <Stack style={{ flex: 1, minWidth: '45%' }}>
+                <label style={labelStyle}>Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      status: e.target.value as Task['status'],
+                    })
+                  }
+                  style={selectStyle}
+                >
+                  <option value="draft">Draft</option>
+                  <option value="pending">Pending</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="awaiting_response">Awaiting Response</option>
+                  <option value="completed">Completed</option>
+                  <option value="escalated">Escalated</option>
+                </select>
+              </Stack>
+
+              <Stack style={{ flex: 1, minWidth: '45%' }}>
+                <label style={labelStyle}>Assign To *</label>
+                <select
+                  value={formData.assigned_to_user_id}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      assigned_to_user_id: e.target.value,
+                    })
+                  }
+                  style={selectStyle}
+                  required
+                >
+                  <option value="">Select user</option>
+                  {(users || []).map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name} ({user.role})
                     </option>
                   ))}
-                </optgroup>
-              ))}
-            </select>
-            {selectedTaskType?.description && (
-              <XStack
-                alignItems="flex-start"
-                gap="$2"
-                padding="$3"
-                backgroundColor="$blue2"
-                borderWidth={1}
-                borderColor="$blue4"
-                borderRadius="$4"
-              >
-                <Info size={16} color="$blue10" mt={2} flexShrink={0} />
-                <Text fontSize="$3" color="$blue12">{selectedTaskType.description}</Text>
-              </XStack>
-            )}
-            {selectedTaskType && (
-              <Text fontSize="$1" color="$color10">
-                Defaults applied: Priority = {selectedTaskType.default_priority}, Due in {selectedTaskType.default_due_date_offset} days
-              </Text>
-            )}
-          </YStack>
+                </select>
+              </Stack>
+            </Row>
 
-          <XStack gap="$4" flexWrap="wrap">
-            <YStack flex={1} minWidth="45%">
-              <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-                Priority
-              </Label>
+            <Stack>
+              <label style={labelStyle}>Client</label>
               <select
-                value={formData.priority}
+                value={formData.client_id}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    priority: e.target.value as Task['priority'],
+                    client_id: e.target.value,
+                    project_id: '',
+                    policy_id: '',
                   })
                 }
-                style={{
-                  width: '100%',
-                  padding: '8px 16px',
-                  border: '1px solid var(--borderColor)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                }}
+                style={selectStyle}
               >
-                <option value="urgent">Urgent</option>
-                <option value="high">High</option>
-                <option value="normal">Normal</option>
-                <option value="low">Low</option>
-              </select>
-            </YStack>
-          </XStack>
-
-          <XStack gap="$4" flexWrap="wrap">
-            <YStack flex={1} minWidth="45%">
-              <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-                Status
-              </Label>
-              <select
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    status: e.target.value as Task['status'],
-                  })
-                }
-                style={{
-                  width: '100%',
-                  padding: '8px 16px',
-                  border: '1px solid var(--borderColor)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                }}
-              >
-                <option value="draft">Draft</option>
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="awaiting_response">Awaiting Response</option>
-                <option value="completed">Completed</option>
-                <option value="escalated">Escalated</option>
-              </select>
-            </YStack>
-
-            <YStack flex={1} minWidth="45%">
-              <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-                Assign To *
-              </Label>
-              <select
-                value={formData.assigned_to_user_id}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    assigned_to_user_id: e.target.value,
-                  })
-                }
-                style={{
-                  width: '100%',
-                  padding: '8px 16px',
-                  border: '1px solid var(--borderColor)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                }}
-                required
-              >
-                <option value="">Select user</option>
-                {(users || []).map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name} ({user.role})
+                <option value="">Select client (optional)</option>
+                {(clients || []).map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.company_name}
                   </option>
                 ))}
               </select>
-            </YStack>
-          </XStack>
+            </Stack>
 
-          <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-              Client
-            </Label>
-            <select
-              value={formData.client_id}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  client_id: e.target.value,
-                  project_id: '',
-                  policy_id: '',
-                })
-              }
+            {formData.client_id && (
+              <>
+                <Stack>
+                  <label style={labelStyle}>Project</label>
+                  <select
+                    value={formData.project_id}
+                    onChange={(e) =>
+                      setFormData({ ...formData, project_id: e.target.value })
+                    }
+                    style={selectStyle}
+                  >
+                    <option value="">Select project (optional)</option>
+                    {filteredProjects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </select>
+                </Stack>
+
+                <Stack>
+                  <label style={labelStyle}>Related Policy</label>
+                  <select
+                    value={formData.policy_id}
+                    onChange={(e) =>
+                      setFormData({ ...formData, policy_id: e.target.value })
+                    }
+                    style={selectStyle}
+                  >
+                    <option value="">Select policy (optional)</option>
+                    {filteredPolicies.map((policy) => (
+                      <option key={policy.id} value={policy.id}>
+                        {policy.policy_type.replace('_', ' ')} -{' '}
+                        {policy.policy_number}
+                      </option>
+                    ))}
+                  </select>
+                </Stack>
+              </>
+            )}
+
+            <Stack>
+              <label style={labelStyle}>Due Date</label>
+              <Input
+                type="date"
+                value={formData.due_date}
+                onChange={(e) =>
+                  setFormData({ ...formData, due_date: e.target.value })
+                }
+                style={inputStyle}
+              />
+            </Stack>
+
+            <Stack>
+              <label style={labelStyle}>Document Link</label>
+              <Input
+                type="url"
+                value={formData.document_link}
+                onChange={(e) =>
+                  setFormData({ ...formData, document_link: e.target.value })
+                }
+                placeholder="https://example.com/document.pdf"
+                style={inputStyle}
+              />
+            </Stack>
+
+            <Row
+              alignItems="center"
+              justifyContent="flex-end"
+              gap={12}
               style={{
-                width: '100%',
-                padding: '8px 16px',
-                border: '1px solid var(--borderColor)',
-                borderRadius: '8px',
-                fontSize: '14px',
+                paddingTop: 24,
+                borderTop: '1px solid var(--color-border)',
               }}
             >
-              <option value="">Select client (optional)</option>
-              {(clients || []).map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.company_name}
-                </option>
-              ))}
-            </select>
-          </YStack>
-
-          {formData.client_id && (
-            <>
-              <YStack>
-                <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-                  Project
-                </Label>
-                <select
-                  value={formData.project_id}
-                  onChange={(e) =>
-                    setFormData({ ...formData, project_id: e.target.value })
-                  }
-                  style={{
-                    width: '100%',
-                    padding: '8px 16px',
-                    border: '1px solid var(--borderColor)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                  }}
-                >
-                  <option value="">Select project (optional)</option>
-                  {filteredProjects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </select>
-              </YStack>
-
-              <YStack>
-                <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-                  Related Policy
-                </Label>
-                <select
-                  value={formData.policy_id}
-                  onChange={(e) =>
-                    setFormData({ ...formData, policy_id: e.target.value })
-                  }
-                  style={{
-                    width: '100%',
-                    padding: '8px 16px',
-                    border: '1px solid var(--borderColor)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                  }}
-                >
-                  <option value="">Select policy (optional)</option>
-                  {filteredPolicies.map((policy) => (
-                    <option key={policy.id} value={policy.id}>
-                      {policy.policy_type.replace('_', ' ')} -{' '}
-                      {policy.policy_number}
-                    </option>
-                  ))}
-                </select>
-              </YStack>
-            </>
-          )}
-
-          <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-              Due Date
-            </Label>
-            <Input
-              type="date"
-              value={formData.due_date}
-              onChange={(e) =>
-                setFormData({ ...formData, due_date: e.target.value })
-              }
-              width="100%"
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-            />
-          </YStack>
-
-          <YStack>
-            <Label fontSize="$3" fontWeight="500" color="$color12" mb="$2">
-              Document Link
-            </Label>
-            <Input
-              type="url"
-              value={formData.document_link}
-              onChange={(e) =>
-                setFormData({ ...formData, document_link: e.target.value })
-              }
-              width="100%"
-              paddingHorizontal="$4"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              placeholder="https://example.com/document.pdf"
-            />
-          </YStack>
-
-          <XStack
-            alignItems="center"
-            justifyContent="flex-end"
-            gap="$3"
-            paddingTop="$6"
-            borderTopWidth={1}
-            borderColor="$borderColor"
-          >
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={onClose}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? 'Saving...' : task ? 'Update Task' : 'Create Task'}
-            </Button>
-          </XStack>
-        </YStack>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onClose}
+                disabled={isSaving}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSaving}>
+                {isSaving ? 'Saving...' : task ? 'Update Task' : 'Create Task'}
+              </Button>
+            </Row>
+          </Stack>
+        </form>
       </Card>
-    </YStack>
+    </Stack>
   );
 }

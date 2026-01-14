@@ -3,8 +3,9 @@
  * Display and manage uploaded documents with filtering and actions
  */
 
+import React from 'react';
 import { Download, RotateCw, Trash2, FileText } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import type { Document, DocumentStatus } from '../../types/document';
 
 interface DocumentTableProps {
@@ -15,6 +16,20 @@ interface DocumentTableProps {
   canDelete?: (document: Document) => boolean;
   canReprocess?: (document: Document) => boolean;
 }
+
+const getStatusBadgeStyles = (status: DocumentStatus): React.CSSProperties => {
+  const badgeMap: Record<DocumentStatus, { bg: string; text: string }> = {
+    pending: { bg: 'var(--color-yellow-2)', text: 'var(--color-yellow-11)' },
+    processing: { bg: 'var(--color-blue-2)', text: 'var(--color-blue-11)' },
+    completed: { bg: 'var(--color-green-2)', text: 'var(--color-green-11)' },
+    error: { bg: 'var(--color-red-2)', text: 'var(--color-red-11)' },
+  };
+  const colors = badgeMap[status] || { bg: 'var(--color-gray-2)', text: 'var(--color-gray-11)' };
+  return {
+    backgroundColor: colors.bg,
+    color: colors.text,
+  };
+};
 
 export const DocumentTable: React.FC<DocumentTableProps> = ({
   documents,
@@ -39,16 +54,6 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  const getStatusBadgeProps = (status: DocumentStatus) => {
-    const badgeMap: Record<DocumentStatus, { bg: string; text: string }> = {
-      pending: { bg: '$yellow2', text: '$yellow11' },
-      processing: { bg: '$blue2', text: '$blue11' },
-      completed: { bg: '$green2', text: '$green11' },
-      error: { bg: '$red2', text: '$red11' },
-    };
-    return badgeMap[status] || { bg: '$gray2', text: '$gray11' };
   };
 
   const handleDownload = (document: Document) => {
@@ -79,26 +84,39 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
   if (documents.length === 0) {
     return (
       <Card
-        alignItems="center"
-        paddingVertical="$12"
-        backgroundColor="$gray2"
-        borderRadius="$4"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingTop: '48px',
+          paddingBottom: '48px',
+          backgroundColor: 'var(--color-gray-2)',
+          borderRadius: '8px',
+        }}
       >
-        <YStack alignItems="center" gap="$2">
-          <FileText size={48} color="$color10" />
-          <Text mt="$2" fontSize="$3" fontWeight="500" color="$color12">
+        <Stack style={{ alignItems: 'center', gap: '8px' }}>
+          <FileText size={48} color="var(--color-gray-10)" />
+          <Text style={{ marginTop: '8px', fontSize: '14px', fontWeight: 500, color: 'var(--color-gray-12)' }}>
             No documents
           </Text>
-          <Text mt="$1" fontSize="$3" color="$color10">
+          <Text style={{ marginTop: '4px', fontSize: '14px', color: 'var(--color-gray-10)' }}>
             Upload your first document to get started.
           </Text>
-        </YStack>
+        </Stack>
       </Card>
     );
   }
 
   return (
-    <Card overflowX="auto" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
+    <Card
+      style={{
+        overflowX: 'auto',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: 'var(--color-border)',
+        borderRadius: '8px',
+      }}
+    >
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ backgroundColor: 'var(--color-gray-2)' }}>
@@ -171,7 +189,7 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
         </thead>
         <tbody>
           {documents.map((document) => {
-            const badgeProps = getStatusBadgeProps(document.status);
+            const badgeStyles = getStatusBadgeStyles(document.status);
             return (
               <tr
                 key={document.id}
@@ -187,81 +205,93 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
                 }}
               >
                 <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                  <YStack>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                  <Stack>
+                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray-12)' }}>
                       {document.file_name}
                     </Text>
                     {document.error_message && (
-                      <Text fontSize="$1" color="$red10" mt="$1">
+                      <Text style={{ fontSize: '11px', color: 'var(--color-red-10)', marginTop: '4px' }}>
                         {document.error_message}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 </td>
                 <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                  <Text fontSize="$3" color="$color10">
+                  <Text style={{ fontSize: '14px', color: 'var(--color-gray-10)' }}>
                     {formatFileSize(document.file_size)}
                   </Text>
                 </td>
                 <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                  <Text fontSize="$3" color="$color10">
+                  <Text style={{ fontSize: '14px', color: 'var(--color-gray-10)' }}>
                     {formatDate(document.upload_date)}
                   </Text>
                 </td>
                 <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
                   <Text
-                    display="inline-flex"
-                    alignItems="center"
-                    paddingHorizontal="$2.5"
-                    paddingVertical="$0.5"
-                    borderRadius={9999}
-                    fontSize="$1"
-                    fontWeight="500"
-                    backgroundColor={badgeProps.bg}
-                    color={badgeProps.text}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      paddingLeft: '10px',
+                      paddingRight: '10px',
+                      paddingTop: '2px',
+                      paddingBottom: '2px',
+                      borderRadius: '9999px',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      ...badgeStyles,
+                    }}
                   >
                     {document.status.charAt(0).toUpperCase() + document.status.slice(1)}
                   </Text>
                 </td>
                 <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right' }}>
-                  <XStack justifyContent="flex-end" gap="$2" fontSize="$3" fontWeight="500">
-                    <XStack
-                      as="button"
-                      color="$teal9"
-                      hoverStyle={{ color: '$teal11' }}
+                  <Row style={{ justifyContent: 'flex-end', gap: '8px', fontSize: '14px', fontWeight: 500 }}>
+                    <button
+                      style={{
+                        color: 'var(--color-teal-9)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 0,
+                      }}
                       onClick={() => handleDownload(document)}
                       title="Download"
-                      cursor="pointer"
                     >
                       <Download size={20} />
-                    </XStack>
+                    </button>
 
                     {document.status === 'error' && canReprocess(document) && onReprocess && (
-                      <XStack
-                        as="button"
-                        color="$blue9"
-                        hoverStyle={{ color: '$blue11' }}
+                      <button
+                        style={{
+                          color: 'var(--color-blue-9)',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 0,
+                        }}
                         onClick={() => onReprocess(document.id)}
                         title="Re-process"
-                        cursor="pointer"
                       >
                         <RotateCw size={20} />
-                      </XStack>
+                      </button>
                     )}
 
                     {canDelete(document) && onDelete && (
-                      <XStack
-                        as="button"
-                        color="$red9"
-                        hoverStyle={{ color: '$red11' }}
+                      <button
+                        style={{
+                          color: 'var(--color-red-9)',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 0,
+                        }}
                         onClick={() => handleDelete(document.id)}
                         title="Delete"
-                        cursor="pointer"
                       >
                         <Trash2 size={20} />
-                      </XStack>
+                      </button>
                     )}
-                  </XStack>
+                  </Row>
                 </td>
               </tr>
             );

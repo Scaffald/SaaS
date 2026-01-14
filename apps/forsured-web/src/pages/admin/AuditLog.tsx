@@ -1,7 +1,10 @@
 // src/pages/admin/AuditLog.tsx
 import { useState } from 'react';
 import { Search, RefreshCcw, FileText } from 'lucide-react';
-import { YStack, XStack, Text, H1, Card, Button, Input, Select, styled, EmptyState } from '@unicornlove/ui';
+import { Stack, Row, Text, H1, Card, Button, Input } from '@unicornlove/beyond-ui';
+import { colors, spacing, fontSize } from '@unicornlove/beyond-ui';
+import Select from '../../components/Common/Select';
+import { EmptyState } from '../../ui/EmptyState';
 
 interface AuditLogEntry {
   id: string;
@@ -43,9 +46,9 @@ const mockAuditLogs: AuditLogEntry[] = [
 
 // Use inline styles for native CSS table properties to avoid React prop warnings
 const tableStyle = { borderCollapse: 'collapse' as const, width: '100%' };
-const thStyle = { textAlign: 'left' as const, padding: '8px 16px', borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
-const tdStyle = { padding: '8px 16px', borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
-const trStyle = { borderBottom: '1px solid var(--borderColor, #e5e5e5)' };
+const thStyle = { textAlign: 'left' as const, padding: `${spacing[8]} ${spacing[16]}`, borderBottom: `1px solid ${colors.border.light.default}` };
+const tdStyle = { padding: `${spacing[8]} ${spacing[16]}`, borderBottom: `1px solid ${colors.border.light.default}` };
+const trStyle = { borderBottom: `1px solid ${colors.border.light.default}` };
 
 
 function AdminAuditLog() {
@@ -67,41 +70,38 @@ function AdminAuditLog() {
   };
 
   return (
-    <YStack>
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <H1 fontSize="$8" fontWeight="bold">Admin Audit Log</H1>
-        <Button variant="outlined" onPress={handleRefresh}>
-          <XStack alignItems="center" gap="$2">
+    <Stack>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
+        <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>Admin Audit Log</H1>
+        <Button variant="outline" onClick={handleRefresh}>
+          <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
             <RefreshCcw size={16} />
             <Text>Refresh</Text>
-          </XStack>
+          </Row>
         </Button>
-      </XStack>
+      </Row>
 
-      <Card backgroundColor="$background" padding="$6" borderRadius="$4" elevation={1} marginBottom="$6">
-        <XStack alignItems="center" gap="$4" marginBottom="$4">
-          <XStack position="relative" flex={1} alignItems="center">
-            <XStack
-              position="absolute"
-              left="$3"
-              zIndex={1}
-              pointerEvents="none"
+      <Card style={{ backgroundColor: colors.bg.light.default, padding: spacing[24], borderRadius: borderRadius.s, marginBottom: spacing[24] }}>
+        <Row style={{ alignItems: 'center', gap: spacing[16], marginBottom: spacing[16] }}>
+          <Row style={{ position: 'relative', flex: 1, alignItems: 'center' }}>
+            <Row
+              style={{
+                position: 'absolute',
+                left: spacing[12],
+                zIndex: 1,
+                pointerEvents: 'none'
+              }}
             >
-              <Search size={18} color="$color10" />
-            </XStack>
+              <Search size={18} color={colors.text.light.tertiary} />
+            </Row>
             <Input
               type="text"
               placeholder="Search by action, type, or ID"
-              width="100%"
-              paddingLeft="$10"
-              paddingRight="$4"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderRadius="$4"
+              style={{ width: '100%', paddingLeft: spacing[40], paddingRight: spacing[16], paddingTop: spacing[8], paddingBottom: spacing[8], borderWidth: 1, borderRadius: borderRadius.s }}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChangeText={setSearchQuery}
             />
-          </XStack>
+          </Row>
           <Select
             value={actionFilter}
             onValueChange={setActionFilter}
@@ -112,7 +112,7 @@ function AdminAuditLog() {
               { value: 'DELETE_ENUM_VALUE', label: 'Delete Enum Value' },
             ]}
           />
-        </XStack>
+        </Row>
 
         {filteredLogs.length === 0 ? (
           <EmptyState
@@ -123,7 +123,7 @@ function AdminAuditLog() {
               : 'Admin actions will be logged here for auditing and compliance purposes.'}
             secondaryAction={searchQuery || actionFilter !== 'all' ? {
               label: "Clear Filters",
-              onClick: () => {
+              onPress: () => {
                 setSearchQuery('');
                 setActionFilter('all');
               },
@@ -134,19 +134,19 @@ function AdminAuditLog() {
             <thead>
               <tr style={trStyle}>
                 <th style={thStyle}>
-                  <Text fontWeight="600">Timestamp</Text>
+                  <Text style={{ fontWeight: 600 }}>Timestamp</Text>
                 </th>
                 <th style={thStyle}>
-                  <Text fontWeight="600">User ID</Text>
+                  <Text style={{ fontWeight: 600 }}>User ID</Text>
                 </th>
                 <th style={thStyle}>
-                  <Text fontWeight="600">Action</Text>
+                  <Text style={{ fontWeight: 600 }}>Action</Text>
                 </th>
                 <th style={thStyle}>
-                  <Text fontWeight="600">Target Type</Text>
+                  <Text style={{ fontWeight: 600 }}>Target Type</Text>
                 </th>
                 <th style={thStyle}>
-                  <Text fontWeight="600">Target ID</Text>
+                  <Text style={{ fontWeight: 600 }}>Target ID</Text>
                 </th>
               </tr>
             </thead>
@@ -174,7 +174,7 @@ function AdminAuditLog() {
           </table>
         )}
       </Card>
-    </YStack>
+    </Stack>
   );
 }
 

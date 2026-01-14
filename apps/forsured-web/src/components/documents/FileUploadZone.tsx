@@ -5,7 +5,7 @@
 
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { Upload, X, CheckCircle, XCircle } from 'lucide-react';
-import { YStack, XStack, Text, Card } from '@unicornlove/ui';
+import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
 import { DocumentService } from '../../lib/documents/documentService';
 import type { Document } from '../../types/document';
 
@@ -45,7 +45,7 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [fileQueue, setFileQueue] = useState<FileQueueItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Use useRef to maintain a stable DocumentService instance
   const documentServiceRef = useRef<DocumentService | null>(null);
   if (!documentServiceRef.current) {
@@ -201,19 +201,20 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   };
 
   return (
-    <YStack width="100%">
+    <Stack style={{ width: '100%' }}>
       <Card
         data-testid="drop-zone"
-        borderWidth={2}
-        borderStyle="dashed"
-        borderRadius="$4"
-        padding="$8"
-        alignItems="center"
-        cursor="pointer"
-        borderColor={isDragging ? '$teal9' : '$gray6'}
-        backgroundColor={isDragging ? '$teal2' : 'transparent'}
-        hoverStyle={{
-          borderColor: isDragging ? '$teal9' : '$gray7',
+        style={{
+          borderWidth: 2,
+          borderStyle: 'dashed',
+          borderRadius: '8px',
+          padding: '32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          borderColor: isDragging ? 'var(--color-teal-9)' : 'var(--color-gray-6)',
+          backgroundColor: isDragging ? 'var(--color-teal-2)' : 'transparent',
         }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -230,94 +231,113 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           aria-label="Browse files"
         />
 
-        <YStack alignItems="center" gap="$2">
-          <Upload size={48} color="$color10" />
-          <XStack fontSize="$3" color="$color11" gap="$1">
-            <Text fontWeight="500" color="$teal9" hoverStyle={{ color: '$teal10' }}>
+        <Stack style={{ alignItems: 'center', gap: '8px' }}>
+          <Upload size={48} color="var(--color-gray-10)" />
+          <Row style={{ fontSize: '14px', color: 'var(--color-gray-11)', gap: '4px' }}>
+            <Text style={{ fontWeight: 500, color: 'var(--color-teal-9)' }}>
               Browse files
             </Text>
             <Text>or drag and drop PDF files here</Text>
-          </XStack>
-          <Text fontSize="$1" color="$color10">
+          </Row>
+          <Text style={{ fontSize: '11px', color: 'var(--color-gray-10)' }}>
             PDF files only, up to 10MB each
           </Text>
-        </YStack>
+        </Stack>
       </Card>
 
       {fileQueue.length > 0 && (
-        <YStack mt="$4" gap="$2">
+        <Stack style={{ marginTop: '16px', gap: '8px' }}>
           {fileQueue.map((item) => (
             <Card
               key={item.id}
-              backgroundColor="$background"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              padding="$4"
-              elevation={1}
+              style={{
+                backgroundColor: 'var(--color-background)',
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'var(--color-border)',
+                borderRadius: '8px',
+                padding: '16px',
+              }}
             >
-              <XStack alignItems="center" justifyContent="space-between" mb="$2">
-                <YStack flex={1} minWidth={0}>
-                  <Text fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
+              <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <Stack style={{ flex: 1, minWidth: 0 }}>
+                  <Text
+                    style={{
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      color: 'var(--color-gray-12)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {item.file.name}
                   </Text>
-                  <Text fontSize="$1" color="$color10">
+                  <Text style={{ fontSize: '11px', color: 'var(--color-gray-10)' }}>
                     {(item.file.size / 1024).toFixed(1)} KB
                   </Text>
-                </YStack>
+                </Stack>
 
                 {item.status === 'queued' && (
-                  <XStack
-                    as="button"
-                    ml="$4"
-                    color="$color9"
-                    hoverStyle={{ color: '$color10' }}
+                  <button
+                    style={{
+                      marginLeft: '16px',
+                      color: 'var(--color-gray-9)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       removeFile(item.id);
                     }}
                     aria-label={`Remove ${item.file.name}`}
-                    cursor="pointer"
                   >
                     <X size={20} />
-                  </XStack>
+                  </button>
                 )}
 
                 {item.status === 'complete' && (
-                  <CheckCircle size={20} color="$green10" />
+                  <CheckCircle size={20} color="var(--color-green-10)" />
                 )}
 
                 {item.status === 'error' && (
-                  <XCircle size={20} color="$red10" />
+                  <XCircle size={20} color="var(--color-red-10)" />
                 )}
-              </XStack>
+              </Row>
 
               {(item.status === 'uploading' || item.status === 'queued') && (
-                <YStack
-                  width="100%"
-                  backgroundColor="$gray4"
-                  borderRadius={9999}
-                  height={8}
+                <div
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'var(--color-gray-4)',
+                    borderRadius: '9999px',
+                    height: '8px',
+                  }}
                   role="progressbar"
                 >
-                  <YStack
-                    backgroundColor="$teal9"
-                    height={8}
-                    borderRadius={9999}
-                    width={`${item.progress}%`}
+                  <div
+                    style={{
+                      backgroundColor: 'var(--color-teal-9)',
+                      height: '8px',
+                      borderRadius: '9999px',
+                      width: `${item.progress}%`,
+                      transition: 'width 0.2s ease',
+                    }}
                   />
-                </YStack>
+                </div>
               )}
 
               {item.status === 'error' && item.error && (
-                <Text fontSize="$1" color="$red10" mt="$1">
+                <Text style={{ fontSize: '11px', color: 'var(--color-red-10)', marginTop: '4px' }}>
                   {item.error}
                 </Text>
               )}
             </Card>
           ))}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   );
 };

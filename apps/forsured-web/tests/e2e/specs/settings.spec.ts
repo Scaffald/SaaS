@@ -156,7 +156,7 @@ test.describe('Settings Sub-Pages', () => {
       await page.waitForLoadState('networkidle');
       await expect(page.getByRole('link', { name: 'Dashboard' }).first()).toBeVisible({ timeout: 15000 });
 
-      // Check for profile form elements - Tamagui inputs may not have type attributes
+      // Check for profile form elements - Beyond UI inputs may not have type attributes
       // Look for textboxes (input role) or heading
       const profileHeading = page.getByRole('heading', { name: /profile/i });
       const hasProfileHeading = await profileHeading.isVisible({ timeout: 3000 }).catch(() => false);

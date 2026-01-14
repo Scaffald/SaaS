@@ -8,17 +8,7 @@ import {
   Loader2,
   UserPlus,
 } from 'lucide-react';
-import {
-  YStack,
-  XStack,
-  Text,
-  H1,
-  H3,
-  Card,
-  Input,
-  Button as TamaguiButton,
-  Spinner,
-} from '@unicornlove/ui';
+import { Stack, Row, Text, H1, H3, Card, Input, Button, Spinner } from '@unicornlove/beyond-ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
@@ -103,13 +93,13 @@ export default function MyBrokerPage() {
         if (brokerRelationships && brokerRelationships.length > 0) {
           const relationship = brokerRelationships[0];
           const metadata = relationship.metadata as Record<string, unknown>;
-          
+
           setBroker({
             id: relationship.id,
-            name: metadata?.name as string || 'Unknown',
-            company: metadata?.company as string || '',
+            name: (metadata?.name as string) || 'Unknown',
+            company: (metadata?.company as string) || '',
             email: relationship.invitee_email,
-            phone: metadata?.phone as string || undefined,
+            phone: (metadata?.phone as string) || undefined,
             status: relationship.status === 'connected' ? 'connected' : 'pending',
           });
         }
@@ -117,7 +107,7 @@ export default function MyBrokerPage() {
         // Fetch pending broker invitations
         const invitations = await getUserInvitations(user.id, 'pending');
         const brokerInvites = invitations.filter(
-          inv => inv.inviter_type === 'manager' && inv.invitee_type === 'broker'
+          (inv) => inv.inviter_type === 'manager' && inv.invitee_type === 'broker'
         );
         setPendingInvitations(brokerInvites);
       } catch (error) {
@@ -210,17 +200,13 @@ export default function MyBrokerPage() {
     setConnectingByCode(true);
 
     try {
-      const result = await connectByRelationshipCode(
-        brokerCode.trim(),
-        organizationId,
-        user.id
-      );
+      const result = await connectByRelationshipCode(brokerCode.trim(), organizationId, user.id);
 
       if (result.success) {
         toast.success('Connected to broker successfully!');
         setBrokerCode('');
         setShowCodeEntry(false);
-        
+
         // Reload page to show new broker
         window.location.reload();
       } else {
@@ -244,102 +230,207 @@ export default function MyBrokerPage() {
 
   if (loading) {
     return (
-      <YStack alignItems="center" justifyContent="center" height="100%" padding="$6">
-        <Spinner size="large" color="$blue10" />
-        <Text mt="$4" color="$color11">
+      <Stack
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          padding: 'var(--space-6)',
+        }}
+      >
+        <Spinner size="lg" />
+        <Text style={{ marginTop: 'var(--space-4)', color: 'var(--color-11)' }}>
           Loading broker information...
         </Text>
-      </YStack>
+      </Stack>
     );
   }
 
   return (
-    <YStack gap="$6">
+    <Stack style={{ gap: 'var(--space-6)' }}>
       {/* Header */}
-      <YStack>
-        <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
+      <Stack>
+        <H1
+          style={{
+            fontSize: 'var(--font-size-10)',
+            fontWeight: 700,
+            color: 'var(--color-12)',
+            fontFamily: 'var(--font-heading)',
+          }}
+        >
           My Insurance Broker
         </H1>
-        <Text color="$color11" fontSize="$6" mt="$1">
+        <Text
+          style={{
+            color: 'var(--color-11)',
+            fontSize: 'var(--font-size-6)',
+            marginTop: 'var(--space-1)',
+          }}
+        >
           {broker ? 'Manage your insurance broker relationship' : 'Connect with your insurance broker'}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Current Broker */}
       {broker && (
-        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1}>
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
-              <H3 fontSize="$5" fontWeight="600" color="$color12">
+        <Card
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 'var(--radius-4)',
+            border: '1px solid var(--color-border)',
+            padding: 'var(--space-5)',
+          }}
+        >
+          <Stack style={{ gap: 'var(--space-4)' }}>
+            <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <H3
+                style={{
+                  fontSize: 'var(--font-size-5)',
+                  fontWeight: 600,
+                  color: 'var(--color-12)',
+                }}
+              >
                 Your Broker
               </H3>
               {broker.status === 'connected' ? (
-                <XStack gap="$2" alignItems="center" backgroundColor="$green2" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$3">
-                  <CheckCircle size={16} color="$green10" />
-                  <Text fontSize="$2" fontWeight="600" color="$green10">
+                <Row
+                  style={{
+                    gap: 'var(--space-2)',
+                    alignItems: 'center',
+                    backgroundColor: 'var(--color-green-2)',
+                    paddingLeft: 'var(--space-3)',
+                    paddingRight: 'var(--space-3)',
+                    paddingTop: 'var(--space-2)',
+                    paddingBottom: 'var(--space-2)',
+                    borderRadius: 'var(--radius-3)',
+                  }}
+                >
+                  <CheckCircle size={16} color="var(--color-green-10)" />
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-2)',
+                      fontWeight: 600,
+                      color: 'var(--color-green-10)',
+                    }}
+                  >
                     Connected
                   </Text>
-                </XStack>
+                </Row>
               ) : (
-                <XStack gap="$2" alignItems="center" backgroundColor="$orange2" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$3">
-                  <Clock size={16} color="$orange10" />
-                  <Text fontSize="$2" fontWeight="600" color="$orange10">
+                <Row
+                  style={{
+                    gap: 'var(--space-2)',
+                    alignItems: 'center',
+                    backgroundColor: 'var(--color-orange-2)',
+                    paddingLeft: 'var(--space-3)',
+                    paddingRight: 'var(--space-3)',
+                    paddingTop: 'var(--space-2)',
+                    paddingBottom: 'var(--space-2)',
+                    borderRadius: 'var(--radius-3)',
+                  }}
+                >
+                  <Clock size={16} color="var(--color-orange-10)" />
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-2)',
+                      fontWeight: 600,
+                      color: 'var(--color-orange-10)',
+                    }}
+                  >
                     Pending
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </XStack>
+            </Row>
 
-            <YStack gap="$3">
-              <YStack gap="$1">
-                <Text fontSize="$2" fontWeight="500" color="$color11">
+            <Stack style={{ gap: 'var(--space-3)' }}>
+              <Stack style={{ gap: 'var(--space-1)' }}>
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-2)',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                  }}
+                >
                   Broker Name
                 </Text>
-                <Text fontSize="$4" fontWeight="600" color="$color12">
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-4)',
+                    fontWeight: 600,
+                    color: 'var(--color-12)',
+                  }}
+                >
                   {broker.name}
                 </Text>
-              </YStack>
+              </Stack>
 
               {broker.company && (
-                <YStack gap="$1">
-                  <Text fontSize="$2" fontWeight="500" color="$color11">
+                <Stack style={{ gap: 'var(--space-1)' }}>
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-2)',
+                      fontWeight: 500,
+                      color: 'var(--color-11)',
+                    }}
+                  >
                     Company
                   </Text>
-                  <Text fontSize="$4" color="$color12">
+                  <Text style={{ fontSize: 'var(--font-size-4)', color: 'var(--color-12)' }}>
                     {broker.company}
                   </Text>
-                </YStack>
+                </Stack>
               )}
 
-              <YStack gap="$1">
-                <Text fontSize="$2" fontWeight="500" color="$color11">
+              <Stack style={{ gap: 'var(--space-1)' }}>
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-2)',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                  }}
+                >
                   Email
                 </Text>
-                <Text fontSize="$4" color="$color12">
+                <Text style={{ fontSize: 'var(--font-size-4)', color: 'var(--color-12)' }}>
                   {broker.email}
                 </Text>
-              </YStack>
+              </Stack>
 
               {broker.phone && (
-                <YStack gap="$1">
-                  <Text fontSize="$2" fontWeight="500" color="$color11">
+                <Stack style={{ gap: 'var(--space-1)' }}>
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-2)',
+                      fontWeight: 500,
+                      color: 'var(--color-11)',
+                    }}
+                  >
                     Phone
                   </Text>
-                  <Text fontSize="$4" color="$color12">
+                  <Text style={{ fontSize: 'var(--font-size-4)', color: 'var(--color-12)' }}>
                     {broker.phone}
                   </Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
 
             {broker.status === 'pending' && (
-              <Card backgroundColor="$blue2" borderColor="$blue6" borderWidth={1} borderRadius="$3" padding="$3">
-                <Text fontSize="$2" color="$blue11">
-                  Your broker invitation is pending. They will be able to see your information once they accept.
+              <Card
+                style={{
+                  backgroundColor: 'var(--color-blue-2)',
+                  border: '1px solid var(--color-blue-6)',
+                  borderRadius: 'var(--radius-3)',
+                  padding: 'var(--space-3)',
+                }}
+              >
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue-11)' }}>
+                  Your broker invitation is pending. They will be able to see your information once
+                  they accept.
                 </Text>
               </Card>
             )}
-          </YStack>
+          </Stack>
         </Card>
       )}
 
@@ -347,267 +438,389 @@ export default function MyBrokerPage() {
       {!broker && (
         <>
           {/* Connect by Code */}
-          <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1}>
-            <YStack gap="$4">
-              <XStack justifyContent="space-between" alignItems="center">
-                <YStack gap="$1">
-                  <H3 fontSize="$5" fontWeight="600" color="$color12">
+          <Card
+            style={{
+              backgroundColor: 'var(--color-background)',
+              borderRadius: 'var(--radius-4)',
+              border: '1px solid var(--color-border)',
+              padding: 'var(--space-5)',
+            }}
+          >
+            <Stack style={{ gap: 'var(--space-4)' }}>
+              <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <Stack style={{ gap: 'var(--space-1)' }}>
+                  <H3
+                    style={{
+                      fontSize: 'var(--font-size-5)',
+                      fontWeight: 600,
+                      color: 'var(--color-12)',
+                    }}
+                  >
                     Connect with Broker Code
                   </H3>
-                  <Text fontSize="$3" color="$color11">
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                     If your broker has given you a code, enter it here
                   </Text>
-                </YStack>
-                <TamaguiButton
-                  size="$3"
-                  variant="outlined"
-                  onPress={() => setShowCodeEntry(!showCodeEntry)}
+                </Stack>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowCodeEntry(!showCodeEntry)}
                 >
                   {showCodeEntry ? 'Hide' : 'Enter Code'}
-                </TamaguiButton>
-              </XStack>
+                </Button>
+              </Row>
 
               {showCodeEntry && (
                 <form onSubmit={handleConnectByCode}>
-                  <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-                    <YStack gap="$2">
-                      <Text fontSize="$2" fontWeight="500" color="$color11">
+                  <Stack
+                    style={{
+                      gap: 'var(--space-3)',
+                      borderTop: '1px solid var(--color-border)',
+                      paddingTop: 'var(--space-4)',
+                    }}
+                  >
+                    <Stack style={{ gap: 'var(--space-2)' }}>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-2)',
+                          fontWeight: 500,
+                          color: 'var(--color-11)',
+                        }}
+                      >
                         Broker Code (BKR-XXXXXX)
                       </Text>
                       <Input
                         placeholder="BKR-123456"
                         value={brokerCode}
-                        onChangeText={(text: string) => setBrokerCode(text.toUpperCase())}
+                        onChange={(e) => setBrokerCode(e.target.value.toUpperCase())}
                         disabled={connectingByCode}
-                        autoCapitalize="characters"
                       />
-                    </YStack>
+                    </Stack>
 
-                    <TamaguiButton
-                      size="$3"
-                      backgroundColor="$blue9"
-                      color="white"
-                      icon={connectingByCode ? <Loader2 size={16} /> : <CheckCircle size={16} />}
+                    <Button
+                      type="submit"
                       disabled={connectingByCode || !brokerCode.trim()}
-                      onPress={handleConnectByCode}
                     >
-                      {connectingByCode ? 'Connecting...' : 'Connect with Broker'}
-                    </TamaguiButton>
-                  </YStack>
+                      {connectingByCode ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Connecting...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle size={16} />
+                          Connect with Broker
+                        </>
+                      )}
+                    </Button>
+                  </Stack>
                 </form>
               )}
-            </YStack>
+            </Stack>
           </Card>
 
           {/* Invite Broker */}
-          <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1}>
-            <YStack gap="$4">
-              <XStack justifyContent="space-between" alignItems="center">
-                <YStack gap="$1">
-                  <H3 fontSize="$5" fontWeight="600" color="$color12">
+          <Card
+            style={{
+              backgroundColor: 'var(--color-background)',
+              borderRadius: 'var(--radius-4)',
+              border: '1px solid var(--color-border)',
+              padding: 'var(--space-5)',
+            }}
+          >
+            <Stack style={{ gap: 'var(--space-4)' }}>
+              <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <Stack style={{ gap: 'var(--space-1)' }}>
+                  <H3
+                    style={{
+                      fontSize: 'var(--font-size-5)',
+                      fontWeight: 600,
+                      color: 'var(--color-12)',
+                    }}
+                  >
                     Invite Your Broker
                   </H3>
-                  <Text fontSize="$3" color="$color11">
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}>
                     Send an email invitation to your insurance broker
                   </Text>
-                </YStack>
-                <TamaguiButton
-                  size="$3"
-                  variant="outlined"
-                  icon={<UserPlus size={16} />}
-                  onPress={() => setShowInviteForm(!showInviteForm)}
+                </Stack>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowInviteForm(!showInviteForm)}
                 >
+                  <UserPlus size={16} />
                   {showInviteForm ? 'Cancel' : 'Invite Broker'}
-                </TamaguiButton>
-              </XStack>
+                </Button>
+              </Row>
 
               {showInviteForm && (
                 <form onSubmit={handleSendInvitation}>
-                  <YStack gap="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
-                    <YStack gap="$2">
-                      <Text fontSize="$2" fontWeight="500" color="$color11">
+                  <Stack
+                    style={{
+                      gap: 'var(--space-3)',
+                      borderTop: '1px solid var(--color-border)',
+                      paddingTop: 'var(--space-4)',
+                    }}
+                  >
+                    <Stack style={{ gap: 'var(--space-2)' }}>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-2)',
+                          fontWeight: 500,
+                          color: 'var(--color-11)',
+                        }}
+                      >
                         Broker Email *
                       </Text>
                       <Input
                         placeholder="broker@example.com"
                         value={inviteFormData.email}
-                        onChangeText={(text: string) =>
-                          setInviteFormData({ ...inviteFormData, email: text })
+                        onChange={(e) =>
+                          setInviteFormData({ ...inviteFormData, email: e.target.value })
                         }
                         disabled={sendingInvite}
                       />
-                    </YStack>
+                    </Stack>
 
-                    <YStack gap="$2">
-                      <Text fontSize="$2" fontWeight="500" color="$color11">
+                    <Stack style={{ gap: 'var(--space-2)' }}>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-2)',
+                          fontWeight: 500,
+                          color: 'var(--color-11)',
+                        }}
+                      >
                         Broker Name *
                       </Text>
                       <Input
                         placeholder="John Smith"
                         value={inviteFormData.name}
-                        onChangeText={(text: string) =>
-                          setInviteFormData({ ...inviteFormData, name: text })
+                        onChange={(e) =>
+                          setInviteFormData({ ...inviteFormData, name: e.target.value })
                         }
                         disabled={sendingInvite}
                       />
-                    </YStack>
+                    </Stack>
 
-                    <XStack gap="$3">
-                      <YStack gap="$2" flex={1}>
-                        <Text fontSize="$2" fontWeight="500" color="$color11">
+                    <Row style={{ gap: 'var(--space-3)' }}>
+                      <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                        <Text
+                          style={{
+                            fontSize: 'var(--font-size-2)',
+                            fontWeight: 500,
+                            color: 'var(--color-11)',
+                          }}
+                        >
                           Company (Optional)
                         </Text>
                         <Input
                           placeholder="ABC Insurance"
                           value={inviteFormData.company}
-                          onChangeText={(text: string) =>
-                            setInviteFormData({ ...inviteFormData, company: text })
+                          onChange={(e) =>
+                            setInviteFormData({ ...inviteFormData, company: e.target.value })
                           }
                           disabled={sendingInvite}
                         />
-                      </YStack>
+                      </Stack>
 
-                      <YStack gap="$2" flex={1}>
-                        <Text fontSize="$2" fontWeight="500" color="$color11">
+                      <Stack style={{ gap: 'var(--space-2)', flex: 1 }}>
+                        <Text
+                          style={{
+                            fontSize: 'var(--font-size-2)',
+                            fontWeight: 500,
+                            color: 'var(--color-11)',
+                          }}
+                        >
                           Phone (Optional)
                         </Text>
                         <Input
                           placeholder="(555) 123-4567"
                           value={inviteFormData.phone}
-                          onChangeText={(text: string) =>
-                            setInviteFormData({ ...inviteFormData, phone: text })
+                          onChange={(e) =>
+                            setInviteFormData({ ...inviteFormData, phone: e.target.value })
                           }
                           disabled={sendingInvite}
                         />
-                      </YStack>
-                    </XStack>
+                      </Stack>
+                    </Row>
 
-                    <TamaguiButton
-                      size="$3"
-                      backgroundColor="$blue9"
-                      color="white"
-                      icon={sendingInvite ? <Loader2 size={16} /> : <Mail size={16} />}
+                    <Button
+                      type="submit"
                       disabled={sendingInvite || !inviteFormData.email || !inviteFormData.name}
-                      onPress={handleSendInvitation}
                     >
-                      {sendingInvite ? 'Sending...' : 'Send Invitation'}
-                    </TamaguiButton>
-                  </YStack>
+                      {sendingInvite ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Mail size={16} />
+                          Send Invitation
+                        </>
+                      )}
+                    </Button>
+                  </Stack>
                 </form>
               )}
-            </YStack>
+            </Stack>
           </Card>
         </>
       )}
 
       {/* Manager Code - For Contractors */}
-      <Card backgroundColor="$blue2" borderRadius="$4" borderWidth={1} borderColor="$blue6" padding="$5" elevation={1}>
-        <YStack gap="$3">
-          <YStack gap="$1">
-            <H3 fontSize="$5" fontWeight="600" color="$blue11">
+      <Card
+        style={{
+          backgroundColor: 'var(--color-blue-2)',
+          borderRadius: 'var(--radius-4)',
+          border: '1px solid var(--color-blue-6)',
+          padding: 'var(--space-5)',
+        }}
+      >
+        <Stack style={{ gap: 'var(--space-3)' }}>
+          <Stack style={{ gap: 'var(--space-1)' }}>
+            <H3
+              style={{
+                fontSize: 'var(--font-size-5)',
+                fontWeight: 600,
+                color: 'var(--color-blue-11)',
+              }}
+            >
               Your Manager Code
             </H3>
-            <Text fontSize="$3" color="$blue10">
+            <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-blue-10)' }}>
               Share this code with contractors to add them to your projects
             </Text>
-          </YStack>
+          </Stack>
 
-          <XStack gap="$2" alignItems="center">
+          <Row style={{ gap: 'var(--space-2)', alignItems: 'center' }}>
             <Card
-              backgroundColor="white"
-              borderColor="$blue6"
-              borderWidth={1}
-              borderRadius="$3"
-              padding="$3"
-              flex={1}
+              style={{
+                backgroundColor: 'white',
+                border: '1px solid var(--color-blue-6)',
+                borderRadius: 'var(--radius-3)',
+                padding: 'var(--space-3)',
+                flex: 1,
+              }}
             >
               <Text
-                fontSize="$5"
-                fontWeight="700"
-                color="$blue11"
-                fontFamily="$mono"
-                textAlign="center"
+                style={{
+                  fontSize: 'var(--font-size-5)',
+                  fontWeight: 700,
+                  color: 'var(--color-blue-11)',
+                  fontFamily: 'var(--font-mono)',
+                  textAlign: 'center',
+                }}
               >
                 {managerCode || 'Loading...'}
               </Text>
             </Card>
-            <TamaguiButton
-              size="$3"
-              icon={<Copy size={16} />}
-              backgroundColor="$blue9"
-              color="white"
-              onPress={copyManagerCode}
-              disabled={!managerCode}
-            >
+            <Button onClick={copyManagerCode} disabled={!managerCode}>
+              <Copy size={16} />
               Copy
-            </TamaguiButton>
-          </XStack>
-        </YStack>
+            </Button>
+          </Row>
+        </Stack>
       </Card>
 
       {/* Pending Invitations */}
       {pendingInvitations.length > 0 && (
-        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1}>
-          <YStack gap="$3">
-            <H3 fontSize="$5" fontWeight="600" color="$color12">
+        <Card
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 'var(--radius-4)',
+            border: '1px solid var(--color-border)',
+            padding: 'var(--space-5)',
+          }}
+        >
+          <Stack style={{ gap: 'var(--space-3)' }}>
+            <H3
+              style={{
+                fontSize: 'var(--font-size-5)',
+                fontWeight: 600,
+                color: 'var(--color-12)',
+              }}
+            >
               Pending Broker Invitations ({pendingInvitations.length})
             </H3>
-            <YStack gap="$2">
-              {pendingInvitations.map(inv => {
+            <Stack style={{ gap: 'var(--space-2)' }}>
+              {pendingInvitations.map((inv) => {
                 const metadata = inv.metadata as Record<string, unknown>;
                 return (
                   <Card
                     key={inv.id}
-                    backgroundColor="$background"
-                    borderColor="$borderColor"
-                    borderWidth={1}
-                    borderRadius="$3"
-                    padding="$3"
+                    style={{
+                      backgroundColor: 'var(--color-background)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-3)',
+                      padding: 'var(--space-3)',
+                    }}
                   >
-                    <XStack justifyContent="space-between" alignItems="center">
-                      <YStack gap="$1" flex={1}>
-                        <Text fontSize="$3" fontWeight="600" color="$color12">
-                          {metadata?.name || inv.invitee_email}
+                    <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Stack style={{ gap: 'var(--space-1)', flex: 1 }}>
+                        <Text
+                          style={{
+                            fontSize: 'var(--font-size-3)',
+                            fontWeight: 600,
+                            color: 'var(--color-12)',
+                          }}
+                        >
+                          {(metadata?.name as string) || inv.invitee_email}
                         </Text>
-                        <Text fontSize="$2" color="$color11">
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-11)' }}>
                           {inv.invitee_email}
                         </Text>
                         {metadata?.company && (
-                          <Text fontSize="$2" color="$color10">
-                            {metadata.company}
+                          <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-10)' }}>
+                            {metadata.company as string}
                           </Text>
                         )}
-                      </YStack>
-                      <XStack gap="$2" alignItems="center">
-                        <Clock size={14} color="$orange10" />
-                        <Text fontSize="$2" color="$orange10">
+                      </Stack>
+                      <Row style={{ gap: 'var(--space-2)', alignItems: 'center' }}>
+                        <Clock size={14} color="var(--color-orange-10)" />
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange-10)' }}>
                           Pending
                         </Text>
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
                   </Card>
                 );
               })}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
       )}
 
       {/* Help Text */}
-      <Card backgroundColor="$gray2" borderRadius="$4" borderWidth={1} borderColor="$gray6" padding="$4">
-        <YStack gap="$2">
-          <XStack gap="$2" alignItems="center">
-            <AlertCircle size={16} color="$color11" />
-            <Text fontSize="$3" fontWeight="600" color="$color12">
+      <Card
+        style={{
+          backgroundColor: 'var(--color-gray-2)',
+          borderRadius: 'var(--radius-4)',
+          border: '1px solid var(--color-gray-6)',
+          padding: 'var(--space-4)',
+        }}
+      >
+        <Stack style={{ gap: 'var(--space-2)' }}>
+          <Row style={{ gap: 'var(--space-2)', alignItems: 'center' }}>
+            <AlertCircle size={16} color="var(--color-11)" />
+            <Text
+              style={{
+                fontSize: 'var(--font-size-3)',
+                fontWeight: 600,
+                color: 'var(--color-12)',
+              }}
+            >
               About Broker Connections
             </Text>
-          </XStack>
-          <Text fontSize="$2" color="$color11">
-            You can only have one insurance broker. Once connected, your broker will be able to manage your insurance policies and compliance requirements.
+          </Row>
+          <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-11)' }}>
+            You can only have one insurance broker. Once connected, your broker will be able to
+            manage your insurance policies and compliance requirements.
           </Text>
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   );
 }
-

@@ -14,7 +14,7 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, AlertCircle, Building2, Clock } from 'lucide-react';
-import { YStack, XStack, Text, Button, Card, H1, H2, H3 } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, Card, Heading, colors, spacing } from '@unicornlove/beyond-ui';
 import { trpc } from '../../../../lib/trpc';
 import StatusBadge from '../../../../components/Common/StatusBadge';
 
@@ -76,76 +76,77 @@ export default function ClientProfilePage() {
   // Loading state
   if (isLoading) {
     return (
-      <YStack
-        minHeight="100vh"
-        backgroundColor="$gray2"
+      <Stack
+        style={{ minHeight: '100vh', backgroundColor: colors.gray[100] }}
         data-testid="client-profile-container"
       >
-        <YStack
-          maxWidth={1120}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          paddingVertical="$8"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
+        <Stack
+          style={{
+            maxWidth: 1120,
+            marginHorizontal: 'auto',
+            paddingHorizontal: spacing[16],
+            paddingVertical: spacing[32],
+            '@media (min-width: 640px)': { paddingHorizontal: spacing[24] },
+            '@media (min-width: 1024px)': { paddingHorizontal: spacing[32] },
+          }}
           data-testid="client-profile-content"
         >
-          <YStack opacity={0.5}>
-            <YStack height={32} backgroundColor="$gray4" borderRadius="$2" width="25%" marginBottom="$4" />
-            <YStack height={16} backgroundColor="$gray4" borderRadius="$2" width="50%" marginBottom="$8" />
-            <Card padding="$6" marginBottom="$6">
-              <YStack height={24} backgroundColor="$gray4" borderRadius="$2" width="33%" marginBottom="$4" />
-              <YStack height={16} backgroundColor="$gray4" borderRadius="$2" width="100%" marginBottom="$2" />
-              <YStack height={16} backgroundColor="$gray4" borderRadius="$2" width="75%" />
+          <Stack style={{ opacity: 0.5 }}>
+            <Stack style={{ height: 32, backgroundColor: colors.gray[200], borderRadius: 8, width: '25%', marginBottom: spacing[16] }} />
+            <Stack style={{ height: 16, backgroundColor: colors.gray[200], borderRadius: 8, width: '50%', marginBottom: spacing[32] }} />
+            <Card style={{ padding: spacing[24], marginBottom: spacing[24] }}>
+              <Stack style={{ height: 24, backgroundColor: colors.gray[200], borderRadius: 8, width: '33%', marginBottom: spacing[16] }} />
+              <Stack style={{ height: 16, backgroundColor: colors.gray[200], borderRadius: 8, width: '100%', marginBottom: spacing[8] }} />
+              <Stack style={{ height: 16, backgroundColor: colors.gray[200], borderRadius: 8, width: '75%' }} />
             </Card>
-          </YStack>
-        </YStack>
-      </YStack>
+          </Stack>
+        </Stack>
+      </Stack>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <YStack
-        minHeight="100vh"
-        backgroundColor="$gray2"
+      <Stack
+        style={{ minHeight: '100vh', backgroundColor: colors.gray[100] }}
         data-testid="client-profile-container"
       >
-        <YStack
-          maxWidth={1120}
-          marginHorizontal="auto"
-          paddingHorizontal="$4"
-          paddingVertical="$8"
-          $gtSm={{ paddingHorizontal: '$6' }}
-          $gtLg={{ paddingHorizontal: '$8' }}
+        <Stack
+          style={{
+            maxWidth: 1120,
+            marginHorizontal: 'auto',
+            paddingHorizontal: spacing[16],
+            paddingVertical: spacing[32],
+            '@media (min-width: 640px)': { paddingHorizontal: spacing[24] },
+            '@media (min-width: 1024px)': { paddingHorizontal: spacing[32] },
+          }}
           data-testid="client-profile-content"
         >
           <Button
             onPress={handleBack}
-            backgroundColor="transparent"
-            color="$gray11"
-            hoverStyle={{ color: '$gray12' }}
-            marginBottom="$4"
+            variant="text"
+            color="gray"
+            style={{ marginBottom: spacing[16] }}
           >
-            <XStack alignItems="center" gap="$1">
+            <Row alignItems="center" gap={spacing[4]}>
               <ArrowLeft size={16} />
-              <Text fontSize="$2">Back</Text>
-            </XStack>
+              <Text size="xs">Back</Text>
+            </Row>
           </Button>
-          <YStack backgroundColor="$red2" borderWidth={1} borderColor="$red6" borderRadius="$4" padding="$6">
-            <XStack alignItems="center" gap="$2">
-              <AlertCircle size={20} color="$red11" />
-              <H3 color="$red11">
+          <Stack style={{ backgroundColor: colors.error[200], borderWidth: 1, borderColor: colors.error[400], borderRadius: spacing[16], padding: spacing[24] }}>
+            <Row alignItems="center" gap={spacing[8]}>
+              <AlertCircle size={20} color={colors.error[600]} />
+              <Heading level={3} color={colors.error[600]}>
                 Error Loading Client
-              </H3>
-            </XStack>
-            <Text marginTop="$2" fontSize="$2" color="$red11">
+              </Heading>
+            </Row>
+            <Text style={{ marginTop: spacing[8] }} size="xs" color={colors.error[600]}>
               {error.message || 'Failed to load client profile'}
             </Text>
-          </YStack>
-        </YStack>
-      </YStack>
+          </Stack>
+        </Stack>
+      </Stack>
     );
   }
 
@@ -154,164 +155,168 @@ export default function ClientProfilePage() {
   const recentActivity = profileData?.recentActivity || [];
 
   return (
-    <YStack
-      minHeight="100vh"
-      backgroundColor="$gray2"
+    <Stack
+      style={{ minHeight: '100vh', backgroundColor: colors.gray[100] }}
       data-testid="client-profile-container"
     >
-      <YStack
-        maxWidth={1120}
-        marginHorizontal="auto"
-        paddingHorizontal="$4"
-        paddingVertical="$8"
-        $gtSm={{ paddingHorizontal: '$6' }}
-        $gtLg={{ paddingHorizontal: '$8' }}
+      <Stack
+        style={{
+          maxWidth: 1120,
+          marginHorizontal: 'auto',
+          paddingHorizontal: spacing[16],
+          paddingVertical: spacing[32],
+          '@media (min-width: 640px)': { paddingHorizontal: spacing[24] },
+          '@media (min-width: 1024px)': { paddingHorizontal: spacing[32] },
+        }}
         data-testid="client-profile-content"
       >
         {/* Header */}
-        <YStack marginBottom="$8">
+        <Stack style={{ marginBottom: spacing[32] }}>
           <Button
             onPress={handleBack}
-            backgroundColor="transparent"
-            color="$gray11"
-            hoverStyle={{ color: '$gray12' }}
-            marginBottom="$4"
+            variant="text"
+            color="gray"
+            style={{ marginBottom: spacing[16] }}
           >
-            <XStack alignItems="center" gap="$1">
+            <Row alignItems="center" gap={spacing[4]}>
               <ArrowLeft size={16} />
-              <Text fontSize="$2">Back</Text>
-            </XStack>
+              <Text size="xs">Back</Text>
+            </Row>
           </Button>
-          <H1>Client Profile</H1>
-          <Text marginTop="$2" fontSize="$5" color="$gray12" data-testid="client-name">
+          <Heading level={1}>Client Profile</Heading>
+          <Text style={{ marginTop: spacing[8] }} size="lg" color={colors.text.light.primary} as="div" data-testid="client-name">
             {clientName}
           </Text>
-          <Text marginTop="$1" fontSize="$1" color="$gray10" data-testid="client-id">
+          <Text style={{ marginTop: spacing[4] }} size="xs" color={colors.text.light.tertiary} data-testid="client-id">
             {clientId}
           </Text>
-        </YStack>
+        </Stack>
 
         {/* GC Relationships Section */}
-        <Card padding="$6" marginBottom="$6">
-          <H3 marginBottom="$4">
+        <Card style={{ padding: spacing[24], marginBottom: spacing[24] }}>
+          <Heading level={3} style={{ marginBottom: spacing[16] }}>
             GC Relationships
-          </H3>
+          </Heading>
           {gcRelationships.length > 0 ? (
-            <YStack gap="$3" data-testid="gc-relationships-list">
+            <Stack gap={spacing[12]} data-testid="gc-relationships-list">
               {gcRelationships.map((relationship) => (
-                <XStack
+                <Row
                   key={relationship.gcId}
                   alignItems="center"
                   justifyContent="space-between"
-                  padding="$4"
-                  backgroundColor="$gray2"
-                  borderRadius="$4"
-                  borderWidth={1}
-                  borderColor="$gray4"
+                  style={{
+                    padding: spacing[16],
+                    backgroundColor: colors.gray[100],
+                    borderRadius: spacing[16],
+                    borderWidth: 1,
+                    borderColor: colors.gray[200],
+                  }}
                   data-testid="gc-relationship-item"
                 >
-                  <XStack alignItems="center" gap="$3">
-                    <YStack width={40} height={40} borderRadius={9999} backgroundColor="$blue2" alignItems="center" justifyContent="center">
-                      <Building2 size={20} color="$blue11" />
-                    </YStack>
-                    <YStack>
+                  <Row alignItems="center" gap={spacing[12]}>
+                    <Stack style={{ width: 40, height: 40, borderRadius: 9999, backgroundColor: colors.primary[200], alignItems: 'center', justifyContent: 'center' }}>
+                      <Building2 size={20} color={colors.primary[600]} />
+                    </Stack>
+                    <Stack>
                       <Link
                         to={`/clients/${relationship.gcId}`}
                         data-testid="gc-name-link"
                       >
-                        <Text fontWeight="500" color="$blue11" hoverStyle={{ color: '$blue12', textDecorationLine: 'underline' }}>
+                        <Text weight="medium" color={colors.primary[600]} style={{ textDecorationLine: 'underline' }}>
                           {relationship.gcName}
                         </Text>
                       </Link>
-                      <Text fontSize="$2" color="$gray11">
+                      <Text size="xs" color={colors.text.light.secondary}>
                         Compliance Score: {relationship.complianceScore}%
                       </Text>
-                    </YStack>
-                  </XStack>
+                    </Stack>
+                  </Row>
                   <StatusBadge
                     status={relationship.complianceStatus as 'compliant' | 'warning' | 'critical'}
                     size="sm"
                     data-testid="compliance-badge"
                   />
-                </XStack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           ) : (
-            <Text fontSize="$2" color="$gray11" textAlign="center" paddingVertical="$4">
+            <Text size="xs" color={colors.text.light.secondary} style={{ textAlign: 'center', paddingVertical: spacing[16] }}>
               No GC relationships found for this client
             </Text>
           )}
         </Card>
 
         {/* Compliance Status Section - Summary view */}
-        <Card padding="$6" marginBottom="$6">
-          <H3 marginBottom="$4">
+        <Card style={{ padding: spacing[24], marginBottom: spacing[24] }}>
+          <Heading level={3} style={{ marginBottom: spacing[16] }}>
             Compliance Status
-          </H3>
+          </Heading>
           {gcRelationships.length > 0 ? (
-            <XStack flexWrap="wrap" gap="$4" data-testid="compliance-summary">
-              <Card padding="$4" backgroundColor="$green2" borderWidth={1} borderColor="$green6" flex={1} minWidth={200}>
-                <Text fontSize="$2" color="$green11" fontWeight="500">Compliant</Text>
-                <Text fontSize="$8" fontWeight="700" color="$green12">
+            <Row style={{ flexWrap: 'wrap', gap: spacing[16] }} data-testid="compliance-summary">
+              <Card style={{ padding: spacing[16], backgroundColor: colors.success[200], borderWidth: 1, borderColor: colors.success[400], flex: 1, minWidth: 200 }}>
+                <Text size="xs" color={colors.success[600]} weight="medium">Compliant</Text>
+                <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.success[700]}>
                   {gcRelationships.filter((r) => r.complianceStatus === 'compliant').length}
                 </Text>
               </Card>
-              <Card padding="$4" backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" flex={1} minWidth={200}>
-                <Text fontSize="$2" color="$yellow11" fontWeight="500">Warning</Text>
-                <Text fontSize="$8" fontWeight="700" color="$yellow12">
+              <Card style={{ padding: spacing[16], backgroundColor: colors.warning[200], borderWidth: 1, borderColor: colors.warning[400], flex: 1, minWidth: 200 }}>
+                <Text size="xs" color={colors.warning[600]} weight="medium">Warning</Text>
+                <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.warning[700]}>
                   {gcRelationships.filter((r) => r.complianceStatus === 'warning').length}
                 </Text>
               </Card>
-              <Card padding="$4" backgroundColor="$red2" borderWidth={1} borderColor="$red6" flex={1} minWidth={200}>
-                <Text fontSize="$2" color="$red11" fontWeight="500">Critical</Text>
-                <Text fontSize="$8" fontWeight="700" color="$red12">
+              <Card style={{ padding: spacing[16], backgroundColor: colors.error[200], borderWidth: 1, borderColor: colors.error[400], flex: 1, minWidth: 200 }}>
+                <Text size="xs" color={colors.error[600]} weight="medium">Critical</Text>
+                <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.error[700]}>
                   {gcRelationships.filter((r) => r.complianceStatus === 'critical').length}
                 </Text>
               </Card>
-            </XStack>
+            </Row>
           ) : (
-            <Text fontSize="$2" color="$gray11" textAlign="center" paddingVertical="$4">
+            <Text size="xs" color={colors.text.light.secondary} style={{ textAlign: 'center', paddingVertical: spacing[16] }}>
               No compliance data available
             </Text>
           )}
         </Card>
 
         {/* Recent Activity Section */}
-        <Card padding="$6">
-          <H3 marginBottom="$4">
+        <Card style={{ padding: spacing[24] }}>
+          <Heading level={3} style={{ marginBottom: spacing[16] }}>
             Recent Activity
-          </H3>
+          </Heading>
           {recentActivity.length > 0 ? (
-            <YStack gap={0} maxHeight={320} overflowY="auto" data-testid="activity-feed">
+            <Stack style={{ gap: 0, maxHeight: 320, overflowY: 'auto' }} data-testid="activity-feed">
               {recentActivity.map((activity, index) => (
-                <XStack
+                <Row
                   key={activity.id}
                   alignItems="flex-start"
-                  gap="$3"
-                  paddingVertical="$3"
-                  borderBottomWidth={index !== recentActivity.length - 1 ? 1 : 0}
-                  borderColor="$gray4"
+                  gap={spacing[12]}
+                  style={{
+                    paddingVertical: spacing[12],
+                    borderBottomWidth: index !== recentActivity.length - 1 ? 1 : 0,
+                    borderBottomColor: colors.gray[200],
+                  }}
                   data-testid="activity-item"
                 >
-                  <YStack flexShrink={0} width={32} height={32} borderRadius={9999} backgroundColor="$gray3" alignItems="center" justifyContent="center">
-                    <Clock size={16} color="$gray11" />
-                  </YStack>
-                  <YStack flex={1} minWidth={0}>
-                    <Text fontSize="$2" color="$gray12">{activity.description}</Text>
-                    <Text fontSize="$1" color="$gray11">
+                  <Stack style={{ flexShrink: 0, width: 32, height: 32, borderRadius: 9999, backgroundColor: colors.gray[150], alignItems: 'center', justifyContent: 'center' }}>
+                    <Clock size={16} color={colors.text.light.secondary} />
+                  </Stack>
+                  <Stack style={{ flex: 1, minWidth: 0 }}>
+                    <Text size="xs" color={colors.text.light.primary}>{activity.description}</Text>
+                    <Text size="xs" color={colors.text.light.secondary}>
                       {formatTimestamp(activity.timestamp)}
                     </Text>
-                  </YStack>
-                </XStack>
+                  </Stack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           ) : (
-            <Text fontSize="$2" color="$gray11" textAlign="center" paddingVertical="$4">
+            <Text size="xs" color={colors.text.light.secondary} style={{ textAlign: 'center', paddingVertical: spacing[16] }}>
               No recent activity
             </Text>
           )}
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   );
 }

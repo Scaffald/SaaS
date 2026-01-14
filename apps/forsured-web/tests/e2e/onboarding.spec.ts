@@ -36,7 +36,7 @@ test.describe('Onboarding Flows', () => {
     // Verify dropdown opened (combobox should have expanded state)
     await expect(selectTrigger).toHaveAttribute('aria-expanded', 'true');
 
-    // Note: Full form submission tested via skip flow since Tamagui Select
+    // Note: Full form submission tested via skip flow since Beyond UI Select
     // requires special handling for option selection in Playwright
   });
 
@@ -48,7 +48,7 @@ test.describe('Onboarding Flows', () => {
     // Wait for the page to fully render
     await expect(page.getByRole('heading', { name: 'Welcome, General Contractor' })).toBeVisible({ timeout: 10000 });
 
-    // Click Skip for now button - use JavaScript click for Tamagui button compatibility
+    // Click Skip for now button - use JavaScript click for Beyond UI button compatibility
     const skipButton = page.getByRole('button', { name: /skip for now/i });
     await expect(skipButton).toBeVisible({ timeout: 10000 });
     await skipButton.scrollIntoViewIfNeeded();
@@ -96,7 +96,7 @@ test.describe('Onboarding Flows', () => {
     // Wait for the page to fully load
     await expect(page.getByRole('heading', { name: /subcontractor prequalification|complete your profile/i })).toBeVisible({ timeout: 10000 });
 
-    // Click Skip for now button - use JavaScript click for Tamagui button compatibility
+    // Click Skip for now button - use JavaScript click for Beyond UI button compatibility
     const skipButton = page.getByRole('button', { name: /skip for now/i });
     await expect(skipButton).toBeVisible({ timeout: 10000 });
     await skipButton.scrollIntoViewIfNeeded();
@@ -147,7 +147,7 @@ test.describe('Onboarding Flows', () => {
     // Wait for page to fully load
     await expect(page.getByRole('heading', { name: 'Welcome, Insurance Broker' })).toBeVisible({ timeout: 10000 });
 
-    // Click Skip for now button - use JavaScript click for Tamagui button compatibility
+    // Click Skip for now button - use JavaScript click for Beyond UI button compatibility
     const skipButton = page.getByRole('button', { name: /skip for now/i });
     await expect(skipButton).toBeVisible({ timeout: 10000 });
     await skipButton.scrollIntoViewIfNeeded();

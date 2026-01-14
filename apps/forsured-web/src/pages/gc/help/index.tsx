@@ -1,7 +1,7 @@
 // src/pages/gc/help/index.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { YStack, Text, Spinner } from '@unicornlove/ui';
+import { Stack, Text, Spinner } from '@unicornlove/beyond-ui';
 import HelpArticle from '../../help/HelpArticle';
 import { getHelpArticleBySlug, HelpArticle as ArticleType } from '../../../services/helpArticleService';
 
@@ -32,30 +32,30 @@ function GCHelpGettingStarted() {
 
   if (loading) {
     return (
-      <YStack padding="$6" alignItems="center" gap="$4">
-        <Spinner size="large" />
-        <Text color="$color11">Loading help article...</Text>
-      </YStack>
+      <Stack style={{ padding: 'var(--space-6)', alignItems: 'center', gap: 'var(--space-4)' }}>
+        <Spinner size="lg" />
+        <Text style={{ color: 'var(--color-11)' }}>Loading help article...</Text>
+      </Stack>
     );
   }
 
   if (error) {
     return (
-      <YStack padding="$6">
-        <Text color="$red10" fontSize="$4" fontWeight="500">
+      <Stack style={{ padding: 'var(--space-6)' }}>
+        <Text style={{ color: 'var(--color-red-10)', fontSize: 'var(--font-size-4)', fontWeight: 500 }}>
           Error: {error.message}
         </Text>
-      </YStack>
+      </Stack>
     );
   }
 
   if (!article) {
     return (
-      <YStack padding="$6">
-        <Text color="$color11" fontSize="$4">
+      <Stack style={{ padding: 'var(--space-6)' }}>
+        <Text style={{ color: 'var(--color-11)', fontSize: 'var(--font-size-4)' }}>
           Article not found.
         </Text>
-      </YStack>
+      </Stack>
     );
   }
 

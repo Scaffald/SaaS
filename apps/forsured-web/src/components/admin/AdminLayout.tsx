@@ -1,9 +1,9 @@
 /**
- * AdminLayout - Admin layout using Tamagui
+ * AdminLayout - Admin layout using Beyond UI
  */
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { XStack, YStack, Text, styled } from '@unicornlove/ui';
+import { Stack, Row, Text } from '@unicornlove/beyond-ui';
 
 const adminMenuItems = [
   { path: '/admin/dashboard', label: 'Dashboard' },
@@ -16,61 +16,51 @@ const adminMenuItems = [
   { path: '/admin/settings', label: 'Settings' },
 ];
 
-const NavItem = styled(XStack, {
-  name: 'AdminNavItem',
-  display: 'block',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$3',
-  
-  variants: {
-    active: {
-      true: {
-        backgroundColor: '$blue9',
-        color: '$color1',
-      },
-      false: {
-        color: '$color11',
-        hoverStyle: {
-          backgroundColor: '$backgroundHover',
-        },
-      },
-    },
-  } as const,
-});
+function getNavItemStyle(isActive: boolean): React.CSSProperties {
+  return {
+    display: 'block',
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderRadius: 8,
+    backgroundColor: isActive ? 'var(--color-blue-9)' : 'transparent',
+    color: isActive ? 'var(--color-1)' : 'var(--color-11)',
+  };
+}
 
 function AdminLayout() {
   return (
-    <XStack minHeight="100vh" backgroundColor="$backgroundHover">
-      <YStack
+    <Row style={{ minHeight: '100vh', backgroundColor: 'var(--color-background-hover)' }}>
+      <Stack
         as="aside"
-        width={256}
-        backgroundColor="$backgroundHover"
-        shadowColor="$shadowColor"
-        shadowRadius={8}
-        shadowOffset={{ width: 4, height: 0 }}
-        padding="$4"
-        gap="$6"
+        style={{
+          width: 256,
+          backgroundColor: 'var(--color-background-hover)',
+          boxShadow: '4px 0 8px var(--color-shadow)',
+          padding: 16,
+          gap: 24,
+        }}
       >
-        <Text fontSize="$6" fontWeight="600" mb="$6">
+        <Text style={{ fontSize: 18, fontWeight: 600, marginBottom: 24 }}>
           Admin Panel
         </Text>
-        <YStack as="nav" gap="$2">
+        <Stack as="nav" style={{ gap: 8 }}>
           {adminMenuItems.map((item) => (
             <NavLink key={item.path} to={item.path}>
               {({ isActive }) => (
-                <NavItem active={isActive}>
+                <Row style={getNavItemStyle(isActive)}>
                   <Text>{item.label}</Text>
-                </NavItem>
+                </Row>
               )}
             </NavLink>
           ))}
-        </YStack>
-      </YStack>
-      <YStack as="main" flex={1} padding="$6">
+        </Stack>
+      </Stack>
+      <Stack as="main" style={{ flex: 1, padding: 24 }}>
         <Outlet />
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   );
 }
 

@@ -1,8 +1,8 @@
 // src/pages/admin/Users.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, RefreshCcw, Users as UsersIcon } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Spinner } from '@unicornlove/ui';
-import { EmptyState } from '@unicornlove/ui';
+import { Stack, Row, Text, Button, H1, H3, Card, Input, Spinner } from '@unicornlove/beyond-ui';
+import { EmptyState } from '../../ui/EmptyState';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getUsers,
@@ -95,75 +95,67 @@ function AdminUsers() {
 
   if (isLoading && users.length === 0) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <XStack alignItems="center" gap="$2">
-          <Spinner size="large" color="$blue10" />
+      <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
+        <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+          <Spinner size="large" />
           <Text>Loading users...</Text>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     );
   }
 
   if (error) {
     return (
-      <Card padding="$6" borderRadius="$4" backgroundColor="$red4">
-        <Text color="$red11">Error: {error}</Text>
-        <Button onPress={handleRefresh} marginTop="$2" backgroundColor="transparent" padding={0}>
-          <Text color="$blue10" textDecorationLine="underline">Try again</Text>
+      <Card style={{ padding: 'var(--space-6)', borderRadius: 'var(--radius-4)', backgroundColor: 'var(--color-red-4)' }}>
+        <Text style={{ color: 'var(--color-red-11)' }}>Error: {error}</Text>
+        <Button onClick={handleRefresh} variant="ghost" style={{ marginTop: 'var(--space-2)', padding: 0 }}>
+          <Text style={{ color: 'var(--color-blue-10)', textDecoration: 'underline' }}>Try again</Text>
         </Button>
       </Card>
     );
   }
 
   return (
-    <YStack>
-      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-        <H1 fontSize="$8" fontWeight="700">User Management</H1>
-        <XStack gap="$3">
+    <Stack>
+      <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
+        <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 700 }}>User Management</H1>
+        <Row style={{ gap: 'var(--space-3)' }}>
           <Button
-            onPress={handleRefresh}
+            onClick={handleRefresh}
             disabled={isLoading}
-            icon={isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
-            paddingHorizontal="$4"
-            paddingVertical="$2"
-            borderWidth={1}
-            borderRadius="$4"
-            hoverStyle={{ backgroundColor: "$backgroundHover" }}
-            opacity={isLoading ? 0.5 : 1}
+            variant="outline"
+            style={{ paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', borderRadius: 'var(--radius-4)', opacity: isLoading ? 0.5 : 1 }}
           >
-            Refresh
+            <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
+              {isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
+              <span>Refresh</span>
+            </Row>
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
-      <Card padding="$6" borderRadius="$4" elevation={1} backgroundColor="$background" marginBottom="$6">
-        <XStack alignItems="center" gap="$4" marginBottom="$4">
-          <XStack position="relative" flex={1}>
+      <Card style={{ padding: 'var(--space-6)', borderRadius: 'var(--radius-4)', backgroundColor: 'var(--color-background)', marginBottom: 'var(--space-6)' }}>
+        <Row style={{ alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+          <Row style={{ position: 'relative', flex: 1 }}>
             <Search
               size={18}
-              color="$color10"
-              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
+              style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 1, color: 'var(--color-10)' }}
             />
             <Input
               type="text"
               placeholder="Search by name, email, or company"
-              width="100%"
-              paddingLeft="$10"
-              paddingRight="$4"
-              paddingVertical="$2"
-              borderWidth={1}
-              borderRadius="$4"
+              style={{ width: '100%', paddingLeft: 'var(--space-10)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', borderWidth: 1, borderRadius: 'var(--radius-4)' }}
               value={searchQuery}
-              onChangeText={setSearchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </XStack>
+          </Row>
           <select
             id="roleFilter"
             style={{
               padding: '8px',
               borderWidth: 1,
               borderStyle: 'solid',
-              borderColor: 'var(--borderColor)',
+              borderColor: 'var(--color-border)',
               borderRadius: '12px',
               fontSize: 14,
             }}
@@ -182,7 +174,7 @@ function AdminUsers() {
               padding: '8px',
               borderWidth: 1,
               borderStyle: 'solid',
-              borderColor: 'var(--borderColor)',
+              borderColor: 'var(--color-border)',
               borderRadius: '12px',
               fontSize: 14,
             }}
@@ -193,7 +185,7 @@ function AdminUsers() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-        </XStack>
+        </Row>
 
         {filteredUsers.length === 0 ? (
           <EmptyState
@@ -209,25 +201,25 @@ function AdminUsers() {
           <table style={{ width: '100%', minWidth: '100%' }}>
             <thead>
               <tr>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Name</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Email</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Role</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Company</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Onboarding</th>
-                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Actions</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Name</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Email</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Role</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Company</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Onboarding</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)', textAlign: 'left' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.map((u) => (
                 <tr key={u.id}>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Text>{u.name}</Text>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Text>{u.email}</Text>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
-                    <XStack alignItems="center" gap="$2">
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
+                    <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                       <select
                         value={u.user_type}
                         onChange={(e) => handleChangeUserRole(u.id, e.target.value as UserType)}
@@ -236,7 +228,7 @@ function AdminUsers() {
                           padding: '4px',
                           borderWidth: 1,
                           borderStyle: 'solid',
-                          borderColor: 'var(--borderColor)',
+                          borderColor: 'var(--color-border)',
                           borderRadius: '12px',
                           fontSize: 14,
                           opacity: updatingUserId === u.id ? 0.5 : 1,
@@ -248,32 +240,37 @@ function AdminUsers() {
                         <option value="admin">Admin</option>
                       </select>
                       {updatingUserId === u.id && (
-                        <Spinner size="small" color="$blue10" />
+                        <Spinner size="small" />
                       )}
-                    </XStack>
+                    </Row>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Text>{u.company || '—'}</Text>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
-                      backgroundColor={u.onboarding_completed ? '$green4' : '$yellow4'}
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
+                    <Row
+                      style={{
+                        paddingLeft: 'var(--space-2)',
+                        paddingRight: 'var(--space-2)',
+                        paddingTop: 'var(--space-1)',
+                        paddingBottom: 'var(--space-1)',
+                        borderRadius: 'var(--radius-2)',
+                        backgroundColor: u.onboarding_completed ? 'var(--color-green-4)' : 'var(--color-yellow-4)',
+                        display: 'inline-flex'
+                      }}
                     >
-                      <Text fontSize="$1" color={u.onboarding_completed ? '$green11' : '$yellow11'}>
+                      <Text style={{ fontSize: 'var(--font-size-1)', color: u.onboarding_completed ? 'var(--color-green-11)' : 'var(--color-yellow-11)' }}>
                         {u.onboarding_completed ? 'Complete' : 'In Progress'}
                       </Text>
-                    </XStack>
+                    </Row>
                   </td>
-                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--color-border)' }}>
                     <Button
-                      onPress={() => handleViewActivity(u.id)}
-                      backgroundColor="transparent"
-                      padding={0}
+                      onClick={() => handleViewActivity(u.id)}
+                      variant="ghost"
+                      style={{ padding: 0 }}
                     >
-                      <Text color="$blue10" textDecorationLine="underline">View Activity</Text>
+                      <Text style={{ color: 'var(--color-blue-10)', textDecoration: 'underline' }}>View Activity</Text>
                     </Button>
                   </td>
                 </tr>
@@ -283,47 +280,46 @@ function AdminUsers() {
         )}
 
         {showActivityLog && (
-          <Card marginTop="$6" padding="$4" borderWidth={1} borderRadius="$4" backgroundColor="$backgroundHover">
-            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
-              <H3 fontSize="$6" fontWeight="600">
+          <Card style={{ marginTop: 'var(--space-6)', padding: 'var(--space-4)', borderWidth: 1, borderRadius: 'var(--radius-4)', backgroundColor: 'var(--color-background-hover)' }}>
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
+              <H3 style={{ fontSize: 'var(--font-size-6)', fontWeight: 600 }}>
                 Activity Log for {users.find((u) => u.id === showActivityLog)?.name}
               </H3>
               <Button
-                onPress={() => setShowActivityLog(null)}
-                backgroundColor="transparent"
-                padding="$1"
-                hoverStyle={{ backgroundColor: "$background" }}
+                onClick={() => setShowActivityLog(null)}
+                variant="ghost"
+                style={{ padding: 'var(--space-1)' }}
               >
-                <Text color="$color11">Close</Text>
+                <Text style={{ color: 'var(--color-11)' }}>Close</Text>
               </Button>
-            </XStack>
+            </Row>
             {activityLoading ? (
-              <YStack alignItems="center" justifyContent="center" paddingVertical="$4">
-                <Spinner size="small" color="$blue10" />
-              </YStack>
+              <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)' }}>
+                <Spinner size="small" />
+              </Stack>
             ) : userActivity.length === 0 ? (
-              <Text color="$color11" fontSize="$3">No activity recorded</Text>
+              <Text style={{ color: 'var(--color-11)', fontSize: 'var(--font-size-3)' }}>No activity recorded</Text>
             ) : (
-              <YStack gap="$2">
+              <Stack style={{ gap: 'var(--space-2)' }}>
                 {userActivity.map((activity) => (
-                  <XStack key={activity.id} gap="$2">
-                    <Text fontSize="$3" color="$color10">
+                  <Row key={activity.id} style={{ gap: 'var(--space-2)' }}>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
                       [{new Date(activity.created_at).toLocaleString()}]
                     </Text>
-                    <Text fontSize="$3" color="$color12">
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>
                       {activity.action}
                       {activity.target_type && (
-                        <Text fontSize="$3" color="$color11"> on {activity.target_type}</Text>
+                        <span style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-11)' }}> on {activity.target_type}</span>
                       )}
                     </Text>
-                  </XStack>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
           </Card>
         )}
       </Card>
-    </YStack>
+    </Stack>
   );
 }
 
