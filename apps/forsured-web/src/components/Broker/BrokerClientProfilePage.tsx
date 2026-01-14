@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -13,12 +13,18 @@ import {
   TrendingUp,
   Users,
   Calendar,
+  Upload,
+  Download,
+  Trash2,
+  Loader2,
 } from 'lucide-react';
 import { Stack, Row, Text, H1, H3, Card } from '@unicornlove/beyond-ui';
 import { Tabs as TabsCustom } from '../../ui/Tabs';
 import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
 import { useProjects } from '../../hooks/useProjects';
+import { useClientDocuments } from '../../hooks/useClientDocuments';
+import { useAuth } from '../../contexts/AuthContext';
 import Button from '../Common/Button';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 
@@ -26,9 +32,22 @@ export default function BrokerClientProfilePage() {
   const { clientId } = useParams<{ clientId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { clients, loading: clientsLoading } = useClients();
   const { policies, loading: policiesLoading } = usePolicies();
   const { projects, loading: projectsLoading } = useProjects();
+  const { 
+    documents, 
+    loading: documentsLoading, 
+    uploading, 
+    uploadDocument, 
+    deleteDocument 
+  } = useClientDocuments({ clientId: clientId || '' });
+  
+  // File upload state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadCategory, setUploadCategory] = useState<'compliance' | 'insurance' | 'contract' | 'general'>('general');
+  const [isDragging, setIsDragging] = useState(false);
 
   const client = clients.find((c) => c.id === clientId);
   const clientPolicies = policies.filter((p) => p.client_id === clientId);
@@ -592,26 +611,215 @@ export default function BrokerClientProfilePage() {
       id: 'documents',
       label: 'Documents',
       icon: FileText,
+      badge: documents.length || undefined,
       content: (
-        <Card
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '48px 24px',
-            backgroundColor: 'var(--color-background)',
-            borderRadius: 12,
-            border: '1px solid var(--color-border)',
-          }}
-        >
-          <FileText color="var(--color-text-muted)" size={48} style={{ marginBottom: 16 }} />
-          <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
-            Documents Coming Soon
-          </H3>
-          <Text muted>
-            Document management for this client will be available in a future update.
-          </Text>
-        </Card>
+        <Stack gap={24}>
+          {/* Upload Section */}
+          <Card
+            style={{
+              backgroundColor: 'var(--color-background)',
+              borderRadius: 12,
+              border: '1px solid var(--color-border)',
+              padding: 24,
+            }}
+          >
+            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
+              Upload Documents
+            </H3>
+            
+            {/* Category Selection */}
+            <Row gap={8} style={{ marginBottom: 16, flexWrap: 'wrap' }}>
+              {(['compliance', 'insurance', 'contract', 'general'] as const).map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setUploadCategory(cat)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 8,
+                    border: 'none',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    backgroundColor: uploadCategory === cat ? 'var(--color-orange-9)' : 'var(--color-gray-3)',
+                    color: uploadCategory === cat ? 'white' : 'var(--color-text-muted)',
+                  }}
+                >
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </button>
+              ))}
+            </Row>
+            
+            {/* Drop Zone */}
+            <div
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
+              onDrop={async (e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && user?.id) {
+                  try {
+                    await uploadDocument(files[0], user.id, uploadCategory);
+                  } catch (err) {
+                    // Error already handled in hook
+                  }
+                }
+              }}
+              style={{
+                border: `2px dashed ${isDragging ? 'var(--color-orange-9)' : 'var(--color-border)'}`,
+                borderRadius: 12,
+                padding: 32,
+                textAlign: 'center',
+                backgroundColor: isDragging ? 'var(--color-orange-2)' : 'var(--color-gray-1)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf"
+                style={{ display: 'none' }}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (file && user?.id) {
+                    try {
+                      await uploadDocument(file, user.id, uploadCategory);
+                    } catch (err) {
+                      // Error already handled in hook
+                    }
+                  }
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                  }
+                }}
+              />
+              {uploading ? (
+                <Row alignItems="center" justifyContent="center" gap={8}>
+                  <Loader2 size={24} className="animate-spin" style={{ color: 'var(--color-orange-9)' }} />
+                  <Text>Uploading...</Text>
+                </Row>
+              ) : (
+                <Stack alignItems="center" gap={8}>
+                  <Upload size={32} style={{ color: 'var(--color-text-muted)' }} />
+                  <Text weight="medium">Drop PDF files here or click to browse</Text>
+                  <Text size="sm" muted>Maximum file size: 10MB</Text>
+                </Stack>
+              )}
+            </div>
+          </Card>
+
+          {/* Documents Table */}
+          <Card
+            style={{
+              backgroundColor: 'var(--color-background)',
+              borderRadius: 12,
+              border: '1px solid var(--color-border)',
+              padding: 24,
+            }}
+          >
+            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
+              Client Documents ({documents.length})
+            </H3>
+            
+            {documentsLoading ? (
+              <Row alignItems="center" justifyContent="center" style={{ padding: 48 }}>
+                <Loader2 size={32} className="animate-spin" style={{ color: 'var(--color-orange-9)' }} />
+              </Row>
+            ) : documents.length > 0 ? (
+              <Stack gap={8}>
+                {documents.map((doc) => (
+                  <Card
+                    key={doc.id}
+                    style={{
+                      backgroundColor: 'var(--color-gray-2)',
+                      borderRadius: 8,
+                      padding: 16,
+                    }}
+                  >
+                    <Row alignItems="center" justifyContent="space-between">
+                      <Row alignItems="center" gap={12} style={{ flex: 1 }}>
+                        <FileText size={20} style={{ color: 'var(--color-text-muted)' }} />
+                        <Stack style={{ flex: 1 }}>
+                          <Text weight="medium" style={{ wordBreak: 'break-word' }}>
+                            {doc.file_name}
+                          </Text>
+                          <Row gap={12} style={{ marginTop: 4 }}>
+                            <Text size="xs" muted>
+                              {(doc.file_size / 1024).toFixed(1)} KB
+                            </Text>
+                            <Text size="xs" muted>
+                              {new Date(doc.uploaded_at).toLocaleDateString()}
+                            </Text>
+                            <span
+                              style={{
+                                fontSize: 11,
+                                padding: '2px 6px',
+                                borderRadius: 4,
+                                backgroundColor: 'var(--color-blue-2)',
+                                color: 'var(--color-blue-11)',
+                              }}
+                            >
+                              {doc.category}
+                            </span>
+                          </Row>
+                        </Stack>
+                      </Row>
+                      <Row gap={8}>
+                        <button
+                          type="button"
+                          onClick={() => window.open(doc.file_url, '_blank')}
+                          style={{
+                            padding: 8,
+                            borderRadius: 8,
+                            border: 'none',
+                            backgroundColor: 'var(--color-gray-3)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                          title="Download"
+                        >
+                          <Download size={16} style={{ color: 'var(--color-text-muted)' }} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm('Are you sure you want to delete this document?')) {
+                              deleteDocument(doc.id);
+                            }
+                          }}
+                          style={{
+                            padding: 8,
+                            borderRadius: 8,
+                            border: 'none',
+                            backgroundColor: 'var(--color-red-2)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                          title="Delete"
+                        >
+                          <Trash2 size={16} style={{ color: 'var(--color-red-10)' }} />
+                        </button>
+                      </Row>
+                    </Row>
+                  </Card>
+                ))}
+              </Stack>
+            ) : (
+              <Stack alignItems="center" style={{ padding: 48 }}>
+                <FileText size={48} style={{ color: 'var(--color-text-muted)', marginBottom: 16 }} />
+                <Text weight="medium" style={{ marginBottom: 4 }}>No Documents</Text>
+                <Text size="sm" muted>Upload documents using the form above</Text>
+              </Stack>
+            )}
+          </Card>
+        </Stack>
       ),
     },
   ];
