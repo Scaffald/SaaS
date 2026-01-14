@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, TrendingUp, AlertTriangle, Shield, Users, Building2, HardHat, UserPlus } from 'lucide-react';
-import { Stack, Row, Text, H1 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, Button } from '@unicornlove/beyond-ui';
 import { EmptyState } from '../../ui/EmptyState';
 import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
@@ -217,23 +217,13 @@ export default function BrokerClientsPage() {
               Manage your client portfolio and monitor compliance
             </Text>
           </Stack>
-          <button
-            type="button"
-            onClick={() => setIsInviteModalOpen(true)}
-            style={{
-              ...orangeButtonStyle,
-              padding: '10px 16px',
-              borderRadius: 8,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              fontSize: 14,
-            }}
+          <Button
+            color="primary"
+            iconStart={UserPlus}
+            onPress={() => setIsInviteModalOpen(true)}
           >
-            <UserPlus size={16} />
             Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
-          </button>
+          </Button>
         </Row>
 
         {/* Stats Overview Row */}
