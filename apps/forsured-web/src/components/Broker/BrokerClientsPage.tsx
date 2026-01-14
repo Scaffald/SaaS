@@ -260,47 +260,6 @@ export default function BrokerClientsPage() {
           <div 
             style={{
               ...statCardStyle,
-              border: activeFilter === 'all' ? '2px solid var(--color-orange-9)' : '1px solid var(--color-gray-4)',
-              boxShadow: activeFilter === 'all' ? '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)' : '0 1px 3px rgba(0, 0, 0, 0.08)',
-            }}
-            onClick={() => setActiveFilter('all')}
-            onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
-              if (activeFilter !== 'all') {
-                e.currentTarget.style.borderColor = 'var(--color-orange-6)';
-              }
-            }}
-            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
-              if (activeFilter !== 'all') {
-                e.currentTarget.style.borderColor = 'var(--color-gray-4)';
-              }
-            }}
-          >
-            <Row alignItems="center" justifyContent="space-between">
-              <Stack>
-                <Text size="sm" muted>Total Clients</Text>
-                <Text size="2xl" weight="bold" style={{ marginTop: 4 }}>
-                  {stats.total}
-                </Text>
-              </Stack>
-              <div style={iconBoxStyle('blue')}>
-                <Users size={20} style={{ color: 'var(--color-blue-10)' }} />
-              </div>
-            </Row>
-            <Row gap={12} style={{ marginTop: 12 }}>
-              <Row alignItems="center" gap={4}>
-                <Building2 size={14} style={{ color: 'var(--color-purple-10)' }} />
-                <Text size="sm" style={{ color: 'var(--color-purple-10)' }}>{stats.managersCount} Mgrs</Text>
-              </Row>
-              <Row alignItems="center" gap={4}>
-                <HardHat size={14} style={{ color: 'var(--color-blue-10)' }} />
-                <Text size="sm" style={{ color: 'var(--color-blue-10)' }}>{stats.contractorsCount} Subs</Text>
-              </Row>
-            </Row>
-          </div>
-
-          <div 
-            style={{
-              ...statCardStyle,
               border: activeFilter === 'manager' ? '2px solid var(--color-orange-9)' : '1px solid var(--color-gray-4)',
               boxShadow: activeFilter === 'manager' ? '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)' : '0 1px 3px rgba(0, 0, 0, 0.08)',
             }}
