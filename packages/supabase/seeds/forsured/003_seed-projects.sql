@@ -94,6 +94,39 @@ VALUES
     '50000000-0000-0000-0000-000000000003',  -- Active GC User
     NOW() - INTERVAL '365 days',
     NOW() - INTERVAL '30 days'
+  ),
+
+  -- =========================================================
+  -- PROJECTS FOR TEST-GC USER (test-gc@forsured.test)
+  -- Organization: 60000000-0000-0000-0000-000000000031
+  -- Manager: 10000000-0000-0000-0000-000000000001
+  -- =========================================================
+  (
+    '90000000-0000-0000-0000-000000000001',
+    'Downtown Office Renovation',
+    NULL,
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    '10000000-0000-0000-0000-000000000001',  -- test-gc@forsured.test
+    NOW() - INTERVAL '90 days',
+    NOW() - INTERVAL '1 day'
+  ),
+  (
+    '90000000-0000-0000-0000-000000000002',
+    'Residential Complex - Phase 1',
+    NULL,
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    '10000000-0000-0000-0000-000000000001',  -- test-gc@forsured.test
+    NOW() - INTERVAL '60 days',
+    NOW() - INTERVAL '2 days'
+  ),
+  (
+    '90000000-0000-0000-0000-000000000003',
+    'Shopping Center Expansion',
+    NULL,
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    '10000000-0000-0000-0000-000000000001',  -- test-gc@forsured.test
+    NOW() - INTERVAL '30 days',
+    NOW() - INTERVAL '1 day'
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -290,6 +323,73 @@ VALUES
     ARRAY[]::TEXT[],
     NOW() - INTERVAL '120 days',
     NOW() - INTERVAL '120 days'
+  ),
+
+  -- =========================================================
+  -- PROJECT REQUIREMENTS FOR TEST-GC PROJECTS
+  -- =========================================================
+  -- Downtown Office Renovation requirements
+  (
+    '94000000-0000-0000-0000-000000000001',
+    '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'general_liability',
+    2000000.00,
+    ARRAY['additional_insured', 'waiver_of_subrogation'],
+    NOW() - INTERVAL '90 days',
+    NOW() - INTERVAL '90 days'
+  ),
+  (
+    '94000000-0000-0000-0000-000000000002',
+    '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'workers_comp',
+    1000000.00,
+    ARRAY[]::TEXT[],
+    NOW() - INTERVAL '90 days',
+    NOW() - INTERVAL '90 days'
+  ),
+  -- Residential Complex requirements
+  (
+    '94000000-0000-0000-0000-000000000011',
+    '90000000-0000-0000-0000-000000000002',  -- Residential Complex
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'general_liability',
+    3000000.00,
+    ARRAY['additional_insured'],
+    NOW() - INTERVAL '60 days',
+    NOW() - INTERVAL '60 days'
+  ),
+  (
+    '94000000-0000-0000-0000-000000000012',
+    '90000000-0000-0000-0000-000000000002',  -- Residential Complex
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'workers_comp',
+    1000000.00,
+    ARRAY[]::TEXT[],
+    NOW() - INTERVAL '60 days',
+    NOW() - INTERVAL '60 days'
+  ),
+  -- Shopping Center Expansion requirements
+  (
+    '94000000-0000-0000-0000-000000000021',
+    '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'general_liability',
+    5000000.00,
+    ARRAY['additional_insured', 'waiver_of_subrogation'],
+    NOW() - INTERVAL '30 days',
+    NOW() - INTERVAL '30 days'
+  ),
+  (
+    '94000000-0000-0000-0000-000000000022',
+    '90000000-0000-0000-0000-000000000003',  -- Shopping Center Expansion
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'auto',
+    1000000.00,
+    ARRAY[]::TEXT[],
+    NOW() - INTERVAL '30 days',
+    NOW() - INTERVAL '30 days'
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -336,6 +436,40 @@ VALUES
     NULL,
     NOW() - INTERVAL '60 days',
     NOW() - INTERVAL '60 days'
+  ),
+
+  -- =========================================================
+  -- PROJECT PARTICIPANTS FOR TEST-GC PROJECTS
+  -- =========================================================
+  -- Downtown Office Renovation participants
+  (
+    '90000000-0000-0000-0000-000000000001',
+    '10000000-0000-0000-0000-000000000001',  -- test-gc@forsured.test
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'manager',
+    NULL,
+    NOW() - INTERVAL '90 days',
+    NOW() - INTERVAL '90 days'
+  ),
+  -- Residential Complex participants
+  (
+    '90000000-0000-0000-0000-000000000002',
+    '10000000-0000-0000-0000-000000000001',  -- test-gc@forsured.test
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'manager',
+    NULL,
+    NOW() - INTERVAL '60 days',
+    NOW() - INTERVAL '60 days'
+  ),
+  -- Shopping Center Expansion participants
+  (
+    '90000000-0000-0000-0000-000000000003',
+    '10000000-0000-0000-0000-000000000001',  -- test-gc@forsured.test
+    '60000000-0000-0000-0000-000000000031',  -- Test Construction Company
+    'manager',
+    NULL,
+    NOW() - INTERVAL '30 days',
+    NOW() - INTERVAL '30 days'
   )
 ON CONFLICT (project_id, user_id) DO NOTHING;
 
