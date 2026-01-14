@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Search, Calendar, MessageSquare, Users, Shield, Building2, HardHat } from 'lucide-react';
-import { Stack, Row, Text, H2, Card, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui';
 import type { BrokerClient, PolicyData, ComplianceData } from '../../types';
 import { formatDistanceToNow } from '../../utils/dateHelpers';
 import type { ClientBrokerCount } from '../../hooks/useClientBrokerCounts';
@@ -348,19 +348,23 @@ export default function ClientsTable({
 
         {/* Filters Row */}
         <Row gap={16} style={{ flexWrap: 'wrap' }}>
-          <Stack style={{ position: 'relative', flex: 1, minWidth: '18%' }}>
-            <Stack
+          <div style={{ position: 'relative', flex: 1, minWidth: '18%' }}>
+            <div
               style={{
                 position: 'absolute',
                 left: 12,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none',
               }}
             >
               <Search size={18} style={{ color: 'var(--color-text-muted)' }} />
-            </Stack>
-            <Input
+            </div>
+            <input
               type="text"
               placeholder="Search clients..."
               value={searchTerm}
@@ -369,13 +373,16 @@ export default function ClientsTable({
                 width: '100%',
                 paddingLeft: 40,
                 paddingRight: 16,
-                paddingTop: 8,
-                paddingBottom: 8,
-                border: '1px solid var(--color-border)',
+                paddingTop: 10,
+                paddingBottom: 10,
+                border: '1px solid var(--color-gray-4)',
                 borderRadius: 8,
+                fontSize: 14,
+                backgroundColor: 'white',
+                outline: 'none',
               }}
             />
-          </Stack>
+          </div>
 
           <select
             value={riskFilter}
