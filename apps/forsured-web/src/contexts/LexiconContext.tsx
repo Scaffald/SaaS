@@ -29,7 +29,7 @@ const DEFAULT_LEXICON: Record<string, string> = {
   'nav.integrations': 'Integrations',
   'nav.help': 'Help',
   'nav.relationships': 'Relationships',
-  'nav.managers': 'GCs',
+  'nav.managers': 'Managers',
   'nav.clients': 'Clients',
   'nav.insurance': 'Insurance',
   'nav.team': 'Team',
