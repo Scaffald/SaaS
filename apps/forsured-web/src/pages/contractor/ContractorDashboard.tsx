@@ -5,6 +5,8 @@ import React from 'react';
 import { Stack, Row, Text, Card, Chip } from '@unicornlove/beyond-ui';
 import { LayoutDashboard, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { EmptyState } from '../../ui/EmptyState';
+import PageTransition from '../../components/Common/PageTransition';
+import AnimatedList from '../../components/Common/AnimatedList';
 
 // Mock tasks for testing
 const mockTasks = [
@@ -52,90 +54,95 @@ function ContractorDashboard() {
   };
 
   return (
-    <Stack style={{ gap: 'var(--space-6)' }}>
-      <Text
-        style={{
-          fontSize: 'var(--font-size-8)',
-          fontWeight: 700,
-          marginBottom: 'var(--space-6)',
-        }}
-      >
-        Contractor Dashboard
-      </Text>
-      {!hasActiveProjects ? (
-        <EmptyState
-          icon={<LayoutDashboard size={48} />}
-          title="No Active Projects"
-          description="You are not currently assigned to any active projects. New projects will appear here."
-          primaryAction={{ label: 'View All Projects', onClick: handleViewProjects }}
-          helpLinks={[
-            { label: 'How to Get Project Invites', href: '#' },
-          ]}
-        />
-      ) : (
-        <Stack style={{ gap: 'var(--space-4)' }}>
-          <Text
-            style={{
-              fontSize: 'var(--font-size-5)',
-              fontWeight: 600,
-            }}
-          >
-            Pending Tasks
-          </Text>
+    <PageTransition>
+      <Stack style={{ gap: 'var(--space-6)' }}>
+        <Text
+          style={{
+            fontSize: 'var(--font-size-8)',
+            fontWeight: 700,
+            marginBottom: 'var(--space-6)',
+          }}
+        >
+          Contractor Dashboard
+        </Text>
+        {!hasActiveProjects ? (
+          <EmptyState
+            icon={<LayoutDashboard size={48} />}
+            title="No Active Projects"
+            description="You are not currently assigned to any active projects. New projects will appear here."
+            primaryAction={{ label: 'View All Projects', onClick: handleViewProjects }}
+            helpLinks={[
+              { label: 'How to Get Project Invites', href: '#' },
+            ]}
+          />
+        ) : (
           <Stack style={{ gap: 'var(--space-4)' }}>
-            {mockTasks.map((task) => (
-              <Card
-                key={task.id}
-                data-testid="task-card"
-                style={{
-                  padding: 'var(--space-4)',
-                  cursor: 'pointer',
-                }}
-              >
-                <Row
+            <Text
+              style={{
+                fontSize: 'var(--font-size-5)',
+                fontWeight: 600,
+              }}
+            >
+              Pending Tasks
+            </Text>
+            <AnimatedList
+              items={mockTasks}
+              keyExtractor={(task) => task.id}
+              gap={16}
+            >
+              {(task) => (
+                <Card
+                  data-testid="task-card"
                   style={{
-                    alignItems: 'flex-start',
-                    justifyContent: 'space-between',
+                    padding: 'var(--space-4)',
+                    cursor: 'pointer',
                   }}
                 >
-                  <Stack style={{ flex: 1, gap: 'var(--space-1)' }}>
-                    <Row
-                      style={{
-                        alignItems: 'center',
-                        gap: 'var(--space-2)',
-                        marginBottom: 'var(--space-1)',
-                      }}
-                    >
-                      {getStatusIcon(task.status)}
-                      <Text style={{ fontWeight: 500 }}>{task.title}</Text>
-                    </Row>
-                    <Text
-                      style={{
-                        fontSize: 'var(--font-size-2)',
-                        color: 'var(--color-10)',
-                      }}
-                    >
-                      Project: {task.project}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 'var(--font-size-2)',
-                        color: 'var(--color-9)',
-                      }}
-                    >
-                      Due: {task.dueDate}
-                    </Text>
-                  </Stack>
-                  <Chip type={getPriorityType(task.priority)} size="sm">
-                    {task.priority}
-                  </Chip>
-                </Row>
-              </Card>
-            ))}
+                  <Row
+                    style={{
+                      alignItems: 'flex-start',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Stack style={{ flex: 1, gap: 'var(--space-1)' }}>
+                      <Row
+                        style={{
+                          alignItems: 'center',
+                          gap: 'var(--space-2)',
+                          marginBottom: 'var(--space-1)',
+                        }}
+                      >
+                        {getStatusIcon(task.status)}
+                        <Text style={{ fontWeight: 500 }}>{task.title}</Text>
+                      </Row>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-2)',
+                          color: 'var(--color-10)',
+                        }}
+                      >
+                        Project: {task.project}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-2)',
+                          color: 'var(--color-9)',
+                        }}
+                      >
+                        Due: {task.dueDate}
+                      </Text>
+                    </Stack>
+                    <Chip type={getPriorityType(task.priority)} size="sm">
+                      {task.priority}
+                    </Chip>
+                  </Row>
+                </Card>
+              )}
+            </AnimatedList>
           </Stack>
-        </Stack>
-      )}
-    </Stack>
+        )}
+      </Stack>
+    </PageTransition>
   );
 }
 
