@@ -199,8 +199,25 @@ describe('useControlledState', () => {
       expect(result.current[0]).toBe('new value')
     })
 
-    it('should handle null values', () => {
-      const { result } = renderHook(() => useControlledState<string | null>(null, null))
+    it('should handle null values in controlled mode', () => {
+      const onChange = vi.fn()
+      const { result } = renderHook(() => useControlledState<string | null>(null, null, onChange))
+
+      // In controlled mode with null
+      expect(result.current[0]).toBe(null)
+
+      act(() => {
+        result.current[1]('not null anymore')
+      })
+
+      // Value stays null because it's controlled (parent must update it)
+      expect(result.current[0]).toBe(null)
+      // But onChange is called
+      expect(onChange).toHaveBeenCalledWith('not null anymore')
+    })
+
+    it('should handle null as default value in uncontrolled mode', () => {
+      const { result } = renderHook(() => useControlledState<string | null>(undefined, null))
 
       expect(result.current[0]).toBe(null)
 

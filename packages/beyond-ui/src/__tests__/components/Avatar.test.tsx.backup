@@ -5,14 +5,8 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
 import { describe, it, expect, vi } from 'vitest'
-import { ThemeProvider } from "./../../playground/ThemeProvider"
 import { Avatar } from '../../components/Avatar'
 import type { AvatarSize, AvatarColor, AvatarStatus } from '../../components/Avatar'
-
-// Wrapper component for tests
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <ThemeProvider>{children}</ThemeProvider>
-)
 
 // Mock icon component for testing
 const MockIcon = () => <></>
@@ -20,31 +14,29 @@ const MockIcon = () => <></>
 describe('Avatar', () => {
   describe('Basic Rendering', () => {
     it('should render avatar with initials', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="JD" /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="JD" />)
       expect(getByText('JD')).toBeTruthy()
     })
 
     it('should render avatar with image', () => {
       const { getByLabelText } = render(
-        <TestWrapper>
-          <Avatar src="https://example.com/avatar.jpg" alt="User avatar" />
-        </TestWrapper>
+        <Avatar src="https://example.com/avatar.jpg" alt="User avatar" />,
       )
       expect(getByLabelText('User avatar')).toBeTruthy()
     })
 
     it('should render avatar with icon', () => {
-      const { container } = render(<TestWrapper><Avatar icon={<MockIcon />} /></TestWrapper>)
+      const { container } = render(<Avatar icon={<MockIcon />} />)
       expect(container).toBeTruthy()
     })
 
     it('should convert initials to uppercase', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="jd" /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="jd" />)
       expect(getByText('JD')).toBeTruthy()
     })
 
     it('should truncate initials to 2 characters', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="ABCD" /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="ABCD" />)
       expect(getByText('AB')).toBeTruthy()
     })
   })
@@ -54,13 +46,13 @@ describe('Avatar', () => {
 
     sizes.forEach((size) => {
       it(`should render ${size}px avatar`, () => {
-        const { getByText } = render(<TestWrapper><Avatar size={size} initials="JD" /></TestWrapper>)
+        const { getByText } = render(<Avatar size={size} initials="JD" />)
         expect(getByText('JD')).toBeTruthy()
       })
     })
 
     it('should use default size of 40px', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="JD" /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="JD" />)
       expect(getByText('JD')).toBeTruthy()
     })
   })
@@ -70,7 +62,7 @@ describe('Avatar', () => {
 
     colors.forEach((color) => {
       it(`should render ${color} colored avatar`, () => {
-        const { getByText } = render(<TestWrapper><Avatar color={color} initials="JD" /></TestWrapper>)
+        const { getByText } = render(<Avatar color={color} initials="JD" />)
         expect(getByText('JD')).toBeTruthy()
       })
     })
@@ -78,12 +70,12 @@ describe('Avatar', () => {
 
   describe('Ring Border', () => {
     it('should render avatar without ring by default', () => {
-      const { container } = render(<TestWrapper><Avatar initials="JD" /></TestWrapper>)
+      const { container } = render(<Avatar initials="JD" />)
       expect(container).toBeTruthy()
     })
 
     it('should render avatar with ring when showRing is true', () => {
-      const { container } = render(<TestWrapper><Avatar initials="JD" showRing /></TestWrapper>)
+      const { container } = render(<Avatar initials="JD" showRing />)
       expect(container).toBeTruthy()
     })
   })
@@ -93,43 +85,43 @@ describe('Avatar', () => {
 
     statuses.forEach((status) => {
       it(`should render avatar with ${status} status`, () => {
-        const { container } = render(<TestWrapper><Avatar initials="JD" status={status} /></TestWrapper>)
+        const { container } = render(<Avatar initials="JD" status={status} />)
         expect(container).toBeTruthy()
       })
     })
 
     it('should not render status by default', () => {
-      const { container } = render(<TestWrapper><Avatar initials="JD" /></TestWrapper>)
+      const { container } = render(<Avatar initials="JD" />)
       expect(container).toBeTruthy()
     })
   })
 
   describe('Badges', () => {
     it('should render verified badge', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="JD" verified /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="JD" verified />)
       expect(getByText('✓')).toBeTruthy()
     })
 
     it('should render star badge', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="JD" star /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="JD" star />)
       expect(getByText('★')).toBeTruthy()
     })
 
     it('should render custom badge', () => {
       const CustomBadge = () => <></>
-      const { container } = render(<TestWrapper><Avatar initials="JD" badge={<CustomBadge />} /></TestWrapper>)
+      const { container } = render(<Avatar initials="JD" badge={<CustomBadge />} />)
       expect(container).toBeTruthy()
     })
 
     it('should prioritize verified over star', () => {
-      const { getByText, queryByText } = render(<TestWrapper><Avatar initials="JD" verified star /></TestWrapper>)
+      const { getByText, queryByText } = render(<Avatar initials="JD" verified star />)
       expect(getByText('✓')).toBeTruthy()
       expect(queryByText('★')).toBeNull()
     })
 
     it('should prioritize verified over custom badge', () => {
       const CustomBadge = () => <></>
-      const { getByText } = render(<TestWrapper><Avatar initials="JD" verified badge={<CustomBadge />} /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="JD" verified badge={<CustomBadge />} />)
       expect(getByText('✓')).toBeTruthy()
     })
   })
@@ -137,14 +129,14 @@ describe('Avatar', () => {
   describe('Clickable Avatar', () => {
     it('should call onPress when clicked', () => {
       const onPress = vi.fn()
-      const { getByRole } = render(<TestWrapper><Avatar initials="JD" onPress={onPress} /></TestWrapper>)
+      const { getByRole } = render(<Avatar initials="JD" onPress={onPress} />)
 
       fireEvent.press(getByRole('button'))
       expect(onPress).toHaveBeenCalledTimes(1)
     })
 
     it('should not be clickable without onPress prop', () => {
-      const { queryByRole } = render(<TestWrapper><Avatar initials="JD" /></TestWrapper>)
+      const { queryByRole } = render(<Avatar initials="JD" />)
       expect(queryByRole('button')).toBeNull()
     })
   })
@@ -152,7 +144,6 @@ describe('Avatar', () => {
   describe('Image Loading', () => {
     it('should show initials on image error', () => {
       const { getByText, getByLabelText } = render(
-        <TestWrapper>
         <Avatar src="invalid-url" initials="JD" alt="Avatar" />,
       )
 
@@ -167,7 +158,6 @@ describe('Avatar', () => {
       const onError = vi.fn()
       const { getByLabelText } = render(
         <Avatar src="invalid-url" initials="JD" alt="Avatar" onError={onError} />,
-        </TestWrapper>
       )
 
       // Trigger error
@@ -179,7 +169,6 @@ describe('Avatar', () => {
 
     it('should handle image error without onError callback', () => {
       const { getByLabelText, getByText } = render(
-        <TestWrapper>
         <Avatar src="invalid-url" initials="JD" alt="Avatar" />,
       )
 
@@ -195,50 +184,49 @@ describe('Avatar', () => {
 
   describe('Accessibility', () => {
     it('should have proper accessibility role', () => {
-      const { getByRole } = render(<TestWrapper><Avatar initials="JD" alt="User avatar" /></TestWrapper>)
-        </TestWrapper>
+      const { getByRole } = render(<Avatar initials="JD" alt="User avatar" />)
       expect(getByRole('image')).toBeTruthy()
     })
 
     it('should use alt text as accessibility label', () => {
-      const { getByLabelText } = render(<TestWrapper><Avatar initials="JD" alt="John Doe" /></TestWrapper>)
+      const { getByLabelText } = render(<Avatar initials="JD" alt="John Doe" />)
       expect(getByLabelText(/John Doe/)).toBeTruthy()
     })
 
     it('should include status in accessibility label', () => {
-      const { getByLabelText } = render(<TestWrapper><Avatar initials="JD" alt="John" status="online" /></TestWrapper>)
+      const { getByLabelText } = render(<Avatar initials="JD" alt="John" status="online" />)
       expect(getByLabelText(/status: online/)).toBeTruthy()
     })
 
     it('should include verified in accessibility label', () => {
-      const { getByLabelText } = render(<TestWrapper><Avatar initials="JD" alt="John" verified /></TestWrapper>)
+      const { getByLabelText } = render(<Avatar initials="JD" alt="John" verified />)
       expect(getByLabelText(/verified/)).toBeTruthy()
     })
 
     it('should include star in accessibility label', () => {
-      const { getByLabelText } = render(<TestWrapper><Avatar initials="JD" alt="John" star /></TestWrapper>)
+      const { getByLabelText } = render(<Avatar initials="JD" alt="John" star />)
       expect(getByLabelText(/starred/)).toBeTruthy()
     })
 
     it('should have accessibility hint for status', () => {
-      const { getByLabelText } = render(<TestWrapper><Avatar initials="JD" status="busy" alt="John" /></TestWrapper>)
+      const { getByLabelText } = render(<Avatar initials="JD" status="busy" alt="John" />)
       expect(getByLabelText(/User status: busy/)).toBeTruthy()
     })
 
     it('should have accessibility hint for clickable avatar', () => {
       const onPress = vi.fn()
-      const { getByLabelText } = render(<TestWrapper><Avatar initials="JD" onPress={onPress} alt="John" /></TestWrapper>)
+      const { getByLabelText } = render(<Avatar initials="JD" onPress={onPress} alt="John" />)
       expect(getByLabelText(/Double tap to open profile/)).toBeTruthy()
     })
 
     it('should use default label when alt is not provided', () => {
-      const { getByLabelText } = render(<TestWrapper><Avatar initials="JD" /></TestWrapper>)
+      const { getByLabelText } = render(<Avatar initials="JD" />)
       expect(getByLabelText(/Avatar/)).toBeTruthy()
     })
 
     it('should have live region for dynamic status', () => {
       // This is implicitly tested through the presence of accessibilityLiveRegion
-      const { container } = render(<TestWrapper><Avatar initials="JD" status="online" /></TestWrapper>)
+      const { container } = render(<Avatar initials="JD" status="online" />)
       expect(container).toBeTruthy()
     })
   })
@@ -246,7 +234,6 @@ describe('Avatar', () => {
   describe('Type Priority', () => {
     it('should prioritize image over initials', () => {
       const { getByLabelText, queryByText } = render(
-        <TestWrapper>
         <Avatar src="https://example.com/avatar.jpg" initials="JD" alt="Avatar" />,
       )
 
@@ -257,20 +244,19 @@ describe('Avatar', () => {
     it('should prioritize image over icon', () => {
       const { getByLabelText } = render(
         <Avatar src="https://example.com/avatar.jpg" icon={<MockIcon />} alt="Avatar" />,
-        </TestWrapper>
       )
 
       expect(getByLabelText('Avatar')).toBeTruthy()
     })
 
     it('should prioritize initials over icon', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="JD" icon={<MockIcon />} /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="JD" icon={<MockIcon />} />)
 
       expect(getByText('JD')).toBeTruthy()
     })
 
     it('should show icon when no image or initials', () => {
-      const { container } = render(<TestWrapper><Avatar icon={<MockIcon />} /></TestWrapper>)
+      const { container } = render(<Avatar icon={<MockIcon />} />)
       expect(container).toBeTruthy()
     })
   })
@@ -278,13 +264,13 @@ describe('Avatar', () => {
   describe('Custom Styles', () => {
     it('should apply custom container style', () => {
       const customStyle = { marginTop: 20 }
-      const { container } = render(<TestWrapper><Avatar initials="JD" containerStyle={customStyle} /></TestWrapper>)
+      const { container } = render(<Avatar initials="JD" containerStyle={customStyle} />)
       expect(container).toBeTruthy()
     })
 
     it('should apply custom avatar style', () => {
       const customStyle = { borderWidth: 2 }
-      const { container } = render(<TestWrapper><Avatar initials="JD" avatarStyle={customStyle} /></TestWrapper>)
+      const { container } = render(<Avatar initials="JD" avatarStyle={customStyle} />)
       expect(container).toBeTruthy()
     })
   })
@@ -292,7 +278,6 @@ describe('Avatar', () => {
   describe('Complex Scenarios', () => {
     it('should render large avatar with ring, status, and verified badge', () => {
       const { getByText, container } = render(
-        <TestWrapper>
         <Avatar size={64} initials="JD" showRing status="online" verified />,
       )
 
@@ -305,7 +290,6 @@ describe('Avatar', () => {
       const onPress = vi.fn()
       const { getByText, getByRole } = render(
         <Avatar color="primary" initials="JD" star onPress={onPress} />,
-        </TestWrapper>
       )
 
       expect(getByText('JD')).toBeTruthy()
@@ -320,7 +304,6 @@ describe('Avatar', () => {
       const onError = vi.fn()
 
       const { getByText, container } = render(
-        <TestWrapper>
         <Avatar
           size={48}
           color="success"
@@ -335,7 +318,6 @@ describe('Avatar', () => {
           onPress={onPress}
           onError={onError}
         />,
-        </TestWrapper>
       )
 
       // Should render with all features
@@ -346,33 +328,32 @@ describe('Avatar', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty initials string', () => {
-      const { container } = render(<TestWrapper><Avatar initials="" /></TestWrapper>)
+      const { container } = render(<Avatar initials="" />)
       expect(container).toBeTruthy()
     })
 
     it('should handle single character initials', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="J" /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="J" />)
       expect(getByText('J')).toBeTruthy()
     })
 
     it('should handle whitespace in initials', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="J D" /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="J D" />)
       expect(getByText('J ')).toBeTruthy()
     })
 
     it('should handle special characters in initials', () => {
-      const { getByText } = render(<TestWrapper><Avatar initials="J@" /></TestWrapper>)
+      const { getByText } = render(<Avatar initials="J@" />)
       expect(getByText('J@')).toBeTruthy()
     })
 
     it('should handle undefined source', () => {
-      const { container } = render(<TestWrapper><Avatar src={undefined} initials="JD" /></TestWrapper>)
+      const { container } = render(<Avatar src={undefined} initials="JD" />)
       expect(container).toBeTruthy()
     })
 
     it('should handle null values gracefully', () => {
       const { container } = render(
-        <TestWrapper>
         <Avatar
           src={undefined}
           initials={undefined}
@@ -380,7 +361,6 @@ describe('Avatar', () => {
           status={undefined}
           badge={undefined}
         />,
-        </TestWrapper>
       )
       expect(container).toBeTruthy()
     })
