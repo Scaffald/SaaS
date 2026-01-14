@@ -418,6 +418,8 @@ export interface BrokerClient {
   notes?: string;
   created_at: string;
   updated_at: string;
+  /** Primary contact name for display purposes (alias for contact_name) */
+  primary_contact?: string;
 }
 
 export interface PolicyData {

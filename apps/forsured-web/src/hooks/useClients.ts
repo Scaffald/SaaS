@@ -4,25 +4,62 @@
  *
  * Manages client/organization data from core.organizations table.
  *
+ * NOTE: This hook maps core.organizations to BrokerClient interface.
+ * Some BrokerClient fields (risk_level, compliance_score, client_type)
+ * are not in core.organizations and use default values until a proper
+ * broker_clients relationship table is implemented.
+ *
  * TODO: brokerOrgId filtering requires a relationship table to connect
  * brokers to their client organizations. For now, this parameter is ignored
  * when using real Supabase.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { BrokerClient } from '../types'
 import { supabaseServiceRole, core as coreQuery } from '../lib/supabase'
 
-export function useClients(brokerOrgId?: string) {
+// Map organization data to BrokerClient interface
+interface OrganizationRow {
+  id: string;
+  name: string;
+  address?: unknown;
+  description?: unknown;
+  owner_user_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+function mapOrganizationToBrokerClient(org: OrganizationRow): BrokerClient {
+  return {
+    id: org.id,
+    broker_org_id: '', // Not available from organizations table
+    client_org_id: org.id,
+    company_name: org.name,
+    contact_name: '', // Would need to join with users table
+    contact_email: '', // Would need to join with users table
+    contact_phone: '',
+    // Default to 'general_contractor' - proper client_type would come from a broker_clients table
+    client_type: 'general_contractor',
+    // Default risk level - proper value would come from broker_clients or compliance table
+    risk_level: 'low',
+    // Default compliance score - proper value would come from compliance_scores table
+    compliance_score: 85,
+    status: 'active',
+    last_activity_at: org.updated_at,
+    notes: '',
+    created_at: org.created_at,
+    updated_at: org.updated_at,
+    // Additional fields for backwards compatibility
+    primary_contact: '',
+  };
+}
+
+export function useClients(_brokerOrgId?: string) {
   const [clients, setClients] = useState<BrokerClient[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  useEffect(() => {
-    fetchClients()
-  }, [brokerOrgId])
-
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       setLoading(true)
 
@@ -51,7 +88,9 @@ export function useClients(brokerOrgId?: string) {
         throw queryError
       }
 
-      setClients(data || [])
+      // Map organization data to BrokerClient interface
+      const mappedClients = (data || []).map(mapOrganizationToBrokerClient)
+      setClients(mappedClients)
       setError(null)
     } catch (err) {
       // Only log if it's not a network/fetch error
@@ -64,7 +103,13 @@ export function useClients(brokerOrgId?: string) {
     } finally {
       setLoading(false)
     }
-  }
+    // TODO: Add brokerOrgId to dependency array when filtering is implemented
+  }, [])
+
+  useEffect(() => {
+    fetchClients()
+    // Note: brokerOrgId filtering will be added when relationship table is implemented
+  }, [fetchClients])
 
   const addClient = async (client: Omit<BrokerClient, 'id' | 'created_at' | 'updated_at'>) => {
     try {
