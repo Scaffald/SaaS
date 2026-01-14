@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useMemo, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import {
   Search,
   Filter,
@@ -12,8 +11,25 @@ import {
   Loader2,
   Plus,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card } from '@unicornlove/beyond-ui';
-import Button from '../Common/Button';
+import {
+  Stack,
+  Row,
+  Text,
+  H1,
+  H2,
+  H3,
+  Card,
+  Button,
+  Input,
+  SearchSelect,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
+  FormField,
+  Chip,
+  Spinner,
+} from '@unicornlove/beyond-ui';
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -456,10 +472,10 @@ export default function ManagerTasksPage() {
   // Show loading state
   if (loading || loadingStatuses || loadingPriorities) {
     return (
-      <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
-        <Stack alignItems="center" gap={16}>
+      <Stack align="center" justify="center" style={{ minHeight: 400 }}>
+        <Stack align="center" gap={16}>
           <Loader2 size={32} color="var(--color-blue-10)" className="animate-spin" />
-          <Text muted>Loading tasks and filters...</Text>
+          <Text color="secondary">Loading tasks and filters...</Text>
         </Stack>
       </Stack>
     );
@@ -468,15 +484,15 @@ export default function ManagerTasksPage() {
   // Show error state
   if (error) {
     return (
-      <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
-        <Stack alignItems="center">
-          <Stack alignItems="center" style={{ marginBottom: 16 }}>
+      <Stack align="center" justify="center" style={{ minHeight: 400 }}>
+        <Stack align="center">
+          <Stack align="center" style={{ marginBottom: 16 }}>
             <AlertCircle color="var(--color-red-10)" size={48} />
           </Stack>
           <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
             Failed to load tasks
           </H3>
-          <Text muted>{error.message}</Text>
+          <Text color="secondary">{error.message}</Text>
         </Stack>
       </Stack>
     );
@@ -484,12 +500,12 @@ export default function ManagerTasksPage() {
 
   return (
     <Stack gap={24}>
-      <Row alignItems="center" justifyContent="space-between">
+      <Row align="center" justify="space-between">
         <Stack>
           <H1 style={{ fontSize: 32, fontWeight: 700 }}>
             Tasks
           </H1>
-          <Text muted style={{ fontSize: 18, marginTop: 4 }}>
+          <Text color="secondary" style={{ fontSize: 18, marginTop: 4 }}>
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
         </Stack>
@@ -502,331 +518,182 @@ export default function ManagerTasksPage() {
         </Button>
       </Row>
 
-      <Row alignItems="center" gap={16} style={{ fontSize: 12 }}>
-        <Row alignItems="center" gap={8}>
+      <Row align="center" gap={16} style={{ fontSize: 12 }}>
+        <Row align="center" gap={8}>
           <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-blue-10)' }} />
           <Text weight="semibold">
             {statusCounts.pending}
           </Text>
-          <Text muted>Pending</Text>
+          <Text color="secondary">Pending</Text>
         </Row>
         <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
-        <Row alignItems="center" gap={8}>
+        <Row align="center" gap={8}>
           <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-blue-10)' }} />
           <Text weight="semibold">
             {statusCounts.in_progress}
           </Text>
-          <Text muted>In Progress</Text>
+          <Text color="secondary">In Progress</Text>
         </Row>
         <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
-        <Row alignItems="center" gap={8}>
+        <Row align="center" gap={8}>
           <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-red-10)' }} />
           <Text weight="semibold">
             {statusCounts.needs_attention}
           </Text>
-          <Text muted>Needs Attention</Text>
+          <Text color="secondary">Needs Attention</Text>
         </Row>
         <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
-        <Row alignItems="center" gap={8}>
+        <Row align="center" gap={8}>
           <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-green-10)' }} />
           <Text weight="semibold">
             {statusCounts.completed}
           </Text>
-          <Text muted>Completed</Text>
+          <Text color="secondary">Completed</Text>
         </Row>
       </Row>
 
       <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 16, border: '1px solid var(--color-border)', padding: 16 }}>
         <Stack gap={16}>
-          <Row alignItems="center" gap={12}>
-            <Stack style={{ flex: 1, position: 'relative' }}>
-              <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
-                <Search
-                  color="var(--color-text-muted)"
-                  size={20}
-                />
-              </div>
-              <input
-                type="text"
+          <Row align="center" gap={12}>
+            <Stack style={{ flex: 1 }}>
+              <Input
                 placeholder="Search tasks by title, description, or tags..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: '100%',
-                  paddingLeft: '40px',
-                  paddingRight: '16px',
-                  paddingTop: '10px',
-                  paddingBottom: '10px',
-                  backgroundColor: 'var(--color-background)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  color: 'var(--color-text)',
-                  fontFamily: 'inherit',
-                }}
+                onChangeText={setSearchQuery}
+                iconStart={Search}
+                testID="task-search-input"
+                accessibilityLabel="Search tasks"
               />
             </Stack>
-            <div
-              onClick={() => setShowFilters(!showFilters)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                paddingLeft: 16,
-                paddingRight: 16,
-                paddingTop: 10,
-                paddingBottom: 10,
-                border: '1px solid',
-                borderRadius: 16,
-                fontSize: 12,
-                fontWeight: 500,
-                backgroundColor: showFilters ? 'var(--color-blue-2)' : 'var(--color-background)',
-                borderColor: showFilters ? 'var(--color-blue-10)' : 'var(--color-border)',
-                color: showFilters ? 'var(--color-blue-10)' : 'var(--color-text-muted)',
-                cursor: 'pointer',
-              }}
+            <Button
+              variant={showFilters ? 'filled' : 'outline'}
+              color={showFilters ? 'primary' : 'gray'}
+              iconStart={Filter}
+              onPress={() => setShowFilters(!showFilters)}
+              accessibilityLabel={showFilters ? 'Hide filters' : 'Show filters'}
+              testID="toggle-filters-btn"
             >
-              <Filter size={18} />
-              <span>Filters</span>
-              {activeFilterCount > 0 && (
-                <span
-                  style={{
-                    marginLeft: 4,
-                    paddingLeft: 8,
-                    paddingRight: 8,
-                    paddingTop: 2,
-                    paddingBottom: 2,
-                    backgroundColor: 'var(--color-blue-10)',
-                    color: 'white',
-                    fontSize: 10,
-                    borderRadius: 9999,
-                  }}
-                >
-                  {activeFilterCount}
-                </span>
-              )}
-            </div>
+              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            </Button>
           </Row>
 
           {showFilters && (
             <Stack style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }} gap={16}>
               <Row style={{ flexWrap: 'wrap' }} gap={16}>
                 <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: 10,
-                      fontWeight: 500,
-                      color: 'var(--color-text-muted)',
-                      marginBottom: 8,
-                    }}
-                  >
-                    Status
-                  </label>
-                  <select
+                  <SearchSelect
+                    label="Status"
+                    options={[
+                      { value: 'ALL', label: 'All Statuses' },
+                      ...(taskStatuses?.map(s => ({ value: s.value, label: s.display_name })) || [])
+                    ]}
                     value={selectedStatus}
-                    onChange={(e) =>
-                      setSelectedStatus(e.target.value as string)
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      backgroundColor: 'var(--color-background)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color-text)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <option value="ALL">All Statuses</option>
-                    {taskStatuses?.map((status) => (
-                      <option key={status.value} value={status.value}>
-                        {status.display_name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setSelectedStatus(value as string)}
+                    searchable={false}
+                    clearable={false}
+                    testID="status-filter-select"
+                  />
                 </Stack>
 
                 <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: 10,
-                      fontWeight: 500,
-                      color: 'var(--color-text-muted)',
-                      marginBottom: 8,
-                    }}
-                  >
-                    Priority
-                  </label>
-                  <select
+                  <SearchSelect
+                    label="Priority"
+                    options={[
+                      { value: 'ALL', label: 'All Priorities' },
+                      ...(taskPriorities?.map(p => ({ value: p.value, label: p.display_name })) || [])
+                    ]}
                     value={selectedPriority}
-                    onChange={(e) =>
-                      setSelectedPriority(e.target.value as string)
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      backgroundColor: 'var(--color-background)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color-text)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <option value="ALL">All Priorities</option>
-                    {taskPriorities?.map((priority) => (
-                      <option key={priority.value} value={priority.value}>
-                        {priority.display_name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setSelectedPriority(value as string)}
+                    searchable={false}
+                    clearable={false}
+                    testID="priority-filter-select"
+                  />
                 </Stack>
 
                 <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: 10,
-                      fontWeight: 500,
-                      color: 'var(--color-text-muted)',
-                      marginBottom: 8,
-                    }}
-                  >
-                    Project
-                  </label>
-                  <select
+                  <SearchSelect
+                    label="Project"
+                    options={[
+                      { value: 'ALL', label: 'All Projects' },
+                      ...allProjects.map(p => ({ value: p, label: p }))
+                    ]}
                     value={selectedProject}
-                    onChange={(e) => setSelectedProject(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      backgroundColor: 'var(--color-background)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color-text)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <option value="ALL">All Projects</option>
-                    {allProjects.map((project) => (
-                      <option key={project} value={project}>
-                        {project}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setSelectedProject(value as string)}
+                    searchable={allProjects.length > 5}
+                    clearable={false}
+                    testID="project-filter-select"
+                  />
                 </Stack>
               </Row>
 
               <Stack>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: 10,
-                    fontWeight: 500,
-                    color: 'var(--color-text-muted)',
-                    marginBottom: 8,
-                  }}
-                >
+                <Text size="xs" weight="medium" color="secondary" style={{ marginBottom: 8 }}>
                   Tags
-                </label>
+                </Text>
                 <Row style={{ flexWrap: 'wrap' }} gap={8}>
                   {alls.map((tag) => (
-                    <div
+                    <Chip
                       key={tag}
-                      onClick={() => toggle(tag)}
-                      style={{
-                        paddingLeft: 12,
-                        paddingRight: 12,
-                        paddingTop: 6,
-                        paddingBottom: 6,
-                        fontSize: 10,
-                        fontWeight: 500,
-                        borderRadius: 9999,
-                        border: '1px solid',
-                        backgroundColor: selecteds.includes(tag) ? 'var(--color-blue-10)' : 'var(--color-background)',
-                        borderColor: selecteds.includes(tag) ? 'var(--color-blue-10)' : 'var(--color-border)',
-                        color: selecteds.includes(tag) ? 'white' : 'var(--color-text-muted)',
-                        cursor: 'pointer',
-                      }}
+                      type={selecteds.includes(tag) ? 'filled' : 'outline'}
+                      onPress={() => toggle(tag)}
+                      testID={`tag-filter-${tag}`}
                     >
                       {tag}
-                    </div>
+                    </Chip>
                   ))}
                 </Row>
               </Stack>
 
               {activeFilterCount > 0 && (
-                <div
-                  onClick={clearFilters}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    fontSize: 12,
-                    color: 'var(--color-text-muted)',
-                    cursor: 'pointer',
-                  }}
+                <Button
+                  variant="ghost"
+                  color="gray"
+                  size="sm"
+                  iconStart={X}
+                  onPress={clearFilters}
+                  testID="clear-filters-btn"
                 >
-                  <X size={16} />
-                  <span>Clear all filters</span>
-                </div>
+                  Clear all filters
+                </Button>
               )}
             </Stack>
           )}
 
-          <Row alignItems="center" justifyContent="space-between" style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
-            <Text size="sm" muted>
+          <Row align="center" justify="space-between" style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+            <Text size="sm" color="secondary">
               Showing{' '}
               <Text weight="semibold">
                 {filteredAndSortedTasks.length}
               </Text>{' '}
               of {tasks.length} tasks
             </Text>
-            <Row alignItems="center" gap={12}>
-              <Text size="xs" muted>Sort by:</Text>
-              <select
+            <Row align="center" gap={12}>
+              <Text size="xs" color="secondary">Sort by:</Text>
+              <SearchSelect
+                options={[
+                  { value: 'due_date', label: 'Due Date' },
+                  { value: 'priority', label: 'Priority' },
+                  { value: 'status', label: 'Status' },
+                ]}
                 value={sortBy}
-                onChange={(e) =>
-                  setSortBy(e.target.value as 'due_date' | 'priority' | 'status')
-                }
+                onChange={(value) => setSortBy(value as 'due_date' | 'priority' | 'status')}
+                searchable={false}
+                clearable={false}
+                size="sm"
+                testID="sort-by-select"
+              />
+              <Button
+                variant="outline"
+                color="gray"
+                size="sm"
+                iconStart={ChevronDown}
+                onPress={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                accessibilityLabel={sortOrder === 'asc' ? 'Sort descending' : 'Sort ascending'}
+                testID="sort-order-btn"
                 style={{
-                  padding: '6px 12px',
-                  backgroundColor: 'var(--color-background)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  color: 'var(--color-text)',
-                  fontFamily: 'inherit',
+                  transform: [{ rotate: sortOrder === 'desc' ? '180deg' : '0deg' }],
                 }}
-              >
-                <option value="due_date">Due Date</option>
-                <option value="priority">Priority</option>
-                <option value="status">Status</option>
-              </select>
-              <div
-                onClick={() =>
-                  setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
-                }
-                style={{
-                  padding: 6,
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                }}
-              >
-                <ChevronDown
-                  size={16}
-                  color="var(--color-text-muted)"
-                  style={{
-                    transform: sortOrder === 'desc' ? 'rotate(180deg)' : 'none',
-                    transition: 'transform 0.2s',
-                  }}
-                />
-              </div>
+              />
             </Row>
           </Row>
         </Stack>
@@ -860,72 +727,77 @@ export default function ManagerTasksPage() {
                 cursor: 'pointer',
               }}
             >
-              <Stack style={{ padding: 20 }}>
-                <Row alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: 12 }}>
-                  <Stack style={{ flex: 1 }}>
-                    <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
-                      <H3 style={{ fontSize: 16, fontWeight: 600 }}>
-                        {task.title}
-                      </H3>
-                      <span
-                        style={{
-                          paddingLeft: 8,
-                          paddingRight: 8,
-                          paddingTop: 2,
-                          paddingBottom: 2,
-                          fontSize: 10,
-                          fontWeight: 500,
-                          borderRadius: 8,
-                          border: '1px solid',
-                          ...getPriorityColorProps(task.priority),
-                        }}
-                      >
-                        {formatLabel(task.priority)}
-                      </span>
-                      <span
-                        style={{
-                          paddingLeft: 8,
-                          paddingRight: 8,
-                          paddingTop: 2,
-                          paddingBottom: 2,
-                          fontSize: 10,
-                          fontWeight: 500,
-                          borderRadius: 8,
-                          ...getStatusColorProps(task.status),
-                        }}
-                      >
-                        {formatLabel(task.status)}
-                      </span>
-                    </Row>
-                    <Text size="sm" muted style={{ marginBottom: 12 }}>
-                      {task.description}
-                    </Text>
-                    <Row alignItems="center" gap={16} style={{ fontSize: 10 }}>
-                      <Row alignItems="center" gap={4}>
-                        <Calendar size={14} />
-                        <Text size="xs" style={{ color: dueDate.color }}>
-                          {dueDate.text}
-                        </Text>
-                      </Row>
-                      <Text size="xs" muted>-</Text>
-                      <Text size="xs" muted>{projectName}</Text>
-                      {taskBlockers.length > 0 && (
-                        <>
-                          <Text size="xs" muted>-</Text>
-                          <Row alignItems="center" gap={4} style={{ color: 'var(--color-red-10)' }}>
-                            <AlertCircle size={14} />
-                            <Text size="xs" style={{ color: 'var(--color-red-10)' }}>
-                              {taskBlockers.length} blocker
-                              {taskBlockers.length > 1 ? 's' : ''}
-                            </Text>
-                          </Row>
-                        </>
-                      )}
-                    </Row>
-                  </Stack>
+              <Stack style={{ padding: 20 }} gap={12}>
+                {/* Title row with badges */}
+                <Row align="center" gap={12} wrap={false}>
+                  <H3 style={{ fontSize: 16, fontWeight: 600, flex: 1 }}>
+                    {task.title}
+                  </H3>
+                  <Row align="center" gap={8} style={{ flexShrink: 0 }}>
+                    <span
+                      style={{
+                        paddingLeft: 8,
+                        paddingRight: 8,
+                        paddingTop: 2,
+                        paddingBottom: 2,
+                        fontSize: 11,
+                        fontWeight: 500,
+                        borderRadius: 6,
+                        border: '1px solid',
+                        whiteSpace: 'nowrap',
+                        ...getPriorityColorProps(task.priority),
+                      }}
+                    >
+                      {formatLabel(task.priority)}
+                    </span>
+                    <span
+                      style={{
+                        paddingLeft: 8,
+                        paddingRight: 8,
+                        paddingTop: 2,
+                        paddingBottom: 2,
+                        fontSize: 11,
+                        fontWeight: 500,
+                        borderRadius: 6,
+                        whiteSpace: 'nowrap',
+                        ...getStatusColorProps(task.status),
+                      }}
+                    >
+                      {formatLabel(task.status)}
+                    </span>
+                  </Row>
                 </Row>
 
-                <Row alignItems="center" justifyContent="space-between">
+                {/* Description */}
+                <Text size="sm" color="secondary">
+                  {task.description}
+                </Text>
+
+                {/* Metadata row */}
+                <Row align="center" gap={16}>
+                  <Row align="center" gap={4}>
+                    <Calendar size={14} color="var(--color-text-muted)" />
+                    <Text size="xs" style={{ color: dueDate.color }}>
+                      {dueDate.text}
+                    </Text>
+                  </Row>
+                  <Text size="xs" color="secondary">·</Text>
+                  <Text size="xs" color="secondary">{projectName}</Text>
+                  {taskBlockers.length > 0 && (
+                    <>
+                      <Text size="xs" color="secondary">·</Text>
+                      <Row align="center" gap={4}>
+                        <AlertCircle size={14} color="var(--color-red-10)" />
+                        <Text size="xs" style={{ color: 'var(--color-red-10)' }}>
+                          {taskBlockers.length} blocker{taskBlockers.length > 1 ? 's' : ''}
+                        </Text>
+                      </Row>
+                    </>
+                  )}
+                </Row>
+
+                {/* Tags and quick actions row */}
+                <Row align="center" justify="space-between">
                   <Row style={{ flexWrap: 'wrap' }} gap={6}>
                     {taskTags.map((tag) => (
                       <span
@@ -946,7 +818,7 @@ export default function ManagerTasksPage() {
                       </span>
                     ))}
                   </Row>
-                  <Row alignItems="center" gap={8}>
+                  <Row align="center" gap={8}>
                     {taskQuickActions.slice(0, 3).map((action) => (
                       <div
                         key={action}
@@ -979,13 +851,13 @@ export default function ManagerTasksPage() {
 
       {filteredAndSortedTasks.length === 0 && (
         <Card style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 64, paddingBottom: 64, backgroundColor: 'var(--color-background)', borderRadius: 16, border: '1px solid var(--color-border)' }}>
-          <Stack alignItems="center" style={{ marginBottom: 16 }}>
+          <Stack align="center" style={{ marginBottom: 16 }}>
             <CheckCircle color="var(--color-text-muted)" size={64} />
           </Stack>
           <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
             No tasks found
           </H3>
-          <Text muted>
+          <Text color="secondary">
             Try adjusting your filters or search criteria
           </Text>
         </Card>
@@ -1023,277 +895,132 @@ export default function ManagerTasksPage() {
         }}
       />
 
-      {/* Create Task Modal - using React portal to avoid nested button/z-index issues */}
-      {showCreateTask && createPortal(
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-          }}
-          onClick={handleCloseCreateTask}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="create-task-modal-title"
-          data-testid="task-modal"
-        >
-          <div
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: 16,
-              width: 560,
-              maxWidth: '90vw',
-              maxHeight: '90vh',
-              overflow: 'hidden',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            }}
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <Row
-              alignItems="center"
-              justifyContent="space-between"
-              style={{
-                padding: 24,
-                borderBottom: '1px solid var(--color-border)',
-              }}
-            >
-              <H2 id="create-task-modal-title" style={{ fontSize: 18, fontWeight: 600 }}>
-                Create New Task
-              </H2>
-              <button
-                onClick={handleCloseCreateTask}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: 8,
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                aria-label="Close modal"
-              >
-                <X size={20} color="var(--color-text-muted)" />
-              </button>
-            </Row>
+      {/* Create Task Modal */}
+      <Modal
+        visible={showCreateTask}
+        onClose={handleCloseCreateTask}
+        width={560}
+        testID="create-task-modal"
+      >
+        <ModalHeader
+          title="Create New Task"
+          onClose={handleCloseCreateTask}
+        />
+        <ModalContent>
+          <Stack gap={20}>
+            {/* Title Field */}
+            <Input
+              label="Title"
+              required
+              placeholder="Enter task title..."
+              value={newTaskForm.title}
+              onChangeText={(text) => handleFormChange('title', text)}
+              error={formErrors.title}
+              testID="task-title-input"
+            />
 
-            {/* Modal Content */}
-            <div style={{ padding: 24, overflowY: 'auto', maxHeight: 'calc(90vh - 160px)' }}>
-              <Stack gap={20}>
-                {/* Title Field */}
-                <Stack gap={8}>
-                  <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                    Title <span style={{ color: 'var(--color-red-10)' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter task title..."
-                    value={newTaskForm.title}
-                    onChange={(e) => handleFormChange('title', e.target.value)}
-                    data-testid="task-title-input"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--color-background)',
-                      border: formErrors.title ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color-text)',
-                      fontFamily: 'inherit',
-                    }}
-                  />
-                  {formErrors.title && (
-                    <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.title}</Text>
-                  )}
-                </Stack>
+            {/* Description Field */}
+            <Input
+              label="Description"
+              placeholder="Enter task description (optional)..."
+              value={newTaskForm.description}
+              onChangeText={(text) => handleFormChange('description', text)}
+              multiline
+              numberOfLines={3}
+              testID="task-description-input"
+            />
 
-                {/* Description Field */}
-                <Stack gap={8}>
-                  <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                    Description
-                  </label>
-                  <textarea
-                    placeholder="Enter task description (optional)..."
-                    value={newTaskForm.description}
-                    onChange={(e) => handleFormChange('description', e.target.value)}
-                    data-testid="task-description-input"
-                    rows={3}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--color-background)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color-text)',
-                      fontFamily: 'inherit',
-                      resize: 'vertical',
-                    }}
-                  />
-                </Stack>
-
-                {/* Project and Subcontractor Row */}
-                <Row gap={16}>
-                  <Stack gap={8} style={{ flex: 1 }}>
-                    <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                      Project <span style={{ color: 'var(--color-red-10)' }}>*</span>
-                    </label>
-                    <select
-                      value={newTaskForm.project_id}
-                      onChange={(e) => handleFormChange('project_id', e.target.value)}
-                      data-testid="task-project-select"
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        backgroundColor: 'var(--color-background)',
-                        border: formErrors.project_id ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        color: 'var(--color-text)',
-                        fontFamily: 'inherit',
-                      }}
-                    >
-                      <option value="">Select a project...</option>
-                      {projects.map((project) => (
-                        <option key={project.id} value={project.id}>
-                          {project.name}
-                        </option>
-                      ))}
-                    </select>
-                    {formErrors.project_id && (
-                      <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.project_id}</Text>
-                    )}
-                  </Stack>
-
-                  <Stack gap={8} style={{ flex: 1 }}>
-                    <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                      Subcontractor
-                    </label>
-                    <select
-                      value={newTaskForm.subcontractor_id}
-                      onChange={(e) => handleFormChange('subcontractor_id', e.target.value)}
-                      data-testid="task-subcontractor-select"
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        backgroundColor: 'var(--color-background)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        color: 'var(--color-text)',
-                        fontFamily: 'inherit',
-                      }}
-                    >
-                      <option value="">None (optional)</option>
-                      {subcontractors.map((sub) => (
-                        <option key={sub.id} value={sub.id}>
-                          {sub.name}
-                        </option>
-                      ))}
-                    </select>
-                  </Stack>
-                </Row>
-
-                {/* Priority and Due Date Row */}
-                <Row gap={16}>
-                  <Stack gap={8} style={{ flex: 1 }}>
-                    <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                      Priority
-                    </label>
-                    <select
-                      value={newTaskForm.priority}
-                      onChange={(e) => handleFormChange('priority', e.target.value)}
-                      data-testid="task-priority-select"
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        backgroundColor: 'var(--color-background)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        color: 'var(--color-text)',
-                        fontFamily: 'inherit',
-                      }}
-                    >
-                      {taskPriorities?.map((priority) => (
-                        <option key={priority.value} value={priority.value}>
-                          {priority.display_name}
-                        </option>
-                      ))}
-                    </select>
-                  </Stack>
-
-                  <Stack gap={8} style={{ flex: 1 }}>
-                    <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                      Due Date <span style={{ color: 'var(--color-red-10)' }}>*</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={newTaskForm.due_date}
-                      onChange={(e) => handleFormChange('due_date', e.target.value)}
-                      data-testid="task-due-date-input"
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        backgroundColor: 'var(--color-background)',
-                        border: formErrors.due_date ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        color: 'var(--color-text)',
-                        fontFamily: 'inherit',
-                      }}
-                    />
-                    {formErrors.due_date && (
-                      <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.due_date}</Text>
-                    )}
-                  </Stack>
-                </Row>
+            {/* Project and Subcontractor Row */}
+            <Row gap={16}>
+              <Stack style={{ flex: 1 }}>
+                <SearchSelect
+                  label="Project"
+                  options={[
+                    { value: '', label: 'Select a project...' },
+                    ...projects.map(p => ({ value: p.id, label: p.name }))
+                  ]}
+                  value={newTaskForm.project_id}
+                  onChange={(value) => handleFormChange('project_id', value as string)}
+                  error={!!formErrors.project_id}
+                  errorMessage={formErrors.project_id}
+                  searchable={projects.length > 5}
+                  clearable={false}
+                  testID="task-project-select"
+                />
               </Stack>
-            </div>
 
-            {/* Modal Actions */}
-            <Row
-              alignItems="center"
-              justifyContent="flex-end"
-              gap={12}
-              style={{
-                padding: 24,
-                borderTop: '1px solid var(--color-border)',
-              }}
-            >
-              <Button
-                variant="outlined"
-                onPress={handleCloseCreateTask}
-                disabled={isCreatingTask}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onPress={handleCreateTask}
-                disabled={isCreatingTask}
-                data-testid="submit-create-task-btn"
-              >
-                {isCreatingTask ? (
-                  <Row alignItems="center" gap={8}>
-                    <Loader2 size={16} className="animate-spin" />
-                    <span>Creating...</span>
-                  </Row>
-                ) : (
-                  'Create Task'
-                )}
-              </Button>
+              <Stack style={{ flex: 1 }}>
+                <SearchSelect
+                  label="Subcontractor"
+                  options={[
+                    { value: '', label: 'None (optional)' },
+                    ...subcontractors.map(s => ({ value: s.id, label: s.name }))
+                  ]}
+                  value={newTaskForm.subcontractor_id}
+                  onChange={(value) => handleFormChange('subcontractor_id', value as string)}
+                  searchable={subcontractors.length > 5}
+                  clearable={false}
+                  testID="task-subcontractor-select"
+                />
+              </Stack>
             </Row>
-          </div>
-        </div>,
-        document.body
-      )}
+
+            {/* Priority and Due Date Row */}
+            <Row gap={16}>
+              <Stack style={{ flex: 1 }}>
+                <SearchSelect
+                  label="Priority"
+                  options={taskPriorities?.map(p => ({ value: p.value, label: p.display_name })) || []}
+                  value={newTaskForm.priority}
+                  onChange={(value) => handleFormChange('priority', value as string)}
+                  searchable={false}
+                  clearable={false}
+                  testID="task-priority-select"
+                />
+              </Stack>
+
+              <Stack style={{ flex: 1 }}>
+                <FormField
+                  label="Due Date"
+                  required
+                  error={formErrors.due_date}
+                >
+                  <input
+                    type="date"
+                    value={newTaskForm.due_date}
+                    onChange={(e) => handleFormChange('due_date', e.target.value)}
+                    data-testid="task-due-date-input"
+                    aria-label="Due Date"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      backgroundColor: 'var(--color-background)',
+                      border: formErrors.due_date ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color-text)',
+                      fontFamily: 'inherit',
+                    }}
+                  />
+                </FormField>
+              </Stack>
+            </Row>
+          </Stack>
+        </ModalContent>
+        <ModalActions
+          primaryAction={{
+            label: isCreatingTask ? 'Creating...' : 'Create Task',
+            onPress: handleCreateTask,
+            disabled: isCreatingTask,
+            loading: isCreatingTask,
+          }}
+          secondaryAction={{
+            label: 'Cancel',
+            onPress: handleCloseCreateTask,
+            disabled: isCreatingTask,
+          }}
+        />
+      </Modal>
     </Stack>
   );
 }

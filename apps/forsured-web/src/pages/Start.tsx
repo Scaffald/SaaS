@@ -24,14 +24,14 @@ import { supabase } from '../lib/supabase';
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
 /**
- * Test user credentials (seeded in database via migration 248)
- * Password for all test users: ForsuredTest123!
+ * Test user credentials (seeded via packages/supabase/seeds/forsured/)
+ * Password for all test users: TestPassword123
  */
 const TEST_USERS: Record<'gc' | 'contractor' | 'broker' | 'admin', { email: string; password: string }> = {
-  gc: { email: 'test-gc@forsured.test', password: 'ForsuredTest123!' },
-  contractor: { email: 'test-contractor@forsured.test', password: 'ForsuredTest123!' },
-  broker: { email: 'test-broker@forsured.test', password: 'ForsuredTest123!' },
-  admin: { email: 'test-admin@forsured.test', password: 'ForsuredTest123!' },
+  gc: { email: 'gc-active@forsured-test.com', password: 'TestPassword123' },
+  contractor: { email: 'contractor-active@forsured-test.com', password: 'TestPassword123' },
+  broker: { email: 'broker-active@forsured-test.com', password: 'TestPassword123' },
+  admin: { email: 'admin@forsured-test.com', password: 'TestPassword123' },
 };
 
 function StartPage() {

@@ -16,7 +16,7 @@ port = 54322
 major_version = 17
 
 [db.seed]
-enabled = true
+enabled = false
 sql_paths = ['./seeds/*.sql']
 
 [studio]
@@ -32,7 +32,7 @@ port = 54323
 [inbucket]
 # Enable/disable Mailpit. Set via ENABLE_MAILPIT environment variable
 # Defaults to enabled for backward compatibility, but should be controlled by startup script
-enabled = true
+enabled = false
 # Port to use for the email testing server web interface.
 port = 54324
 smtp_port = 54325
@@ -78,7 +78,7 @@ enable_confirmations = true
 # `twitter`, `slack`, `spotify`, `workos`, `zoom`.
 
 [auth.external.google]
-enabled = true
+enabled = false
 
 client_id = "env(EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID)"
 secret = "env(GOOGLE_SECRET)"
@@ -92,7 +92,7 @@ url = ""
 skip_nonce_check = true
 
 [auth.external.apple]
-enabled = true
+enabled = false
 client_id = "env(APPLE_CLIENT_ID)"
 secret = "env(APPLE_SECRET)"
 # Overrides the default auth redirectUrl.
@@ -103,7 +103,7 @@ skip_nonce_check = true
 
 
 [analytics]
-enabled = true
+enabled = false
 port = 54327
 vector_port = 54328
 # Setup BigQuery project to enable log viewer on local development stack.

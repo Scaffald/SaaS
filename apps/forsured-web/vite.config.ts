@@ -5,7 +5,8 @@ import type { Plugin as EsbuildPlugin } from 'esbuild';
 import dotenv from 'dotenv';
 
 // Load .env file for server-side code (tRPC middleware)
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Use monorepo root .env file (same as envDir setting below)
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // Path to shim files for missing modules
 const shimPath = path.resolve(__dirname, './src/shims/react-native-shims.ts');
