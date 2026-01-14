@@ -173,16 +173,35 @@ export default function BrokerClientsPage() {
     return (
       <>
         <Stack gap={24}>
-          <Stack>
-            <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>Clients</H1>
-            <Text muted>
-              Manage your client portfolio and monitor compliance
-            </Text>
-          </Stack>
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>Clients</H1>
+              <Text muted>
+                Manage your client portfolio and monitor compliance
+              </Text>
+            </Stack>
+            <Row gap={12}>
+              <Button
+                onPress={() => setIsInviteModalOpen(true)}
+                style={orangeOutlineButtonStyle}
+              >
+                <Row alignItems="center" gap={8}>
+                  <UserPlus size={16} />
+                  <span>Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}</span>
+                </Row>
+              </Button>
+              <Button
+                onPress={() => setIsClientModalOpen(true)}
+                style={orangeButtonStyle}
+              >
+                Add Client
+              </Button>
+            </Row>
+          </Row>
           <EmptyState
             icon={Users}
             title="No Clients Yet"
-            description="Start building your client portfolio by adding your first client. You'll be able to manage their policies, track compliance, and monitor risk."
+            description="Start building your client portfolio by inviting or adding your first client. You'll be able to manage their policies, track compliance, and monitor risk."
             action={{
               label: 'Add Client',
               onClick: () => setIsClientModalOpen(true),
@@ -193,6 +212,15 @@ export default function BrokerClientsPage() {
           isOpen={isClientModalOpen}
           onClose={() => setIsClientModalOpen(false)}
           onSave={handleSaveClient}
+        />
+        <InviteClientsModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          brokerCode={brokerCode}
+          pendingInvitations={pendingInvitations}
+          userId={user?.id || ''}
+          organizationId={organizationId || ''}
+          onInvitationSent={refreshPendingInvitations}
         />
       </>
     );
