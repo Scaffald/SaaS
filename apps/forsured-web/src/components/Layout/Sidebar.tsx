@@ -122,7 +122,6 @@ export default function Sidebar({
     { path: '/broker/tasks', label: t('nav.tasks'), icon: CheckSquare },
     { path: '/broker/clients', label: t('nav.clients'), icon: Briefcase },
     { path: '/broker/team', label: t('nav.team'), icon: Users },
-    { path: '/broker/documents', label: t('nav.documents'), icon: FileText },
     { path: '/broker/help', label: t('nav.help'), icon: LifeBuoy },
   ];
 

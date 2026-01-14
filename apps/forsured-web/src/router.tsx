@@ -528,14 +528,6 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="broker/documents"
-          element={
-            <ProtectedRoute allowedTypes={['broker']}>
-              <DocumentsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="broker/acknowledgements"
           element={
             <ProtectedRoute allowedTypes={['broker']}>
