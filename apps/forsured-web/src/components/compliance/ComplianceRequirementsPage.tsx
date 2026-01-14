@@ -771,9 +771,9 @@ export function ComplianceRequirementsPage() {
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-gray-2)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                    onPress={() => handleRowClick(requirement.id)}
+                    onClick={() => handleRowClick(requirement.id)}
                   >
-                    <td style={{ padding: '16px' }} onPress={(e) => e.stopPropagation()}>
+                    <td style={{ padding: '16px' }} onClick={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(requirement.id)}
@@ -846,7 +846,7 @@ export function ComplianceRequirementsPage() {
                         v{requirement.current_version}
                       </Text>
                     </td>
-                    <td style={{ padding: '16px' }} onPress={(e) => e.stopPropagation()}>
+                    <td style={{ padding: '16px' }} onClick={(e) => e.stopPropagation()}>
                       <button
                         style={{
                           padding: 4,
