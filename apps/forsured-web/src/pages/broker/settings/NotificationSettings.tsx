@@ -48,9 +48,7 @@ function BrokerNotificationSettings() {
     return JSON.stringify(preferences) !== JSON.stringify(originalPreferences);
   }, [preferences, originalPreferences]);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = useCallback(async () => {
     try {
       await updateUserSettings({
         notification_preferences: preferences,
@@ -139,11 +137,12 @@ function BrokerNotificationSettings() {
             </select>
           </Stack>
           <Button
-            type="submit"
+            onPress={handleSubmit}
             disabled={!isDirty || isSaving}
+            loading={isSaving}
             color="primary"
           >
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            Save Changes
           </Button>
         </Stack>
       </form>

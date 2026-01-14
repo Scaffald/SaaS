@@ -25,9 +25,7 @@ function BrokerClientSettings() {
     return autoAssignClients !== originalAutoAssign;
   }, [autoAssignClients, originalAutoAssign]);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = useCallback(async () => {
     try {
       await updateBrokerSettings({
         auto_assign_clients: autoAssignClients,
@@ -70,12 +68,13 @@ function BrokerClientSettings() {
             helperText="When enabled, new clients in your agency's territory will automatically be assigned to you."
           />
           <Button
-            type="submit"
+            onPress={handleSubmit}
             disabled={!isDirty || isSaving}
+            loading={isSaving}
             color="primary"
             style={{ marginTop: 'var(--space-6)' }}
           >
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            Save Changes
           </Button>
         </Stack>
       </form>
