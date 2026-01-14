@@ -2,23 +2,36 @@
  * Clients Hook
  * REQ-212: Code Updates for Shared Database Architecture
  *
- * Manages client/organization data from core.organizations table.
+ * Fetches broker's clients from relationship_invitations table.
+ * Clients can be:
+ * - Managers (General Contractors / GCs)
+ * - Contractors (Subcontractors)
  *
- * NOTE: This hook maps core.organizations to BrokerClient interface.
- * Some BrokerClient fields (risk_level, compliance_score, client_type)
- * are not in core.organizations and use default values until a proper
- * broker_clients relationship table is implemented.
- *
- * TODO: brokerOrgId filtering requires a relationship table to connect
- * brokers to their client organizations. For now, this parameter is ignored
- * when using real Supabase.
+ * The hook queries connected relationships where the broker is either
+ * the inviter or invitee, and the other party is a manager or subcontractor.
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import type { BrokerClient } from '../types'
-import { supabaseServiceRole, core as coreQuery } from '../lib/supabase'
+import type { BrokerClient, ClientType } from '../types'
+import { supabaseServiceRole, core as coreQuery, forsured as forsuredQuery } from '../lib/supabase'
 
-// Map organization data to BrokerClient interface
+// Relationship invitation row from the database
+interface RelationshipInvitationRow {
+  id: string;
+  inviter_org_id: string;
+  inviter_type: 'broker' | 'manager' | 'subcontractor';
+  invitee_org_id: string | null;
+  invitee_type: 'broker' | 'manager' | 'subcontractor';
+  invitee_email: string;
+  invitee_name: string | null;
+  invitee_company: string | null;
+  status: string;
+  connected_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Organization row from core schema
 interface OrganizationRow {
   id: string;
   name: string;
@@ -29,32 +42,47 @@ interface OrganizationRow {
   updated_at: string;
 }
 
-function mapOrganizationToBrokerClient(org: OrganizationRow): BrokerClient {
+/**
+ * Map connection type to client type
+ * - 'manager' -> 'general_contractor'
+ * - 'subcontractor' -> 'subcontractor'
+ */
+function getClientType(connectionType: 'manager' | 'subcontractor'): ClientType {
+  return connectionType === 'manager' ? 'general_contractor' : 'subcontractor';
+}
+
+/**
+ * Create a BrokerClient from relationship and organization data
+ */
+function createBrokerClient(
+  org: OrganizationRow,
+  brokerOrgId: string,
+  clientType: ClientType,
+  invitation: RelationshipInvitationRow
+): BrokerClient {
   return {
     id: org.id,
-    broker_org_id: '', // Not available from organizations table
+    broker_org_id: brokerOrgId,
     client_org_id: org.id,
     company_name: org.name,
-    contact_name: '', // Would need to join with users table
-    contact_email: '', // Would need to join with users table
+    contact_name: invitation.invitee_name || '',
+    contact_email: invitation.invitee_email || '',
     contact_phone: '',
-    // Default to 'general_contractor' - proper client_type would come from a broker_clients table
-    client_type: 'general_contractor',
-    // Default risk level - proper value would come from broker_clients or compliance table
+    client_type: clientType,
+    // Default risk level - would come from compliance analysis
     risk_level: 'low',
-    // Default compliance score - proper value would come from compliance_scores table
+    // Default compliance score - would come from compliance_scores table
     compliance_score: 85,
     status: 'active',
     last_activity_at: org.updated_at,
     notes: '',
     created_at: org.created_at,
     updated_at: org.updated_at,
-    // Additional fields for backwards compatibility
-    primary_contact: '',
+    primary_contact: invitation.invitee_name || '',
   };
 }
 
-export function useClients(_brokerOrgId?: string) {
+export function useClients(brokerOrgId?: string) {
   const [clients, setClients] = useState<BrokerClient[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -63,52 +91,145 @@ export function useClients(_brokerOrgId?: string) {
     try {
       setLoading(true)
 
-      // Use real Supabase with core schema
       const client = supabaseServiceRole || null
 
       if (!client) {
-        // In test/dev environments, service role might not be configured
-        // Set empty array instead of throwing to prevent console errors
         setClients([])
         setError(null)
         return
       }
 
-      // TODO: Add brokerOrgId filtering via relationship table
-      // For now, fetch all organizations
-      const { data, error: queryError } = await coreQuery('organizations', client)
-        .select('*')
-        .order('created_at', { ascending: false })
+      // If no brokerOrgId provided, we can't filter by broker
+      // Fall back to fetching all organizations (for backwards compatibility)
+      if (!brokerOrgId) {
+        const { data: orgs, error: orgError } = await coreQuery('organizations', client)
+          .select('*')
+          .order('created_at', { ascending: false })
 
-      if (queryError) {
-        // Only log if it's not a network/fetch error (which might be expected in tests)
-        if (!queryError.message?.includes('Failed to fetch') && !queryError.message?.includes('NetworkError')) {
-          console.error('[useClients] Error fetching clients:', queryError)
-        }
-        throw queryError
+        if (orgError) throw orgError
+
+        // Map all orgs as GCs (default) when no broker context
+        const mappedClients = (orgs || []).map((org: OrganizationRow): BrokerClient => ({
+          id: org.id,
+          broker_org_id: '',
+          client_org_id: org.id,
+          company_name: org.name,
+          contact_name: '',
+          contact_email: '',
+          contact_phone: '',
+          client_type: 'general_contractor',
+          risk_level: 'low',
+          compliance_score: 85,
+          status: 'active',
+          last_activity_at: org.updated_at,
+          notes: '',
+          created_at: org.created_at,
+          updated_at: org.updated_at,
+          primary_contact: '',
+        }))
+        setClients(mappedClients)
+        setError(null)
+        return
       }
 
-      // Map organization data to BrokerClient interface
-      const mappedClients = (data || []).map(mapOrganizationToBrokerClient)
+      // Fetch relationships where broker is the inviter (broker invited client)
+      const { data: asInviter, error: inviterError } = await forsuredQuery('relationship_invitations', client)
+        .select('*')
+        .eq('inviter_org_id', brokerOrgId)
+        .eq('inviter_type', 'broker')
+        .in('invitee_type', ['manager', 'subcontractor'])
+        .eq('status', 'connected')
+
+      if (inviterError && !inviterError.message?.includes('Failed to fetch')) {
+        console.error('[useClients] Error fetching as inviter:', inviterError)
+      }
+
+      // Fetch relationships where broker is the invitee (client invited broker)
+      const { data: asInvitee, error: inviteeError } = await forsuredQuery('relationship_invitations', client)
+        .select('*')
+        .eq('invitee_org_id', brokerOrgId)
+        .eq('invitee_type', 'broker')
+        .in('inviter_type', ['manager', 'subcontractor'])
+        .eq('status', 'connected')
+
+      if (inviteeError && !inviteeError.message?.includes('Failed to fetch')) {
+        console.error('[useClients] Error fetching as invitee:', inviteeError)
+      }
+
+      // Combine and dedupe relationships
+      const allRelationships: RelationshipInvitationRow[] = [
+        ...(asInviter || []),
+        ...(asInvitee || []),
+      ]
+
+      // Get unique client org IDs and their types
+      const clientOrgMap = new Map<string, { type: 'manager' | 'subcontractor'; invitation: RelationshipInvitationRow }>();
+      
+      for (const rel of allRelationships) {
+        // Determine client org ID and type based on broker's position
+        let clientOrgId: string | null = null;
+        let clientConnectionType: 'manager' | 'subcontractor';
+
+        if (rel.inviter_type === 'broker') {
+          // Broker invited the client
+          clientOrgId = rel.invitee_org_id;
+          clientConnectionType = rel.invitee_type as 'manager' | 'subcontractor';
+        } else {
+          // Client invited the broker
+          clientOrgId = rel.inviter_org_id;
+          clientConnectionType = rel.inviter_type as 'manager' | 'subcontractor';
+        }
+
+        if (clientOrgId && !clientOrgMap.has(clientOrgId)) {
+          clientOrgMap.set(clientOrgId, { type: clientConnectionType, invitation: rel });
+        }
+      }
+
+      // Fetch organization details for all client orgs
+      const clientOrgIds = Array.from(clientOrgMap.keys());
+      
+      if (clientOrgIds.length === 0) {
+        setClients([])
+        setError(null)
+        return
+      }
+
+      const { data: orgs, error: orgsError } = await coreQuery('organizations', client)
+        .select('*')
+        .in('id', clientOrgIds)
+
+      if (orgsError) throw orgsError
+
+      // Map to BrokerClient with correct client_type
+      const mappedClients: BrokerClient[] = (orgs || []).map((org: OrganizationRow) => {
+        const clientInfo = clientOrgMap.get(org.id);
+        const clientType = clientInfo ? getClientType(clientInfo.type) : 'general_contractor';
+        const invitation = clientInfo?.invitation;
+        
+        return createBrokerClient(
+          org,
+          brokerOrgId,
+          clientType,
+          invitation || {} as RelationshipInvitationRow
+        );
+      });
+
       setClients(mappedClients)
       setError(null)
     } catch (err) {
-      // Only log if it's not a network/fetch error
       const error = err as Error
       if (!error.message?.includes('Failed to fetch') && !error.message?.includes('NetworkError')) {
         console.error('[useClients] Error fetching clients:', err)
       }
       setError(error)
-      setClients([]) // Set empty array on error to prevent UI breakage
+      setClients([])
     } finally {
       setLoading(false)
     }
-    // TODO: Add brokerOrgId to dependency array when filtering is implemented
-  }, [])
+  }, [brokerOrgId])
 
   useEffect(() => {
     fetchClients()
-    // Note: brokerOrgId filtering will be added when relationship table is implemented
   }, [fetchClients])
 
   const addClient = async (client: Omit<BrokerClient, 'id' | 'created_at' | 'updated_at'>) => {

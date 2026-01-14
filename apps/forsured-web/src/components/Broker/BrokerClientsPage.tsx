@@ -25,12 +25,14 @@ import { generateRelationshipCode } from '../../lib/connectionCodes';
 export default function BrokerClientsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { clients, loading: clientsLoading, addClient } = useClients();
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
+  
+  // Pass broker's organizationId to get their connected clients (managers & subcontractors)
+  const { clients, loading: clientsLoading, addClient } = useClients(organizationId || undefined);
   const { policies, loading: policiesLoading } = usePolicies();
   const { projects, loading: projectsLoading } = useProjects();
   const { complianceData, loading: complianceLoading } = useCompliance();
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
-  const [organizationId, setOrganizationId] = useState<string | null>(null);
 
   // Get client organization IDs for broker count lookup
   const clientOrgIds = useMemo(() => clients.map(c => c.id), [clients]);
