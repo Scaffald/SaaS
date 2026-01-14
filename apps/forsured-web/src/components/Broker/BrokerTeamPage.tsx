@@ -46,17 +46,7 @@ export default function BrokerTeamPage() {
             Manage your broker team and client assignments
           </Text>
         </Stack>
-        <Button
-          color="primary"
-          onPress={() => setIsInviteModalOpen(true)}
-          style={{
-            backgroundColor: 'var(--color-orange-9)',
-          }}
-          textStyle={{
-            color: 'white',
-          }}
-          iconStart={UserPlus}
-        >
+        <Button color="primary" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
           Invite Team Member
         </Button>
       </Row>
@@ -179,30 +169,10 @@ export default function BrokerTeamPage() {
                 </Row>
 
                 <Row alignItems="center" gap={8}>
-                  <Button
-                    variant="ghost"
-                    color="gray"
-                    size="sm"
-                    style={{
-                      backgroundColor: 'transparent',
-                    }}
-                    textStyle={{
-                      color: 'var(--color-orange-10)',
-                    }}
-                  >
+                  <Button variant="ghost" color="gray" size="sm">
                     Edit Access
                   </Button>
-                  <Button
-                    variant="ghost"
-                    color="gray"
-                    size="sm"
-                    style={{
-                      backgroundColor: 'transparent',
-                    }}
-                    textStyle={{
-                      color: 'var(--color-orange-10)',
-                    }}
-                  >
+                  <Button variant="ghost" color="gray" size="sm">
                     View Activity
                   </Button>
                 </Row>
@@ -285,17 +255,7 @@ export default function BrokerTeamPage() {
             <Text size="sm" muted style={{ marginBottom: 16 }}>
               Invite team members to collaborate
             </Text>
-            <Button
-              color="primary"
-              onPress={() => setIsInviteModalOpen(true)}
-              style={{
-                backgroundColor: 'var(--color-orange-9)',
-              }}
-              textStyle={{
-                color: 'white',
-              }}
-              iconStart={UserPlus}
-            >
+            <Button color="primary" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
               Invite Team Member
             </Button>
           </Stack>
