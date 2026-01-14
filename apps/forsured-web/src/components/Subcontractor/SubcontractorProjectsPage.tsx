@@ -76,10 +76,17 @@ export default function SubcontractorProjectsPage() {
           .from('subcontractors')
           .select('id')
           .eq('organization_id', orgId)
-          .single();
+          .maybeSingle();
 
-        if (subError || !subcontractor) {
-          console.log('[SubcontractorProjectsPage] No subcontractor record found:', subError);
+        if (subError) {
+          console.error('[SubcontractorProjectsPage] Error fetching subcontractor record:', subError);
+          setError('Failed to load subcontractor information');
+          setLoading(false);
+          return;
+        }
+
+        if (!subcontractor) {
+          console.log('[SubcontractorProjectsPage] No subcontractor record found for organization:', orgId);
           setProjects([]);
           setLoading(false);
           return;
