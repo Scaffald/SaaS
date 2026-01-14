@@ -420,6 +420,16 @@ export interface BrokerClient {
   updated_at: string;
   /** Primary contact name for display purposes (alias for contact_name) */
   primary_contact?: string;
+  /** REQ-4: User set type ID for lexicon-aware display (fetched from owner's profile) */
+  user_set_type_id?: string | null;
+  /** REQ-4: Manager/contractor label singular from user set type */
+  manager_label_singular?: string;
+  /** REQ-4: Manager/contractor label plural from user set type */
+  manager_label_plural?: string;
+  /** REQ-4: Contractor label singular from user set type */
+  contractor_label_singular?: string;
+  /** REQ-4: Contractor label plural from user set type */
+  contractor_label_plural?: string;
 }
 
 export interface PolicyData {

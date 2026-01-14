@@ -42,6 +42,24 @@ interface OrganizationRow {
   updated_at: string;
 }
 
+// User set type row from forsured schema
+interface UserSetTypeRow {
+  id: string;
+  name: string;
+  slug: string;
+  manager_label_singular: string;
+  manager_label_plural: string;
+  contractor_label_singular: string;
+  contractor_label_plural: string;
+}
+
+// User profile row from forsured schema
+interface UserProfileRow {
+  scaffald_user_id: string;
+  user_set_type_id: string | null;
+  user_set_types?: UserSetTypeRow;
+}
+
 /**
  * Map connection type to client type
  * - 'manager' -> 'general_contractor'
@@ -58,7 +76,8 @@ function createBrokerClient(
   org: OrganizationRow,
   brokerOrgId: string,
   clientType: ClientType,
-  invitation: RelationshipInvitationRow
+  invitation: RelationshipInvitationRow,
+  userSetType?: UserSetTypeRow | null
 ): BrokerClient {
   return {
     id: org.id,
@@ -79,6 +98,12 @@ function createBrokerClient(
     created_at: org.created_at,
     updated_at: org.updated_at,
     primary_contact: invitation.invitee_name || '',
+    // REQ-4: Lexicon information from user set type
+    user_set_type_id: userSetType?.id || null,
+    manager_label_singular: userSetType?.manager_label_singular || 'General Contractor',
+    manager_label_plural: userSetType?.manager_label_plural || 'General Contractors',
+    contractor_label_singular: userSetType?.contractor_label_singular || 'Subcontractor',
+    contractor_label_plural: userSetType?.contractor_label_plural || 'Subcontractors',
   };
 }
 
@@ -200,17 +225,54 @@ export function useClients(brokerOrgId?: string) {
 
       if (orgsError) throw orgsError
 
-      // Map to BrokerClient with correct client_type
+      // Fetch user set type information for each organization's owner
+      // This allows us to display clients using their preferred terminology
+      const ownerUserIds = (orgs || [])
+        .map((org: OrganizationRow) => org.owner_user_id)
+        .filter((id): id is string => !!id);
+      
+      let userSetTypeMap = new Map<string, UserSetTypeRow>();
+      
+      if (ownerUserIds.length > 0) {
+        const { data: profiles } = await forsuredQuery('user_profiles', client)
+          .select(`
+            scaffald_user_id,
+            user_set_type_id,
+            user_set_types:user_set_type_id (
+              id,
+              name,
+              slug,
+              manager_label_singular,
+              manager_label_plural,
+              contractor_label_singular,
+              contractor_label_plural
+            )
+          `)
+          .in('scaffald_user_id', ownerUserIds);
+        
+        // Build a map of owner_user_id -> user_set_type
+        if (profiles) {
+          for (const profile of profiles as UserProfileRow[]) {
+            if (profile.user_set_types) {
+              userSetTypeMap.set(profile.scaffald_user_id, profile.user_set_types);
+            }
+          }
+        }
+      }
+
+      // Map to BrokerClient with correct client_type and lexicon info
       const mappedClients: BrokerClient[] = (orgs || []).map((org: OrganizationRow) => {
         const clientInfo = clientOrgMap.get(org.id);
         const clientType = clientInfo ? getClientType(clientInfo.type) : 'general_contractor';
         const invitation = clientInfo?.invitation;
+        const userSetType = org.owner_user_id ? userSetTypeMap.get(org.owner_user_id) : undefined;
         
         return createBrokerClient(
           org,
           brokerOrgId,
           clientType,
-          invitation || {} as RelationshipInvitationRow
+          invitation || {} as RelationshipInvitationRow,
+          userSetType
         );
       });
 

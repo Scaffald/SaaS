@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Briefcase, TrendingUp, AlertTriangle, Shield, Users, Mail, Copy, Clock, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card, Input, Button } from '@unicornlove/beyond-ui';
+import { Briefcase, TrendingUp, AlertTriangle, Shield, Users, Mail, Copy, Clock, Loader2, Building2, HardHat } from 'lucide-react';
+import { Stack, Row, Text, H1, Card, Input, Button } from '@unicornlove/beyond-ui';
 import { EmptyState } from '../../ui/EmptyState';
 import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
@@ -22,10 +22,28 @@ import {
 } from '../../lib/relationshipInvitations';
 import { generateRelationshipCode } from '../../lib/connectionCodes';
 
+// Orange button styles for visibility
+const orangeButtonStyle: React.CSSProperties = {
+  backgroundColor: 'var(--color-orange-9)',
+  color: 'white',
+  border: 'none',
+  fontWeight: 600,
+};
+
+const orangeOutlineButtonStyle: React.CSSProperties = {
+  backgroundColor: 'transparent',
+  color: 'var(--color-orange-10)',
+  border: '1px solid var(--color-orange-6)',
+  fontWeight: 600,
+};
+
+type ClientTypeFilter = 'all' | 'manager' | 'subcontractor';
+
 export default function BrokerClientsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [organizationId, setOrganizationId] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<ClientTypeFilter>('all');
   
   // Pass broker's organizationId to get their connected clients (managers & subcontractors)
   const { clients, loading: clientsLoading, addClient } = useClients(organizationId || undefined);
@@ -147,17 +165,37 @@ export default function BrokerClientsPage() {
     toast.success('Broker code copied to clipboard');
   };
 
+  // Calculate stats based on active filter
   const getClientStats = () => {
-    const totalClients = clients.length;
-    const activeClients = clients.filter((c) => c.status === 'active').length;
-    const highRiskClients = clients.filter((c) => c.risk_level === 'high').length;
-    const avgComplianceScore = clients.reduce((acc, c) => acc + c.compliance_score, 0) / (totalClients || 1);
+    const filteredByType = activeFilter === 'all' 
+      ? clients 
+      : activeFilter === 'manager'
+        ? clients.filter(c => c.client_type === 'general_contractor')
+        : clients.filter(c => c.client_type === 'subcontractor');
+    
+    const totalClients = filteredByType.length;
+    const activeClients = filteredByType.filter((c) => c.status === 'active').length;
+    const highRiskClients = filteredByType.filter((c) => c.risk_level === 'high').length;
+    const avgComplianceScore = filteredByType.reduce((acc, c) => acc + (c.compliance_score ?? 0), 0) / (totalClients || 1);
+
+    // Counts by type (for filter badges)
+    const managersCount = clients.filter(c => c.client_type === 'general_contractor').length;
+    const contractorsCount = clients.filter(c => c.client_type === 'subcontractor').length;
+
+    // Risk breakdown
+    const lowRisk = filteredByType.filter(c => c.risk_level === 'low').length;
+    const mediumRisk = filteredByType.filter(c => c.risk_level === 'medium').length;
 
     return {
-      total: totalClients,
+      total: clients.length,
+      filtered: totalClients,
       active: activeClients,
       highRisk: highRiskClients,
+      lowRisk,
+      mediumRisk,
       avgCompliance: Math.round(avgComplianceScore),
+      managersCount,
+      contractorsCount,
     };
   };
 
@@ -172,18 +210,20 @@ export default function BrokerClientsPage() {
     setIsClientModalOpen(false);
   };
 
-  const cardStyle: React.CSSProperties = {
+  const statCardStyle: React.CSSProperties = {
     backgroundColor: 'var(--color-background)',
     borderRadius: 12,
-    padding: 24,
+    padding: 20,
     border: '1px solid var(--color-border)',
     flex: 1,
-    minWidth: '20%',
+    minWidth: 150,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
   };
 
   const iconBoxStyle = (color: string): React.CSSProperties => ({
     backgroundColor: `var(--color-${color}-3)`,
-    padding: 12,
+    padding: 10,
     borderRadius: 8,
   });
 
@@ -199,12 +239,15 @@ export default function BrokerClientsPage() {
   const clientTypeButtonStyle = (isSelected: boolean): React.CSSProperties => ({
     padding: '8px 16px',
     fontSize: 14,
-    fontWeight: 500,
+    fontWeight: 600,
     borderRadius: 8,
-    border: '1px solid var(--color-border)',
-    backgroundColor: isSelected ? 'var(--color-blue-9)' : 'var(--color-background)',
+    border: 'none',
+    backgroundColor: isSelected ? 'var(--color-orange-9)' : 'var(--color-gray-3)',
     color: isSelected ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
   });
 
   if (clients.length === 0) {
@@ -239,12 +282,20 @@ export default function BrokerClientsPage() {
   return (
     <>
       <Stack gap={24}>
-        <Stack>
-          <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>Clients</H1>
-          <Text muted>
-            Manage your client portfolio and monitor compliance
-          </Text>
-        </Stack>
+        <Row alignItems="center" justifyContent="space-between">
+          <Stack>
+            <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>Clients</H1>
+            <Text muted>
+              Manage your client portfolio and monitor compliance
+            </Text>
+          </Stack>
+          <Button
+            onPress={() => setIsClientModalOpen(true)}
+            style={orangeButtonStyle}
+          >
+            Add Client
+          </Button>
+        </Row>
 
         {/* Client Invitation Section */}
         <Card
@@ -258,9 +309,9 @@ export default function BrokerClientsPage() {
           <Stack gap={16}>
             <Row justifyContent="space-between" alignItems="center">
               <Stack gap={4}>
-                <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)' }}>
+                <Text size="lg" weight="semibold" style={{ color: 'var(--color-text)' }}>
                   Invite Clients
-                </H3>
+                </Text>
                 <Text size="sm" muted>
                   Invite managers or contractors to connect as your clients
                 </Text>
@@ -268,6 +319,7 @@ export default function BrokerClientsPage() {
               <Button
                 variant="outlined"
                 onPress={() => setShowInviteSection(!showInviteSection)}
+                style={orangeOutlineButtonStyle}
               >
                 {showInviteSection ? 'Hide' : 'Show Invitations'}
               </Button>
@@ -283,8 +335,8 @@ export default function BrokerClientsPage() {
                   <Row gap={8} alignItems="center">
                     <Card
                       style={{
-                        backgroundColor: 'var(--color-blue-2)',
-                        border: '1px solid var(--color-blue-6)',
+                        backgroundColor: 'var(--color-orange-2)',
+                        border: '1px solid var(--color-orange-6)',
                         borderRadius: 8,
                         padding: 12,
                         flex: 1,
@@ -293,7 +345,7 @@ export default function BrokerClientsPage() {
                       <Text
                         size="lg"
                         weight="bold"
-                        style={{ color: 'var(--color-blue-11)', fontFamily: 'monospace', textAlign: 'center' }}
+                        style={{ color: 'var(--color-orange-11)', fontFamily: 'monospace', textAlign: 'center' }}
                       >
                         {brokerCode || 'Loading...'}
                       </Text>
@@ -302,6 +354,7 @@ export default function BrokerClientsPage() {
                       onPress={copyBrokerCode}
                       disabled={!brokerCode}
                       iconStart={Copy}
+                      style={orangeButtonStyle}
                     >
                       Copy
                     </Button>
@@ -329,13 +382,15 @@ export default function BrokerClientsPage() {
                             onClick={() => setInviteClientType('manager')}
                             style={clientTypeButtonStyle(inviteClientType === 'manager')}
                           >
-                            Manager/GC
+                            <Building2 size={16} />
+                            Manager
                           </button>
                           <button
                             type="button"
                             onClick={() => setInviteClientType('subcontractor')}
                             style={clientTypeButtonStyle(inviteClientType === 'subcontractor')}
                           >
+                            <HardHat size={16} />
                             Contractor
                           </button>
                         </Row>
@@ -399,13 +454,13 @@ export default function BrokerClientsPage() {
                         type="submit"
                         disabled={sendingInvite || !inviteFormData.email || !inviteFormData.name}
                         style={{
-                          backgroundColor: 'var(--color-blue-9)',
+                          ...orangeButtonStyle,
                           opacity: sendingInvite || !inviteFormData.email || !inviteFormData.name ? 0.5 : 1,
                         }}
                       >
                         <Row alignItems="center" gap={8}>
-                          {sendingInvite ? <Loader2 size={16} /> : <Mail size={16} />}
-                          <span style={{ color: 'white' }}>{sendingInvite ? 'Sending...' : 'Send Invitation'}</span>
+                          {sendingInvite ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
+                          <span>{sendingInvite ? 'Sending...' : 'Send Invitation'}</span>
                         </Row>
                       </Button>
                     </Stack>
@@ -440,8 +495,8 @@ export default function BrokerClientsPage() {
                                     fontSize: 12,
                                     padding: '2px 8px',
                                     borderRadius: 4,
-                                    backgroundColor: 'var(--color-gray-3)',
-                                    color: 'var(--color-text-muted)',
+                                    backgroundColor: inv.invitee_type === 'manager' ? 'var(--color-purple-2)' : 'var(--color-blue-2)',
+                                    color: inv.invitee_type === 'manager' ? 'var(--color-purple-11)' : 'var(--color-blue-11)',
                                   }}
                                 >
                                   {inv.invitee_type === 'manager' ? 'Manager' : 'Contractor'}
@@ -473,8 +528,24 @@ export default function BrokerClientsPage() {
           </Stack>
         </Card>
 
-        <Row gap={24} style={{ flexWrap: 'wrap' }}>
-          <Card style={cardStyle}>
+        {/* Stats Overview Row */}
+        <Row gap={16} style={{ flexWrap: 'wrap' }}>
+          <Card 
+            style={{
+              ...statCardStyle,
+              borderColor: activeFilter === 'all' ? 'var(--color-orange-6)' : 'var(--color-border)',
+              boxShadow: activeFilter === 'all' ? '0 0 0 2px var(--color-orange-3)' : 'none',
+            }}
+            onClick={() => setActiveFilter('all')}
+            onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
+              e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+            }}
+            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+              if (activeFilter !== 'all') {
+                e.currentTarget.style.borderColor = 'var(--color-border)';
+              }
+            }}
+          >
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>Total Clients</Text>
@@ -483,15 +554,86 @@ export default function BrokerClientsPage() {
                 </Text>
               </Stack>
               <div style={iconBoxStyle('blue')}>
-                <Briefcase size={24} style={{ color: 'var(--color-blue-10)' }} />
+                <Users size={20} style={{ color: 'var(--color-blue-10)' }} />
+              </div>
+            </Row>
+            <Row gap={12} style={{ marginTop: 12 }}>
+              <Row alignItems="center" gap={4}>
+                <Building2 size={14} style={{ color: 'var(--color-purple-10)' }} />
+                <Text size="sm" style={{ color: 'var(--color-purple-10)' }}>{stats.managersCount} Mgrs</Text>
+              </Row>
+              <Row alignItems="center" gap={4}>
+                <HardHat size={14} style={{ color: 'var(--color-blue-10)' }} />
+                <Text size="sm" style={{ color: 'var(--color-blue-10)' }}>{stats.contractorsCount} Subs</Text>
+              </Row>
+            </Row>
+          </Card>
+
+          <Card 
+            style={{
+              ...statCardStyle,
+              borderColor: activeFilter === 'manager' ? 'var(--color-orange-6)' : 'var(--color-border)',
+              boxShadow: activeFilter === 'manager' ? '0 0 0 2px var(--color-orange-3)' : 'none',
+            }}
+            onClick={() => setActiveFilter('manager')}
+            onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
+              e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+            }}
+            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+              if (activeFilter !== 'manager') {
+                e.currentTarget.style.borderColor = 'var(--color-border)';
+              }
+            }}
+          >
+            <Row alignItems="center" justifyContent="space-between">
+              <Stack>
+                <Text size="sm" muted>Managers</Text>
+                <Text size="2xl" weight="bold" style={{ color: 'var(--color-purple-10)', marginTop: 4 }}>
+                  {stats.managersCount}
+                </Text>
+              </Stack>
+              <div style={iconBoxStyle('purple')}>
+                <Building2 size={20} style={{ color: 'var(--color-purple-10)' }} />
               </div>
             </Row>
             <Text size="sm" muted style={{ marginTop: 12 }}>
-              {stats.active} active accounts
+              GCs, Property Managers
             </Text>
           </Card>
 
-          <Card style={cardStyle}>
+          <Card 
+            style={{
+              ...statCardStyle,
+              borderColor: activeFilter === 'subcontractor' ? 'var(--color-orange-6)' : 'var(--color-border)',
+              boxShadow: activeFilter === 'subcontractor' ? '0 0 0 2px var(--color-orange-3)' : 'none',
+            }}
+            onClick={() => setActiveFilter('subcontractor')}
+            onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
+              e.currentTarget.style.borderColor = 'var(--color-orange-6)';
+            }}
+            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+              if (activeFilter !== 'subcontractor') {
+                e.currentTarget.style.borderColor = 'var(--color-border)';
+              }
+            }}
+          >
+            <Row alignItems="center" justifyContent="space-between">
+              <Stack>
+                <Text size="sm" muted>Contractors</Text>
+                <Text size="2xl" weight="bold" style={{ color: 'var(--color-blue-10)', marginTop: 4 }}>
+                  {stats.contractorsCount}
+                </Text>
+              </Stack>
+              <div style={iconBoxStyle('blue')}>
+                <HardHat size={20} style={{ color: 'var(--color-blue-10)' }} />
+              </div>
+            </Row>
+            <Text size="sm" muted style={{ marginTop: 12 }}>
+              Subcontractors, Vendors
+            </Text>
+          </Card>
+
+          <Card style={statCardStyle}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>Avg Compliance</Text>
@@ -500,7 +642,7 @@ export default function BrokerClientsPage() {
                 </Text>
               </Stack>
               <div style={iconBoxStyle('green')}>
-                <Shield size={24} style={{ color: 'var(--color-green-10)' }} />
+                <Shield size={20} style={{ color: 'var(--color-green-10)' }} />
               </div>
             </Row>
             <Row alignItems="center" gap={4} style={{ marginTop: 12 }}>
@@ -509,7 +651,7 @@ export default function BrokerClientsPage() {
             </Row>
           </Card>
 
-          <Card style={cardStyle}>
+          <Card style={statCardStyle}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>High Risk</Text>
@@ -518,7 +660,7 @@ export default function BrokerClientsPage() {
                 </Text>
               </Stack>
               <div style={iconBoxStyle('red')}>
-                <AlertTriangle size={24} style={{ color: 'var(--color-red-10)' }} />
+                <AlertTriangle size={20} style={{ color: 'var(--color-red-10)' }} />
               </div>
             </Row>
             <Text size="sm" muted style={{ marginTop: 12 }}>
@@ -526,7 +668,7 @@ export default function BrokerClientsPage() {
             </Text>
           </Card>
 
-          <Card style={cardStyle}>
+          <Card style={statCardStyle}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>Active Projects</Text>
@@ -535,7 +677,7 @@ export default function BrokerClientsPage() {
                 </Text>
               </Stack>
               <div style={iconBoxStyle('blue')}>
-                <Briefcase size={24} style={{ color: 'var(--color-blue-10)' }} />
+                <Briefcase size={20} style={{ color: 'var(--color-blue-10)' }} />
               </div>
             </Row>
             <Text size="sm" muted style={{ marginTop: 12 }}>
@@ -544,87 +686,15 @@ export default function BrokerClientsPage() {
           </Card>
         </Row>
 
-        <Card
-          style={{
-            backgroundColor: 'var(--color-background)',
-            borderRadius: 12,
-            border: '1px solid var(--color-border)',
-            padding: 24,
-          }}
-        >
-          <H2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)', marginBottom: 16 }}>
-            Client Overview
-          </H2>
-          <Row gap={24} style={{ flexWrap: 'wrap' }}>
-            <Stack style={{ flex: 1, minWidth: '30%' }}>
-              <Text size="sm" muted style={{ marginBottom: 8 }}>By Type</Text>
-              <Stack gap={8}>
-                <Row alignItems="center" justifyContent="space-between">
-                  <Text size="sm">General Contractors</Text>
-                  <Text size="sm" weight="semibold">
-                    {clients.filter((c) => c.client_type === 'general_contractor').length}
-                  </Text>
-                </Row>
-                <Row alignItems="center" justifyContent="space-between">
-                  <Text size="sm">Subcontractors</Text>
-                  <Text size="sm" weight="semibold">
-                    {clients.filter((c) => c.client_type === 'subcontractor').length}
-                  </Text>
-                </Row>
-              </Stack>
-            </Stack>
-
-            <Stack style={{ flex: 1, minWidth: '30%' }}>
-              <Text size="sm" muted style={{ marginBottom: 8 }}>By Risk Level</Text>
-              <Stack gap={8}>
-                <Row alignItems="center" justifyContent="space-between">
-                  <Text size="sm" style={{ color: 'var(--color-green-10)' }}>Low Risk</Text>
-                  <Text size="sm" weight="semibold">
-                    {clients.filter((c) => c.risk_level === 'low').length}
-                  </Text>
-                </Row>
-                <Row alignItems="center" justifyContent="space-between">
-                  <Text size="sm" style={{ color: 'var(--color-yellow-10)' }}>Medium Risk</Text>
-                  <Text size="sm" weight="semibold">
-                    {clients.filter((c) => c.risk_level === 'medium').length}
-                  </Text>
-                </Row>
-                <Row alignItems="center" justifyContent="space-between">
-                  <Text size="sm" style={{ color: 'var(--color-red-10)' }}>High Risk</Text>
-                  <Text size="sm" weight="semibold">
-                    {clients.filter((c) => c.risk_level === 'high').length}
-                  </Text>
-                </Row>
-              </Stack>
-            </Stack>
-
-            <Stack style={{ flex: 1, minWidth: '30%' }}>
-              <Text size="sm" muted style={{ marginBottom: 8 }}>Active Policies</Text>
-              <Stack gap={8}>
-                <Row alignItems="center" justifyContent="space-between">
-                  <Text size="sm">Total Active</Text>
-                  <Text size="sm" weight="semibold">
-                    {policies.filter((p) => p.status === 'active').length}
-                  </Text>
-                </Row>
-                <Row alignItems="center" justifyContent="space-between">
-                  <Text size="sm" style={{ color: 'var(--color-yellow-10)' }}>Expiring Soon</Text>
-                  <Text size="sm" weight="semibold">
-                    {policies.filter((p) => p.status === 'expiring').length}
-                  </Text>
-                </Row>
-              </Stack>
-            </Stack>
-          </Row>
-        </Card>
-
+        {/* Unified Clients Table */}
         <ClientsTable
           clients={clients}
           policies={policies}
-          gcOnly={true}
           complianceData={complianceData}
           projects={projects}
           brokerCounts={brokerCounts}
+          initialClientTypeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
           onClientClick={(client: BrokerClient) => {
             navigate(`/broker/clients/${client.id}`);
           }}

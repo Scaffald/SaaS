@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Search, Calendar, MessageSquare, Users, Shield } from 'lucide-react';
+import { ChevronRight, Search, Calendar, MessageSquare, Users, Shield, Building2, HardHat } from 'lucide-react';
 import { Stack, Row, Text, H2, Card, Input } from '@unicornlove/beyond-ui';
 import type { BrokerClient, PolicyData, ComplianceData } from '../../types';
 import { formatDistanceToNow } from '../../utils/dateHelpers';
 import type { ClientBrokerCount } from '../../hooks/useClientBrokerCounts';
 
 type SortOption = 'default' | 'most-subs' | 'lowest-compliance' | 'recent-activity';
+type ClientTypeFilter = 'all' | 'manager' | 'subcontractor';
 
 interface GCSubcontractorStats {
   totalSubs: number;
@@ -18,35 +19,63 @@ interface ClientsTableProps {
   clients: BrokerClient[];
   policies: PolicyData[];
   onClientClick?: (client: BrokerClient) => void;
-  /** When true, only shows General Contractors with aggregate sub compliance */
-  gcOnly?: boolean;
   /** Compliance data for calculating aggregate sub compliance */
   complianceData?: ComplianceData[];
   /** Projects for mapping GCs to their subcontractors */
   projects?: Array<{ id: string; client_id: string }>;
   /** Optional map of client organization ID to broker count info */
   brokerCounts?: Map<string, ClientBrokerCount>;
+  /** Initial client type filter */
+  initialClientTypeFilter?: ClientTypeFilter;
+  /** Callback when filter changes - useful for updating parent stats */
+  onFilterChange?: (filter: ClientTypeFilter) => void;
 }
+
+// Orange button style for visibility
+const orangeButtonStyle: React.CSSProperties = {
+  padding: '8px 16px',
+  fontSize: 14,
+  fontWeight: 600,
+  color: 'white',
+  backgroundColor: 'var(--color-orange-9)',
+  border: 'none',
+  borderRadius: 8,
+  cursor: 'pointer',
+};
+
+const orangeButtonHoverStyle: React.CSSProperties = {
+  ...orangeButtonStyle,
+  backgroundColor: 'var(--color-orange-10)',
+};
 
 export default function ClientsTable({
   clients,
   policies,
   onClientClick,
-  gcOnly = false,
   complianceData = [],
   projects = [],
   brokerCounts,
+  initialClientTypeFilter = 'all',
+  onFilterChange,
 }: ClientsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [riskFilter, setRiskFilter] = useState<string>('all');
   const [complianceFilter, setComplianceFilter] = useState<string>('all');
   const [expiringFilter, setExpiringFilter] = useState<string>('all');
+  const [clientTypeFilter, setClientTypeFilter] = useState<ClientTypeFilter>(initialClientTypeFilter);
   const [sortOption, setSortOption] = useState<SortOption>('default');
 
-  // Calculate subcontractor stats for each GC
+  // Count clients by type
+  const clientCounts = useMemo(() => {
+    const managers = clients.filter(c => c.client_type === 'general_contractor').length;
+    const contractors = clients.filter(c => c.client_type === 'subcontractor').length;
+    return { managers, contractors, total: clients.length };
+  }, [clients]);
+
+  // Calculate subcontractor stats for each GC (only when showing managers)
   const gcSubStats = useMemo((): Map<string, GCSubcontractorStats> => {
     const statsMap = new Map<string, GCSubcontractorStats>();
-    if (!gcOnly) return statsMap;
+    if (clientTypeFilter === 'subcontractor') return statsMap;
 
     // Get projects for each GC
     const gcProjects = new Map<string, string[]>();
@@ -84,14 +113,18 @@ export default function ClientsTable({
       });
 
     return statsMap;
-  }, [clients, complianceData, projects, gcOnly]);
+  }, [clients, complianceData, projects, clientTypeFilter]);
 
   const filteredClients = useMemo(() => {
     const filtered = clients.filter((client) => {
-      // GC-only filter
-      if (gcOnly && client.client_type !== 'general_contractor') {
+      // Client type filter
+      if (clientTypeFilter === 'manager' && client.client_type !== 'general_contractor') {
         return false;
       }
+      if (clientTypeFilter === 'subcontractor' && client.client_type !== 'subcontractor') {
+        return false;
+      }
+      
       if (
         searchTerm &&
         !client.company_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -104,21 +137,14 @@ export default function ClientsTable({
       }
 
       if (complianceFilter !== 'all') {
-        if (complianceFilter === 'compliant' && client.compliance_score < 90)
-          return false;
-        if (
-          complianceFilter === 'warning' &&
-          (client.compliance_score >= 90 || client.compliance_score < 70)
-        )
-          return false;
-        if (complianceFilter === 'critical' && client.compliance_score >= 70)
-          return false;
+        const score = client.compliance_score ?? 0;
+        if (complianceFilter === 'compliant' && score < 90) return false;
+        if (complianceFilter === 'warning' && (score >= 90 || score < 70)) return false;
+        if (complianceFilter === 'critical' && score >= 70) return false;
       }
 
       if (expiringFilter !== 'all') {
-        const clientPolicies = policies.filter(
-          (p) => p.client_id === client.id
-        );
+        const clientPolicies = policies.filter((p) => p.client_id === client.id);
         const daysUntilExpiry = parseInt(expiringFilter);
         const hasExpiringPolicy = clientPolicies.some((policy) => {
           if (!policy.end_date) return false;
@@ -136,8 +162,8 @@ export default function ClientsTable({
       return true;
     });
 
-    // Sort for GC-only mode
-    if (gcOnly && sortOption !== 'default') {
+    // Sort
+    if (sortOption !== 'default') {
       filtered.sort((a, b) => {
         const statsA = gcSubStats.get(a.id);
         const statsB = gcSubStats.get(b.id);
@@ -146,7 +172,7 @@ export default function ClientsTable({
           case 'most-subs':
             return (statsB?.totalSubs || 0) - (statsA?.totalSubs || 0);
           case 'lowest-compliance':
-            return (statsA?.compliancePercent || 100) - (statsB?.compliancePercent || 100);
+            return (a.compliance_score ?? 100) - (b.compliance_score ?? 100);
           case 'recent-activity': {
             const dateA = a.last_activity_at ? new Date(a.last_activity_at).getTime() : 0;
             const dateB = b.last_activity_at ? new Date(b.last_activity_at).getTime() : 0;
@@ -165,11 +191,16 @@ export default function ClientsTable({
     riskFilter,
     complianceFilter,
     expiringFilter,
+    clientTypeFilter,
     policies,
-    gcOnly,
     sortOption,
     gcSubStats,
   ]);
+
+  const handleClientTypeChange = (filter: ClientTypeFilter) => {
+    setClientTypeFilter(filter);
+    onFilterChange?.(filter);
+  };
 
   const getRiskBadgeStyle = (risk: string): React.CSSProperties => {
     const styles: Record<string, React.CSSProperties> = {
@@ -209,6 +240,31 @@ export default function ClientsTable({
     return isNaN(firstDate.getTime()) ? 'N/A' : firstDate.toLocaleDateString();
   };
 
+  /**
+   * Get display label for client type using their lexicon preference
+   * Falls back to standard terms if not available
+   */
+  const getClientTypeLabel = (client: BrokerClient): string => {
+    if (client.client_type === 'general_contractor') {
+      return client.manager_label_singular || 'General Contractor';
+    }
+    return client.contractor_label_singular || 'Subcontractor';
+  };
+
+  /**
+   * Get short display label for client type badge
+   */
+  const getClientTypeBadge = (client: BrokerClient): string => {
+    if (client.client_type === 'general_contractor') {
+      // Use first word of manager label or "GC"
+      const label = client.manager_label_singular || 'General Contractor';
+      if (label.toLowerCase().includes('property')) return 'PM';
+      if (label.toLowerCase().includes('general')) return 'GC';
+      return label.split(' ')[0].substring(0, 3).toUpperCase();
+    }
+    return 'Sub';
+  };
+
   const selectStyle: React.CSSProperties = {
     padding: '8px 16px',
     border: '1px solid var(--color-border)',
@@ -227,6 +283,20 @@ export default function ClientsTable({
     letterSpacing: '0.05em',
   };
 
+  const clientTypeButtonStyle = (isSelected: boolean): React.CSSProperties => ({
+    padding: '8px 16px',
+    fontSize: 14,
+    fontWeight: 600,
+    borderRadius: 8,
+    border: 'none',
+    backgroundColor: isSelected ? 'var(--color-orange-9)' : 'var(--color-gray-3)',
+    color: isSelected ? 'white' : 'var(--color-text-muted)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  });
+
   return (
     <Card
       style={{
@@ -236,46 +306,47 @@ export default function ClientsTable({
       }}
     >
       <Stack padding={24} style={{ borderBottom: '1px solid var(--color-border)' }}>
+        {/* Header with counts and type filter */}
         <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
           <Row alignItems="center" gap={12}>
             <H2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}>
-              {gcOnly ? 'Key Clients (General Contractors)' : 'Key Clients'}
+              Clients
             </H2>
-            {gcOnly && (
-              <Text size="sm" muted>
-                {filteredClients.length} GC{filteredClients.length !== 1 ? 's' : ''}
-              </Text>
-            )}
+            <Text size="sm" muted>
+              {filteredClients.length} of {clients.length} clients
+            </Text>
           </Row>
-          <Row alignItems="center" gap={12}>
-            {gcOnly && (
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as SortOption)}
-                style={{ ...selectStyle, padding: '6px 12px' }}
-              >
-                <option value="default">Sort by: Default</option>
-                <option value="most-subs">Most Subcontractors</option>
-                <option value="lowest-compliance">Lowest Compliance</option>
-                <option value="recent-activity">Recent Activity</option>
-              </select>
-            )}
+          
+          {/* Client Type Toggle */}
+          <Row alignItems="center" gap={8}>
             <button
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '8px 16px',
-                fontSize: 14,
-                fontWeight: 500,
-                color: 'var(--color-blue-10)',
-                cursor: 'pointer',
-              }}
+              type="button"
+              onClick={() => handleClientTypeChange('all')}
+              style={clientTypeButtonStyle(clientTypeFilter === 'all')}
             >
-              View all Clients
+              <Users size={16} />
+              All ({clientCounts.total})
+            </button>
+            <button
+              type="button"
+              onClick={() => handleClientTypeChange('manager')}
+              style={clientTypeButtonStyle(clientTypeFilter === 'manager')}
+            >
+              <Building2 size={16} />
+              Managers ({clientCounts.managers})
+            </button>
+            <button
+              type="button"
+              onClick={() => handleClientTypeChange('subcontractor')}
+              style={clientTypeButtonStyle(clientTypeFilter === 'subcontractor')}
+            >
+              <HardHat size={16} />
+              Contractors ({clientCounts.contractors})
             </button>
           </Row>
         </Row>
 
+        {/* Filters Row */}
         <Row gap={16} style={{ flexWrap: 'wrap' }}>
           <Stack style={{ position: 'relative', flex: 1, minWidth: '18%' }}>
             <Stack
@@ -339,22 +410,33 @@ export default function ClientsTable({
             <option value="90">Expiring in 90 days</option>
           </select>
 
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value as SortOption)}
+            style={selectStyle}
+          >
+            <option value="default">Sort by: Default</option>
+            <option value="most-subs">Most Subcontractors</option>
+            <option value="lowest-compliance">Lowest Compliance</option>
+            <option value="recent-activity">Recent Activity</option>
+          </select>
+
           <button
+            type="button"
             onClick={() => {
               setSearchTerm('');
               setRiskFilter('all');
               setComplianceFilter('all');
               setExpiringFilter('all');
+              setClientTypeFilter('all');
+              setSortOption('default');
+              onFilterChange?.('all');
             }}
             style={{
-              padding: '8px 16px',
-              fontSize: 14,
-              fontWeight: 500,
-              color: 'var(--color-text-muted)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 8,
-              background: 'none',
-              cursor: 'pointer',
+              ...orangeButtonStyle,
+              backgroundColor: 'transparent',
+              color: 'var(--color-orange-10)',
+              border: '1px solid var(--color-orange-6)',
             }}
           >
             Clear Filters
@@ -367,20 +449,21 @@ export default function ClientsTable({
           <thead style={{ backgroundColor: 'var(--color-gray-3)' }}>
             <tr>
               <th style={thStyle}>Client</th>
-              {gcOnly && <th style={thStyle}>Subs Compliant</th>}
+              <th style={thStyle}>Type</th>
+              {clientTypeFilter !== 'subcontractor' && <th style={thStyle}>Subs Compliant</th>}
               <th style={thStyle}>Risk Score</th>
               <th style={thStyle}>Open Items</th>
               <th style={thStyle}>Next Renewal</th>
               <th style={thStyle}>Compliance</th>
               {brokerCounts && <th style={thStyle}>Brokers</th>}
               <th style={thStyle}>Last Activity</th>
-              <th style={thStyle}>Notes</th>
               <th style={{ ...thStyle, textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody style={{ backgroundColor: 'var(--color-background)' }}>
             {filteredClients.map((client, index) => {
               const riskBadgeStyle = getRiskBadgeStyle(client.risk_level);
+              const isGC = client.client_type === 'general_contractor';
               return (
                 <tr
                   key={client.id}
@@ -405,11 +488,11 @@ export default function ClientsTable({
                           flexShrink: 0,
                           width: 40,
                           height: 40,
-                          backgroundColor: 'var(--color-blue-3)',
+                          backgroundColor: isGC ? 'var(--color-purple-3)' : 'var(--color-blue-3)',
                           borderRadius: 9999,
                         }}
                       >
-                        <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-10)' }}>
+                        <Text size="sm" weight="medium" style={{ color: isGC ? 'var(--color-purple-10)' : 'var(--color-blue-10)' }}>
                           {(client.company_name || '')
                             .split(' ')
                             .map((n) => n[0] || '')
@@ -431,31 +514,35 @@ export default function ClientsTable({
                         >
                           {client.company_name}
                         </Link>
-                        <Stack style={{ marginTop: 4 }}>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              paddingLeft: 8,
-                              paddingRight: 8,
-                              paddingTop: 2,
-                              paddingBottom: 2,
-                              borderRadius: 4,
-                              fontSize: 12,
-                              fontWeight: 500,
-                              backgroundColor: client.client_type === 'subcontractor' ? 'var(--color-blue-2)' : 'var(--color-purple-2)',
-                              color: client.client_type === 'subcontractor' ? 'var(--color-blue-11)' : 'var(--color-purple-11)',
-                            }}
-                          >
-                            {client.client_type === 'subcontractor' ? 'Sub' : 'GC'}
-                          </span>
-                        </Stack>
+                        <Text size="xs" muted style={{ marginTop: 2 }}>
+                          {client.contact_email || client.contact_name || 'No contact info'}
+                        </Text>
                       </Stack>
                     </Row>
                   </td>
-                  {gcOnly && (
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        paddingLeft: 8,
+                        paddingRight: 8,
+                        paddingTop: 2,
+                        paddingBottom: 2,
+                        borderRadius: 4,
+                        fontSize: 12,
+                        fontWeight: 500,
+                        backgroundColor: isGC ? 'var(--color-purple-2)' : 'var(--color-blue-2)',
+                        color: isGC ? 'var(--color-purple-11)' : 'var(--color-blue-11)',
+                      }}
+                      title={getClientTypeLabel(client)}
+                    >
+                      {getClientTypeBadge(client)}
+                    </span>
+                  </td>
+                  {clientTypeFilter !== 'subcontractor' && (
                     <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      {(() => {
+                      {isGC ? (() => {
                         const stats = gcSubStats.get(client.id);
                         if (!stats || stats.totalSubs === 0) {
                           return <Text size="sm" muted>No subs</Text>;
@@ -473,7 +560,9 @@ export default function ClientsTable({
                             </Text>
                           </Row>
                         );
-                      })()}
+                      })() : (
+                        <Text size="sm" muted>-</Text>
+                      )}
                     </td>
                   )}
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
@@ -520,13 +609,13 @@ export default function ClientsTable({
                           style={{
                             height: 8,
                             borderRadius: 9999,
-                            backgroundColor: getComplianceColor(client.compliance_score),
-                            width: `${client.compliance_score}%`,
+                            backgroundColor: getComplianceColor(client.compliance_score ?? 0),
+                            width: `${client.compliance_score ?? 0}%`,
                           }}
                         />
                       </Stack>
                       <Text size="sm" weight="medium">
-                        {client.compliance_score}%
+                        {client.compliance_score ?? 0}%
                       </Text>
                     </Row>
                   </td>
@@ -579,25 +668,23 @@ export default function ClientsTable({
                       </Text>
                     </Row>
                   </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: 14, color: 'var(--color-text-muted)' }}>
-                    <Row alignItems="center" gap={4}>
-                      <MessageSquare size={14} />
-                      <Text size="sm" muted>
-                        {client.notes ? '2 comments' : 'No notes'}
-                      </Text>
-                    </Row>
-                  </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right', fontSize: 14, fontWeight: 500 }}>
                     <button
+                      type="button"
                       style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: 'var(--color-blue-10)',
-                        padding: 4,
+                        ...orangeButtonStyle,
+                        padding: '6px 12px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClientClick?.(client);
                       }}
                     >
-                      <ChevronRight size={20} />
+                      View
+                      <ChevronRight size={16} />
                     </button>
                   </td>
                 </tr>
