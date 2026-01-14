@@ -18,7 +18,7 @@ import type { ListProps } from './List.types'
 import { getListStyles } from './List.styles'
 import { useThemeContext } from '../../playground/ThemeProvider'
 
-export function List({ title, children, style, gap = 0, accessibilityLabel }: ListProps) {
+export function List({ title, children, style, gap = 10, accessibilityLabel }: ListProps) {
   const { theme } = useThemeContext()
   const styles = getListStyles(theme, gap)
 

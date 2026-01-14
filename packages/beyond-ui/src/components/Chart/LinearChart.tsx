@@ -43,52 +43,94 @@ export function LinearChart({
     return <View style={[{ width: width as number, height }, style]} />
   }
 
-  // Get all data points for normalization
-  const allPoints = chartSeries.flatMap((s) => s.data)
-  const allYValues = allPoints.map((p) => (typeof p === 'object' ? p.y : p))
-  const normalizedYValues = normalizeData(allYValues, 0, height)
-
-  // Convert to points with normalized y values
-  const normalizedPoints = allPoints.map((point) => {
-    const pointIndex = allYValues.indexOf(typeof point === 'object' ? point.y : point)
-    const xValue = typeof point === 'object' ? point.x : pointIndex
-    return {
-      x: typeof xValue === 'string' ? parseFloat(xValue) || pointIndex : (typeof xValue === 'number' ? xValue : pointIndex),
-      y: normalizedYValues[pointIndex] || 0,
-    }
+  // Get all Y values across all series for normalization
+  const allYValues: number[] = []
+  chartSeries.forEach((s) => {
+    s.data.forEach((p) => {
+      const yValue = typeof p === 'object' ? p.y : p
+      allYValues.push(yValue)
+    })
   })
 
-  const path = generateLinePath(normalizedPoints, width, height, !sharpen)
+  const maxY = Math.max(...allYValues, 1)
+  const minY = Math.min(...allYValues, 0)
+  const yRange = maxY - minY || 1
+
+  // Generate paths for each series
+  const seriesPaths = chartSeries.map((s) => {
+    // Convert data points to coordinates
+    const points = s.data.map((point, index) => {
+      const xValue = typeof point === 'object' ? point.x : index
+      const yValue = typeof point === 'object' ? point.y : point
+      
+      // Normalize X to index if not numeric
+      const normalizedX = typeof xValue === 'string' 
+        ? parseFloat(xValue) || index 
+        : (typeof xValue === 'number' ? xValue : index)
+      
+      // Normalize Y to chart height
+      const normalizedY = height - ((yValue - minY) / yRange) * height
+      
+      return { x: normalizedX, y: normalizedY }
+    })
+
+    // Normalize X values to fit width (0 to width)
+    const xValues = points.map((p) => p.x)
+    const minX = Math.min(...xValues)
+    const maxX = Math.max(...xValues) || 1
+    const xRange = maxX - minX || 1
+    
+    const normalizedPoints = points.map((p) => ({
+      x: ((p.x - minX) / xRange) * width,
+      y: p.y,
+    }))
+
+    return {
+      path: generateLinePath(normalizedPoints, width, height, !sharpen),
+      color: s.color || color,
+    }
+  })
 
   return (
     <View style={[{ width: width as number, height }, style]}>
       <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <Defs>
-          {showShadow && (
-            <LinearGradient id="linearShadowGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <Stop offset="0%" stopColor={color} stopOpacity="0.3" />
-              <Stop offset="100%" stopColor={color} stopOpacity="0" />
+          {showShadow && seriesPaths.map((_, index) => (
+            <LinearGradient
+              key={`shadow-${index}`}
+              id={`linearShadowGradient-${index}`}
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              <Stop offset="0%" stopColor={seriesPaths[index].color} stopOpacity="0.3" />
+              <Stop offset="100%" stopColor={seriesPaths[index].color} stopOpacity="0" />
             </LinearGradient>
-          )}
+          ))}
         </Defs>
 
-        {/* Shadow area */}
-        {showShadow && (
+        {/* Shadow areas for each series */}
+        {showShadow && seriesPaths.map((seriesPath, index) => (
           <Path
-            d={`${path} L ${width} ${height} L 0 ${height} Z`}
-            fill="url(#linearShadowGradient)"
+            key={`shadow-${index}`}
+            d={`${seriesPath.path} L ${width} ${height} L 0 ${height} Z`}
+            fill={`url(#linearShadowGradient-${index})`}
           />
-        )}
+        ))}
 
-        {/* Line */}
-        <Path
-          d={path}
-          fill="none"
-          stroke={color}
-          strokeWidth={sharpen ? '3' : '2'}
-          strokeLinecap="round"
-          strokeLinejoin={sharpen ? 'miter' : 'round'}
-        />
+        {/* Lines for each series */}
+        {seriesPaths.map((seriesPath, index) => (
+          <Path
+            key={`line-${index}`}
+            d={seriesPath.path}
+            fill="none"
+            stroke={seriesPath.color}
+            strokeWidth={sharpen ? '3' : '2'}
+            strokeLinecap="round"
+            strokeLinejoin={sharpen ? 'miter' : 'round'}
+          />
+        ))}
       </Svg>
     </View>
   )

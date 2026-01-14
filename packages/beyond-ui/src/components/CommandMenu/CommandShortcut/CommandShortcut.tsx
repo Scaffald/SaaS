@@ -23,6 +23,7 @@ import type { CommandShortcutProps } from './CommandShortcut.types'
 import { colors } from '../../../tokens/colors'
 import { fontFamily, fontSize, lineHeight, fontWeight } from '../../../tokens/typography'
 import { spacing } from '../../../tokens/spacing'
+import { borderRadius } from '../../../tokens/borders'
 
 /**
  * Map arrow key names to arrow symbols
@@ -84,17 +85,22 @@ export function CommandShortcut({
 
   const formattedKeys = keys.map(formatKey)
 
+  // Determine padding based on variant
+  // Arrows: 2px horizontal, Text keys: 4px horizontal
+  const paddingHorizontal = variant === 'Arrow' ? spacing[2] : spacing[4]
+
   // Container style
   const containerStyle: ViewStyle = {
     backgroundColor: colors.bg.light.default,
     borderWidth: 1,
     borderColor: colors.border.light.default,
-    borderRadius: 6, // radius-xs
-    paddingHorizontal: spacing[4],
+    borderRadius: borderRadius.xs, // radius-xs = 6px
+    paddingHorizontal,
     paddingVertical: spacing[0],
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    ...(variant === 'Arrow' && { width: 20, height: 20 }), // 20px size for arrows from Figma
     ...style,
   }
 

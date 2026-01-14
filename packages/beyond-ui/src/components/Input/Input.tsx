@@ -69,7 +69,9 @@ import { getInputStyles, getFocusBoxShadow, getFocusShadowStyle } from './Input.
 import { InputLabel } from './InputLabel'
 import { InputHelperText } from './InputHelperText'
 import { InputExternalAddon, InputLeftSide, InputRightSide } from './InputAddon'
+import { PasswordStrength } from '../PasswordStrength/PasswordStrength'
 import { colors } from '../../tokens/colors'
+import { spacing } from '../../tokens/spacing'
 import { useThemeContext } from '../../playground/ThemeProvider'
 
 export const Input = forwardRef<TextInputType, InputProps>(function Input({
@@ -88,6 +90,9 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
   inputStyle,
   labelStyle,
   helperTextStyle,
+  showPasswordStrength = false,
+  passwordStrength = 'too-weak',
+  passwordRequirements,
   onFocus,
   onBlur,
   value,
@@ -220,12 +225,39 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
       </View>
 
       {/* Helper Text / Error Message */}
-      {(helperText || error) && (
+      {(helperText || error) && !showPasswordStrength && (
         <InputHelperText
           type={error ? 'error' : 'default'}
           textStyle={helperTextStyle}
         >
           {error || helperText || ''}
+        </InputHelperText>
+      )}
+
+      {/* Password Strength Indicator */}
+      {showPasswordStrength && !error && (
+        <View style={{ marginTop: spacing[8] }}>
+          {passwordRequirements && passwordRequirements.length > 0 ? (
+            <PasswordStrength
+              variant="checklist"
+              requirements={passwordRequirements}
+            />
+          ) : (
+            <PasswordStrength
+              variant="bar"
+              strength={passwordStrength}
+            />
+          )}
+        </View>
+      )}
+
+      {/* Error message when password strength is shown */}
+      {showPasswordStrength && error && (
+        <InputHelperText
+          type="error"
+          textStyle={helperTextStyle}
+        >
+          {error}
         </InputHelperText>
       )}
     </View>

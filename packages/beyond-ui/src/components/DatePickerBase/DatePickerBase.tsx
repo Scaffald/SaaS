@@ -159,6 +159,7 @@ export function DatePickerBase({
               key={label}
               label={label}
               disabled
+              style={styles.weekHeaderCell}
             />
           ))}
         </View>
@@ -192,6 +193,10 @@ export function DatePickerBase({
 const styles = StyleSheet.create({
   calendarContainer: {
     flexDirection: 'column',
-    gap: spacing[4],
+    flex: 1,
+    gap: 0, // No gap between rows - cells fill the space
+  },
+  weekHeaderCell: {
+    paddingHorizontal: spacing[2], // 2px horizontal padding for week headers (from Figma)
   },
 })

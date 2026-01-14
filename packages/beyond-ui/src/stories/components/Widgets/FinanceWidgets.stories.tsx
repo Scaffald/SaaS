@@ -32,8 +32,9 @@ export const Balance01: BalanceWidgetStory = {
   args: {
     variant: 'Balance 01',
     title: 'Sales Revenue',
-    amount: '$5.632',
-    change: '+$23.53 this month',
+    amount: '5.632',
+    changeValue: '+$23.53',
+    changePeriod: 'this month',
     changeType: 'positive',
     chartData: [
       { value: 16, label: 'Jun' },
@@ -48,9 +49,32 @@ export const Balance02: BalanceWidgetStory = {
   args: {
     variant: 'Balance 02',
     title: 'Total Revenue',
-    amount: '$12,345',
-    change: '+$1,234',
+    amount: '12,345',
+    changeValue: '+$1,234',
+    changePeriod: 'this month',
     changeType: 'positive',
+  },
+}
+
+export const Balance03: BalanceWidgetStory = {
+  args: {
+    variant: 'Balance 03',
+    title: 'Monthly Earnings',
+    amount: '8,500',
+    changeValue: '+$450',
+    changePeriod: 'vs. last month',
+    changeType: 'positive',
+  },
+}
+
+export const Balance04Stock: BalanceWidgetStory = {
+  args: {
+    variant: 'Balance 04 (Stock)',
+    title: 'Stock Value',
+    amount: '25,000',
+    changeValue: '-$500',
+    changePeriod: 'today',
+    changeType: 'negative',
   },
 }
 

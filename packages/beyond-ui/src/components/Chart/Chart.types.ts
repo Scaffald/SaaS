@@ -8,7 +8,18 @@ import type { ViewStyle } from 'react-native'
 /**
  * Chart period/timeframe
  */
-export type ChartPeriod = 'week' | 'month' | 'year'
+export type ChartPeriod = 'week' | 'month' | 'year' | 'last-days'
+
+/**
+ * Chart time period type for X-axis labels
+ */
+export type ChartTimePeriodType =
+  | 'Value'
+  | 'Period - Week'
+  | 'Period - Month 01'
+  | 'Period - Month 02'
+  | 'Period - Last Days'
+  | 'Period - Year'
 
 /**
  * Chart size variants
@@ -419,6 +430,12 @@ export interface ChartProps {
   showGrid?: boolean
 
   /**
+   * Show X-axis indicator
+   * @default true
+   */
+  showXIndicator?: boolean
+
+  /**
    * Chart height
    */
   height?: number
@@ -435,6 +452,61 @@ export interface ChartProps {
 
   /**
    * Custom chart style
+   */
+  style?: ViewStyle
+}
+
+/**
+ * ChartTimePeriod props
+ */
+export interface ChartTimePeriodProps {
+  /**
+   * Period type for X-axis labels
+   * @default 'Value'
+   */
+  type?: ChartTimePeriodType
+
+  /**
+   * Show number label (for Value type)
+   * @default true
+   */
+  showNumber?: boolean
+
+  /**
+   * Custom style
+   */
+  style?: ViewStyle
+}
+
+/**
+ * ChartGrid props
+ */
+export interface ChartGridProps {
+  /**
+   * Y-axis labels/values
+   * @default [0, 20, 40, 60, 80, 100]
+   */
+  yAxisLabels?: number[]
+
+  /**
+   * Grid height
+   * @default 247
+   */
+  height?: number
+
+  /**
+   * Show X-axis indicator
+   * @default true
+   */
+  showXIndicator?: boolean
+
+  /**
+   * Time period for X-axis labels
+   */
+  period?: ChartPeriod
+
+  /**
+   * Custom style
    */
   style?: ViewStyle
 }

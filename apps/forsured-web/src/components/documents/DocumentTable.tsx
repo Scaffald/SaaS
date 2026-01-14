@@ -1,12 +1,14 @@
 /**
  * REQ-124: Document Upload & Storage - DocumentTable Component
  * Display and manage uploaded documents with filtering and actions
+ * Migrated to use Beyond UI Table component
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Download, RotateCw, Trash2, FileText } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Table, TableCell } from '@unicornlove/beyond-ui';
 import type { Document, DocumentStatus } from '../../types/document';
+import type { TableColumn, TableRowData } from '@unicornlove/beyond-ui';
 
 interface DocumentTableProps {
   documents: Document[];
@@ -107,6 +109,111 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
     );
   }
 
+  // Convert documents to table data format
+  const tableData = useMemo<TableRowData[]>(
+    () =>
+      documents.map((doc) => ({
+        id: doc.id,
+        fileName: doc.file_name,
+        fileSize: doc.file_size,
+        uploadDate: doc.upload_date,
+        status: doc.status,
+        errorMessage: doc.error_message,
+        document: doc, // Keep full document for handlers
+      })),
+    [documents]
+  );
+
+  // Define table columns
+  const columns: TableColumn[] = useMemo(
+    () => [
+      {
+        id: 'fileName',
+        title: 'File Name',
+        width: 300,
+        render: (value, row) => (
+          <TableCell
+            type="file"
+            text={String(value)}
+            fileSize={formatFileSize((row as any).fileSize)}
+            fileType="PDF"
+          />
+        ),
+      },
+      {
+        id: 'fileSize',
+        title: 'Size',
+        width: 120,
+        render: (value) => (
+          <TableCell type="text-default" text={formatFileSize(Number(value))} />
+        ),
+      },
+      {
+        id: 'uploadDate',
+        title: 'Upload Date',
+        width: 180,
+        render: (value) => (
+          <TableCell type="text-default" text={formatDate(String(value))} />
+        ),
+      },
+      {
+        id: 'status',
+        title: 'Status',
+        width: 120,
+        cellType: 'status',
+        render: (value, row) => {
+          const status = String(value) as DocumentStatus;
+          const statusMap: Record<DocumentStatus, 'success' | 'error' | 'warning' | 'info' | 'in-progress'> = {
+            completed: 'success',
+            error: 'error',
+            pending: 'warning',
+            processing: 'in-progress',
+          };
+          return (
+            <TableCell
+              type="status"
+              statusType={statusMap[status] || 'info'}
+              statusLabel={status.charAt(0).toUpperCase() + status.slice(1)}
+            />
+          );
+        },
+      },
+      {
+        id: 'actions',
+        title: 'Actions',
+        width: 150,
+        align: 'right',
+        render: (_value, row) => {
+          const doc = (row as any).document as Document;
+          const actions = [];
+          if (onDownload) {
+            actions.push({
+              icon: Download,
+              onPress: () => handleDownload(doc),
+              label: 'Download',
+            });
+          }
+          if (doc.status === 'error' && canReprocess(doc) && onReprocess) {
+            actions.push({
+              icon: RotateCw,
+              onPress: () => onReprocess(doc.id),
+              label: 'Re-process',
+            });
+          }
+          if (canDelete(doc) && onDelete) {
+            actions.push({
+              icon: Trash2,
+              onPress: () => handleDelete(doc.id),
+              label: 'Delete',
+            });
+          }
+          return <TableCell type="actions" actions={actions} />;
+        },
+      },
+    ],
+    [onDownload, onDelete, onReprocess, canDelete, canReprocess]
+  );
+
   return (
     <Card
       style={{
@@ -115,189 +222,26 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
         borderStyle: 'solid',
         borderColor: 'var(--color-border)',
         borderRadius: '8px',
+        padding: 0,
       }}
     >
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ backgroundColor: 'var(--color-gray-2)' }}>
-            <th
-              style={{
-                padding: '12px 24px',
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 500,
-                color: 'var(--color-gray-10)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              File Name
-            </th>
-            <th
-              style={{
-                padding: '12px 24px',
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 500,
-                color: 'var(--color-gray-10)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Size
-            </th>
-            <th
-              style={{
-                padding: '12px 24px',
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 500,
-                color: 'var(--color-gray-10)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Upload Date
-            </th>
-            <th
-              style={{
-                padding: '12px 24px',
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 500,
-                color: 'var(--color-gray-10)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Status
-            </th>
-            <th
-              style={{
-                padding: '12px 24px',
-                textAlign: 'right',
-                fontSize: '11px',
-                fontWeight: 500,
-                color: 'var(--color-gray-10)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {documents.map((document) => {
-            const badgeStyles = getStatusBadgeStyles(document.status);
-            return (
-              <tr
-                key={document.id}
-                style={{
-                  borderTop: '1px solid var(--color-border)',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-background-hover)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                  <Stack>
-                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray-12)' }}>
-                      {document.file_name}
-                    </Text>
-                    {document.error_message && (
-                      <Text style={{ fontSize: '11px', color: 'var(--color-red-10)', marginTop: '4px' }}>
-                        {document.error_message}
-                      </Text>
-                    )}
-                  </Stack>
-                </td>
-                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                  <Text style={{ fontSize: '14px', color: 'var(--color-gray-10)' }}>
-                    {formatFileSize(document.file_size)}
-                  </Text>
-                </td>
-                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                  <Text style={{ fontSize: '14px', color: 'var(--color-gray-10)' }}>
-                    {formatDate(document.upload_date)}
-                  </Text>
-                </td>
-                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                  <Text
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      paddingLeft: '10px',
-                      paddingRight: '10px',
-                      paddingTop: '2px',
-                      paddingBottom: '2px',
-                      borderRadius: '9999px',
-                      fontSize: '11px',
-                      fontWeight: 500,
-                      ...badgeStyles,
-                    }}
-                  >
-                    {document.status.charAt(0).toUpperCase() + document.status.slice(1)}
-                  </Text>
-                </td>
-                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right' }}>
-                  <Row style={{ justifyContent: 'flex-end', gap: '8px', fontSize: '14px', fontWeight: 500 }}>
-                    <button
-                      style={{
-                        color: 'var(--color-teal-9)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: 0,
-                      }}
-                      onClick={() => handleDownload(document)}
-                      title="Download"
-                    >
-                      <Download size={20} />
-                    </button>
-
-                    {document.status === 'error' && canReprocess(document) && onReprocess && (
-                      <button
-                        style={{
-                          color: 'var(--color-blue-9)',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: 0,
-                        }}
-                        onClick={() => onReprocess(document.id)}
-                        title="Re-process"
-                      >
-                        <RotateCw size={20} />
-                      </button>
-                    )}
-
-                    {canDelete(document) && onDelete && (
-                      <button
-                        style={{
-                          color: 'var(--color-red-9)',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: 0,
-                        }}
-                        onClick={() => handleDelete(document.id)}
-                        title="Delete"
-                      >
-                        <Trash2 size={20} />
-                      </button>
-                    )}
-                  </Row>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <Table
+        columns={columns}
+        data={tableData}
+        showHeader={true}
+        emptyMessage="No documents found"
+        renderEmpty={() => (
+          <Stack style={{ alignItems: 'center', gap: '8px', padding: '48px' }}>
+            <FileText size={48} color="var(--color-gray-10)" />
+            <Text style={{ marginTop: '8px', fontSize: '14px', fontWeight: 500, color: 'var(--color-gray-12)' }}>
+              No documents
+            </Text>
+            <Text style={{ marginTop: '4px', fontSize: '14px', color: 'var(--color-gray-10)' }}>
+              Upload your first document to get started.
+            </Text>
+          </Stack>
+        )}
+      />
     </Card>
   );
 };

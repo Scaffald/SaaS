@@ -471,7 +471,7 @@ export function TableCell(props: TableCellProps) {
               style={{
                 width: 43,
                 height: 30,
-                backgroundColor: colors.white,
+                backgroundColor: colors.bg[theme].default,
                 borderWidth: borderWidth.thin,
                 borderColor: colors.border[theme].default,
                 borderRadius: borderRadius.xs,

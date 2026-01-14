@@ -13,6 +13,8 @@ import {
   MiniLinearChart,
   SmallCircleChart,
   Chart,
+  ChartTimePeriod,
+  ChartGrid,
 } from '../../../components/Chart'
 import { spacing } from '../../../tokens/spacing'
 
@@ -181,17 +183,78 @@ export const SmallCircleChartExample: Story = {
   ),
 }
 
+// Chart Time Period
+export const ChartTimePeriodVariants: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <Text style={styles.title}>Chart Time Period Variants</Text>
+      <View style={styles.column}>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Value</Text>
+          <ChartTimePeriod type="Value" showNumber />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Period - Week</Text>
+          <ChartTimePeriod type="Period - Week" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Period - Month 01</Text>
+          <ChartTimePeriod type="Period - Month 01" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Period - Month 02</Text>
+          <ChartTimePeriod type="Period - Month 02" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Period - Last Days</Text>
+          <ChartTimePeriod type="Period - Last Days" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Period - Year</Text>
+          <ChartTimePeriod type="Period - Year" />
+        </View>
+      </View>
+    </View>
+  ),
+}
+
+// Chart Grid
+export const ChartGridVariants: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <Text style={styles.title}>Chart Grid Variants</Text>
+      <View style={styles.row}>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>With X Indicator</Text>
+          <ChartGrid
+            yAxisLabels={[0, 20, 40, 60, 80, 100]}
+            height={247}
+            showXIndicator
+            period="year"
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Without X Indicator</Text>
+          <ChartGrid
+            yAxisLabels={[0, 20, 40, 60, 80, 100]}
+            height={247}
+            showXIndicator={false}
+          />
+        </View>
+      </View>
+    </View>
+  ),
+}
+
 // Main Chart with grid and axes
 export const MainChart: Story = {
   render: () => (
     <View style={styles.container}>
       <Text style={styles.title}>Main Chart with Grid and Axes</Text>
       <Chart
-        type="linear"
-        xAxisLabels={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
-        yAxisLabels={[0, 20, 40, 60, 80, 100]}
-        period="month"
+        period="year"
         showGrid
+        showXIndicator
       >
         <LinearChart
           data={[
@@ -201,9 +264,237 @@ export const MainChart: Story = {
             { x: 3, y: 60 },
             { x: 4, y: 50 },
             { x: 5, y: 80 },
+            { x: 6, y: 70 },
+            { x: 7, y: 90 },
+            { x: 8, y: 65 },
+            { x: 9, y: 75 },
+            { x: 10, y: 85 },
+            { x: 11, y: 95 },
           ]}
         />
       </Chart>
+    </View>
+  ),
+}
+
+// Linear Chart variants
+export const LinearChartVariants: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <Text style={styles.title}>Linear Chart Variants</Text>
+      <View style={styles.column}>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Standard</Text>
+          <LinearChart
+            data={[
+              { x: 0, y: 10 },
+              { x: 1, y: 20 },
+              { x: 2, y: 15 },
+              { x: 3, y: 30 },
+              { x: 4, y: 25 },
+            ]}
+            showShadow
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Sharpen</Text>
+          <LinearChart
+            data={[
+              { x: 0, y: 10 },
+              { x: 1, y: 20 },
+              { x: 2, y: 15 },
+              { x: 3, y: 30 },
+              { x: 4, y: 25 },
+            ]}
+            sharpen
+            showShadow
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Multi-Series (3 Lines)</Text>
+          <LinearChart
+            series={[
+              {
+                name: 'Series 1',
+                data: [
+                  { x: 0, y: 10 },
+                  { x: 1, y: 20 },
+                  { x: 2, y: 15 },
+                  { x: 3, y: 30 },
+                ],
+                color: '#8b5cf6',
+              },
+              {
+                name: 'Series 2',
+                data: [
+                  { x: 0, y: 15 },
+                  { x: 1, y: 25 },
+                  { x: 2, y: 20 },
+                  { x: 3, y: 35 },
+                ],
+                color: '#10b978',
+              },
+              {
+                name: 'Series 3',
+                data: [
+                  { x: 0, y: 20 },
+                  { x: 1, y: 30 },
+                  { x: 2, y: 25 },
+                  { x: 3, y: 40 },
+                ],
+                color: '#f59e0b',
+              },
+            ]}
+            showShadow
+          />
+        </View>
+      </View>
+    </View>
+  ),
+}
+
+// Donut Chart - All sizes
+export const DonutChartAllSizes: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <Text style={styles.title}>Donut Chart - All Sizes</Text>
+      <View style={styles.row}>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>3X Small</Text>
+          <DonutChart
+            data={[
+              { label: 'A', value: 30 },
+              { label: 'B', value: 50 },
+              { label: 'C', value: 20 },
+            ]}
+            size="3x-small"
+            colorScheme="primary"
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>2X Small</Text>
+          <DonutChart
+            data={[
+              { label: 'A', value: 30 },
+              { label: 'B', value: 50 },
+              { label: 'C', value: 20 },
+            ]}
+            size="2x-small"
+            colorScheme="primary"
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Extra Small</Text>
+          <DonutChart
+            data={[
+              { label: 'A', value: 30 },
+              { label: 'B', value: 50 },
+              { label: 'C', value: 20 },
+            ]}
+            size="xs"
+            colorScheme="primary"
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Small</Text>
+          <DonutChart
+            data={[
+              { label: 'A', value: 30 },
+              { label: 'B', value: 50 },
+              { label: 'C', value: 20 },
+            ]}
+            size="sm"
+            colorScheme="primary"
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Medium</Text>
+          <DonutChart
+            data={[
+              { label: 'A', value: 30 },
+              { label: 'B', value: 50 },
+              { label: 'C', value: 20 },
+            ]}
+            size="md"
+            colorScheme="primary"
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Large</Text>
+          <DonutChart
+            data={[
+              { label: 'A', value: 30 },
+              { label: 'B', value: 50 },
+              { label: 'C', value: 20 },
+            ]}
+            size="lg"
+            colorScheme="colorful"
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Extra Large</Text>
+          <DonutChart
+            data={[
+              { label: 'A', value: 30 },
+              { label: 'B', value: 50 },
+              { label: 'C', value: 20 },
+            ]}
+            size="xl"
+            colorScheme="colorful"
+          />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>2X Large</Text>
+          <DonutChart
+            data={[
+              { label: 'A', value: 30 },
+              { label: 'B', value: 50 },
+              { label: 'C', value: 20 },
+            ]}
+            size="2x-large"
+            colorScheme="colorful"
+          />
+        </View>
+      </View>
+    </View>
+  ),
+}
+
+// Small Circle Chart - All sizes
+export const SmallCircleChartAllSizes: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <Text style={styles.title}>Small Circle Chart - All Sizes</Text>
+      <View style={styles.row}>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>2X Small</Text>
+          <SmallCircleChart value={75} size="2x-small" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Extra Small</Text>
+          <SmallCircleChart value={75} size="xs" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Small</Text>
+          <SmallCircleChart value={75} size="sm" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Medium</Text>
+          <SmallCircleChart value={75} size="md" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Large</Text>
+          <SmallCircleChart value={75} size="lg" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>Extra Large</Text>
+          <SmallCircleChart value={75} size="xl" />
+        </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.subtitle}>2X Large</Text>
+          <SmallCircleChart value={75} size="2x-large" />
+        </View>
+      </View>
     </View>
   ),
 }
@@ -229,6 +520,12 @@ const styles = StyleSheet.create({
     gap: spacing[16],
     alignItems: 'center',
     flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  column: {
+    flexDirection: 'column',
+    gap: spacing[16],
+    alignItems: 'center',
   },
   chartContainer: {
     alignItems: 'center',

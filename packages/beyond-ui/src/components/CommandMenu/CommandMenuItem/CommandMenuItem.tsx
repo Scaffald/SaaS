@@ -34,6 +34,7 @@ import { CommandShortcut } from '../CommandShortcut'
 import { colors } from '../../../tokens/colors'
 import { fontFamily, fontSize, lineHeight, fontWeight } from '../../../tokens/typography'
 import { spacing } from '../../../tokens/spacing'
+import { borderRadius } from '../../../tokens/borders'
 
 /**
  * Get background color based on state
@@ -112,7 +113,7 @@ export function CommandMenuItem({
   // Container style
   const containerStyle: ViewStyle = {
     backgroundColor,
-    borderRadius: 10, // radius-m
+    borderRadius: borderRadius.m, // radius-m = 10px
     paddingHorizontal: spacing[10],
     paddingVertical: spacing[8],
     flexDirection: 'row',

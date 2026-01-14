@@ -99,6 +99,22 @@ export interface InputProps extends Omit<TextInputProps, 'style'> {
    * Custom helper text style
    */
   helperTextStyle?: TextStyle
+
+  /**
+   * Show password strength indicator (only for password inputs)
+   * @default false
+   */
+  showPasswordStrength?: boolean
+
+  /**
+   * Password strength level (used when showPasswordStrength is true)
+   */
+  passwordStrength?: 'too-weak' | 'weak' | 'good' | 'strong'
+
+  /**
+   * Password requirements checklist (used when showPasswordStrength is true and variant is 'checklist')
+   */
+  passwordRequirements?: Array<{ label: string; met: boolean }>
 }
 
 /**

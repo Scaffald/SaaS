@@ -123,13 +123,13 @@ export function TableColumnHeader({
       {showRightIcon && sortable && (
         <View style={{ width: 14, height: 14, alignItems: 'center', justifyContent: 'center' }}>
           {sortDirection === 'asc' ? (
-            <ChevronUp size={14} color={styles.iconColor || colors.gray[700]} />
+            <ChevronUp size={14} color={styles.iconColor || colors.text[theme].secondary} />
           ) : sortDirection === 'desc' ? (
-            <ChevronDown size={14} color={styles.iconColor || colors.gray[700]} />
+            <ChevronDown size={14} color={styles.iconColor || colors.text[theme].secondary} />
           ) : (
             <View style={{ flexDirection: 'column', gap: 1 }}>
-              <ChevronUp size={7} color={colors.gray[400]} />
-              <ChevronDown size={7} color={colors.gray[400]} />
+              <ChevronUp size={7} color={colors.text[theme].tertiary} />
+              <ChevronDown size={7} color={colors.text[theme].tertiary} />
             </View>
           )}
         </View>

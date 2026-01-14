@@ -35,11 +35,49 @@ const styles = StyleSheet.create({
   },
 })
 
-// Basic list with tasks (from Figma design)
+// Basic list with tasks (from Figma "List - Master Component" design)
 export const Basic: Story = {
   render: () => (
     <View style={styles.container}>
       <List title="List title">
+        <ListItem
+          variant="task"
+          title="Opportunity 1"
+          metadata="Opportunity Pipeline"
+          updatedText="Updated 10 min ago"
+          iconColor="success"
+        />
+        <ListItem
+          variant="task"
+          title="Opportunity 2"
+          metadata="Opportunity Pipeline"
+          updatedText="Updated 14 min ago"
+          iconColor="error"
+        />
+        <ListItem
+          variant="task"
+          title="Opportunity 3"
+          metadata="Opportunity Pipeline"
+          updatedText="Updated 18 min ago"
+          iconColor="warning"
+        />
+        <ListItem
+          variant="task"
+          title="Opportunity 4"
+          metadata="Opportunity Pipeline"
+          updatedText="Updated 17 min ago"
+          iconColor="info"
+        />
+      </List>
+    </View>
+  ),
+}
+
+// List matching Figma "List - Master Component" design exactly
+export const FigmaMasterComponent: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <List title="List title" gap={10}>
         <ListItem
           variant="task"
           title="Opportunity 1"

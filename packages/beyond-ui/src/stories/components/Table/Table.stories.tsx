@@ -412,6 +412,229 @@ export const FullFeatured: Story = {
   },
 }
 
+// Example Column - matches Figma design
+export const ExampleColumn: Story = {
+  render: () => {
+    const [searchValue, setSearchValue] = useState('')
+
+    const exampleColumns: TableColumn[] = [
+      { id: 'col1', title: 'Column', width: 191 },
+      { id: 'col2', title: 'Column', width: 191 },
+      { id: 'col3', title: 'Column', width: 191 },
+      { id: 'col4', title: 'Column', width: 191 },
+      { id: 'col5', title: 'Column', width: 143 },
+      { id: 'col6', title: 'Column', width: 157 },
+      { id: 'col7', title: '', width: 92 },
+    ]
+
+    const exampleData = Array.from({ length: 10 }, (_, i) => ({
+      id: String(i + 1),
+      col1: `Row ${i + 1} Col 1`,
+      col2: `Row ${i + 1} Col 2`,
+      col3: `Row ${i + 1} Col 3`,
+      col4: `Row ${i + 1} Col 4`,
+      col5: `Row ${i + 1} Col 5`,
+      col6: `Row ${i + 1} Col 6`,
+      col7: '',
+    }))
+
+    return (
+      <View style={styles.container}>
+        <Table
+          columns={exampleColumns}
+          data={exampleData}
+          searchable
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          actions={[
+            { label: 'Export', onPress: () => console.log('Export') },
+            { label: 'Add New', onPress: () => console.log('Add New') },
+          ]}
+          pagination={{ totalPages: 5, currentPage: 1 }}
+        />
+      </View>
+    )
+  },
+}
+
+// Example Row - matches Figma design with expanded rows
+export const ExampleRow: Story = {
+  render: () => {
+    const [searchValue, setSearchValue] = useState('')
+    const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(['1']))
+
+    const exampleRowColumns: TableColumn[] = [
+      { id: 'expand', title: '', width: 40 },
+      { id: 'col1', title: 'Column', width: 191 },
+      { id: 'col2', title: 'Column', width: 342 },
+      { id: 'col3', title: 'Column', width: 191 },
+      { id: 'col4', title: 'Column', width: 157 },
+      { id: 'col5', title: 'Column', width: 143 },
+      { id: 'col6', title: 'Column', width: 92 },
+    ]
+
+    const exampleRowData = [
+      {
+        id: '1',
+        col1: 'Row 1 Col 1',
+        col2: 'Row 1 Col 2',
+        col3: 'Row 1 Col 3',
+        col4: 'Row 1 Col 4',
+        col5: 'Row 1 Col 5',
+        col6: 'Row 1 Col 6',
+        expandedData: {
+          title: 'Company Name',
+          items: [
+            { label: 'Full Address', value: '123 Main St, City, State 12345' },
+            { label: 'CEO', value: 'John Doe' },
+            { label: 'Website', value: 'www.example.com' },
+            { label: 'Contact Person', value: 'Jane Smith' },
+            { label: 'Contact Email', value: 'contact@example.com' },
+            { label: 'Phone Number', value: '+1 (234) 567 123' },
+          ],
+        },
+        expandedVariant: 'variant2' as const,
+      },
+      {
+        id: '2',
+        col1: 'Row 2 Col 1',
+        col2: 'Row 2 Col 2',
+        col3: 'Row 2 Col 3',
+        col4: 'Row 2 Col 4',
+        col5: 'Row 2 Col 5',
+        col6: 'Row 2 Col 6',
+      },
+      {
+        id: '3',
+        col1: 'Row 3 Col 1',
+        col2: 'Row 3 Col 2',
+        col3: 'Row 3 Col 3',
+        col4: 'Row 3 Col 4',
+        col5: 'Row 3 Col 5',
+        col6: 'Row 3 Col 6',
+      },
+    ]
+
+    return (
+      <View style={styles.container}>
+        <Table
+          columns={exampleRowColumns}
+          data={exampleRowData}
+          searchable
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          actions={[
+            { label: 'Export', onPress: () => console.log('Export') },
+            { label: 'Add New', onPress: () => console.log('Add New') },
+          ]}
+          expandableRows
+          expansionConfig={{
+            expandedIds,
+            allowMultiple: false,
+          }}
+          onRowExpand={(rowId, expanded) => {
+            const newExpanded = new Set<string>()
+            if (expanded) {
+              newExpanded.add(rowId)
+            }
+            setExpandedIds(newExpanded)
+          }}
+          pagination={{ totalPages: 5, currentPage: 1 }}
+        />
+      </View>
+    )
+  },
+}
+
+// All cell types showcase - displays all cell variants in a table
+export const AllCellTypesShowcase: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <TableCell type="interactive-default" text="Interactive Default" width={161} />
+          <TableCell type="interactive-hover" text="Interactive Hover" width={161} />
+          <TableCell type="interactive-focused" text="Interactive Focused" width={161} />
+          <TableCell type="interactive-error" text="Interactive Error" width={161} />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <TableCell type="text-default" text="Text Default" description="Description" width={192} />
+          <TableCell type="text-default" text="With Checkbox" showCheckbox checked={false} width={192} />
+          <TableCell type="text-default" text="With Radio" showRadio radioChecked={false} width={192} />
+          <TableCell type="text-default" text="With Switch" showSwitch switchChecked={false} width={192} />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <TableCell type="checkbox-only" width={60} />
+          <TableCell type="radio-only" width={60} />
+          <TableCell type="switch-only" width={76} />
+          <TableCell type="icon-open" width={60} />
+          <TableCell type="icon-close" width={60} />
+          <TableCell type="empty" width={60} />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <TableCell type="card" text="Card" expirationDate="05/24" width={245} />
+          <TableCell type="avatar" text="Avatar" description="annataylor@email.com" width={264} />
+          <TableCell type="assignee" avatars={['', '', '']} width={138} />
+          <TableCell type="file" text="File" fileSize="64KB" fileType="PDF" width={234} />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <TableCell type="brand-icon" text="Brand Icon" brandHandle="@ui_beyond" width={234} />
+          <TableCell type="flag" text="Flag" countryCode="+1" width={226} />
+          <TableCell type="company" text="Company" width={230} />
+          <TableCell type="crypto" text="Crypto" symbol="BTC" width={230} />
+          <TableCell type="stock-market" text="Stock Market" trendDirection="up" width={218} />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <TableCell type="status" statusType="success" statusLabel="Active" width={140} />
+          <TableCell type="labels" labels={['Beyond UI', 'Figma', 'React']} maxLabels={2} width={215} />
+          <TableCell
+            type="actions"
+            actions={[
+              { icon: () => null, onPress: () => {}, label: 'Share' },
+              { icon: () => null, onPress: () => {}, label: 'Edit' },
+            ]}
+            width={156}
+          />
+          <TableCell type="more" width={62} />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <TableCell type="progress-bar" progress={70} width={324} />
+          <TableCell type="rating" rating={4} width={168} />
+          <TableCell type="chart-01" width={144.5} />
+          <TableCell type="chart-02" width={144.5} />
+          <TableCell type="chart-03" width={144.5} />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <TableCell type="guideline-vertical-full" width={40} />
+          <TableCell type="guideline-vertical-half" width={39} />
+          <TableCell type="guideline-vertical-f-h" width={39} />
+        </View>
+      </View>
+    </View>
+  ),
+}
+
 const styles = StyleSheet.create({
   container: {
     width: 1220,

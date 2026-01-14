@@ -79,8 +79,17 @@ export function ListItem(props: ListItemProps) {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[4] }}>
                 <Text style={styles.title}>{name}</Text>
                 {showVerified && (
-                  <View style={{ width: 16, height: 16 }}>
-                    {/* Verified indicator */}
+                  <View
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: 8,
+                      backgroundColor: colors.primary[500],
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text style={{ color: colors.gray[0], fontSize: 10 }}>✓</Text>
                   </View>
                 )}
                 <Text style={styles.subtitle}>{username}</Text>
@@ -94,7 +103,7 @@ export function ListItem(props: ListItemProps) {
             {onFollowPress && (
               <View style={styles.rightSection}>
                 <Button
-                  color="gray"
+                  color="primary"
                   variant="filled"
                   size="sm"
                   onPress={onFollowPress}
@@ -144,15 +153,27 @@ export function ListItem(props: ListItemProps) {
             {/* View Profile button */}
             {onViewProfilePress && (
               <View style={styles.rightSection}>
-                <Button
-                  color="gray"
-                  variant="light"
-                  size="sm"
+                <Pressable
                   onPress={onViewProfilePress}
-                  style={{ minWidth: 100 }}
+                  style={{
+                    paddingHorizontal: spacing[16],
+                    paddingVertical: spacing[8],
+                    borderRadius: borderRadius.s,
+                    backgroundColor: colors.bg[theme].subtle || colors.gray[50],
+                  }}
                 >
-                  View Profile
-                </Button>
+                  <Text
+                    style={{
+                      fontFamily: typographyVariants.paragraphSMedium.fontFamily,
+                      fontSize: typographyVariants.paragraphSMedium.fontSize,
+                      fontWeight: typographyVariants.paragraphSMedium.fontWeight,
+                      lineHeight: typographyVariants.paragraphSMedium.lineHeight,
+                      color: colors.text[theme].secondary,
+                    }}
+                  >
+                    View Profile
+                  </Text>
+                </Pressable>
               </View>
             )}
           </View>
@@ -210,6 +231,7 @@ export function ListItem(props: ListItemProps) {
                     borderRadius: borderRadius.s,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    flexDirection: 'column',
                     gap: spacing[4],
                   }}
                 >
@@ -261,7 +283,13 @@ export function ListItem(props: ListItemProps) {
                   {description}
                   {onReadMorePress && (
                     <Text
-                      style={{ color: colors.primary[500] }}
+                      style={{
+                        color: colors.primary[500],
+                        fontFamily: typographyVariants.paragraphSRegular.fontFamily,
+                        fontSize: typographyVariants.paragraphSRegular.fontSize,
+                        fontWeight: typographyVariants.paragraphSRegular.fontWeight,
+                        lineHeight: typographyVariants.paragraphSRegular.lineHeight,
+                      }}
                       onPress={onReadMorePress}
                     >
                       {' '}...Read more
@@ -329,7 +357,7 @@ export function ListItem(props: ListItemProps) {
 
         return (
           <View style={[styles.container, style]}>
-            {/* Icon */}
+            {/* Featured Icon with gradient background */}
             <View style={styles.leftSection}>
               {icon || (iconSrc && <Image source={{ uri: iconSrc }} style={{ width: 40, height: 40 }} />) || (
                 <View
@@ -337,7 +365,14 @@ export function ListItem(props: ListItemProps) {
                     width: 40,
                     height: 40,
                     borderRadius: borderRadius.l,
-                    backgroundColor: colors.bg[theme].subtle || colors.gray[50],
+                    ...(Platform.OS === 'web'
+                      ? {
+                          background: `linear-gradient(to bottom, ${colors.bg[theme].subtle || colors.gray[50]}, ${colors.bg[theme].default || colors.gray[100]})`,
+                          boxShadow: `0px 0px 0px 2px ${colors.gray[0]}, 0px 0px 0px 3px ${colors.gray[100]}`,
+                        }
+                      : {
+                          backgroundColor: colors.bg[theme].subtle || colors.gray[50],
+                        }),
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -486,7 +521,7 @@ export function ListItem(props: ListItemProps) {
 
         return (
           <View style={[styles.container, style]}>
-            {/* Icon */}
+            {/* Featured Icon with gradient background */}
             <View style={styles.leftSection}>
               {icon || (iconSrc && <Image source={{ uri: iconSrc }} style={{ width: 40, height: 40 }} />) || (
                 <View
@@ -494,7 +529,14 @@ export function ListItem(props: ListItemProps) {
                     width: 40,
                     height: 40,
                     borderRadius: borderRadius.l,
-                    backgroundColor: colors.bg[theme].subtle || colors.gray[50],
+                    ...(Platform.OS === 'web'
+                      ? {
+                          background: `linear-gradient(to bottom, ${colors.bg[theme].subtle || colors.gray[50]}, ${colors.bg[theme].default || colors.gray[100]})`,
+                          boxShadow: `0px 0px 0px 2px ${colors.gray[0]}, 0px 0px 0px 3px ${colors.gray[100]}`,
+                        }
+                      : {
+                          backgroundColor: colors.bg[theme].subtle || colors.gray[50],
+                        }),
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -560,8 +602,8 @@ export function ListItem(props: ListItemProps) {
               )}
             </View>
 
-            {/* Content */}
-            <View style={styles.contentSection}>
+            {/* Content - horizontal layout */}
+            <View style={[styles.contentSection, { flexDirection: 'row', alignItems: 'center', gap: spacing[10] }]}>
               <Text style={styles.title}>{countryCode}</Text>
               <Text style={styles.subtitle}>{countryName}</Text>
             </View>

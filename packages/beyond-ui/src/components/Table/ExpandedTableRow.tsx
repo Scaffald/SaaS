@@ -68,17 +68,8 @@ export function ExpandedTableRow({
   if (variant === 'variant2') {
     return (
       <View style={[styles.container, style]}>
-        {/* Guideline cell */}
-        <View style={styles.guidelineCell}>
-          <View
-            style={{
-              width: 1,
-              height: '50%',
-              backgroundColor: colors.border[theme].default,
-            }}
-          />
-          <View style={{ width: 19, height: '50%' }} />
-        </View>
+        {/* Guideline cell - uses guideline-vertical-f-h type */}
+        <TableCell type="guideline-vertical-f-h" width={40} />
 
         {/* Content area */}
         <View style={[styles.contentArea, contentStyle]}>
@@ -105,16 +96,8 @@ export function ExpandedTableRow({
 
   return (
     <View style={[styles.container, style]}>
-      {/* Guideline cell */}
-      <View style={styles.guidelineCell}>
-        <View
-          style={{
-            width: 1,
-            height: '100%',
-            backgroundColor: colors.border[theme].default,
-          }}
-        />
-      </View>
+      {/* Guideline cell - uses guideline-vertical-full type for default variant */}
+      <TableCell type="guideline-vertical-full" width={40} />
 
       {/* Content area with form fields */}
       <View style={[styles.contentArea, contentStyle]}>

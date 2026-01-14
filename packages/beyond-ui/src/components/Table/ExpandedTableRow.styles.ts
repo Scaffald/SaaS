@@ -16,7 +16,6 @@ import type { ExpandedTableRowVariant } from './ExpandedTableRow.types'
  */
 export interface ExpandedTableRowStyleConfig {
   container: ViewStyle
-  guidelineCell: ViewStyle
   contentArea: ViewStyle
   title?: TextStyle
   fieldLabel?: TextStyle
@@ -40,16 +39,8 @@ export function getExpandedTableRowStyles(
     backgroundColor: colors.bg[theme].subtle || colors.gray[50],
   }
 
-  // Guideline cell (40px width)
-  const guidelineCell: ViewStyle = {
-    width: 40,
-    backgroundColor: colors.bg[theme].default,
-    paddingLeft: spacing[20],
-    paddingRight: 0,
-    paddingVertical: 0,
-    flexDirection: 'column',
-    alignItems: 'center',
-  }
+  // Guideline cell is now handled by TableCell component
+  // No need for separate style definition
 
   // Content area
   const contentArea: ViewStyle = {
@@ -66,7 +57,7 @@ export function getExpandedTableRowStyles(
     fontWeight: typographyVariants.paragraphMMedium.fontWeight,
     lineHeight: typographyVariants.paragraphMMedium.lineHeight,
     color: colors.text[theme].primary,
-    marginBottom: spacing[4],
+    marginBottom: spacing[20], // Gap between title and info items
   }
 
   // Field label styles (for default variant)
@@ -113,7 +104,6 @@ export function getExpandedTableRowStyles(
         ...baseContainer,
         paddingBottom: spacing[24],
       },
-      guidelineCell,
       contentArea: {
         ...contentArea,
         paddingTop: spacing[20],
@@ -129,7 +119,6 @@ export function getExpandedTableRowStyles(
   // Default variant (with form inputs)
   return {
     container: baseContainer,
-    guidelineCell,
     contentArea: {
       ...contentArea,
       paddingBottom: spacing[24],

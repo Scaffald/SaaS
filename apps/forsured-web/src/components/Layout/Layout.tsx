@@ -9,10 +9,13 @@
  */
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Navigate } from 'react-router-dom';
-import { Row, Stack, Text, SkipLink } from '@unicornlove/beyond-ui';
+import { Row, Stack, Text, SkipLink, CommandMenu } from '@unicornlove/beyond-ui';
+import type { CommandMenuItemData } from '@unicornlove/beyond-ui';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../contexts/AuthContext';
 import { useApprovals } from '../../hooks/useApprovals';
+import { useCommandMenu } from '../../hooks/useCommandMenu';
+import { getCommandMenuItems } from '../../utils/commandMenuItems';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import { PageViewTracker } from '../../hooks/usePageView';
 
@@ -77,6 +80,18 @@ export default function Layout() {
   // Map database type to UI type
   const uiUserType = mapDbTypeToUiType(profile.user_type);
 
+  // CommandMenu integration
+  const { isOpen, closeMenu } = useCommandMenu();
+  const { tabs, items } = getCommandMenuItems(uiUserType);
+
+  const handleItemSelect = (item: CommandMenuItemData) => {
+    const path = item.data?.path as string | undefined;
+    if (path) {
+      navigate(path);
+      closeMenu();
+    }
+  };
+
   const getNotificationsPath = () => {
     if (uiUserType === 'manager') return '/manager/notifications';
     if (uiUserType === 'broker') return '/broker/notifications';
@@ -131,6 +146,43 @@ export default function Layout() {
         </Stack>
       </Stack>
       </Row>
+
+      {/* CommandMenu with backdrop */}
+      {isOpen && (
+        <Stack
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 24,
+          }}
+          onPress={closeMenu}
+        >
+          <Stack
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <CommandMenu
+              open={isOpen}
+              onOpenChange={closeMenu}
+              tabs={tabs}
+              items={items}
+              onItemSelect={handleItemSelect}
+              placeholder="Search commands..."
+              helperText="Type to search or use arrow keys to navigate"
+            />
+          </Stack>
+        </Stack>
+      )}
     </>
   );
 }

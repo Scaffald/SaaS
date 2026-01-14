@@ -27,7 +27,7 @@ export interface ListProps {
 
   /**
    * Gap between list items
-   * @default 0
+   * @default 10
    */
   gap?: number
 

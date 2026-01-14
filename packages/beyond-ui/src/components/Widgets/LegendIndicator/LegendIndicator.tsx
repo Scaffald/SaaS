@@ -19,7 +19,7 @@ import Svg, { Circle } from 'react-native-svg'
 import type { LegendIndicatorProps } from './LegendIndicator.types'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
-import { typographyVariants } from '../../../tokens/typography'
+import { typographyVariants, fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
 
 export function LegendIndicator({
   items,
@@ -75,7 +75,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    ...typographyVariants.captionRegular,
-    color: colors.text.secondary,
+    // Caption/Regular: 12px, line-height 16px, Roboto Regular
+    fontFamily: 'Roboto',
+    fontSize: fontSize.xs, // 12
+    fontWeight: fontWeight.regular, // 400
+    lineHeight: lineHeight.xs, // 16
+    letterSpacing: letterSpacing.normal, // 0
+    color: colors.text.secondary, // #344051 for active, #637083 for inactive
   },
 })

@@ -162,23 +162,25 @@ export function calculatePieAngles(data: DonutChartData[]): Array<{
 
 /**
  * Get chart size dimensions
+ * Matches Figma specifications exactly
  */
 export function getChartSize(size: ChartSize): { width: number; height: number } {
   const sizeMap: Record<ChartSize, { width: number; height: number }> = {
-    '3x-small': { width: 40, height: 40 },
-    '2x-small': { width: 64, height: 64 },
-    xs: { width: 80, height: 80 },
-    sm: { width: 96, height: 96 },
-    md: { width: 120, height: 120 },
-    lg: { width: 160, height: 160 },
-    xl: { width: 200, height: 200 },
-    '2x-large': { width: 240, height: 240 },
+    '3x-small': { width: 40, height: 40 }, // 3X Small from Figma
+    '2x-small': { width: 64, height: 64 }, // 2X Small from Figma
+    xs: { width: 80, height: 80 }, // Extra Small from Figma
+    sm: { width: 96, height: 96 }, // Small from Figma
+    md: { width: 120, height: 120 }, // Medium from Figma
+    lg: { width: 160, height: 160 }, // Large from Figma
+    xl: { width: 200, height: 200 }, // Extra Large from Figma
+    '2x-large': { width: 240, height: 240 }, // 2X Large from Figma
   }
   return sizeMap[size] || sizeMap.md
 }
 
 /**
  * Get circle chart size dimensions
+ * Matches Figma specifications exactly: small (140px), medium (160px), large (180px), extra-large (220px)
  */
 export function getCircleChartSize(size: CircleChartSize): {
   width: number
@@ -186,16 +188,17 @@ export function getCircleChartSize(size: CircleChartSize): {
   radius: number
 } {
   const sizeMap: Record<CircleChartSize, { width: number; height: number; radius: number }> = {
-    sm: { width: 140, height: 140, radius: 60 },
-    md: { width: 160, height: 160, radius: 70 },
-    lg: { width: 180, height: 180, radius: 80 },
-    xl: { width: 220, height: 220, radius: 100 },
+    sm: { width: 140, height: 140, radius: 60 }, // small from Figma
+    md: { width: 160, height: 160, radius: 70 }, // medium from Figma
+    lg: { width: 180, height: 180, radius: 80 }, // large from Figma
+    xl: { width: 220, height: 220, radius: 100 }, // extra-large from Figma
   }
   return sizeMap[size] || sizeMap.md
 }
 
 /**
  * Get half pie chart size dimensions
+ * Matches Figma specifications exactly: Small (102x50), Medium (124x62), Large (152x75)
  */
 export function getHalfPieChartSize(size: HalfPieChartSize): {
   width: number
@@ -203,15 +206,17 @@ export function getHalfPieChartSize(size: HalfPieChartSize): {
   radius: number
 } {
   const sizeMap: Record<HalfPieChartSize, { width: number; height: number; radius: number }> = {
-    sm: { width: 102, height: 50, radius: 50 },
-    md: { width: 124, height: 62, radius: 62 },
-    lg: { width: 152, height: 75, radius: 75 },
+    sm: { width: 102, height: 50, radius: 50 }, // Small from Figma
+    md: { width: 124, height: 62, radius: 62 }, // Medium from Figma
+    lg: { width: 152, height: 75, radius: 75 }, // Large from Figma
   }
   return sizeMap[size] || sizeMap.md
 }
 
 /**
  * Get small circle chart size dimensions
+ * Matches Figma specifications exactly: 2x-small (40px), extra-small (44px), small (48px), 
+ * medium (56px), large (64px), extra-large (72px), 2x-large (80px)
  */
 export function getSmallCircleChartSize(size: ChartSize): {
   width: number
@@ -219,13 +224,13 @@ export function getSmallCircleChartSize(size: ChartSize): {
   radius: number
 } {
   const sizeMap: Partial<Record<ChartSize, { width: number; height: number; radius: number }>> = {
-    '2x-small': { width: 40, height: 40, radius: 16 },
-    xs: { width: 44, height: 44, radius: 18 },
-    sm: { width: 48, height: 48, radius: 20 },
-    md: { width: 56, height: 56, radius: 24 },
-    lg: { width: 64, height: 64, radius: 28 },
-    xl: { width: 72, height: 72, radius: 32 },
-    '2x-large': { width: 80, height: 80, radius: 36 },
+    '2x-small': { width: 40, height: 40, radius: 16 }, // 2x-small from Figma
+    xs: { width: 44, height: 44, radius: 18 }, // extra-small from Figma
+    sm: { width: 48, height: 48, radius: 20 }, // small from Figma
+    md: { width: 56, height: 56, radius: 24 }, // medium from Figma
+    lg: { width: 64, height: 64, radius: 28 }, // large from Figma
+    xl: { width: 72, height: 72, radius: 32 }, // extra-large from Figma
+    '2x-large': { width: 80, height: 80, radius: 36 }, // 2x-large from Figma
   }
   return sizeMap[size] || sizeMap.md || { width: 56, height: 56, radius: 24 }
 }
@@ -256,7 +261,9 @@ export function getPeriodLabels(period: ChartPeriod): string[] {
     case 'month':
       return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     case 'year':
-      return ['Q1', 'Q2', 'Q3', 'Q4']
+      return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Avg', 'Sep', 'Oct', 'Nov', 'Dec']
+    case 'last-days':
+      return ['T 13', 'W 14', 'T 15', 'F 16', 'S 17', ' S 18', 'M 19']
     default:
       return []
   }

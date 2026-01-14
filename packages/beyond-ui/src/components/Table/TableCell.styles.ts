@@ -4,11 +4,13 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
+import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
 import { typographyVariants } from '../../tokens/typography'
+import { boxShadows } from '../../tokens/shadows'
 import type { TableCellType, TableCellState, TableCellAlign } from './TableCell.types'
 
 /**
@@ -53,21 +55,24 @@ export function getTableCellStyles(
     ...(width && { width: typeof width === 'string' ? (parseFloat(width) || undefined) : width }),
   }
 
-  // Base text styles
+  // Base text styles - Paragraph S/Medium for main text
   const baseText: TextStyle = {
-    fontFamily: typographyVariants.paragraphSRegular.fontFamily,
-    fontSize: typographyVariants.paragraphSRegular.fontSize,
-    fontWeight: typographyVariants.paragraphSRegular.fontWeight,
-    lineHeight: typographyVariants.paragraphSRegular.lineHeight,
+    fontFamily: typographyVariants.paragraphSMedium.fontFamily,
+    fontSize: typographyVariants.paragraphSMedium.fontSize,
+    fontWeight: typographyVariants.paragraphSMedium.fontWeight,
+    lineHeight: typographyVariants.paragraphSMedium.lineHeight,
     color: colors.text[theme].primary,
     textAlign: align,
   }
 
-  // Base description text styles
+  // Base description text styles - Paragraph S/Regular for description
   const descriptionText: TextStyle = {
-    ...baseText,
+    fontFamily: typographyVariants.paragraphSRegular.fontFamily,
+    fontSize: typographyVariants.paragraphSRegular.fontSize,
     fontWeight: typographyVariants.paragraphSRegular.fontWeight,
+    lineHeight: typographyVariants.paragraphSRegular.lineHeight,
     color: colors.text[theme].tertiary,
+    textAlign: align,
   }
 
   // Get type-specific styles
@@ -245,14 +250,24 @@ function getInteractiveCellStyles(
     actualState = 'error'
   }
 
+  // Interactive cells use Paragraph S/Regular (not Medium)
+  const interactiveText: TextStyle = {
+    fontFamily: typographyVariants.paragraphSRegular.fontFamily,
+    fontSize: typographyVariants.paragraphSRegular.fontSize,
+    fontWeight: typographyVariants.paragraphSRegular.fontWeight,
+    lineHeight: typographyVariants.paragraphSRegular.lineHeight,
+    color: colors.text[theme].primary,
+    textAlign: 'left',
+  }
+
   switch (actualState) {
     case 'hover':
       return {
         container: {
           ...baseContainer,
-          backgroundColor: colors.bg[theme].subtle || colors.gray[50],
+          backgroundColor: colors.bg[theme].subtle || colors.gray[50], // bg-0_hover = #f9fafb
         },
-        text: baseText,
+        text: interactiveText,
       }
 
     case 'focused':
@@ -262,10 +277,12 @@ function getInteractiveCellStyles(
           borderWidth: borderWidth.thin,
           borderColor: colors.gray[900],
           borderBottomColor: colors.border[theme].default,
-          // Note: React Native doesn't support box-shadow spread well
-          // For web, this would have: box-shadow: 0 0 0 4px rgba(206, 210, 218, 1), 0 0 0 2px rgba(255, 255, 255, 1)
+          // Web: Use box-shadow for focus ring effect
+          ...(Platform.OS === 'web' && {
+            boxShadow: boxShadows.focusBase,
+          }),
         },
-        text: baseText,
+        text: interactiveText,
       }
 
     case 'error':
@@ -275,11 +292,13 @@ function getInteractiveCellStyles(
           borderWidth: borderWidth.thin,
           borderColor: colors.error[400],
           borderBottomColor: colors.error[400],
-          // Note: React Native doesn't support box-shadow spread well
-          // For web, this would have: box-shadow: 0 0 0 4px rgba(255, 133, 133, 1), 0 0 0 2px rgba(255, 255, 255, 1)
+          // Web: Use box-shadow for error focus ring effect
+          ...(Platform.OS === 'web' && {
+            boxShadow: boxShadows.focusError,
+          }),
         },
         text: {
-          ...baseText,
+          ...interactiveText,
           color: colors.error[500],
         },
       }
@@ -292,7 +311,7 @@ function getInteractiveCellStyles(
           opacity: 0.6,
         },
         text: {
-          ...baseText,
+          ...interactiveText,
           color: colors.text[theme].disabled,
         },
       }
@@ -300,7 +319,7 @@ function getInteractiveCellStyles(
     default:
       return {
         container: baseContainer,
-        text: baseText,
+        text: interactiveText,
       }
   }
 }

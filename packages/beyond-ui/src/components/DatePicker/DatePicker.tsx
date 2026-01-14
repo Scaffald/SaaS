@@ -212,9 +212,6 @@ export function DatePicker({
     if (size === 'expanded') {
       return (
         <View style={calendarsContainerStyles}>
-          {/* Preset buttons */}
-          {renderPresetButtons()}
-
           {/* First calendar */}
           <DatePickerBase
             month={currentMonth}
@@ -265,6 +262,7 @@ export function DatePicker({
 
   return (
     <View style={[containerStyles, style]}>
+      {size === 'expanded' && renderPresetButtons()}
       {renderCalendars()}
       {renderActions()}
     </View>

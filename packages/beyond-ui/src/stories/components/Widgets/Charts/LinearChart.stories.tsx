@@ -33,6 +33,23 @@ export const Large: Story = {
       { value: 35, label: 'Feb' },
       { value: 28, label: 'Mar' },
       { value: 45, label: 'Apr' },
+      { value: 50, label: 'May' },
+      { value: 40, label: 'Jun' },
+    ],
+    showLegend: true,
+  },
+}
+
+export const LargeWithMultipleSeries: Story = {
+  args: {
+    variant: 'large',
+    data: [
+      { value: 20, label: 'Jan', color: '#10b981' },
+      { value: 35, label: 'Feb', color: '#10b981' },
+      { value: 28, label: 'Mar', color: '#10b981' },
+      { value: 45, label: 'Apr', color: '#af92d9' },
+      { value: 50, label: 'May', color: '#af92d9' },
+      { value: 40, label: 'Jun', color: '#af92d9' },
     ],
     showLegend: true,
   },

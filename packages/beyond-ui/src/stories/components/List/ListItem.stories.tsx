@@ -246,6 +246,94 @@ export const TaskAllColors: Story = {
   ),
 }
 
+// All Variants Showcase - matches Figma "Lists Base Elements" design
+export const AllVariantsShowcase: Story = {
+  render: () => (
+    <View style={styles.wideContainer}>
+      <ListItem
+        variant="user-profile-01"
+        name="Tina Hernandez"
+        username="@tinahernan90"
+        description="Passionate Senior Product Designer @beyond_ui 🚀 | Crafting delightful user experiences that go beyond expectations"
+        avatarSrc="https://i.pravatar.cc/150?img=1"
+        showVerified
+        onFollowPress={() => console.log('Follow pressed')}
+      />
+      <ListItem
+        variant="user-profile-02"
+        name="Tina Hernandez"
+        username="@tinahernan90"
+        subscriptionDate="March 25, 2024"
+        avatarSrc="https://i.pravatar.cc/150?img=1"
+        onViewProfilePress={() => console.log('View profile pressed')}
+      />
+      <ListItem
+        variant="product"
+        name="Flux Co."
+        tags={['UX Design', 'Design Systems']}
+        count={16}
+        onActionPress={() => console.log('Action pressed')}
+      />
+      <ListItem
+        variant="search-result-01"
+        title="Personal Settings"
+        timestamp="March 25, 2024 04:53PM"
+        breadcrumbs={[
+          { label: 'Help Center' },
+          { label: 'Manage my account' },
+          { label: 'Account billing & payment' },
+        ]}
+        description="Customize your experience effortlessly with personal settings. Tailor it your way"
+        onReadMorePress={() => console.log('Read more pressed')}
+      />
+      <ListItem
+        variant="search-result-02"
+        title="Personal Settings"
+        description="Unlock a world of personalization with our comprehensive suite of personal settings. Tailor every detail of your experience, from preferences to security, effortlessly. Your journey, your choices. Elevate your interaction and make our platform uniquely yours."
+        authorName="Tina Hernandez"
+        authorAvatarSrc="https://i.pravatar.cc/150?img=1"
+        updatedText="Updated over a week ago"
+      />
+      <ListItem
+        variant="search-result-03"
+        title="Personal Settings"
+        description="Unlock a world of personalization with our comprehensive suite of personal settings. Tailor every detail of your experience..."
+      />
+      <ListItem
+        variant="task"
+        title="Opportunity 4"
+        metadata="Opportunity Pipeline"
+        updatedText="Updated 10 min ago"
+        iconColor="success"
+      />
+      <ListItem
+        variant="song-title"
+        title="Auto Layout (feat. DJ Rectangle)"
+        type="Single"
+        artist="Beyond UI"
+        year="2024"
+        imageSrc="https://via.placeholder.com/50"
+      />
+      <ListItem
+        variant="cloud-file"
+        name="Request Files"
+        service="Boxdrop"
+        size="24MB"
+      />
+      <ListItem
+        variant="phone-number"
+        countryCode="+1"
+        countryName="United States"
+      />
+      <ListItem
+        variant="integration"
+        name="Figma"
+        onPress={() => console.log('Integration pressed')}
+      />
+    </View>
+  ),
+}
+
 export const TaskMinimal: Story = {
   render: () => (
     <View style={styles.container}>

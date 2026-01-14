@@ -3,6 +3,7 @@ import { Toaster } from 'sonner';
 import { LiveRegion } from '@unicornlove/beyond-ui';
 import AppRoutes from './router';
 import ThemeSwitcher from './components/Common/ThemeSwitcher';
+import { CommandMenuProvider } from './contexts/CommandMenuContext';
 
 /**
  * Main App component
@@ -15,13 +16,13 @@ import ThemeSwitcher from './components/Common/ThemeSwitcher';
  */
 function App() {
   return (
-    <>
+    <CommandMenuProvider>
       <AppRoutes />
       <ThemeSwitcher />
       <Toaster position="top-right" />
       {/* LiveRegion for accessible announcements - screen readers will read these */}
       <LiveRegion />
-    </>
+    </CommandMenuProvider>
   );
 }
 

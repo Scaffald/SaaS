@@ -6,6 +6,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { DatePicker } from '../../../components/DatePicker'
 import type { DatePickerPresetOption } from '../../../components/DatePicker'
+import { dateToSimple, simpleToDate, type DateObject } from '../../../components/DatePickerBase/DatePickerBase.utils'
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Components/DatePicker',
@@ -38,7 +39,7 @@ type Story = StoryObj<typeof DatePicker>
 
 export const Blank: Story = {
   render: () => {
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+    const [selectedDate, setSelectedDate] = useState<DateObject | null>(null)
 
     return (
       <DatePicker
@@ -58,8 +59,8 @@ export const Blank: Story = {
 export const OneDaySelected: Story = {
   render: () => {
     const today = new Date()
-    const [selectedDate, setSelectedDate] = useState<Date | null>(
-      new Date(today.getFullYear(), today.getMonth(), 16)
+    const [selectedDate, setSelectedDate] = useState<DateObject>(
+      dateToSimple(new Date(today.getFullYear(), today.getMonth(), 16))
     )
 
     return (
@@ -80,9 +81,9 @@ export const OneDaySelected: Story = {
 export const DateRange: Story = {
   render: () => {
     const today = new Date()
-    const [dateRange, setDateRange] = useState<[Date, Date] | null>([
-      new Date(today.getFullYear(), today.getMonth(), 12),
-      new Date(today.getFullYear(), today.getMonth(), 16),
+    const [dateRange, setDateRange] = useState<[DateObject, DateObject]>([
+      dateToSimple(new Date(today.getFullYear(), today.getMonth(), 12)),
+      dateToSimple(new Date(today.getFullYear(), today.getMonth(), 16)),
     ])
 
     return (
