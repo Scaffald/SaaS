@@ -829,9 +829,10 @@ export default function BrokerClientProfilePage() {
       <Row alignItems="center" justifyContent="space-between">
         <Row alignItems="center" gap={16}>
           <Button
-            variant="ghost"
+            variant="text"
+            color="gray"
             onPress={() => navigate('/broker/clients')}
-            leftIcon={ArrowLeft}
+            iconStart={ArrowLeft}
             size="sm"
           >
             Back to Clients
@@ -879,10 +880,24 @@ export default function BrokerClientProfilePage() {
           </Stack>
         </Row>
         <Row alignItems="center" gap={12}>
-          <Button variant="outlined">
+          <Button 
+            variant="outline" 
+            color="gray"
+            onPress={() => {
+              // TODO: Implement edit client functionality
+              console.log('Edit client:', clientId);
+            }}
+          >
             Edit Client
           </Button>
-          <Button variant="primary">
+          <Button 
+            variant="filled" 
+            color="primary"
+            onPress={() => {
+              // TODO: Implement add policy functionality
+              console.log('Add policy for client:', clientId);
+            }}
+          >
             Add Policy
           </Button>
         </Row>
