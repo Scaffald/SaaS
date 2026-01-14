@@ -50,6 +50,27 @@ import type {
   TeamJobAssignmentsListResponse,
   TeamJobAssignmentResponse,
   DeleteResponse,
+  ApiKey,
+  ApiKeyCreated,
+  CreateApiKeyParams,
+  UpdateApiKeyParams,
+  GetUsageParams,
+  ApiKeyUsageStats,
+  RevokeApiKeyResponse,
+  Webhook,
+  WebhookWithSecret,
+  WebhookDelivery,
+  WebhookEventTypeInfo,
+  CreateWebhookParams,
+  UpdateWebhookParams,
+  ListDeliveriesParams,
+  WebhooksListResponse,
+  WebhookResponse,
+  WebhookCreatedResponse,
+  DeliveriesListResponse,
+  RetryDeliveryResponse,
+  DeleteWebhookResponse,
+  EventTypesResponse,
 } from '../index.js'
 
 // ===== Jobs Hooks =====
@@ -1290,6 +1311,516 @@ export function useDeleteTeamJobAssignment(
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['teams', variables.teamId, 'jobs'] })
     },
+    ...options,
+  })
+}
+
+// ===== API Keys Hooks =====
+
+/**
+ * Hook to fetch all API keys for the user's organization
+ *
+ * @example
+ * ```tsx
+ * function ApiKeysList() {
+ *   const { data: keys, isLoading } = useApiKeys()
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   return (
+ *     <div>
+ *       {keys?.map(key => (
+ *         <div key={key.id}>
+ *           {key.name} - {key.key_prefix}
+ *           <span>Active: {key.is_active ? '✓' : '✗'}</span>
+ *         </div>
+ *       ))}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useApiKeys(options?: Omit<UseQueryOptions<ApiKey[]>, 'queryKey' | 'queryFn'>) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['apiKeys'],
+    queryFn: () => client.apiKeys.list(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    ...options,
+  })
+}
+
+/**
+ * Hook to create a new API key
+ *
+ * @remarks
+ * The full API key is only returned once - make sure to save it immediately
+ *
+ * @example
+ * ```tsx
+ * function CreateApiKeyButton() {
+ *   const createKey = useCreateApiKey()
+ *   const [newKey, setNewKey] = useState<string | null>(null)
+ *
+ *   const handleCreate = async () => {
+ *     const result = await createKey.mutateAsync({
+ *       name: 'My API Key',
+ *       environment: 'live',
+ *       scopes: ['read:jobs', 'write:applications'],
+ *       rate_limit_tier: 'pro'
+ *     })
+ *     setNewKey(result.key) // Save this immediately!
+ *   }
+ *
+ *   return (
+ *     <div>
+ *       <button onClick={handleCreate}>Create Key</button>
+ *       {newKey && (
+ *         <div>
+ *           <strong>Save this key (you won't see it again!):</strong>
+ *           <code>{newKey}</code>
+ *         </div>
+ *       )}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useCreateApiKey(
+  options?: Omit<UseMutationOptions<ApiKeyCreated, Error, CreateApiKeyParams>, 'mutationFn'>
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: CreateApiKeyParams) => client.apiKeys.create(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to update an API key
+ *
+ * @example
+ * ```tsx
+ * function UpdateApiKeyForm({ keyId }: { keyId: string }) {
+ *   const updateKey = useUpdateApiKey()
+ *
+ *   const handleUpdate = async () => {
+ *     await updateKey.mutateAsync({
+ *       id: keyId,
+ *       params: {
+ *         name: 'Updated Key Name',
+ *         scopes: ['read:jobs', 'write:jobs', 'read:applications'],
+ *         is_active: true
+ *       }
+ *     })
+ *   }
+ *
+ *   return <button onClick={handleUpdate}>Update Key</button>
+ * }
+ * ```
+ */
+export function useUpdateApiKey(
+  options?: Omit<
+    UseMutationOptions<ApiKey, Error, { id: string; params: UpdateApiKeyParams }>,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, params }: { id: string; params: UpdateApiKeyParams }) =>
+      client.apiKeys.update(id, params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to revoke an API key
+ *
+ * @example
+ * ```tsx
+ * function RevokeApiKeyButton({ keyId }: { keyId: string }) {
+ *   const revokeKey = useRevokeApiKey()
+ *
+ *   const handleRevoke = async () => {
+ *     if (confirm('Are you sure you want to revoke this key?')) {
+ *       await revokeKey.mutateAsync(keyId)
+ *     }
+ *   }
+ *
+ *   return <button onClick={handleRevoke}>Revoke Key</button>
+ * }
+ * ```
+ */
+export function useRevokeApiKey(
+  options?: Omit<UseMutationOptions<RevokeApiKeyResponse, Error, string>, 'mutationFn'>
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => client.apiKeys.revoke(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to fetch usage statistics for an API key
+ *
+ * @example
+ * ```tsx
+ * function ApiKeyUsageStats({ keyId }: { keyId: string }) {
+ *   const { data: stats, isLoading } = useApiKeyUsage(keyId, { days: 7 })
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   return (
+ *     <div>
+ *       <h3>Last 7 Days Usage</h3>
+ *       <p>Total Requests: {stats?.total_requests}</p>
+ *       <p>Success Rate: {100 - parseFloat(stats?.error_rate || '0')}%</p>
+ *       <p>Avg Response Time: {stats?.avg_response_time_ms}ms</p>
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useApiKeyUsage(
+  id: string,
+  params?: GetUsageParams,
+  options?: Omit<UseQueryOptions<ApiKeyUsageStats>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['apiKeys', id, 'usage', params],
+    queryFn: () => client.apiKeys.getUsage(id, params),
+    staleTime: 1 * 60 * 1000, // 1 minute
+    ...options,
+  })
+}
+
+// ===== Webhooks Hooks =====
+
+/**
+ * Hook to fetch all webhooks for the user's organization
+ *
+ * @example
+ * ```typescript
+ * function WebhooksList() {
+ *   const { data: webhooks, isLoading } = useWebhooks()
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   return (
+ *     <div>
+ *       {webhooks?.data.map(webhook => (
+ *         <div key={webhook.id}>
+ *           {webhook.url} - {webhook.is_active ? 'Active' : 'Inactive'}
+ *           <span>Events: {webhook.events.join(', ')}</span>
+ *         </div>
+ *       ))}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useWebhooks(
+  options?: Omit<UseQueryOptions<WebhooksListResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['webhooks'],
+    queryFn: () => client.webhooks.list(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    ...options,
+  })
+}
+
+/**
+ * Hook to fetch a single webhook by ID
+ *
+ * @example
+ * ```typescript
+ * function WebhookDetail({ webhookId }: { webhookId: string }) {
+ *   const { data, isLoading } = useWebhook(webhookId)
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   return (
+ *     <div>
+ *       <h3>{data?.data.url}</h3>
+ *       <p>Events: {data?.data.events.join(', ')}</p>
+ *       <p>Status: {data?.data.is_active ? 'Active' : 'Inactive'}</p>
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useWebhook(
+  id: string,
+  options?: Omit<UseQueryOptions<WebhookResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['webhooks', id],
+    queryFn: () => client.webhooks.retrieve(id),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled: !!id,
+    ...options,
+  })
+}
+
+/**
+ * Hook to create a new webhook
+ *
+ * @remarks
+ * The webhook secret is only returned once - make sure to save it immediately
+ *
+ * @example
+ * ```typescript
+ * function CreateWebhookButton() {
+ *   const createWebhook = useCreateWebhook()
+ *   const [secret, setSecret] = useState<string | null>(null)
+ *
+ *   const handleCreate = async () => {
+ *     const result = await createWebhook.mutateAsync({
+ *       url: 'https://api.example.com/webhooks',
+ *       events: ['job.created', 'application.created'],
+ *       description: 'Main webhook',
+ *       retry_max_attempts: 5,
+ *       timeout_ms: 15000
+ *     })
+ *     setSecret(result.data.secret) // Save this immediately!
+ *   }
+ *
+ *   return (
+ *     <div>
+ *       <button onClick={handleCreate}>Create Webhook</button>
+ *       {secret && (
+ *         <div>
+ *           <strong>Save this secret (you won't see it again!):</strong>
+ *           <code>{secret}</code>
+ *         </div>
+ *       )}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useCreateWebhook(
+  options?: Omit<UseMutationOptions<WebhookCreatedResponse, Error, CreateWebhookParams>, 'mutationFn'>
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: CreateWebhookParams) => client.webhooks.create(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to update a webhook
+ *
+ * @example
+ * ```typescript
+ * function UpdateWebhookForm({ webhookId }: { webhookId: string }) {
+ *   const updateWebhook = useUpdateWebhook()
+ *
+ *   const handleUpdate = async () => {
+ *     await updateWebhook.mutateAsync({
+ *       id: webhookId,
+ *       params: {
+ *         events: ['job.created', 'job.published', 'application.created'],
+ *         is_active: true
+ *       }
+ *     })
+ *   }
+ *
+ *   return <button onClick={handleUpdate}>Update Webhook</button>
+ * }
+ * ```
+ */
+export function useUpdateWebhook(
+  options?: Omit<
+    UseMutationOptions<WebhookResponse, Error, { id: string; params: UpdateWebhookParams }>,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, params }: { id: string; params: UpdateWebhookParams }) =>
+      client.webhooks.update(id, params),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] })
+      queryClient.invalidateQueries({ queryKey: ['webhooks', variables.id] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to delete a webhook
+ *
+ * @example
+ * ```typescript
+ * function DeleteWebhookButton({ webhookId }: { webhookId: string }) {
+ *   const deleteWebhook = useDeleteWebhook()
+ *
+ *   const handleDelete = async () => {
+ *     if (confirm('Are you sure you want to delete this webhook?')) {
+ *       await deleteWebhook.mutateAsync(webhookId)
+ *     }
+ *   }
+ *
+ *   return <button onClick={handleDelete}>Delete Webhook</button>
+ * }
+ * ```
+ */
+export function useDeleteWebhook(
+  options?: Omit<UseMutationOptions<DeleteWebhookResponse, Error, string>, 'mutationFn'>
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => client.webhooks.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to fetch webhook deliveries
+ *
+ * @example
+ * ```typescript
+ * function WebhookDeliveries({ webhookId }: { webhookId: string }) {
+ *   const { data, isLoading } = useWebhookDeliveries(webhookId, {
+ *     status: 'failed',
+ *     limit: 50
+ *   })
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   return (
+ *     <div>
+ *       <h3>Failed Deliveries</h3>
+ *       {data?.data.map(delivery => (
+ *         <div key={delivery.id}>
+ *           {delivery.event_type} - {delivery.status}
+ *           {delivery.error_message && <p>Error: {delivery.error_message}</p>}
+ *         </div>
+ *       ))}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useWebhookDeliveries(
+  webhookId: string,
+  params?: ListDeliveriesParams,
+  options?: Omit<UseQueryOptions<DeliveriesListResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['webhooks', webhookId, 'deliveries', params],
+    queryFn: () => client.webhooks.listDeliveries(webhookId, params),
+    staleTime: 30 * 1000, // 30 seconds
+    enabled: !!webhookId,
+    ...options,
+  })
+}
+
+/**
+ * Hook to retry a webhook delivery
+ *
+ * @example
+ * ```typescript
+ * function RetryDeliveryButton({ deliveryId }: { deliveryId: string }) {
+ *   const retryDelivery = useRetryWebhookDelivery()
+ *
+ *   const handleRetry = async () => {
+ *     const result = await retryDelivery.mutateAsync(deliveryId)
+ *     console.log(result.message) // "Delivery scheduled for retry"
+ *   }
+ *
+ *   return <button onClick={handleRetry}>Retry Delivery</button>
+ * }
+ * ```
+ */
+export function useRetryWebhookDelivery(
+  options?: Omit<UseMutationOptions<RetryDeliveryResponse, Error, string>, 'mutationFn'>
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (deliveryId: string) => client.webhooks.retryDelivery(deliveryId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['webhooks'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to fetch available webhook event types
+ *
+ * @example
+ * ```typescript
+ * function EventTypeSelector() {
+ *   const { data: eventTypes, isLoading } = useWebhookEventTypes()
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   const jobEvents = eventTypes?.data.filter(e => e.category === 'job')
+ *
+ *   return (
+ *     <select>
+ *       {jobEvents?.map(event => (
+ *         <option key={event.value} value={event.value}>
+ *           {event.label}
+ *         </option>
+ *       ))}
+ *     </select>
+ *   )
+ * }
+ * ```
+ */
+export function useWebhookEventTypes(
+  options?: Omit<UseQueryOptions<EventTypesResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['webhooks', 'event-types'],
+    queryFn: () => client.webhooks.eventTypes(),
+    staleTime: 60 * 60 * 1000, // 1 hour (rarely changes)
     ...options,
   })
 }

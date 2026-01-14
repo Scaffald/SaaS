@@ -1090,6 +1090,407 @@ export const handlers = [
       success: true,
     })
   }),
+
+  // ===== API Keys Endpoints =====
+
+  // GET /v1/api-keys - List all API keys
+  http.get(`${BASE_URL}/v1/api-keys`, () => {
+    return HttpResponse.json([
+      {
+        id: 'key_1',
+        name: 'Production API Key',
+        key_prefix: 'sk_live_abc123...',
+        scopes: ['read:jobs', 'write:applications'],
+        rate_limit_tier: 'pro',
+        is_active: true,
+        last_used_at: '2025-01-10T10:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
+        expires_at: '2026-12-31T23:59:59Z',
+      },
+      {
+        id: 'key_2',
+        name: 'Test API Key',
+        key_prefix: 'sk_test_xyz789...',
+        scopes: ['read:jobs', 'read:applications'],
+        rate_limit_tier: 'free',
+        is_active: true,
+        last_used_at: null,
+        created_at: '2024-06-15T00:00:00Z',
+        expires_at: null,
+      },
+      {
+        id: 'key_3',
+        name: 'Revoked Key',
+        key_prefix: 'sk_live_old456...',
+        scopes: ['read:jobs'],
+        rate_limit_tier: 'free',
+        is_active: false,
+        last_used_at: '2024-12-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
+        expires_at: null,
+      },
+    ])
+  }),
+
+  // POST /v1/api-keys - Create a new API key
+  http.post(`${BASE_URL}/v1/api-keys`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, any>
+
+    // Validate scopes (at least one required)
+    if (!body.scopes || body.scopes.length === 0) {
+      return HttpResponse.json(
+        { error: 'At least one scope is required' },
+        { status: 400 }
+      )
+    }
+
+    return HttpResponse.json(
+      {
+        id: 'key_new_123',
+        name: body.name,
+        key: 'sk_live_full_key_secret_abc123xyz789', // Full key only shown once
+        key_prefix: 'sk_live_abc123...',
+        scopes: body.scopes || [],
+        rate_limit_tier: body.rate_limit_tier || 'free',
+        created_at: new Date().toISOString(),
+        expires_at: body.expires_at || null,
+      },
+      { status: 201 }
+    )
+  }),
+
+  // PATCH /v1/api-keys/:id - Update an API key
+  http.patch(`${BASE_URL}/v1/api-keys/:id`, async ({ params, request }) => {
+    const { id } = params
+    const body = (await request.json()) as Record<string, any>
+
+    // Check for invalid key ID
+    if (id === 'invalid_key_id') {
+      return HttpResponse.json(
+        { error: 'API key not found' },
+        { status: 404 }
+      )
+    }
+
+    return HttpResponse.json({
+      id,
+      name: body.name || 'Updated API Key',
+      key_prefix: 'sk_live_abc123...',
+      scopes: body.scopes || ['read:jobs', 'write:jobs'],
+      rate_limit_tier: 'pro',
+      is_active: body.is_active !== undefined ? body.is_active : true,
+      last_used_at: '2025-01-10T10:00:00Z',
+      created_at: '2024-01-01T00:00:00Z',
+      expires_at: '2026-12-31T23:59:59Z',
+    })
+  }),
+
+  // POST /v1/api-keys/:id/revoke - Revoke an API key
+  http.post(`${BASE_URL}/v1/api-keys/:id/revoke`, ({ params }) => {
+    const { id } = params
+
+    // Check for invalid key ID
+    if (id === 'invalid_key_id') {
+      return HttpResponse.json(
+        { error: 'API key not found' },
+        { status: 404 }
+      )
+    }
+
+    return HttpResponse.json({
+      id,
+      name: 'Production API Key',
+      message: 'API key revoked successfully',
+    })
+  }),
+
+  // GET /v1/api-keys/:id/usage - Get usage statistics
+  http.get(`${BASE_URL}/v1/api-keys/:id/usage`, ({ params, request }) => {
+    const { id } = params
+    const url = new URL(request.url)
+    const days = url.searchParams.get('days') || '30'
+
+    // Check for invalid key ID
+    if (id === 'invalid_key_id') {
+      return HttpResponse.json(
+        { error: 'API key not found' },
+        { status: 404 }
+      )
+    }
+
+    return HttpResponse.json({
+      total_requests: 1250,
+      success_requests: 1180,
+      error_requests: 70,
+      error_rate: '5.60',
+      avg_response_time_ms: 245,
+      period_days: Number.parseInt(days),
+      usage: [
+        {
+          endpoint: '/v1/jobs',
+          method: 'GET',
+          status_code: 200,
+          response_time_ms: 150,
+          timestamp: '2025-01-12T10:00:00Z',
+        },
+        {
+          endpoint: '/v1/applications',
+          method: 'POST',
+          status_code: 201,
+          response_time_ms: 320,
+          timestamp: '2025-01-12T09:45:00Z',
+        },
+        {
+          endpoint: '/v1/jobs/123',
+          method: 'GET',
+          status_code: 404,
+          response_time_ms: 85,
+          timestamp: '2025-01-12T09:30:00Z',
+        },
+      ],
+    })
+  }),
+
+  // ===== Webhooks Endpoints =====
+
+  // GET /v1/webhooks - List all webhooks
+  http.get(`${BASE_URL}/v1/webhooks`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          id: 'webhook_1',
+          organization_id: 'org_1',
+          url: 'https://api.example.com/webhooks/scaffald',
+          description: 'Production webhook',
+          events: ['job.created', 'job.published', 'application.created'],
+          is_active: true,
+          retry_max_attempts: 3,
+          timeout_ms: 10000,
+          rate_limit_per_minute: 60,
+          metadata: { environment: 'production' },
+          created_by: 'user_1',
+          updated_by: null,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+        },
+        {
+          id: 'webhook_2',
+          organization_id: 'org_1',
+          url: 'https://api.test.com/webhooks',
+          description: 'Test webhook',
+          events: ['job.created'],
+          is_active: false,
+          retry_max_attempts: 5,
+          timeout_ms: 15000,
+          rate_limit_per_minute: null,
+          metadata: {},
+          created_by: 'user_1',
+          updated_by: 'user_1',
+          created_at: '2024-06-01T00:00:00Z',
+          updated_at: '2024-06-15T00:00:00Z',
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/webhooks/:id - Get a single webhook
+  http.get(`${BASE_URL}/v1/webhooks/:id`, ({ params }) => {
+    const { id } = params
+
+    if (id === 'invalid_webhook_id') {
+      return HttpResponse.json({ error: 'Webhook not found' }, { status: 404 })
+    }
+
+    return HttpResponse.json({
+      data: {
+        id,
+        organization_id: 'org_1',
+        url: 'https://api.example.com/webhooks/scaffald',
+        description: 'Production webhook',
+        events: ['job.created', 'job.published', 'application.created'],
+        is_active: true,
+        retry_max_attempts: 3,
+        timeout_ms: 10000,
+        rate_limit_per_minute: 60,
+        metadata: { environment: 'production' },
+        created_by: 'user_1',
+        updated_by: null,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+      },
+    })
+  }),
+
+  // POST /v1/webhooks - Create a new webhook
+  http.post(`${BASE_URL}/v1/webhooks`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, any>
+
+    // Validate required fields
+    if (!body.url || !body.events || body.events.length === 0) {
+      return HttpResponse.json(
+        { error: 'URL and at least one event are required' },
+        { status: 400 }
+      )
+    }
+
+    return HttpResponse.json(
+      {
+        data: {
+          id: 'webhook_new_123',
+          organization_id: 'org_1',
+          url: body.url,
+          description: body.description || null,
+          secret: 'whsec_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz', // Full secret only shown once
+          events: body.events,
+          is_active: true,
+          retry_max_attempts: body.retry_max_attempts ?? 3,
+          timeout_ms: body.timeout_ms ?? 10000,
+          rate_limit_per_minute: body.rate_limit_per_minute || null,
+          metadata: body.metadata ?? {},
+          created_by: 'user_1',
+          updated_by: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        message: 'Webhook created successfully. Save the secret - it will not be shown again!',
+      },
+      { status: 201 }
+    )
+  }),
+
+  // PATCH /v1/webhooks/:id - Update a webhook
+  http.patch(`${BASE_URL}/v1/webhooks/:id`, async ({ params, request }) => {
+    const { id } = params
+    const body = (await request.json()) as Record<string, any>
+
+    if (id === 'invalid_webhook_id') {
+      return HttpResponse.json({ error: 'Webhook not found' }, { status: 404 })
+    }
+
+    return HttpResponse.json({
+      data: {
+        id,
+        organization_id: 'org_1',
+        url: body.url || 'https://api.example.com/webhooks/scaffald',
+        description: body.description || 'Updated webhook',
+        events: body.events || ['job.created', 'application.created'],
+        is_active: body.is_active !== undefined ? body.is_active : true,
+        retry_max_attempts: body.retry_max_attempts ?? 3,
+        timeout_ms: body.timeout_ms ?? 10000,
+        rate_limit_per_minute: body.rate_limit_per_minute || 60,
+        metadata: body.metadata ?? {},
+        created_by: 'user_1',
+        updated_by: 'user_1',
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: new Date().toISOString(),
+      },
+    })
+  }),
+
+  // DELETE /v1/webhooks/:id - Delete a webhook
+  http.delete(`${BASE_URL}/v1/webhooks/:id`, ({ params }) => {
+    const { id } = params
+
+    if (id === 'invalid_webhook_id') {
+      return HttpResponse.json({ error: 'Webhook not found' }, { status: 404 })
+    }
+
+    return HttpResponse.json({
+      success: true,
+    })
+  }),
+
+  // GET /v1/webhooks/:id/deliveries - List webhook deliveries
+  http.get(`${BASE_URL}/v1/webhooks/:id/deliveries`, ({ params, request }) => {
+    const { id } = params
+    const url = new URL(request.url)
+    const status = url.searchParams.get('status')
+
+    if (id === 'invalid_webhook_id') {
+      return HttpResponse.json({ error: 'Webhook not found' }, { status: 404 })
+    }
+
+    const allDeliveries = [
+      {
+        id: 'delivery_1',
+        webhook_id: id,
+        event_type: 'job.created',
+        status: 'success',
+        response_status_code: 200,
+        response_body: '{"received":true}',
+        error_message: null,
+        retry_count: 0,
+        next_retry_at: null,
+        payload: { job_id: 'job_123', action: 'created' },
+        created_at: '2025-01-12T10:00:00Z',
+        completed_at: '2025-01-12T10:00:01Z',
+      },
+      {
+        id: 'delivery_2',
+        webhook_id: id,
+        event_type: 'application.created',
+        status: 'failed',
+        response_status_code: 500,
+        response_body: 'Internal Server Error',
+        error_message: 'Connection timeout',
+        retry_count: 3,
+        next_retry_at: '2025-01-12T11:00:00Z',
+        payload: { application_id: 'app_456', action: 'created' },
+        created_at: '2025-01-12T09:30:00Z',
+        completed_at: null,
+      },
+      {
+        id: 'delivery_3',
+        webhook_id: id,
+        event_type: 'job.published',
+        status: 'retrying',
+        response_status_code: null,
+        response_body: null,
+        error_message: null,
+        retry_count: 1,
+        next_retry_at: '2025-01-12T10:30:00Z',
+        payload: { job_id: 'job_789', action: 'published' },
+        created_at: '2025-01-12T10:15:00Z',
+        completed_at: null,
+      },
+    ]
+
+    const filteredDeliveries = status
+      ? allDeliveries.filter((d) => d.status === status)
+      : allDeliveries
+
+    return HttpResponse.json({
+      data: filteredDeliveries,
+    })
+  }),
+
+  // POST /v1/webhooks/deliveries/:id/retry - Retry a delivery
+  http.post(`${BASE_URL}/v1/webhooks/deliveries/:id/retry`, ({ params }) => {
+    const { id } = params
+
+    if (id === 'invalid_delivery_id') {
+      return HttpResponse.json({ error: 'Delivery not found' }, { status: 404 })
+    }
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Delivery scheduled for retry',
+    })
+  }),
+
+  // GET /v1/webhooks/event-types - Get available event types
+  http.get(`${BASE_URL}/v1/webhooks/event-types`, () => {
+    return HttpResponse.json({
+      data: [
+        { value: 'job.created', label: 'Job Created', category: 'job' },
+        { value: 'job.published', label: 'Job Published', category: 'job' },
+        { value: 'job.closed', label: 'Job Closed', category: 'job' },
+        { value: 'application.created', label: 'Application Created', category: 'application' },
+        { value: 'application.updated', label: 'Application Updated', category: 'application' },
+        { value: 'application.withdrawn', label: 'Application Withdrawn', category: 'application' },
+      ],
+    })
+  }),
 ]
 
 export const server = setupServer(...handlers)

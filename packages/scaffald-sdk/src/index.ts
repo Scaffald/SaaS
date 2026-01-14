@@ -82,6 +82,44 @@ export type {
   DeleteResponse,
 } from './types/teams.js'
 
+export type {
+  ApiKey,
+  ApiKeyCreated,
+  ApiKeyScope,
+  ApiKeyEnvironment,
+  RateLimitTier,
+  ApiKeyUsageRecord,
+  ApiKeyUsageStats,
+  CreateApiKeyParams,
+  UpdateApiKeyParams,
+  GetUsageParams,
+  ApiKeysListResponse,
+  ApiKeyResponse,
+  ApiKeyCreatedResponse,
+  RevokeApiKeyResponse,
+  ApiKeyUsageResponse,
+} from './types/api-keys.js'
+
+export type {
+  Webhook,
+  WebhookWithSecret,
+  WebhookDelivery,
+  WebhookDeliveryStatus,
+  WebhookEventType,
+  WebhookEventTypeInfo,
+  CreateWebhookParams,
+  UpdateWebhookParams,
+  ListDeliveriesParams,
+  WebhooksListResponse,
+  WebhookResponse,
+  WebhookCreatedResponse,
+  WebhookUpdatedResponse,
+  DeleteWebhookResponse,
+  DeliveriesListResponse,
+  RetryDeliveryResponse,
+  EventTypesResponse,
+} from './types/webhooks-management.js'
+
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
 export {
