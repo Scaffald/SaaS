@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, TrendingUp, AlertTriangle, Shield, Users, Building2, HardHat, UserPlus } from 'lucide-react';
-import { Stack, Row, Text, H1, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1 } from '@unicornlove/beyond-ui';
 import { EmptyState } from '../../ui/EmptyState';
 import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
@@ -181,21 +181,36 @@ export default function BrokerClientsPage() {
               </Text>
             </Stack>
             <Row gap={12}>
-              <Button
-                onPress={() => setIsInviteModalOpen(true)}
-                style={orangeOutlineButtonStyle}
+              <button
+                type="button"
+                onClick={() => setIsInviteModalOpen(true)}
+                style={{
+                  ...orangeOutlineButtonStyle,
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: 14,
+                }}
               >
-                <Row alignItems="center" gap={8}>
-                  <UserPlus size={16} />
-                  <span>Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}</span>
-                </Row>
-              </Button>
-              <Button
-                onPress={() => setIsClientModalOpen(true)}
-                style={orangeButtonStyle}
+                <UserPlus size={16} />
+                Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsClientModalOpen(true)}
+                style={{
+                  ...orangeButtonStyle,
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  fontSize: 14,
+                }}
               >
                 Add Client
-              </Button>
+              </button>
             </Row>
           </Row>
           <EmptyState
@@ -237,21 +252,36 @@ export default function BrokerClientsPage() {
             </Text>
           </Stack>
           <Row gap={12}>
-            <Button
-              onPress={() => setIsInviteModalOpen(true)}
-              style={orangeOutlineButtonStyle}
+            <button
+              type="button"
+              onClick={() => setIsInviteModalOpen(true)}
+              style={{
+                ...orangeOutlineButtonStyle,
+                padding: '10px 16px',
+                borderRadius: 8,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                fontSize: 14,
+              }}
             >
-              <Row alignItems="center" gap={8}>
-                <UserPlus size={16} />
-                <span>Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}</span>
-              </Row>
-            </Button>
-            <Button
-              onPress={() => setIsClientModalOpen(true)}
-              style={orangeButtonStyle}
+              <UserPlus size={16} />
+              Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsClientModalOpen(true)}
+              style={{
+                ...orangeButtonStyle,
+                padding: '10px 16px',
+                borderRadius: 8,
+                cursor: 'pointer',
+                fontSize: 14,
+              }}
             >
               Add Client
-            </Button>
+            </button>
           </Row>
         </Row>
 
