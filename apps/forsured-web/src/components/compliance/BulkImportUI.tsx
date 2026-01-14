@@ -291,7 +291,7 @@ export function BulkImportUI({
                       fontWeight: 500,
                       cursor: 'pointer',
                     }}
-                    onPress={() => fileInputRef.current?.click()}
+                    onClick={() => fileInputRef.current?.click()}
                   >
                     Click to upload
                   </span>{' '}
@@ -500,7 +500,7 @@ export function BulkImportUI({
                       border: 'none',
                       cursor: 'pointer',
                     }}
-                    onPress={() => toggleRowExpansion(row.rowIndex)}
+                    onClick={() => toggleRowExpansion(row.rowIndex)}
                   >
                     <Row style={{ alignItems: 'center', gap: '12px' }}>
                       <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-gray9)' }}>

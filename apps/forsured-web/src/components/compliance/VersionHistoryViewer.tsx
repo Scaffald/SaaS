@@ -321,7 +321,7 @@ function DiffView({ comparison }: DiffViewProps) {
                   border: 'none',
                   cursor: 'pointer',
                 }}
-                onPress={() => toggleField(change.field)}
+                onClick={() => toggleField(change.field)}
               >
                 <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
                   {/* Change type icon */}

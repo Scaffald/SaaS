@@ -159,7 +159,7 @@ export const FlagFilter: React.FC<FlagFilterProps> = ({
               role="radio"
               aria-checked={isSelected}
               style={getToggleButtonStyles(isSelected)}
-              onPress={() => handleFilterChange(option)}
+              onClick={() => handleFilterChange(option)}
             >
               {getFilterIcon(option)}
               <Text>{getFilterLabel(option)}</Text>

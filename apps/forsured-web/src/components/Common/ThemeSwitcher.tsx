@@ -58,7 +58,7 @@ export default function ThemeSwitcher() {
                 right: 0,
                 bottom: 0,
               }}
-              onPress={() => setIsOpen(false)}
+              onClick={() => setIsOpen(false)}
             />
             <Stack
               style={{

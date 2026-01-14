@@ -218,7 +218,7 @@ export default function BrokerAcknowledgementFormPage() {
           Please select a form to view or edit.
         </Text>
         <button
-          onPress={() => navigate('/broker/acknowledgements')}
+          onClick={() => navigate('/broker/acknowledgements')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -263,7 +263,7 @@ export default function BrokerAcknowledgementFormPage() {
       <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <Stack>
           <button
-            onPress={() => navigate('/broker/acknowledgements')}
+            onClick={() => navigate('/broker/acknowledgements')}
             style={{
               display: 'flex',
               alignItems: 'center',

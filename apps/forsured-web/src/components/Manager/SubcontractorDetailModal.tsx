@@ -221,7 +221,7 @@ export default function SubcontractorDetailModal({
         justifyContent: 'center',
         zIndex: 1000,
       }}
-      onPress={onClose}
+      onClick={onClose}
     >
       <Card
         onPress={(e: React.MouseEvent) => e.stopPropagation()}
@@ -384,7 +384,7 @@ export default function SubcontractorDetailModal({
 
           <Row style={{ borderBottom: '1px solid var(--color-border)' }}>
             <div
-              onPress={() => setActiveTab('overview')}
+              onClick={() => setActiveTab('overview')}
               style={{
                 paddingLeft: 16,
                 paddingRight: 16,
@@ -403,7 +403,7 @@ export default function SubcontractorDetailModal({
               </Text>
             </div>
             <div
-              onPress={() => setActiveTab('policies')}
+              onClick={() => setActiveTab('policies')}
               style={{
                 paddingLeft: 16,
                 paddingRight: 16,
@@ -422,7 +422,7 @@ export default function SubcontractorDetailModal({
               </Text>
             </div>
             <div
-              onPress={() => setActiveTab('documents')}
+              onClick={() => setActiveTab('documents')}
               style={{
                 paddingLeft: 16,
                 paddingRight: 16,
@@ -441,7 +441,7 @@ export default function SubcontractorDetailModal({
               </Text>
             </div>
             <div
-              onPress={() => setActiveTab('issues')}
+              onClick={() => setActiveTab('issues')}
               style={{
                 paddingLeft: 16,
                 paddingRight: 16,

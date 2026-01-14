@@ -41,7 +41,7 @@ export default function BrokerTaskDetailPage() {
     return (
       <Stack gap={24}>
         <button
-          onPress={() => navigate(-1)}
+          onClick={() => navigate(-1)}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -131,7 +131,7 @@ export default function BrokerTaskDetailPage() {
     <Stack gap={24}>
       <Row alignItems="center" justifyContent="space-between">
         <button
-          onPress={() => navigate(-1)}
+          onClick={() => navigate(-1)}
           style={{
             display: 'flex',
             alignItems: 'center',

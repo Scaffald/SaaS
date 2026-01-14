@@ -500,7 +500,7 @@ export default function NotificationsAndApprovalsPage() {
                         color: 'var(--color-text-secondary)',
                         cursor: 'pointer',
                       }}
-                      onPress={() => toggleSelectItem(approval.id)}
+                      onClick={() => toggleSelectItem(approval.id)}
                     >
                       {selectedItems.includes(approval.id) ? (
                         <CheckSquare size={20} color="var(--color-blue-9)" />

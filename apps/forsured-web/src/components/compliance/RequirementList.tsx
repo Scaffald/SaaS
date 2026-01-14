@@ -141,7 +141,7 @@ export default function RequirementList({
       <Card style={{ backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-5)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
         <Text style={{ color: 'var(--color-red-11)', marginBottom: 8 }}>Error: {error}</Text>
         <button
-          onPress={() => loadRequirements()}
+          onClick={() => loadRequirements()}
           style={{
             fontSize: 'var(--font-size-3)',
             color: 'var(--color-red-10)',
@@ -164,7 +164,7 @@ export default function RequirementList({
         <h2 style={{ fontSize: 'var(--font-size-7)', fontWeight: 700, color: 'var(--color-12)', margin: 0 }}>Compliance Requirements</h2>
         {onCreateNew && (
           <button
-            onPress={onCreateNew}
+            onClick={onCreateNew}
             style={{
               paddingLeft: 'var(--space-4)',
               paddingRight: 'var(--space-4)',
@@ -316,7 +316,7 @@ export default function RequirementList({
             <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-4)' }}>No requirements found. Create your first requirement or load from templates.</Text>
             {onCreateNew && (
               <button
-                onPress={onCreateNew}
+                onClick={onCreateNew}
                 style={{
                   paddingLeft: 'var(--space-4)',
                   paddingRight: 'var(--space-4)',
@@ -399,7 +399,7 @@ export default function RequirementList({
                     <Row style={{ alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
                       {onEditRequirement && (
                         <button
-                          onPress={(e) => {
+                          onClick={(e) => {
                             e.stopPropagation();
                             onEditRequirement(requirement);
                           }}
@@ -418,7 +418,7 @@ export default function RequirementList({
                       )}
                       {onCloneRequirement && (
                         <button
-                          onPress={(e) => {
+                          onClick={(e) => {
                             e.stopPropagation();
                             onCloneRequirement(requirement);
                           }}
@@ -437,7 +437,7 @@ export default function RequirementList({
                       )}
                       {requirement.status !== RequirementStatus.ARCHIVED && (
                         <button
-                          onPress={(e) => {
+                          onClick={(e) => {
                             e.stopPropagation();
                             handleDelete(requirement);
                           }}
@@ -482,7 +482,7 @@ export default function RequirementList({
               </Text>
               <Row style={{ gap: 'var(--space-2)' }}>
                 <button
-                  onPress={() => setPage(Math.max(1, page - 1))}
+                  onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
                   style={{
                     paddingLeft: 'var(--space-3)',
@@ -504,7 +504,7 @@ export default function RequirementList({
                   Previous
                 </button>
                 <button
-                  onPress={() => setPage(Math.min(totalPages, page + 1))}
+                  onClick={() => setPage(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
                   style={{
                     paddingLeft: 'var(--space-3)',

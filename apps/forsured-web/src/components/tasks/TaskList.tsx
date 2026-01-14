@@ -144,7 +144,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
-                  onPress={() => handleSort('title')}
+                  onClick={() => handleSort('title')}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
@@ -164,7 +164,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
-                  onPress={() => handleSort('status')}
+                  onClick={() => handleSort('status')}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
@@ -184,7 +184,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
-                  onPress={() => handleSort('priority')}
+                  onClick={() => handleSort('priority')}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >
@@ -217,7 +217,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     letterSpacing: '0.05em',
                     cursor: 'pointer',
                   }}
-                  onPress={() => handleSort('due_date')}
+                  onClick={() => handleSort('due_date')}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color3)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-color2)')}
                 >

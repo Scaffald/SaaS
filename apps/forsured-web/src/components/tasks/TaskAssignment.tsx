@@ -218,7 +218,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                 <button
                   key={user.id}
                   type="button"
-                  onPress={() => handleUserSelect(user.id)}
+                  onClick={() => handleUserSelect(user.id)}
                   style={{
                     display: 'flex',
                     width: '100%',

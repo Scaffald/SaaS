@@ -420,7 +420,7 @@ export default function SubcontractorsPage() {
         justifyContent: 'center',
         zIndex: 1000,
       }}
-      onPress={handleCloseModal}
+      onClick={handleCloseModal}
     >
       <Card
         style={{
@@ -1010,7 +1010,7 @@ export default function SubcontractorsPage() {
                     <option value="issues">Issues</option>
                   </select>
                   <div
-                    onPress={() =>
+                    onClick={() =>
                       setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
                     }
                     style={{

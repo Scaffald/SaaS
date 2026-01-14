@@ -484,8 +484,7 @@ export default function SubcontractorTasksPanel({
                       </Row>
                     )}
                     {task.document_link && (
-                      <a
-                        href={task.document_link}
+                      <a href={task.document_link}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
@@ -494,7 +493,7 @@ export default function SubcontractorTasksPanel({
                           color: 'var(--color-blue10)',
                           textDecoration: 'none',
                         }}
-                        onPress={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <FileText size={12} style={{ marginRight: 4 }} />
                         <Text style={{ fontSize: 10 }}>View Doc</Text>

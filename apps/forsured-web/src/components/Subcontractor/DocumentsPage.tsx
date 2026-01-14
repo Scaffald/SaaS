@@ -467,19 +467,19 @@ export default function DocumentsPage() {
       >
         <Row alignItems="center" gap={8}>
           <button
-            onPress={() => setFilter('verified')}
+            onClick={() => setFilter('verified')}
             style={getFilterButtonStyle(filter === 'verified')}
           >
             Verified ({stats.verified})
           </button>
           <button
-            onPress={() => setFilter('pending')}
+            onClick={() => setFilter('pending')}
             style={getFilterButtonStyle(filter === 'pending')}
           >
             Pending ({stats.pending})
           </button>
           <button
-            onPress={() => setFilter('expiring')}
+            onClick={() => setFilter('expiring')}
             style={getFilterButtonStyle(filter === 'expiring')}
           >
             Expiring ({stats.expiring})
@@ -631,7 +631,7 @@ export default function DocumentsPage() {
                     <td>
                       <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16, justifyContent: 'flex-end' }} alignItems="center" gap={8}>
                         <button
-                          onPress={() => setSelectedDocument(doc)}
+                          onClick={() => setSelectedDocument(doc)}
                           style={getActionButtonStyle()}
                         >
                           <Eye size={16} />
@@ -693,7 +693,7 @@ export default function DocumentsPage() {
             justifyContent: 'center',
             zIndex: 1000,
           }}
-          onPress={handleModalClose}
+          onClick={handleModalClose}
         >
           <Card
             style={{

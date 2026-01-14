@@ -437,7 +437,7 @@ export default function RequirementEditor({
                   border: 'none',
                   cursor: 'pointer',
                 }}
-                onPress={addEndorsement}
+                onClick={addEndorsement}
               >
                 + Add Endorsement
               </button>
@@ -484,7 +484,7 @@ export default function RequirementEditor({
                         border: 'none',
                         cursor: 'pointer',
                       }}
-                      onPress={() => removeEndorsement(index)}
+                      onClick={() => removeEndorsement(index)}
                     >
                       Remove
                     </button>
@@ -512,7 +512,7 @@ export default function RequirementEditor({
                   border: 'none',
                   cursor: 'pointer',
                 }}
-                onPress={addCondition}
+                onClick={addCondition}
               >
                 + Add Condition
               </button>
@@ -562,7 +562,7 @@ export default function RequirementEditor({
                           border: 'none',
                           cursor: 'pointer',
                         }}
-                        onPress={() => removeCondition(index)}
+                        onClick={() => removeCondition(index)}
                       >
                         Remove
                       </button>
@@ -588,7 +588,7 @@ export default function RequirementEditor({
                   border: 'none',
                   cursor: 'pointer',
                 }}
-                onPress={addDocumentation}
+                onClick={addDocumentation}
               >
                 + Add Document
               </button>
@@ -631,7 +631,7 @@ export default function RequirementEditor({
                       border: 'none',
                       cursor: 'pointer',
                     }}
-                    onPress={() => removeDocumentation(index)}
+                    onClick={() => removeDocumentation(index)}
                   >
                     Remove
                   </button>

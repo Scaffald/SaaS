@@ -153,7 +153,7 @@ export default function HomePage() {
                 About
               </a>
               <button
-                onPress={() => navigate('/colors')}
+                onClick={() => navigate('/colors')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -187,7 +187,7 @@ export default function HomePage() {
             </Text>
             <Row style={{ flexWrap: 'wrap', gap: 'var(--space-2)' }}>
               <button
-                onPress={() => navigate('/manager/onboarding')}
+                onClick={() => navigate('/manager/onboarding')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -199,7 +199,7 @@ export default function HomePage() {
                 Manager Onboarding
               </button>
               <button
-                onPress={() => navigate('/subcontractor/onboarding')}
+                onClick={() => navigate('/subcontractor/onboarding')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -211,7 +211,7 @@ export default function HomePage() {
                 Subcontractor Onboarding
               </button>
               <button
-                onPress={() => navigate('/broker/onboarding')}
+                onClick={() => navigate('/broker/onboarding')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -223,7 +223,7 @@ export default function HomePage() {
                 Broker Onboarding
               </button>
               <button
-                onPress={() => navigate('/manager/dashboard')}
+                onClick={() => navigate('/manager/dashboard')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -235,7 +235,7 @@ export default function HomePage() {
                 Manager Dashboard
               </button>
               <button
-                onPress={() => navigate('/subcontractor/dashboard')}
+                onClick={() => navigate('/subcontractor/dashboard')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -247,7 +247,7 @@ export default function HomePage() {
                 Subcontractor Dashboard
               </button>
               <button
-                onPress={() => navigate('/broker/dashboard')}
+                onClick={() => navigate('/broker/dashboard')}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -259,7 +259,7 @@ export default function HomePage() {
                 Broker Dashboard
               </button>
               <button
-                onPress={() => navigate('/colors')}
+                onClick={() => navigate('/colors')}
                 style={{
                   background: 'none',
                   border: 'none',

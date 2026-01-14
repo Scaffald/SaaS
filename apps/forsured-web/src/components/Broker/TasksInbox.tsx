@@ -212,13 +212,13 @@ export default function TasksInbox({
 
         <Row gap={16}>
           <button
-            onPress={() => setActiveTab('urgent')}
+            onClick={() => setActiveTab('urgent')}
             style={tabButtonStyle(activeTab === 'urgent')}
           >
             Urgent ({urgentTasks.length})
           </button>
           <button
-            onPress={() => setActiveTab('upcoming')}
+            onClick={() => setActiveTab('upcoming')}
             style={tabButtonStyle(activeTab === 'upcoming')}
           >
             Upcoming ({upcomingTasks.length})
@@ -311,8 +311,7 @@ export default function TasksInbox({
 
                     {task.document_link && (
                       <Stack style={{ marginTop: 8 }}>
-                        <a
-                          href={task.document_link}
+                        <a href={task.document_link}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
@@ -323,7 +322,7 @@ export default function TasksInbox({
                             color: 'var(--color-blue-10)',
                             textDecoration: 'none',
                           }}
-                          onPress={(e) => e.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <FileText size={12} />
                           <span>View Document</span>

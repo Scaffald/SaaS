@@ -38,7 +38,7 @@ export default function BrokerPolicyDetailPage() {
     return (
       <Stack gap={24}>
         <button
-          onPress={() => navigate(-1)}
+          onClick={() => navigate(-1)}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -337,7 +337,7 @@ export default function BrokerPolicyDetailPage() {
             </H2>
             {client ? (
               <div
-                onPress={() => navigate(`/broker/clients/${client.id}`)}
+                onClick={() => navigate(`/broker/clients/${client.id}`)}
                 style={{ cursor: 'pointer', padding: 12, margin: -12, borderRadius: 8 }}
               >
                 <Row alignItems="center" gap={12} style={{ marginBottom: 12 }}>

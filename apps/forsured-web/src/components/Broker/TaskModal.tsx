@@ -274,7 +274,7 @@ export default function TaskModal({
             {task ? 'Edit Task' : 'Create New Task'}
           </H2>
           <button
-            onPress={onClose}
+            onClick={onClose}
             style={{
               background: 'none',
               border: 'none',

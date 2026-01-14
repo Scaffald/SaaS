@@ -225,7 +225,7 @@ export default function TestingPage() {
           alignItems: 'center',
           gap: 8,
         }}
-        onPress={() => setShowFeedbackModal(true)}
+        onClick={() => setShowFeedbackModal(true)}
         aria-label="Share feedback"
       >
         <MessageSquare size={20} />

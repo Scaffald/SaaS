@@ -90,7 +90,7 @@ const ModalOverlay = ({
       justifyContent: 'center',
       zIndex: 1000,
     }}
-    onPress={onClose}
+    onClick={onClose}
   >
     <Card
       onPress={(e: React.MouseEvent) => e.stopPropagation()}
@@ -331,7 +331,7 @@ export default function EnhancedTaskDetailModal({
               )}
             </Stack>
             <div
-              onPress={onClose}
+              onClick={onClose}
               style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
             >
               <X size={24} color="var(--color-text-muted)" />
@@ -393,7 +393,7 @@ export default function EnhancedTaskDetailModal({
                 Assigned To
               </Text>
               <div
-                onPress={() => setShowReassignModal(true)}
+                onClick={() => setShowReassignModal(true)}
                 style={{ cursor: 'pointer' }}
               >
                 <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-10)' }}>
@@ -606,7 +606,7 @@ export default function EnhancedTaskDetailModal({
             <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 8 }}>
               <H3 style={{ fontSize: 18, fontWeight: 600 }}>Reassign Task</H3>
               <div
-                onPress={() => setShowReassignModal(false)}
+                onClick={() => setShowReassignModal(false)}
                 style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
               >
                 <X size={20} color="var(--color-text-muted)" />
@@ -665,7 +665,7 @@ export default function EnhancedTaskDetailModal({
             <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 8 }}>
               <H3 style={{ fontSize: 18, fontWeight: 600 }}>Add Note</H3>
               <div
-                onPress={() => setShowAddNoteModal(false)}
+                onClick={() => setShowAddNoteModal(false)}
                 style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
               >
                 <X size={20} color="var(--color-text-muted)" />

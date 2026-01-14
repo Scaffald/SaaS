@@ -404,7 +404,7 @@ export default function ManagerProjectsPage() {
             </H2>
           </Row>
           <div
-            onPress={() => setComplianceFilter('all')}
+            onClick={() => setComplianceFilter('all')}
             style={{
               padding: '8px 16px',
               fontSize: 14,
@@ -730,7 +730,7 @@ export default function ManagerProjectsPage() {
                   {selectedProject.name}
                 </H2>
                 <div
-                  onPress={() => setSelectedProject(null)}
+                  onClick={() => setSelectedProject(null)}
                   style={{ cursor: 'pointer' }}
                 >
                   <X size={24} color="var(--color-11)" />
@@ -886,7 +886,7 @@ export default function ManagerProjectsPage() {
             justifyContent: 'center',
             zIndex: 9999,
           }}
-          onPress={closeInviteModal}
+          onClick={closeInviteModal}
           role="dialog"
           aria-modal="true"
           aria-labelledby="invite-modal-title"
@@ -902,7 +902,7 @@ export default function ManagerProjectsPage() {
               overflow: 'auto',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
-            onPress={(e: React.MouseEvent) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {/* Header */}
             <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -915,7 +915,7 @@ export default function ManagerProjectsPage() {
                 </Text>
               </Stack>
               <button
-                onPress={closeInviteModal}
+                onClick={closeInviteModal}
                 style={{
                   background: 'none',
                   border: 'none',

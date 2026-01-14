@@ -154,7 +154,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
                     border: 'none',
                     padding: 0,
                   }}
-                  onPress={() => handleMarkAsReviewed(fieldName)}
+                  onClick={() => handleMarkAsReviewed(fieldName)}
                 >
                   Mark as Reviewed
                 </button>

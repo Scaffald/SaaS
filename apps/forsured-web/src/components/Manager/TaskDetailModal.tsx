@@ -139,7 +139,7 @@ export default function TaskDetailModal({
             </Row>
           </Stack>
           <div
-            onPress={onClose}
+            onClick={onClose}
             style={{ cursor: 'pointer' }}
           >
             <X size={20} color="var(--color-text-muted)" />

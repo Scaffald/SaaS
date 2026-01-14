@@ -357,19 +357,19 @@ export default function SubcontractorProjectsPage() {
       >
         <Row style={{ alignItems: 'center', gap: 8 }}>
           <button
-            onPress={() => setFilter('all')}
+            onClick={() => setFilter('all')}
             style={getFilterButtonStyle(filter === 'all')}
           >
             All ({projects.length})
           </button>
           <button
-            onPress={() => setFilter('active')}
+            onClick={() => setFilter('active')}
             style={getFilterButtonStyle(filter === 'active')}
           >
             Active ({stats.active})
           </button>
           <button
-            onPress={() => setFilter('completed')}
+            onClick={() => setFilter('completed')}
             style={getFilterButtonStyle(filter === 'completed')}
           >
             Completed ({stats.completed})

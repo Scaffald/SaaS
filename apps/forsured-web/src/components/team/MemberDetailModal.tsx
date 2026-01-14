@@ -152,7 +152,7 @@ export function MemberDetailModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
-      onPress={handleBackdropClick}
+      onClick={handleBackdropClick}
     >
       <Card
         style={{

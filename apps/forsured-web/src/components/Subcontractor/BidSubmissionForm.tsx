@@ -340,7 +340,7 @@ export default function BidSubmissionForm({
                         </Stack>
                       </Row>
                       <button
-                        onPress={() => removeFile(index)}
+                        onClick={() => removeFile(index)}
                         style={{
                           padding: 4,
                           backgroundColor: 'transparent',

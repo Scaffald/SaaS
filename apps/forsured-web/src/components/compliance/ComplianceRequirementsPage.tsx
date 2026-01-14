@@ -335,7 +335,7 @@ export function ComplianceRequirementsPage() {
             border: 'none',
             cursor: 'pointer',
           }}
-          onPress={() => { setView('all'); setPage(1); }}
+          onClick={() => { setView('all'); setPage(1); }}
         >
           <FileText size={18} />
           <Text>All</Text>
@@ -375,7 +375,7 @@ export function ComplianceRequirementsPage() {
             border: 'none',
             cursor: 'pointer',
           }}
-          onPress={() => { setView('templates'); setPage(1); }}
+          onClick={() => { setView('templates'); setPage(1); }}
         >
           <Copy size={18} />
           <Text>Templates</Text>
@@ -400,7 +400,7 @@ export function ComplianceRequirementsPage() {
             border: 'none',
             cursor: 'pointer',
           }}
-          onPress={() => { setView('requirements'); setPage(1); }}
+          onClick={() => { setView('requirements'); setPage(1); }}
         >
           <CheckCircle size={18} />
           <Text>Requirements</Text>
@@ -442,7 +442,7 @@ export function ComplianceRequirementsPage() {
               />
             </Row>
             <button
-              onPress={() => setShowFilters(!showFilters)}
+              onClick={() => setShowFilters(!showFilters)}
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -498,7 +498,7 @@ export function ComplianceRequirementsPage() {
                     {coverageTypes.map((type) => (
                       <button
                         key={type.value}
-                        onPress={() => handleTypeToggle(type.value)}
+                        onClick={() => handleTypeToggle(type.value)}
                         style={{
                           paddingLeft: 8,
                           paddingRight: 8,
@@ -529,7 +529,7 @@ export function ComplianceRequirementsPage() {
                     {requirementStatuses.map((status) => (
                       <button
                         key={status.value}
-                        onPress={() => handleStatusToggle(status.value)}
+                        onClick={() => handleStatusToggle(status.value)}
                         style={{
                           paddingLeft: 8,
                           paddingRight: 8,
@@ -577,7 +577,7 @@ export function ComplianceRequirementsPage() {
 
               {activeFilterCount > 0 && (
                 <button
-                  onPress={clearFilters}
+                  onClick={clearFilters}
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -668,7 +668,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onPress={() => handleSort('code')}
+                    onClick={() => handleSort('code')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Code</Text>
@@ -686,7 +686,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onPress={() => handleSort('name')}
+                    onClick={() => handleSort('name')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Name</Text>
@@ -704,7 +704,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onPress={() => handleSort('type')}
+                    onClick={() => handleSort('type')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Type</Text>
@@ -722,7 +722,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onPress={() => handleSort('status')}
+                    onClick={() => handleSort('status')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Status</Text>
@@ -740,7 +740,7 @@ export function ComplianceRequirementsPage() {
                       letterSpacing: '0.05em',
                       cursor: 'pointer',
                     }}
-                    onPress={() => handleSort('effective_date')}
+                    onClick={() => handleSort('effective_date')}
                   >
                     <Row style={{ alignItems: 'center' }}>
                       <Text>Effective Date</Text>

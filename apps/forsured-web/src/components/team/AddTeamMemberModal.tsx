@@ -79,7 +79,7 @@ export function AddTeamMemberModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="add-member-modal-title"
-      onPress={handleBackdropClick}
+      onClick={handleBackdropClick}
     >
       <Card
         style={{

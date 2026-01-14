@@ -534,7 +534,7 @@ export default function BrokerTasksPage() {
       {/* REQ-260: View navigation tabs */}
       <Row alignItems="center" style={{ borderBottom: '1px solid var(--color-border)' }}>
         <button
-          onPress={() => setSelectedView('inbox')}
+          onClick={() => setSelectedView('inbox')}
           style={tabButtonStyle(selectedView === 'inbox')}
         >
           <Inbox size={18} />
@@ -544,7 +544,7 @@ export default function BrokerTasksPage() {
           </span>
         </button>
         <button
-          onPress={() => setSelectedView('assigned_by_me')}
+          onClick={() => setSelectedView('assigned_by_me')}
           style={tabButtonStyle(selectedView === 'assigned_by_me')}
         >
           <Send size={18} />
@@ -554,7 +554,7 @@ export default function BrokerTasksPage() {
           </span>
         </button>
         <button
-          onPress={() => setSelectedView('all')}
+          onClick={() => setSelectedView('all')}
           style={tabButtonStyle(selectedView === 'all')}
         >
           <List size={18} />
@@ -632,7 +632,7 @@ export default function BrokerTasksPage() {
               />
             </Stack>
             <button
-              onPress={() => setShowFilters(!showFilters)}
+              onClick={() => setShowFilters(!showFilters)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -784,7 +784,7 @@ export default function BrokerTasksPage() {
 
               {activeFilterCount > 0 && (
                 <button
-                  onPress={clearFilters}
+                  onClick={clearFilters}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -836,7 +836,7 @@ export default function BrokerTasksPage() {
                 <option value="status">Status</option>
               </select>
               <button
-                onPress={() =>
+                onClick={() =>
                   setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
                 }
                 style={{
@@ -928,7 +928,7 @@ export default function BrokerTasksPage() {
                         <>
                           <Text size="xs" muted>•</Text>
                           <button
-                            onPress={(e) => handleClientClick(e, task.client_id!)}
+                            onClick={(e) => handleClientClick(e, task.client_id!)}
                             style={{
                               display: 'flex',
                               alignItems: 'center',

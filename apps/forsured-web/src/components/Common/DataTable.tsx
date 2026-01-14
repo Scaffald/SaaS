@@ -77,7 +77,7 @@ export function DataTable<TData>({
                 return (
                   <th
                     key={header.id}
-                    onPress={canSort ? header.column.getToggleSortingHandler() : undefined}
+                    onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                     style={{
                       padding: 12,
                       textAlign: 'left',

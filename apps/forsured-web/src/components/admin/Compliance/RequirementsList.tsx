@@ -501,7 +501,7 @@ export function RequirementsList({
                         cursor: header.column.getCanSort() ? 'pointer' : 'default',
                         userSelect: header.column.getCanSort() ? 'none' : 'auto',
                       }}
-                      onPress={header.column.getToggleSortingHandler()}
+                      onClick={header.column.getToggleSortingHandler()}
                     >
                       <Row style={{ alignItems: 'center', gap: 4 }}>
                         {flexRender(header.column.columnDef.header, header.getContext())}

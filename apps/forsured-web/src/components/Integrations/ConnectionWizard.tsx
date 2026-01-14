@@ -220,7 +220,7 @@ export default function ConnectionWizard({
                     settings.authMethod === 'api_key' ? 'var(--color-blue-9)' : 'var(--color-border)',
                   cursor: 'pointer',
                 }}
-                onPress={() =>
+                onClick={() =>
                   setSettings({ ...settings, authMethod: 'api_key' })
                 }
               >
@@ -258,7 +258,7 @@ export default function ConnectionWizard({
                     settings.authMethod === 'oauth' ? 'var(--color-blue-9)' : 'var(--color-border)',
                   cursor: 'pointer',
                 }}
-                onPress={() =>
+                onClick={() =>
                   setSettings({ ...settings, authMethod: 'oauth' })
                 }
               >
@@ -298,7 +298,7 @@ export default function ConnectionWizard({
                       : 'var(--color-border)',
                   cursor: 'pointer',
                 }}
-                onPress={() =>
+                onClick={() =>
                   setSettings({ ...settings, authMethod: 'username_password' })
                 }
               >
@@ -432,7 +432,7 @@ export default function ConnectionWizard({
                           borderColor:
                             isSelected ? 'var(--color-blue-9)' : 'var(--color-border)',
                         }}
-                        onPress={() => {
+                        onClick={() => {
                           if (isSelected) {
                             setSettings({
                               ...settings,
@@ -508,7 +508,7 @@ export default function ConnectionWizard({
                   cursor: 'pointer',
                   backgroundColor: 'transparent',
                 }}
-                onPress={() =>
+                onClick={() =>
                   setSettings({
                     ...settings,
                     initialSync: !settings.initialSync,

@@ -170,7 +170,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
               />
               {searchQuery && (
                 <button
-                  onPress={() => setSearchQuery('')}
+                  onClick={() => setSearchQuery('')}
                   style={{
                     position: 'absolute',
                     right: 8,
@@ -233,7 +233,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                     {gcs.map((client) => (
                       <button
                         key={client.id}
-                        onPress={() => handleClientClick(client)}
+                        onClick={() => handleClientClick(client)}
                         style={clientItemStyle}
                         onMouseEnter={(e) => {
                           (e.currentTarget as HTMLElement).style.backgroundColor =
@@ -307,7 +307,7 @@ export default function ClientsDropdown({ className = '' }: ClientsDropdownProps
                     {subs.map((client) => (
                       <button
                         key={client.id}
-                        onPress={() => handleClientClick(client)}
+                        onClick={() => handleClientClick(client)}
                         style={clientItemStyle}
                         onMouseEnter={(e) => {
                           (e.currentTarget as HTMLElement).style.backgroundColor =
