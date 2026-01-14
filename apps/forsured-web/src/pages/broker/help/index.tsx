@@ -11,6 +11,7 @@ import {
   H3,
   Card,
   Accordion,
+  Paragraph,
 } from '@unicornlove/beyond-ui';
 import {
   Users,
@@ -214,10 +215,10 @@ export default function BrokerHelp() {
 
       {/* Getting Started */}
       <HelpSection id="getting-started" icon={Zap} title="Getting Started">
-        <Text style={{ color: 'var(--color-gray-11)', marginBottom: 20, lineHeight: 1.6 }}>
+        <Paragraph style={{ color: 'var(--color-gray-11)', marginBottom: 20 }}>
           Welcome to ForSured! As a broker, you can manage multiple clients&apos; insurance
           needs, track compliance requirements, and stay on top of policy renewals all in one place.
-        </Text>
+        </Paragraph>
         <Stack gap={8}>
           <StepItem
             number={1}
@@ -249,10 +250,10 @@ export default function BrokerHelp() {
             <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
               Inviting Clients
             </H3>
-            <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
               To add a new client to your portfolio, use the &quot;Invite Clients&quot; button on the
               Clients page. You can either:
-            </Text>
+            </Paragraph>
             <Stack gap={12} style={{ marginTop: 8 }}>
               <Row alignItems="center" gap={12}>
                 <Mail size={18} style={{ color: 'var(--color-orange-9)' }} />
@@ -273,9 +274,9 @@ export default function BrokerHelp() {
             <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
               Client Profiles
             </H3>
-            <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
               Each client has a dedicated profile page accessible from the Clients list. The profile includes:
-            </Text>
+            </Paragraph>
             <Stack gap={8} style={{ marginTop: 8, marginLeft: 16 }}>
               <Row alignItems="center" gap={8}>
                 <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
@@ -314,9 +315,9 @@ export default function BrokerHelp() {
             <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
               Client Types
             </H3>
-            <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
               ForSured supports two types of clients for brokers:
-            </Text>
+            </Paragraph>
             <Row gap={16} style={{ marginTop: 12, flexWrap: 'wrap' }}>
               <Card
                 style={{
@@ -360,10 +361,10 @@ export default function BrokerHelp() {
       {/* Documents */}
       <HelpSection id="documents" icon={FileText} title="Documents">
         <Stack gap={20}>
-          <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+          <Paragraph style={{ color: 'var(--color-gray-11)' }}>
             Documents are managed at the client level. Navigate to a client&apos;s profile and
             select the &quot;Documents&quot; tab to upload and manage their files.
-          </Text>
+          </Paragraph>
 
           <Stack gap={8}>
             <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
@@ -453,10 +454,10 @@ export default function BrokerHelp() {
       {/* Compliance */}
       <HelpSection id="compliance" icon={Shield} title="Insurance & Compliance">
         <Stack gap={20}>
-          <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+          <Paragraph style={{ color: 'var(--color-gray-11)' }}>
             The compliance dashboard gives you a quick overview of all your clients&apos; insurance
             status. Monitor coverage gaps, expiring policies, and compliance scores.
-          </Text>
+          </Paragraph>
 
           <Stack gap={8}>
             <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
@@ -521,10 +522,10 @@ export default function BrokerHelp() {
             <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
               Viewing Client Policies
             </H3>
-            <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
               To view a client&apos;s insurance policies, navigate to their profile and select the
               &quot;Policies&quot; tab. You&apos;ll see:
-            </Text>
+            </Paragraph>
             <Stack gap={8} style={{ marginTop: 8, marginLeft: 16 }}>
               <Row alignItems="center" gap={8}>
                 <CheckCircle size={14} style={{ color: 'var(--color-green-9)' }} />
@@ -558,10 +559,10 @@ export default function BrokerHelp() {
       {/* Tasks */}
       <HelpSection id="tasks" icon={CheckSquare} title="Tasks & Dashboard">
         <Stack gap={20}>
-          <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+          <Paragraph style={{ color: 'var(--color-gray-11)' }}>
             The Tasks page helps you stay organized and on top of important deadlines. Create tasks
             for policy renewals, document requests, follow-ups, and more.
-          </Text>
+          </Paragraph>
 
           <Stack gap={8}>
             <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
@@ -599,9 +600,9 @@ export default function BrokerHelp() {
             <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
               Dashboard Overview
             </H3>
-            <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
               Your dashboard provides a high-level view of your entire book of business:
-            </Text>
+            </Paragraph>
             <Stack gap={8} style={{ marginTop: 8, marginLeft: 16 }}>
               <Row alignItems="center" gap={8}>
                 <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
@@ -634,12 +635,12 @@ export default function BrokerHelp() {
               How do I add a new client?
             </Accordion.Trigger>
             <Accordion.Content>
-              <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
                 Go to the Clients page and click the &quot;Invite Clients&quot; button. You can either
                 send an email invitation directly to the client, or generate a connection code that
                 the client can enter when signing up or logging in to ForSured. Once they accept,
                 they&apos;ll appear in your client list.
-              </Text>
+              </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
 
@@ -648,12 +649,12 @@ export default function BrokerHelp() {
               Where do I upload client documents?
             </Accordion.Trigger>
             <Accordion.Content>
-              <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
                 Documents are uploaded at the client level. Navigate to Clients, select a client,
                 then click on the &quot;Documents&quot; tab. From there you can drag and drop PDF files
                 or click to browse. Choose a category (Compliance, Insurance, Contract, or General)
                 before uploading.
-              </Text>
+              </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
 
@@ -662,11 +663,11 @@ export default function BrokerHelp() {
               How do I view a client&apos;s insurance policies?
             </Accordion.Trigger>
             <Accordion.Content>
-              <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
                 From the Clients page, click on a client to view their profile. Select the
                 &quot;Policies&quot; tab to see all their active and expired insurance policies,
                 including coverage details, effective dates, and status.
-              </Text>
+              </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
 
@@ -675,12 +676,12 @@ export default function BrokerHelp() {
               What does the compliance score mean?
             </Accordion.Trigger>
             <Accordion.Content>
-              <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
                 The compliance score indicates how well a client meets their insurance requirements.
                 A score of 90-100% means they&apos;re fully compliant. 70-89% means some items need
                 attention (like expiring policies or missing documents). Below 70% indicates
                 significant gaps that require urgent action.
-              </Text>
+              </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
 
@@ -689,12 +690,12 @@ export default function BrokerHelp() {
               What&apos;s the difference between Managers and Contractors?
             </Accordion.Trigger>
             <Accordion.Content>
-              <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
                 &quot;Managers&quot; (also called General Contractors or GCs) are companies that
                 manage construction projects and hire subcontractors. &quot;Contractors&quot; are
                 subcontractors who work on specific trade scopes within projects. Both types can
                 be your clients, and the compliance requirements may differ based on their role.
-              </Text>
+              </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
 
@@ -703,12 +704,12 @@ export default function BrokerHelp() {
               How do I get notified about expiring policies?
             </Accordion.Trigger>
             <Accordion.Content>
-              <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
                 ForSured automatically tracks policy expiration dates and creates tasks when
                 policies are approaching their expiration date. Check your Tasks page regularly
                 to see upcoming renewals. You&apos;ll also see expiring policies highlighted in
                 the dashboard compliance overview.
-              </Text>
+              </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
 
@@ -717,11 +718,11 @@ export default function BrokerHelp() {
               How do I get additional support?
             </Accordion.Trigger>
             <Accordion.Content>
-              <Text style={{ color: 'var(--color-gray-11)', lineHeight: 1.6 }}>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
                 If you need additional help or have questions not covered here, please contact
                 our support team at support@forsured.com. We&apos;re here to help you manage
                 your clients&apos; insurance compliance effectively.
-              </Text>
+              </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
         </Accordion>
