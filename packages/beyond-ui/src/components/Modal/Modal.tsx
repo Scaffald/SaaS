@@ -23,7 +23,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { View, Modal as RNModal, Pressable, Platform } from 'react-native'
+import { View, Modal as RNModal, Platform } from 'react-native'
 import type { ModalProps } from './Modal.types'
 import { getModalStyles } from './Modal.styles'
 import { useThemeContext } from '../../playground/ThemeProvider'
@@ -86,6 +86,14 @@ export function Modal({
     return null
   }
 
+  // Handle backdrop click for web - using View with onClick to avoid nested button issue
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    // Only close if clicking directly on the backdrop, not on the modal content
+    if (e.target === e.currentTarget && closeOnBackdropPress) {
+      handleClose()
+    }
+  }
+
   return (
     <RNModal
       visible={isVisible}
@@ -95,11 +103,12 @@ export function Modal({
       statusBarTranslucent
       testID={testID}
     >
-      <Pressable
+      <View
         style={styles.overlay}
-        onPress={handleBackdropPress}
-        accessibilityRole="button"
-        accessibilityLabel="Close modal"
+        onTouchEnd={handleBackdropPress}
+        {...(Platform.OS === 'web' && {
+          onClick: handleBackdropClick,
+        } as any)}
       >
         <View
           style={[styles.container, style]}
@@ -109,8 +118,8 @@ export function Modal({
             e.stopPropagation()
           }}
           {...(Platform.OS === 'web' && {
-            onMouseDown: (e: any) => {
-              // Prevent mouse events from bubbling to backdrop handler
+            onClick: (e: React.MouseEvent) => {
+              // Prevent click events from bubbling to backdrop handler
               e.stopPropagation()
             },
             role: 'dialog',
@@ -122,7 +131,7 @@ export function Modal({
         >
           {children}
         </View>
-      </Pressable>
+      </View>
     </RNModal>
   )
 }

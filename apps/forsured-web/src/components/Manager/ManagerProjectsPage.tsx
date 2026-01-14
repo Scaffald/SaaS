@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
   Building,
@@ -333,7 +334,7 @@ export default function ManagerProjectsPage() {
           </Text>
           <Button
             variant="primary"
-            onClick={() => navigate('/manager/projects/new')}
+            onPress={() => navigate('/manager/projects/new')}
           >
             Create Project
           </Button>
@@ -353,7 +354,7 @@ export default function ManagerProjectsPage() {
         </Stack>
         <Button
           variant="primary"
-          onClick={() => navigate('/manager/projects/new')}
+          onPress={() => navigate('/manager/projects/new')}
         >
           <Row style={{ alignItems: 'center', gap: 8 }}>
             <FolderPlus size={18} />
@@ -659,7 +660,7 @@ export default function ManagerProjectsPage() {
                     <Row style={{ alignItems: 'center', gap: 8 }}>
                       <Button
                         variant="ghost"
-                        onClick={() =>
+                        onPress={() =>
                           navigate(`/manager/projects/${project.id}`)
                         }
                       >
@@ -670,7 +671,7 @@ export default function ManagerProjectsPage() {
                       </Button>
                       <Button
                         variant="ghost"
-                        onClick={() => handleInviteUser(project)}
+                        onPress={() => handleInviteUser(project)}
                       >
                         <Row style={{ alignItems: 'center', gap: 4 }}>
                           <UserPlus size={14} />
@@ -874,8 +875,8 @@ export default function ManagerProjectsPage() {
         </div>
       )}
 
-      {/* Invite Subcontractor Modal */}
-      {inviteModalProject && (
+      {/* Invite Subcontractor Modal - using React portal */}
+      {inviteModalProject && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -884,49 +885,59 @@ export default function ManagerProjectsPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: 9999,
           }}
           onClick={closeInviteModal}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="invite-modal-title"
         >
-          <Card
+          <div
             style={{
-              backgroundColor: 'var(--background)',
+              backgroundColor: '#ffffff',
               padding: 24,
-              borderRadius: 8,
+              borderRadius: 16,
               width: 560,
               maxWidth: '95vw',
               maxHeight: '85vh',
               overflow: 'auto',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {/* Header */}
             <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <Stack>
-                <H2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)' }}>
+                <H2 id="invite-modal-title" style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)' }}>
                   Invite Subcontractor
                 </H2>
                 <Text style={{ fontSize: 14, color: 'var(--color-11)' }}>
                   {inviteModalProject.name}
                 </Text>
               </Stack>
-              <div
+              <button
                 onClick={closeInviteModal}
                 style={{
+                  background: 'none',
+                  border: 'none',
                   cursor: 'pointer',
                   padding: 8,
-                  borderRadius: 4,
+                  borderRadius: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
+                aria-label="Close modal"
               >
                 <X size={20} color="var(--color-11)" />
-              </div>
+              </button>
             </Row>
 
             {/* Tabs */}
             <Row style={{ gap: 8, marginBottom: 16 }}>
               <Button
                 variant={inviteTab === 'select' ? 'primary' : 'ghost'}
-                onClick={() => setInviteTab('select')}
+                onPress={() => setInviteTab('select')}
               >
                 <Row style={{ alignItems: 'center', gap: 8 }}>
                   <Users size={16} />
@@ -935,7 +946,7 @@ export default function ManagerProjectsPage() {
               </Button>
               <Button
                 variant={inviteTab === 'create' ? 'primary' : 'ghost'}
-                onClick={() => setInviteTab('create')}
+                onPress={() => setInviteTab('create')}
               >
                 <Row style={{ alignItems: 'center', gap: 8 }}>
                   <Plus size={16} />
@@ -957,7 +968,7 @@ export default function ManagerProjectsPage() {
                     <Text style={{ color: 'var(--color-11)' }}>No subcontractors found</Text>
                     <Button
                       variant="ghost"
-                      onClick={() => setInviteTab('create')}
+                      onPress={() => setInviteTab('create')}
                     >
                       <Text style={{ color: 'var(--color-teal10)' }}>Add your first subcontractor</Text>
                     </Button>
@@ -1026,14 +1037,14 @@ export default function ManagerProjectsPage() {
                     <Row style={{ gap: 12, justifyContent: 'flex-end' }}>
                       <Button
                         variant="ghost"
-                        onClick={closeInviteModal}
+                        onPress={closeInviteModal}
                       >
                         <Text>Cancel</Text>
                       </Button>
                       <Button
                         variant="primary"
                         disabled={!selectedSubcontractorId || inviting}
-                        onClick={handleInviteExisting}
+                        onPress={handleInviteExisting}
                       >
                         <Row style={{ alignItems: 'center', gap: 8 }}>
                           {inviting ? (
@@ -1109,7 +1120,7 @@ export default function ManagerProjectsPage() {
                   <Row style={{ gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
                     <Button
                       variant="ghost"
-                      onClick={closeInviteModal}
+                      onPress={closeInviteModal}
                       type="button"
                     >
                       <Text>Cancel</Text>
@@ -1132,8 +1143,9 @@ export default function ManagerProjectsPage() {
                 </Stack>
               </form>
             )}
-          </Card>
-        </div>
+          </div>
+        </div>,
+        document.body
       )}
     </Stack>
   );

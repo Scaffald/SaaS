@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Search,
   Filter,
@@ -13,7 +14,6 @@ import {
 import { Stack, Row, Text, H1, H2, H3, Card } from '@unicornlove/beyond-ui';
 import Button from '../Common/Button';
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
-// Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
@@ -1021,8 +1021,8 @@ export default function ManagerTasksPage() {
         }}
       />
 
-      {/* Simple overlay modal - avoiding ResponsiveModal freeze issue */}
-      {showCreateTask && (
+      {/* Create Task Modal - using React portal to avoid nested button/z-index issues */}
+      {showCreateTask && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -1031,236 +1031,266 @@ export default function ManagerTasksPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: 9999,
           }}
           onClick={handleCloseCreateTask}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="create-task-modal-title"
+          data-testid="task-modal"
         >
-          <Card
+          <div
             style={{
-              backgroundColor: 'var(--color-background)',
-              padding: 24,
+              backgroundColor: '#ffffff',
               borderRadius: 16,
               width: 560,
+              maxWidth: '90vw',
               maxHeight: '90vh',
-              overflow: 'auto',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            data-testid="task-modal"
           >
-            <Stack gap={20}>
-              <Row alignItems="center" justifyContent="space-between">
-                <H2 style={{ fontSize: 18, fontWeight: 600 }}>
-                  Create New Task
-                </H2>
-                <div
-                  onClick={handleCloseCreateTask}
-                  style={{
-                    padding: 8,
-                    borderRadius: 8,
-                    cursor: 'pointer',
-                  }}
-                >
-                  <X size={20} color="var(--color-text-muted)" />
-                </div>
-              </Row>
+            {/* Modal Header */}
+            <Row
+              alignItems="center"
+              justifyContent="space-between"
+              style={{
+                padding: 24,
+                borderBottom: '1px solid var(--color-border)',
+              }}
+            >
+              <H2 id="create-task-modal-title" style={{ fontSize: 18, fontWeight: 600 }}>
+                Create New Task
+              </H2>
+              <button
+                onClick={handleCloseCreateTask}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 8,
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                aria-label="Close modal"
+              >
+                <X size={20} color="var(--color-text-muted)" />
+              </button>
+            </Row>
 
-              {/* Title Field */}
-              <Stack gap={8}>
-                <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                  Title <span style={{ color: 'var(--color-red-10)' }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter task title..."
-                  value={newTaskForm.title}
-                  onChange={(e) => handleFormChange('title', e.target.value)}
-                  data-testid="task-title-input"
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'var(--color-background)',
-                    border: formErrors.title ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--color-text)',
-                    fontFamily: 'inherit',
-                  }}
-                />
-                {formErrors.title && (
-                  <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.title}</Text>
-                )}
-              </Stack>
-
-              {/* Description Field */}
-              <Stack gap={8}>
-                <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                  Description
-                </label>
-                <textarea
-                  placeholder="Enter task description (optional)..."
-                  value={newTaskForm.description}
-                  onChange={(e) => handleFormChange('description', e.target.value)}
-                  data-testid="task-description-input"
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'var(--color-background)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    color: 'var(--color-text)',
-                    fontFamily: 'inherit',
-                    resize: 'vertical',
-                  }}
-                />
-              </Stack>
-
-              {/* Project and Subcontractor Row */}
-              <Row gap={16}>
-                <Stack gap={8} style={{ flex: 1 }}>
+            {/* Modal Content */}
+            <div style={{ padding: 24, overflowY: 'auto', maxHeight: 'calc(90vh - 160px)' }}>
+              <Stack gap={20}>
+                {/* Title Field */}
+                <Stack gap={8}>
                   <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                    Project <span style={{ color: 'var(--color-red-10)' }}>*</span>
-                  </label>
-                  <select
-                    value={newTaskForm.project_id}
-                    onChange={(e) => handleFormChange('project_id', e.target.value)}
-                    data-testid="task-project-select"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--color-background)',
-                      border: formErrors.project_id ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color-text)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <option value="">Select a project...</option>
-                    {projects.map((project) => (
-                      <option key={project.id} value={project.id}>
-                        {project.name}
-                      </option>
-                    ))}
-                  </select>
-                  {formErrors.project_id && (
-                    <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.project_id}</Text>
-                  )}
-                </Stack>
-
-                <Stack gap={8} style={{ flex: 1 }}>
-                  <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                    Subcontractor
-                  </label>
-                  <select
-                    value={newTaskForm.subcontractor_id}
-                    onChange={(e) => handleFormChange('subcontractor_id', e.target.value)}
-                    data-testid="task-subcontractor-select"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--color-background)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color-text)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <option value="">None (optional)</option>
-                    {subcontractors.map((sub) => (
-                      <option key={sub.id} value={sub.id}>
-                        {sub.name}
-                      </option>
-                    ))}
-                  </select>
-                </Stack>
-              </Row>
-
-              {/* Priority and Due Date Row */}
-              <Row gap={16}>
-                <Stack gap={8} style={{ flex: 1 }}>
-                  <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                    Priority
-                  </label>
-                  <select
-                    value={newTaskForm.priority}
-                    onChange={(e) => handleFormChange('priority', e.target.value)}
-                    data-testid="task-priority-select"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--color-background)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      color: 'var(--color-text)',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    {taskPriorities?.map((priority) => (
-                      <option key={priority.value} value={priority.value}>
-                        {priority.display_name}
-                      </option>
-                    ))}
-                  </select>
-                </Stack>
-
-                <Stack gap={8} style={{ flex: 1 }}>
-                  <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
-                    Due Date <span style={{ color: 'var(--color-red-10)' }}>*</span>
+                    Title <span style={{ color: 'var(--color-red-10)' }}>*</span>
                   </label>
                   <input
-                    type="date"
-                    value={newTaskForm.due_date}
-                    onChange={(e) => handleFormChange('due_date', e.target.value)}
-                    data-testid="task-due-date-input"
+                    type="text"
+                    placeholder="Enter task title..."
+                    value={newTaskForm.title}
+                    onChange={(e) => handleFormChange('title', e.target.value)}
+                    data-testid="task-title-input"
                     style={{
                       width: '100%',
                       padding: '10px 12px',
                       backgroundColor: 'var(--color-background)',
-                      border: formErrors.due_date ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
+                      border: formErrors.title ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
                       borderRadius: '8px',
                       fontSize: '14px',
                       color: 'var(--color-text)',
                       fontFamily: 'inherit',
                     }}
                   />
-                  {formErrors.due_date && (
-                    <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.due_date}</Text>
+                  {formErrors.title && (
+                    <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.title}</Text>
                   )}
                 </Stack>
-              </Row>
 
-              {/* Action Buttons */}
-              <Row gap={12} justifyContent="flex-end" style={{ marginTop: 8 }}>
-                <Button
-                  variant="outlined"
-                  onPress={handleCloseCreateTask}
-                  disabled={isCreatingTask}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onPress={handleCreateTask}
-                  disabled={isCreatingTask}
-                  data-testid="submit-create-task-btn"
-                >
-                  {isCreatingTask ? (
-                    <Row alignItems="center" gap={8}>
-                      <Loader2 size={16} className="animate-spin" />
-                      <span>Creating...</span>
-                    </Row>
-                  ) : (
-                    'Create Task'
-                  )}
-                </Button>
-              </Row>
-            </Stack>
-          </Card>
-        </div>
+                {/* Description Field */}
+                <Stack gap={8}>
+                  <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
+                    Description
+                  </label>
+                  <textarea
+                    placeholder="Enter task description (optional)..."
+                    value={newTaskForm.description}
+                    onChange={(e) => handleFormChange('description', e.target.value)}
+                    data-testid="task-description-input"
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      backgroundColor: 'var(--color-background)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color-text)',
+                      fontFamily: 'inherit',
+                      resize: 'vertical',
+                    }}
+                  />
+                </Stack>
+
+                {/* Project and Subcontractor Row */}
+                <Row gap={16}>
+                  <Stack gap={8} style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
+                      Project <span style={{ color: 'var(--color-red-10)' }}>*</span>
+                    </label>
+                    <select
+                      value={newTaskForm.project_id}
+                      onChange={(e) => handleFormChange('project_id', e.target.value)}
+                      data-testid="task-project-select"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        backgroundColor: 'var(--color-background)',
+                        border: formErrors.project_id ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        color: 'var(--color-text)',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      <option value="">Select a project...</option>
+                      {projects.map((project) => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                    {formErrors.project_id && (
+                      <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.project_id}</Text>
+                    )}
+                  </Stack>
+
+                  <Stack gap={8} style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
+                      Subcontractor
+                    </label>
+                    <select
+                      value={newTaskForm.subcontractor_id}
+                      onChange={(e) => handleFormChange('subcontractor_id', e.target.value)}
+                      data-testid="task-subcontractor-select"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        backgroundColor: 'var(--color-background)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        color: 'var(--color-text)',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      <option value="">None (optional)</option>
+                      {subcontractors.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          {sub.name}
+                        </option>
+                      ))}
+                    </select>
+                  </Stack>
+                </Row>
+
+                {/* Priority and Due Date Row */}
+                <Row gap={16}>
+                  <Stack gap={8} style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
+                      Priority
+                    </label>
+                    <select
+                      value={newTaskForm.priority}
+                      onChange={(e) => handleFormChange('priority', e.target.value)}
+                      data-testid="task-priority-select"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        backgroundColor: 'var(--color-background)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        color: 'var(--color-text)',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      {taskPriorities?.map((priority) => (
+                        <option key={priority.value} value={priority.value}>
+                          {priority.display_name}
+                        </option>
+                      ))}
+                    </select>
+                  </Stack>
+
+                  <Stack gap={8} style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)' }}>
+                      Due Date <span style={{ color: 'var(--color-red-10)' }}>*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={newTaskForm.due_date}
+                      onChange={(e) => handleFormChange('due_date', e.target.value)}
+                      data-testid="task-due-date-input"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        backgroundColor: 'var(--color-background)',
+                        border: formErrors.due_date ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        color: 'var(--color-text)',
+                        fontFamily: 'inherit',
+                      }}
+                    />
+                    {formErrors.due_date && (
+                      <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{formErrors.due_date}</Text>
+                    )}
+                  </Stack>
+                </Row>
+              </Stack>
+            </div>
+
+            {/* Modal Actions */}
+            <Row
+              alignItems="center"
+              justifyContent="flex-end"
+              gap={12}
+              style={{
+                padding: 24,
+                borderTop: '1px solid var(--color-border)',
+              }}
+            >
+              <Button
+                variant="outlined"
+                onPress={handleCloseCreateTask}
+                disabled={isCreatingTask}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onPress={handleCreateTask}
+                disabled={isCreatingTask}
+                data-testid="submit-create-task-btn"
+              >
+                {isCreatingTask ? (
+                  <Row alignItems="center" gap={8}>
+                    <Loader2 size={16} className="animate-spin" />
+                    <span>Creating...</span>
+                  </Row>
+                ) : (
+                  'Create Task'
+                )}
+              </Button>
+            </Row>
+          </div>
+        </div>,
+        document.body
       )}
     </Stack>
   );

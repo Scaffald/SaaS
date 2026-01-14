@@ -116,7 +116,7 @@ export default function ProjectCreatePage() {
       <Row style={{ alignItems: 'center', gap: 16 }}>
         <Button
           variant="ghost"
-          onClick={() => navigate('/manager/projects')}
+          onPress={() => navigate('/manager/projects')}
           leftIcon={ArrowLeft}
           size="$2"
         >
@@ -336,7 +336,7 @@ export default function ProjectCreatePage() {
           <Row style={{ justifyContent: 'flex-end', gap: 12 }}>
             <Button
               variant="outline"
-              onClick={() => navigate('/manager/projects')}
+              onPress={() => navigate('/manager/projects')}
               disabled={saving}
             >
               Cancel

@@ -27,7 +27,8 @@ export function getModalStyles(
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'transparent',
+      // Use semi-transparent backdrop for the overlay
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     backdrop: {
       ...StyleSheet.absoluteFillObject,
