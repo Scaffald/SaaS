@@ -1,6 +1,6 @@
-import { defineConfig } from 'tsup'
+const { defineConfig } = require('tsup')
 
-export default defineConfig({
+module.exports = defineConfig({
   entry: {
     index: 'src/index.ts',
     'tokens/index': 'src/tokens/index.ts',

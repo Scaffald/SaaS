@@ -55,14 +55,26 @@ export interface BalanceWidgetProps {
   title: string
 
   /**
-   * Currency amount (formatted string, e.g., "$5.632")
+   * Currency amount (numeric value as string, e.g., "5.632")
+   * Currency symbol "$" will be added automatically
    */
-  amount: string
+  amount: string | number
 
   /**
    * Change value and period (e.g., "+$23.53 this month")
+   * @deprecated Use changeValue and changePeriod instead for better control
    */
   change?: string
+
+  /**
+   * Change value (e.g., "+$23.53")
+   */
+  changeValue?: string
+
+  /**
+   * Change period text (e.g., "this month")
+   */
+  changePeriod?: string
 
   /**
    * Change type (positive/negative)
@@ -72,6 +84,7 @@ export interface BalanceWidgetProps {
 
   /**
    * Bar chart data
+   * Value represents inset percentage from top (16, 36, 22, 6 for example)
    */
   chartData?: BarChartDataPoint[]
 

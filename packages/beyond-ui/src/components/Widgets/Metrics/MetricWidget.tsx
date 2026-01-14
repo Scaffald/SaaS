@@ -16,12 +16,13 @@
  * ```
  */
 
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Platform } from 'react-native'
+import { ArrowUp, ArrowDown } from 'lucide-react-native'
 import type { MetricWidgetProps } from './MetricWidget.types'
 import { MiniLinearChart } from '../../Chart'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
-import { typographyVariants } from '../../../tokens/typography'
+import { typographyVariants, fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
 
 export function MetricWidget({
   type = 'Chart 01',
@@ -63,27 +64,28 @@ export function MetricWidget({
       {/* Value and change section */}
       <View style={styles.valueSection}>
         <View style={styles.valueContainer}>
-          {/* Value */}
+          {/* Value and change indicator row */}
           <View style={styles.valueRow}>
             <Text style={styles.value}>{value}</Text>
 
-            {/* Change indicator */}
-            {change && (
+            {/* Change indicator with arrow icon */}
+            {change && changeType !== 'neutral' && (
               <View style={styles.changeContainer}>
                 {changeType === 'positive' && (
-                  <View style={styles.changeIndicator}>
-                    <Text style={[styles.changeText, { color: getChangeColor() }]}>{change}</Text>
-                  </View>
+                  <ArrowUp size={16} color={colors.success[500]} />
                 )}
                 {changeType === 'negative' && (
-                  <View style={styles.changeIndicator}>
-                    <Text style={[styles.changeText, { color: getChangeColor() }]}>{change}</Text>
-                  </View>
+                  <ArrowDown size={16} color={colors.error[500]} />
                 )}
-                {changeType === 'neutral' && (
-                  <Text style={[styles.changeText, { color: getChangeColor() }]}>{change}</Text>
-                )}
+                <Text style={[styles.changeText, { color: getChangeColor() }]}>
+                  {change}
+                </Text>
               </View>
+            )}
+            {change && changeType === 'neutral' && (
+              <Text style={[styles.changeText, { color: getChangeColor() }]}>
+                {change}
+              </Text>
             )}
           </View>
 
@@ -93,11 +95,13 @@ export function MetricWidget({
 
         {/* Chart */}
         {showChart && chartType === 'linear' && (
-          <MiniLinearChart
-            data={chartData || []}
-            shadow={type === 'Chart 01' || type === 'Chart 02'}
-            color={colors.primary[600]}
-          />
+          <View style={styles.chartContainer}>
+            <MiniLinearChart
+              data={chartData || []}
+              shadow={type === 'Chart 01' || type === 'Chart 02'}
+              color={colors.primary[600]}
+            />
+          </View>
         )}
       </View>
     </View>
@@ -113,8 +117,13 @@ const styles = StyleSheet.create({
     gap: spacing[8],
   },
   title: {
-    ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    // Paragraph M/Medium: 16px, line-height 24px, Roboto Medium, text-right
+    fontFamily: 'Roboto',
+    fontSize: fontSize.md, // 16
+    fontWeight: fontWeight.medium, // 500
+    lineHeight: lineHeight.md, // 24
+    letterSpacing: letterSpacing.normal, // 0
+    color: colors.text.primary, // #141c25
     textAlign: 'right',
   },
   valueSection: {
@@ -134,28 +143,38 @@ const styles = StyleSheet.create({
     gap: spacing[8],
   },
   value: {
-    ...typographyVariants.subtitleSemiBold,
-    color: colors.text.primary,
+    // Subtitle/SemiBold: 20px, line-height 28px, Roboto SemiBold
+    fontFamily: 'Roboto',
+    fontSize: fontSize.xl, // 20
+    fontWeight: fontWeight.semibold, // 600
+    lineHeight: lineHeight.lg, // 28
+    letterSpacing: letterSpacing.normal, // 0
+    color: colors.text.primary, // #141c25
   },
   changeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
   },
-  changeIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[2],
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    borderRadius: 6,
-    backgroundColor: colors.bg.light.default,
-  },
   changeText: {
-    ...typographyVariants.paragraphSMedium,
+    // Paragraph S/Medium: 14px, line-height 20px, Roboto Medium
+    fontFamily: 'Roboto',
+    fontSize: fontSize.sm, // 14
+    fontWeight: fontWeight.medium, // 500
+    lineHeight: lineHeight.sm, // 20
+    letterSpacing: letterSpacing.normal, // 0
   },
   subtitle: {
-    ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    // Caption/Regular: 12px, line-height 16px, Roboto Regular
+    fontFamily: 'Roboto',
+    fontSize: fontSize.xs, // 12
+    fontWeight: fontWeight.regular, // 400
+    lineHeight: lineHeight.xs, // 16
+    letterSpacing: letterSpacing.normal, // 0
+    color: colors.text.tertiary, // #637083
+  },
+  chartContainer: {
+    width: 112,
+    height: 59,
   },
 })

@@ -160,7 +160,15 @@ export function SaaSNavigation({
         accessibilityLabel={accessibilityLabel || 'Finance banking navigation'}
       >
         {showFeaturedIcon && FeaturedIcon && (
-          <View style={featuredIconStyles}>
+          <View
+            style={[
+              featuredIconStyles,
+              // Web: Use CSS gradient background
+              typeof window !== 'undefined' && {
+                background: 'linear-gradient(180deg, #f9fafb 0%, #f2f4f7 100%)',
+              } as any,
+            ]}
+          >
             <FeaturedIcon size={20} color={colors.icon[theme].default} />
           </View>
         )}
@@ -199,7 +207,15 @@ export function SaaSNavigation({
     >
       {/* Left section: Icon + Content */}
       {showFeaturedIcon && FeaturedIcon && (
-        <View style={featuredIconStyles}>
+        <View
+          style={[
+            featuredIconStyles,
+            // Web: Use CSS gradient background
+            typeof window !== 'undefined' && {
+              background: 'linear-gradient(180deg, #f9fafb 0%, #f2f4f7 100%)',
+            } as any,
+          ]}
+        >
           <FeaturedIcon size={20} color={colors.icon[theme].default} />
         </View>
       )}
@@ -306,6 +322,6 @@ export function SaaSNavigation({
 const styles = StyleSheet.create({
   tabsContainer: {
     width: '100%',
-    marginTop: spacing[16],
+    marginTop: spacing[0], // Tabs are directly below navigation in Figma
   },
 })

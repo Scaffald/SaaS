@@ -111,7 +111,15 @@ export function SaaSSectionHeader({
         <View style={leftSectionStyles}>
           {/* Featured Icon */}
           {showIcon && FeaturedIcon && (
-            <View style={featuredIconStyles}>
+            <View
+              style={[
+                featuredIconStyles,
+                // Web: Use CSS gradient background
+                typeof window !== 'undefined' && {
+                  background: 'linear-gradient(180deg, #f9fafb 0%, #f2f4f7 100%)',
+                } as any,
+              ]}
+            >
               <FeaturedIcon size={20} color={colors.icon[theme].default} />
             </View>
           )}

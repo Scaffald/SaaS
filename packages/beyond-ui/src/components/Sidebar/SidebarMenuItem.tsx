@@ -108,10 +108,10 @@ export function SidebarMenuItem({
     const baseStyles: ViewStyle[] = [
       styles.item,
       {
-        paddingHorizontal: collapsed ? spacing[12] : spacing[12],
+        paddingHorizontal: spacing[8],
         paddingVertical: spacing[8],
-        marginHorizontal: spacing[4],
-        marginVertical: spacing[2],
+        marginHorizontal: spacing[16],
+        marginVertical: 1,
         borderRadius: borderRadius.s,
       },
     ]
@@ -130,7 +130,7 @@ export function SidebarMenuItem({
     // Child type indentation
     if (type === 'child') {
       baseStyles.push({
-        marginLeft: collapsed ? 0 : spacing[24],
+        marginLeft: collapsed ? spacing[16] : spacing[24] + spacing[16],
       })
     }
 
@@ -355,17 +355,18 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[12],
+    gap: spacing[6],
     minHeight: 40,
   },
   headingContainer: {
     paddingVertical: spacing[8],
+    paddingHorizontal: spacing[16] + spacing[4],
   },
   headingText: {
-    fontFamily: typography.bodyMedium.fontFamily,
-    fontSize: typography.bodyMedium.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight,
-    lineHeight: typography.bodyMedium.lineHeight,
+    fontFamily: typography.caption.fontFamily,
+    fontSize: typography.caption.fontSize,
+    fontWeight: typography.body.fontWeight,
+    lineHeight: typography.caption.lineHeight,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },

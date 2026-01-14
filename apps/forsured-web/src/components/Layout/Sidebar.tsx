@@ -186,7 +186,7 @@ export default function Sidebar({
         user={{
           name: user.name || user.email || 'User',
           email: getRoleDisplay(),
-          avatar: <Avatar initials={getInitials(user.name || user.email)} size={32} />,
+          avatar: <Avatar initials={getInitials(user.name || user.email)} size={40} />,
         }}
         actions={[
           {

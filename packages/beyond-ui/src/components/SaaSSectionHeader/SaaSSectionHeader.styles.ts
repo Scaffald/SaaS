@@ -12,13 +12,15 @@ import { typography, lineHeight } from '../../tokens/typography'
 
 /**
  * Get container styles
+ * Height: 72px (default), 128px (with tabs below)
  */
 export function getContainerStyles(tabsBelow: boolean, _theme: ThemeMode = 'light'): ViewStyle {
   return {
     flexDirection: 'column',
-    gap: tabsBelow ? spacing[0] : spacing[0],
+    gap: spacing[0],
     width: '100%',
-    paddingVertical: tabsBelow ? spacing[16] : spacing[0],
+    paddingVertical: spacing[0],
+    minHeight: tabsBelow ? 128 : 72, // From Figma: 72px default, 128px with tabs
   }
 }
 
@@ -50,22 +52,30 @@ export function getLeftSectionStyles(): ViewStyle {
 
 /**
  * Get featured icon container styles
+ * Matches Figma: gradient from bg-50 to bg-100 with double border effect
  */
 export function getFeaturedIconStyles(theme: ThemeMode = 'light'): ViewStyle {
+  // Figma uses gradient from bg-50 (#f9fafb) to bg-100 (#f2f4f7)
+  // With double border: 2px white, 3px gray-100
   return {
     width: 32,
     height: 32,
     borderRadius: borderRadius.s,
-    backgroundColor: colors.bg[theme].subtle,
+    backgroundColor: colors.gray[50], // Fallback
     borderWidth: 2,
-    borderColor: colors.bg[theme].default,
+    borderColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
+    // Double border effect: outer ring (3px gray-100) + inner ring (2px white)
     shadowColor: colors.gray[100],
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 3,
-    elevation: 0, // React Native shadow
+    shadowRadius: 0,
+    // For web, we'll use boxShadow with double shadow
+    ...(typeof window !== 'undefined' && {
+      boxShadow: '0 0 0 3px rgba(242, 244, 247, 1), 0 0 0 2px rgba(255, 255, 255, 1)',
+    } as any),
+    elevation: 0,
   }
 }
 

@@ -48,12 +48,18 @@ type Story = StoryObj<typeof SaaSNavigation>
 export const Default: Story = {
   args: {
     variant: 'main',
-    pageTitle: 'Dashboard',
-    description: 'Overview of your account',
+    pageTitle: 'Page Title',
+    description: 'Description is going here',
     featuredIcon: Dashboard,
     showNotifications: true,
     notificationBadge: 5,
     onNotificationPress: () => {},
+    onSearchPress: () => {},
+    showCta: true,
+    ctaActions: [
+      { label: 'Secondary CTA', variant: 'secondary', onPress: () => {} },
+      { label: 'Main CTA', variant: 'primary', onPress: () => {} },
+    ],
     avatarSrc: 'https://i.pravatar.cc/150?img=1',
   },
 }
@@ -78,25 +84,42 @@ export const WithBreadcrumbs: Story = {
 export const WithTabs: Story = {
   args: {
     variant: 'main',
-    pageTitle: 'Dashboard',
-    description: 'Overview of your account',
+    pageTitle: 'Page Title',
+    description: 'Description is going here',
     featuredIcon: Dashboard,
     showTabs: true,
     tabs: (
-      <Tabs defaultValue="overview">
-        <Tabs.Item value="overview">
-          <Tabs.Trigger>Overview</Tabs.Trigger>
+      <Tabs defaultValue="summary" size="md">
+        <Tabs.Item value="summary">
+          <Tabs.Trigger>Summary</Tabs.Trigger>
         </Tabs.Item>
         <Tabs.Item value="transactions">
           <Tabs.Trigger>Transactions</Tabs.Trigger>
         </Tabs.Item>
-        <Tabs.Item value="reports">
-          <Tabs.Trigger>Reports</Tabs.Trigger>
+        <Tabs.Item value="orders">
+          <Tabs.Trigger>Orders History</Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="services">
+          <Tabs.Trigger>Services</Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="settings">
+          <Tabs.Trigger>Settings</Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="hidden">
+          <Tabs.Trigger>Hidden Lists</Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="more">
+          <Tabs.Trigger>Add More</Tabs.Trigger>
         </Tabs.Item>
       </Tabs>
     ),
     showNotifications: true,
-    notificationBadge: 3,
+    notificationBadge: 5,
+    showCta: true,
+    ctaActions: [
+      { label: 'Secondary CTA', variant: 'secondary', onPress: () => {} },
+      { label: 'Main CTA', variant: 'primary', onPress: () => {} },
+    ],
     avatarSrc: 'https://i.pravatar.cc/150?img=3',
   },
 }

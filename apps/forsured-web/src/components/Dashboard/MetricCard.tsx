@@ -1,11 +1,12 @@
 /**
- * MetricCard - Metric card component using Beyond UI
+ * MetricCard - Metric card component using Beyond UI MetricWidget
  * REQ-129: Manager Dashboard - Reusable Metric Card Component
- * Migrated from Tamagui to Beyond UI
+ * Now uses MetricWidget from @unicornlove/beyond-ui internally
  */
 import React from 'react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Card, Row, Stack } from '@unicornlove/beyond-ui';
+import { MetricWidget } from '@unicornlove/beyond-ui';
+import type { MetricWidgetType, MetricChangeType } from '@unicornlove/beyond-ui';
 
 export interface MetricCardProps {
   title: string;
@@ -48,6 +49,17 @@ const getStatusStyles = (status: MetricCardProps['status']) => {
   }
 };
 
+const mapTrendToChangeType = (direction: 'up' | 'down' | 'neutral'): MetricChangeType => {
+  switch (direction) {
+    case 'up':
+      return 'positive';
+    case 'down':
+      return 'negative';
+    default:
+      return 'neutral';
+  }
+};
+
 export const MetricCard: React.FC<MetricCardProps> = ({
   title,
   value,
@@ -59,30 +71,38 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   onClick,
   className = '',
 }) => {
-  const getTrendColor = () => {
-    if (!trend) return 'var(--color-text-muted)';
-    switch (trend.direction) {
-      case 'up':
-        return 'var(--color-green-9)';
-      case 'down':
-        return 'var(--color-red-9)';
-      default:
-        return 'var(--color-text-muted)';
-    }
-  };
-
-  const getTrendIcon = () => {
-    if (!trend) return null;
-    if (trend.direction === 'up') {
-      return <TrendingUp size={16} />;
-    }
-    if (trend.direction === 'down') {
-      return <TrendingDown size={16} />;
-    }
-    return <Minus size={16} />;
-  };
-
   const statusStyles = getStatusStyles(status);
+
+  // Determine widget type based on whether we have trend data
+  const widgetType: MetricWidgetType = trend ? 'Chart 01' : 'Blank 01';
+
+  // Map trend to MetricWidget props
+  const change = trend ? `${trend.direction === 'up' ? '+' : trend.direction === 'down' ? '-' : ''}${Math.abs(trend.value)}%` : undefined;
+  const changeType = trend ? mapTrendToChangeType(trend.direction) : undefined;
+
+  // If loading, show skeleton
+  if (loading) {
+    return (
+      <Card
+        style={{
+          padding: 24,
+          border: '1px solid',
+          ...statusStyles,
+        }}
+        className={className}
+      >
+        <Stack
+          style={{
+            height: 32,
+            backgroundColor: 'var(--color-text-muted)',
+            borderRadius: 8,
+            width: 96,
+            opacity: 0.3,
+          }}
+        />
+      </Card>
+    );
+  }
 
   return (
     <Card
@@ -109,57 +129,15 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       className={className}
     >
       <Row alignItems="flex-start" justifyContent="space-between">
-        <Stack flex={1} gap={4}>
-          <Text
-            size="sm"
-            weight="medium"
-            muted
-            style={{ marginBottom: 4 }}
-          >
-            {title}
-          </Text>
-          {loading ? (
-            <Stack
-              style={{
-                height: 32,
-                backgroundColor: 'var(--color-text-muted)',
-                borderRadius: 8,
-                width: 96,
-                opacity: 0.3,
-              }}
-            />
-          ) : (
-            <>
-              <Text
-                size="2xl"
-                weight="bold"
-                style={{ marginBottom: 8 }}
-              >
-                {value}
-              </Text>
-              {subtitle && (
-                <Text size="sm" muted>
-                  {subtitle}
-                </Text>
-              )}
-              {trend && (
-                <Row
-                  alignItems="center"
-                  gap={4}
-                  style={{
-                    marginTop: 8,
-                    color: getTrendColor(),
-                  }}
-                >
-                  {getTrendIcon()}
-                  <Text size="sm">{Math.abs(trend.value)}%</Text>
-                  <Text size="sm" muted>
-                    vs last week
-                  </Text>
-                </Row>
-              )}
-            </>
-          )}
+        <Stack flex={1}>
+          <MetricWidget
+            type={widgetType}
+            title={title}
+            value={value}
+            change={change}
+            changeType={changeType}
+            subtitle={subtitle}
+          />
         </Stack>
         {icon && (
           <Stack style={{ marginLeft: 16, color: 'var(--color-text-muted)' }}>

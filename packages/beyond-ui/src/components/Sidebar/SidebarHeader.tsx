@@ -48,10 +48,8 @@ export function SidebarHeader({
       style={[
         styles.container,
         {
-          paddingHorizontal: spacing[16],
-          paddingVertical: spacing[12],
-          borderBottomWidth: borderWidth.thin,
-          borderBottomColor: isLight ? colors.border.light.default : colors.border.dark.default,
+          paddingHorizontal: collapsed ? spacing[8] : 24,
+          paddingVertical: spacing[16],
         },
         style,
       ]}
@@ -74,7 +72,7 @@ export function SidebarHeader({
       </View>
 
       {/* Collapse toggle button */}
-      {showCollapseButton && onCollapse && (
+      {showCollapseButton && onCollapse && !collapsed && (
         <Pressable
           onPress={onCollapse}
           style={({ pressed }) => [

@@ -6,8 +6,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Stack, Row, Text, Button, Card, H1, H3, Input } from '@unicornlove/beyond-ui';
-import { Search } from 'lucide-react';
+import { Stack, Row, Text, Button, Card, H1, H3, Input, SaaSSectionHeader } from '@unicornlove/beyond-ui';
+import { Search, LayoutDashboard } from 'lucide-react';
 import { dashboardService } from '../../../lib/api/dashboard/dashboardService';
 import { useLexicon } from '../../../contexts/LexiconContext';
 import type {
@@ -102,29 +102,21 @@ export default function DashboardPage() {
   return (
     <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-gray-2)' }}>
       <Stack style={{ maxWidth: 1120, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
-        {/* Header */}
-        <Row style={{ marginBottom: 'var(--space-8)', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
-          <Stack>
-            <H1>{t('nav.dashboard')}</H1>
-            <Text style={{ marginTop: 'var(--space-2)', fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>
-              Real-time compliance metrics across all projects and {getContractorLabel(true).toLowerCase()}
-            </Text>
-            <Text style={{ marginTop: 'var(--space-1)', fontSize: 'var(--font-size-1)', color: 'var(--color-gray-10)' }}>
-              Last updated: {new Date(lastUpdated).toLocaleTimeString()}
-            </Text>
-          </Stack>
-          <Button
-            onPress={handleExportCSV}
-            style={{
-              backgroundColor: 'var(--color-blue-9)',
-              color: 'white',
-              fontSize: 'var(--font-size-2)',
-              borderRadius: 'var(--radius-4)',
-            }}
-          >
-            Export to CSV
-          </Button>
-        </Row>
+        {/* Section Header with CTA */}
+        <SaaSSectionHeader
+          variant="ctas"
+          title={t('nav.dashboard')}
+          description={`Real-time compliance metrics across all projects and ${getContractorLabel(true).toLowerCase()}. Last updated: ${new Date(lastUpdated).toLocaleTimeString()}`}
+          featuredIcon={LayoutDashboard}
+          actions={[
+            {
+              label: 'Export to CSV',
+              variant: 'primary',
+              onPress: handleExportCSV,
+            },
+          ]}
+          style={{ marginBottom: 'var(--space-8)' }}
+        />
 
         {/* Search and Filters */}
         <Card style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>

@@ -49,21 +49,80 @@ export function SidebarFooter({
   const iconColor = isLight ? colors.icon.light.default : colors.icon.dark.default
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingHorizontal: spacing[16],
-          paddingVertical: spacing[12],
-          borderTopWidth: borderWidth.thin,
-          borderTopColor: isLight ? colors.border.light.default : colors.border.dark.default,
-        },
-        style,
-      ]}
-    >
+    <View style={[styles.container, style]}>
+      {/* Action buttons */}
+      {actions.length > 0 && (
+        <View
+          style={[
+            styles.actionsWrapper,
+            {
+              paddingHorizontal: spacing[16],
+              paddingVertical: 0,
+              justifyContent: collapsed ? 'center' : 'space-between',
+            },
+          ]}
+        >
+          <View style={styles.actions}>
+            {actions.map((action, index) => (
+              <Pressable
+                key={index}
+                onPress={action.onPress}
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  {
+                    paddingHorizontal: spacing[12],
+                    paddingVertical: spacing[8],
+                  },
+                  pressed && { opacity: 0.7 },
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={action.label || `Action ${index + 1}`}
+              >
+                <View style={{ width: actionIconSize, height: actionIconSize, position: 'relative' }}>
+                  <action.icon size={actionIconSize} color={iconColor} />
+                  {action.badge !== undefined && action.badge > 0 && (
+                    <View
+                      style={[
+                        styles.actionBadge,
+                        {
+                          backgroundColor: colors.error[500],
+                          minWidth: action.badge > 9 ? 16 : 12,
+                          height: action.badge > 9 ? 16 : 12,
+                        },
+                      ]}
+                    >
+                      <Text style={styles.actionBadgeText}>
+                        {action.badge > 9 ? '9+' : action.badge}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {/* Divider */}
+      <View
+        style={{
+          height: 1,
+          backgroundColor: isLight ? colors.border.light.default : colors.border.dark.default,
+          marginVertical: spacing[12],
+        }}
+      />
+
       {/* User profile section */}
       {user && (
-        <View style={styles.userSection}>
+        <View
+          style={[
+            styles.userSection,
+            {
+              paddingHorizontal: spacing[16],
+              paddingBottom: spacing[10],
+            },
+          ]}
+        >
           {user.avatar && (
             <View style={styles.avatarContainer}>{user.avatar}</View>
           )}
@@ -87,7 +146,7 @@ export function SidebarFooter({
                   style={[
                     styles.userEmail,
                     {
-                      color: isLight ? colors.text.light.tertiary : colors.text.dark.tertiary,
+                      color: isLight ? colors.text.light.secondary : colors.text.dark.secondary,
                     },
                   ]}
                   numberOfLines={1}
@@ -99,104 +158,27 @@ export function SidebarFooter({
           )}
         </View>
       )}
-
-      {/* Action buttons */}
-      {actions.length > 0 && (
-        <View style={styles.actions}>
-          {actions.map((action, index) => (
-            <Pressable
-              key={index}
-              onPress={action.onPress}
-              style={({ pressed }) => [
-                styles.actionButton,
-                {
-                  width: collapsed ? 32 : 'auto',
-                  height: 32,
-                  paddingHorizontal: collapsed ? 0 : spacing[8],
-                },
-                pressed && { opacity: 0.7 },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={action.label || `Action ${index + 1}`}
-            >
-              <View style={{ width: actionIconSize, height: actionIconSize, position: 'relative' }}>
-                <action.icon size={actionIconSize} color={iconColor} />
-                {action.badge !== undefined && action.badge > 0 && (
-                  <View
-                    style={[
-                      styles.actionBadge,
-                      {
-                        backgroundColor: colors.error[500],
-                        minWidth: action.badge > 9 ? 16 : 12,
-                        height: action.badge > 9 ? 16 : 12,
-                      },
-                    ]}
-                  >
-                    <Text style={styles.actionBadgeText}>
-                      {action.badge > 9 ? '9+' : action.badge}
-                    </Text>
-                  </View>
-                )}
-              </View>
-              {!collapsed && action.label && (
-                <Text
-                  style={[
-                    styles.actionLabel,
-                    {
-                      color: isLight ? colors.text.light.primary : colors.text.dark.primary,
-                    },
-                  ]}
-                >
-                  {action.label}
-                </Text>
-              )}
-            </Pressable>
-          ))}
-        </View>
-      )}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing[12],
+    flexDirection: 'column',
   },
-  userSection: {
+  actionsWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[12],
-  },
-  avatarContainer: {
-    width: 32,
-    height: 32,
-  },
-  userInfo: {
-    flex: 1,
-    gap: spacing[2],
-  },
-  userName: {
-    fontFamily: typography.bodyMedium.fontFamily,
-    fontSize: typography.small.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight,
-    lineHeight: typography.small.lineHeight,
-  },
-  userEmail: {
-    fontFamily: typography.body.fontFamily,
-    fontSize: typography.caption.fontSize,
-    fontWeight: typography.body.fontWeight,
-    lineHeight: typography.caption.lineHeight,
   },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[8],
+    gap: 0,
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing[6],
     borderRadius: borderRadius.s,
   },
   actionBadge: {
@@ -215,11 +197,30 @@ const styles = StyleSheet.create({
     color: colors.white,
     lineHeight: 10,
   },
-  actionLabel: {
+  userSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[6],
+  },
+  avatarContainer: {
+    width: 40,
+    height: 40,
+  },
+  userInfo: {
+    flex: 1,
+    gap: spacing[2],
+  },
+  userName: {
     fontFamily: typography.body.fontFamily,
-    fontSize: typography.small.fontSize,
+    fontSize: typography.body.fontSize,
     fontWeight: typography.body.fontWeight,
-    lineHeight: typography.small.lineHeight,
+    lineHeight: typography.body.lineHeight,
+  },
+  userEmail: {
+    fontFamily: typography.body.fontFamily,
+    fontSize: typography.caption.fontSize,
+    fontWeight: typography.body.fontWeight,
+    lineHeight: typography.caption.lineHeight,
   },
 })
 
