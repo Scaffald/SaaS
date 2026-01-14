@@ -10,7 +10,6 @@ import { useCompliance } from '../../hooks/useCompliance';
 import { useClientBrokerCounts } from '../../hooks/useClientBrokerCounts';
 import { useAuth } from '../../contexts/AuthContext';
 import ClientsTable from './ClientsTable';
-import ClientModal from './ClientModal';
 import InviteClientsModal from './InviteClientsModal';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 import type { BrokerClient } from '../../types';
@@ -21,18 +20,11 @@ import {
 } from '../../lib/relationshipInvitations';
 import { generateRelationshipCode } from '../../lib/connectionCodes';
 
-// Orange button styles for visibility
+// Orange button style for visibility
 const orangeButtonStyle: React.CSSProperties = {
   backgroundColor: 'var(--color-orange-9)',
   color: 'white',
   border: 'none',
-  fontWeight: 600,
-};
-
-const orangeOutlineButtonStyle: React.CSSProperties = {
-  backgroundColor: 'transparent',
-  color: 'var(--color-orange-10)',
-  border: '1px solid var(--color-orange-6)',
   fontWeight: 600,
 };
 
@@ -45,11 +37,10 @@ export default function BrokerClientsPage() {
   const [activeFilter, setActiveFilter] = useState<ClientTypeFilter>('all');
   
   // Pass broker's organizationId to get their connected clients (managers & subcontractors)
-  const { clients, loading: clientsLoading, addClient } = useClients(organizationId || undefined);
+  const { clients, loading: clientsLoading } = useClients(organizationId || undefined);
   const { policies, loading: policiesLoading } = usePolicies();
   const { projects, loading: projectsLoading } = useProjects();
   const { complianceData, loading: complianceLoading } = useCompliance();
-  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
 
   // Get client organization IDs for broker count lookup
   const clientOrgIds = useMemo(() => clients.map(c => c.id), [clients]);
@@ -146,11 +137,6 @@ export default function BrokerClientsPage() {
     return <DashboardSkeleton />;
   }
 
-  const handleSaveClient = async (clientData: Partial<BrokerClient>) => {
-    await addClient(clientData as Omit<BrokerClient, 'id' | 'created_at' | 'updated_at'>);
-    setIsClientModalOpen(false);
-  };
-
   const statCardStyle: React.CSSProperties = {
     backgroundColor: 'white',
     borderRadius: 12,
@@ -180,54 +166,34 @@ export default function BrokerClientsPage() {
                 Manage your client portfolio and monitor compliance
               </Text>
             </Stack>
-            <Row gap={12}>
-              <button
-                type="button"
-                onClick={() => setIsInviteModalOpen(true)}
-                style={{
-                  ...orangeOutlineButtonStyle,
-                  padding: '10px 16px',
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  fontSize: 14,
-                }}
-              >
-                <UserPlus size={16} />
-                Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsClientModalOpen(true)}
-                style={{
-                  ...orangeButtonStyle,
-                  padding: '10px 16px',
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  fontSize: 14,
-                }}
-              >
-                Add Client
-              </button>
-            </Row>
+            <button
+              type="button"
+              onClick={() => setIsInviteModalOpen(true)}
+              style={{
+                ...orangeButtonStyle,
+                padding: '10px 16px',
+                borderRadius: 8,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                fontSize: 14,
+              }}
+            >
+              <UserPlus size={16} />
+              Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
+            </button>
           </Row>
           <EmptyState
             icon={Users}
             title="No Clients Yet"
-            description="Start building your client portfolio by inviting or adding your first client. You'll be able to manage their policies, track compliance, and monitor risk."
+            description="Start building your client portfolio by inviting your first client. Send an invitation email or share your broker code, and they'll connect with you once they sign up."
             action={{
-              label: 'Add Client',
-              onClick: () => setIsClientModalOpen(true),
+              label: 'Invite Client',
+              onClick: () => setIsInviteModalOpen(true),
             }}
           />
         </Stack>
-        <ClientModal
-          isOpen={isClientModalOpen}
-          onClose={() => setIsClientModalOpen(false)}
-          onSave={handleSaveClient}
-        />
         <InviteClientsModal
           isOpen={isInviteModalOpen}
           onClose={() => setIsInviteModalOpen(false)}
@@ -251,38 +217,23 @@ export default function BrokerClientsPage() {
               Manage your client portfolio and monitor compliance
             </Text>
           </Stack>
-          <Row gap={12}>
-            <button
-              type="button"
-              onClick={() => setIsInviteModalOpen(true)}
-              style={{
-                ...orangeOutlineButtonStyle,
-                padding: '10px 16px',
-                borderRadius: 8,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                fontSize: 14,
-              }}
-            >
-              <UserPlus size={16} />
-              Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsClientModalOpen(true)}
-              style={{
-                ...orangeButtonStyle,
-                padding: '10px 16px',
-                borderRadius: 8,
-                cursor: 'pointer',
-                fontSize: 14,
-              }}
-            >
-              Add Client
-            </button>
-          </Row>
+          <button
+            type="button"
+            onClick={() => setIsInviteModalOpen(true)}
+            style={{
+              ...orangeButtonStyle,
+              padding: '10px 16px',
+              borderRadius: 8,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              fontSize: 14,
+            }}
+          >
+            <UserPlus size={16} />
+            Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
+          </button>
         </Row>
 
         {/* Stats Overview Row */}
@@ -422,11 +373,6 @@ export default function BrokerClientsPage() {
           }}
         />
       </Stack>
-      <ClientModal
-        isOpen={isClientModalOpen}
-        onClose={() => setIsClientModalOpen(false)}
-        onSave={handleSaveClient}
-      />
       <InviteClientsModal
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
