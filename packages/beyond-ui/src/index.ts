@@ -32,9 +32,132 @@ export type {
 export { getIconSize, getIconColor, getIconSizeForComponent } from './utils/icon'
 export type { IconSize } from './utils/icon'
 
+// Export error handling utilities
+export { invariant, warning, deprecated } from './utils/invariant'
+
 // Export hooks
 export { useResponsive } from './hooks'
 export type { ResponsiveValue, UseResponsiveReturn } from './hooks'
+
+// Export animation utilities
+export {
+  // Core animated components
+  AnimatedView,
+  AnimatedPressable,
+  isReanimatedAvailable,
+  isAnimatedPressAvailable,
+  // Animation hooks
+  useReducedMotion,
+  useAnimatedSpring,
+  useAnimatedTiming,
+  // Transition components
+  FadeTransition,
+  SlideTransition,
+  ScaleTransition,
+  // Animation presets and configs
+  springConfigs,
+  timingConfigs,
+  animationPresets,
+  bezierCurves,
+} from './animation'
+export type {
+  AnimatedViewProps,
+  AnimatedPressableProps,
+  UseAnimatedSpringOptions,
+  UseAnimatedSpringReturn,
+  UseAnimatedTimingOptions,
+  UseAnimatedTimingReturn,
+  EasingType,
+  FadeTransitionProps,
+  SlideTransitionProps,
+  ScaleTransitionProps,
+  SlideDirection,
+  SlideAnimationType,
+  SpringConfigKey,
+  TimingConfigKey,
+  BezierCurveKey,
+} from './animation'
+
+// Export platform utilities
+export {
+  // Core platform utilities
+  Platform,
+  // Platform detection hook
+  usePlatform,
+  // Haptic feedback
+  useHaptics,
+  // Web-specific hooks
+  useFocusVisible,
+  isFocusVisibleActive,
+  useHoverState,
+  // Native-specific hooks
+  useAccessibilityInfo,
+} from './platform'
+export type {
+  PlatformOS,
+  PlatformSelectOptions,
+  UsePlatformReturn,
+  UseHapticsReturn,
+  HapticImpactStyle,
+  HapticNotificationType,
+  UseFocusVisibleReturn,
+  FocusVisibleProps,
+  UseHoverStateReturn,
+  UseHoverStateOptions,
+  HoverProps,
+  UseAccessibilityInfoReturn,
+} from './platform'
+
+// Export accessibility utilities
+export {
+  // ID generation
+  useId,
+  useIds,
+  // Focus management
+  useFocusTrap,
+  useRovingTabIndex,
+  useFocusRing,
+  getFocusRingStyles,
+  // Announcements
+  useAnnouncer,
+  AnnouncerProvider,
+  // Components
+  VisuallyHidden,
+  LiveRegion,
+  SkipLink,
+  FocusGuard,
+} from './accessibility'
+export type {
+  // Types
+  AriaLive,
+  AriaAtomic,
+  AriaRelevant,
+  FocusableElement,
+  FocusTrapConfig,
+  RovingTabIndexConfig,
+  NavigationKey,
+  AccessibilityRole,
+  AccessibilityState,
+  AccessibilityProps,
+  // Hook returns
+  UseFocusTrapReturn,
+  UseRovingTabIndexOptions,
+  UseRovingTabIndexReturn,
+  RovingItemProps,
+  UseFocusRingOptions,
+  UseFocusRingReturn,
+  FocusRingVariant,
+  FocusRingSize,
+  FocusProps as A11yFocusProps,
+  AnnouncerContextValue,
+  AnnouncerProviderProps,
+  Announcement,
+  // Component props
+  VisuallyHiddenProps,
+  LiveRegionProps,
+  SkipLinkProps,
+  FocusGuardProps,
+} from './accessibility'
 
 // Layout components
 export { Box, Stack, Row, Spacer, Separator } from './components/Layout'
@@ -249,9 +372,7 @@ export type {
   AddAvatarProps,
   AvatarSize,
   AvatarColor,
-  AvatarType,
   AvatarStatus,
-  AvatarBadge,
 } from './components/Avatar'
 
 export { Alert } from './components/Alert'

@@ -61,9 +61,9 @@
  * ```
  */
 
-import { useState } from 'react'
+import { useState, forwardRef } from 'react'
 import { View, TextInput, Platform } from 'react-native'
-import type { TextInputProps as RNTextInputProps } from 'react-native'
+import type { TextInputProps as RNTextInputProps, TextInput as TextInputType } from 'react-native'
 import type { InputProps } from './Input.types'
 import { getInputStyles, getFocusBoxShadow, getFocusShadowStyle } from './Input.styles'
 import { InputLabel } from './InputLabel'
@@ -72,7 +72,7 @@ import { InputExternalAddon, InputLeftSide, InputRightSide } from './InputAddon'
 import { colors } from '../../tokens/colors'
 import { useThemeContext } from '../../playground/ThemeProvider'
 
-export function Input({
+export const Input = forwardRef<TextInputType, InputProps>(function Input({
   label,
   required = false,
   helperText,
@@ -92,7 +92,7 @@ export function Input({
   onBlur,
   value,
   ...textInputProps
-}: InputProps) {
+}, ref) {
   const [internalFocused, setInternalFocused] = useState(false)
   const { theme } = useThemeContext()
 
@@ -199,6 +199,7 @@ export function Input({
 
           {/* Text Input */}
           <TextInput
+            ref={ref}
             {...textInputProps}
             value={value}
             editable={!disabled}
@@ -229,7 +230,9 @@ export function Input({
       )}
     </View>
   )
-}
+})
+
+Input.displayName = 'Input'
 
 // Export types
 export type { InputProps, InputState, InputType } from './Input.types'

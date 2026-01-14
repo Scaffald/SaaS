@@ -2,6 +2,8 @@
  * Toggle component
  * Fully-featured toggle switch component mapped from Figma Forsured Design System
  *
+ * Features smooth spring animations for the thumb sliding when Reanimated is available.
+ *
  * @example
  * ```tsx
  * import { Toggle } from '@unicornlove/beyond-ui'
@@ -31,7 +33,7 @@
  * ```
  */
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, forwardRef } from 'react'
 import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -42,6 +44,21 @@ import type { ToggleProps } from './Toggle.types'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { HelperText } from '../HelperText'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
+import { AnimatedView, useReducedMotion, springConfigs } from '../../animation'
+
+// Try to import Reanimated for animations
+let useSharedValue: any = null
+let useAnimatedStyle: any = null
+let withSpring: any = null
+
+try {
+  const Reanimated = require('react-native-reanimated')
+  useSharedValue = Reanimated.useSharedValue
+  useAnimatedStyle = Reanimated.useAnimatedStyle
+  withSpring = Reanimated.withSpring
+} catch {
+  // Reanimated not installed, will use static positioning
+}
 
 export function Toggle({
   checked: checkedProp,
@@ -65,6 +82,53 @@ export function Toggle({
 
   const { theme } = useThemeContext()
   const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
+  const prefersReducedMotion = useReducedMotion()
+
+  // Size configuration - needed early for animation calculations
+  const sizeConfig = {
+    sm: {
+      trackWidth: 36,
+      trackHeight: 20,
+      thumbSize: 16,
+      thumbOffset: 2,
+      thumbTranslate: 36 - 16 - 2 - 2,
+    },
+    md: {
+      trackWidth: 44,
+      trackHeight: 24,
+      thumbSize: 20,
+      thumbOffset: 2,
+      thumbTranslate: 44 - 20 - 2 - 2,
+    },
+  }[size]
+
+  // Animated thumb position (Reanimated)
+  const thumbPosition = useSharedValue
+    ? useSharedValue(checked ? sizeConfig.thumbTranslate : 0)
+    : null
+
+  // Animate thumb when checked state changes
+  useEffect(() => {
+    if (thumbPosition && withSpring && !prefersReducedMotion) {
+      thumbPosition.value = withSpring(
+        checked ? sizeConfig.thumbTranslate : 0,
+        springConfigs.snappy
+      )
+    } else if (thumbPosition) {
+      // Instant change when reduced motion is preferred
+      thumbPosition.value = checked ? sizeConfig.thumbTranslate : 0
+    }
+  }, [checked, sizeConfig.thumbTranslate, prefersReducedMotion])
+
+  // Animated style for thumb
+  const animatedThumbStyle = useAnimatedStyle
+    ? useAnimatedStyle(() => {
+        if (!thumbPosition) return {}
+        return {
+          transform: [{ translateX: thumbPosition.value }],
+        }
+      }, [thumbPosition])
+    : null
 
   const handlePress = () => {
     if (disabled) return
@@ -78,26 +142,6 @@ export function Toggle({
     // Always call onChange if provided
     onChange?.(newValue)
   }
-
-  // Size configuration
-  // Small: 36px width, 20px height, 16px thumb
-  // Medium: 44px width, 24px height, 20px thumb
-  const sizeConfig = {
-    sm: {
-      trackWidth: 36,
-      trackHeight: 20,
-      thumbSize: 16,
-      thumbOffset: 2, // Padding inside track
-      thumbTranslate: 36 - 16 - 2 - 2, // Track width - thumb size - left padding - right padding
-    },
-    md: {
-      trackWidth: 44,
-      trackHeight: 24,
-      thumbSize: 20,
-      thumbOffset: 2,
-      thumbTranslate: 44 - 20 - 2 - 2,
-    },
-  }[size]
 
   // Color configuration based on state (memoized for performance)
   const colorConfig = useMemo(() => {
@@ -184,16 +228,29 @@ export function Toggle({
               toggleStyle,
             ]}
           >
-            <View
-              style={[
-                styles.toggleThumb,
-                {
-                  width: sizeConfig.thumbSize,
-                  height: sizeConfig.thumbSize,
-                  transform: [{ translateX: checked ? sizeConfig.thumbTranslate : 0 }],
-                },
-              ]}
-            />
+            {animatedThumbStyle ? (
+              <AnimatedView
+                style={[
+                  styles.toggleThumb,
+                  {
+                    width: sizeConfig.thumbSize,
+                    height: sizeConfig.thumbSize,
+                  },
+                  animatedThumbStyle,
+                ]}
+              />
+            ) : (
+              <View
+                style={[
+                  styles.toggleThumb,
+                  {
+                    width: sizeConfig.thumbSize,
+                    height: sizeConfig.thumbSize,
+                    transform: [{ translateX: checked ? sizeConfig.thumbTranslate : 0 }],
+                  },
+                ]}
+              />
+            )}
           </View>
         </View>
 

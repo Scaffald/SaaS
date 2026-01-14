@@ -31,8 +31,8 @@
  * ```
  */
 
-import { useState, useMemo } from 'react'
-import { View, Pressable, Text, StyleSheet } from 'react-native'
+import { useState, useMemo, useEffect } from 'react'
+import { View, Pressable, Text, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -44,6 +44,21 @@ import { MinusIcon } from './MinusIcon'
 import { useThemeContext } from '../../playground/ThemeProvider'
 import { HelperText } from '../HelperText'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
+import { AnimatedView, useReducedMotion, springConfigs } from '../../animation'
+
+// Try to import Reanimated for animations
+let useSharedValue: any = null
+let useAnimatedStyle: any = null
+let withSpring: any = null
+
+try {
+  const Reanimated = require('react-native-reanimated')
+  useSharedValue = Reanimated.useSharedValue
+  useAnimatedStyle = Reanimated.useAnimatedStyle
+  withSpring = Reanimated.withSpring
+} catch {
+  // Reanimated not installed, will use static rendering
+}
 
 export function Checkbox({
   checked: checkedProp,
@@ -69,6 +84,35 @@ export function Checkbox({
 
   const { theme } = useThemeContext()
   const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
+  const prefersReducedMotion = useReducedMotion()
+
+  // Animated scale + opacity for check/minus icon
+  const iconScale = useSharedValue ? useSharedValue(checked || indeterminate ? 1 : 0) : null
+  const iconOpacity = useSharedValue ? useSharedValue(checked || indeterminate ? 1 : 0) : null
+
+  // Animate icon when checked/indeterminate state changes
+  useEffect(() => {
+    const targetValue = checked || indeterminate ? 1 : 0
+    if (iconScale && iconOpacity && withSpring && !prefersReducedMotion) {
+      iconScale.value = withSpring(targetValue, springConfigs.snappy)
+      iconOpacity.value = withSpring(targetValue, springConfigs.snappy)
+    } else if (iconScale && iconOpacity) {
+      // Instant change when reduced motion is preferred
+      iconScale.value = targetValue
+      iconOpacity.value = targetValue
+    }
+  }, [checked, indeterminate, prefersReducedMotion])
+
+  // Animated style for the icon
+  const animatedIconStyle = useAnimatedStyle
+    ? useAnimatedStyle(() => {
+        if (!iconScale || !iconOpacity) return {}
+        return {
+          transform: [{ scale: iconScale.value }],
+          opacity: iconOpacity.value,
+        }
+      }, [iconScale, iconOpacity])
+    : null
 
   const handlePress = () => {
     if (disabled) return
@@ -194,10 +238,22 @@ export function Checkbox({
             ]}
           >
             {showCheckIcon && (
-              <CheckIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+              animatedIconStyle ? (
+                <AnimatedView style={animatedIconStyle}>
+                  <CheckIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+                </AnimatedView>
+              ) : (
+                <CheckIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+              )
             )}
             {showMinusIcon && (
-              <MinusIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+              animatedIconStyle ? (
+                <AnimatedView style={animatedIconStyle}>
+                  <MinusIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+                </AnimatedView>
+              ) : (
+                <MinusIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />
+              )
             )}
           </View>
         </View>
