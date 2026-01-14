@@ -531,7 +531,7 @@ export default function BrokerClientsPage() {
 
         {/* Stats Overview Row */}
         <Row gap={16} style={{ flexWrap: 'wrap' }}>
-          <Card 
+          <div 
             style={{
               ...statCardStyle,
               border: activeFilter === 'all' ? '2px solid var(--color-orange-9)' : '1px solid var(--color-gray-4)',
@@ -570,9 +570,9 @@ export default function BrokerClientsPage() {
                 <Text size="sm" style={{ color: 'var(--color-blue-10)' }}>{stats.contractorsCount} Subs</Text>
               </Row>
             </Row>
-          </Card>
+          </div>
 
-          <Card 
+          <div 
             style={{
               ...statCardStyle,
               border: activeFilter === 'manager' ? '2px solid var(--color-orange-9)' : '1px solid var(--color-gray-4)',
@@ -604,9 +604,9 @@ export default function BrokerClientsPage() {
             <Text size="sm" muted style={{ marginTop: 12 }}>
               GCs, Property Managers
             </Text>
-          </Card>
+          </div>
 
-          <Card 
+          <div 
             style={{
               ...statCardStyle,
               border: activeFilter === 'subcontractor' ? '2px solid var(--color-orange-9)' : '1px solid var(--color-gray-4)',
@@ -638,9 +638,9 @@ export default function BrokerClientsPage() {
             <Text size="sm" muted style={{ marginTop: 12 }}>
               Subcontractors, Vendors
             </Text>
-          </Card>
+          </div>
 
-          <Card style={{ ...statCardStyle, cursor: 'default' }}>
+          <div style={{ ...statCardStyle, cursor: 'default' }}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>Avg Compliance</Text>
@@ -656,9 +656,9 @@ export default function BrokerClientsPage() {
               <TrendingUp size={14} style={{ color: 'var(--color-green-10)' }} />
               <Text size="sm" style={{ color: 'var(--color-green-10)' }}>Above target</Text>
             </Row>
-          </Card>
+          </div>
 
-          <Card style={{ ...statCardStyle, cursor: 'default' }}>
+          <div style={{ ...statCardStyle, cursor: 'default' }}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>High Risk</Text>
@@ -673,9 +673,9 @@ export default function BrokerClientsPage() {
             <Text size="sm" muted style={{ marginTop: 12 }}>
               Require attention
             </Text>
-          </Card>
+          </div>
 
-          <Card style={{ ...statCardStyle, cursor: 'default' }}>
+          <div style={{ ...statCardStyle, cursor: 'default' }}>
             <Row alignItems="center" justifyContent="space-between">
               <Stack>
                 <Text size="sm" muted>Active Projects</Text>
@@ -690,7 +690,7 @@ export default function BrokerClientsPage() {
             <Text size="sm" muted style={{ marginTop: 12 }}>
               Across all clients
             </Text>
-          </Card>
+          </div>
         </Row>
 
         {/* Unified Clients Table */}
