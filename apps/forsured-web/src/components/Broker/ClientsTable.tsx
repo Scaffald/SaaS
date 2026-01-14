@@ -115,6 +115,57 @@ export default function ClientsTable({
     return statsMap;
   }, [clients, complianceData, projects, clientTypeFilter]);
 
+  // Calculate filter counts based on base filters (client type + search)
+  const filterCounts = useMemo(() => {
+    // Base filtered list (only client type and search applied)
+    const baseFiltered = clients.filter((client) => {
+      if (clientTypeFilter === 'manager' && client.client_type !== 'general_contractor') return false;
+      if (clientTypeFilter === 'subcontractor' && client.client_type !== 'subcontractor') return false;
+      if (searchTerm && !client.company_name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+      return true;
+    });
+
+    // Risk level counts
+    const riskCounts = {
+      low: baseFiltered.filter(c => c.risk_level === 'low').length,
+      medium: baseFiltered.filter(c => c.risk_level === 'medium').length,
+      high: baseFiltered.filter(c => c.risk_level === 'high').length,
+    };
+
+    // Compliance counts
+    const complianceCounts = {
+      compliant: baseFiltered.filter(c => (c.compliance_score ?? 0) >= 90).length,
+      warning: baseFiltered.filter(c => {
+        const score = c.compliance_score ?? 0;
+        return score >= 70 && score < 90;
+      }).length,
+      critical: baseFiltered.filter(c => (c.compliance_score ?? 0) < 70).length,
+    };
+
+    // Expiring policy counts
+    const getExpiringCount = (days: number) => {
+      return baseFiltered.filter(client => {
+        const clientPolicies = policies.filter(p => p.client_id === client.id);
+        return clientPolicies.some(policy => {
+          if (!policy.end_date) return false;
+          const endDate = new Date(policy.end_date);
+          if (isNaN(endDate.getTime())) return false;
+          const today = new Date();
+          const daysLeft = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          return daysLeft <= days && daysLeft >= 0;
+        });
+      }).length;
+    };
+
+    const expiringCounts = {
+      '30': getExpiringCount(30),
+      '60': getExpiringCount(60),
+      '90': getExpiringCount(90),
+    };
+
+    return { riskCounts, complianceCounts, expiringCounts, total: baseFiltered.length };
+  }, [clients, clientTypeFilter, searchTerm, policies]);
+
   const filteredClients = useMemo(() => {
     const filtered = clients.filter((client) => {
       // Client type filter
@@ -389,10 +440,10 @@ export default function ClientsTable({
             onChange={(e) => setRiskFilter(e.target.value)}
             style={selectStyle}
           >
-            <option value="all">All Risk Levels</option>
-            <option value="low">Low Risk</option>
-            <option value="medium">Medium Risk</option>
-            <option value="high">High Risk</option>
+            <option value="all">All Risk Levels ({filterCounts.total})</option>
+            <option value="low">Low Risk ({filterCounts.riskCounts.low})</option>
+            <option value="medium">Medium Risk ({filterCounts.riskCounts.medium})</option>
+            <option value="high">High Risk ({filterCounts.riskCounts.high})</option>
           </select>
 
           <select
@@ -400,10 +451,10 @@ export default function ClientsTable({
             onChange={(e) => setComplianceFilter(e.target.value)}
             style={selectStyle}
           >
-            <option value="all">All Compliance</option>
-            <option value="compliant">Compliant (90%+)</option>
-            <option value="warning">Warning (70-89%)</option>
-            <option value="critical">Critical (&lt;70%)</option>
+            <option value="all">All Compliance ({filterCounts.total})</option>
+            <option value="compliant">Compliant 90%+ ({filterCounts.complianceCounts.compliant})</option>
+            <option value="warning">Warning 70-89% ({filterCounts.complianceCounts.warning})</option>
+            <option value="critical">Critical &lt;70% ({filterCounts.complianceCounts.critical})</option>
           </select>
 
           <select
@@ -411,10 +462,10 @@ export default function ClientsTable({
             onChange={(e) => setExpiringFilter(e.target.value)}
             style={selectStyle}
           >
-            <option value="all">All Policies</option>
-            <option value="30">Expiring in 30 days</option>
-            <option value="60">Expiring in 60 days</option>
-            <option value="90">Expiring in 90 days</option>
+            <option value="all">All Policies ({filterCounts.total})</option>
+            <option value="30">Expiring 30 days ({filterCounts.expiringCounts['30']})</option>
+            <option value="60">Expiring 60 days ({filterCounts.expiringCounts['60']})</option>
+            <option value="90">Expiring 90 days ({filterCounts.expiringCounts['90']})</option>
           </select>
 
           <select
