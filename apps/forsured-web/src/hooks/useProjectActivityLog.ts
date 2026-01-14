@@ -345,14 +345,19 @@ function generateDescription(
     metadata: Record<string, unknown> | null;
     old_data: Record<string, unknown> | null;
     new_data: Record<string, unknown> | null;
+    user_name: string | null;
+    user_email: string | null;
   },
   cache: ResourceNameCache
 ): string {
-  const { action, resource_type, resource_name, changed_fields, metadata, old_data, new_data } = entry;
+  const { action, resource_type, resource_name, changed_fields, metadata, old_data, new_data, user_name, user_email } = entry;
 
   // Resolve resource name from IDs
   const resolvedName = resolveResourceName(resource_name, resource_type, metadata, old_data, new_data, cache);
   const displayName = resolvedName || resource_name;
+  
+  // Get user display name for actions that should show who did it
+  const userDisplayName = user_name || user_email;
 
   // Handle specific actions
   switch (action) {
@@ -361,11 +366,11 @@ function generateDescription(
         ? `Created ${resource_type || 'item'}: ${displayName}`
         : `Created ${resource_type || 'item'}`;
     case 'comments_insert':
-      return 'Added a note';
+      return userDisplayName ? `${userDisplayName} added a note` : 'Added a note';
     case 'comments_update':
-      return 'Edited a note';
+      return userDisplayName ? `${userDisplayName} edited a note` : 'Edited a note';
     case 'comments_delete':
-      return 'Deleted a note';
+      return userDisplayName ? `${userDisplayName} deleted a note` : 'Deleted a note';
     case 'projects_insert':
       return displayName ? `Project created: ${displayName}` : 'Project created';
     case 'projects_update':
@@ -522,6 +527,8 @@ function transformToEntries(
       status: string | null;
     };
     const userInfo = e.user_id ? userCache.get(e.user_id) : null;
+    const userName = userInfo?.name || null;
+    const userEmail = userInfo?.email || null;
     return {
       id: e.id,
       action: e.action,
@@ -535,13 +542,15 @@ function transformToEntries(
           metadata: e.metadata,
           old_data: e.old_data,
           new_data: e.new_data,
+          user_name: userName,
+          user_email: userEmail,
         },
         resourceCache
       ),
       timestamp: e.created_at,
       user_id: e.user_id,
-      user_name: userInfo?.name || null,
-      user_email: userInfo?.email || null,
+      user_name: userName,
+      user_email: userEmail,
       resource_type: e.resource_type,
       resource_name: e.resource_name,
       changed_fields: e.changed_fields,
