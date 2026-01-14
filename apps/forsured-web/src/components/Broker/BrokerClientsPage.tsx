@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Briefcase, TrendingUp, AlertTriangle, Shield, Users, Mail, Copy, Clock, Loader2, Building2, HardHat } from 'lucide-react';
-import { Stack, Row, Text, H1, Card, Input, Button } from '@unicornlove/beyond-ui';
+import { Briefcase, TrendingUp, AlertTriangle, Shield, Users, Building2, HardHat, UserPlus } from 'lucide-react';
+import { Stack, Row, Text, H1, Button } from '@unicornlove/beyond-ui';
 import { EmptyState } from '../../ui/EmptyState';
 import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
@@ -11,12 +11,11 @@ import { useClientBrokerCounts } from '../../hooks/useClientBrokerCounts';
 import { useAuth } from '../../contexts/AuthContext';
 import ClientsTable from './ClientsTable';
 import ClientModal from './ClientModal';
+import InviteClientsModal from './InviteClientsModal';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 import type { BrokerClient } from '../../types';
-import { toast } from 'sonner';
 import { getUserOrganizationId } from '../../lib/supabase';
 import {
-  createRelationshipInvitation,
   getUserInvitations,
   type RelationshipInvitation,
 } from '../../lib/relationshipInvitations';
@@ -61,15 +60,7 @@ export default function BrokerClientsPage() {
   // Invitation state
   const [brokerCode, setBrokerCode] = useState<string>('');
   const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([]);
-  const [showInviteSection, setShowInviteSection] = useState(false);
-  const [inviteClientType, setInviteClientType] = useState<'manager' | 'subcontractor'>('manager');
-  const [inviteFormData, setInviteFormData] = useState({
-    email: '',
-    name: '',
-    company: '',
-    phone: '',
-  });
-  const [sendingInvite, setSendingInvite] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   // Fetch organization ID on mount
   useEffect(() => {
@@ -104,65 +95,15 @@ export default function BrokerClientsPage() {
     initBrokerCode();
   }, [user?.id]);
 
-  const handleSendInvitation = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!user?.id || !organizationId) {
-      toast.error('Unable to send invitation. Please ensure you are logged in.');
-      return;
+  const refreshPendingInvitations = async () => {
+    if (user?.id) {
+      const invitations = await getUserInvitations(user.id, 'pending');
+      const clientInvites = invitations.filter(
+        inv => inv.inviter_type === 'broker' &&
+               (inv.invitee_type === 'manager' || inv.invitee_type === 'subcontractor')
+      );
+      setPendingInvitations(clientInvites);
     }
-
-    if (!inviteFormData.email || !inviteFormData.name) {
-      toast.error('Client email and name are required');
-      return;
-    }
-
-    setSendingInvite(true);
-
-    try {
-      const invitation = await createRelationshipInvitation({
-        inviterOrgId: organizationId,
-        inviterUserId: user.id,
-        inviterType: 'broker',
-        inviteeEmail: inviteFormData.email.trim(),
-        inviteeName: inviteFormData.name.trim(),
-        inviteeCompany: inviteFormData.company.trim(),
-        inviteePhone: inviteFormData.phone.trim(),
-        inviteeType: inviteClientType,
-        connectionMethod: 'both',
-      });
-
-      toast.success('Client invitation sent!', {
-        description: `${inviteFormData.name} can connect using code ${invitation.relationship_code}`,
-      });
-
-      setInviteFormData({
-        email: '',
-        name: '',
-        company: '',
-        phone: '',
-      });
-
-      if (user?.id) {
-        const invitations = await getUserInvitations(user.id, 'pending');
-        const clientInvites = invitations.filter(
-          inv => inv.inviter_type === 'broker' &&
-                 (inv.invitee_type === 'manager' || inv.invitee_type === 'subcontractor')
-        );
-        setPendingInvitations(clientInvites);
-      }
-    } catch (error) {
-      console.error('[BrokerClientsPage] Error sending invitation:', error);
-      toast.error('Failed to send invitation. Please try again.');
-    } finally {
-      setSendingInvite(false);
-    }
-  };
-
-  const copyBrokerCode = () => {
-    if (!brokerCode) return;
-    navigator.clipboard.writeText(brokerCode);
-    toast.success('Broker code copied to clipboard');
   };
 
   // Calculate stats based on active filter
@@ -228,29 +169,6 @@ export default function BrokerClientsPage() {
     borderRadius: 8,
   });
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '10px 12px',
-    border: '1px solid var(--color-border)',
-    borderRadius: 8,
-    backgroundColor: 'var(--color-background)',
-    fontSize: 14,
-  };
-
-  const clientTypeButtonStyle = (isSelected: boolean): React.CSSProperties => ({
-    padding: '8px 16px',
-    fontSize: 14,
-    fontWeight: 600,
-    borderRadius: 8,
-    border: 'none',
-    backgroundColor: isSelected ? 'var(--color-orange-9)' : 'var(--color-gray-3)',
-    color: isSelected ? 'white' : 'var(--color-text-muted)',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-  });
-
   if (clients.length === 0) {
     return (
       <>
@@ -290,244 +208,24 @@ export default function BrokerClientsPage() {
               Manage your client portfolio and monitor compliance
             </Text>
           </Stack>
-          <Button
-            onPress={() => setIsClientModalOpen(true)}
-            style={orangeButtonStyle}
-          >
-            Add Client
-          </Button>
+          <Row gap={12}>
+            <Button
+              onPress={() => setIsInviteModalOpen(true)}
+              style={orangeOutlineButtonStyle}
+            >
+              <Row alignItems="center" gap={8}>
+                <UserPlus size={16} />
+                <span>Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}</span>
+              </Row>
+            </Button>
+            <Button
+              onPress={() => setIsClientModalOpen(true)}
+              style={orangeButtonStyle}
+            >
+              Add Client
+            </Button>
+          </Row>
         </Row>
-
-        {/* Client Invitation Section */}
-        <Card
-          style={{
-            backgroundColor: 'var(--color-background)',
-            borderRadius: 12,
-            border: '1px solid var(--color-border)',
-            padding: 20,
-          }}
-        >
-          <Stack gap={16}>
-            <Row justifyContent="space-between" alignItems="center">
-              <Stack gap={4}>
-                <Text size="lg" weight="semibold" style={{ color: 'var(--color-text)' }}>
-                  Invite Clients
-                </Text>
-                <Text size="sm" muted>
-                  Invite managers or contractors to connect as your clients
-                </Text>
-              </Stack>
-              <Button
-                variant="outlined"
-                onPress={() => setShowInviteSection(!showInviteSection)}
-                style={orangeOutlineButtonStyle}
-              >
-                {showInviteSection ? 'Hide' : 'Show Invitations'}
-              </Button>
-            </Row>
-
-            {showInviteSection && (
-              <Stack gap={16} style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
-                {/* Broker Code Display */}
-                <Stack gap={8}>
-                  <Text size="sm" weight="medium" muted>
-                    Your Broker Code
-                  </Text>
-                  <Row gap={8} alignItems="center">
-                    <Card
-                      style={{
-                        backgroundColor: 'var(--color-orange-2)',
-                        border: '1px solid var(--color-orange-6)',
-                        borderRadius: 8,
-                        padding: 12,
-                        flex: 1,
-                      }}
-                    >
-                      <Text
-                        size="lg"
-                        weight="bold"
-                        style={{ color: 'var(--color-orange-11)', fontFamily: 'monospace', textAlign: 'center' }}
-                      >
-                        {brokerCode || 'Loading...'}
-                      </Text>
-                    </Card>
-                    <Button
-                      onPress={copyBrokerCode}
-                      disabled={!brokerCode}
-                      iconStart={Copy}
-                      style={orangeButtonStyle}
-                    >
-                      Copy
-                    </Button>
-                  </Row>
-                  <Text size="xs" muted>
-                    Share this code with clients so they can connect with you
-                  </Text>
-                </Stack>
-
-                {/* Invitation Form */}
-                <Stack gap={12} style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
-                  <Text size="md" weight="semibold">
-                    Send Invitation Email
-                  </Text>
-                  <form onSubmit={handleSendInvitation}>
-                    <Stack gap={12}>
-                      {/* Client Type Selector */}
-                      <Stack gap={8}>
-                        <Text size="xs" weight="medium" muted>
-                          Client Type *
-                        </Text>
-                        <Row gap={8}>
-                          <button
-                            type="button"
-                            onClick={() => setInviteClientType('manager')}
-                            style={clientTypeButtonStyle(inviteClientType === 'manager')}
-                          >
-                            <Building2 size={16} />
-                            Manager
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setInviteClientType('subcontractor')}
-                            style={clientTypeButtonStyle(inviteClientType === 'subcontractor')}
-                          >
-                            <HardHat size={16} />
-                            Contractor
-                          </button>
-                        </Row>
-                      </Stack>
-
-                      <Stack gap={8}>
-                        <Text size="xs" weight="medium" muted>
-                          Client Email *
-                        </Text>
-                        <Input
-                          placeholder="client@example.com"
-                          value={inviteFormData.email}
-                          onChange={(e) => setInviteFormData({ ...inviteFormData, email: e.target.value })}
-                          disabled={sendingInvite}
-                          style={inputStyle}
-                        />
-                      </Stack>
-
-                      <Stack gap={8}>
-                        <Text size="xs" weight="medium" muted>
-                          Client Name *
-                        </Text>
-                        <Input
-                          placeholder="John Doe"
-                          value={inviteFormData.name}
-                          onChange={(e) => setInviteFormData({ ...inviteFormData, name: e.target.value })}
-                          disabled={sendingInvite}
-                          style={inputStyle}
-                        />
-                      </Stack>
-
-                      <Row gap={12}>
-                        <Stack gap={8} style={{ flex: 1 }}>
-                          <Text size="xs" weight="medium" muted>
-                            Company (Optional)
-                          </Text>
-                          <Input
-                            placeholder="Acme Construction"
-                            value={inviteFormData.company}
-                            onChange={(e) => setInviteFormData({ ...inviteFormData, company: e.target.value })}
-                            disabled={sendingInvite}
-                            style={inputStyle}
-                          />
-                        </Stack>
-
-                        <Stack gap={8} style={{ flex: 1 }}>
-                          <Text size="xs" weight="medium" muted>
-                            Phone (Optional)
-                          </Text>
-                          <Input
-                            placeholder="(555) 123-4567"
-                            value={inviteFormData.phone}
-                            onChange={(e) => setInviteFormData({ ...inviteFormData, phone: e.target.value })}
-                            disabled={sendingInvite}
-                            style={inputStyle}
-                          />
-                        </Stack>
-                      </Row>
-
-                      <Button
-                        type="submit"
-                        disabled={sendingInvite || !inviteFormData.email || !inviteFormData.name}
-                        style={{
-                          ...orangeButtonStyle,
-                          opacity: sendingInvite || !inviteFormData.email || !inviteFormData.name ? 0.5 : 1,
-                        }}
-                      >
-                        <Row alignItems="center" gap={8}>
-                          {sendingInvite ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
-                          <span>{sendingInvite ? 'Sending...' : 'Send Invitation'}</span>
-                        </Row>
-                      </Button>
-                    </Stack>
-                  </form>
-                </Stack>
-
-                {/* Pending Invitations */}
-                {pendingInvitations.length > 0 && (
-                  <Stack gap={12} style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
-                    <Text size="md" weight="semibold">
-                      Pending Invitations ({pendingInvitations.length})
-                    </Text>
-                    <Stack gap={8}>
-                      {pendingInvitations.map(inv => (
-                        <Card
-                          key={inv.id}
-                          style={{
-                            backgroundColor: 'var(--color-background)',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: 8,
-                            padding: 12,
-                          }}
-                        >
-                          <Row justifyContent="space-between" alignItems="center">
-                            <Stack gap={4} style={{ flex: 1 }}>
-                              <Row gap={8} alignItems="center">
-                                <Text size="sm" weight="semibold">
-                                  {inv.metadata?.name || inv.invitee_email}
-                                </Text>
-                                <span
-                                  style={{
-                                    fontSize: 12,
-                                    padding: '2px 8px',
-                                    borderRadius: 4,
-                                    backgroundColor: inv.invitee_type === 'manager' ? 'var(--color-purple-2)' : 'var(--color-blue-2)',
-                                    color: inv.invitee_type === 'manager' ? 'var(--color-purple-11)' : 'var(--color-blue-11)',
-                                  }}
-                                >
-                                  {inv.invitee_type === 'manager' ? 'Manager' : 'Contractor'}
-                                </span>
-                              </Row>
-                              <Text size="xs" muted>
-                                {inv.invitee_email}
-                              </Text>
-                              {inv.metadata?.company && (
-                                <Text size="xs" muted>
-                                  {inv.metadata.company}
-                                </Text>
-                              )}
-                            </Stack>
-                            <Row gap={8} alignItems="center">
-                              <Clock size={14} style={{ color: 'var(--color-orange-10)' }} />
-                              <Text size="xs" style={{ color: 'var(--color-orange-10)' }}>
-                                Pending
-                              </Text>
-                            </Row>
-                          </Row>
-                        </Card>
-                      ))}
-                    </Stack>
-                  </Stack>
-                )}
-              </Stack>
-            )}
-          </Stack>
-        </Card>
 
         {/* Stats Overview Row */}
         <Row gap={16} style={{ flexWrap: 'wrap' }}>
@@ -711,6 +409,15 @@ export default function BrokerClientsPage() {
         isOpen={isClientModalOpen}
         onClose={() => setIsClientModalOpen(false)}
         onSave={handleSaveClient}
+      />
+      <InviteClientsModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        brokerCode={brokerCode}
+        pendingInvitations={pendingInvitations}
+        userId={user?.id || ''}
+        organizationId={organizationId || ''}
+        onInvitationSent={refreshPendingInvitations}
       />
     </>
   );
