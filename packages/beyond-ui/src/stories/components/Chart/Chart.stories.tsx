@@ -13,8 +13,6 @@ import {
   MiniLinearChart,
   SmallCircleChart,
   Chart,
-  ChartTimePeriod,
-  ChartGrid,
 } from '../../../components/Chart'
 import { spacing } from '../../../tokens/spacing'
 
@@ -183,79 +181,12 @@ export const SmallCircleChartExample: Story = {
   ),
 }
 
-// Chart Time Period
-export const ChartTimePeriodVariants: Story = {
-  render: () => (
-    <View style={styles.container}>
-      <Text style={styles.title}>Chart Time Period Variants</Text>
-      <View style={styles.column}>
-        <View style={styles.chartContainer}>
-          <Text style={styles.subtitle}>Value</Text>
-          <ChartTimePeriod type="Value" showNumber />
-        </View>
-        <View style={styles.chartContainer}>
-          <Text style={styles.subtitle}>Period - Week</Text>
-          <ChartTimePeriod type="Period - Week" />
-        </View>
-        <View style={styles.chartContainer}>
-          <Text style={styles.subtitle}>Period - Month 01</Text>
-          <ChartTimePeriod type="Period - Month 01" />
-        </View>
-        <View style={styles.chartContainer}>
-          <Text style={styles.subtitle}>Period - Month 02</Text>
-          <ChartTimePeriod type="Period - Month 02" />
-        </View>
-        <View style={styles.chartContainer}>
-          <Text style={styles.subtitle}>Period - Last Days</Text>
-          <ChartTimePeriod type="Period - Last Days" />
-        </View>
-        <View style={styles.chartContainer}>
-          <Text style={styles.subtitle}>Period - Year</Text>
-          <ChartTimePeriod type="Period - Year" />
-        </View>
-      </View>
-    </View>
-  ),
-}
-
-// Chart Grid
-export const ChartGridVariants: Story = {
-  render: () => (
-    <View style={styles.container}>
-      <Text style={styles.title}>Chart Grid Variants</Text>
-      <View style={styles.row}>
-        <View style={styles.chartContainer}>
-          <Text style={styles.subtitle}>With X Indicator</Text>
-          <ChartGrid
-            yAxisLabels={[0, 20, 40, 60, 80, 100]}
-            height={247}
-            showXIndicator
-            period="year"
-          />
-        </View>
-        <View style={styles.chartContainer}>
-          <Text style={styles.subtitle}>Without X Indicator</Text>
-          <ChartGrid
-            yAxisLabels={[0, 20, 40, 60, 80, 100]}
-            height={247}
-            showXIndicator={false}
-          />
-        </View>
-      </View>
-    </View>
-  ),
-}
-
-// Main Chart with grid and axes
+// Main Chart with Linear Chart
 export const MainChart: Story = {
   render: () => (
     <View style={styles.container}>
-      <Text style={styles.title}>Main Chart with Grid and Axes</Text>
-      <Chart
-        period="year"
-        showGrid
-        showXIndicator
-      >
+      <Text style={styles.title}>Main Chart Example</Text>
+      <Chart period="year">
         <LinearChart
           data={[
             { x: 0, y: 20 },
