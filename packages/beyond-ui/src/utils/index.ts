@@ -18,3 +18,9 @@ export {
   getCombinedFocusStyle,
 } from './focusRing'
 export type { ShadowType } from './focusRing'
+
+export {
+  resolveResponsiveValue,
+  isResponsiveValue,
+  resolveResponsiveValues,
+} from './responsive'

@@ -23,6 +23,15 @@
  *   <Button>Bottom</Button>
  * </Stack>
  *
+ * // Responsive spacing
+ * <Stack
+ *   gap={{ base: 8, md: 16, lg: 24 }}
+ *   padding={{ base: 12, md: 20, lg: 32 }}
+ * >
+ *   <Card>Responsive card 1</Card>
+ *   <Card>Responsive card 2</Card>
+ * </Stack>
+ *
  * // Migration from YStack:
  * // Before: <YStack gap="$4" padding="$3">
  * // After:  <Stack gap={16} padding={12}>

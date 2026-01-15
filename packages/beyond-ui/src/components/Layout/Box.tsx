@@ -24,6 +24,15 @@
  * <Box padding="xl" gap="md">
  *   <Text>Tokenized spacing</Text>
  * </Box>
+ *
+ * // Responsive props
+ * <Box
+ *   padding={{ base: 8, md: 16, lg: 24 }}
+ *   gap={{ base: 'sm', md: 'md', lg: 'lg' }}
+ *   direction={{ base: 'column', md: 'row' }}
+ * >
+ *   <Text>Responsive layout</Text>
+ * </Box>
  * ```
  */
 
@@ -31,6 +40,8 @@ import { useMemo } from 'react'
 import { View, type ViewStyle, type DimensionValue } from 'react-native'
 import type { BoxProps, SpacingValue, GapValue, PaddingValue } from './Box.types'
 import { spacing, gap as gapTokens, padding as paddingTokens } from '../../tokens/spacing'
+import { useResponsive } from '../../hooks/useResponsive'
+import { resolveResponsiveValue } from '../../utils/responsive'
 
 /**
  * Resolve a spacing value to a number
@@ -116,51 +127,73 @@ export function Box({
   style,
   ...viewProps
 }: BoxProps) {
+  const { width: screenWidth } = useResponsive()
+
   const computedStyle = useMemo<ViewStyle>(() => {
     const styles: ViewStyle = {}
 
+    // Resolve responsive values first
+    const resolvedDirection = resolveResponsiveValue(direction, screenWidth)
+    const resolvedGapProp = resolveResponsiveValue(gapProp, screenWidth)
+    const resolvedRowGap = resolveResponsiveValue(rowGap, screenWidth)
+    const resolvedColumnGap = resolveResponsiveValue(columnGap, screenWidth)
+    const resolvedPaddingProp = resolveResponsiveValue(paddingProp, screenWidth)
+    const resolvedPaddingH = resolveResponsiveValue(paddingHorizontal, screenWidth)
+    const resolvedPaddingV = resolveResponsiveValue(paddingVertical, screenWidth)
+    const resolvedPaddingTop = resolveResponsiveValue(paddingTop, screenWidth)
+    const resolvedPaddingBottom = resolveResponsiveValue(paddingBottom, screenWidth)
+    const resolvedPaddingLeft = resolveResponsiveValue(paddingLeft, screenWidth)
+    const resolvedPaddingRight = resolveResponsiveValue(paddingRight, screenWidth)
+    const resolvedMargin = resolveResponsiveValue(margin, screenWidth)
+    const resolvedMarginH = resolveResponsiveValue(marginHorizontal, screenWidth)
+    const resolvedMarginV = resolveResponsiveValue(marginVertical, screenWidth)
+    const resolvedMarginTop = resolveResponsiveValue(marginTop, screenWidth)
+    const resolvedMarginBottom = resolveResponsiveValue(marginBottom, screenWidth)
+    const resolvedMarginLeft = resolveResponsiveValue(marginLeft, screenWidth)
+    const resolvedMarginRight = resolveResponsiveValue(marginRight, screenWidth)
+
     // Gap
-    const resolvedGap = resolveGap(gapProp)
-    if (resolvedGap !== undefined) styles.gap = resolvedGap
-    const resolvedRowGap = resolveGap(rowGap)
-    if (resolvedRowGap !== undefined) styles.rowGap = resolvedRowGap
-    const resolvedColumnGap = resolveGap(columnGap)
-    if (resolvedColumnGap !== undefined) styles.columnGap = resolvedColumnGap
+    const finalGap = resolveGap(resolvedGapProp)
+    if (finalGap !== undefined) styles.gap = finalGap
+    const finalRowGap = resolveGap(resolvedRowGap)
+    if (finalRowGap !== undefined) styles.rowGap = finalRowGap
+    const finalColumnGap = resolveGap(resolvedColumnGap)
+    if (finalColumnGap !== undefined) styles.columnGap = finalColumnGap
 
     // Padding
-    const resolvedPadding = resolvePadding(paddingProp)
-    if (resolvedPadding !== undefined) styles.padding = resolvedPadding
-    const resolvedPaddingH = resolvePadding(paddingHorizontal)
-    if (resolvedPaddingH !== undefined) styles.paddingHorizontal = resolvedPaddingH
-    const resolvedPaddingV = resolvePadding(paddingVertical)
-    if (resolvedPaddingV !== undefined) styles.paddingVertical = resolvedPaddingV
-    const resolvedPaddingTop = resolvePadding(paddingTop)
-    if (resolvedPaddingTop !== undefined) styles.paddingTop = resolvedPaddingTop
-    const resolvedPaddingBottom = resolvePadding(paddingBottom)
-    if (resolvedPaddingBottom !== undefined) styles.paddingBottom = resolvedPaddingBottom
-    const resolvedPaddingLeft = resolvePadding(paddingLeft)
-    if (resolvedPaddingLeft !== undefined) styles.paddingLeft = resolvedPaddingLeft
-    const resolvedPaddingRight = resolvePadding(paddingRight)
-    if (resolvedPaddingRight !== undefined) styles.paddingRight = resolvedPaddingRight
+    const finalPadding = resolvePadding(resolvedPaddingProp)
+    if (finalPadding !== undefined) styles.padding = finalPadding
+    const finalPaddingH = resolvePadding(resolvedPaddingH)
+    if (finalPaddingH !== undefined) styles.paddingHorizontal = finalPaddingH
+    const finalPaddingV = resolvePadding(resolvedPaddingV)
+    if (finalPaddingV !== undefined) styles.paddingVertical = finalPaddingV
+    const finalPaddingTop = resolvePadding(resolvedPaddingTop)
+    if (finalPaddingTop !== undefined) styles.paddingTop = finalPaddingTop
+    const finalPaddingBottom = resolvePadding(resolvedPaddingBottom)
+    if (finalPaddingBottom !== undefined) styles.paddingBottom = finalPaddingBottom
+    const finalPaddingLeft = resolvePadding(resolvedPaddingLeft)
+    if (finalPaddingLeft !== undefined) styles.paddingLeft = finalPaddingLeft
+    const finalPaddingRight = resolvePadding(resolvedPaddingRight)
+    if (finalPaddingRight !== undefined) styles.paddingRight = finalPaddingRight
 
     // Margin
-    const resolvedMargin = resolveSpacing(margin)
-    if (resolvedMargin !== undefined) styles.margin = resolvedMargin
-    const resolvedMarginH = resolveSpacing(marginHorizontal)
-    if (resolvedMarginH !== undefined) styles.marginHorizontal = resolvedMarginH
-    const resolvedMarginV = resolveSpacing(marginVertical)
-    if (resolvedMarginV !== undefined) styles.marginVertical = resolvedMarginV
-    const resolvedMarginTop = resolveSpacing(marginTop)
-    if (resolvedMarginTop !== undefined) styles.marginTop = resolvedMarginTop
-    const resolvedMarginBottom = resolveSpacing(marginBottom)
-    if (resolvedMarginBottom !== undefined) styles.marginBottom = resolvedMarginBottom
-    const resolvedMarginLeft = resolveSpacing(marginLeft)
-    if (resolvedMarginLeft !== undefined) styles.marginLeft = resolvedMarginLeft
-    const resolvedMarginRight = resolveSpacing(marginRight)
-    if (resolvedMarginRight !== undefined) styles.marginRight = resolvedMarginRight
+    const finalMargin = resolveSpacing(resolvedMargin)
+    if (finalMargin !== undefined) styles.margin = finalMargin
+    const finalMarginH = resolveSpacing(resolvedMarginH)
+    if (finalMarginH !== undefined) styles.marginHorizontal = finalMarginH
+    const finalMarginV = resolveSpacing(resolvedMarginV)
+    if (finalMarginV !== undefined) styles.marginVertical = finalMarginV
+    const finalMarginTop = resolveSpacing(resolvedMarginTop)
+    if (finalMarginTop !== undefined) styles.marginTop = finalMarginTop
+    const finalMarginBottom = resolveSpacing(resolvedMarginBottom)
+    if (finalMarginBottom !== undefined) styles.marginBottom = finalMarginBottom
+    const finalMarginLeft = resolveSpacing(resolvedMarginLeft)
+    if (finalMarginLeft !== undefined) styles.marginLeft = finalMarginLeft
+    const finalMarginRight = resolveSpacing(resolvedMarginRight)
+    if (finalMarginRight !== undefined) styles.marginRight = finalMarginRight
 
     // Flexbox
-    if (direction !== undefined) styles.flexDirection = direction
+    if (resolvedDirection !== undefined) styles.flexDirection = resolvedDirection
     if (align !== undefined) styles.alignItems = align
     if (justify !== undefined) styles.justifyContent = justify
     if (wrap !== undefined) styles.flexWrap = wrap
@@ -193,6 +226,7 @@ export function Box({
 
     return styles
   }, [
+    screenWidth,
     gapProp,
     rowGap,
     columnGap,
