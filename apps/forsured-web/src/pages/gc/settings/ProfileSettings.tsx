@@ -1,7 +1,8 @@
 // src/pages/gc/settings/ProfileSettings.tsx
 // REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Stack, Text, Button, H2, Input } from '@unicornlove/beyond-ui';
+import { Stack, Text, Button, H2, SettingsFormField, SettingsSectionHeader } from '@unicornlove/beyond-ui';
+import { User } from 'lucide-react-native';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSettings } from '../../../hooks/useSettings';
 import { useLexicon } from '../../../contexts/LexiconContext';
@@ -61,32 +62,36 @@ function GCProfileSettings() {
   }
 
   return (
-    <Stack style={{ gap: 'var(--space-4)' }}>
-      <H2>Profile Settings</H2>
+    <Stack style={{ gap: 'var(--space-6)' }}>
+      <SettingsSectionHeader
+        icon={User}
+        title="Basic Info"
+        description="Basic workspace info details"
+      />
       <form onSubmit={handleSubmit}>
         <Stack style={{ gap: 'var(--space-4)' }}>
-          <Input
+          <SettingsFormField
             label="Name"
             type="text"
             value={user?.name || ''}
             disabled
             helperText="Name is managed in Scaffald"
           />
-          <Input
+          <SettingsFormField
             label="Email"
             type="email"
             value={user?.email || ''}
             disabled
             helperText="Email is managed in Scaffald"
           />
-          <Input
+          <SettingsFormField
             label="Phone"
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChangeText={setPhone}
             placeholder="Enter phone number"
           />
-          <Input
+          <SettingsFormField
             label="User Type"
             type="text"
             value={

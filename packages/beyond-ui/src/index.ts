@@ -865,6 +865,53 @@ export type { CommandShortcutProps, CommandShortcutVariant } from './components/
 export { CommandMenuFooter } from './components/CommandMenu'
 export type { CommandMenuFooterProps, ShortcutHint } from './components/CommandMenu'
 
+// Settings components
+export { AppearanceThemeCard } from './components/AppearanceThemeCard'
+export type {
+  AppearanceThemeCardProps,
+  AppearanceThemeCardVariant,
+  AppearanceThemeCardStyleConfig,
+} from './components/AppearanceThemeCard'
+
+export { SettingsSectionHeader } from './components/SettingsSectionHeader'
+export type {
+  SettingsSectionHeaderProps,
+  SettingsSectionHeaderStyleConfig,
+} from './components/SettingsSectionHeader'
+
+export { SettingsFormField } from './components/SettingsFormField'
+export type { SettingsFormFieldProps } from './components/SettingsFormField'
+
+export { SettingsToggleCard } from './components/SettingsToggleCard'
+export type {
+  SettingsToggleCardProps,
+  SettingsToggleCardStyleConfig,
+} from './components/SettingsToggleCard'
+
+export { SettingsNotificationTable } from './components/SettingsNotificationTable'
+export type {
+  SettingsNotificationTableProps,
+  NotificationPreference,
+} from './components/SettingsNotificationTable'
+
+export { SettingsTeamTable } from './components/SettingsTeamTable'
+export type {
+  SettingsTeamTableProps,
+  TeamMember,
+} from './components/SettingsTeamTable'
+
+export { SettingsIntegrationsGrid } from './components/SettingsIntegrationsGrid'
+export type {
+  SettingsIntegrationsGridProps,
+  Integration,
+} from './components/SettingsIntegrationsGrid'
+
+export { SettingsPageLayout } from './components/SettingsPageLayout'
+export type {
+  SettingsPageLayoutProps,
+  SettingsTab,
+} from './components/SettingsPageLayout'
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box ✅, Stack ✅, Row ✅, Spacer ✅, Separator ✅)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅

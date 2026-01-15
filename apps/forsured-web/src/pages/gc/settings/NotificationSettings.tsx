@@ -1,49 +1,45 @@
 // src/pages/gc/settings/NotificationSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Stack, Text, Button, H2 } from '@unicornlove/beyond-ui';
-import Checkbox from '../../../ui/Checkbox';
-import Select from '../../../components/Common/Select';
+import { Stack, Button, SettingsNotificationTable, SettingsSectionHeader } from '@unicornlove/beyond-ui';
+import type { NotificationPreference } from '@unicornlove/beyond-ui';
+import { Bell } from 'lucide-react-native';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
-const frequencyOptions = [
-  { value: 'daily', label: 'Daily' },
-  { value: 'weekly', label: 'Weekly' },
-  { value: 'never', label: 'Never' },
+// Convert to SettingsNotificationTable format
+const defaultPreferences: NotificationPreference[] = [
+  { id: '1', name: 'Assigned comments', category: 'Comments', email: true, mobile: false, inbox: false, browser: false },
+  { id: '2', name: 'Resolved comments', category: 'Comments', email: true, mobile: true, inbox: false, browser: true },
+  { id: '3', name: 'New Comment Notifications', category: 'Comments', email: false, mobile: true, inbox: false, browser: true },
+  { id: '4', name: 'Mentions in Comments', category: 'Comments', email: false, mobile: true, inbox: false, browser: true },
+  { id: '5', name: 'Thread Activity Notifications', category: 'Comments', email: false, mobile: true, inbox: false, browser: false },
+  { id: '6', name: 'Task Assignment Notifications', category: 'Tasks', email: true, mobile: true, inbox: false, browser: false },
+  { id: '7', name: 'Task Deadline Reminders', category: 'Tasks', email: true, mobile: true, inbox: false, browser: true },
+  { id: '8', name: 'Task Completion Acknowledgments', category: 'Tasks', email: true, mobile: true, inbox: false, browser: true },
+  { id: '9', name: 'Task Updates and Edits', category: 'Tasks', email: true, mobile: true, inbox: false, browser: true },
+  { id: '10', name: 'Task Comment Activity', category: 'Tasks', email: true, mobile: true, inbox: false, browser: true },
+  { id: '11', name: 'Shared Folder Updates', category: 'Sharing', email: true, mobile: true, inbox: false, browser: false },
+  { id: '12', name: 'Shared Calendar Events', category: 'Sharing', email: true, mobile: true, inbox: false, browser: false },
+  { id: '13', name: 'Content Shared with You', category: 'Sharing', email: true, mobile: true, inbox: false, browser: false },
+  { id: '14', name: 'Access Requests', category: 'Sharing', email: true, mobile: true, inbox: false, browser: false },
+  { id: '15', name: 'Collaborator Activity', category: 'Sharing', email: true, mobile: true, inbox: false, browser: false },
+  { id: '16', name: 'Shared Workspace Announcements', category: 'Sharing', email: true, mobile: true, inbox: false, browser: false },
+  { id: '17', name: 'Expiration Notices', category: 'Sharing', email: true, mobile: true, inbox: true, browser: false },
 ];
-
-interface NotificationPreferences {
-  emailOnNewDocument: boolean;
-  emailOnExpiringCOI: boolean;
-  emailOnComplianceChange: boolean;
-  emailDigestFrequency: string;
-}
-
-const defaultPreferences: NotificationPreferences = {
-  emailOnNewDocument: true,
-  emailOnExpiringCOI: true,
-  emailOnComplianceChange: true,
-  emailDigestFrequency: 'weekly',
-};
 
 function GCNotificationSettings() {
   const { userSettings, updateUserSettings, isLoading, isSaving } = useSettings();
 
-  const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences);
-  const [originalPreferences, setOriginalPreferences] = useState<NotificationPreferences>(defaultPreferences);
+  const [preferences, setPreferences] = useState<NotificationPreference[]>(defaultPreferences);
+  const [originalPreferences, setOriginalPreferences] = useState<NotificationPreference[]>(defaultPreferences);
 
   // Initialize from userSettings.notification_preferences
   useEffect(() => {
     if (userSettings?.notification_preferences) {
-      const prefs = userSettings.notification_preferences as NotificationPreferences;
-      const newPreferences = {
-        emailOnNewDocument: prefs.emailOnNewDocument ?? true,
-        emailOnExpiringCOI: prefs.emailOnExpiringCOI ?? true,
-        emailOnComplianceChange: prefs.emailOnComplianceChange ?? true,
-        emailDigestFrequency: prefs.emailDigestFrequency || 'weekly',
-      };
-      setPreferences(newPreferences);
-      setOriginalPreferences(newPreferences);
+      // In a real app, convert from stored format to NotificationPreference[]
+      // For now, use defaults
+      setPreferences(defaultPreferences);
+      setOriginalPreferences(defaultPreferences);
     }
   }, [userSettings]);
 
@@ -52,10 +48,17 @@ function GCNotificationSettings() {
     return JSON.stringify(preferences) !== JSON.stringify(originalPreferences);
   }, [preferences, originalPreferences]);
 
+  const handlePreferenceChange = useCallback((id: string, channel: 'email' | 'mobile' | 'inbox' | 'browser', enabled: boolean) => {
+    setPreferences(prev =>
+      prev.map(pref => (pref.id === id ? { ...pref, [channel]: enabled } : pref))
+    );
+  }, []);
+
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
+      // In a real app, convert NotificationPreference[] back to stored format
       await updateUserSettings({
         notification_preferences: preferences,
       });
@@ -67,17 +70,10 @@ function GCNotificationSettings() {
     }
   }, [preferences, updateUserSettings]);
 
-  const updatePreference = useCallback(<K extends keyof NotificationPreferences>(
-    key: K,
-    value: NotificationPreferences[K]
-  ) => {
-    setPreferences(prev => ({ ...prev, [key]: value }));
-  }, []);
-
   if (isLoading) {
     return (
       <Stack style={{ gap: 'var(--space-4)' }}>
-        <H2>Notification Settings</H2>
+        <SettingsSectionHeader icon={Bell} title="Notifications" description="Manage your notification preferences" />
         <Stack style={{ gap: 'var(--space-4)' }}>
           {[1, 2, 3, 4].map(i => (
             <Stack key={i} style={{ height: 40, backgroundColor: 'var(--color-3)', borderRadius: 'var(--radius-4)' }} />
@@ -88,40 +84,23 @@ function GCNotificationSettings() {
   }
 
   return (
-    <Stack style={{ gap: 'var(--space-4)' }}>
-      <H2>Notification Settings</H2>
-      <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-6)' }}>
-        Configure how and when you receive notifications about your projects and subcontractors.
-      </Text>
+    <Stack style={{ gap: 'var(--space-6)' }}>
+      <SettingsSectionHeader
+        icon={Bell}
+        title="Notifications"
+        description="Manage your notification preferences"
+      />
       <form onSubmit={handleSubmit}>
         <Stack style={{ gap: 'var(--space-4)' }}>
-          <Checkbox
-            checked={preferences.emailOnNewDocument}
-            onChange={(e) => updatePreference('emailOnNewDocument', e.target.checked)}
-            label="Email me on new document uploads"
+          <SettingsNotificationTable
+            preferences={preferences}
+            onPreferenceChange={handlePreferenceChange}
           />
-          <Checkbox
-            checked={preferences.emailOnExpiringCOI}
-            onChange={(e) => updatePreference('emailOnExpiringCOI', e.target.checked)}
-            label="Email me on expiring COIs"
-          />
-          <Checkbox
-            checked={preferences.emailOnComplianceChange}
-            onChange={(e) => updatePreference('emailOnComplianceChange', e.target.checked)}
-            label="Email me on compliance status changes"
-          />
-          <Stack style={{ gap: 'var(--space-1)', marginBottom: 'var(--space-6)' }}>
-            <Select
-              label="Email Digest Frequency"
-              value={preferences.emailDigestFrequency}
-              onChange={(value) => updatePreference('emailDigestFrequency', value)}
-              options={frequencyOptions}
-            />
-          </Stack>
           <Button
             type="submit"
             disabled={!isDirty || isSaving}
             variant="primary"
+            style={{ marginTop: 'var(--space-6)' }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>

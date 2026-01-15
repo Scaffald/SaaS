@@ -65,6 +65,7 @@ import GCInsuranceSettings from './pages/gc/settings/InsuranceSettings';
 import GCNotificationSettings from './pages/gc/settings/NotificationSettings';
 import GCTeamSettings from './pages/gc/settings/TeamSettings';
 import GCIntegrationSettings from './pages/gc/settings/IntegrationSettings';
+import GCAppearanceSettings from './pages/gc/settings/AppearanceSettings';
 
 // Contractor Settings Pages
 import ContractorProfileSettings from './pages/contractor/settings/ProfileSettings';
@@ -148,6 +149,7 @@ const AuthenticatedAppRoutes = () => {
                 <Route path="settings/notifications" element={<GCNotificationSettings />} />
                 <Route path="settings/team" element={<GCTeamSettings />} />
                 <Route path="settings/integrations" element={<GCIntegrationSettings />} />
+                <Route path="settings/appearance" element={<GCAppearanceSettings />} />
                 <Route path="settings/referrals" element={<ReferralSettings />} />
               </Routes>
             </ProtectedRoute>

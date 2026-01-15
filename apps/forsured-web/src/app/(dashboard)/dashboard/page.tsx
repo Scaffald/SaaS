@@ -3,13 +3,22 @@
  * Real-time compliance metrics and monitoring
  */
 
-'use client';
+'use client'
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Stack, Row, Text, Button, Card, H1, H3, Input, SaaSSectionHeader } from '@unicornlove/beyond-ui';
-import { Search, LayoutDashboard } from 'lucide-react';
-import { dashboardService } from '../../../lib/api/dashboard/dashboardService';
-import { useLexicon } from '../../../contexts/LexiconContext';
+import { useState, useEffect, useCallback } from 'react'
+import {
+  Stack,
+  Row,
+  Text,
+  Button,
+  Card,
+  H3,
+  Input,
+  SaaSSectionHeader,
+} from '@unicornlove/beyond-ui'
+import { Search, LayoutDashboard } from 'lucide-react'
+import { dashboardService } from '../../../lib/api/dashboard/dashboardService'
+import { useLexicon } from '../../../contexts/LexiconContext'
 import type {
   DashboardOverview,
   SubcontractorScore,
@@ -17,65 +26,65 @@ import type {
   ExpiringPolicy,
   ActivityEvent,
   DashboardFilters,
-} from '../../../lib/api/dashboard/types';
-import { MetricCard } from '../../../components/dashboard/MetricCard';
-import { RiskBadge } from '../../../components/compliance/RiskBadge';
-import type { RiskLevel } from '../../../lib/compliance/riskCalculationService';
-import { ComplianceTrendChart } from '../../../components/dashboard/ComplianceTrendChart';
-import { TaskBreakdownChart } from '../../../components/dashboard/TaskBreakdownChart';
-import { ActivityTrendChart } from '../../../components/dashboard/ActivityTrendChart';
+} from '../../../lib/api/dashboard/types'
+import { MetricCard } from '../../../components/dashboard/MetricCard'
+import { RiskBadge } from '../../../components/compliance/RiskBadge'
+import type { RiskLevel } from '../../../lib/compliance/riskCalculationService'
+import { ComplianceTrendChart } from '../../../components/dashboard/ComplianceTrendChart'
+import { TaskBreakdownChart } from '../../../components/dashboard/TaskBreakdownChart'
+import { ActivityTrendChart } from '../../../components/dashboard/ActivityTrendChart'
 
 export default function DashboardPage() {
   // REQ-4: Use lexicon for dynamic labels
-  const { t, getContractorLabel } = useLexicon();
-  const [overview, setOverview] = useState<DashboardOverview | null>(null);
-  const [subcontractorScores, setSubcontractorScores] = useState<SubcontractorScore[]>([]);
-  const [taskSummary, setTaskSummary] = useState<TaskSummary | null>(null);
-  const [expiringPolicies, setExpiringPolicies] = useState<ExpiringPolicy[]>([]);
-  const [activities, setActivities] = useState<ActivityEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<DashboardFilters>({});
-  const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
+  const { t, getContractorLabel } = useLexicon()
+  const [overview, setOverview] = useState<DashboardOverview | null>(null)
+  const [subcontractorScores, setSubcontractorScores] = useState<SubcontractorScore[]>([])
+  const [taskSummary, setTaskSummary] = useState<TaskSummary | null>(null)
+  const [expiringPolicies, setExpiringPolicies] = useState<ExpiringPolicy[]>([])
+  const [activities, setActivities] = useState<ActivityEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState<DashboardFilters>({})
+  const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString())
 
   const loadDashboardData = useCallback(async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       const [overviewData, scores, tasks, policies, activityFeed] = await Promise.all([
         dashboardService.getOverview(),
         dashboardService.getSubcontractorScores(filters),
         dashboardService.getTaskSummary(),
         dashboardService.getExpiringPolicies(30),
         dashboardService.getActivityFeed(20, filters),
-      ]);
+      ])
 
-      setOverview(overviewData);
-      setSubcontractorScores(scores);
-      setTaskSummary(tasks);
-      setExpiringPolicies(policies);
-      setActivities(activityFeed);
-      setLastUpdated(new Date().toISOString());
+      setOverview(overviewData)
+      setSubcontractorScores(scores)
+      setTaskSummary(tasks)
+      setExpiringPolicies(policies)
+      setActivities(activityFeed)
+      setLastUpdated(new Date().toISOString())
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+      console.error('Failed to load dashboard data:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [filters]);
+  }, [filters])
 
   // Initial load and real-time updates
   useEffect(() => {
-    loadDashboardData();
+    loadDashboardData()
 
     // Poll every 30 seconds
     const interval = setInterval(() => {
-      loadDashboardData();
-    }, 30000);
+      loadDashboardData()
+    }, 30000)
 
-    return () => clearInterval(interval);
-  }, [loadDashboardData]);
+    return () => clearInterval(interval)
+  }, [loadDashboardData])
 
   const handleSearchChange = (search: string) => {
-    setFilters((prev) => ({ ...prev, subcontractor_search: search }));
-  };
+    setFilters((prev) => ({ ...prev, subcontractor_search: search }))
+  }
 
   const handleExportCSV = async () => {
     try {
@@ -83,28 +92,38 @@ export default function DashboardPage() {
         format: 'csv',
         filters,
         report_date: new Date().toISOString(),
-      });
-      const blob = new Blob([csv as string], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `dashboard-export-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      })
+      const blob = new Blob([csv as string], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `dashboard-export-${new Date().toISOString().split('T')[0]}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
     } catch (error) {
-      console.error('Failed to export dashboard:', error);
+      console.error('Failed to export dashboard:', error)
     }
-  };
+  }
 
   const getComplianceStatus = (score: number): 'success' | 'warning' | 'danger' => {
-    if (score >= 90) return 'success';
-    if (score >= 70) return 'warning';
-    return 'danger';
-  };
+    if (score >= 90) return 'success'
+    if (score >= 70) return 'warning'
+    return 'danger'
+  }
 
   return (
-    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-gray-2)' }}>
-      <Stack style={{ maxWidth: 1120, marginLeft: 'auto', marginRight: 'auto', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
+    <Stack style={{ minHeight: '100vh', backgroundColor: 'var(--color-background)' }}>
+      <Stack
+        style={{
+          maxWidth: 1120,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          paddingLeft: 'var(--space-6)',
+          paddingRight: 'var(--space-6)',
+          paddingTop: 'var(--space-6)',
+          paddingBottom: 'var(--space-6)',
+        }}
+      >
         {/* Section Header with CTA */}
         <SaaSSectionHeader
           variant="ctas"
@@ -122,7 +141,13 @@ export default function DashboardPage() {
         />
 
         {/* Search and Filters */}
-        <Card style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+        <Card
+          variant="elevated"
+          padding="lg"
+          radius="lg"
+          elevation="sm"
+          style={{ marginBottom: 'var(--space-6)' }}
+        >
           <Row style={{ gap: 'var(--space-4)', alignItems: 'center', flexWrap: 'wrap' }}>
             <Row style={{ flex: 1, position: 'relative', minWidth: 200 }}>
               <Row
@@ -234,17 +259,50 @@ export default function DashboardPage() {
             {overview && (
               <ComplianceTrendChart
                 data={[
-                  { date: new Date(Date.now() - 11 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score - 5 },
-                  { date: new Date(Date.now() - 10 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score - 3 },
-                  { date: new Date(Date.now() - 9 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score - 2 },
-                  { date: new Date(Date.now() - 8 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score - 1 },
-                  { date: new Date(Date.now() - 7 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score },
-                  { date: new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score + 1 },
-                  { date: new Date(Date.now() - 5 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score + 2 },
-                  { date: new Date(Date.now() - 4 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score + 1 },
-                  { date: new Date(Date.now() - 3 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score },
-                  { date: new Date(Date.now() - 2 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score + 1 },
-                  { date: new Date(Date.now() - 1 * 30 * 24 * 60 * 60 * 1000).toISOString(), score: overview.overall_compliance_score },
+                  {
+                    date: new Date(Date.now() - 11 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score - 5,
+                  },
+                  {
+                    date: new Date(Date.now() - 10 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score - 3,
+                  },
+                  {
+                    date: new Date(Date.now() - 9 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score - 2,
+                  },
+                  {
+                    date: new Date(Date.now() - 8 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score - 1,
+                  },
+                  {
+                    date: new Date(Date.now() - 7 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score,
+                  },
+                  {
+                    date: new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score + 1,
+                  },
+                  {
+                    date: new Date(Date.now() - 5 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score + 2,
+                  },
+                  {
+                    date: new Date(Date.now() - 4 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score + 1,
+                  },
+                  {
+                    date: new Date(Date.now() - 3 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score,
+                  },
+                  {
+                    date: new Date(Date.now() - 2 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score + 1,
+                  },
+                  {
+                    date: new Date(Date.now() - 1 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    score: overview.overall_compliance_score,
+                  },
                   { date: new Date().toISOString(), score: overview.overall_compliance_score },
                 ]}
                 period="year"
@@ -256,9 +314,21 @@ export default function DashboardPage() {
             {taskSummary && (
               <TaskBreakdownChart
                 data={[
-                  { label: 'High Priority', value: taskSummary.high_priority_count, color: 'var(--color-error-500)' },
-                  { label: 'Medium Priority', value: taskSummary.medium_priority_count, color: 'var(--color-warning-500)' },
-                  { label: 'Low Priority', value: taskSummary.low_priority_count, color: 'var(--color-info-500)' },
+                  {
+                    label: 'High Priority',
+                    value: taskSummary.high_priority_count,
+                    color: 'var(--color-error-500)',
+                  },
+                  {
+                    label: 'Medium Priority',
+                    value: taskSummary.medium_priority_count,
+                    color: 'var(--color-warning-500)',
+                  },
+                  {
+                    label: 'Low Priority',
+                    value: taskSummary.low_priority_count,
+                    color: 'var(--color-info-500)',
+                  },
                 ]}
                 title="Task Breakdown by Priority"
                 size="lg"
@@ -297,8 +367,23 @@ export default function DashboardPage() {
 
         <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
           {/* Subcontractor Scores Table */}
-          <Card style={{ flex: 1, minWidth: 400, overflow: 'hidden' }}>
-            <Stack style={{ paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', borderBottomWidth: 1, borderColor: 'var(--color-gray-6)' }}>
+          <Card
+            variant="elevated"
+            padding="none"
+            radius="lg"
+            elevation="sm"
+            style={{ flex: 1, minWidth: 400, overflow: 'hidden' }}
+          >
+            <Stack
+              style={{
+                paddingLeft: 'var(--space-6)',
+                paddingRight: 'var(--space-6)',
+                paddingTop: 'var(--space-4)',
+                paddingBottom: 'var(--space-4)',
+                borderBottomWidth: 1,
+                borderColor: 'var(--color-gray-6)',
+              }}
+            >
               <H3>{getContractorLabel()} Compliance</H3>
             </Stack>
             <Stack>
@@ -306,23 +391,74 @@ export default function DashboardPage() {
                 <Stack style={{ padding: 'var(--space-6)' }}>
                   <Stack style={{ gap: 'var(--space-3)' }}>
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <Stack key={i} style={{ height: 48, backgroundColor: 'var(--color-gray-4)', borderRadius: 'var(--radius-2)' }} />
+                      <Stack
+                        key={i}
+                        style={{
+                          height: 48,
+                          backgroundColor: 'var(--color-gray-4)',
+                          borderRadius: 'var(--radius-2)',
+                        }}
+                      />
                     ))}
                   </Stack>
                 </Stack>
               ) : (
                 <Stack>
-                  <Row style={{ backgroundColor: 'var(--color-gray-2)', paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }}>
-                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  <Row
+                    style={{
+                      backgroundColor: 'var(--color-gray-2)',
+                      paddingLeft: 'var(--space-6)',
+                      paddingRight: 'var(--space-6)',
+                      paddingTop: 'var(--space-3)',
+                      paddingBottom: 'var(--space-3)',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: 'var(--font-size-1)',
+                        fontWeight: 500,
+                        color: 'var(--color-gray-11)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                      }}
+                    >
                       Company
                     </Text>
-                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: 'var(--font-size-1)',
+                        fontWeight: 500,
+                        color: 'var(--color-gray-11)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                      }}
+                    >
                       Score
                     </Text>
-                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: 'var(--font-size-1)',
+                        fontWeight: 500,
+                        color: 'var(--color-gray-11)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                      }}
+                    >
                       Risk Level
                     </Text>
-                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: 'var(--font-size-1)',
+                        fontWeight: 500,
+                        color: 'var(--color-gray-11)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                      }}
+                    >
                       Open Tasks
                     </Text>
                   </Row>
@@ -340,20 +476,46 @@ export default function DashboardPage() {
                         }}
                         data-testid="subcontractor-row"
                       >
-                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', whiteSpace: 'nowrap' }}>
+                        <Text
+                          style={{
+                            flex: 1,
+                            fontSize: 'var(--font-size-2)',
+                            fontWeight: 500,
+                            color: 'var(--color-gray-12)',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
                           {score.company_name}
                         </Text>
-                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)', whiteSpace: 'nowrap' }} data-testid="compliance-score">
+                        <Text
+                          style={{
+                            flex: 1,
+                            fontSize: 'var(--font-size-2)',
+                            color: 'var(--color-gray-12)',
+                            whiteSpace: 'nowrap',
+                          }}
+                          data-testid="compliance-score"
+                        >
                           {score.compliance_score}%
                         </Text>
-                        <Stack style={{ flex: 1, alignItems: 'flex-start' }} data-testid="risk-badge-container">
+                        <Stack
+                          style={{ flex: 1, alignItems: 'flex-start' }}
+                          data-testid="risk-badge-container"
+                        >
                           <RiskBadge
                             level={score.risk_level as RiskLevel}
                             score={score.compliance_score}
                             size="sm"
                           />
                         </Stack>
-                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)', whiteSpace: 'nowrap' }}>
+                        <Text
+                          style={{
+                            flex: 1,
+                            fontSize: 'var(--font-size-2)',
+                            color: 'var(--color-gray-11)',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
                           {score.open_tasks_count}
                         </Text>
                       </Row>
@@ -365,31 +527,86 @@ export default function DashboardPage() {
           </Card>
 
           {/* Expiring Policies */}
-          <Card style={{ flex: 1, minWidth: 400, overflow: 'hidden' }}>
-            <Stack style={{ paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', borderBottomWidth: 1, borderColor: 'var(--color-gray-6)' }}>
-              <H3>
-                Policies Expiring Soon (30 days)
-              </H3>
+          <Card
+            variant="elevated"
+            padding="none"
+            radius="lg"
+            elevation="sm"
+            style={{ flex: 1, minWidth: 400, overflow: 'hidden' }}
+          >
+            <Stack
+              style={{
+                paddingLeft: 'var(--space-6)',
+                paddingRight: 'var(--space-6)',
+                paddingTop: 'var(--space-4)',
+                paddingBottom: 'var(--space-4)',
+                borderBottomWidth: 1,
+                borderColor: 'var(--color-gray-6)',
+              }}
+            >
+              <H3>Policies Expiring Soon (30 days)</H3>
             </Stack>
             <Stack>
               {loading ? (
                 <Stack style={{ padding: 'var(--space-6)' }}>
                   <Stack style={{ gap: 'var(--space-3)' }}>
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <Stack key={i} style={{ height: 48, backgroundColor: 'var(--color-gray-4)', borderRadius: 'var(--radius-2)' }} />
+                      <Stack
+                        key={i}
+                        style={{
+                          height: 48,
+                          backgroundColor: 'var(--color-gray-4)',
+                          borderRadius: 'var(--radius-2)',
+                        }}
+                      />
                     ))}
                   </Stack>
                 </Stack>
               ) : (
                 <Stack>
-                  <Row style={{ backgroundColor: 'var(--color-gray-2)', paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-3)', paddingBottom: 'var(--space-3)' }}>
-                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  <Row
+                    style={{
+                      backgroundColor: 'var(--color-gray-2)',
+                      paddingLeft: 'var(--space-6)',
+                      paddingRight: 'var(--space-6)',
+                      paddingTop: 'var(--space-3)',
+                      paddingBottom: 'var(--space-3)',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: 'var(--font-size-1)',
+                        fontWeight: 500,
+                        color: 'var(--color-gray-11)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                      }}
+                    >
                       {getContractorLabel()}
                     </Text>
-                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: 'var(--font-size-1)',
+                        fontWeight: 500,
+                        color: 'var(--color-gray-11)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                      }}
+                    >
                       Policy Type
                     </Text>
-                    <Text style={{ flex: 1, fontSize: 'var(--font-size-1)', fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: 'var(--font-size-1)',
+                        fontWeight: 500,
+                        color: 'var(--color-gray-11)',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                      }}
+                    >
                       Days Left
                     </Text>
                   </Row>
@@ -406,10 +623,25 @@ export default function DashboardPage() {
                           borderColor: 'var(--color-gray-6)',
                         }}
                       >
-                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', fontWeight: 500, color: 'var(--color-gray-12)', whiteSpace: 'nowrap' }}>
+                        <Text
+                          style={{
+                            flex: 1,
+                            fontSize: 'var(--font-size-2)',
+                            fontWeight: 500,
+                            color: 'var(--color-gray-12)',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
                           {policy.subcontractor_name}
                         </Text>
-                        <Text style={{ flex: 1, fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)', whiteSpace: 'nowrap' }}>
+                        <Text
+                          style={{
+                            flex: 1,
+                            fontSize: 'var(--font-size-2)',
+                            color: 'var(--color-gray-12)',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
                           {policy.policy_type.replace(/_/g, ' ')}
                         </Text>
                         <Stack style={{ flex: 1, alignItems: 'flex-start' }}>
@@ -448,7 +680,9 @@ export default function DashboardPage() {
                     ))}
                     {expiringPolicies.length === 0 && (
                       <Stack style={{ padding: 'var(--space-6)', alignItems: 'center' }}>
-                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}>
+                        <Text
+                          style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-11)' }}
+                        >
                           No policies expiring in the next 30 days
                         </Text>
                       </Stack>
@@ -461,8 +695,23 @@ export default function DashboardPage() {
         </Row>
 
         {/* Activity Feed */}
-        <Card style={{ overflow: 'hidden' }}>
-          <Stack style={{ paddingLeft: 'var(--space-6)', paddingRight: 'var(--space-6)', paddingTop: 'var(--space-4)', paddingBottom: 'var(--space-4)', borderBottomWidth: 1, borderColor: 'var(--color-gray-6)' }}>
+        <Card
+          variant="elevated"
+          padding="none"
+          radius="lg"
+          elevation="sm"
+          style={{ overflow: 'hidden' }}
+        >
+          <Stack
+            style={{
+              paddingLeft: 'var(--space-6)',
+              paddingRight: 'var(--space-6)',
+              paddingTop: 'var(--space-4)',
+              paddingBottom: 'var(--space-4)',
+              borderBottomWidth: 1,
+              borderColor: 'var(--color-gray-6)',
+            }}
+          >
             <H3>Recent Activity</H3>
           </Stack>
           <Stack>
@@ -471,10 +720,31 @@ export default function DashboardPage() {
                 <Stack style={{ gap: 'var(--space-4)' }}>
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Row key={i} style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                      <Stack style={{ width: 32, height: 32, backgroundColor: 'var(--color-gray-4)', borderRadius: 9999 }} />
+                      <Stack
+                        style={{
+                          width: 32,
+                          height: 32,
+                          backgroundColor: 'var(--color-gray-4)',
+                          borderRadius: 9999,
+                        }}
+                      />
                       <Stack style={{ flex: 1, gap: 'var(--space-2)' }}>
-                        <Stack style={{ height: 16, backgroundColor: 'var(--color-gray-4)', borderRadius: 'var(--radius-2)', width: '75%' }} />
-                        <Stack style={{ height: 12, backgroundColor: 'var(--color-gray-4)', borderRadius: 'var(--radius-2)', width: '25%' }} />
+                        <Stack
+                          style={{
+                            height: 16,
+                            backgroundColor: 'var(--color-gray-4)',
+                            borderRadius: 'var(--radius-2)',
+                            width: '75%',
+                          }}
+                        />
+                        <Stack
+                          style={{
+                            height: 12,
+                            backgroundColor: 'var(--color-gray-4)',
+                            borderRadius: 'var(--radius-2)',
+                            width: '25%',
+                          }}
+                        />
                       </Stack>
                     </Row>
                   ))}
@@ -494,7 +764,14 @@ export default function DashboardPage() {
                       borderColor: 'var(--color-gray-6)',
                     }}
                   >
-                    <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)', flex: 1, minWidth: 0 }}>
+                    <Row
+                      style={{
+                        alignItems: 'flex-start',
+                        gap: 'var(--space-3)',
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                    >
                       <Stack
                         style={{
                           flexShrink: 0,
@@ -506,11 +783,46 @@ export default function DashboardPage() {
                         }}
                       />
                       <Stack style={{ flex: 1, minWidth: 0 }}>
-                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)' }}>{activity.description}</Text>
-                        <Row style={{ marginTop: 'var(--space-1)', alignItems: 'center', gap: 'var(--space-2)' }}>
-                          {activity.subcontractor_name && <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)' }}>{activity.subcontractor_name}</Text>}
-                          {activity.subcontractor_name && <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)' }}>-</Text>}
-                          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)' }}>{new Date(activity.timestamp).toLocaleString()}</Text>
+                        <Text
+                          style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-gray-12)' }}
+                        >
+                          {activity.description}
+                        </Text>
+                        <Row
+                          style={{
+                            marginTop: 'var(--space-1)',
+                            alignItems: 'center',
+                            gap: 'var(--space-2)',
+                          }}
+                        >
+                          {activity.subcontractor_name && (
+                            <Text
+                              style={{
+                                fontSize: 'var(--font-size-1)',
+                                color: 'var(--color-gray-11)',
+                              }}
+                            >
+                              {activity.subcontractor_name}
+                            </Text>
+                          )}
+                          {activity.subcontractor_name && (
+                            <Text
+                              style={{
+                                fontSize: 'var(--font-size-1)',
+                                color: 'var(--color-gray-11)',
+                              }}
+                            >
+                              -
+                            </Text>
+                          )}
+                          <Text
+                            style={{
+                              fontSize: 'var(--font-size-1)',
+                              color: 'var(--color-gray-11)',
+                            }}
+                          >
+                            {new Date(activity.timestamp).toLocaleString()}
+                          </Text>
                         </Row>
                       </Stack>
                     </Row>
@@ -529,5 +841,5 @@ export default function DashboardPage() {
         </Card>
       </Stack>
     </Stack>
-  );
+  )
 }
