@@ -1,5 +1,5 @@
 import type { Preview } from '@storybook/react'
-import { ThemeProvider } from '../src/playground/ThemeProvider'
+import { ThemeProvider } from '../src/theme'
 import { colors } from '../src/tokens/colors'
 
 // Load Roboto font
