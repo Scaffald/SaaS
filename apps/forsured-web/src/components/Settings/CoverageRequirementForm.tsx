@@ -5,20 +5,16 @@
  * Form component for creating and editing coverage limit requirements.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Stack, Row, Text, H3, Button } from '@unicornlove/beyond-ui';
-import ButtonCommon from '../Common/Button';
-import Input from '../Common/Input';
-import Select from '../Common/Select';
-import {
-  CoverageLimitRequirement,
-  CoverageLimitType,
-  CoverageRequirementLevel,
-} from '../../types';
+import React, { useState, useEffect, useCallback } from 'react'
+import { Stack, Row, Text, H3, Button, Grid } from '@unicornlove/beyond-ui'
+import ButtonCommon from '../Common/Button'
+import Input from '../Common/Input'
+import Select from '../Common/Select'
+import { CoverageLimitRequirement, CoverageLimitType, CoverageRequirementLevel } from '../../types'
 import {
   validateCoverageType,
   validateMinimumLimit,
-} from '../../lib/coverageRequirements/coverageLimitRequirementService';
+} from '../../lib/coverageRequirements/coverageLimitRequirementService'
 
 // Coverage type display names
 const COVERAGE_TYPE_OPTIONS: { value: CoverageLimitType; label: string }[] = [
@@ -30,27 +26,27 @@ const COVERAGE_TYPE_OPTIONS: { value: CoverageLimitType; label: string }[] = [
   { value: 'pollution_liability', label: 'Pollution Liability' },
   { value: 'builders_risk', label: "Builder's Risk" },
   { value: 'equipment_floater', label: 'Equipment Floater' },
-];
+]
 
 export interface CoverageRequirementFormData {
-  name: string;
-  coverage_type: CoverageLimitType;
-  minimum_limit: number;
-  required: boolean;
+  name: string
+  coverage_type: CoverageLimitType
+  minimum_limit: number
+  required: boolean
 }
 
 interface CoverageRequirementFormProps {
-  initialData?: CoverageLimitRequirement;
-  level: CoverageRequirementLevel;
-  onSubmit: (data: CoverageRequirementFormData) => Promise<void>;
-  onCancel: () => void;
-  isSubmitting?: boolean;
+  initialData?: CoverageLimitRequirement
+  level: CoverageRequirementLevel
+  onSubmit: (data: CoverageRequirementFormData) => Promise<void>
+  onCancel: () => void
+  isSubmitting?: boolean
 }
 
 interface FormErrors {
-  name?: string;
-  coverage_type?: string;
-  minimum_limit?: string;
+  name?: string
+  coverage_type?: string
+  minimum_limit?: string
 }
 
 export default function CoverageRequirementForm({
@@ -65,71 +61,71 @@ export default function CoverageRequirementForm({
     coverage_type: initialData?.coverage_type || 'general_liability',
     minimum_limit: initialData?.minimum_limit ?? 1000000,
     required: initialData?.required ?? true,
-  });
+  })
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   // Validate form
   const validate = useCallback((): FormErrors => {
-    const newErrors: FormErrors = {};
+    const newErrors: FormErrors = {}
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = 'Name is required'
     } else if (formData.name.length > 200) {
-      newErrors.name = 'Name must be 200 characters or less';
+      newErrors.name = 'Name must be 200 characters or less'
     }
 
-    const coverageTypeError = validateCoverageType(formData.coverage_type);
+    const coverageTypeError = validateCoverageType(formData.coverage_type)
     if (coverageTypeError) {
-      newErrors.coverage_type = coverageTypeError.message;
+      newErrors.coverage_type = coverageTypeError.message
     }
 
-    const limitError = validateMinimumLimit(formData.minimum_limit);
+    const limitError = validateMinimumLimit(formData.minimum_limit)
     if (limitError) {
-      newErrors.minimum_limit = limitError.message;
+      newErrors.minimum_limit = limitError.message
     }
 
-    return newErrors;
-  }, [formData]);
+    return newErrors
+  }, [formData])
 
   // Validate on change
   useEffect(() => {
     if (Object.keys(touched).length > 0) {
-      setErrors(validate());
+      setErrors(validate())
     }
-  }, [touched, validate]);
+  }, [touched, validate])
 
   // Handle field change
   const handleChange = (
     field: keyof CoverageRequirementFormData,
     value: string | number | boolean
   ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    setTouched((prev) => ({ ...prev, [field]: true }))
+  }
 
   // Handle submit
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // Mark all fields as touched
-    const allTouched: Record<string, boolean> = {};
+    const allTouched: Record<string, boolean> = {}
     Object.keys(formData).forEach((key) => {
-      allTouched[key] = true;
-    });
-    setTouched(allTouched);
+      allTouched[key] = true
+    })
+    setTouched(allTouched)
 
     // Validate
-    const validationErrors = validate();
-    setErrors(validationErrors);
+    const validationErrors = validate()
+    setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) {
-      return;
+      return
     }
 
-    await onSubmit(formData);
-  };
+    await onSubmit(formData)
+  }
 
   // Format number as currency
   const formatCurrency = (value: number): string => {
@@ -138,8 +134,8 @@ export default function CoverageRequirementForm({
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(value);
-  };
+    }).format(value)
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -166,37 +162,51 @@ export default function CoverageRequirementForm({
 
         {/* Basic Information */}
         <Stack style={{ gap: 16 }}>
-          <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-color11)', textTransform: 'uppercase', letterSpacing: 1 }}>
+          <H3
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--color-color11)',
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
             Requirement Details
           </H3>
 
-        <Input
-          label="Name"
-          value={formData.name}
-          onChange={(e) => handleChange('name', e.target.value)}
-          error={touched.name ? errors.name : undefined}
-          required
-          fullWidth
-          placeholder="e.g., Minimum General Liability Coverage"
-          maxLength={200}
-        />
+          <Input
+            label="Name"
+            value={formData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            error={touched.name ? errors.name : undefined}
+            required
+            fullWidth
+            placeholder="e.g., Minimum General Liability Coverage"
+            maxLength={200}
+          />
 
-        <Select
-          label="Coverage Type"
-          options={COVERAGE_TYPE_OPTIONS}
-          value={formData.coverage_type}
-          onChange={(e) =>
-            handleChange('coverage_type', e.target.value as CoverageLimitType)
-          }
-          error={touched.coverage_type ? errors.coverage_type : undefined}
-          required
-          fullWidth
-        />
+          <Select
+            label="Coverage Type"
+            options={COVERAGE_TYPE_OPTIONS}
+            value={formData.coverage_type}
+            onChange={(e) => handleChange('coverage_type', e.target.value as CoverageLimitType)}
+            error={touched.coverage_type ? errors.coverage_type : undefined}
+            required
+            fullWidth
+          />
         </Stack>
 
         {/* Limit Settings */}
         <Stack style={{ gap: 16 }}>
-          <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-color11)', textTransform: 'uppercase', letterSpacing: 1 }}>
+          <H3
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--color-color11)',
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
             Limit Requirements
           </H3>
 
@@ -207,9 +217,7 @@ export default function CoverageRequirementForm({
               min={0}
               step={100000}
               value={formData.minimum_limit}
-              onChange={(e) =>
-                handleChange('minimum_limit', parseFloat(e.target.value) || 0)
-              }
+              onChange={(e) => handleChange('minimum_limit', parseFloat(e.target.value) || 0)}
               error={touched.minimum_limit ? errors.minimum_limit : undefined}
               required
               fullWidth
@@ -218,36 +226,55 @@ export default function CoverageRequirementForm({
           </Stack>
 
           {/* Common limit quick-select buttons */}
-          <Row style={{ flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-            <Text style={{ fontSize: 14, color: 'var(--color-color10)', marginRight: 8 }}>Quick select:</Text>
-            {[500000, 1000000, 2000000, 5000000].map((amount) => (
-              <Button
-                key={amount}
-                type="button"
-                onPress={() => handleChange('minimum_limit', amount)}
-                style={{
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                  paddingTop: 4,
-                  paddingBottom: 4,
-                  fontSize: 14,
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  borderStyle: 'solid',
-                  backgroundColor: formData.minimum_limit === amount ? 'var(--color-blue2)' : 'var(--color-backgroundHover)',
-                  borderColor: formData.minimum_limit === amount ? 'var(--color-blue6)' : 'var(--color-border)',
-                  color: formData.minimum_limit === amount ? 'var(--color-blue11)' : 'var(--color-color11)',
-                }}
-              >
-                {formatCurrency(amount)}
-              </Button>
-            ))}
-          </Row>
+          <Stack style={{ gap: 8 }}>
+            <Text style={{ fontSize: 14, color: 'var(--color-color10)' }}>Quick select:</Text>
+            <Grid columns={{ base: 2, sm: 4 }} gap={8}>
+              {[500000, 1000000, 2000000, 5000000].map((amount) => (
+                <Button
+                  key={amount}
+                  type="button"
+                  onPress={() => handleChange('minimum_limit', amount)}
+                  style={{
+                    paddingLeft: 12,
+                    paddingRight: 12,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    fontSize: 14,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    backgroundColor:
+                      formData.minimum_limit === amount
+                        ? 'var(--color-blue2)'
+                        : 'var(--color-backgroundHover)',
+                    borderColor:
+                      formData.minimum_limit === amount
+                        ? 'var(--color-blue6)'
+                        : 'var(--color-border)',
+                    color:
+                      formData.minimum_limit === amount
+                        ? 'var(--color-blue11)'
+                        : 'var(--color-color11)',
+                  }}
+                >
+                  {formatCurrency(amount)}
+                </Button>
+              ))}
+            </Grid>
+          </Stack>
         </Stack>
 
         {/* Status */}
         <Stack style={{ gap: 16 }}>
-          <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-color11)', textTransform: 'uppercase', letterSpacing: 1 }}>
+          <H3
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--color-color11)',
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
             Enforcement
           </H3>
 
@@ -266,7 +293,14 @@ export default function CoverageRequirementForm({
         </Stack>
 
         {/* Form Actions */}
-        <Row style={{ justifyContent: 'flex-end', gap: 12, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
+        <Row
+          style={{
+            justifyContent: 'flex-end',
+            gap: 12,
+            paddingTop: 16,
+            borderTop: '1px solid var(--color-border)',
+          }}
+        >
           <ButtonCommon variant="ghost" onPress={onCancel} disabled={isSubmitting}>
             Cancel
           </ButtonCommon>
@@ -282,5 +316,5 @@ export default function CoverageRequirementForm({
         </Row>
       </Stack>
     </form>
-  );
+  )
 }
