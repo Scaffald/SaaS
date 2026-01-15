@@ -10,11 +10,11 @@
  * - Status
  */
 
-'use client';
+'use client'
 
-import React, { useCallback, useMemo } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import React, { useCallback, useMemo } from 'react'
+import { Loader2 } from 'lucide-react'
+import { Stack, Row, Text, Card, Grid } from '@unicornlove/beyond-ui'
 import {
   DocumentFilterPanelProps,
   DocumentFilterState,
@@ -22,7 +22,7 @@ import {
   DocumentStatus,
   DOCUMENT_TYPE_LABELS,
   DOCUMENT_STATUS_LABELS,
-} from '../../types/document-filters';
+} from '../../types/document-filters'
 
 /**
  * All document type options for filter dropdown
@@ -34,7 +34,7 @@ const DOCUMENT_TYPE_OPTIONS: { value: DocumentType; label: string }[] = [
   { value: 'w9', label: DOCUMENT_TYPE_LABELS.w9 },
   { value: 'endorsement', label: DOCUMENT_TYPE_LABELS.endorsement },
   { value: 'other', label: DOCUMENT_TYPE_LABELS.other },
-];
+]
 
 /**
  * All document status options for filter dropdown
@@ -44,7 +44,7 @@ const DOCUMENT_STATUS_OPTIONS: { value: DocumentStatus; label: string }[] = [
   { value: 'pending', label: DOCUMENT_STATUS_LABELS.pending },
   { value: 'expiring', label: DOCUMENT_STATUS_LABELS.expiring },
   { value: 'expired', label: DOCUMENT_STATUS_LABELS.expired },
-];
+]
 
 export function DocumentFilterPanel({
   filters,
@@ -57,71 +57,71 @@ export function DocumentFilterPanel({
   // Filter projects based on selected client
   const filteredProjects = useMemo(() => {
     if (!filters.clientId) {
-      return projects;
+      return projects
     }
-    return projects.filter((project) => project.clientId === filters.clientId);
-  }, [projects, filters.clientId]);
+    return projects.filter((project) => project.clientId === filters.clientId)
+  }, [projects, filters.clientId])
 
   // Handle client filter change
   const handleClientChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const clientId = e.target.value || undefined;
+      const clientId = e.target.value || undefined
       // Reset project filter when client changes
       onFiltersChange({
         ...filters,
         clientId,
         projectId: undefined,
-      });
+      })
     },
     [filters, onFiltersChange]
-  );
+  )
 
   // Handle project filter change
   const handleProjectChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const projectId = e.target.value || undefined;
+      const projectId = e.target.value || undefined
       onFiltersChange({
         ...filters,
         projectId,
-      });
+      })
     },
     [filters, onFiltersChange]
-  );
+  )
 
   // Handle document type filter change
   const handleDocTypeChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const docType = (e.target.value as DocumentType) || undefined;
+      const docType = (e.target.value as DocumentType) || undefined
       onFiltersChange({
         ...filters,
         docType,
-      });
+      })
     },
     [filters, onFiltersChange]
-  );
+  )
 
   // Handle status filter change
   const handleStatusChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const status = (e.target.value as DocumentStatus) || undefined;
+      const status = (e.target.value as DocumentStatus) || undefined
       onFiltersChange({
         ...filters,
         status,
-      });
+      })
     },
     [filters, onFiltersChange]
-  );
+  )
 
   // Handle clear all filters
   const handleClearFilters = useCallback(() => {
-    onFiltersChange({});
-  }, [onFiltersChange]);
+    onFiltersChange({})
+  }, [onFiltersChange])
 
   // Check if any filters are active
   const hasActiveFilters =
-    filters.clientId || filters.projectId || filters.docType || filters.status;
+    filters.clientId || filters.projectId || filters.docType || filters.status
 
-  const isDisabled = disabled || loading;
+  const isDisabled = disabled || loading
 
   const selectStyle: React.CSSProperties = {
     width: '100%',
@@ -130,7 +130,7 @@ export function DocumentFilterPanel({
     border: '1px solid var(--color-gray-6)',
     borderRadius: '8px',
     outline: 'none',
-  };
+  }
 
   return (
     <Card
@@ -167,9 +167,9 @@ export function DocumentFilterPanel({
         )}
       </Row>
 
-      <Row style={{ flexWrap: 'wrap', gap: '16px' }}>
+      <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
         {/* Client Filter */}
-        <Stack style={{ flex: 1, minWidth: '200px', gap: '4px' }}>
+        <Stack style={{ gap: '4px' }}>
           <Text
             as="label"
             htmlFor="filter-client"
@@ -189,12 +189,12 @@ export function DocumentFilterPanel({
             disabled={isDisabled}
             style={selectStyle}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-teal-9)';
-              e.currentTarget.style.borderWidth = '2px';
+              e.currentTarget.style.borderColor = 'var(--color-teal-9)'
+              e.currentTarget.style.borderWidth = '2px'
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-gray-6)';
-              e.currentTarget.style.borderWidth = '1px';
+              e.currentTarget.style.borderColor = 'var(--color-gray-6)'
+              e.currentTarget.style.borderWidth = '1px'
             }}
           >
             <option value="">All Clients</option>
@@ -207,7 +207,7 @@ export function DocumentFilterPanel({
         </Stack>
 
         {/* Project Filter */}
-        <Stack style={{ flex: 1, minWidth: '200px', gap: '4px' }}>
+        <Stack style={{ gap: '4px' }}>
           <Text
             as="label"
             htmlFor="filter-project"
@@ -227,12 +227,12 @@ export function DocumentFilterPanel({
             disabled={isDisabled}
             style={selectStyle}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-teal-9)';
-              e.currentTarget.style.borderWidth = '2px';
+              e.currentTarget.style.borderColor = 'var(--color-teal-9)'
+              e.currentTarget.style.borderWidth = '2px'
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-gray-6)';
-              e.currentTarget.style.borderWidth = '1px';
+              e.currentTarget.style.borderColor = 'var(--color-gray-6)'
+              e.currentTarget.style.borderWidth = '1px'
             }}
           >
             <option value="">All Projects</option>
@@ -245,7 +245,7 @@ export function DocumentFilterPanel({
         </Stack>
 
         {/* Document Type Filter */}
-        <Stack style={{ flex: 1, minWidth: '200px', gap: '4px' }}>
+        <Stack style={{ gap: '4px' }}>
           <Text
             as="label"
             htmlFor="filter-doc-type"
@@ -265,12 +265,12 @@ export function DocumentFilterPanel({
             disabled={isDisabled}
             style={selectStyle}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-teal-9)';
-              e.currentTarget.style.borderWidth = '2px';
+              e.currentTarget.style.borderColor = 'var(--color-teal-9)'
+              e.currentTarget.style.borderWidth = '2px'
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-gray-6)';
-              e.currentTarget.style.borderWidth = '1px';
+              e.currentTarget.style.borderColor = 'var(--color-gray-6)'
+              e.currentTarget.style.borderWidth = '1px'
             }}
           >
             <option value="">All Types</option>
@@ -283,7 +283,7 @@ export function DocumentFilterPanel({
         </Stack>
 
         {/* Status Filter */}
-        <Stack style={{ flex: 1, minWidth: '200px', gap: '4px' }}>
+        <Stack style={{ gap: '4px' }}>
           <Text
             as="label"
             htmlFor="filter-status"
@@ -303,12 +303,12 @@ export function DocumentFilterPanel({
             disabled={isDisabled}
             style={selectStyle}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-teal-9)';
-              e.currentTarget.style.borderWidth = '2px';
+              e.currentTarget.style.borderColor = 'var(--color-teal-9)'
+              e.currentTarget.style.borderWidth = '2px'
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-gray-6)';
-              e.currentTarget.style.borderWidth = '1px';
+              e.currentTarget.style.borderColor = 'var(--color-gray-6)'
+              e.currentTarget.style.borderWidth = '1px'
             }}
           >
             <option value="">All Statuses</option>
@@ -319,17 +319,25 @@ export function DocumentFilterPanel({
             ))}
           </select>
         </Stack>
-      </Row>
+      </Grid>
 
       {/* Loading indicator */}
       {loading && (
-        <Row style={{ alignItems: 'center', marginTop: '12px', fontSize: '14px', color: 'var(--color-gray-10)', gap: '8px' }}>
+        <Row
+          style={{
+            alignItems: 'center',
+            marginTop: '12px',
+            fontSize: '14px',
+            color: 'var(--color-gray-10)',
+            gap: '8px',
+          }}
+        >
           <Loader2 size={16} color="var(--color-teal-9)" className="animate-spin" />
           <Text>Updating filters...</Text>
         </Row>
       )}
     </Card>
-  );
+  )
 }
 
-export default DocumentFilterPanel;
+export default DocumentFilterPanel
