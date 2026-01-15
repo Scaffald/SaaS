@@ -86,6 +86,7 @@
     "supa:preview": "pnpm env-preview pnpx supabase --workdir packages",
     "supa:prod": "pnpm env-prod pnpx supabase --workdir packages",
     "supa:reset": "pnpm supa db reset && pnpm supa seed && pnpm test",
+    "supa:reset:forsured": "pnpm supa db reset && pnpm supa:seed:forsured",
     "supa:restart": "pnpm supa stop && pnpm supa start",
     "supa:seed": "pnpm env-local pnpm --filter @scf/supabase seed",
     "supa:seed:forsured": "pnpm env-local pnpm --filter @scf/supabase seed:forsured",
