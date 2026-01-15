@@ -239,9 +239,9 @@ export default function BrokerClientProfilePage() {
             }}
           >
             <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Contact Information</H3>
-            <Row gap={16} style={{ flexWrap: 'wrap' }}>
+            <Grid columns={{ base: 1, sm: 2 }} gap={16}>
               {client.primary_contact && (
-                <Row alignItems="center" gap={12} style={{ flex: 1, minWidth: '45%' }}>
+                <Row alignItems="center" gap={12}>
                   <Users color="var(--color-text-muted)" size={18} />
                   <Stack>
                     <Text size="sm" muted>
@@ -252,7 +252,7 @@ export default function BrokerClientProfilePage() {
                 </Row>
               )}
               {client.email && (
-                <Row alignItems="center" gap={12} style={{ flex: 1, minWidth: '45%' }}>
+                <Row alignItems="center" gap={12}>
                   <Mail color="var(--color-text-muted)" size={18} />
                   <Stack>
                     <Text size="sm" muted>
@@ -263,7 +263,7 @@ export default function BrokerClientProfilePage() {
                 </Row>
               )}
               {client.phone && (
-                <Row alignItems="center" gap={12} style={{ flex: 1, minWidth: '45%' }}>
+                <Row alignItems="center" gap={12}>
                   <Phone color="var(--color-text-muted)" size={18} />
                   <Stack>
                     <Text size="sm" muted>
@@ -274,7 +274,7 @@ export default function BrokerClientProfilePage() {
                 </Row>
               )}
               {client.address && (
-                <Row alignItems="center" gap={12} style={{ flex: 1, minWidth: '45%' }}>
+                <Row alignItems="center" gap={12}>
                   <MapPin color="var(--color-text-muted)" size={18} />
                   <Stack>
                     <Text size="sm" muted>
@@ -284,7 +284,7 @@ export default function BrokerClientProfilePage() {
                   </Stack>
                 </Row>
               )}
-            </Row>
+            </Grid>
           </Card>
 
           {client.notes && (
@@ -483,20 +483,20 @@ export default function BrokerClientProfilePage() {
                       {policy.status}
                     </Text>
                   </Row>
-                  <Row gap={16} style={{ flexWrap: 'wrap' }}>
-                    <Stack style={{ flex: 1, minWidth: '20%' }}>
+                  <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
+                    <Stack>
                       <Text size="sm" muted>
                         Policy Number
                       </Text>
                       <Text weight="medium">{policy.policy_number}</Text>
                     </Stack>
-                    <Stack style={{ flex: 1, minWidth: '20%' }}>
+                    <Stack>
                       <Text size="sm" muted>
                         Coverage Limit
                       </Text>
                       <Text weight="medium">${(policy.coverage_limit / 1000000).toFixed(1)}M</Text>
                     </Stack>
-                    <Stack style={{ flex: 1, minWidth: '20%' }}>
+                    <Stack>
                       <Text size="sm" muted>
                         Start Date
                       </Text>
@@ -504,13 +504,13 @@ export default function BrokerClientProfilePage() {
                         {new Date(policy.start_date).toLocaleDateString()}
                       </Text>
                     </Stack>
-                    <Stack style={{ flex: 1, minWidth: '20%' }}>
+                    <Stack>
                       <Text size="sm" muted>
                         End Date
                       </Text>
                       <Text weight="medium">{new Date(policy.end_date).toLocaleDateString()}</Text>
                     </Stack>
-                  </Row>
+                  </Grid>
                 </Card>
               )
             })
@@ -646,7 +646,7 @@ export default function BrokerClientProfilePage() {
             <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Upload Documents</H3>
 
             {/* Category Selection */}
-            <Row gap={8} style={{ marginBottom: 16, flexWrap: 'wrap' }}>
+            <Grid columns={{ base: 2, sm: 4 }} gap={8} style={{ marginBottom: 16 }}>
               {(['compliance', 'insurance', 'contract', 'general'] as const).map((cat) => (
                 <button
                   key={cat}
@@ -667,7 +667,7 @@ export default function BrokerClientProfilePage() {
                   {cat.charAt(0).toUpperCase() + cat.slice(1)}
                 </button>
               ))}
-            </Row>
+            </Grid>
 
             {/* Drop Zone */}
             <div
