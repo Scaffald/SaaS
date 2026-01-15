@@ -101,14 +101,17 @@ export function TeamMembersList({
     return (
       <Stack gap="md">
         {/* Search and Filter Bar */}
-        <Row style={{ flexDirection: 'column', flexWrap: 'wrap', gap: 16 }}>
-          <Stack style={{ flex: 1 }}>
-            <div style={{ height: 40, backgroundColor: 'var(--color-gray-3)', borderRadius: 8 }} />
-          </Stack>
-          <Stack style={{ width: 160 }}>
-            <div style={{ height: 40, backgroundColor: 'var(--color-gray-3)', borderRadius: 8 }} />
-          </Stack>
-        </Row>
+        <Grid columns={{ base: 1, sm: 2 }} gap={16}>
+          <div style={{ height: 40, backgroundColor: 'var(--color-gray-3)', borderRadius: 8 }} />
+          <div
+            style={{
+              height: 40,
+              backgroundColor: 'var(--color-gray-3)',
+              borderRadius: 8,
+              maxWidth: 160,
+            }}
+          />
+        </Grid>
 
         {/* Skeleton Cards */}
         <Grid columns={{ base: 1, md: 2, lg: 3 }} gap={16}>
@@ -160,9 +163,9 @@ export function TeamMembersList({
   return (
     <Stack gap="md">
       {/* Search and Filter Bar */}
-      <Row style={{ flexDirection: 'column', flexWrap: 'wrap', gap: 16 }}>
+      <Grid columns={{ base: 1, sm: 2 }} gap={16}>
         {/* Search Input */}
-        <Row style={{ flex: 1, position: 'relative', alignItems: 'center' }}>
+        <Row style={{ position: 'relative', alignItems: 'center' }}>
           <Search
             size={20}
             style={{ position: 'absolute', left: 12, zIndex: 1 }}
@@ -182,27 +185,26 @@ export function TeamMembersList({
         </Row>
 
         {/* Role Filter */}
-        <Row style={{ width: '100%', flexWrap: 'wrap' }}>
-          <select
-            value={activeRole}
-            onChange={(e) => handleRoleChange(e.target.value as RoleFilter)}
-            style={{
-              width: 160,
-              padding: '8px 12px',
-              border: '1px solid var(--color-border)',
-              borderRadius: 8,
-              backgroundColor: 'var(--color-background)',
-            }}
-            aria-label="Filter by role"
-          >
-            {ROLE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </Row>
-      </Row>
+        <select
+          value={activeRole}
+          onChange={(e) => handleRoleChange(e.target.value as RoleFilter)}
+          style={{
+            width: '100%',
+            maxWidth: 160,
+            padding: '8px 12px',
+            border: '1px solid var(--color-border)',
+            borderRadius: 8,
+            backgroundColor: 'var(--color-background)',
+          }}
+          aria-label="Filter by role"
+        >
+          {ROLE_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </Grid>
 
       {/* Results Count */}
       <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
