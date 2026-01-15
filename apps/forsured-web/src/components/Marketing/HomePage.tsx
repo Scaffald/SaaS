@@ -13,7 +13,7 @@ import {
   BarChart3,
   Handshake,
 } from 'lucide-react'
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Grid } from '@unicornlove/beyond-ui'
 import ForsuredLogo from '../Common/ForsuredLogo'
 import Button from '../Common/Button'
 import { useUser } from '../../contexts/UserContext'
@@ -169,7 +169,12 @@ export default function HomePage() {
       </header>
 
       {/* Quick Testing Links - Development Helper */}
-      <Stack style={{ backgroundColor: 'var(--color-yellow-2)', borderBottom: '1px solid var(--color-yellow-6)' }}>
+      <Stack
+        style={{
+          backgroundColor: 'var(--color-yellow-2)',
+          borderBottom: '1px solid var(--color-yellow-6)',
+        }}
+      >
         <Row
           style={{
             maxWidth: 1280,
@@ -181,8 +186,21 @@ export default function HomePage() {
             paddingBottom: 'var(--space-3)',
           }}
         >
-          <Row style={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
-            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-yellow-12)' }}>
+          <Row
+            style={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 'var(--space-2)',
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 'var(--font-size-3)',
+                fontWeight: '500',
+                color: 'var(--color-yellow-12)',
+              }}
+            >
               Quick Links:
             </Text>
             <Row style={{ flexWrap: 'wrap', gap: 'var(--space-2)' }}>
@@ -276,7 +294,14 @@ export default function HomePage() {
       </Stack>
 
       {/* Hero Section - Dynamic theme-aware backgrounds */}
-      <section style={{ position: 'relative', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)', backgroundColor: 'var(--color-blue-12)' }}>
+      <section
+        style={{
+          position: 'relative',
+          paddingTop: 'var(--space-12)',
+          paddingBottom: 'var(--space-12)',
+          backgroundColor: 'var(--color-blue-12)',
+        }}
+      >
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1 }}>
           <div
             style={{
@@ -388,7 +413,11 @@ export default function HomePage() {
             </Row>
 
             {/* Value Props */}
-            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', maxWidth: 1024, marginLeft: 'auto', marginRight: 'auto' }}>
+            <Grid
+              columns={{ base: 1, sm: 2, lg: 3 }}
+              gap={24}
+              style={{ maxWidth: 1024, marginLeft: 'auto', marginRight: 'auto' }}
+            >
               <Card
                 style={{
                   backgroundColor: 'var(--color-background)',
@@ -397,15 +426,26 @@ export default function HomePage() {
                   boxShadow: 'var(--shadow-md)',
                   borderWidth: 1,
                   borderColor: 'var(--color-border)',
-                  flex: 1,
-                  minWidth: '45%',
                 }}
               >
-                <Shield size={40} color="var(--color-blue-10)" style={{ marginBottom: 'var(--space-4)' }} />
-                <h3 style={{ fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)', fontSize: 'var(--font-size-6)' }}>
+                <Shield
+                  size={40}
+                  color="var(--color-blue-10)"
+                  style={{ marginBottom: 'var(--space-4)' }}
+                />
+                <h3
+                  style={{
+                    fontWeight: '600',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-2)',
+                    fontSize: 'var(--font-size-6)',
+                  }}
+                >
                   Automated Verification
                 </h3>
-                <Text style={{ color: 'var(--color-text-tertiary)' }}>AI-powered document verification with 99.8% accuracy</Text>
+                <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                  AI-powered document verification with 99.8% accuracy
+                </Text>
               </Card>
               <Card
                 style={{
@@ -415,15 +455,26 @@ export default function HomePage() {
                   boxShadow: 'var(--shadow-md)',
                   borderWidth: 1,
                   borderColor: 'var(--color-border)',
-                  flex: 1,
-                  minWidth: '45%',
                 }}
               >
-                <Clock size={40} color="var(--color-gray-10)" style={{ marginBottom: 'var(--space-4)' }} />
-                <h3 style={{ fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)', fontSize: 'var(--font-size-6)' }}>
+                <Clock
+                  size={40}
+                  color="var(--color-gray-10)"
+                  style={{ marginBottom: 'var(--space-4)' }}
+                />
+                <h3
+                  style={{
+                    fontWeight: '600',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-2)',
+                    fontSize: 'var(--font-size-6)',
+                  }}
+                >
                   Save 60% Time
                 </h3>
-                <Text style={{ color: 'var(--color-text-tertiary)' }}>Reduce compliance management from hours to minutes</Text>
+                <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                  Reduce compliance management from hours to minutes
+                </Text>
               </Card>
               <Card
                 style={{
@@ -433,17 +484,28 @@ export default function HomePage() {
                   boxShadow: 'var(--shadow-md)',
                   borderWidth: 1,
                   borderColor: 'var(--color-border)',
-                  flex: 1,
-                  minWidth: '45%',
                 }}
               >
-                <DollarSign size={40} color="var(--color-yellow-10)" style={{ marginBottom: 'var(--space-4)' }} />
-                <h3 style={{ fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)', fontSize: 'var(--font-size-6)' }}>
+                <DollarSign
+                  size={40}
+                  color="var(--color-yellow-10)"
+                  style={{ marginBottom: 'var(--space-4)' }}
+                />
+                <h3
+                  style={{
+                    fontWeight: '600',
+                    color: 'var(--color-text-primary)',
+                    marginBottom: 'var(--space-2)',
+                    fontSize: 'var(--font-size-6)',
+                  }}
+                >
                   Instant Coverage
                 </h3>
-                <Text style={{ color: 'var(--color-text-tertiary)' }}>Purchase insurance and get COIs issued immediately</Text>
+                <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                  Purchase insurance and get COIs issued immediately
+                </Text>
               </Card>
-            </Row>
+            </Grid>
           </Stack>
         </Stack>
       </section>
@@ -496,7 +558,14 @@ export default function HomePage() {
           }}
         >
           <Stack style={{ alignItems: 'center', marginBottom: 'var(--space-10)' }}>
-            <h2 style={{ fontSize: 'var(--font-size-9)', fontWeight: '700', marginBottom: 'var(--space-4)', color: 'white' }}>
+            <h2
+              style={{
+                fontSize: 'var(--font-size-9)',
+                fontWeight: '700',
+                marginBottom: 'var(--space-4)',
+                color: 'white',
+              }}
+            >
               Trusted by Construction Leaders
             </h2>
             <Text style={{ fontSize: 'var(--font-size-6)', color: 'rgba(255,255,255,0.7)' }}>
@@ -533,7 +602,14 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" style={{ paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)', backgroundColor: 'var(--color-background)' }}>
+      <section
+        id="features"
+        style={{
+          paddingTop: 'var(--space-12)',
+          paddingBottom: 'var(--space-12)',
+          backgroundColor: 'var(--color-background)',
+        }}
+      >
         <Stack
           style={{
             maxWidth: 1280,
@@ -599,7 +675,14 @@ export default function HomePage() {
                   >
                     <Icon size={28} color="var(--color-blue-11)" />
                   </Row>
-                  <h3 style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-3)' }}>
+                  <h3
+                    style={{
+                      fontSize: 'var(--font-size-6)',
+                      fontWeight: '600',
+                      color: 'var(--color-text-primary)',
+                      marginBottom: 'var(--space-3)',
+                    }}
+                  >
                     {feature.title}
                   </h3>
                   <Text style={{ color: 'var(--color-text-tertiary)', lineHeight: 1.6 }}>
@@ -613,7 +696,13 @@ export default function HomePage() {
       </section>
 
       {/* Use Cases Section */}
-      <section style={{ paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)', backgroundColor: 'var(--color-background-hover)' }}>
+      <section
+        style={{
+          paddingTop: 'var(--space-12)',
+          paddingBottom: 'var(--space-12)',
+          backgroundColor: 'var(--color-background-hover)',
+        }}
+      >
         <Stack
           style={{
             maxWidth: 1280,
@@ -623,7 +712,7 @@ export default function HomePage() {
             paddingRight: 'var(--space-4)',
           }}
         >
-          <Row style={{ flexWrap: 'wrap', gap: 'var(--space-8)' }}>
+          <Grid columns={{ base: 1, sm: 2, lg: 3 }} gap={32}>
             {/* Construction Managers */}
             <Card
               style={{
@@ -633,37 +722,71 @@ export default function HomePage() {
                 boxShadow: 'var(--shadow-md)',
                 borderWidth: 2,
                 borderColor: 'var(--color-border)',
-                flex: 1,
-                minWidth: '45%',
               }}
             >
-              <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
-                <Row style={{ backgroundColor: 'var(--color-blue-2)', padding: 'var(--space-3)', borderRadius: 'var(--radius-4)' }}>
+              <Row
+                style={{
+                  alignItems: 'center',
+                  gap: 'var(--space-3)',
+                  marginBottom: 'var(--space-6)',
+                }}
+              >
+                <Row
+                  style={{
+                    backgroundColor: 'var(--color-blue-2)',
+                    padding: 'var(--space-3)',
+                    borderRadius: 'var(--radius-4)',
+                  }}
+                >
                   <Users size={28} color="var(--color-blue-11)" />
                 </Row>
-                <h3 style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-text-primary)' }}>
+                <h3
+                  style={{
+                    fontSize: 'var(--font-size-8)',
+                    fontWeight: '700',
+                    color: 'var(--color-text-primary)',
+                  }}
+                >
                   For Managers
                 </h3>
               </Row>
               <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-blue-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-blue-10)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
                   <Text style={{ color: 'var(--color-text-tertiary)' }}>
                     Automatically verify subcontractor compliance across all projects
                   </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-blue-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
-                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Real-time risk monitoring with predictive alerts</Text>
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-blue-10)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                    Real-time risk monitoring with predictive alerts
+                  </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-blue-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-blue-10)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
                   <Text style={{ color: 'var(--color-text-tertiary)' }}>
                     Generate compliance reports for audits and stakeholders
                   </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-blue-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-blue-10)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
                   <Text style={{ color: 'var(--color-text-tertiary)' }}>
                     Integrate with existing construction management tools
                   </Text>
@@ -689,34 +812,74 @@ export default function HomePage() {
                 boxShadow: 'var(--shadow-md)',
                 borderWidth: 2,
                 borderColor: 'var(--color-border)',
-                flex: 1,
-                minWidth: '45%',
               }}
             >
-              <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
-                <Row style={{ backgroundColor: 'var(--color-gray-2)', padding: 'var(--space-3)', borderRadius: 'var(--radius-4)' }}>
+              <Row
+                style={{
+                  alignItems: 'center',
+                  gap: 'var(--space-3)',
+                  marginBottom: 'var(--space-6)',
+                }}
+              >
+                <Row
+                  style={{
+                    backgroundColor: 'var(--color-gray-2)',
+                    padding: 'var(--space-3)',
+                    borderRadius: 'var(--radius-4)',
+                  }}
+                >
                   <Award size={28} color="var(--color-gray-11)" />
                 </Row>
-                <h3 style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-text-primary)' }}>
+                <h3
+                  style={{
+                    fontSize: 'var(--font-size-8)',
+                    fontWeight: '700',
+                    color: 'var(--color-text-primary)',
+                  }}
+                >
                   For Subcontractors
                 </h3>
               </Row>
               <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-gray-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
-                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Upload documents and get instant compliance scoring</Text>
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-gray-10)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                    Upload documents and get instant compliance scoring
+                  </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-gray-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
-                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Receive personalized insurance recommendations</Text>
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-gray-10)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                    Receive personalized insurance recommendations
+                  </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-gray-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
-                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Purchase coverage and get COIs issued instantly</Text>
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-gray-10)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                    Purchase coverage and get COIs issued instantly
+                  </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-gray-10)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
-                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Track renewal dates and maintain compliance status</Text>
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-gray-10)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                    Track renewal dates and maintain compliance status
+                  </Text>
                 </Row>
               </Stack>
               <Button
@@ -739,36 +902,74 @@ export default function HomePage() {
                 boxShadow: 'var(--shadow-md)',
                 borderWidth: 2,
                 borderColor: 'var(--color-border)',
-                flex: 1,
-                minWidth: '45%',
               }}
             >
-              <Row style={{ alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
-                <Row style={{ backgroundColor: 'var(--color-gray-2)', padding: 'var(--space-3)', borderRadius: 'var(--radius-4)' }}>
+              <Row
+                style={{
+                  alignItems: 'center',
+                  gap: 'var(--space-3)',
+                  marginBottom: 'var(--space-6)',
+                }}
+              >
+                <Row
+                  style={{
+                    backgroundColor: 'var(--color-gray-2)',
+                    padding: 'var(--space-3)',
+                    borderRadius: 'var(--radius-4)',
+                  }}
+                >
                   <Handshake size={28} color="var(--color-gray-11)" />
                 </Row>
-                <h3 style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-text-primary)' }}>
+                <h3
+                  style={{
+                    fontSize: 'var(--font-size-8)',
+                    fontWeight: '700',
+                    color: 'var(--color-text-primary)',
+                  }}
+                >
                   For Brokers
                 </h3>
               </Row>
               <Stack style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-text-tertiary)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-text-tertiary)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
                   <Text style={{ color: 'var(--color-text-tertiary)' }}>
                     Access qualified construction leads with verified needs
                   </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-text-tertiary)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
-                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Streamline quote generation and policy management</Text>
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-text-tertiary)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                    Streamline quote generation and policy management
+                  </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-text-tertiary)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
-                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Automated COI generation and compliance tracking</Text>
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-text-tertiary)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                    Automated COI generation and compliance tracking
+                  </Text>
                 </Row>
                 <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <CheckCircle size={20} color="var(--color-text-tertiary)" style={{ marginTop: 'var(--space-1)', flexShrink: 0 }} />
-                  <Text style={{ color: 'var(--color-text-tertiary)' }}>Expand your construction industry client base</Text>
+                  <CheckCircle
+                    size={20}
+                    color="var(--color-text-tertiary)"
+                    style={{ marginTop: 'var(--space-1)', flexShrink: 0 }}
+                  />
+                  <Text style={{ color: 'var(--color-text-tertiary)' }}>
+                    Expand your construction industry client base
+                  </Text>
                 </Row>
               </Stack>
               <Button
@@ -781,7 +982,7 @@ export default function HomePage() {
                 Get Started
               </Button>
             </Card>
-          </Row>
+          </Grid>
         </Stack>
       </section>
 
@@ -858,7 +1059,14 @@ export default function HomePage() {
       </section>
 
       {/* Footer - Theme-aware dark backgrounds */}
-      <footer style={{ backgroundColor: 'var(--color-gray-12)', color: 'white', paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
+      <footer
+        style={{
+          backgroundColor: 'var(--color-gray-12)',
+          color: 'white',
+          paddingTop: 'var(--space-8)',
+          paddingBottom: 'var(--space-8)',
+        }}
+      >
         <Stack
           style={{
             maxWidth: 1280,
@@ -880,10 +1088,18 @@ export default function HomePage() {
                 Product
               </h3>
               <Stack style={{ gap: 'var(--space-3)' }}>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Features</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Pricing</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Integrations</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>API</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Features
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Pricing
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Integrations
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  API
+                </a>
               </Stack>
             </Stack>
             <Stack style={{ flex: 1, minWidth: '45%' }}>
@@ -891,10 +1107,18 @@ export default function HomePage() {
                 Company
               </h3>
               <Stack style={{ gap: 'var(--space-3)' }}>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>About</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Careers</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Contact</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Blog</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  About
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Careers
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Contact
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Blog
+                </a>
               </Stack>
             </Stack>
             <Stack style={{ flex: 1, minWidth: '45%' }}>
@@ -902,10 +1126,18 @@ export default function HomePage() {
                 Support
               </h3>
               <Stack style={{ gap: 'var(--space-3)' }}>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Help Center</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Documentation</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Status</a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Security</a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Help Center
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Documentation
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Status
+                </a>
+                <a href="#" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>
+                  Security
+                </a>
               </Stack>
             </Stack>
           </Row>
@@ -917,7 +1149,9 @@ export default function HomePage() {
               alignItems: 'center',
             }}
           >
-            <Text style={{ color: 'rgba(255,255,255,0.6)' }}>&copy; 2024 Forsured. All rights reserved.</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.6)' }}>
+              &copy; 2024 Forsured. All rights reserved.
+            </Text>
           </Stack>
         </Stack>
       </footer>
