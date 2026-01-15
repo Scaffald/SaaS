@@ -123,6 +123,7 @@ export function ExpandedTableRow({
                     required={field.required}
                     helperText={field.helperText}
                     error={field.error}
+                    errorMessage={field.errorMessage}
                   />
                 </View>
               ))}

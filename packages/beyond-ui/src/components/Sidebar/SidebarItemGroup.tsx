@@ -13,13 +13,11 @@
  * ```
  */
 
-import { View, StyleSheet } from 'react-native'
+import { View } from 'react-native'
 import type { SidebarItemGroupProps } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
 import { SidebarMenuItem } from './SidebarMenuItem'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { borderWidth } from '../../tokens/borders'
+import { getSidebarItemGroupStyles } from './SidebarItemGroup.styles'
 
 /**
  * SidebarItemGroup component
@@ -31,24 +29,16 @@ export function SidebarItemGroup({
   collapsed: collapsedProp,
   style,
 }: SidebarItemGroupProps) {
-  const { collapsed: contextCollapsed } = useSidebarContext()
+  const { collapsed: contextCollapsed, theme } = useSidebarContext()
   const collapsed = collapsedProp ?? contextCollapsed
+
+  const styles = getSidebarItemGroupStyles(theme)
 
   return (
     <View style={[styles.container, style]}>
       {/* Divider */}
       {showDivider && (
-        <View
-          style={[
-            styles.divider,
-            {
-              marginHorizontal: spacing[12],
-              marginVertical: spacing[8],
-              borderTopWidth: borderWidth.thin,
-              borderTopColor: colors.border.light.default,
-            },
-          ]}
-        />
+        <View style={styles.divider} />
       )}
 
       {/* Heading */}
@@ -61,16 +51,4 @@ export function SidebarItemGroup({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing[4],
-  },
-  divider: {
-    height: 1,
-  },
-  content: {
-    gap: spacing[2],
-  },
-})
 

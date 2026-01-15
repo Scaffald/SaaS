@@ -291,3 +291,49 @@ export function getTabTriggerStyles(
   }
 }
 
+/**
+ * Get styles for TabContent component
+ */
+export interface TabContentStyleConfig {
+  container: ViewStyle
+  content: TextStyle
+  customContent: ViewStyle
+}
+
+export function getTabContentStyles(
+  contentVariant: 'default' | 'bordered',
+  theme: ThemeMode
+): TabContentStyleConfig {
+  const container: ViewStyle = {
+    paddingTop: spacing[12],
+    gap: spacing[12],
+  }
+
+  // Add bordered variant styles
+  if (contentVariant === 'bordered') {
+    container.backgroundColor = colors.bg[theme].default
+    container.borderWidth = 1
+    container.borderColor = colors.border[theme].default
+    container.borderRadius = 12 // borderRadius.m
+    container.padding = spacing[16]
+  }
+
+  const content: TextStyle = {
+    fontFamily: typography.body.fontFamily,
+    fontSize: typography.body.fontSize,
+    fontWeight: typography.body.fontWeight,
+    lineHeight: typography.body.lineHeight,
+    color: colors.text[theme].secondary,
+  }
+
+  const customContent: ViewStyle = {
+    // Allow custom content to define its own styles
+  }
+
+  return {
+    container,
+    content,
+    customContent,
+  }
+}
+

@@ -45,9 +45,14 @@ export interface ExpandedRowFormField {
   helperText?: string
 
   /**
-   * Field error message
+   * Whether field has an error
    */
-  error?: string
+  error?: boolean
+
+  /**
+   * Error message to display
+   */
+  errorMessage?: string
 }
 
 /**

@@ -25,16 +25,14 @@
  * ```
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import type { SidebarWidgetProps } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { borderRadius } from '../../tokens/borders'
-import { typography } from '../../tokens/typography'
+import { getSidebarWidgetStyles } from './SidebarWidget.styles'
 import { ProgressBar } from '../ProgressBar'
 import { HelperText } from '../HelperText'
 import { AlertTriangle, ChevronRight } from 'lucide-react-native'
+import { colors } from '../../tokens/colors'
 
 /**
  * SidebarWidget component
@@ -52,11 +50,12 @@ export function SidebarWidget({
   style,
 }: SidebarWidgetProps) {
   const { collapsed: contextCollapsed, theme } = useSidebarContext()
-  const isLight = theme === 'light'
   const collapsed = collapsedProp ?? contextCollapsed
 
   // Calculate progress percentage
   const progressValue = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0
+
+  const styles = getSidebarWidgetStyles(theme, progressValue)
 
   // If collapsed, show minimal representation
   if (collapsed) {
@@ -66,10 +65,7 @@ export function SidebarWidget({
           <View
             style={[
               styles.collapsedProgressIndicator,
-              {
-                backgroundColor: progressValue > 75 ? colors.error[500] : colors.primary[500],
-                width: `${progressValue}%`,
-              },
+              { width: `${progressValue}%` },
             ]}
           />
         </View>
@@ -88,30 +84,16 @@ export function SidebarWidget({
             onPress={onButtonPress}
             style={styles.labelButton}
           >
-            <Text
-              style={[
-                styles.progressLabel,
-                {
-                  color: isLight ? colors.text.light.primary : colors.text.dark.primary,
-                },
-              ]}
-            >
+            <Text style={styles.progressLabel}>
               {label}
             </Text>
-            <ChevronRight size={16} color={isLight ? colors.icon.light.default : colors.icon.dark.default} />
+            <ChevronRight size={16} color={styles.iconColor} />
           </Pressable>
         </View>
 
         {/* Value text */}
         {valueText && (
-          <Text
-            style={[
-              styles.valueText,
-              {
-                color: isLight ? colors.text.light.secondary : colors.text.dark.secondary,
-              },
-            ]}
-          >
+          <Text style={styles.valueText}>
             {valueText}
           </Text>
         )}
@@ -135,14 +117,7 @@ export function SidebarWidget({
       <View style={[styles.progressVerticalContainer, style]}>
         {/* Top row: Label and indicator */}
         <View style={styles.progressHeader}>
-          <Text
-            style={[
-              styles.progressLabel,
-              {
-                color: isLight ? colors.text.light.primary : colors.text.dark.primary,
-              },
-            ]}
-          >
+          <Text style={styles.progressLabel}>
             {label}
           </Text>
           <ProgressBar
@@ -157,14 +132,7 @@ export function SidebarWidget({
 
         {/* Value text */}
         {valueText && (
-          <Text
-            style={[
-              styles.valueText,
-              {
-                color: isLight ? colors.text.light.secondary : colors.text.dark.secondary,
-              },
-            ]}
-          >
+          <Text style={styles.valueText}>
             {valueText}
           </Text>
         )}
@@ -220,81 +188,4 @@ export function SidebarWidget({
 
   return null
 }
-
-const styles = StyleSheet.create({
-  collapsedContainer: {
-    height: 4,
-    marginHorizontal: spacing[12],
-    marginVertical: spacing[4],
-    backgroundColor: colors.bg.light['200'],
-    borderRadius: borderRadius.max,
-    overflow: 'hidden',
-  },
-  collapsedProgressIndicator: {
-    height: '100%',
-    borderRadius: borderRadius.max,
-  },
-  progressHorizontalContainer: {
-    gap: spacing[6],
-    paddingHorizontal: spacing[12],
-    paddingVertical: spacing[8],
-  },
-  progressVerticalContainer: {
-    gap: spacing[6],
-    paddingHorizontal: spacing[12],
-    paddingVertical: spacing[8],
-  },
-  progressHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing[8],
-  },
-  labelButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[4],
-  },
-  progressLabel: {
-    fontFamily: typography.bodyMedium.fontFamily,
-    fontSize: typography.small.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight,
-    lineHeight: typography.small.lineHeight,
-  },
-  valueText: {
-    fontFamily: typography.body.fontFamily,
-    fontSize: typography.small.fontSize,
-    fontWeight: typography.body.fontWeight,
-    lineHeight: typography.small.lineHeight,
-  },
-  progressBar: {
-    marginTop: spacing[4],
-  },
-  messageHorizontalContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing[8],
-    paddingHorizontal: spacing[12],
-    paddingVertical: spacing[8],
-  },
-  messageVerticalContainer: {
-    gap: spacing[8],
-    paddingHorizontal: spacing[12],
-    paddingVertical: spacing[8],
-  },
-  upgradeButton: {
-    paddingHorizontal: spacing[12],
-    paddingVertical: spacing[6],
-    borderRadius: borderRadius.s,
-    backgroundColor: colors.primary[500],
-  },
-  upgradeButtonText: {
-    fontFamily: typography.bodyMedium.fontFamily,
-    fontSize: typography.small.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight,
-    color: colors.white,
-    lineHeight: typography.small.lineHeight,
-  },
-})
 

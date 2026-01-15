@@ -3,14 +3,11 @@
  * Panel content shown when tab is active
  */
 
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text } from 'react-native'
 import type { TabContentProps } from './Tabs.types'
 import { useTabItemContext } from './TabItem'
 import { useTabsContext } from './Tabs'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { typography } from '../../tokens/typography'
-import { borderRadius } from '../../tokens/borders'
+import { getTabContentStyles } from './Tabs.styles'
 import { useThemeContext } from '../../theme'
 
 export function TabContent({
@@ -27,35 +24,12 @@ export function TabContent({
     return null
   }
 
-  const isBordered = tabsContext.contentVariant === 'bordered'
-  const _isHorizontal = tabsContext.orientation === 'horizontal'
+  const styles = getTabContentStyles(tabsContext.contentVariant, theme)
 
   return (
-    <View
-      style={[
-        styles.container,
-        // In horizontal layout, content is rendered in a separate container below triggers
-        // So padding/spacing is applied here
-        isBordered && {
-          backgroundColor: colors.bg[theme].default,
-          borderWidth: 1,
-          borderColor: colors.border[theme].default,
-          borderRadius: borderRadius.m,
-          padding: spacing[16],
-        },
-        containerStyle,
-      ]}
-    >
+    <View style={[styles.container, containerStyle]}>
       {typeof children === 'string' ? (
-        <Text
-          style={[
-            styles.content,
-            {
-              color: colors.text[theme].secondary,
-            },
-            contentStyle,
-          ]}
-        >
+        <Text style={[styles.content, contentStyle]}>
           {children}
         </Text>
       ) : (
@@ -64,20 +38,4 @@ export function TabContent({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: spacing[12],
-    gap: spacing[12],
-  },
-  content: {
-    fontFamily: typography.body.fontFamily,
-    fontSize: typography.body.fontSize,
-    fontWeight: typography.body.fontWeight,
-    lineHeight: typography.body.lineHeight,
-  },
-  customContent: {
-    // Allow custom content to define its own styles
-  },
-})
 

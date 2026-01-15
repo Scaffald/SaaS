@@ -258,12 +258,12 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
       )}
 
       {/* Error message when password strength is shown */}
-      {showPasswordStrength && error && (
+      {showPasswordStrength && error && errorMessage && (
         <InputHelperText
           type="error"
           textStyle={helperTextStyle}
         >
-          {error}
+          {errorMessage}
         </InputHelperText>
       )}
     </View>

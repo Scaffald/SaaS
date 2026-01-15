@@ -24,7 +24,7 @@ import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import { boxShadows } from '../../tokens/shadows'
+import { shadows } from '../../tokens/shadows'
 
 export function SettingsNotificationTable({
   preferences,
@@ -61,7 +61,7 @@ export function SettingsNotificationTable({
         {
           borderRadius: borderRadius.l,
           overflow: 'hidden',
-          ...boxShadows.button,
+          ...shadows.button,
         },
         style,
       ]}

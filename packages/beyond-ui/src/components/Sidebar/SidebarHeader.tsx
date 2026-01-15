@@ -16,13 +16,10 @@
  * ```
  */
 
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import type { SidebarHeaderProps } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { borderWidth, borderRadius } from '../../tokens/borders'
-import { typography } from '../../tokens/typography'
+import { getSidebarHeaderStyles } from './SidebarHeader.styles'
 import { Menu, X } from 'lucide-react-native'
 
 /**
@@ -37,35 +34,18 @@ export function SidebarHeader({
   style,
 }: SidebarHeaderProps) {
   const { collapsed: contextCollapsed, theme } = useSidebarContext()
-  const isLight = theme === 'light'
   const collapsed = collapsedProp ?? contextCollapsed
 
+  const styles = getSidebarHeaderStyles(theme, collapsed)
   const iconSize = 24
-  const iconColor = isLight ? colors.icon.light.default : colors.icon.dark.default
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingHorizontal: collapsed ? spacing[8] : 24,
-          paddingVertical: spacing[16],
-        },
-        style,
-      ]}
-    >
+    <View style={[styles.container, style]}>
       {/* Logo and title */}
       <View style={styles.content}>
         {logo && <View style={styles.logoContainer}>{logo}</View>}
         {!collapsed && title && (
-          <Text
-            style={[
-              styles.title,
-              {
-                color: isLight ? colors.text.light.primary : colors.text.dark.primary,
-              },
-            ]}
-          >
+          <Text style={styles.title}>
             {title}
           </Text>
         )}
@@ -83,50 +63,13 @@ export function SidebarHeader({
           accessibilityLabel={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? (
-            <Menu size={iconSize} color={iconColor} />
+            <Menu size={iconSize} color={styles.iconColor} />
           ) : (
-            <X size={iconSize} color={iconColor} />
+            <X size={iconSize} color={styles.iconColor} />
           )}
         </Pressable>
       )}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 56,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[12],
-    flex: 1,
-  },
-  logoContainer: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontFamily: typography.bodyMedium.fontFamily,
-    fontSize: typography.body.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight,
-    lineHeight: typography.body.lineHeight,
-  },
-  collapseButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: borderRadius.s,
-    ...(Platform.OS === 'web' && {
-      cursor: 'pointer',
-    }),
-  },
-})
 

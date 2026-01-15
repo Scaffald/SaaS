@@ -6,7 +6,7 @@ import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
-import { boxShadows } from '../../tokens/shadows'
+import { shadows } from '../../tokens/shadows'
 import { typography } from '../../tokens/typography'
 import type { SettingsSectionHeaderStyleConfig } from './SettingsSectionHeader.types'
 import type { ThemeMode } from '../../tokens/colors'
@@ -28,7 +28,7 @@ export function getSettingsSectionHeaderStyles(theme: ThemeMode): SettingsSectio
     backgroundColor: isLight ? colors.gray[50] : colors.gray[800],
     justifyContent: 'center',
     alignItems: 'center',
-    ...boxShadows.iconBase,
+    ...shadows.xs,
   }
 
   const textContainer: ViewStyle = {

@@ -2,11 +2,11 @@
  * SettingsToggleCard styles
  */
 
-import type { ViewStyle } from 'react-native'
+import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
-import { boxShadows } from '../../tokens/shadows'
+import { shadows } from '../../tokens/shadows'
 import { typography } from '../../tokens/typography'
 import type { SettingsToggleCardStyleConfig } from './SettingsToggleCard.types'
 import type { ThemeMode } from '../../tokens/colors'
@@ -33,7 +33,7 @@ export function getSettingsToggleCardStyles(
       : isLight
         ? colors.border.light['200']
         : colors.border.dark['200'],
-    ...boxShadows.button,
+    ...shadows.button,
     ...(disabled && {
       opacity: 0.5,
     }),
@@ -53,7 +53,7 @@ export function getSettingsToggleCardStyles(
     backgroundColor: isLight ? colors.gray[50] : colors.gray[800],
     justifyContent: 'center',
     alignItems: 'center',
-    ...boxShadows.iconBase,
+    ...shadows.xs,
   }
 
   const textContainer: ViewStyle = {
@@ -61,7 +61,7 @@ export function getSettingsToggleCardStyles(
     gap: spacing[2],
   }
 
-  const title: ViewStyle = {
+  const title: TextStyle = {
     fontFamily: typography.bodyMedium.fontFamily,
     fontSize: 16,
     fontWeight: typography.bodyMedium.fontWeight,
@@ -69,7 +69,7 @@ export function getSettingsToggleCardStyles(
     color: isLight ? colors.text.light.primary : colors.text.dark.primary,
   }
 
-  const description: ViewStyle = {
+  const description: TextStyle = {
     fontFamily: typography.body.fontFamily,
     fontSize: 14,
     fontWeight: typography.body.fontWeight,

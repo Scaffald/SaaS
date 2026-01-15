@@ -2,11 +2,10 @@
  * AppearanceThemeCard styles
  */
 
-import type { ViewStyle } from 'react-native'
+import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
-import { boxShadows } from '../../tokens/shadows'
 import { typography } from '../../tokens/typography'
 import type { AppearanceThemeCardStyleConfig, AppearanceThemeCardVariant } from './AppearanceThemeCard.types'
 import type { ThemeMode } from '../../tokens/colors'
@@ -32,9 +31,6 @@ export function getAppearanceThemeCardStyles(
       : isLight
         ? colors.border.light['200']
         : colors.border.dark['200'],
-    ...(selected && {
-      ...boxShadows.focusBase,
-    }),
   }
 
   const preview: ViewStyle = {
@@ -57,14 +53,7 @@ export function getAppearanceThemeCardStyles(
     flexDirection: 'row',
   }
 
-  const label: ViewStyle = {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+  const label: TextStyle = {
     fontFamily: typography.bodyMedium.fontFamily,
     fontSize: 14,
     fontWeight: typography.bodyMedium.fontWeight,

@@ -31,7 +31,7 @@ import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import { boxShadows } from '../../tokens/shadows'
+import { shadows } from '../../tokens/shadows'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function SettingsTeamTable({
@@ -96,7 +96,7 @@ export function SettingsTeamTable({
         {
           borderRadius: borderRadius.l,
           overflow: 'hidden',
-          ...boxShadows.button,
+          ...shadows.button,
         },
         style,
       ]}

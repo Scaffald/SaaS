@@ -42,7 +42,6 @@ export function SettingsIntegrationsGrid({
           <View
             key={integration.id}
             style={{
-              width: 'calc(33.333% - 16px)',
               minWidth: 280,
               flex: 1,
               maxWidth: 400,

@@ -32,7 +32,7 @@ export function AppearanceThemeCard({
   ...pressableProps
 }: AppearanceThemeCardProps) {
   const { theme } = useThemeContext()
-  const { isHovered, interactiveProps } = useInteractiveState(disabled)
+  const { isHovered, interactiveProps } = useInteractiveState(disabled ?? false)
   const styles = getAppearanceThemeCardStyles(theme, variant, selected)
 
   const renderPreview = () => {
@@ -272,7 +272,7 @@ export function AppearanceThemeCard({
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityState={{ selected, disabled }}
+      accessibilityState={{ selected, disabled: disabled ?? false }}
       {...interactiveProps}
       style={({ pressed }) => [
         styles.container,
