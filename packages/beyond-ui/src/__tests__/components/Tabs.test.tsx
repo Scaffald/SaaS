@@ -9,7 +9,7 @@ import { Tabs } from '../../components/Tabs'
 import type { TabType, TabColor, TabSize, TabOrientation } from '../../components/Tabs'
 
 // Mock ThemeProvider
-vi.mock('../../playground/ThemeProvider', () => ({
+vi.mock('../../theme', () => ({
   useThemeContext: () => ({ theme: 'light' }),
 }))
 

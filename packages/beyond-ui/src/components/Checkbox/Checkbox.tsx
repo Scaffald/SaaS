@@ -41,7 +41,7 @@ import { boxShadows } from '../../tokens/shadows'
 import type { CheckboxProps } from './Checkbox.types'
 import { CheckIcon } from './CheckIcon'
 import { MinusIcon } from './MinusIcon'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { HelperText } from '../HelperText'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 
@@ -53,12 +53,14 @@ export function Checkbox({
   color = 'primary',
   disabled = false,
   error = false,
+  errorMessage,
+  showError = true,
   label,
   helperText,
   optional = false,
   labelElement,
-  containerStyle,
-  checkboxStyle,
+  style,
+  contentStyle,
   labelStyle,
   helperTextStyle,
 }: CheckboxProps) {
@@ -68,7 +70,11 @@ export function Checkbox({
   const checked = isControlled ? checkedProp : internalChecked
 
   const { theme } = useThemeContext()
-  const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
+  const { isHovered, isFocused, interactiveProps} = useInteractiveState(disabled)
+
+  // Resolve error display
+  const shouldShowError = showError && error
+  const displayMessage = shouldShowError && errorMessage ? errorMessage : helperText
 
   // Create a stable initial value for animation
   const initialValue = checked || indeterminate ? 1 : 0
@@ -176,7 +182,7 @@ export function Checkbox({
     isFocused && !disabled ? (Platform.OS === 'web' ? { boxShadow: boxShadows.focusBase } : {}) : {}
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, style]}>
       <Pressable
         onPress={handlePress}
         disabled={disabled}
@@ -212,7 +218,7 @@ export function Checkbox({
               },
               focusRing,
               disabled && styles.disabled,
-              checkboxStyle,
+              contentStyle,
             ]}
           >
             {showCheckIcon && (
@@ -228,7 +234,7 @@ export function Checkbox({
           </View>
         </View>
 
-        {(label || labelElement || helperText) && (
+        {(label || labelElement || displayMessage) && (
           <View style={styles.textContainer}>
             {/* Label with optional indicator */}
             {(label || labelElement) && (
@@ -283,12 +289,12 @@ export function Checkbox({
             )}
 
             {/* Helper text */}
-            {helperText && (
+            {displayMessage && (
               <HelperText
-                type={disabled ? 'disabled' : error ? 'error' : 'default'}
+                type={disabled ? 'disabled' : shouldShowError ? 'error' : 'default'}
                 textStyle={helperTextStyle}
               >
-                {helperText}
+                {displayMessage}
               </HelperText>
             )}
           </View>

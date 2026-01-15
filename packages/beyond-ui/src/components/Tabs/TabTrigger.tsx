@@ -9,7 +9,7 @@ import type { TabTriggerProps } from './Tabs.types'
 import { useTabsContext } from './Tabs'
 import { useTabItemContext } from './TabItem'
 import { getTabTriggerStyles } from './Tabs.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function TabTrigger({
   children,

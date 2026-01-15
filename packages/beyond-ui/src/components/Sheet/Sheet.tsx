@@ -29,13 +29,16 @@ import {
   StyleSheet,
 } from 'react-native'
 import type { SheetProps, SheetHeaderProps, SheetContentProps, SheetFooterProps, SheetHeight } from './Sheet.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
-import { borderRadius } from '../../tokens/borders'
-import { shadows, boxShadows } from '../../tokens/shadows'
-import { spacing } from '../../tokens/spacing'
 import { Text, H4 } from '../Typography'
 import { Button } from '../Button'
+import {
+  getSheetStyles,
+  getSheetHeaderStyles,
+  getSheetContentStyles,
+  getSheetFooterStyles,
+} from './Sheet.styles'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -205,7 +208,7 @@ export function Sheet({
     return null
   }
 
-  const styles = getStyles(theme, sheetHeight, height === 'auto')
+  const styles = getSheetStyles(theme, sheetHeight, height === 'auto')
 
   return (
     <RNModal
@@ -271,7 +274,7 @@ export function SheetHeader({
   testID,
 }: SheetHeaderProps) {
   const { theme } = useThemeContext()
-  const styles = getHeaderStyles(theme)
+  const styles = getSheetHeaderStyles(theme)
 
   return (
     <View style={[styles.header, style]} testID={testID}>
@@ -314,7 +317,7 @@ export function SheetContent({
   testID,
 }: SheetContentProps) {
   const { theme } = useThemeContext()
-  const styles = getContentStyles(theme)
+  const styles = getSheetContentStyles(theme)
 
   if (scrollable) {
     return (
@@ -347,7 +350,7 @@ export function SheetFooter({
   testID,
 }: SheetFooterProps) {
   const { theme } = useThemeContext()
-  const styles = getFooterStyles(theme, align)
+  const styles = getSheetFooterStyles(theme, align)
 
   return (
     <View style={[styles.footer, style]} testID={testID}>
@@ -360,106 +363,4 @@ export function SheetFooter({
 // Styles
 // ============================================================================
 
-function getStyles(theme: 'light' | 'dark', sheetHeight: number, isAutoHeight: boolean) {
-  const shadow = shadows.l
-
-  return StyleSheet.create({
-    overlay: {
-      flex: 1,
-      justifyContent: 'flex-end',
-    },
-    backdrop: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    container: {
-      height: isAutoHeight ? undefined : sheetHeight,
-      maxHeight: isAutoHeight ? sheetHeight : undefined,
-      backgroundColor: colors.bg[theme].default,
-      borderTopLeftRadius: borderRadius.xl,
-      borderTopRightRadius: borderRadius.xl,
-      ...(Platform.OS === 'web'
-        ? {
-            boxShadow: boxShadows.l,
-          }
-        : {
-            shadowColor: shadow.shadowColor,
-            shadowOffset: shadow.shadowOffset,
-            shadowOpacity: shadow.shadowOpacity,
-            shadowRadius: shadow.shadowRadius,
-            elevation: shadow.elevation,
-          }),
-    },
-    handleContainer: {
-      alignItems: 'center',
-      paddingTop: spacing[8],
-      paddingBottom: spacing[4],
-    },
-    handle: {
-      width: 36,
-      height: 4,
-      borderRadius: 2,
-      backgroundColor: colors.border[theme].default,
-    },
-  })
-}
-
-function getHeaderStyles(theme: 'light' | 'dark') {
-  return StyleSheet.create({
-    header: {
-      paddingHorizontal: spacing[16],
-      paddingVertical: spacing[12],
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border[theme].subtle,
-    },
-    headerContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    titleContainer: {
-      flex: 1,
-      gap: spacing[4],
-    },
-  })
-}
-
-function getContentStyles(_theme: 'light' | 'dark') {
-  return StyleSheet.create({
-    content: {
-      flex: 1,
-      padding: spacing[16],
-    },
-    contentScroll: {
-      flex: 1,
-    },
-    contentContainer: {
-      padding: spacing[16],
-    },
-  })
-}
-
-function getFooterStyles(
-  theme: 'light' | 'dark',
-  align: 'left' | 'center' | 'right' | 'space-between'
-) {
-  const alignMap = {
-    left: 'flex-start',
-    center: 'center',
-    right: 'flex-end',
-    'space-between': 'space-between',
-  } as const
-
-  return StyleSheet.create({
-    footer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: alignMap[align],
-      gap: spacing[12],
-      paddingHorizontal: spacing[16],
-      paddingVertical: spacing[12],
-      borderTopWidth: 1,
-      borderTopColor: colors.border[theme].subtle,
-    },
-  })
-}
+// Styles are now in Sheet.styles.ts

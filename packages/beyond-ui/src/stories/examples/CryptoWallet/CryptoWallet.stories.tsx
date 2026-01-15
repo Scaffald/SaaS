@@ -8,7 +8,7 @@ import { View, StyleSheet, Text, ScrollView, } from 'react-native'
 import { spacing } from '../../../tokens/spacing'
 import { colors } from '../../../tokens/colors'
 import { typographyVariants } from '../../../tokens/typography'
-import { useThemeContext } from '../../../playground/ThemeProvider'
+import { useThemeContext } from '../../../theme'
 import { Wallet, TrendingUp, UserPlus, } from 'lucide-react-native'
 
 const meta: Meta = {

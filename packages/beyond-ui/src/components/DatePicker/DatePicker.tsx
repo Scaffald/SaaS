@@ -42,7 +42,7 @@ import {
   getPresetButtonsContainerStyles,
   getActionsContainerStyles,
 } from './DatePicker.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { dateToSimple, simpleToDate, type DateObject } from '../DatePickerBase/DatePickerBase.utils'
 
 export function DatePicker({

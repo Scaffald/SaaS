@@ -179,6 +179,23 @@ export type {
   Position,
 } from './components/Layout'
 
+// Grid component
+export { Grid, GridItem } from './components/Grid'
+export type {
+  GridProps,
+  GridItemProps,
+  GridAutoFlow,
+  GridJustifyItems,
+  GridAlignItems,
+  GridJustifyContent,
+  GridAlignContent,
+  GapValue as GridGapValue,
+} from './components/Grid'
+
+// Responsive utility components
+export { Show, Hide, Responsive } from './components/Responsive'
+export type { ShowProps, HideProps, ResponsiveProps } from './components/Responsive'
+
 // Typography components (replaces Tamagui H1-H6, Paragraph, SizableText)
 export { Heading, H1, H2, H3, H4, H5, H6, Paragraph, Label, Text, Caption } from './components/Typography'
 export type {
@@ -918,9 +935,9 @@ export type {
 // Phase 3: Feedback components (Alert ✅, Toast)
 // Phase 4+: Complex components (Dialog, Popover, Select, Tooltip ✅, etc.)
 
-// Theme Provider (temporary location in playground - will be moved to proper location)
-export { ThemeProvider, ThemeContext, useThemeContext } from './playground/ThemeProvider'
-export type { ThemeContextValue } from './playground/ThemeProvider'
+// Theme system
+export { ThemeProvider, ThemeContext, useThemeContext } from './theme'
+export type { ThemeContextValue } from './theme'
 
 /**
  * Package version

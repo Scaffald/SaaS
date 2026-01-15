@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typographyVariants } from '../../tokens/typography'
-import type { ThemeMode } from '../../playground/ThemeProvider'
+import type { ThemeMode } from '../../theme'
 
 export function getContainerStyles(theme: ThemeMode = 'light'): ViewStyle {
   return {

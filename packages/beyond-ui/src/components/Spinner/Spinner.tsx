@@ -6,7 +6,7 @@
 import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { SpinnerProps } from './Spinner.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function Spinner({
   size = 'md',

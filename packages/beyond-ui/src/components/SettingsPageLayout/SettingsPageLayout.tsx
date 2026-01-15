@@ -21,7 +21,7 @@
 
 import { View, Text, ScrollView, Pressable } from 'react-native'
 import type { SettingsPageLayoutProps } from './SettingsPageLayout.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'

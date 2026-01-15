@@ -24,7 +24,7 @@ import type { StepperProps, StepStatus } from './Stepper.types'
 import { Step } from './Step'
 import { ArrowRightIcon } from './StepperIcons'
 import { colors } from '../../tokens/colors'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function Stepper({
   steps,

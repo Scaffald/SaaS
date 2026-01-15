@@ -40,7 +40,7 @@ import {
   WEEK_DAY_LABELS,
   type DateObject,
 } from './DatePickerBase.utils'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function DatePickerBase({
   month,

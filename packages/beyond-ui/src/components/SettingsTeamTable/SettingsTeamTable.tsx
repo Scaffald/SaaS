@@ -23,7 +23,7 @@
 
 import { View, Text, ScrollView, Pressable } from 'react-native'
 import type { SettingsTeamTableProps, TeamMember } from './SettingsTeamTable.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Checkbox } from '../Checkbox'
 import { Avatar } from '../Avatar'
 import { Edit2, Trash2 } from 'lucide-react-native'

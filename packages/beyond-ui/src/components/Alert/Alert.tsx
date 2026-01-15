@@ -34,7 +34,7 @@
 import { useState } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import type { AlertProps } from './Alert.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import {
   getBackgroundColor,
   getTextColor,

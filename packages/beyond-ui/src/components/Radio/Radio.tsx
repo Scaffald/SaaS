@@ -40,7 +40,7 @@ import { typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
 import type { RadioProps } from './Radio.types'
 import { RadioIcon } from './RadioIcon'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { HelperText } from '../HelperText'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 
@@ -51,14 +51,16 @@ export function Radio({
   color = 'primary',
   disabled = false,
   error = false,
+  errorMessage,
+  showError = true,
   label,
   helperText,
   optional = false,
   labelElement,
   value: _value,
   name: _name,
-  containerStyle,
-  radioStyle,
+  style,
+  contentStyle,
   labelStyle,
   helperTextStyle,
 }: RadioProps) {
@@ -69,6 +71,10 @@ export function Radio({
 
   const { theme } = useThemeContext()
   const { isHovered, isFocused, interactiveProps } = useInteractiveState(disabled)
+
+  // Resolve error display
+  const shouldShowError = showError && error
+  const displayMessage = shouldShowError && errorMessage ? errorMessage : helperText
 
   const handlePress = () => {
     if (disabled) return
@@ -143,7 +149,7 @@ export function Radio({
     isFocused && !disabled ? (Platform.OS === 'web' ? { boxShadow: boxShadows.focusBase } : {}) : {}
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, style]}>
       <Pressable
         onPress={handlePress}
         disabled={disabled}
@@ -171,14 +177,14 @@ export function Radio({
               },
               focusRing,
               disabled && styles.disabled,
-              radioStyle,
+              contentStyle,
             ]}
           >
             {checked && <RadioIcon size={sizeConfig.iconSize} color={colorConfig.iconColor} />}
           </View>
         </View>
 
-        {(label || labelElement || helperText) && (
+        {(label || labelElement || displayMessage) && (
           <View style={styles.textContainer}>
             {/* Label with optional indicator */}
             {(label || labelElement) && (
@@ -233,12 +239,12 @@ export function Radio({
             )}
 
             {/* Helper text */}
-            {helperText && (
+            {displayMessage && (
               <HelperText
-                type={disabled ? 'disabled' : error ? 'error' : 'default'}
+                type={disabled ? 'disabled' : shouldShowError ? 'error' : 'default'}
                 textStyle={helperTextStyle}
               >
-                {helperText}
+                {displayMessage}
               </HelperText>
             )}
           </View>

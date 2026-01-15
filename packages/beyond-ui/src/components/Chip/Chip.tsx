@@ -39,7 +39,7 @@ import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { ChipProps } from './Chip.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function Chip({

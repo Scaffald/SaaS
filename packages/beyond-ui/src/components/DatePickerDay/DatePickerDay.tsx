@@ -29,7 +29,7 @@ import {
   getTextStyles,
   getIndicatorStyles,
 } from './DatePickerDay.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function DatePickerDay({
   day,

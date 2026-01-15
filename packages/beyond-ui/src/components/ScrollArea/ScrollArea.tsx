@@ -30,7 +30,7 @@ import {
 } from 'react-native'
 import type { NativeScrollEvent, NativeSyntheticEvent, ScrollView as RNScrollView } from 'react-native'
 import type { ScrollAreaProps } from './ScrollArea.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 
 export function ScrollArea({

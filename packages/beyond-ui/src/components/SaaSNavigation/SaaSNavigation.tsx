@@ -55,7 +55,7 @@ import {
   getNotificationsContainerStyles,
   getCtasContainerStyles,
 } from './SaaSNavigation.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { NavIconButton } from '../NavIconButton'
 import { Avatar, AvatarGroup } from '../Avatar'
 import { Button } from '../Button'

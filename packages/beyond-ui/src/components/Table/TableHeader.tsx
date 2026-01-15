@@ -29,7 +29,7 @@ interface TableHeaderProps {
   actions?: React.ReactNode
   style?: any
 }
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'

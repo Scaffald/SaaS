@@ -16,7 +16,7 @@
 import { View, Text } from 'react-native'
 import type { ListProps } from './List.types'
 import { getListStyles } from './List.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function List({ title, children, style, gap = 10, accessibilityLabel }: ListProps) {
   const { theme } = useThemeContext()

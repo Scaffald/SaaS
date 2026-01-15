@@ -72,13 +72,16 @@ import { InputExternalAddon, InputLeftSide, InputRightSide } from './InputAddon'
 import { PasswordStrength } from '../PasswordStrength/PasswordStrength'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export const Input = forwardRef<TextInputType, InputProps>(function Input({
   label,
   required = false,
   helperText,
-  error,
+  error = false,
+  errorMessage,
+  showError = true,
+  validateOnBlur = false,
   state: controlledState,
   type = 'classic',
   externalAddon,
@@ -86,8 +89,8 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
   iconEnd: IconEnd,
   disabled = false,
   fullWidth = true,
-  containerStyle,
-  inputStyle,
+  style,
+  contentStyle,
   labelStyle,
   helperTextStyle,
   showPasswordStrength = false,
@@ -101,9 +104,12 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
   const [internalFocused, setInternalFocused] = useState(false)
   const { theme } = useThemeContext()
 
+  // Resolve error display
+  const shouldShowError = showError && error
+
   // Determine actual state (controlled or derived)
   const isFocused = controlledState === 'focused' || internalFocused
-  const isError = !!error || controlledState === 'error'
+  const isError = error || controlledState === 'error'
   const isFilled = controlledState === 'filled' || (!!value && value.length > 0)
 
   let actualState: InputProps['state'] = controlledState
@@ -140,21 +146,21 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
 
   return (
     <View style={[
-      styles.container, 
-      fullWidth && { 
-        width: '100%', 
-        minWidth: '100%', 
+      styles.container,
+      fullWidth && {
+        width: '100%',
+        minWidth: '100%',
         maxWidth: '100%',
         alignSelf: 'stretch',
         flexShrink: 0,
         flexGrow: 1,
-      }, 
-      containerStyle
+      },
+      style
     ]}>
       {/* Label */}
       {label && (
         <InputLabel
-          type={error ? 'error' : disabled ? 'disabled' : 'default'}
+          type={shouldShowError ? 'error' : disabled ? 'disabled' : 'default'}
           required={required}
           labelStyle={labelStyle}
         >
@@ -212,7 +218,7 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
               styles.inputText,
               // Remove default browser outline on web
               Platform.OS === 'web' && ({ outlineStyle: 'none' } as object),
-              inputStyle,
+              contentStyle,
             ]}
             placeholderTextColor={colors.text[theme].tertiary}
             onFocus={handleFocus}
@@ -225,17 +231,17 @@ export const Input = forwardRef<TextInputType, InputProps>(function Input({
       </View>
 
       {/* Helper Text / Error Message */}
-      {(helperText || error) && !showPasswordStrength && (
+      {(helperText || errorMessage) && !showPasswordStrength && (
         <InputHelperText
-          type={error ? 'error' : 'default'}
+          type={shouldShowError ? 'error' : 'default'}
           textStyle={helperTextStyle}
         >
-          {error || helperText || ''}
+          {shouldShowError && errorMessage ? errorMessage : helperText || ''}
         </InputHelperText>
       )}
 
       {/* Password Strength Indicator */}
-      {showPasswordStrength && !error && (
+      {showPasswordStrength && !shouldShowError && (
         <View style={{ marginTop: spacing[8] }}>
           {passwordRequirements && passwordRequirements.length > 0 ? (
             <PasswordStrength

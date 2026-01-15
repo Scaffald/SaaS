@@ -38,7 +38,7 @@ import { createContext, useContext, useState, Children, isValidElement, cloneEle
 import { View, } from 'react-native'
 import type { TabsProps, TabsContextValue } from './Tabs.types'
 import { getTabsStyles, getTabListStyles } from './Tabs.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { TabTrigger } from './TabTrigger'
 import { TabContent } from './TabContent'
 

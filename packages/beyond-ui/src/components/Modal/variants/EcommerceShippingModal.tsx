@@ -31,7 +31,7 @@
 
 import { View, StyleSheet } from 'react-native'
 import type { EcommerceShippingModalProps } from './EcommerceShippingModal.types'
-import { useThemeContext } from '../../../playground/ThemeProvider'
+import { useThemeContext } from '../../../theme'
 import { spacing } from '../../../tokens/spacing'
 import { SelectionCard } from '../../SelectionCard'
 

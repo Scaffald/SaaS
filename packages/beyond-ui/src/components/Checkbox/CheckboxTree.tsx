@@ -34,7 +34,7 @@ import { ArrowRightIcon } from './ArrowRightIcon'
 import { ArrowDownIcon } from './ArrowDownIcon'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import type {
   CheckboxTreeProps,
   CheckboxTreeNodeProps,

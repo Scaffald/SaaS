@@ -6,7 +6,7 @@
 import { Pressable, View, Text, StyleSheet, Platform } from 'react-native'
 import type { AddAvatarProps } from './Avatar.types'
 import { colors } from '../../tokens/colors'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function AddAvatar({ size = 40, onPress, containerStyle }: AddAvatarProps) {
   const { theme } = useThemeContext()

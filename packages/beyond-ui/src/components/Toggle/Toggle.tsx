@@ -41,7 +41,7 @@ import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import { boxShadows } from '../../tokens/shadows'
 import type { ToggleProps } from './Toggle.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { HelperText } from '../HelperText'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 import { AnimatedView, useReducedMotion, springConfigs } from '../../animation'
@@ -66,18 +66,25 @@ export function Toggle({
   size = 'md',
   color = 'primary',
   disabled = false,
+  error = false,
+  errorMessage,
+  showError = true,
   label,
   helperText,
   optional = false,
   labelElement,
-  containerStyle,
-  toggleStyle,
+  style,
+  contentStyle,
   labelStyle,
   helperTextStyle,
 }: ToggleProps) {
   // Support both controlled and uncontrolled mode
   const [internalChecked, setInternalChecked] = useState(false)
   const isControlled = checkedProp !== undefined
+
+  // Resolve error display
+  const shouldShowError = showError && error
+  const displayMessage = shouldShowError && errorMessage ? errorMessage : helperText
   const checked = isControlled ? checkedProp : internalChecked
 
   const { theme } = useThemeContext()
@@ -199,7 +206,7 @@ export function Toggle({
     isFocused && !disabled ? (Platform.OS === 'web' ? { boxShadow: boxShadows.focusBase } : {}) : {}
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, style]}>
       <Pressable
         onPress={handlePress}
         disabled={disabled}
@@ -225,7 +232,7 @@ export function Toggle({
                 ...focusRing,
               },
               disabled && styles.disabled,
-              toggleStyle,
+              contentStyle,
             ]}
           >
             {animatedThumbStyle ? (
@@ -254,7 +261,7 @@ export function Toggle({
           </View>
         </View>
 
-        {(label || labelElement || helperText) && (
+        {(label || labelElement || displayMessage) && (
           <View style={styles.textContainer}>
             {/* Label with optional indicator */}
             {(label || labelElement) && (
@@ -309,12 +316,12 @@ export function Toggle({
             )}
 
             {/* Helper text */}
-            {helperText && (
+            {displayMessage && (
               <HelperText
-                type={disabled ? 'disabled' : 'default'}
+                type={disabled ? 'disabled' : shouldShowError ? 'error' : 'default'}
                 textStyle={helperTextStyle}
               >
-                {helperText}
+                {displayMessage}
               </HelperText>
             )}
           </View>

@@ -22,7 +22,7 @@
 import { ScrollView } from 'react-native'
 import type { ModalContentProps } from './ModalContent.types'
 import { getModalContentStyles } from './ModalContent.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function ModalContent({
   children,

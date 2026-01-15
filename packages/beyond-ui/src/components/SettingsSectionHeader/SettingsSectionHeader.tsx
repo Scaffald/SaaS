@@ -18,7 +18,7 @@
 import { View, Text } from 'react-native'
 import type { SettingsSectionHeaderProps } from './SettingsSectionHeader.types'
 import { getSettingsSectionHeaderStyles } from './SettingsSectionHeader.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 
 export function SettingsSectionHeader({

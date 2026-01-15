@@ -20,7 +20,7 @@
 import { View, StyleSheet } from 'react-native'
 import type { CryptoWalletLayoutProps } from './CryptoWalletLayout.types'
 import { getContainerStyles, getContentStyles } from './CryptoWalletLayout.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function CryptoWalletLayout({
   sidebarContent,

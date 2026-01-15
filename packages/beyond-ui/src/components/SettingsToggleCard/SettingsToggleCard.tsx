@@ -20,7 +20,7 @@
 import { View, Text, Pressable } from 'react-native'
 import type { SettingsToggleCardProps } from './SettingsToggleCard.types'
 import { getSettingsToggleCardStyles } from './SettingsToggleCard.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 import { Toggle } from '../Toggle'
 import { colors } from '../../tokens/colors'
@@ -80,7 +80,7 @@ export function SettingsToggleCard({
         size="sm"
         color="primary"
         disabled={disabled}
-        containerStyle={{ marginTop: 2 }}
+        style={{ marginTop: 2 }}
       />
     </Pressable>
   )

@@ -42,7 +42,7 @@ import {
   getBadgeTextStyles,
   getIconSize,
 } from './NavIconButton.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Bell } from 'lucide-react-native'
 
 export function NavIconButton({

@@ -6,7 +6,7 @@
 import { View, StyleSheet, Platform } from 'react-native'
 import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import type { SliderColor, SliderHandleState } from './Slider.types'
 
 export interface SliderHandleProps {

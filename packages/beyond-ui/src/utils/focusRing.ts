@@ -27,7 +27,7 @@
 
 import { Platform, type ViewStyle } from 'react-native'
 import { boxShadows } from '../tokens/shadows'
-import type { ThemeMode } from '../playground/ThemeProvider'
+import type { ThemeMode } from '../theme'
 
 export type ShadowType = 'base' | 'button' | 'card' | 'dropdown'
 

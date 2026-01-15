@@ -12,7 +12,7 @@ import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { StepProps } from './Stepper.types'
 import { CheckIcon } from './StepperIcons'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function Step({
   status,

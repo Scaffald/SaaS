@@ -26,7 +26,7 @@
 import { View } from 'react-native'
 import type { ModalActionsProps } from './ModalActions.types'
 import { getModalActionsStyles } from './ModalActions.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Button } from '../Button'
 
 export function ModalActions({

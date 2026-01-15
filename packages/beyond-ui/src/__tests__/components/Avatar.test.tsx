@@ -5,7 +5,7 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
 import { describe, it, expect, vi } from 'vitest'
-import { ThemeProvider } from "./../../playground/ThemeProvider"
+import { ThemeProvider } from "./../../theme"
 import { Avatar } from '../../components/Avatar'
 import type { AvatarSize, AvatarColor, AvatarStatus } from '../../components/Avatar'
 

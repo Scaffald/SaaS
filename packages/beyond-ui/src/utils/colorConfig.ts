@@ -24,7 +24,7 @@
  */
 
 import { colors } from '../tokens/colors'
-import type { ThemeMode } from '../playground/ThemeProvider'
+import type { ThemeMode } from '../theme'
 
 export interface FormControlColorState {
   checked?: boolean

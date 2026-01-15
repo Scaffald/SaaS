@@ -13,7 +13,7 @@
 
 import { View, } from 'react-native'
 import type { ViewStyle } from 'react-native'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 
 export interface CancelIconProps {

@@ -48,6 +48,17 @@ export interface SidebarContextValue {
 }
 
 /**
+ * Sidebar style configuration returned by style factory
+ */
+export interface SidebarStyleConfig {
+  container: ViewStyle
+  scrollView: ViewStyle
+  scrollContent: ViewStyle
+  footerContainer: ViewStyle
+  activeColor: string
+}
+
+/**
  * Main Sidebar component props
  */
 export interface SidebarProps {

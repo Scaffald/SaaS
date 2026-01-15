@@ -24,7 +24,7 @@ import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 const meta: Meta = {
   title: 'Playground/Inputs',

@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { View, Text } from 'react-native'
 import { Breadcrumb } from '../../../components/Breadcrumb'
-import { ThemeProvider } from '../../../playground/ThemeProvider'
+import { ThemeProvider } from '../../../theme'
 
 const meta: Meta<typeof Breadcrumb> = {
   title: 'Components/Breadcrumb',

@@ -20,7 +20,7 @@ import { View, Text } from 'react-native'
 import type { ChartProps } from './Chart.types'
 import { getChartStyles } from './Chart.styles'
 import { getPeriodLabels } from './Chart.utils'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
 

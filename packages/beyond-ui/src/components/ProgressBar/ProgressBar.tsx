@@ -11,7 +11,7 @@ import type { ProgressBarProps } from './ProgressBar.types'
 import { ProgressBarBase } from './ProgressBarBase'
 import { ProgressIndicator } from './ProgressIndicator'
 import { HintMessage } from './HintMessage'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function ProgressBar({
   value,

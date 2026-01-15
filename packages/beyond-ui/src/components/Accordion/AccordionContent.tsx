@@ -9,7 +9,7 @@ import { useAccordionItemContext } from './AccordionItem'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function AccordionContent({
   children,

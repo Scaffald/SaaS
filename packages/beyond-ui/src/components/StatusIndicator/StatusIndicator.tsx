@@ -30,7 +30,7 @@ import {
   CircleDot,
 } from 'lucide-react-native'
 import type { StatusIndicatorProps } from './StatusIndicator.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { getStatusColors } from './StatusIndicator.utils'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'

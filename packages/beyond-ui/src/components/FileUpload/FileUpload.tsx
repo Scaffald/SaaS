@@ -24,15 +24,13 @@
  */
 
 import { useState } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text } from 'react-native'
 import type { FileUploadProps, UploadedFile } from './FileUpload.types'
 import { FileUploadDropZone } from './FileUploadDropZone'
 import { FileUploadList } from './FileUploadList'
 import { validateFile, fileToUploadedFile } from './FileUpload.utils'
-import { useThemeContext } from '../../playground/ThemeProvider'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { typography } from '../../tokens/typography'
+import { useThemeContext } from '../../theme'
+import { getFileUploadStyles } from './FileUpload.styles'
 
 /**
  * FileUpload component
@@ -80,7 +78,9 @@ export function FileUpload({
   const errorMessage = externalError || validationError
 
   const { theme } = useThemeContext()
-  const isLight = theme === 'light'
+
+  // Get styles from factory function
+  const styles = getFileUploadStyles(theme, disabled)
 
   // Handle file selection
   const handleFilesSelected = (selectedFiles: File[]) => {
@@ -139,22 +139,10 @@ export function FileUpload({
     onFileRemove?.(fileId)
   }
 
-  // Get label color
-  const labelColor = disabled
-    ? isLight
-      ? colors.text.light.disabled
-      : colors.text.dark.disabled
-    : isLight
-      ? colors.text.light.primary
-      : colors.text.dark.primary
-
-  // Get error color
-  const errorColor = colors.error[500]
-
   return (
     <View style={[styles.container, style]}>
       {/* Label */}
-      {label && <Text style={[styles.label, { color: labelColor }]}>{label}</Text>}
+      {label && <Text style={styles.label}>{label}</Text>}
 
       {/* Drop zone (only show if not at max files) */}
       {(!maxFiles || files.length < maxFiles) && (
@@ -183,29 +171,8 @@ export function FileUpload({
       )}
 
       {/* Error message */}
-      {errorMessage && (
-        <Text style={[styles.error, { color: errorColor }]}>{errorMessage}</Text>
-      )}
+      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
     </View>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing[16],
-  },
-  label: {
-    fontFamily: typography.body.fontFamily,
-    fontSize: typography.body.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight,
-    lineHeight: typography.body.lineHeight,
-  },
-  listContainer: {
-    // Gap is handled by FileUploadList
-  },
-  error: {
-    fontFamily: typography.small.fontFamily,
-    fontSize: typography.small.fontSize,
-    lineHeight: typography.small.lineHeight,
-  },
-})

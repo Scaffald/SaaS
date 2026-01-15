@@ -37,7 +37,7 @@ import type {
   FormRowProps,
   FormActionsProps,
 } from './Form.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { Text, H4, Caption } from '../Typography'

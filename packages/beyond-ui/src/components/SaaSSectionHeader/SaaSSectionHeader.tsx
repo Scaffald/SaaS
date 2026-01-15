@@ -56,7 +56,7 @@ import {
   getTimePeriodContainerStyles,
   getSubHeaderTextStyles,
 } from './SaaSSectionHeader.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Button } from '../Button'
 import { Input } from '../Input'
 import { Dropdown, DropdownSection, DropdownItem } from '../Dropdown'

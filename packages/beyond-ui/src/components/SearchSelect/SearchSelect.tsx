@@ -33,7 +33,7 @@ import {
   Text as RNText,
 } from 'react-native'
 import type { SearchSelectProps, SearchSelectOption } from './SearchSelect.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 import { borderRadius, borderWidth } from '../../tokens/borders'
 import { spacing } from '../../tokens/spacing'

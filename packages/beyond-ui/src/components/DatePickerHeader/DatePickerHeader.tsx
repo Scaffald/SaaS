@@ -36,7 +36,7 @@ import {
   getIconSize,
   getIconColor,
 } from './DatePickerHeader.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 const MONTH_NAMES = [
   'January',

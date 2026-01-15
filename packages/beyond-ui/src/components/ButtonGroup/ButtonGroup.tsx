@@ -42,7 +42,7 @@ import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { ButtonGroupProps, ButtonGroupItem } from './ButtonGroup.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function ButtonGroup({
   items,

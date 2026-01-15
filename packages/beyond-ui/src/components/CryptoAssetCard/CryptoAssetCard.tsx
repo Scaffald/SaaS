@@ -25,7 +25,7 @@ import {
   getPriceStyles,
   getChangeStyles,
 } from './CryptoAssetCard.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typographyVariants } from '../../tokens/typography'

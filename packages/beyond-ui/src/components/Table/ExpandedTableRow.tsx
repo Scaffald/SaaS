@@ -31,7 +31,7 @@
 import { View, Text } from 'react-native'
 import type { ExpandedTableRowProps } from './ExpandedTableRow.types'
 import { getExpandedTableRowStyles } from './ExpandedTableRow.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Input } from '../Input'
 import { TableCell } from './TableCell'
 import { spacing } from '../../tokens/spacing'

@@ -7,7 +7,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import type { AvatarGroupProps } from './Avatar.types'
 import { colors } from '../../tokens/colors'
 import { fontFamily, fontWeight } from '../../tokens/typography'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import React, { Children } from 'react'
 
 export function AvatarGroup({

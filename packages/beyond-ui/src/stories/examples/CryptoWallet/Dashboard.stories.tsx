@@ -14,7 +14,7 @@ import { Avatar } from '../../../components/Avatar'
 import { spacing } from '../../../tokens/spacing'
 import { colors } from '../../../tokens/colors'
 import { typographyVariants } from '../../../tokens/typography'
-import { useThemeContext } from '../../../playground/ThemeProvider'
+import { useThemeContext } from '../../../theme'
 import { portfolio, cryptoAssets } from './mockData'
 import {
   LayoutDashboard,

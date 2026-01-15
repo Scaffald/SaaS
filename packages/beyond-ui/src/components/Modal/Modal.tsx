@@ -26,7 +26,7 @@ import { useState, useEffect, useCallback, forwardRef, useRef, useMemo } from 'r
 import { View, Modal as RNModal, Platform } from 'react-native'
 import type { ModalProps } from './Modal.types'
 import { getModalStyles } from './Modal.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { useFocusTrap } from '../../accessibility/useFocusTrap'
 
 export const Modal = forwardRef<View, ModalProps>(function Modal({

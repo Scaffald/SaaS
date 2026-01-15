@@ -19,7 +19,7 @@
 import { useState } from 'react'
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native'
 import type { BreadcrumbItemProps } from './Breadcrumb.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'

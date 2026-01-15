@@ -5,7 +5,7 @@
 import { View, ActivityIndicator } from 'react-native'
 import { CheckIcon } from '../Stepper/StepperIcons'
 import { colors } from '../../tokens/colors'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 interface SpinnerIconProps {
   size?: number

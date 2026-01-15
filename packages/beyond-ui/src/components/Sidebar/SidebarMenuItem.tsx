@@ -25,14 +25,10 @@
  */
 
 import { useState } from 'react'
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native'
-import type { ViewStyle, } from 'react-native'
+import { View, Text, Pressable, Platform } from 'react-native'
 import type { SidebarMenuItemProps, SidebarItemType } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { borderRadius } from '../../tokens/borders'
-import { typography } from '../../tokens/typography'
+import { getSidebarMenuItemStyles, getIconColor } from './SidebarMenuItem.styles'
 import { Toggle } from '../Toggle'
 import { ChevronRight } from 'lucide-react-native'
 
@@ -64,107 +60,30 @@ export function SidebarMenuItem({
   value,
 }: SidebarMenuItemProps) {
   const { collapsed, theme, activeColor } = useSidebarContext()
-  const isLight = theme === 'light'
   const [isHovered, setIsHovered] = useState(false)
 
   // Determine actual state
   const actualState = disabled ? 'disabled' : stateProp || (isHovered ? 'hover' : 'default')
 
   // Use variant-specific active color if available
-  const activeBackgroundColor = activeColor || colors.primary[500]
+  const activeBackgroundColor = activeColor || '#000000'
+
+  // Get styles from factory function
+  const styles = getSidebarMenuItemStyles(type, actualState, theme, collapsed, activeBackgroundColor)
 
   // Handle item types that don't need interactive rendering
   if (type === 'heading') {
     return (
-      <View style={[styles.headingContainer, { paddingHorizontal: collapsed ? spacing[12] : spacing[12] }, style]}>
-        {!collapsed && label && (
-          <Text style={[styles.headingText, { color: isLight ? colors.text.light.secondary : colors.text.dark.secondary }]}>
-            {label}
-          </Text>
-        )}
+      <View style={[styles.headingContainer, style]}>
+        {!collapsed && label && <Text style={styles.headingText}>{label}</Text>}
       </View>
     )
   }
 
   if (type === 'divider') {
-    return (
-      <View
-        style={[
-          styles.dividerContainer,
-          {
-            marginHorizontal: spacing[12],
-            marginVertical: spacing[8],
-            borderTopWidth: 1,
-            borderTopColor: isLight ? colors.border.light.default : colors.border.dark.default,
-          },
-          style,
-        ]}
-      />
-    )
+    return <View style={[styles.dividerContainer, style]} />
   }
 
-  // Get styles based on state
-  const getItemStyles = (): ViewStyle[] => {
-    const baseStyles: ViewStyle[] = [
-      styles.item,
-      {
-        paddingHorizontal: spacing[12],
-        paddingVertical: type === 'double' ? spacing[12] : spacing[8],
-        marginHorizontal: spacing[16],
-        marginVertical: 1,
-        borderRadius: borderRadius.s,
-      },
-    ]
-
-    // Background color based on state
-    if (actualState === 'active') {
-      baseStyles.push({
-        backgroundColor: activeBackgroundColor,
-      })
-    } else if (actualState === 'hover' && !disabled) {
-      baseStyles.push({
-        backgroundColor: isLight ? colors.bg.light.subtle : colors.bg.dark.subtle,
-      })
-    }
-
-    // Child type indentation
-    if (type === 'child') {
-      baseStyles.push({
-        marginLeft: collapsed ? spacing[16] : spacing[24] + spacing[16],
-      })
-    }
-
-    // Additional spacing for double type (user profile)
-    if (type === 'double') {
-      baseStyles.push({
-        minHeight: 56,
-      })
-    }
-
-    return baseStyles
-  }
-
-  // Get text color based on state
-  const getTextColor = (): string => {
-    if (actualState === 'disabled') {
-      return isLight ? colors.text.light.disabled : colors.text.dark.disabled
-    }
-    if (actualState === 'active') {
-      return colors.white
-    }
-    return isLight ? colors.text.light.primary : colors.text.dark.primary
-  }
-
-  // Get icon color based on state
-  const getIconColor = (): string => {
-    if (actualState === 'disabled') {
-      return isLight ? colors.text.light.disabled : colors.text.dark.disabled
-    }
-    if (actualState === 'active') {
-      return colors.white
-    }
-    return isLight ? colors.icon.light.default : colors.icon.dark.default
-  }
 
   const iconSize = 20
 
@@ -174,9 +93,10 @@ export function SidebarMenuItem({
       return <View style={{ width: iconSize, height: iconSize }}>{avatar}</View>
     }
     if (IconComponent) {
+      const iconColor = getIconColor(actualState, theme)
       return (
         <View style={{ width: iconSize, height: iconSize }}>
-          <IconComponent size={iconSize} color={getIconColor()} />
+          <IconComponent size={iconSize} color={iconColor} />
         </View>
       )
     }
@@ -200,17 +120,12 @@ export function SidebarMenuItem({
     }
 
     if (badge !== undefined && !collapsed) {
+      const badgeStyle = {
+        ...styles.badge,
+        minWidth: typeof badge === 'number' && badge > 9 ? 20 : 16,
+      }
       trailingItems.push(
-        <View
-          key="badge"
-          style={[
-            styles.badge,
-            {
-              backgroundColor: colors.error[500],
-              minWidth: typeof badge === 'number' && badge > 9 ? 20 : 16,
-            },
-          ]}
-        >
+        <View key="badge" style={badgeStyle}>
           <Text style={styles.badgeText}>{badge}</Text>
         </View>
       )
@@ -218,22 +133,24 @@ export function SidebarMenuItem({
 
     if (count !== undefined && !collapsed) {
       trailingItems.push(
-        <Text key="count" style={[styles.countText, { color: getTextColor() }]}>
+        <Text key="count" style={styles.countText}>
           {count}
         </Text>
       )
     }
 
     if (showExpandIcon && !collapsed) {
+      const iconColor = getIconColor(actualState, theme)
       trailingItems.push(
         <View
           key="expand"
-          style={[
-            { transform: [{ rotate: expanded ? '90deg' : '0deg' }] },
-            { width: 16, height: 16 },
-          ]}
+          style={{
+            transform: [{ rotate: expanded ? '90deg' : '0deg' }],
+            width: 16,
+            height: 16,
+          }}
         >
-          <ChevronRight size={16} color={getIconColor()} />
+          <ChevronRight size={16} color={iconColor} />
         </View>
       )
     }
@@ -254,7 +171,7 @@ export function SidebarMenuItem({
   }
 
   const itemContent = (
-    <View style={[...getItemStyles(), style]}>
+    <View style={[styles.item, style]}>
       {/* Leading content */}
       {renderLeading()}
 
@@ -262,28 +179,13 @@ export function SidebarMenuItem({
       {!collapsed && label && (
         <View style={styles.textContainer}>
           <Text
-            style={[
-              styles.label,
-              { color: getTextColor() },
-              type === 'double' ? styles.labelWithSupport : null,
-              labelStyle,
-            ]}
+            style={[styles.label, type === 'double' ? styles.labelWithSupport : null, labelStyle]}
             numberOfLines={1}
           >
             {label}
           </Text>
           {supportingText && type === 'double' && (
-            <Text
-              style={[
-                styles.supportingText,
-                {
-                  color: actualState === 'active'
-                    ? colors.white
-                    : (isLight ? colors.text.light.secondary : colors.text.dark.secondary)
-                },
-              ]}
-              numberOfLines={1}
-            >
+            <Text style={styles.supportingText} numberOfLines={1}>
               {supportingText}
             </Text>
           )}
@@ -360,88 +262,4 @@ export function SidebarMenuItem({
   )
 }
 
-const styles = StyleSheet.create({
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[12],
-    minHeight: 40,
-  },
-  headingContainer: {
-    paddingVertical: spacing[8],
-    paddingHorizontal: spacing[16] + spacing[4],
-  },
-  headingText: {
-    fontFamily: typography.caption.fontFamily,
-    fontSize: typography.caption.fontSize,
-    fontWeight: typography.body.fontWeight,
-    lineHeight: typography.caption.lineHeight,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  dividerContainer: {
-    height: 1,
-  },
-  textContainer: {
-    flex: 1,
-    gap: spacing[2],
-    minWidth: 0, // Ensure text can shrink
-  },
-  label: {
-    fontFamily: typography.body.fontFamily,
-    fontSize: typography.body.fontSize,
-    fontWeight: typography.body.fontWeight,
-    lineHeight: typography.body.lineHeight,
-  },
-  labelWithSupport: {
-    fontWeight: typography.bodyMedium.fontWeight,
-  },
-  supportingText: {
-    fontFamily: typography.body.fontFamily,
-    fontSize: typography.small.fontSize,
-    fontWeight: typography.body.fontWeight,
-    lineHeight: typography.small.lineHeight,
-  },
-  trailing: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[8],
-  },
-  badge: {
-    height: 16,
-    paddingHorizontal: 4,
-    borderRadius: borderRadius.max,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badgeText: {
-    fontFamily: typography.caption.fontFamily,
-    fontSize: typography.caption.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight,
-    color: colors.white,
-    lineHeight: 16,
-  },
-  countText: {
-    fontFamily: typography.body.fontFamily,
-    fontSize: typography.small.fontSize,
-    fontWeight: typography.body.fontWeight,
-    lineHeight: typography.small.lineHeight,
-  },
-  ctaButton: {
-    paddingHorizontal: spacing[8],
-    paddingVertical: spacing[4],
-    borderRadius: borderRadius.s,
-    backgroundColor: colors.primary[500],
-  },
-  ctaButtonText: {
-    fontFamily: typography.bodyMedium.fontFamily,
-    fontSize: typography.small.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight,
-    color: colors.white,
-  },
-  submenu: {
-    marginLeft: spacing[24],
-    gap: spacing[2],
-  },
-})
 

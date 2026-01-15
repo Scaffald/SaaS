@@ -28,7 +28,7 @@ import {
 } from 'lucide-react-native'
 import type { TableCellProps } from './TableCell.types'
 import { getTableCellStyles } from './TableCell.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Checkbox } from '../Checkbox'
 import { Radio } from '../Radio'
 import { Toggle } from '../Toggle'
@@ -130,7 +130,7 @@ export function TableCell(props: TableCellProps) {
           onChange={handleSelectionChange}
           size="md"
           color="primary"
-          containerStyle={{ margin: 0 }}
+          style={{ margin: 0 }}
         />
       )
     }
@@ -141,7 +141,7 @@ export function TableCell(props: TableCellProps) {
           onChange={handleSelectionChange}
           size="md"
           color="primary"
-          containerStyle={{ margin: 0 }}
+          style={{ margin: 0 }}
         />
       )
     }
@@ -152,7 +152,7 @@ export function TableCell(props: TableCellProps) {
           onChange={handleSelectionChange}
           size="md"
           color="primary"
-          containerStyle={{ margin: 0 }}
+          style={{ margin: 0 }}
         />
       )
     }
@@ -165,7 +165,7 @@ export function TableCell(props: TableCellProps) {
           onChange={handleSelectionChange}
           size="md"
           color="primary"
-          containerStyle={{ margin: 0 }}
+          style={{ margin: 0 }}
         />
       )
     }
@@ -176,7 +176,7 @@ export function TableCell(props: TableCellProps) {
           onChange={handleSelectionChange}
           size="md"
           color="primary"
-          containerStyle={{ margin: 0 }}
+          style={{ margin: 0 }}
         />
       )
     }
@@ -187,7 +187,7 @@ export function TableCell(props: TableCellProps) {
           onChange={handleSelectionChange}
           size="md"
           color="primary"
-          containerStyle={{ margin: 0 }}
+          style={{ margin: 0 }}
         />
       )
     }

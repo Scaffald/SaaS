@@ -21,7 +21,7 @@
 import { View, Text, StyleSheet } from 'react-native'
 import type { TradeControlsProps } from './TradeControls.types'
 import { getContainerStyles } from './TradeControls.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Input } from '../Input'
 import { Button } from '../Button'
 import { colors } from '../../tokens/colors'

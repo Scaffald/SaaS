@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { View } from 'react-native'
 import { FileUpload } from '../../../components/FileUpload'
 import type { UploadedFile } from '../../../components/FileUpload'
-import { ThemeProvider } from '../../../playground/ThemeProvider'
+import { ThemeProvider } from '../../../theme'
 
 const meta: Meta<typeof FileUpload> = {
   title: 'Components/FileUpload',

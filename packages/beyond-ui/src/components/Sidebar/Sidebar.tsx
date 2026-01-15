@@ -17,12 +17,10 @@
  */
 
 import { useState, createContext, useContext } from 'react'
-import { View, StyleSheet, ScrollView, Platform } from 'react-native'
+import { View, ScrollView, Platform } from 'react-native'
 import type { SidebarProps, SidebarContextValue } from './Sidebar.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { borderWidth } from '../../tokens/borders'
+import { useThemeContext } from '../../theme'
+import { getSidebarStyles } from './Sidebar.styles'
 
 // Sidebar context
 const SidebarContext = createContext<SidebarContextValue | null>(null)
@@ -66,55 +64,21 @@ export function Sidebar({
     onCollapseChange?.(newCollapsed)
   }
 
-  const width = collapsed ? collapsedWidth : expandedWidth
-
-  // Get background color based on variant and theme
-  const getBackgroundColor = (): string => {
-    if (isLight) {
-      return colors.bg.light.default
-    }
-    return colors.bg.dark.default
-  }
-
-  // Get active color based on variant
-  const getActiveColor = (): string => {
-    switch (variant) {
-      case 'finance':
-        return colors.blue[500]
-      case 'management':
-        return colors.purple[500]
-      case 'banking':
-        return colors.green[500]
-      case 'crypto':
-        return colors.orange[500]
-      default:
-        return colors.primary[500]
-    }
-  }
-
-  const backgroundColor = getBackgroundColor()
+  // Get styles from factory function
+  const styles = getSidebarStyles(variant, theme, collapsed, expandedWidth, collapsedWidth)
 
   // Create context value with active color
   const contextValue: SidebarContextValue = {
     collapsed,
     variant,
     theme,
-    activeColor: getActiveColor(),
+    activeColor: styles.activeColor,
   }
 
   return (
     <SidebarContext.Provider value={contextValue}>
       <View
-        style={[
-          styles.container,
-          {
-            width,
-            backgroundColor,
-            borderRightWidth: borderWidth.thin,
-            borderRightColor: isLight ? colors.border.light.default : colors.border.dark.default,
-          },
-          style,
-        ]}
+        style={[styles.container, style]}
         {...(Platform.OS === 'web' && {
           role: 'navigation',
           'aria-label': 'Main navigation',
@@ -146,27 +110,4 @@ export function Sidebar({
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    height: '100%',
-    flexDirection: 'column',
-    ...(Platform.OS === 'web' && {
-      // Ensure sidebar stays fixed on web
-      position: 'fixed',
-      top: 0,
-      left: 0,
-    } as any),
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingVertical: spacing[8],
-    gap: spacing[2],
-  },
-  footerContainer: {
-    paddingTop: spacing[8],
-    paddingBottom: spacing[12],
-  },
-})
 

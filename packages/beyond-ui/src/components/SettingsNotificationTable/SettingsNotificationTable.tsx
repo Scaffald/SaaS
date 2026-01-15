@@ -17,7 +17,7 @@
 
 import { View, Text, ScrollView } from 'react-native'
 import type { SettingsNotificationTableProps, NotificationPreference } from './SettingsNotificationTable.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Table, TableColumnHeader, TableCell } from '../Table'
 import { Toggle } from '../Toggle'
 import { colors } from '../../tokens/colors'

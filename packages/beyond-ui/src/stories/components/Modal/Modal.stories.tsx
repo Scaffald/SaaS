@@ -17,7 +17,7 @@ import {
 } from '../../../components/Modal'
 import { Button } from '../../../components/Button'
 import { Checkbox } from '../../../components/Checkbox'
-import { ThemeProvider } from '../../../playground/ThemeProvider'
+import { ThemeProvider } from '../../../theme'
 import { CheckCircle } from 'lucide-react-native'
 import { spacing } from '../../../tokens/spacing'
 

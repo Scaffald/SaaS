@@ -40,6 +40,17 @@ export interface RadioProps {
   error?: boolean
 
   /**
+   * Error message to display when error is true
+   */
+  errorMessage?: string
+
+  /**
+   * Whether to show error state visually
+   * @default true when error is true
+   */
+  showError?: boolean
+
+  /**
    * Label text to display next to radio
    */
   label?: string
@@ -70,14 +81,14 @@ export interface RadioProps {
   name?: string
 
   /**
-   * Additional container styles
+   * Container style
    */
-  containerStyle?: object
+  style?: object
 
   /**
-   * Additional radio circle styles
+   * Radio circle style
    */
-  radioStyle?: object
+  contentStyle?: object
 
   /**
    * Additional label styles

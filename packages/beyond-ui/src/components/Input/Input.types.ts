@@ -36,9 +36,26 @@ export interface InputProps extends Omit<TextInputProps, 'style'> {
   helperText?: string
 
   /**
-   * Error message (overrides helperText when present)
+   * Whether the field has an error state
    */
-  error?: string
+  error?: boolean
+
+  /**
+   * Error message to display when error is true
+   */
+  errorMessage?: string
+
+  /**
+   * Whether to show error state visually
+   * @default true when error is true
+   */
+  showError?: boolean
+
+  /**
+   * Validate field on blur event
+   * @default false
+   */
+  validateOnBlur?: boolean
 
   /**
    * Input state variant
@@ -81,14 +98,14 @@ export interface InputProps extends Omit<TextInputProps, 'style'> {
   fullWidth?: boolean
 
   /**
-   * Custom input container style
+   * Custom container style
    */
-  containerStyle?: ViewStyle
+  style?: ViewStyle
 
   /**
-   * Custom input text style
+   * Custom input field style
    */
-  inputStyle?: TextStyle
+  contentStyle?: TextStyle
 
   /**
    * Custom label style

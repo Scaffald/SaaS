@@ -35,6 +35,22 @@ export interface ToggleProps {
   disabled?: boolean
 
   /**
+   * Whether the toggle has an error state
+   */
+  error?: boolean
+
+  /**
+   * Error message to display when error is true
+   */
+  errorMessage?: string
+
+  /**
+   * Whether to show error state visually
+   * @default true when error is true
+   */
+  showError?: boolean
+
+  /**
    * Label text to display next to toggle
    */
   label?: string
@@ -55,14 +71,14 @@ export interface ToggleProps {
   labelElement?: React.ReactNode
 
   /**
-   * Additional container styles
+   * Container style
    */
-  containerStyle?: object
+  style?: object
 
   /**
-   * Additional toggle switch styles
+   * Toggle switch style
    */
-  toggleStyle?: object
+  contentStyle?: object
 
   /**
    * Additional label styles

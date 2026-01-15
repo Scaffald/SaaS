@@ -33,7 +33,7 @@ import { useState, useMemo } from 'react'
 import { View, Text, ScrollView } from 'react-native'
 import type { TableProps, TableSortConfig, TableSelectionConfig, TableExpansionConfig } from './Table.types'
 import { getTableStyles } from './Table.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { TableColumnHeader } from './TableColumnHeader'
 import { TableCell } from './TableCell'
 import { ExpandedTableRow } from './ExpandedTableRow'
@@ -249,7 +249,7 @@ export function Table({
                     placeholder={searchPlaceholder}
                     value={searchValue}
                     onChangeText={handleSearchChange}
-                    containerStyle={{ flex: 1, maxWidth: 263 }}
+                    style={{ flex: 1, maxWidth: 263 }}
                   />
                 )}
                 {actions.length > 0 && (
@@ -289,7 +289,7 @@ export function Table({
                   placeholder={searchPlaceholder}
                   value={searchValue}
                   onChangeText={handleSearchChange}
-                  containerStyle={{ flex: 1, maxWidth: 263 }}
+                  style={{ flex: 1, maxWidth: 263 }}
                 />
               )}
               {actions.length > 0 && (
@@ -332,7 +332,7 @@ export function Table({
                 placeholder={searchPlaceholder}
                 value={searchValue}
                 onChangeText={handleSearchChange}
-                containerStyle={{ flex: 1, maxWidth: 263 }}
+                style={{ flex: 1, maxWidth: 263 }}
               />
             )}
             {actions.length > 0 && (

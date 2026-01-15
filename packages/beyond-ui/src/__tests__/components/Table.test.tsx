@@ -6,7 +6,7 @@ import React from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
 import { View, Text } from 'react-native'
 import { describe, it, expect, vi } from 'vitest'
-import { ThemeProvider } from '../../playground/ThemeProvider'
+import { ThemeProvider } from '../../theme'
 import { Table, TableCell, TableColumnHeader, ExpandedTableRow } from '../../components/Table'
 
 // Wrapper component for tests

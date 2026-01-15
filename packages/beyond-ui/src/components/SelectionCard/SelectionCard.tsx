@@ -48,7 +48,7 @@ import type { CheckboxColor } from '../Checkbox'
 import { Radio } from '../Radio'
 import type { RadioColor } from '../Radio'
 import { Toggle } from '../Toggle'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export function SelectionCard({

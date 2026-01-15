@@ -52,13 +52,16 @@ import type {
   PopoverPlacement,
   TriggerLayout,
 } from './Popover.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
-import { borderRadius } from '../../tokens/borders'
-import { shadows, boxShadows } from '../../tokens/shadows'
-import { spacing } from '../../tokens/spacing'
 import { H4 } from '../Typography'
 import { Button } from '../Button'
+import {
+  getPopoverStyles,
+  getPopoverHeaderStyles,
+  getPopoverContentStyles,
+  getPopoverFooterStyles,
+} from './Popover.styles'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -363,7 +366,7 @@ export function Popover({
       })
     : children
 
-  const styles = getStyles(theme, maxWidth, width, triggerLayout?.width)
+  const styles = getPopoverStyles(theme, maxWidth, width, triggerLayout?.width)
   const arrowStyle = showArrow
     ? getArrowStyleWithColor(placement, position, colors.bg[theme].default)
     : null
@@ -431,7 +434,7 @@ export function PopoverHeader({
 }: PopoverHeaderProps) {
   const { theme } = useThemeContext()
   const context = usePopoverContext()
-  const styles = getHeaderStyles(theme)
+  const styles = getPopoverHeaderStyles(theme)
 
   const handleClose = onClose || context?.onClose
 
@@ -467,7 +470,7 @@ export function PopoverContent({
   style,
   testID,
 }: PopoverContentProps) {
-  const styles = getContentStyles()
+  const styles = getPopoverContentStyles()
 
   return (
     <View style={[styles.content, style]} testID={testID}>
@@ -487,7 +490,7 @@ export function PopoverFooter({
   testID,
 }: PopoverFooterProps) {
   const { theme } = useThemeContext()
-  const styles = getFooterStyles(theme, align)
+  const styles = getPopoverFooterStyles(theme, align)
 
   return (
     <View style={[styles.footer, style]} testID={testID}>
@@ -496,98 +499,4 @@ export function PopoverFooter({
   )
 }
 
-// ============================================================================
-// Styles
-// ============================================================================
-
-function getStyles(
-  theme: 'light' | 'dark',
-  maxWidth: number,
-  width?: number | 'auto' | 'trigger',
-  triggerWidth?: number
-) {
-  const shadow = shadows.m
-
-  let popoverWidth: number | 'auto' | undefined
-  if (width === 'trigger' && triggerWidth) {
-    popoverWidth = triggerWidth
-  } else if (typeof width === 'number') {
-    popoverWidth = width
-  } else {
-    popoverWidth = undefined
-  }
-
-  return StyleSheet.create({
-    container: {
-      position: 'absolute',
-      width: popoverWidth,
-      maxWidth,
-      backgroundColor: colors.bg[theme].default,
-      borderRadius: borderRadius.l,
-      ...(Platform.OS === 'web'
-        ? {
-            boxShadow: boxShadows.m,
-          }
-        : {
-            shadowColor: shadow.shadowColor,
-            shadowOffset: shadow.shadowOffset,
-            shadowOpacity: shadow.shadowOpacity,
-            shadowRadius: shadow.shadowRadius,
-            elevation: shadow.elevation,
-          }),
-    },
-    content: {
-      overflow: 'hidden',
-      borderRadius: borderRadius.l,
-    },
-  })
-}
-
-function getHeaderStyles(theme: 'light' | 'dark') {
-  return StyleSheet.create({
-    header: {
-      paddingHorizontal: spacing[12],
-      paddingVertical: spacing[8],
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border[theme].subtle,
-    },
-    headerContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-  })
-}
-
-function getContentStyles() {
-  return StyleSheet.create({
-    content: {
-      padding: spacing[12],
-    },
-  })
-}
-
-function getFooterStyles(
-  theme: 'light' | 'dark',
-  align: 'left' | 'center' | 'right' | 'space-between'
-) {
-  const alignMap = {
-    left: 'flex-start',
-    center: 'center',
-    right: 'flex-end',
-    'space-between': 'space-between',
-  } as const
-
-  return StyleSheet.create({
-    footer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: alignMap[align],
-      gap: spacing[8],
-      paddingHorizontal: spacing[12],
-      paddingVertical: spacing[8],
-      borderTopWidth: 1,
-      borderTopColor: colors.border[theme].subtle,
-    },
-  })
-}
+// Styles are now in Popover.styles.ts

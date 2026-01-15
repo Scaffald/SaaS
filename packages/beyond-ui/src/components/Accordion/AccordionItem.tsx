@@ -11,7 +11,7 @@ import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { boxShadows } from '../../tokens/shadows'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 // AccordionItem context
 const AccordionItemContext = createContext<AccordionItemContextValue | null>(null)

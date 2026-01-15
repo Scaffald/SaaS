@@ -11,7 +11,7 @@ import { Checkbox } from '../../../components/Checkbox'
 import { spacing } from '../../../tokens/spacing'
 import { colors } from '../../../tokens/colors'
 import { typographyVariants } from '../../../tokens/typography'
-import { useThemeContext } from '../../../playground/ThemeProvider'
+import { useThemeContext } from '../../../theme'
 
 const meta: Meta = {
   title: 'Examples/CryptoWallet/RegistrationFlow',

@@ -29,7 +29,7 @@ import { forwardRef, useMemo } from 'react'
 import { Pressable, Text, View, ActivityIndicator, Platform } from 'react-native'
 import type { ButtonProps } from './Button.types'
 import { getButtonStyles } from './Button.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 
 export const Button = forwardRef<View, ButtonProps>(function Button({

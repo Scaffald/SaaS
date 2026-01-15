@@ -4,12 +4,8 @@
  */
 
 import type React from 'react'
-import { useMemo, useCallback, useState } from 'react'
-import { View, Pressable, Image, StyleSheet, Platform, type ViewStyle, type ImageStyle } from 'react-native'
-import { colors } from '../../tokens/colors'
-import { spacing } from '../../tokens/spacing'
-import { borderRadius } from '../../tokens/borders'
-import { shadows, boxShadows } from '../../tokens/shadows'
+import { useCallback, useState } from 'react'
+import { View, Pressable, Image } from 'react-native'
 import { H4, Text } from '../Typography'
 import { Row } from '../Layout'
 import type {
@@ -18,54 +14,14 @@ import type {
   CardContentProps,
   CardFooterProps,
   CardMediaProps,
-  CardPadding,
-  CardRadius,
-  CardElevation,
 } from './Card.types'
-
-// ============================================================================
-// Types
-// ============================================================================
-
-/** Shadow style properties for React Native */
-interface ShadowStyle {
-  shadowColor: string
-  shadowOffset: { width: number; height: number }
-  shadowOpacity: number
-  shadowRadius: number
-  elevation: number
-}
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-const PADDING_MAP: Record<CardPadding, number> = {
-  none: 0,
-  sm: spacing[8],
-  md: spacing[12],
-  lg: spacing[16],
-  xl: spacing[24],
-}
-
-const RADIUS_MAP: Record<CardRadius, number> = {
-  sm: borderRadius.s,
-  md: borderRadius.m,
-  lg: borderRadius.l,
-  xl: borderRadius.xl,
-}
-
-const SHADOW_MAP: Record<CardElevation, ShadowStyle> = {
-  sm: shadows.s as ShadowStyle,
-  md: shadows.m as ShadowStyle,
-  lg: shadows.l as ShadowStyle,
-}
-
-const BOX_SHADOW_MAP: Record<CardElevation, string> = {
-  sm: boxShadows.s,
-  md: boxShadows.m,
-  lg: boxShadows.l,
-}
+import {
+  getCardStyles,
+  getCardHeaderStyles,
+  getCardContentStyles,
+  getCardFooterStyles,
+  getCardMediaStyles,
+} from './Card.styles'
 
 // ============================================================================
 // Card Component
@@ -123,59 +79,9 @@ export function Card({
     onPressOut?.()
   }, [onPressOut])
 
-  const cardStyle = useMemo<ViewStyle>(() => {
-    const baseStyle: ViewStyle = {
-      backgroundColor: colors.bg.light.default,
-      borderRadius: RADIUS_MAP[radius],
-      padding: PADDING_MAP[padding],
-      overflow: 'hidden',
-    }
-
-    // Variant-specific styles
-    switch (variant) {
-      case 'elevated': {
-        const elevatedStyle: ViewStyle = {
-          ...baseStyle,
-          ...SHADOW_MAP[elevation],
-        }
-        // Add web-specific box-shadow
-        if (Platform.OS === 'web') {
-          ;(elevatedStyle as Record<string, unknown>).boxShadow = BOX_SHADOW_MAP[elevation]
-        }
-        return elevatedStyle
-      }
-      case 'outlined':
-        return {
-          ...baseStyle,
-          borderWidth: 1,
-          borderColor: colors.border.light.default,
-        }
-      case 'filled':
-        return {
-          ...baseStyle,
-          backgroundColor: colors.bg.light.subtle,
-        }
-      default:
-        return baseStyle
-    }
-  }, [variant, radius, padding, elevation])
-
-  const pressedStyle = useMemo<ViewStyle>(() => {
-    if (!isPressed || disabled) return {}
-    return {
-      opacity: 0.9,
-      transform: [{ scale: 0.98 }],
-    }
-  }, [isPressed, disabled])
-
-  const disabledStyle = useMemo<ViewStyle>(() => {
-    if (!disabled) return {}
-    return {
-      opacity: 0.6,
-    }
-  }, [disabled])
-
-  const combinedStyle = [cardStyle, pressedStyle, disabledStyle, style]
+  // Get styles from factory function
+  const styles = getCardStyles(variant, padding, radius, elevation, isPressed, disabled)
+  const combinedStyle = [styles.container, styles.pressed, styles.disabled, style]
 
   if (pressable && onPress) {
     return (
@@ -224,6 +130,8 @@ export function CardHeader({
   action,
   style,
 }: CardHeaderProps): React.ReactElement {
+  const styles = getCardHeaderStyles()
+
   // If custom children provided, render them
   if (children && !title) {
     return <View style={[styles.header, style]}>{children}</View>
@@ -264,14 +172,8 @@ export function CardContent({
   padding = 'md',
   style,
 }: CardContentProps): React.ReactElement {
-  const contentStyle = useMemo<ViewStyle>(
-    () => ({
-      padding: PADDING_MAP[padding],
-    }),
-    [padding]
-  )
-
-  return <View style={[contentStyle, style]}>{children}</View>
+  const styles = getCardContentStyles(padding)
+  return <View style={[styles.content, style]}>{children}</View>
 }
 
 // ============================================================================
@@ -292,24 +194,12 @@ export function CardFooter({
   align = 'right',
   style,
 }: CardFooterProps): React.ReactElement {
-  const alignMap: Record<string, ViewStyle['justifyContent']> = {
-    left: 'flex-start',
-    center: 'center',
-    right: 'flex-end',
-    'space-between': 'space-between',
-  }
-
-  const footerStyle = useMemo<ViewStyle>(
-    () => ({
-      flexDirection: 'row',
-      justifyContent: alignMap[align],
-      alignItems: 'center',
-      gap: spacing[8],
-    }),
-    [align]
+  const styles = getCardFooterStyles(align)
+  return (
+    <View style={[styles.footer, style]}>
+      <View style={styles.footerInner}>{children}</View>
+    </View>
   )
-
-  return <View style={[styles.footer, footerStyle, style]}>{children}</View>
 }
 
 // ============================================================================
@@ -331,46 +221,14 @@ export function CardMedia({
   height = 200,
   style,
 }: CardMediaProps): React.ReactElement {
-  const mediaStyle = useMemo(
-    (): ImageStyle => ({
-      width: '100%' as unknown as number, // 100% works on web, cast for RN types
-      height,
-    }),
-    [height]
-  )
-
+  const styles = getCardMediaStyles(height)
   return (
     <Image
       source={source}
-      style={[mediaStyle, style] as ImageStyle[]}
+      style={[styles.media, style]}
       accessibilityLabel={alt}
       resizeMode="cover"
     />
   )
 }
 
-// ============================================================================
-// Styles
-// ============================================================================
-
-const styles = StyleSheet.create({
-  header: {
-    padding: spacing[16],
-    paddingBottom: spacing[8],
-  },
-  headerText: {
-    flex: 1,
-  },
-  subtitle: {
-    marginTop: spacing[4],
-  },
-  headerAction: {
-    marginLeft: spacing[12],
-  },
-  footer: {
-    padding: spacing[16],
-    paddingTop: spacing[8],
-    borderTopWidth: 1,
-    borderTopColor: colors.border.light.subtle,
-  },
-})

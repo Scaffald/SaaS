@@ -25,7 +25,7 @@ import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
 import { typography } from '../../tokens/typography'
 import { InfoIcon } from '../Icon'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export type InputLabelType = 'default' | 'error' | 'disabled'
 

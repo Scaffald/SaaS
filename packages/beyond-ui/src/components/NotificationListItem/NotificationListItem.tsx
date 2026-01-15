@@ -54,7 +54,7 @@ import {
   getLinkTextStyles,
   getLinksContainerStyles,
 } from './NotificationListItem.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Avatar } from '../Avatar'
 import { typography } from '../../tokens/typography'
 import { spacing } from '../../tokens/spacing'

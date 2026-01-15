@@ -34,7 +34,7 @@ import type { BreadcrumbProps } from './Breadcrumb.types'
 import { BreadcrumbItem } from './BreadcrumbItem'
 import { BreadcrumbSeparator } from './BreadcrumbSeparator'
 import { HomeIcon } from './BreadcrumbIcons'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 

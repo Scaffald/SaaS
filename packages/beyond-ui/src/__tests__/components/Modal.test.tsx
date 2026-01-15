@@ -5,7 +5,7 @@
 import { render, fireEvent } from '@testing-library/react-native'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { View, Text } from 'react-native'
-import { ThemeProvider } from '../../playground/ThemeProvider'
+import { ThemeProvider } from '../../theme'
 import {
   Modal,
   ModalHeader,

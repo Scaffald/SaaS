@@ -29,7 +29,7 @@ import { View, Text, Pressable, Platform } from 'react-native'
 import { ChevronUp, ChevronDown } from 'lucide-react-native'
 import type { TableColumnHeaderProps, SortDirection } from './TableColumnHeader.types'
 import { getTableColumnHeaderStyles } from './TableColumnHeader.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { Checkbox } from '../Checkbox'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -110,7 +110,7 @@ export function TableColumnHeader({
           onChange={handleCheckboxChange}
           size="md"
           color="primary"
-          containerStyle={{ margin: 0 }}
+          style={{ margin: 0 }}
         />
       )}
 

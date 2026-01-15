@@ -18,7 +18,7 @@ import { Pressable, View, StyleSheet } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import type { AppStoreButtonProps, AppStore, StoreConfig } from './AppStoreButton.types'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 /**
  * Store configurations with dimensions

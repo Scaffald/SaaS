@@ -9,7 +9,7 @@ import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import type { ProgressIndicatorProps } from './ProgressBar.types'
 import { SpinnerIcon, CheckCircleIcon, CancelIcon } from './ProgressIndicatorIcons'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function ProgressIndicator({
   value,

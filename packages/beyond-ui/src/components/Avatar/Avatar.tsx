@@ -8,7 +8,7 @@ import { View, Text, Image, Pressable, StyleSheet, Platform } from 'react-native
 import type { AvatarProps } from './Avatar.types'
 import { colors } from '../../tokens/colors'
 import { fontFamily, fontWeight } from '../../tokens/typography'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 // Avatar size to dimensions mapping
 const SIZE_DIMENSIONS = {

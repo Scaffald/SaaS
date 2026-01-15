@@ -5,7 +5,7 @@
 import React from 'react'
 import { render } from '@testing-library/react-native'
 import { describe, it, expect } from 'vitest'
-import { ThemeProvider } from '../../playground/ThemeProvider'
+import { ThemeProvider } from '../../theme'
 import {
   BarChart,
   BarChartBase,

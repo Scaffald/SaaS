@@ -17,7 +17,7 @@
 import { View, Text, Pressable } from 'react-native'
 import type { AppearanceThemeCardProps } from './AppearanceThemeCard.types'
 import { getAppearanceThemeCardStyles } from './AppearanceThemeCard.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'

@@ -14,7 +14,7 @@
 import { View, StyleSheet } from 'react-native'
 import type { BreadcrumbSeparatorProps } from './Breadcrumb.types'
 import { ChevronIcon } from './BreadcrumbIcons'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
 
 /**

@@ -42,7 +42,7 @@ function getRowStyles(selected: boolean, expanded: boolean, theme: ThemeMode = '
         : colors.bg[theme].default,
   }
 }
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function TableRow({
   children,

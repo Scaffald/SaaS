@@ -29,7 +29,7 @@ import { View, Text, Pressable } from 'react-native'
 import { X } from 'lucide-react-native'
 import type { ModalHeaderProps } from './ModalHeader.types'
 import { getModalHeaderStyles } from './ModalHeader.styles'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 
 export function ModalHeader({
   title,

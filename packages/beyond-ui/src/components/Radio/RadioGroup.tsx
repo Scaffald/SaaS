@@ -26,7 +26,7 @@ import { Radio } from './Radio'
 import { spacing } from '../../tokens/spacing'
 import { typography } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'
-import { useThemeContext } from '../../playground/ThemeProvider'
+import { useThemeContext } from '../../theme'
 import type { RadioGroupProps } from './RadioGroup.types'
 
 export function RadioGroup({
