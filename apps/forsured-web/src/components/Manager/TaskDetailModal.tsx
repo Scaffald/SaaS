@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState } from 'react';
-import { X, Calendar, User, MessageSquare, CheckCircle2 } from 'lucide-react';
-import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
-import { Task } from '../../types';
-import Modal from '../Common/Modal';
-import Button from '../Common/Button';
-import Textarea from '../Common/Textarea';
-import Select from '../Common/Select';
-import { formatDate } from '../../utils/dateHelpers';
+import { useState } from 'react'
+import { X, Calendar, User, MessageSquare, CheckCircle2 } from 'lucide-react'
+import { Stack, Row, Text, H2, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { Task } from '../../types'
+import Modal from '../Common/Modal'
+import Button from '../Common/Button'
+import Textarea from '../Common/Textarea'
+import Select from '../Common/Select'
+import { formatDate } from '../../utils/dateHelpers'
 
 interface TaskDetailModalProps {
-  task: Task | null;
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
-  availableUsers?: Array<{ id: string; name: string; role: string }>;
+  task: Task | null
+  isOpen: boolean
+  onClose: () => void
+  onUpdateTask: (taskId: string, updates: Partial<Task>) => void
+  availableUsers?: Array<{ id: string; name: string; role: string }>
 }
 
 export default function TaskDetailModal({
@@ -24,21 +24,19 @@ export default function TaskDetailModal({
   onUpdateTask,
   availableUsers = [],
 }: TaskDetailModalProps) {
-  const [comment, setComment] = useState('');
-  const [completionNote, setCompletionNote] = useState('');
-  const [selectedAssignee, setSelectedAssignee] = useState(
-    task?.assigned_to_user_id || ''
-  );
-  const [showCompletionForm, setShowCompletionForm] = useState(false);
+  const [comment, setComment] = useState('')
+  const [completionNote, setCompletionNote] = useState('')
+  const [selectedAssignee, setSelectedAssignee] = useState(task?.assigned_to_user_id || '')
+  const [showCompletionForm, setShowCompletionForm] = useState(false)
 
-  if (!task) return null;
+  if (!task) return null
 
   const handleReassign = () => {
     if (selectedAssignee && selectedAssignee !== task.assigned_to_user_id) {
-      onUpdateTask(task.id, { assigned_to_user_id: selectedAssignee });
-      onClose();
+      onUpdateTask(task.id, { assigned_to_user_id: selectedAssignee })
+      onClose()
     }
-  };
+  }
 
   const handleComplete = () => {
     onUpdateTask(task.id, {
@@ -48,15 +46,15 @@ export default function TaskDetailModal({
         completion_note: completionNote,
         completed_at: new Date().toISOString(),
       },
-    });
-    setShowCompletionForm(false);
-    setCompletionNote('');
-    onClose();
-  };
+    })
+    setShowCompletionForm(false)
+    setCompletionNote('')
+    onClose()
+  }
 
   const handleAddComment = () => {
     if (comment.trim()) {
-      const comments = task.metadata?.comments || [];
+      const comments = task.metadata?.comments || []
       onUpdateTask(task.id, {
         metadata: {
           ...task.metadata,
@@ -70,43 +68,41 @@ export default function TaskDetailModal({
             },
           ],
         },
-      });
-      setComment('');
+      })
+      setComment('')
     }
-  };
+  }
 
   const getPriorityColorProps = (priority: string): React.CSSProperties => {
     switch (priority) {
       case 'urgent':
-        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)' }
       case 'high':
-        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)' };
+        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)' }
       default:
-        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' }
     }
-  };
+  }
 
   const getStatusColorProps = (status: string): React.CSSProperties => {
     switch (status) {
       case 'completed':
-        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' };
+        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' }
       case 'in_progress':
-        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' }
       case 'pending':
-        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' };
+        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' }
       default:
-        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' };
+        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' }
     }
-  };
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="">
       <Stack gap={24}>
         <Row alignItems="flex-start" justifyContent="space-between">
           <Stack style={{ flex: 1 }}>
-            <H2 style={{ fontSize: 28, fontWeight: 600, marginBottom: 8 }}>
-              {task.title}
-            </H2>
+            <H2 style={{ fontSize: 28, fontWeight: 600, marginBottom: 8 }}>{task.title}</H2>
             <Row alignItems="center" gap={8}>
               <span
                 style={{
@@ -138,27 +134,31 @@ export default function TaskDetailModal({
               </span>
             </Row>
           </Stack>
-          <div
-            onClick={onClose}
-            style={{ cursor: 'pointer' }}
-          >
+          <div onClick={onClose} style={{ cursor: 'pointer' }}>
             <X size={20} color="var(--color-text-muted)" />
           </div>
         </Row>
 
         {task.description && (
           <Stack>
-            <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>
-              Description
-            </H3>
-            <Text size="sm" muted>{task.description}</Text>
+            <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Description</H3>
+            <Text size="sm" muted>
+              {task.description}
+            </Text>
           </Stack>
         )}
 
-        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+        <Grid columns={{ base: 1, sm: 2 }} gap={16}>
           {task.due_date && (
-            <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
-              <H3 style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: 4 }}>
+            <Stack>
+              <H3
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: 'var(--color-text-muted)',
+                  marginBottom: 4,
+                }}
+              >
                 Due Date
               </H3>
               <Row alignItems="center" gap={8}>
@@ -168,22 +168,27 @@ export default function TaskDetailModal({
             </Stack>
           )}
 
-          <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
-            <H3 style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: 4 }}>
+          <Stack>
+            <H3
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: 'var(--color-text-muted)',
+                marginBottom: 4,
+              }}
+            >
               Task Type
             </H3>
             <Text size="sm" style={{ textTransform: 'capitalize' }}>
               {task.task_type || 'General'}
             </Text>
           </Stack>
-        </Row>
+        </Grid>
 
         {task.status !== 'completed' && (
           <>
             <Stack>
-              <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>
-                Reassign Task
-              </H3>
+              <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Reassign Task</H3>
               <Row alignItems="center" gap={8}>
                 <Select
                   value={selectedAssignee}
@@ -199,10 +204,7 @@ export default function TaskDetailModal({
                 />
                 <Button
                   onPress={handleReassign}
-                  disabled={
-                    !selectedAssignee ||
-                    selectedAssignee === task.assigned_to_user_id
-                  }
+                  disabled={!selectedAssignee || selectedAssignee === task.assigned_to_user_id}
                   size="sm"
                 >
                   Reassign
@@ -211,9 +213,7 @@ export default function TaskDetailModal({
             </Stack>
 
             <Stack>
-              <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>
-                Mark as Complete
-              </H3>
+              <H3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>Mark as Complete</H3>
               {!showCompletionForm ? (
                 <Button
                   onPress={() => setShowCompletionForm(true)}
@@ -224,7 +224,14 @@ export default function TaskDetailModal({
                   Complete Task
                 </Button>
               ) : (
-                <Card style={{ padding: 16, backgroundColor: 'var(--color-green-2)', border: '1px solid var(--color-green-8)', borderRadius: 12 }}>
+                <Card
+                  style={{
+                    padding: 16,
+                    backgroundColor: 'var(--color-green-2)',
+                    border: '1px solid var(--color-green-8)',
+                    borderRadius: 12,
+                  }}
+                >
                   <Stack gap={12}>
                     <Textarea
                       value={completionNote}
@@ -233,17 +240,13 @@ export default function TaskDetailModal({
                       rows={3}
                     />
                     <Row gap={8}>
-                      <Button
-                        onPress={handleComplete}
-                        variant="primary"
-                        style={{ flex: 1 }}
-                      >
+                      <Button onPress={handleComplete} variant="primary" style={{ flex: 1 }}>
                         Confirm Complete
                       </Button>
                       <Button
                         onPress={() => {
-                          setShowCompletionForm(false);
-                          setCompletionNote('');
+                          setShowCompletionForm(false)
+                          setCompletionNote('')
                         }}
                         variant="ghost"
                         style={{ flex: 1 }}
@@ -261,9 +264,7 @@ export default function TaskDetailModal({
         <Stack>
           <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <MessageSquare size={16} />
-            <H3 style={{ fontSize: 14, fontWeight: 500 }}>
-              Comments
-            </H3>
+            <H3 style={{ fontSize: 14, fontWeight: 500 }}>Comments</H3>
           </Row>
 
           <Stack gap={12} style={{ marginBottom: 12, maxHeight: 160, overflowY: 'auto' }}>
@@ -277,7 +278,11 @@ export default function TaskDetailModal({
                     borderRadius: 12,
                   }}
                 >
-                  <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 4 }}>
+                  <Row
+                    alignItems="center"
+                    justifyContent="space-between"
+                    style={{ marginBottom: 4 }}
+                  >
                     <Text size="xs" weight="medium">
                       {comment.author}
                     </Text>
@@ -285,7 +290,9 @@ export default function TaskDetailModal({
                       {formatDate(comment.timestamp)}
                     </Text>
                   </Row>
-                  <Text size="sm" muted>{comment.text}</Text>
+                  <Text size="sm" muted>
+                    {comment.text}
+                  </Text>
                 </Card>
               ))
             ) : (
@@ -303,19 +310,29 @@ export default function TaskDetailModal({
               rows={2}
               style={{ flex: 1 }}
             />
-            <Button
-              onPress={handleAddComment}
-              disabled={!comment.trim()}
-              size="sm"
-            >
+            <Button onPress={handleAddComment} disabled={!comment.trim()} size="sm">
               Add
             </Button>
           </Row>
         </Stack>
 
         {task.metadata?.completion_note && (
-          <Card style={{ padding: 16, backgroundColor: 'var(--color-green-2)', border: '1px solid var(--color-green-8)', borderRadius: 12 }}>
-            <H3 style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-green-10)', marginBottom: 8 }}>
+          <Card
+            style={{
+              padding: 16,
+              backgroundColor: 'var(--color-green-2)',
+              border: '1px solid var(--color-green-8)',
+              borderRadius: 12,
+            }}
+          >
+            <H3
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: 'var(--color-green-10)',
+                marginBottom: 8,
+              }}
+            >
               Completion Notes
             </H3>
             <Text size="sm" muted>
@@ -325,5 +342,5 @@ export default function TaskDetailModal({
         )}
       </Stack>
     </Modal>
-  );
+  )
 }
