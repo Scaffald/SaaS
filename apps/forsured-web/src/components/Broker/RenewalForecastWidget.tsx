@@ -1,77 +1,72 @@
-import { useMemo } from 'react';
-import { Calendar, AlertTriangle } from 'lucide-react';
-import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
-import { PolicyData } from '../../types';
+import { useMemo } from 'react'
+import { Calendar, AlertTriangle } from 'lucide-react'
+import { Stack, Row, Text, H2, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { PolicyData } from '../../types'
 
 interface RenewalForecastWidgetProps {
-  policies: PolicyData[];
+  policies: PolicyData[]
 }
 
 interface ForecastData {
-  month: string;
-  count: number;
-  value: number;
+  month: string
+  count: number
+  value: number
 }
 
-export default function RenewalForecastWidget({
-  policies,
-}: RenewalForecastWidgetProps) {
+export default function RenewalForecastWidget({ policies }: RenewalForecastWidgetProps) {
   const forecastData = useMemo(() => {
-    const today = new Date();
-    const next6Months: ForecastData[] = [];
+    const today = new Date()
+    const next6Months: ForecastData[] = []
 
     for (let i = 0; i < 6; i++) {
-      const monthDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
+      const monthDate = new Date(today.getFullYear(), today.getMonth() + i, 1)
       const monthName = monthDate.toLocaleDateString('en-US', {
         month: 'short',
-      });
+      })
 
       const monthPolicies = policies.filter((policy) => {
-        const endDate = new Date(policy.end_date);
+        const endDate = new Date(policy.end_date)
         return (
           endDate.getMonth() === monthDate.getMonth() &&
           endDate.getFullYear() === monthDate.getFullYear()
-        );
-      });
+        )
+      })
 
       next6Months.push({
         month: monthName,
         count: monthPolicies.length,
-        value: monthPolicies.reduce(
-          (sum, p) => sum + (p.premium_amount || 0),
-          0
-        ),
-      });
+        value: monthPolicies.reduce((sum, p) => sum + (p.premium_amount || 0), 0),
+      })
     }
 
-    return next6Months;
-  }, [policies]);
+    return next6Months
+  }, [policies])
 
-  const maxCount = Math.max(...forecastData.map((d) => d.count), 1);
-  const expiringThisMonth = forecastData[0]?.count || 0;
-  const expiringNextMonth = forecastData[1]?.count || 0;
+  const maxCount = Math.max(...forecastData.map((d) => d.count), 1)
+  const expiringThisMonth = forecastData[0]?.count || 0
+  const expiringNextMonth = forecastData[1]?.count || 0
 
   const policyTypeBreakdown = useMemo(() => {
-    const next30Days = new Date();
-    next30Days.setDate(next30Days.getDate() + 30);
+    const next30Days = new Date()
+    next30Days.setDate(next30Days.getDate() + 30)
 
     const upcoming = policies.filter((policy) => {
-      const endDate = new Date(policy.end_date);
-      return endDate <= next30Days && endDate >= new Date();
-    });
+      const endDate = new Date(policy.end_date)
+      return endDate <= next30Days && endDate >= new Date()
+    })
 
-    const breakdown: { [key: string]: number } = {};
+    const breakdown: { [key: string]: number } = {}
     upcoming.forEach((policy) => {
-      const type = policy.policy_type.replace('_', ' ');
-      breakdown[type] = (breakdown[type] || 0) + 1;
-    });
+      const type = policy.policy_type.replace('_', ' ')
+      breakdown[type] = (breakdown[type] || 0) + 1
+    })
 
     return Object.entries(breakdown).map(([type, count]) => ({
       type,
       count,
       percentage: (count / upcoming.length) * 100,
-    }));
-  }, [policies]);
+    }))
+  }, [policies])
 
   const getPolicyTypeColor = (index: number) => {
     const colors = [
@@ -81,15 +76,15 @@ export default function RenewalForecastWidget({
       'var(--color-yellow-9)',
       'var(--color-red-9)',
       'var(--color-gray-9)',
-    ];
-    return colors[index % colors.length];
-  };
+    ]
+    return colors[index % colors.length]
+  }
 
   const getBarColor = (index: number) => {
-    if (index === 0) return 'var(--color-red-9)';
-    if (index === 1) return 'var(--color-yellow-9)';
-    return 'var(--color-blue-9)';
-  };
+    if (index === 0) return 'var(--color-red-9)'
+    if (index === 1) return 'var(--color-yellow-9)'
+    return 'var(--color-blue-9)'
+  }
 
   return (
     <Card
@@ -117,9 +112,11 @@ export default function RenewalForecastWidget({
         </Row>
       </Row>
 
-      <Row gap={24} style={{ flexWrap: 'wrap' }}>
-        <Stack style={{ flex: 1 }}>
-          <H3 style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 16 }}>
+      <Grid columns={{ base: 1, lg: 2 }} gap={24}>
+        <Stack>
+          <H3
+            style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 16 }}
+          >
             Monthly Expirations
           </H3>
           <Stack gap={12}>
@@ -152,7 +149,11 @@ export default function RenewalForecastWidget({
                         }}
                       >
                         {data.count > 0 && (
-                          <Text size="xs" weight="medium" style={{ color: 'white', paddingLeft: 8, paddingRight: 8 }}>
+                          <Text
+                            size="xs"
+                            weight="medium"
+                            style={{ color: 'white', paddingLeft: 8, paddingRight: 8 }}
+                          >
                             {data.count}
                           </Text>
                         )}
@@ -168,16 +169,25 @@ export default function RenewalForecastWidget({
           </Stack>
         </Stack>
 
-        <Stack style={{ flex: 1 }}>
-          <H3 style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 16 }}>
+        <Stack>
+          <H3
+            style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', marginBottom: 16 }}
+          >
             Next 30 Days by Type
           </H3>
           {policyTypeBreakdown.length > 0 ? (
             <Stack gap={16}>
               {policyTypeBreakdown.map((item, index) => (
                 <Stack key={item.type}>
-                  <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 4 }}>
-                    <Text size="sm" style={{ textTransform: 'capitalize', color: 'var(--color-text)' }}>
+                  <Row
+                    alignItems="center"
+                    justifyContent="space-between"
+                    style={{ marginBottom: 4 }}
+                  >
+                    <Text
+                      size="sm"
+                      style={{ textTransform: 'capitalize', color: 'var(--color-text)' }}
+                    >
                       {item.type}
                     </Text>
                     <Text size="sm" weight="medium" muted>
@@ -217,30 +227,36 @@ export default function RenewalForecastWidget({
             </Stack>
           )}
         </Stack>
-      </Row>
+      </Grid>
 
       <Stack style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}>
-        <Row gap={16} style={{ flexWrap: 'wrap' }}>
-          <Stack style={{ flex: 1, minWidth: '30%', alignItems: 'center' }}>
+        <Grid columns={{ base: 1, sm: 3 }} gap={16}>
+          <Stack style={{ alignItems: 'center' }}>
             <Text size="xl" weight="bold">
               {expiringThisMonth}
             </Text>
-            <Text size="sm" muted>This Month</Text>
+            <Text size="sm" muted>
+              This Month
+            </Text>
           </Stack>
-          <Stack style={{ flex: 1, minWidth: '30%', alignItems: 'center' }}>
+          <Stack style={{ alignItems: 'center' }}>
             <Text size="xl" weight="bold">
               {expiringNextMonth}
             </Text>
-            <Text size="sm" muted>Next Month</Text>
+            <Text size="sm" muted>
+              Next Month
+            </Text>
           </Stack>
-          <Stack style={{ flex: 1, minWidth: '30%', alignItems: 'center' }}>
+          <Stack style={{ alignItems: 'center' }}>
             <Text size="xl" weight="bold">
               {forecastData.reduce((sum, d) => sum + d.count, 0)}
             </Text>
-            <Text size="sm" muted>6 Months Total</Text>
+            <Text size="sm" muted>
+              6 Months Total
+            </Text>
           </Stack>
-        </Row>
+        </Grid>
       </Stack>
     </Card>
-  );
+  )
 }
