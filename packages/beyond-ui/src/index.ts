@@ -185,11 +185,8 @@ export type {
   GridProps,
   GridItemProps,
   GridAutoFlow,
-  GridJustifyItems,
-  GridAlignItems,
-  GridJustifyContent,
-  GridAlignContent,
-  GapValue as GridGapValue,
+  GridTemplateColumns,
+  GridTemplateRows,
 } from './components/Grid'
 
 // Responsive utility components
@@ -728,7 +725,21 @@ export type { ScrollAreaProps } from './components/ScrollArea'
 export { List } from './components/List'
 export type { ListProps } from './components/List'
 
-export { ListItem } from './components/ListItem'
+export {
+  ListItem,
+  // ListItem variant components
+  UserProfile01ListItem,
+  UserProfile02ListItem,
+  ProductListItem,
+  SearchResult01ListItem,
+  SearchResult02ListItem,
+  SearchResult03ListItem,
+  TaskListItem,
+  SongTitleListItem,
+  CloudFileListItem,
+  PhoneNumberListItem,
+  IntegrationListItem,
+} from './components/ListItem'
 export type {
   ListItemProps,
   ListItemVariant,

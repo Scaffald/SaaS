@@ -17,10 +17,7 @@ import { breakpoints } from '../tokens/breakpoints'
  * // Returns 16 (md value) because 1200px is at md breakpoint
  * ```
  */
-export function resolveResponsiveValue<T>(
-  value: T | ResponsiveValue<T>,
-  width: number
-): T {
+export function resolveResponsiveValue<T>(value: T | ResponsiveValue<T>, width: number): T {
   // If not a responsive value object, return as-is
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return value as T
@@ -68,7 +65,7 @@ export function isResponsiveValue<T>(value: unknown): value is ResponsiveValue<T
 
   // Check if it has at least one responsive breakpoint key
   const responsiveKeys = ['base', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl']
-  return Object.keys(value as object).some(key => responsiveKeys.includes(key))
+  return Object.keys(value as object).some((key) => responsiveKeys.includes(key))
 }
 
 /**
@@ -90,7 +87,8 @@ export function resolveResponsiveValues<T extends Record<string, unknown>>(
   const resolved = {} as T
 
   for (const key in values) {
-    if (Object.hasOwn(values, key)) {
+    // biome-ignore lint/suspicious/noPrototypeBuiltins: TypeScript lib compatibility
+    if (Object.prototype.hasOwnProperty.call(values, key)) {
       resolved[key] = resolveResponsiveValue(values[key], width)
     }
   }

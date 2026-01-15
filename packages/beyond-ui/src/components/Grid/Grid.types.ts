@@ -1,163 +1,117 @@
 /**
  * Grid component types
- * CSS Grid-based layout component with responsive breakpoints
+ * CSS Grid layout component for responsive layouts
  */
 
-import type { ViewStyle } from 'react-native'
+import type { ReactNode } from 'react'
+import type { ViewStyle, ViewProps } from 'react-native'
 import type { ResponsiveValue } from '../../hooks/useResponsive'
+import type { GapValue } from '../Layout/Box.types'
 
-// Gap value types
-export type GapValue = 'none' | '3xs' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | number
+/**
+ * Grid auto-flow options
+ */
+export type GridAutoFlow = 'row' | 'column' | 'row-dense' | 'column-dense'
 
-export type GridAutoFlow = 'row' | 'column' | 'dense' | 'row-dense' | 'column-dense'
-export type GridJustifyItems = 'start' | 'end' | 'center' | 'stretch'
-export type GridAlignItems = 'start' | 'end' | 'center' | 'stretch' | 'baseline'
-export type GridJustifyContent = 'start' | 'end' | 'center' | 'stretch' | 'space-between' | 'space-around' | 'space-evenly'
-export type GridAlignContent = 'start' | 'end' | 'center' | 'stretch' | 'space-between' | 'space-around' | 'space-evenly'
+/**
+ * Grid template columns value
+ * Can be a number of columns or a custom template string
+ */
+export type GridTemplateColumns = number | string
 
-export interface GridProps {
-  /**
-   * Number of columns in the grid
-   * Supports responsive values: { base: 1, sm: 2, md: 3, lg: 4, xl: 6 }
-   * @default 12
-   */
-  columns?: number | ResponsiveValue<number>
+/**
+ * Grid template rows value
+ * Can be a number of rows or a custom template string
+ */
+export type GridTemplateRows = number | string
 
-  /**
-   * Number of rows in the grid
-   * Supports responsive values
-   */
-  rows?: number | ResponsiveValue<number>
+/**
+ * Grid component props
+ */
+export interface GridProps extends Omit<ViewProps, 'style'> {
+  /** Child elements */
+  children?: ReactNode
 
-  /**
-   * Gap between grid items (both row and column)
-   * Supports responsive values: { base: 'sm', md: 'md', lg: 'lg' }
-   */
+  /** Number of columns or custom template - supports responsive values */
+  columns?: GridTemplateColumns | ResponsiveValue<GridTemplateColumns>
+
+  /** Number of rows or custom template - supports responsive values */
+  rows?: GridTemplateRows | ResponsiveValue<GridTemplateRows>
+
+  /** Gap between grid items (applies to both row and column) - supports responsive values */
   gap?: GapValue | ResponsiveValue<GapValue>
 
-  /**
-   * Gap between columns
-   * Overrides gap for columns
-   */
-  columnGap?: GapValue | ResponsiveValue<GapValue>
-
-  /**
-   * Gap between rows
-   * Overrides gap for rows
-   */
+  /** Row gap between grid items - supports responsive values */
   rowGap?: GapValue | ResponsiveValue<GapValue>
 
-  /**
-   * Controls how auto-placed items are flowed in the grid
-   * @default 'row'
-   */
+  /** Column gap between grid items - supports responsive values */
+  columnGap?: GapValue | ResponsiveValue<GapValue>
+
+  /** Grid auto-flow direction */
   autoFlow?: GridAutoFlow
 
-  /**
-   * Alignment of grid items along the inline (row) axis
-   * @default 'stretch'
-   */
-  justifyItems?: GridJustifyItems
+  /** Justify items alignment */
+  justifyItems?: 'start' | 'end' | 'center' | 'stretch'
 
-  /**
-   * Alignment of grid items along the block (column) axis
-   * @default 'stretch'
-   */
-  alignItems?: GridAlignItems
+  /** Align items alignment */
+  alignItems?: 'start' | 'end' | 'center' | 'stretch' | 'baseline'
 
-  /**
-   * Alignment of the grid within its container along the inline axis
-   */
-  justifyContent?: GridJustifyContent
+  /** Justify content alignment */
+  justifyContent?:
+    | 'start'
+    | 'end'
+    | 'center'
+    | 'stretch'
+    | 'space-between'
+    | 'space-around'
+    | 'space-evenly'
 
-  /**
-   * Alignment of the grid within its container along the block axis
-   */
-  alignContent?: GridAlignContent
+  /** Align content alignment */
+  alignContent?:
+    | 'start'
+    | 'end'
+    | 'center'
+    | 'stretch'
+    | 'space-between'
+    | 'space-around'
+    | 'space-evenly'
 
-  /**
-   * Minimum column width for auto-fill/auto-fit columns
-   * Example: '200px' creates as many columns as fit with min 200px width
-   */
-  minColumnWidth?: string | number
-
-  /**
-   * Children elements (grid items)
-   */
-  children?: React.ReactNode
-
-  /**
-   * Container style
-   */
+  /** Custom style override */
   style?: ViewStyle
-
-  /**
-   * Test ID for testing
-   */
-  testID?: string
 }
 
-export interface GridItemProps {
-  /**
-   * Column span (how many columns this item should occupy)
-   * Supports responsive values: { base: 1, md: 2, lg: 3 }
-   */
-  colSpan?: number | ResponsiveValue<number>
+/**
+ * GridItem component props
+ * Optional wrapper for grid items with placement control
+ */
+export interface GridItemProps extends Omit<ViewProps, 'style'> {
+  /** Child elements */
+  children?: ReactNode
 
-  /**
-   * Row span (how many rows this item should occupy)
-   * Supports responsive values
-   */
-  rowSpan?: number | ResponsiveValue<number>
+  /** Column start position */
+  colStart?: number
 
-  /**
-   * Column start position (1-indexed)
-   * Supports responsive values
-   */
-  colStart?: number | ResponsiveValue<number>
+  /** Column end position */
+  colEnd?: number
 
-  /**
-   * Column end position (1-indexed)
-   * Supports responsive values
-   */
-  colEnd?: number | ResponsiveValue<number>
+  /** Column span */
+  colSpan?: number
 
-  /**
-   * Row start position (1-indexed)
-   * Supports responsive values
-   */
-  rowStart?: number | ResponsiveValue<number>
+  /** Row start position */
+  rowStart?: number
 
-  /**
-   * Row end position (1-indexed)
-   * Supports responsive values
-   */
-  rowEnd?: number | ResponsiveValue<number>
+  /** Row end position */
+  rowEnd?: number
 
-  /**
-   * Alignment of this specific item along the inline axis
-   * Overrides justifyItems from Grid
-   */
-  justifySelf?: GridJustifyItems
+  /** Row span */
+  rowSpan?: number
 
-  /**
-   * Alignment of this specific item along the block axis
-   * Overrides alignItems from Grid
-   */
-  alignSelf?: GridAlignItems
+  /** Justify self alignment */
+  justifySelf?: 'start' | 'end' | 'center' | 'stretch'
 
-  /**
-   * Children elements
-   */
-  children?: React.ReactNode
+  /** Align self alignment */
+  alignSelf?: 'start' | 'end' | 'center' | 'stretch' | 'baseline'
 
-  /**
-   * Item style
-   */
+  /** Custom style override */
   style?: ViewStyle
-
-  /**
-   * Test ID for testing
-   */
-  testID?: string
 }

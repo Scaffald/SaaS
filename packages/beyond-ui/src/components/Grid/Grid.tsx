@@ -1,237 +1,126 @@
 /**
  * Grid component
- * CSS Grid-based layout component with responsive breakpoints
+ * CSS Grid layout component for responsive layouts
  *
  * @example
  * ```tsx
- * import { Grid, GridItem } from '@unicornlove/beyond-ui'
+ * import { Grid } from '@unicornlove/beyond-ui'
  *
  * // Basic grid with 3 columns
- * <Grid columns={3} gap="md">
+ * <Grid columns={3} gap={16}>
  *   <Card>Item 1</Card>
  *   <Card>Item 2</Card>
  *   <Card>Item 3</Card>
  * </Grid>
  *
  * // Responsive grid
- * <Grid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gap={{ base: 'sm', md: 'lg' }}>
+ * <Grid
+ *   columns={{ base: 1, sm: 2, md: 3, lg: 4 }}
+ *   gap={{ base: 12, md: 16, lg: 20 }}
+ * >
  *   <Card>Item 1</Card>
  *   <Card>Item 2</Card>
  *   <Card>Item 3</Card>
+ *   <Card>Item 4</Card>
  * </Grid>
  *
- * // Grid with auto-fit columns (minimum 200px per column)
- * <Grid minColumnWidth={200} gap="md">
- *   <Card>Item 1</Card>
- *   <Card>Item 2</Card>
- *   <Card>Item 3</Card>
- * </Grid>
- *
- * // Grid with custom item spans
- * <Grid columns={12} gap="md">
- *   <GridItem colSpan={8}><Card>Main content</Card></GridItem>
- *   <GridItem colSpan={4}><Card>Sidebar</Card></GridItem>
+ * // Custom template with different gap values
+ * <Grid
+ *   columns="200px 1fr 1fr"
+ *   rowGap={20}
+ *   columnGap={40}
+ *   autoFlow="row-dense"
+ * >
+ *   <Card>Sidebar</Card>
+ *   <Card>Main content</Card>
+ *   <Card>Secondary content</Card>
  * </Grid>
  * ```
  */
 
-import { View, Platform, StyleSheet } from 'react-native'
+import { useMemo } from 'react'
+import { View } from 'react-native'
+import type { GridProps } from './Grid.types'
+import { getGridStyles } from './Grid.styles'
 import { useResponsive } from '../../hooks/useResponsive'
-import type { ResponsiveValue } from '../../hooks/useResponsive'
-import { spacing } from '../../tokens/spacing'
-import type { GridProps, GridItemProps, GapValue } from './Grid.types'
+import { resolveResponsiveValue } from '../../utils/responsive'
+import { gap as gapTokens } from '../../tokens/spacing'
+import type { GapValue } from '../Layout/Box.types'
 
-// Helper to resolve responsive values
-function resolveResponsiveValue<T>(
-  value: T | ResponsiveValue<T> | undefined,
-  currentBreakpoint: string
-): T | undefined {
+/**
+ * Resolve a gap value to a number
+ */
+function resolveGap(value: GapValue | undefined): number | undefined {
   if (value === undefined) return undefined
-  if (typeof value !== 'object' || value === null) return value as T
-
-  const responsiveValue = value as ResponsiveValue<T>
-
-  // Breakpoint priority order: exact match > smaller breakpoints
-  const breakpoints = ['base', 'sm', 'md', 'lg', 'xl', '2xl']
-  const currentIndex = breakpoints.indexOf(currentBreakpoint)
-
-  // Start from current breakpoint and work backwards
-  for (let i = currentIndex; i >= 0; i--) {
-    const bp = breakpoints[i] as keyof ResponsiveValue<T>
-    if (responsiveValue[bp] !== undefined) {
-      return responsiveValue[bp]
-    }
-  }
-
-  return undefined
-}
-
-// Helper to convert gap value to pixels
-function getGapValue(gap: GapValue | undefined): number {
-  if (gap === undefined) return 0
-  if (typeof gap === 'number') return gap
-
-  // Map gap names to spacing tokens
-  const gapMap: Record<string, number> = {
-    none: spacing[0],
-    '3xs': spacing[1],
-    '2xs': spacing[2],
-    xs: spacing[4],
-    sm: spacing[6],
-    md: spacing[8],
-    lg: spacing[12],
-    xl: spacing[16],
-    '2xl': spacing[20],
-    '3xl': spacing[24],
-    '4xl': spacing[32],
-  }
-
-  return gapMap[gap] || spacing[8] // default to 8px
+  if (typeof value === 'number') return value
+  const key = value as keyof typeof gapTokens
+  return gapTokens[key]
 }
 
 export function Grid({
-  columns = 12,
+  children,
+  columns,
   rows,
-  gap,
-  columnGap,
+  gap: gapProp,
   rowGap,
-  autoFlow = 'row',
-  justifyItems = 'stretch',
-  alignItems = 'stretch',
+  columnGap,
+  autoFlow,
+  justifyItems,
+  alignItems,
   justifyContent,
   alignContent,
-  minColumnWidth,
-  children,
   style,
-  testID,
+  ...viewProps
 }: GridProps) {
-  const { breakpoint: currentBreakpoint } = useResponsive()
+  const { width: screenWidth } = useResponsive()
 
-  // Resolve responsive values
-  const resolvedColumns = resolveResponsiveValue(columns, currentBreakpoint) || 12
-  const resolvedRows = resolveResponsiveValue(rows, currentBreakpoint)
-  const resolvedGap = resolveResponsiveValue(gap, currentBreakpoint)
-  const resolvedColumnGap = resolveResponsiveValue(columnGap, currentBreakpoint)
-  const resolvedRowGap = resolveResponsiveValue(rowGap, currentBreakpoint)
+  const computedStyle = useMemo(() => {
+    // Resolve responsive values
+    const resolvedColumns = resolveResponsiveValue(columns, screenWidth)
+    const resolvedRows = resolveResponsiveValue(rows, screenWidth)
+    const resolvedGapProp = resolveResponsiveValue(gapProp, screenWidth)
+    const resolvedRowGap = resolveResponsiveValue(rowGap, screenWidth)
+    const resolvedColumnGap = resolveResponsiveValue(columnGap, screenWidth)
 
-  // Calculate gap values
-  const gapValue = getGapValue(resolvedGap)
-  const columnGapValue = getGapValue(resolvedColumnGap) || gapValue
-  const rowGapValue = getGapValue(resolvedRowGap) || gapValue
+    // Resolve gap tokens to numbers
+    const finalGap = resolveGap(resolvedGapProp)
+    const finalRowGap = resolveGap(resolvedRowGap)
+    const finalColumnGap = resolveGap(resolvedColumnGap)
 
-  if (Platform.OS === 'web') {
-    // Use CSS Grid on web
-    const gridTemplateColumns = minColumnWidth
-      ? `repeat(auto-fit, minmax(${typeof minColumnWidth === 'number' ? `${minColumnWidth}px` : minColumnWidth}, 1fr))`
-      : `repeat(${resolvedColumns}, 1fr)`
-
-    const gridTemplateRows = resolvedRows ? `repeat(${resolvedRows}, auto)` : undefined
-
-    const webStyle = {
-      display: 'grid',
-      gridTemplateColumns,
-      gridTemplateRows,
-      gridAutoFlow: autoFlow,
-      gap: `${rowGapValue}px ${columnGapValue}px`,
+    // Get styles from factory
+    const styles = getGridStyles(
+      resolvedColumns,
+      resolvedRows,
+      finalGap,
+      finalRowGap,
+      finalColumnGap,
+      autoFlow,
       justifyItems,
       alignItems,
       justifyContent,
-      alignContent,
-    } as any // Type assertion for CSS Grid properties not in React Native ViewStyle
-
-    return (
-      <View style={[webStyle, style]} testID={testID}>
-        {children}
-      </View>
+      alignContent
     )
-  }
 
-  // Fallback to flexbox for React Native
-  // This is a simplified layout - true grid behavior requires custom layout on native
-  const nativeStyle = {
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
-    marginHorizontal: -columnGapValue / 2,
-    marginVertical: -rowGapValue / 2,
-    alignItems: alignItems as any,
-    justifyContent: justifyContent as any,
-  }
+    return styles.container
+  }, [
+    screenWidth,
+    columns,
+    rows,
+    gapProp,
+    rowGap,
+    columnGap,
+    autoFlow,
+    justifyItems,
+    alignItems,
+    justifyContent,
+    alignContent,
+  ])
 
   return (
-    <View style={[nativeStyle, style]} testID={testID}>
+    <View style={[computedStyle, style]} {...viewProps}>
       {children}
     </View>
   )
 }
 
-export function GridItem({
-  colSpan,
-  rowSpan,
-  colStart,
-  colEnd,
-  rowStart,
-  rowEnd,
-  justifySelf,
-  alignSelf,
-  children,
-  style,
-  testID,
-}: GridItemProps) {
-  const { breakpoint: currentBreakpoint } = useResponsive()
-
-  // Resolve responsive values
-  const resolvedColSpan = resolveResponsiveValue(colSpan, currentBreakpoint)
-  const resolvedRowSpan = resolveResponsiveValue(rowSpan, currentBreakpoint)
-  const resolvedColStart = resolveResponsiveValue(colStart, currentBreakpoint)
-  const resolvedColEnd = resolveResponsiveValue(colEnd, currentBreakpoint)
-  const resolvedRowStart = resolveResponsiveValue(rowStart, currentBreakpoint)
-  const resolvedRowEnd = resolveResponsiveValue(rowEnd, currentBreakpoint)
-
-  if (Platform.OS === 'web') {
-    // Use CSS Grid properties on web
-    const webStyle = {
-      gridColumn: resolvedColSpan
-        ? `span ${resolvedColSpan}`
-        : resolvedColStart && resolvedColEnd
-          ? `${resolvedColStart} / ${resolvedColEnd}`
-          : resolvedColStart
-            ? `${resolvedColStart}`
-            : undefined,
-      gridRow: resolvedRowSpan
-        ? `span ${resolvedRowSpan}`
-        : resolvedRowStart && resolvedRowEnd
-          ? `${resolvedRowStart} / ${resolvedRowEnd}`
-          : resolvedRowStart
-            ? `${resolvedRowStart}`
-            : undefined,
-      justifySelf,
-      alignSelf,
-    } as any // Type assertion for CSS Grid properties
-
-    return (
-      <View style={[webStyle, style]} testID={testID}>
-        {children}
-      </View>
-    )
-  }
-
-  // Fallback for React Native
-  // Calculate flex basis based on colSpan
-  const flexBasis = resolvedColSpan ? `${(resolvedColSpan / 12) * 100}%` : undefined
-
-  const nativeStyle = {
-    flexBasis: flexBasis as any,
-    flexGrow: 0,
-    flexShrink: 0,
-    alignSelf: alignSelf as any,
-  }
-
-  return (
-    <View style={[nativeStyle, style]} testID={testID}>
-      {children}
-    </View>
-  )
-}
-
-// Export types
-export type { GridProps, GridItemProps, GridAutoFlow, GridJustifyItems, GridAlignItems, GridJustifyContent, GridAlignContent, GapValue } from './Grid.types'
+export type { GridProps } from './Grid.types'

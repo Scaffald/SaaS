@@ -2,5 +2,12 @@
  * Grid component exports
  */
 
-export { Grid, GridItem } from './Grid'
-export type { GridProps, GridItemProps, GridAutoFlow, GridJustifyItems, GridAlignItems, GridJustifyContent, GridAlignContent, GapValue } from './Grid.types'
+export { Grid } from './Grid'
+export { GridItem } from './GridItem'
+export type {
+  GridProps,
+  GridItemProps,
+  GridAutoFlow,
+  GridTemplateColumns,
+  GridTemplateRows,
+} from './Grid.types'
