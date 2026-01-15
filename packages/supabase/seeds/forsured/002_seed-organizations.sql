@@ -136,6 +136,43 @@ FROM industry_lookup il,
     -121.8863,
     'https://pinnacle-insurance.test',
     'Specialized insurance brokerage for construction and contracting industry'
+  ),
+
+  -- =========================================================
+  -- TEST USER ORGANIZATIONS (for Start.tsx quick login)
+  -- =========================================================
+  (
+    '60000000-0000-0000-0000-000000000031',
+    '10000000-0000-0000-0000-000000000001',  -- test-gc@forsured.test
+    'Test Construction Company',
+    'test-construction-company',
+    '{"street": "100 Test St", "city": "New York", "state": "NY", "postal": "10001", "country": "USA"}',
+    40.7128,
+    -74.0060,
+    'https://test-construction.test',
+    'Test construction company for demonstration purposes'
+  ),
+  (
+    '60000000-0000-0000-0000-000000000032',
+    '10000000-0000-0000-0000-000000000002',  -- test-contractor@forsured.test
+    'Test Contractor Services',
+    'test-contractor-services',
+    '{"street": "200 Contractor Ave", "city": "Houston", "state": "TX", "postal": "77001", "country": "USA"}',
+    29.7604,
+    -95.3698,
+    'https://test-contractor.test',
+    'Test contractor company for demonstration purposes'
+  ),
+  (
+    '60000000-0000-0000-0000-000000000033',
+    '10000000-0000-0000-0000-000000000003',  -- test-broker@forsured.test
+    'Test Insurance Brokers',
+    'test-insurance-brokers',
+    '{"street": "300 Broker Blvd", "city": "San Jose", "state": "CA", "postal": "95101", "country": "USA"}',
+    37.3382,
+    -121.8863,
+    'https://test-broker.test',
+    'Test insurance brokerage for demonstration purposes'
   )
 ) AS orgs(id, owner_id, name, slug, address, lat, lon, website, description_text)
 ON CONFLICT (id) DO NOTHING;
@@ -181,7 +218,12 @@ FROM roles r,
   ('member', '50000000-0000-0000-0000-000000000021', '60000000-0000-0000-0000-000000000021'),
 
   -- Admin has access to primary GC org
-  ('admin', '50000000-0000-0000-0000-000000000031', '60000000-0000-0000-0000-000000000001')
+  ('admin', '50000000-0000-0000-0000-000000000031', '60000000-0000-0000-0000-000000000001'),
+
+  -- Test user organizations
+  ('owner', '10000000-0000-0000-0000-000000000001', '60000000-0000-0000-0000-000000000031'),  -- test-gc
+  ('owner', '10000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000032'),  -- test-contractor
+  ('owner', '10000000-0000-0000-0000-000000000003', '60000000-0000-0000-0000-000000000033')   -- test-broker
 ) AS ra(role_name, user_id, org_id)
 WHERE r.name = ra.role_name
 ON CONFLICT (role_id, user_id, scope_org_id, scope_team_id) DO NOTHING;

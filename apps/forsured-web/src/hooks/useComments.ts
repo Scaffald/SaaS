@@ -18,6 +18,7 @@ import { useState, useEffect } from 'react';
 import { Comment, EntityType } from '../types';
 import { useDatabase } from '../contexts/DatabaseContext';
 import { formatSupabaseError } from '../lib/database/formatSupabaseError';
+import { core } from '../lib/supabase';
 
 interface UseCommentsOptions {
   entityType?: EntityType;
@@ -65,7 +66,46 @@ export function useComments(options: UseCommentsOptions = {}) {
         throw formatSupabaseError(supabaseError, 'fetching comments');
       }
 
-      setComments(data || []);
+      const commentsData = data || [];
+
+      // Fetch user information for all unique user_ids
+      const uniqueUserIds = [...new Set(commentsData.map((c) => c.user_id))];
+      const userMap = new Map<string, { display_name?: string; username?: string }>();
+
+      if (uniqueUserIds.length > 0) {
+        try {
+          const { data: usersData, error: usersError } = await core('users')
+            .select('id, display_name, username')
+            .in('id', uniqueUserIds);
+
+          if (!usersError && usersData) {
+            usersData.forEach((user) => {
+              userMap.set(user.id, {
+                display_name: user.display_name || undefined,
+                username: user.username || undefined,
+              });
+            });
+          }
+        } catch (err) {
+          console.warn('[useComments] Error fetching user information:', err);
+          // Continue without user information if fetch fails
+        }
+      }
+
+      // Merge user information with comments
+      const commentsWithUsers: Comment[] = commentsData.map((comment) => {
+        const user = userMap.get(comment.user_id);
+        const userDisplayName = user?.display_name?.trim();
+        const userName = userDisplayName || user?.username?.trim() || undefined;
+
+        return {
+          ...comment,
+          user_name: userName,
+          user_display_name: userDisplayName,
+        };
+      });
+
+      setComments(commentsWithUsers);
     } catch (err) {
       console.error('[useComments] Error fetching comments:', err);
       setError(err as Error);

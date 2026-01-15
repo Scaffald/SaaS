@@ -665,6 +665,9 @@ export interface Comment {
   edited_at?: string;
   created_at: string;
   updated_at: string;
+  // User information (populated when fetching comments)
+  user_name?: string; // display_name or username from core.users
+  user_display_name?: string; // display_name from core.users
 }
 
 export interface Attachment {

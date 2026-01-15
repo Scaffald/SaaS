@@ -298,34 +298,53 @@ function NoteCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  // Get user initials for avatar
+  const userName = comment.user_name || comment.user_display_name || `User ${comment.user_id.substring(0, 8)}`;
+  const userInitials = userName
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || '?';
+
   return (
     <Card
       style={{
         padding: 16,
-        backgroundColor: 'var(--color-backgroundHover)',
+        backgroundColor: 'var(--color-background)',
         borderRadius: 8,
+        border: '1px solid var(--color-border)',
+        position: 'relative',
       }}
     >
-      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
-        <Row style={{ alignItems: 'center', gap: 12, flex: 1 }}>
-          <Row
+      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <Row style={{ alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
+          {/* Avatar with user initials */}
+          <div
             style={{
-              width: 36,
-              height: 36,
-              backgroundColor: 'var(--color-blue10)',
-              borderRadius: 9999,
+              width: 40,
+              height: 40,
+              backgroundColor: 'var(--color-blue-9)',
+              borderRadius: '50%',
+              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
+              minWidth: 40,
+              flex: '0 0 40px',
             }}
           >
-            <User size={16} color="white" />
-          </Row>
-          <Stack style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-12)' }}>
-              User {comment.user_id.substring(0, 8)}
-            </Text>
-            <Row style={{ gap: 8, alignItems: 'center' }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'white', lineHeight: 1 }}>
+              {userInitials}
+            </span>
+          </div>
+          
+          {/* User info and content */}
+          <Stack style={{ flex: 1, minWidth: 0 }}>
+            <Row style={{ alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}>
+                {userName}
+              </Text>
               <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
                 {formatDate(comment.created_at)}
               </Text>
@@ -335,60 +354,87 @@ function NoteCard({
                 </Text>
               )}
             </Row>
+            
+            <Text
+              style={{
+                fontSize: 14,
+                color: 'var(--color-11)',
+                whiteSpace: 'pre-wrap',
+                marginTop: 8,
+                lineHeight: 1.5,
+              }}
+            >
+              {comment.content}
+            </Text>
           </Stack>
         </Row>
 
-        {/* Actions - only show for own notes */}
+        {/* Actions - only show for own notes, more visible */}
         {isOwnNote && (
-          <Row style={{ gap: 4 }}>
+          <Row style={{ gap: 4, flexShrink: 0 }}>
             <button
               type="button"
               onClick={onEdit}
               style={{
-                background: 'none',
-                border: 'none',
-                padding: 8,
+                background: 'var(--color-backgroundHover)',
+                border: '1px solid var(--color-border)',
+                padding: '6px 10px',
                 borderRadius: 6,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                gap: 6,
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-blue-2)';
+                e.currentTarget.style.borderColor = 'var(--color-blue-6)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--color-backgroundHover)';
+                e.currentTarget.style.borderColor = 'var(--color-border)';
               }}
               title="Edit note"
             >
-              <Edit2 size={16} color="var(--color-blue-10)" />
+              <Edit2 size={14} color="var(--color-blue-10)" />
+              <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-blue-10)' }}>
+                Edit
+              </Text>
             </button>
             <button
               type="button"
               onClick={onDelete}
               style={{
-                background: 'none',
-                border: 'none',
-                padding: 8,
+                background: 'var(--color-backgroundHover)',
+                border: '1px solid var(--color-border)',
+                padding: '6px 10px',
                 borderRadius: 6,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                gap: 6,
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-red-2)';
+                e.currentTarget.style.borderColor = 'var(--color-red-6)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--color-backgroundHover)';
+                e.currentTarget.style.borderColor = 'var(--color-border)';
               }}
               title="Delete note"
             >
-              <Trash2 size={16} color="var(--color-red-10)" />
+              <Trash2 size={14} color="var(--color-red-10)" />
+              <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-red-10)' }}>
+                Delete
+              </Text>
             </button>
           </Row>
         )}
       </Row>
-
-      <Text
-        style={{
-          fontSize: 14,
-          color: 'var(--color-11)',
-          whiteSpace: 'pre-wrap',
-          marginTop: 12,
-        }}
-      >
-        {comment.content}
-      </Text>
     </Card>
   );
 }
