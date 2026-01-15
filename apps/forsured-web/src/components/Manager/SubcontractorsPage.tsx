@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Search,
   Filter,
@@ -15,144 +15,140 @@ import {
   Mail,
   Copy,
   Clock,
-} from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card } from '@unicornlove/beyond-ui';
-import Button from '../Common/Button';
-import SubcontractorDetailModal from './SubcontractorDetailModal';
-import { useDatabase } from '../../contexts/DatabaseContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { getUserOrganizationId } from '../../lib/supabase';
-import { toast } from 'sonner';
+} from 'lucide-react'
+import { Stack, Row, Text, H1, H2, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import Button from '../Common/Button'
+import SubcontractorDetailModal from './SubcontractorDetailModal'
+import { useDatabase } from '../../contexts/DatabaseContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { getUserOrganizationId } from '../../lib/supabase'
+import { toast } from 'sonner'
 import {
   createRelationshipInvitation,
   getUserInvitations,
   type RelationshipInvitation,
-} from '../../lib/relationshipInvitations';
-import { generateRelationshipCode } from '../../lib/connectionCodes';
+} from '../../lib/relationshipInvitations'
+import { generateRelationshipCode } from '../../lib/connectionCodes'
 
-type ComplianceStatus = 'compliant' | 'warning' | 'critical' | 'all';
+type ComplianceStatus = 'compliant' | 'warning' | 'critical' | 'all'
 
 // Database schema: name (contact person), company (company name)
 interface Subcontractor {
-  id: string;
-  organization_id: string;
-  name: string; // Contact person name (from DB)
-  company: string; // Company name (from DB)
+  id: string
+  organization_id: string
+  name: string // Contact person name (from DB)
+  company: string // Company name (from DB)
   // Legacy fields for compatibility - mapped from DB fields
-  company_name: string; // Mapped from 'company'
-  contact_name: string; // Mapped from 'name'
+  company_name: string // Mapped from 'company'
+  contact_name: string // Mapped from 'name'
   contact_info: {
-    email: string;
-    phone: string;
+    email: string
+    phone: string
     address?: {
-      street: string;
-      city: string;
-      state: string;
-      zip: string;
-    };
-  };
-  trade_type?: string;
-  license_number?: string;
-  status?: string;
-  compliance_score?: number;
-  risk_level?: string;
-  last_activity_at?: string;
-  notes?: string;
-  created_at: string;
-  updated_at?: string;
+      street: string
+      city: string
+      state: string
+      zip: string
+    }
+  }
+  trade_type?: string
+  license_number?: string
+  status?: string
+  compliance_score?: number
+  risk_level?: string
+  last_activity_at?: string
+  notes?: string
+  created_at: string
+  updated_at?: string
 }
 
 export default function SubcontractorsPage() {
-  const { forsured } = useDatabase();
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const { forsured } = useDatabase()
+  const { user } = useAuth()
+  const navigate = useNavigate()
 
   // State for data fetching
-  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
   // Filter and sort state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<ComplianceStatus>('all');
-  const [sortBy, setSortBy] = useState<'name' | 'compliance' | 'issues'>(
-    'name'
-  );
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedSubcontractor, setSelectedSubcontractor] = useState<
-    string | null
-  >(null);
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState<ComplianceStatus>('all')
+  const [sortBy, setSortBy] = useState<'name' | 'compliance' | 'issues'>('name')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [showFilters, setShowFilters] = useState(false)
+  const [selectedSubcontractor, setSelectedSubcontractor] = useState<string | null>(null)
 
   // Add subcontractor modal state
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [organizationId, setOrganizationId] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [organizationId, setOrganizationId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     company: '',
     name: '',
     email: '',
     phone: '',
-  });
-  const [submitting, setSubmitting] = useState(false);
+  })
+  const [submitting, setSubmitting] = useState(false)
 
   // Invitation state
-  const [managerCode, setManagerCode] = useState<string>('');
-  const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([]);
-  const [showInviteSection, setShowInviteSection] = useState(false);
+  const [managerCode, setManagerCode] = useState<string>('')
+  const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([])
+  const [showInviteSection, setShowInviteSection] = useState(false)
   const [inviteFormData, setInviteFormData] = useState({
     email: '',
     name: '',
     company: '',
     phone: '',
-  });
-  const [sendingInvite, setSendingInvite] = useState(false);
+  })
+  const [sendingInvite, setSendingInvite] = useState(false)
 
   // Fetch organization ID on mount
   useEffect(() => {
     async function fetchOrg() {
       if (user?.id) {
-        const orgId = await getUserOrganizationId(user.id);
-        setOrganizationId(orgId);
+        const orgId = await getUserOrganizationId(user.id)
+        setOrganizationId(orgId)
       }
     }
-    fetchOrg();
-  }, [user?.id]);
+    fetchOrg()
+  }, [user?.id])
 
   // Generate/fetch manager's MGR- code
   useEffect(() => {
     async function initManagerCode() {
-      if (!user?.id) return;
+      if (!user?.id) return
 
       try {
         // Generate MGR- code
-        const code = generateRelationshipCode('MGR');
-        setManagerCode(code);
+        const code = generateRelationshipCode('MGR')
+        setManagerCode(code)
 
         // Fetch pending invitations
-        const invitations = await getUserInvitations(user.id, 'pending');
+        const invitations = await getUserInvitations(user.id, 'pending')
         const contractorInvites = invitations.filter(
-          inv => inv.invitee_type === 'subcontractor' && inv.inviter_type === 'manager'
-        );
-        setPendingInvitations(contractorInvites);
+          (inv) => inv.invitee_type === 'subcontractor' && inv.inviter_type === 'manager'
+        )
+        setPendingInvitations(contractorInvites)
       } catch (error) {
-        console.error('[SubcontractorsPage] Error initializing manager code:', error);
+        console.error('[SubcontractorsPage] Error initializing manager code:', error)
       }
     }
-    initManagerCode();
-  }, [user?.id]);
+    initManagerCode()
+  }, [user?.id])
 
   // Fetch subcontractors - reusable function
   const fetchSubcontractors = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
 
     try {
       const { data, error: queryError } = await forsured('subcontractors')
         .select('*')
-        .order('company', { ascending: true }); // Use 'company' column from DB
+        .order('company', { ascending: true }) // Use 'company' column from DB
 
       if (queryError) {
-        throw queryError;
+        throw queryError
       }
 
       // Map database fields to component interface
@@ -160,38 +156,38 @@ export default function SubcontractorsPage() {
         ...sub,
         company_name: sub.company || '', // Map 'company' to 'company_name' for compatibility
         contact_name: sub.name || '', // Map 'name' to 'contact_name' for compatibility
-      }));
+      }))
 
-      setSubcontractors(mappedData);
+      setSubcontractors(mappedData)
     } catch (err) {
-      const error = err as Error;
-      setError(error);
-      toast.error(error.message || 'Failed to load subcontractors');
+      const error = err as Error
+      setError(error)
+      toast.error(error.message || 'Failed to load subcontractors')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [forsured]);
+  }, [forsured])
 
   // Fetch subcontractors on mount
   useEffect(() => {
-    fetchSubcontractors();
-  }, [fetchSubcontractors]);
+    fetchSubcontractors()
+  }, [fetchSubcontractors])
 
   // Handle invitation submit
   const handleSendInvitation = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!user?.id || !organizationId) {
-      toast.error('Unable to send invitation. Please ensure you are logged in.');
-      return;
+      toast.error('Unable to send invitation. Please ensure you are logged in.')
+      return
     }
 
     if (!inviteFormData.email || !inviteFormData.name) {
-      toast.error('Contractor email and name are required');
-      return;
+      toast.error('Contractor email and name are required')
+      return
     }
 
-    setSendingInvite(true);
+    setSendingInvite(true)
 
     try {
       const invitation = await createRelationshipInvitation({
@@ -204,11 +200,11 @@ export default function SubcontractorsPage() {
         inviteePhone: inviteFormData.phone.trim(),
         inviteeType: 'subcontractor',
         connectionMethod: 'both',
-      });
+      })
 
       toast.success('Contractor invitation sent!', {
         description: `${inviteFormData.name} can connect using code ${invitation.relationship_code}`,
-      });
+      })
 
       // Reset form
       setInviteFormData({
@@ -216,47 +212,47 @@ export default function SubcontractorsPage() {
         name: '',
         company: '',
         phone: '',
-      });
+      })
 
       // Refresh pending invitations
       if (user?.id) {
-        const invitations = await getUserInvitations(user.id, 'pending');
+        const invitations = await getUserInvitations(user.id, 'pending')
         const contractorInvites = invitations.filter(
-          inv => inv.invitee_type === 'subcontractor' && inv.inviter_type === 'manager'
-        );
-        setPendingInvitations(contractorInvites);
+          (inv) => inv.invitee_type === 'subcontractor' && inv.inviter_type === 'manager'
+        )
+        setPendingInvitations(contractorInvites)
       }
     } catch (error) {
-      console.error('[SubcontractorsPage] Error sending invitation:', error);
-      toast.error('Failed to send invitation. Please try again.');
+      console.error('[SubcontractorsPage] Error sending invitation:', error)
+      toast.error('Failed to send invitation. Please try again.')
     } finally {
-      setSendingInvite(false);
+      setSendingInvite(false)
     }
-  };
+  }
 
   // Copy manager code to clipboard
   const copyManagerCode = () => {
-    if (!managerCode) return;
+    if (!managerCode) return
 
-    navigator.clipboard.writeText(managerCode);
-    toast.success('Manager code copied to clipboard');
-  };
+    navigator.clipboard.writeText(managerCode)
+    toast.success('Manager code copied to clipboard')
+  }
 
   // Handle form submission
   const handleAddSubcontractor = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!organizationId) {
-      toast.error('No organization found. Please try again.');
-      return;
+      toast.error('No organization found. Please try again.')
+      return
     }
 
     if (!formData.company.trim() || !formData.name.trim()) {
-      toast.error('Company name and contact name are required.');
-      return;
+      toast.error('Company name and contact name are required.')
+      return
     }
 
-    setSubmitting(true);
+    setSubmitting(true)
     try {
       // Only insert columns that exist in the database table
       // compliance_score, status, risk_level are derived from other tables
@@ -268,118 +264,116 @@ export default function SubcontractorsPage() {
           email: formData.email.trim() || null,
           phone: formData.phone.trim() || null,
         },
-      });
+      })
 
       if (insertError) {
-        throw insertError;
+        throw insertError
       }
 
-      toast.success('Subcontractor added successfully!');
-      setShowAddModal(false);
-      setFormData({ company: '', name: '', email: '', phone: '' });
-      fetchSubcontractors(); // Refresh the list
+      toast.success('Subcontractor added successfully!')
+      setShowAddModal(false)
+      setFormData({ company: '', name: '', email: '', phone: '' })
+      fetchSubcontractors() // Refresh the list
     } catch (err) {
-      const error = err as Error;
-      console.error('[SubcontractorsPage] Error adding subcontractor:', error);
-      toast.error(error.message || 'Failed to add subcontractor');
+      const error = err as Error
+      console.error('[SubcontractorsPage] Error adding subcontractor:', error)
+      toast.error(error.message || 'Failed to add subcontractor')
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   // Close modal handler
   const handleCloseModal = () => {
-    setShowAddModal(false);
-    setFormData({ company: '', name: '', email: '', phone: '' });
-  };
+    setShowAddModal(false)
+    setFormData({ company: '', name: '', email: '', phone: '' })
+  }
 
   // Derive compliance status from compliance_score
   const subcontractorsWithStatus = useMemo(() => {
     return subcontractors.map((sub) => {
-      let complianceStatus: 'compliant' | 'warning' | 'critical';
-      const score = sub.compliance_score ?? 0;
+      let complianceStatus: 'compliant' | 'warning' | 'critical'
+      const score = sub.compliance_score ?? 0
       if (sub.risk_level === 'critical' || score < 60) {
-        complianceStatus = 'critical';
+        complianceStatus = 'critical'
       } else if (sub.risk_level === 'medium' || score < 80) {
-        complianceStatus = 'warning';
+        complianceStatus = 'warning'
       } else {
-        complianceStatus = 'compliant';
+        complianceStatus = 'compliant'
       }
 
       return {
         ...sub,
         complianceStatus,
-      };
-    });
-  }, [subcontractors]);
+      }
+    })
+  }, [subcontractors])
 
   const filteredAndSortedSubs = useMemo(() => {
     const filtered = subcontractorsWithStatus.filter((sub) => {
       const matchesSearch =
         searchQuery === '' ||
         sub.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        sub.contact_name.toLowerCase().includes(searchQuery.toLowerCase());
+        sub.contact_name.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesStatus =
-        selectedStatus === 'all' || sub.complianceStatus === selectedStatus;
+      const matchesStatus = selectedStatus === 'all' || sub.complianceStatus === selectedStatus
 
-      return matchesSearch && matchesStatus;
-    });
+      return matchesSearch && matchesStatus
+    })
 
     filtered.sort((a, b) => {
-      let comparison = 0;
+      let comparison = 0
 
       if (sortBy === 'name') {
-        comparison = a.company_name.localeCompare(b.company_name);
+        comparison = a.company_name.localeCompare(b.company_name)
       } else if (sortBy === 'compliance') {
-        comparison = (b.compliance_score ?? 0) - (a.compliance_score ?? 0);
+        comparison = (b.compliance_score ?? 0) - (a.compliance_score ?? 0)
       } else if (sortBy === 'issues') {
         // Sort by risk level (critical > medium > low) then by compliance score
-        const riskOrder: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
-        comparison = (riskOrder[a.risk_level] ?? 4) - (riskOrder[b.risk_level] ?? 4);
+        const riskOrder: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 }
+        comparison = (riskOrder[a.risk_level] ?? 4) - (riskOrder[b.risk_level] ?? 4)
         if (comparison === 0) {
-          comparison = (a.compliance_score ?? 0) - (b.compliance_score ?? 0);
+          comparison = (a.compliance_score ?? 0) - (b.compliance_score ?? 0)
         }
       }
 
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
+      return sortOrder === 'asc' ? comparison : -comparison
+    })
 
-    return filtered;
-  }, [subcontractorsWithStatus, searchQuery, selectedStatus, sortBy, sortOrder]);
+    return filtered
+  }, [subcontractorsWithStatus, searchQuery, selectedStatus, sortBy, sortOrder])
 
   const statusCounts = useMemo(() => {
     return {
-      compliant: subcontractorsWithStatus.filter((s) => s.complianceStatus === 'compliant')
-        .length,
-      warning: subcontractorsWithStatus.filter((s) => s.complianceStatus === 'warning')
-        .length,
-      critical: subcontractorsWithStatus.filter((s) => s.complianceStatus === 'critical')
-        .length,
-    };
-  }, [subcontractorsWithStatus]);
+      compliant: subcontractorsWithStatus.filter((s) => s.complianceStatus === 'compliant').length,
+      warning: subcontractorsWithStatus.filter((s) => s.complianceStatus === 'warning').length,
+      critical: subcontractorsWithStatus.filter((s) => s.complianceStatus === 'critical').length,
+    }
+  }, [subcontractorsWithStatus])
 
-  const getStatusColorProps = (status: 'compliant' | 'warning' | 'critical'): React.CSSProperties => {
+  const getStatusColorProps = (
+    status: 'compliant' | 'warning' | 'critical'
+  ): React.CSSProperties => {
     switch (status) {
       case 'compliant':
-        return { borderColor: 'var(--color-green8)', backgroundColor: 'var(--color-green2)' };
+        return { borderColor: 'var(--color-green8)', backgroundColor: 'var(--color-green2)' }
       case 'warning':
-        return { borderColor: 'var(--color-orange8)', backgroundColor: 'var(--color-orange2)' };
+        return { borderColor: 'var(--color-orange8)', backgroundColor: 'var(--color-orange2)' }
       case 'critical':
-        return { borderColor: 'var(--color-red8)', backgroundColor: 'var(--color-red2)' };
+        return { borderColor: 'var(--color-red8)', backgroundColor: 'var(--color-red2)' }
     }
-  };
+  }
 
   const getStatusIcon = (status: 'compliant' | 'warning' | 'critical') => {
     switch (status) {
       case 'compliant':
-        return <CheckCircle color="var(--color-green10)" size={20} />;
+        return <CheckCircle color="var(--color-green10)" size={20} />
       case 'warning':
-        return <AlertTriangle color="var(--color-orange10)" size={20} />;
+        return <AlertTriangle color="var(--color-orange10)" size={20} />
       case 'critical':
-        return <AlertTriangle color="var(--color-red10)" size={20} />;
+        return <AlertTriangle color="var(--color-red10)" size={20} />
     }
-  };
+  }
 
   // Show loading state
   if (loading) {
@@ -390,7 +384,7 @@ export default function SubcontractorsPage() {
           <Text style={{ color: 'var(--color-11)' }}>Loading subcontractors...</Text>
         </Stack>
       </Stack>
-    );
+    )
   }
 
   // Show error state
@@ -405,7 +399,7 @@ export default function SubcontractorsPage() {
           <Text style={{ color: 'var(--color-11)' }}>{error.message}</Text>
         </Stack>
       </Stack>
-    );
+    )
   }
 
   // Reusable modal component
@@ -494,9 +488,7 @@ export default function SubcontractorsPage() {
             </Stack>
 
             <Stack style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>
-                Email
-              </Text>
+              <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>Email</Text>
               <input
                 placeholder="Enter email address"
                 value={formData.email}
@@ -514,9 +506,7 @@ export default function SubcontractorsPage() {
             </Stack>
 
             <Stack style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>
-                Phone
-              </Text>
+              <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>Phone</Text>
               <input
                 placeholder="Enter phone number"
                 value={formData.phone}
@@ -534,18 +524,14 @@ export default function SubcontractorsPage() {
             </Stack>
 
             <Row style={{ justifyContent: 'flex-end', gap: 12, marginTop: 8 }}>
-              <Button
-                variant="outlined"
-                onPress={handleCloseModal}
-                disabled={submitting}
-              >
+              <Button variant="outlined" onPress={handleCloseModal} disabled={submitting}>
                 Cancel
               </Button>
               <Button
                 color="primary"
                 onPress={() => {
-                  const form = document.querySelector('form');
-                  if (form) form.requestSubmit();
+                  const form = document.querySelector('form')
+                  if (form) form.requestSubmit()
                 }}
                 disabled={submitting || !formData.company.trim() || !formData.name.trim()}
               >
@@ -563,7 +549,7 @@ export default function SubcontractorsPage() {
         </form>
       </Card>
     </div>
-  );
+  )
 
   // Show empty state when no subcontractors exist
   if (subcontractors.length === 0) {
@@ -585,13 +571,10 @@ export default function SubcontractorsPage() {
                 No Subcontractors Yet
               </Text>
               <Text style={{ color: 'var(--color-11)', textAlign: 'center', maxWidth: 400 }}>
-                Invite subcontractors to your projects to track their compliance and insurance requirements.
+                Invite subcontractors to your projects to track their compliance and insurance
+                requirements.
               </Text>
-              <Button
-                color="primary"
-                iconStart={Plus}
-                onPress={() => setShowAddModal(true)}
-              >
+              <Button color="primary" iconStart={Plus} onPress={() => setShowAddModal(true)}>
                 Add Subcontractor
               </Button>
             </Stack>
@@ -599,7 +582,7 @@ export default function SubcontractorsPage() {
         </Stack>
         {addSubcontractorModal}
       </>
-    );
+    )
   }
 
   return (
@@ -613,17 +596,21 @@ export default function SubcontractorsPage() {
             Manage {subcontractors.length} subcontractors across your projects
           </Text>
         </Stack>
-        <Button
-          color="primary"
-          iconStart={Plus}
-          onPress={() => setShowAddModal(true)}
-        >
+        <Button color="primary" iconStart={Plus} onPress={() => setShowAddModal(true)}>
           Add Subcontractor
         </Button>
       </Row>
 
       {/* Contractor Invitation Section */}
-      <Card style={{ backgroundColor: 'var(--background)', borderRadius: 8, borderWidth: 1, borderColor: 'var(--color-border)', padding: 20 }}>
+      <Card
+        style={{
+          backgroundColor: 'var(--background)',
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: 'var(--color-border)',
+          padding: 20,
+        }}
+      >
         <Stack style={{ gap: 16 }}>
           <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Stack style={{ gap: 4 }}>
@@ -688,7 +675,9 @@ export default function SubcontractorsPage() {
               </Stack>
 
               {/* Invitation Form */}
-              <Stack style={{ gap: 12, borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+              <Stack
+                style={{ gap: 12, borderTop: '1px solid var(--color-border)', paddingTop: 16 }}
+              >
                 <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
                   Send Invitation Email
                 </Text>
@@ -740,8 +729,8 @@ export default function SubcontractorsPage() {
                       />
                     </Stack>
 
-                    <Row style={{ gap: 12, flexWrap: 'wrap' }}>
-                      <Stack style={{ gap: 8, flex: 1, minWidth: 200 }}>
+                    <Grid columns={{ base: 1, sm: 2 }} gap={12}>
+                      <Stack style={{ gap: 8 }}>
                         <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>
                           Company (Optional)
                         </Text>
@@ -764,7 +753,7 @@ export default function SubcontractorsPage() {
                         />
                       </Stack>
 
-                      <Stack style={{ gap: 8, flex: 1, minWidth: 200 }}>
+                      <Stack style={{ gap: 8 }}>
                         <Text style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-11)' }}>
                           Phone (Optional)
                         </Text>
@@ -786,7 +775,7 @@ export default function SubcontractorsPage() {
                           }}
                         />
                       </Stack>
-                    </Row>
+                    </Grid>
 
                     <Button
                       size="sm"
@@ -810,12 +799,14 @@ export default function SubcontractorsPage() {
 
               {/* Pending Invitations */}
               {pendingInvitations.length > 0 && (
-                <Stack style={{ gap: 12, borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+                <Stack
+                  style={{ gap: 12, borderTop: '1px solid var(--color-border)', paddingTop: 16 }}
+                >
                   <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
                     Pending Invitations ({pendingInvitations.length})
                   </Text>
                   <Stack style={{ gap: 8 }}>
-                    {pendingInvitations.map(inv => (
+                    {pendingInvitations.map((inv) => (
                       <Card
                         key={inv.id}
                         style={{
@@ -828,7 +819,9 @@ export default function SubcontractorsPage() {
                       >
                         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                           <Stack style={{ gap: 4, flex: 1 }}>
-                            <Text style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}>
+                            <Text
+                              style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-12)' }}
+                            >
                               {inv.metadata?.name || inv.invitee_email}
                             </Text>
                             <Text style={{ fontSize: 12, color: 'var(--color-11)' }}>
@@ -859,7 +852,14 @@ export default function SubcontractorsPage() {
 
       <Row style={{ alignItems: 'center', gap: 16, fontSize: 14 }}>
         <Row style={{ alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 12, height: 12, borderRadius: 9999, backgroundColor: 'var(--color-green10)' }} />
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: 9999,
+              backgroundColor: 'var(--color-green10)',
+            }}
+          />
           <Text style={{ fontWeight: 600, color: 'var(--color-12)' }}>
             {statusCounts.compliant}
           </Text>
@@ -867,30 +867,54 @@ export default function SubcontractorsPage() {
         </Row>
         <div style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
         <Row style={{ alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 12, height: 12, borderRadius: 9999, backgroundColor: 'var(--color-orange10)' }} />
-          <Text style={{ fontWeight: 600, color: 'var(--color-12)' }}>
-            {statusCounts.warning}
-          </Text>
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: 9999,
+              backgroundColor: 'var(--color-orange10)',
+            }}
+          />
+          <Text style={{ fontWeight: 600, color: 'var(--color-12)' }}>{statusCounts.warning}</Text>
           <Text style={{ color: 'var(--color-11)' }}>Issues</Text>
         </Row>
         <div style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
         <Row style={{ alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 12, height: 12, borderRadius: 9999, backgroundColor: 'var(--color-red10)' }} />
-          <Text style={{ fontWeight: 600, color: 'var(--color-12)' }}>
-            {statusCounts.critical}
-          </Text>
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: 9999,
+              backgroundColor: 'var(--color-red10)',
+            }}
+          />
+          <Text style={{ fontWeight: 600, color: 'var(--color-12)' }}>{statusCounts.critical}</Text>
           <Text style={{ color: 'var(--color-11)' }}>Critical</Text>
         </Row>
       </Row>
 
-      <Card style={{ backgroundColor: 'var(--background)', borderRadius: 8, borderWidth: 1, borderColor: 'var(--color-border)', padding: 16, gap: 16 }}>
+      <Card
+        style={{
+          backgroundColor: 'var(--background)',
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: 'var(--color-border)',
+          padding: 16,
+          gap: 16,
+        }}
+      >
         <Row style={{ alignItems: 'center', gap: 12 }}>
           <div style={{ flex: 1, position: 'relative' }}>
-            <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
-              <Search
-                color="var(--color-10)"
-                size={20}
-              />
+            <div
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 1,
+              }}
+            >
+              <Search color="var(--color-10)" size={20} />
             </div>
             <input
               type="text"
@@ -932,7 +956,13 @@ export default function SubcontractorsPage() {
             }}
           >
             <Filter size={18} />
-            <Text style={{ fontSize: 14, fontWeight: 500, color: showFilters ? 'var(--color-blue10)' : 'var(--color-11)' }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: showFilters ? 'var(--color-blue10)' : 'var(--color-11)',
+              }}
+            >
               Filters
             </Text>
           </Row>
@@ -940,8 +970,8 @@ export default function SubcontractorsPage() {
 
         {showFilters && (
           <Stack style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16, gap: 16 }}>
-            <Row style={{ flexWrap: 'wrap', gap: 16 }}>
-              <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+            <Grid columns={{ base: 1, sm: 2 }} gap={16}>
+              <Stack>
                 <label
                   style={{
                     display: 'block',
@@ -955,9 +985,7 @@ export default function SubcontractorsPage() {
                 </label>
                 <select
                   value={selectedStatus}
-                  onChange={(e) =>
-                    setSelectedStatus(e.target.value as ComplianceStatus)
-                  }
+                  onChange={(e) => setSelectedStatus(e.target.value as ComplianceStatus)}
                   style={{
                     width: '100%',
                     padding: '8px 12px',
@@ -975,7 +1003,7 @@ export default function SubcontractorsPage() {
                 </select>
               </Stack>
 
-              <Stack style={{ flex: 1, minWidth: 'calc(50% - 8px)' }}>
+              <Stack>
                 <label
                   style={{
                     display: 'block',
@@ -990,11 +1018,7 @@ export default function SubcontractorsPage() {
                 <Row style={{ gap: 8 }}>
                   <select
                     value={sortBy}
-                    onChange={(e) =>
-                      setSortBy(
-                        e.target.value as 'name' | 'compliance' | 'issues'
-                      )
-                    }
+                    onChange={(e) => setSortBy(e.target.value as 'name' | 'compliance' | 'issues')}
                     style={{
                       flex: 1,
                       padding: '8px 12px',
@@ -1010,9 +1034,7 @@ export default function SubcontractorsPage() {
                     <option value="issues">Issues</option>
                   </select>
                   <div
-                    onClick={() =>
-                      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
-                    }
+                    onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
                     style={{
                       padding: 8,
                       borderWidth: 1,
@@ -1033,7 +1055,7 @@ export default function SubcontractorsPage() {
                   </div>
                 </Row>
               </Stack>
-            </Row>
+            </Grid>
           </Stack>
         )}
 
@@ -1062,9 +1084,22 @@ export default function SubcontractorsPage() {
             }}
           >
             <Stack style={{ padding: 20 }}>
-              <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+              <Row
+                style={{
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  marginBottom: 12,
+                }}
+              >
                 <Stack style={{ flex: 1 }}>
-                  <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)', marginBottom: 4 }}>
+                  <H3
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 600,
+                      color: 'var(--color-12)',
+                      marginBottom: 4,
+                    }}
+                  >
                     {sub.company_name}
                   </H3>
                   <Text style={{ fontSize: 14, color: 'var(--color-10)' }}>{sub.trade_type}</Text>
@@ -1073,16 +1108,25 @@ export default function SubcontractorsPage() {
               </Row>
 
               <Stack style={{ marginBottom: 16 }}>
-                <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>
-                    Compliance Score
-                  </Text>
+                <Row
+                  style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}
+                >
+                  <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>Compliance Score</Text>
                   <Text style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-12)' }}>
-                    {sub.compliance_score != null ? `${Math.round(sub.compliance_score)}%` : 'No data yet'}
+                    {sub.compliance_score != null
+                      ? `${Math.round(sub.compliance_score)}%`
+                      : 'No data yet'}
                   </Text>
                 </Row>
                 {sub.compliance_score != null && (
-                  <div style={{ width: '100%', height: 8, backgroundColor: 'var(--color-gray8)', borderRadius: 9999 }}>
+                  <div
+                    style={{
+                      width: '100%',
+                      height: 8,
+                      backgroundColor: 'var(--color-gray8)',
+                      borderRadius: 9999,
+                    }}
+                  >
                     <div
                       style={{
                         height: '100%',
@@ -1100,14 +1144,35 @@ export default function SubcontractorsPage() {
                 )}
               </Stack>
 
-              <Row style={{ flexWrap: 'wrap', gap: 12 }}>
-                <Card style={{ padding: 8, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 4, flex: 1, minWidth: 'calc(50% - 6px)', alignItems: 'center' }}>
-                  <Text style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-12)', textTransform: 'capitalize' }}>
+              <Grid columns={{ base: 1, sm: 2 }} gap={12}>
+                <Card
+                  style={{
+                    padding: 8,
+                    backgroundColor: 'var(--color-backgroundHover)',
+                    borderRadius: 4,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 700,
+                      color: 'var(--color-12)',
+                      textTransform: 'capitalize',
+                    }}
+                  >
                     {sub.risk_level}
                   </Text>
                   <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>Risk Level</Text>
                 </Card>
-                <Card style={{ padding: 8, backgroundColor: 'var(--color-backgroundHover)', borderRadius: 4, flex: 1, minWidth: 'calc(50% - 6px)', alignItems: 'center' }}>
+                <Card
+                  style={{
+                    padding: 8,
+                    backgroundColor: 'var(--color-backgroundHover)',
+                    borderRadius: 4,
+                    alignItems: 'center',
+                  }}
+                >
                   <Text
                     style={{
                       fontSize: 20,
@@ -1120,10 +1185,16 @@ export default function SubcontractorsPage() {
                   </Text>
                   <Text style={{ fontSize: 12, color: 'var(--color-10)' }}>Status</Text>
                 </Card>
-              </Row>
+              </Grid>
 
               {sub.contact_name && (
-                <Stack style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
+                <Stack
+                  style={{
+                    marginTop: 12,
+                    paddingTop: 12,
+                    borderTop: '1px solid var(--color-border)',
+                  }}
+                >
                   <Row style={{ alignItems: 'center', gap: 8 }}>
                     <Users size={14} color="var(--color-10)" />
                     <Text style={{ fontSize: 12, color: 'var(--color-11)' }}>
@@ -1138,7 +1209,17 @@ export default function SubcontractorsPage() {
       </Row>
 
       {filteredAndSortedSubs.length === 0 && (
-        <Card style={{ alignItems: 'center', paddingTop: 64, paddingBottom: 64, backgroundColor: 'var(--background)', borderRadius: 8, borderWidth: 1, borderColor: 'var(--color-border)' }}>
+        <Card
+          style={{
+            alignItems: 'center',
+            paddingTop: 64,
+            paddingBottom: 64,
+            backgroundColor: 'var(--background)',
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+          }}
+        >
           <Building color="var(--color-10)" size={64} style={{ marginBottom: 16 }} />
           <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-12)', marginBottom: 8 }}>
             No subcontractors found
@@ -1157,5 +1238,5 @@ export default function SubcontractorsPage() {
 
       {addSubcontractorModal}
     </Stack>
-  );
+  )
 }
