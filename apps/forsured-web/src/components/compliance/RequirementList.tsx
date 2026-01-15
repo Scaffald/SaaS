@@ -3,23 +3,23 @@
  * List view for compliance requirements with filtering and actions
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { useState, useEffect, useCallback } from 'react'
+import { Loader2 } from 'lucide-react'
+import { Stack, Row, Text, Button, Card, Grid } from '@unicornlove/beyond-ui'
 import {
   ComplianceRequirement,
   CoverageType,
   RequirementStatus,
-  RequirementFilters
-} from '../../lib/compliance/types';
-import { listRequirements, deleteRequirement } from '../../lib/compliance/requirementService';
+  RequirementFilters,
+} from '../../lib/compliance/types'
+import { listRequirements, deleteRequirement } from '../../lib/compliance/requirementService'
 
 interface RequirementListProps {
-  organizationId: string;
-  onViewRequirement?: (requirement: ComplianceRequirement) => void;
-  onEditRequirement?: (requirement: ComplianceRequirement) => void;
-  onCloneRequirement?: (requirement: ComplianceRequirement) => void;
-  onCreateNew?: () => void;
+  organizationId: string
+  onViewRequirement?: (requirement: ComplianceRequirement) => void
+  onEditRequirement?: (requirement: ComplianceRequirement) => void
+  onCloneRequirement?: (requirement: ComplianceRequirement) => void
+  onCreateNew?: () => void
 }
 
 export default function RequirementList({
@@ -27,63 +27,63 @@ export default function RequirementList({
   onViewRequirement,
   onEditRequirement,
   onCloneRequirement,
-  onCreateNew
+  onCreateNew,
 }: RequirementListProps) {
-  const [requirements, setRequirements] = useState<ComplianceRequirement[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [requirements, setRequirements] = useState<ComplianceRequirement[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [filters, setFilters] = useState<RequirementFilters>({
-    organization_id: organizationId
-  });
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
+    organization_id: organizationId,
+  })
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const loadRequirements = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
       const result = await listRequirements({
         filters: {
           ...filters,
-          search: searchTerm || undefined
+          search: searchTerm || undefined,
         },
         page,
         limit: 20,
         sort_by: 'created_at',
-        ascending: false
-      });
+        ascending: false,
+      })
 
-      setRequirements(result.data);
-      setTotalPages(result.pagination.total_pages);
+      setRequirements(result.data)
+      setTotalPages(result.pagination.total_pages)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load requirements');
+      setError(err instanceof Error ? err.message : 'Failed to load requirements')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [filters, page, searchTerm]);
+  }, [filters, page, searchTerm])
 
   useEffect(() => {
-    loadRequirements();
-  }, [loadRequirements]);
+    loadRequirements()
+  }, [loadRequirements])
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    setPage(1);
-    loadRequirements();
+    e.preventDefault()
+    setPage(1)
+    loadRequirements()
   }
 
   async function handleDelete(requirement: ComplianceRequirement) {
     if (!confirm(`Are you sure you want to archive "${requirement.name}"?`)) {
-      return;
+      return
     }
 
     try {
-      await deleteRequirement(requirement.id);
-      loadRequirements();
+      await deleteRequirement(requirement.id)
+      loadRequirements()
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to archive requirement');
+      alert(err instanceof Error ? err.message : 'Failed to archive requirement')
     }
   }
 
@@ -93,19 +93,28 @@ export default function RequirementList({
       [CoverageType.WORKERS_COMP]: 'Workers Comp',
       [CoverageType.AUTO_LIABILITY]: 'Auto Liability',
       [CoverageType.UMBRELLA]: 'Umbrella',
-      [CoverageType.CUSTOM]: 'Custom'
-    };
-    return labels[type];
+      [CoverageType.CUSTOM]: 'Custom',
+    }
+    return labels[type]
   }
 
   function getStatusBadgeStyles(status: RequirementStatus): React.CSSProperties {
     const colorMap = {
-      [RequirementStatus.ACTIVE]: { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-11)' },
-      [RequirementStatus.DRAFT]: { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)' },
-      [RequirementStatus.ARCHIVED]: { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)' }
-    };
+      [RequirementStatus.ACTIVE]: {
+        backgroundColor: 'var(--color-green-2)',
+        color: 'var(--color-green-11)',
+      },
+      [RequirementStatus.DRAFT]: {
+        backgroundColor: 'var(--color-yellow-2)',
+        color: 'var(--color-yellow-11)',
+      },
+      [RequirementStatus.ARCHIVED]: {
+        backgroundColor: 'var(--color-gray-2)',
+        color: 'var(--color-gray-11)',
+      },
+    }
 
-    return colorMap[status] || colorMap[RequirementStatus.DRAFT];
+    return colorMap[status] || colorMap[RequirementStatus.DRAFT]
   }
 
   function getStatusBadge(status: RequirementStatus) {
@@ -124,21 +133,33 @@ export default function RequirementList({
       >
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Text>
-    );
+    )
   }
 
   if (loading && requirements.length === 0) {
     return (
       <Stack style={{ alignItems: 'center', justifyContent: 'center', height: 256 }}>
-        <Loader2 className="animate-spin" style={{ width: 32, height: 32, color: 'var(--color-blue-10)' }} />
-        <Text style={{ color: 'var(--color-10)', marginTop: 'var(--space-4)' }}>Loading requirements...</Text>
+        <Loader2
+          className="animate-spin"
+          style={{ width: 32, height: 32, color: 'var(--color-blue-10)' }}
+        />
+        <Text style={{ color: 'var(--color-10)', marginTop: 'var(--space-4)' }}>
+          Loading requirements...
+        </Text>
       </Stack>
-    );
+    )
   }
 
   if (error) {
     return (
-      <Card style={{ backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-5)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)' }}>
+      <Card
+        style={{
+          backgroundColor: 'var(--color-red-2)',
+          borderColor: 'var(--color-red-5)',
+          borderRadius: 'var(--radius-4)',
+          padding: 'var(--space-4)',
+        }}
+      >
         <Text style={{ color: 'var(--color-red-11)', marginBottom: 8 }}>Error: {error}</Text>
         <button
           onClick={() => loadRequirements()}
@@ -154,14 +175,23 @@ export default function RequirementList({
           Retry
         </button>
       </Card>
-    );
+    )
   }
 
   return (
     <Stack style={{ gap: 'var(--space-4)' }}>
       {/* Header */}
       <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ fontSize: 'var(--font-size-7)', fontWeight: 700, color: 'var(--color-12)', margin: 0 }}>Compliance Requirements</h2>
+        <h2
+          style={{
+            fontSize: 'var(--font-size-7)',
+            fontWeight: 700,
+            color: 'var(--color-12)',
+            margin: 0,
+          }}
+        >
+          Compliance Requirements
+        </h2>
         {onCreateNew && (
           <button
             onClick={onCreateNew}
@@ -183,7 +213,14 @@ export default function RequirementList({
       </Row>
 
       {/* Search and Filters */}
-      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 1px 2px var(--color-shadow)', padding: 'var(--space-4)' }}>
+      <Card
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 'var(--radius-4)',
+          boxShadow: '0 1px 2px var(--color-shadow)',
+          padding: 'var(--space-4)',
+        }}
+      >
         <form onSubmit={handleSearch}>
           <Stack style={{ gap: 'var(--space-4)' }}>
             <input
@@ -203,16 +240,23 @@ export default function RequirementList({
               }}
             />
 
-            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+            <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
               {/* Type Filter */}
-              <Stack style={{ flex: 1, minWidth: 200 }}>
-                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
+              <Stack>
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    marginBottom: 4,
+                  }}
+                >
                   Type
                 </Text>
                 <select
                   value={filters.type || ''}
                   onChange={(e) =>
-                    setFilters({ ...filters, type: e.target.value as CoverageType || undefined })
+                    setFilters({ ...filters, type: (e.target.value as CoverageType) || undefined })
                   }
                   style={{
                     width: '100%',
@@ -232,14 +276,24 @@ export default function RequirementList({
               </Stack>
 
               {/* Status Filter */}
-              <Stack style={{ flex: 1, minWidth: 200 }}>
-                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
+              <Stack>
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    marginBottom: 4,
+                  }}
+                >
                   Status
                 </Text>
                 <select
                   value={filters.status || ''}
                   onChange={(e) =>
-                    setFilters({ ...filters, status: e.target.value as RequirementStatus || undefined })
+                    setFilters({
+                      ...filters,
+                      status: (e.target.value as RequirementStatus) || undefined,
+                    })
                   }
                   style={{
                     width: '100%',
@@ -257,18 +311,25 @@ export default function RequirementList({
               </Stack>
 
               {/* Template Filter */}
-              <Stack style={{ flex: 1, minWidth: 200 }}>
-                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-11)', marginBottom: 4 }}>
+              <Stack>
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    marginBottom: 4,
+                  }}
+                >
                   Type
                 </Text>
                 <select
                   value={filters.is_template === undefined ? '' : filters.is_template.toString()}
                   onChange={(e) => {
-                    const value = e.target.value;
+                    const value = e.target.value
                     setFilters({
                       ...filters,
-                      is_template: value === '' ? undefined : value === 'true'
-                    });
+                      is_template: value === '' ? undefined : value === 'true',
+                    })
                   }}
                   style={{
                     width: '100%',
@@ -285,7 +346,7 @@ export default function RequirementList({
               </Stack>
 
               {/* Search Button */}
-              <Row style={{ alignItems: 'flex-end', flex: 1, minWidth: 200 }}>
+              <Stack style={{ alignSelf: 'flex-end' }}>
                 <button
                   type="submit"
                   style={{
@@ -303,17 +364,26 @@ export default function RequirementList({
                 >
                   Search
                 </button>
-              </Row>
-            </Row>
+              </Stack>
+            </Grid>
           </Stack>
         </form>
       </Card>
 
       {/* Requirements Table */}
       {requirements.length === 0 ? (
-        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 1px 2px var(--color-shadow)', padding: 'var(--space-8)' }}>
+        <Card
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 'var(--radius-4)',
+            boxShadow: '0 1px 2px var(--color-shadow)',
+            padding: 'var(--space-8)',
+          }}
+        >
           <Stack style={{ alignItems: 'center', gap: 'var(--space-4)' }}>
-            <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-4)' }}>No requirements found. Create your first requirement or load from templates.</Text>
+            <Text style={{ color: 'var(--color-10)', marginBottom: 'var(--space-4)' }}>
+              No requirements found. Create your first requirement or load from templates.
+            </Text>
             {onCreateNew && (
               <button
                 onClick={onCreateNew}
@@ -335,26 +405,93 @@ export default function RequirementList({
           </Stack>
         </Card>
       ) : (
-        <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-4)', boxShadow: '0 1px 2px var(--color-shadow)', overflow: 'hidden' }}>
+        <Card
+          style={{
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 'var(--radius-4)',
+            boxShadow: '0 1px 2px var(--color-shadow)',
+            overflow: 'hidden',
+          }}
+        >
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead style={{ backgroundColor: 'var(--color-gray-2)' }}>
               <tr>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Name
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Type
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Status
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Version
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color-10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Template
                 </th>
-                <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: 500, color: 'var(--color-10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <th
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'right',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Actions
                 </th>
               </tr>
@@ -368,40 +505,70 @@ export default function RequirementList({
                     borderBottom: '1px solid var(--color-border)',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--color-background-hover)';
+                    e.currentTarget.style.backgroundColor = 'var(--color-background-hover)'
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--color-background)';
+                    e.currentTarget.style.backgroundColor = 'var(--color-background)'
                   }}
                   onPress={() => onViewRequirement?.(requirement)}
                 >
                   <td style={{ padding: '16px 24px' }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-12)' }}>{requirement.name}</Text>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-3)',
+                        fontWeight: 500,
+                        color: 'var(--color-12)',
+                      }}
+                    >
+                      {requirement.name}
+                    </Text>
                     {requirement.description && (
-                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)', marginTop: 4, maxWidth: '28rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-3)',
+                          color: 'var(--color-10)',
+                          marginTop: 4,
+                          maxWidth: '28rem',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
                         {requirement.description}
                       </Text>
                     )}
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>{getTypeLabel(requirement.type)}</Text>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-12)' }}>
+                      {getTypeLabel(requirement.type)}
+                    </Text>
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
                     {getStatusBadge(requirement.status)}
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>v{requirement.version}</Text>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
+                      v{requirement.version}
+                    </Text>
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>{requirement.is_template ? 'Yes' : 'No'}</Text>
+                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-10)' }}>
+                      {requirement.is_template ? 'Yes' : 'No'}
+                    </Text>
                   </td>
                   <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right' }}>
-                    <Row style={{ alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+                    <Row
+                      style={{
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: 'var(--space-2)',
+                      }}
+                    >
                       {onEditRequirement && (
                         <button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            onEditRequirement(requirement);
+                            e.stopPropagation()
+                            onEditRequirement(requirement)
                           }}
                           style={{
                             color: 'var(--color-blue-10)',
@@ -419,8 +586,8 @@ export default function RequirementList({
                       {onCloneRequirement && (
                         <button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            onCloneRequirement(requirement);
+                            e.stopPropagation()
+                            onCloneRequirement(requirement)
                           }}
                           style={{
                             color: 'var(--color-green-10)',
@@ -438,8 +605,8 @@ export default function RequirementList({
                       {requirement.status !== RequirementStatus.ARCHIVED && (
                         <button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(requirement);
+                            e.stopPropagation()
+                            handleDelete(requirement)
                           }}
                           style={{
                             color: 'var(--color-red-10)',
@@ -531,5 +698,5 @@ export default function RequirementList({
         </Card>
       )}
     </Stack>
-  );
+  )
 }
