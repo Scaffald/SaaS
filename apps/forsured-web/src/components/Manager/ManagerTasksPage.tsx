@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react'
 import {
   Search,
   Filter,
@@ -10,7 +10,7 @@ import {
   X,
   Loader2,
   Plus,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   Stack,
   Row,
@@ -29,63 +29,73 @@ import {
   FormField,
   Chip,
   Spinner,
-} from '@unicornlove/beyond-ui';
-import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
-import { useDatabase } from '../../contexts/DatabaseContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { toast } from 'sonner';
-import { useEnums } from '../../hooks/useEnums';
-import { useProjects } from '../../hooks/useProjects';
+  Grid,
+} from '@unicornlove/beyond-ui'
+import EnhancedTaskDetailModal from './EnhancedTaskDetailModal'
+import { useDatabase } from '../../contexts/DatabaseContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { toast } from 'sonner'
+import { useEnums } from '../../hooks/useEnums'
+import { useProjects } from '../../hooks/useProjects'
 
 // New database schema types
-type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'submitted' | 'in_review' | 'approved' | 'rejected' | 'needs_info';
-type TaskPriority = 'urgent' | 'high' | 'medium' | 'low';
+type TaskStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled'
+  | 'submitted'
+  | 'in_review'
+  | 'approved'
+  | 'rejected'
+  | 'needs_info'
+type TaskPriority = 'urgent' | 'high' | 'medium' | 'low'
 
 interface Task {
-  id: string;
-  project_id: string;
-  subcontractor_id: string | null;
-  assigned_to_user_id: string | null;
-  created_by_user_id: string;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  priority: TaskPriority;
-  due_date: string;
-  task_type: string;
-  origin_role: string;
+  id: string
+  project_id: string
+  subcontractor_id: string | null
+  assigned_to_user_id: string | null
+  created_by_user_id: string
+  title: string
+  description: string
+  status: TaskStatus
+  priority: TaskPriority
+  due_date: string
+  task_type: string
+  origin_role: string
   metadata?: {
-    blockers?: string[];
-    quick_actions?: string[];
-    tags?: string[];
-    project_name?: string;
-    [key: string]: unknown;
-  };
-  created_at: string;
-  updated_at: string;
+    blockers?: string[]
+    quick_actions?: string[]
+    tags?: string[]
+    project_name?: string
+    [key: string]: unknown
+  }
+  created_at: string
+  updated_at: string
 }
 
 // Interface for project dropdown (includes organization_id for task creation)
 interface ProjectOption {
-  id: string;
-  name: string;
-  organization_id: string;
+  id: string
+  name: string
+  organization_id: string
 }
 
 // Interface for subcontractor dropdown
 interface Subcontractor {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 // Interface for new task form
 interface NewTaskForm {
-  title: string;
-  description: string;
-  project_id: string;
-  subcontractor_id: string;
-  priority: TaskPriority;
-  due_date: string;
+  title: string
+  description: string
+  project_id: string
+  subcontractor_id: string
+  priority: TaskPriority
+  due_date: string
 }
 
 const initialFormState: NewTaskForm = {
@@ -95,72 +105,70 @@ const initialFormState: NewTaskForm = {
   subcontractor_id: '',
   priority: 'medium',
   due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default to 1 week from now
-};
+}
 
 export default function ManagerTasksPage() {
-  const { forsured } = useDatabase();
-  const { user } = useAuth();
-  const { projects: projectsData } = useProjects();
+  const { forsured } = useDatabase()
+  const { user } = useAuth()
+  const { projects: projectsData } = useProjects()
 
   // Fetch enums
-  const { data: taskStatuses, isLoading: loadingStatuses } = useEnums('task_status');
-  const { data: taskPriorities, isLoading: loadingPriorities } = useEnums('task_priority');
+  const { data: taskStatuses, isLoading: loadingStatuses } = useEnums('task_status')
+  const { data: taskPriorities, isLoading: loadingPriorities } = useEnums('task_priority')
 
   // State for data fetching
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
   // Projects and subcontractors for form dropdowns
-  const [projects, setProjects] = useState<ProjectOption[]>([]);
-  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([]);
+  const [projects, setProjects] = useState<ProjectOption[]>([])
+  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([])
 
   // Create task form state
-  const [newTaskForm, setNewTaskForm] = useState<NewTaskForm>(initialFormState);
-  const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const [formErrors, setFormErrors] = useState<Partial<Record<keyof NewTaskForm, string>>>({});
+  const [newTaskForm, setNewTaskForm] = useState<NewTaskForm>(initialFormState)
+  const [isCreatingTask, setIsCreatingTask] = useState(false)
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof NewTaskForm, string>>>({})
 
   // Filter and sort state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('ALL'); // Changed to string
-  const [selectedPriority, setSelectedPriority] = useState<string>('ALL'); // Changed to string
-  const [selectedProject, setSelectedProject] = useState<string>('ALL');
-  const [selecteds, setSelecteds] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<'due_date' | 'priority' | 'status'>(
-    'due_date'
-  );
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [showCreateTask, setShowCreateTask] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState<string>('ALL') // Changed to string
+  const [selectedPriority, setSelectedPriority] = useState<string>('ALL') // Changed to string
+  const [selectedProject, setSelectedProject] = useState<string>('ALL')
+  const [selecteds, setSelecteds] = useState<string[]>([])
+  const [sortBy, setSortBy] = useState<'due_date' | 'priority' | 'status'>('due_date')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [showFilters, setShowFilters] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [showCreateTask, setShowCreateTask] = useState(false)
 
   // Fetch tasks from database on mount
   useEffect(() => {
     async function fetchTasks() {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
       try {
         const { data, error: queryError } = await forsured('tasks')
           .select('*')
-          .order('due_date', { ascending: true });
+          .order('due_date', { ascending: true })
 
         if (queryError) {
-          throw queryError;
+          throw queryError
         }
 
-        setTasks(data || []);
+        setTasks(data || [])
       } catch (err) {
-        const error = err as Error;
-        setError(error);
-        toast.error(error.message || 'Failed to load tasks');
+        const error = err as Error
+        setError(error)
+        toast.error(error.message || 'Failed to load tasks')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchTasks();
-  }, [forsured]);
+    fetchTasks()
+  }, [forsured])
 
   // Fetch subcontractors for the form dropdown
   useEffect(() => {
@@ -168,25 +176,25 @@ export default function ManagerTasksPage() {
       try {
         const { data, error: queryError } = await forsured('subcontractors')
           .select('id, company')
-          .order('company', { ascending: true });
+          .order('company', { ascending: true })
 
         if (queryError) {
-          throw queryError;
+          throw queryError
         }
 
         // Map to our Subcontractor interface
         const mapped = (data || []).map((sub: { id: string; company: string }) => ({
           id: sub.id,
           name: sub.company,
-        }));
-        setSubcontractors(mapped);
+        }))
+        setSubcontractors(mapped)
       } catch (err) {
-        console.error('Failed to fetch subcontractors:', err);
+        console.error('Failed to fetch subcontractors:', err)
       }
     }
 
-    fetchSubcontractors();
-  }, [forsured]);
+    fetchSubcontractors()
+  }, [forsured])
 
   // Map projects from useProjects hook to our Project interface
   useEffect(() => {
@@ -195,57 +203,57 @@ export default function ManagerTasksPage() {
         id: p.id,
         name: p.name,
         organization_id: p.organization_id,
-      }));
-      setProjects(mapped);
+      }))
+      setProjects(mapped)
     }
-  }, [projectsData]);
+  }, [projectsData])
 
   // Form validation
   const validateForm = (): boolean => {
-    const errors: Partial<Record<keyof NewTaskForm, string>> = {};
+    const errors: Partial<Record<keyof NewTaskForm, string>> = {}
 
     if (!newTaskForm.title.trim()) {
-      errors.title = 'Title is required';
+      errors.title = 'Title is required'
     }
     if (!newTaskForm.project_id) {
-      errors.project_id = 'Project is required';
+      errors.project_id = 'Project is required'
     }
     if (!newTaskForm.due_date) {
-      errors.due_date = 'Due date is required';
+      errors.due_date = 'Due date is required'
     }
 
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
 
   // Handle form field changes
   const handleFormChange = (field: keyof NewTaskForm, value: string) => {
-    setNewTaskForm((prev) => ({ ...prev, [field]: value }));
+    setNewTaskForm((prev) => ({ ...prev, [field]: value }))
     // Clear error for this field when user starts typing
     if (formErrors[field]) {
-      setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+      setFormErrors((prev) => ({ ...prev, [field]: undefined }))
     }
-  };
+  }
 
   // Handle task creation
   const handleCreateTask = async () => {
     if (!validateForm()) {
-      return;
+      return
     }
 
     if (!user) {
-      toast.error('You must be logged in to create a task');
-      return;
+      toast.error('You must be logged in to create a task')
+      return
     }
 
     // Get the selected project to get its organization_id
-    const selectedProject = projects.find((p) => p.id === newTaskForm.project_id);
+    const selectedProject = projects.find((p) => p.id === newTaskForm.project_id)
     if (!selectedProject) {
-      toast.error('Please select a valid project');
-      return;
+      toast.error('Please select a valid project')
+      return
     }
 
-    setIsCreatingTask(true);
+    setIsCreatingTask(true)
 
     try {
       const taskData = {
@@ -260,106 +268,90 @@ export default function ManagerTasksPage() {
         created_by_user_id: user.id,
         task_type: 'manual',
         origin_role: 'manager',
-      };
+      }
 
       const { data, error: insertError } = await forsured('tasks')
         .insert(taskData)
         .select()
-        .single();
+        .single()
 
       if (insertError) {
-        throw insertError;
+        throw insertError
       }
 
       // Add the new task to the list
-      setTasks((prev) => [data, ...prev]);
+      setTasks((prev) => [data, ...prev])
 
       // Reset form and close modal
-      setNewTaskForm(initialFormState);
-      setShowCreateTask(false);
-      toast.success('Task created successfully');
+      setNewTaskForm(initialFormState)
+      setShowCreateTask(false)
+      toast.success('Task created successfully')
     } catch (err) {
-      const error = err as Error;
-      console.error('Failed to create task:', error);
-      toast.error(error.message || 'Failed to create task');
+      const error = err as Error
+      console.error('Failed to create task:', error)
+      toast.error(error.message || 'Failed to create task')
     } finally {
-      setIsCreatingTask(false);
+      setIsCreatingTask(false)
     }
-  };
+  }
 
   // Reset form when modal closes
   const handleCloseCreateTask = () => {
-    setShowCreateTask(false);
-    setNewTaskForm(initialFormState);
-    setFormErrors({});
-  };
+    setShowCreateTask(false)
+    setNewTaskForm(initialFormState)
+    setFormErrors({})
+  }
 
   const allProjects = useMemo(() => {
     const projects = new Set(
-      tasks
-        .map((t) => t.metadata?.project_name || t.project_id)
-        .filter(Boolean)
-    );
-    return Array.from(projects);
-  }, [tasks]);
+      tasks.map((t) => t.metadata?.project_name || t.project_id).filter(Boolean)
+    )
+    return Array.from(projects)
+  }, [tasks])
 
   const alls = useMemo(() => {
-    const tags = new Set(tasks.flatMap((t) => t.metadata?.tags || []));
-    return Array.from(tags).sort();
-  }, [tasks]);
+    const tags = new Set(tasks.flatMap((t) => t.metadata?.tags || []))
+    return Array.from(tags).sort()
+  }, [tasks])
 
   const filteredAndSortedTasks = useMemo(() => {
     const filtered = tasks.filter((task) => {
-      const taskTags = task.metadata?.tags || [];
-      const projectName = task.metadata?.project_name || task.project_id;
+      const taskTags = task.metadata?.tags || []
+      const projectName = task.metadata?.project_name || task.project_id
 
       const matchesSearch =
         searchQuery === '' ||
         task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        taskTags.some((tag) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        taskTags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
 
-      const matchesStatus =
-        selectedStatus === 'ALL' || task.status === selectedStatus;
-      const matchesPriority =
-        selectedPriority === 'ALL' || task.priority === selectedPriority;
-      const matchesProject =
-        selectedProject === 'ALL' || projectName === selectedProject;
-      const matchess =
-        selecteds.length === 0 ||
-        selecteds.some((tag) => taskTags.includes(tag));
+      const matchesStatus = selectedStatus === 'ALL' || task.status === selectedStatus
+      const matchesPriority = selectedPriority === 'ALL' || task.priority === selectedPriority
+      const matchesProject = selectedProject === 'ALL' || projectName === selectedProject
+      const matchess = selecteds.length === 0 || selecteds.some((tag) => taskTags.includes(tag))
 
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesPriority &&
-        matchesProject &&
-        matchess
-      );
-    });
+      return matchesSearch && matchesStatus && matchesPriority && matchesProject && matchess
+    })
 
     filtered.sort((a, b) => {
-      let comparison = 0;
+      let comparison = 0
 
       if (sortBy === 'due_date') {
-        comparison =
-          new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+        comparison = new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
       } else if (sortBy === 'priority') {
-        const priorityOrder: Record<string, number> = {}; // Changed to string
-        taskPriorities?.forEach((p, index) => priorityOrder[p.value] = index);
-        comparison = (priorityOrder[a.priority] ?? 999) - (priorityOrder[b.priority] ?? 999);
+        const priorityOrder: Record<string, number> = {} // Changed to string
+        taskPriorities?.forEach((p, index) => (priorityOrder[p.value] = index))
+        comparison = (priorityOrder[a.priority] ?? 999) - (priorityOrder[b.priority] ?? 999)
       } else if (sortBy === 'status') {
-        const statusOrder: Record<string, number> = {}; // Changed to string
-        taskStatuses?.forEach((s, index) => statusOrder[s.value] = index);
-        comparison = (statusOrder[a.status] ?? 999) - (statusOrder[b.status] ?? 999);
+        const statusOrder: Record<string, number> = {} // Changed to string
+        taskStatuses?.forEach((s, index) => (statusOrder[s.value] = index))
+        comparison = (statusOrder[a.status] ?? 999) - (statusOrder[b.status] ?? 999)
       }
 
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
+      return sortOrder === 'asc' ? comparison : -comparison
+    })
 
-    return filtered;
+    return filtered
   }, [
     tasks,
     searchQuery,
@@ -370,87 +362,109 @@ export default function ManagerTasksPage() {
     sortBy,
     sortOrder,
     taskPriorities, // Added dependency
-    taskStatuses,   // Added dependency
-  ]);
+    taskStatuses, // Added dependency
+  ])
 
   const getPriorityColorProps = (priority: string): React.CSSProperties => {
-    const priorityEnum = taskPriorities?.find(p => p.value === priority);
-    if (!priorityEnum) return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
+    const priorityEnum = taskPriorities?.find((p) => p.value === priority)
+    if (!priorityEnum)
+      return {
+        color: 'var(--color-text)',
+        backgroundColor: 'var(--color-gray-2)',
+        borderColor: 'var(--color-gray-8)',
+      }
 
     switch (priorityEnum.value) {
       case 'urgent':
-        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-8)' };
+        return {
+          color: 'var(--color-red-10)',
+          backgroundColor: 'var(--color-red-2)',
+          borderColor: 'var(--color-red-8)',
+        }
       case 'high':
-        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)', borderColor: 'var(--color-orange-8)' };
+        return {
+          color: 'var(--color-orange-10)',
+          backgroundColor: 'var(--color-orange-2)',
+          borderColor: 'var(--color-orange-8)',
+        }
       case 'medium':
-        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-8)' };
+        return {
+          color: 'var(--color-blue-10)',
+          backgroundColor: 'var(--color-blue-2)',
+          borderColor: 'var(--color-blue-8)',
+        }
       case 'low':
-        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
+        return {
+          color: 'var(--color-text)',
+          backgroundColor: 'var(--color-gray-2)',
+          borderColor: 'var(--color-gray-8)',
+        }
       default:
-        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
+        return {
+          color: 'var(--color-text)',
+          backgroundColor: 'var(--color-gray-2)',
+          borderColor: 'var(--color-gray-8)',
+        }
     }
-  };
+  }
 
   const getStatusColorProps = (status: string): React.CSSProperties => {
-    const statusEnum = taskStatuses?.find(s => s.value === status);
-    if (!statusEnum) return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' };
+    const statusEnum = taskStatuses?.find((s) => s.value === status)
+    if (!statusEnum)
+      return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' }
 
     switch (statusEnum.value) {
       case 'pending':
-        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' }
       case 'in_progress':
-        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' };
+        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)' }
       case 'submitted':
-        return { color: 'var(--color-blue-9)', backgroundColor: 'var(--color-blue-2)' };
+        return { color: 'var(--color-blue-9)', backgroundColor: 'var(--color-blue-2)' }
       case 'in_review':
-        return { color: 'var(--color-purple-10)', backgroundColor: 'var(--color-purple-2)' };
+        return { color: 'var(--color-purple-10)', backgroundColor: 'var(--color-purple-2)' }
       case 'approved':
-        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' };
+        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' }
       case 'rejected':
-        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)' };
+        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)' }
       case 'needs_info':
-        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)' };
+        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)' }
       case 'completed':
-        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' };
+        return { color: 'var(--color-green-10)', backgroundColor: 'var(--color-green-2)' }
       case 'cancelled':
-        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)' };
+        return { color: 'var(--color-text)', backgroundColor: 'var(--color-gray-2)' }
       default:
-        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' };
+        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)' }
     }
-  };
+  }
 
   const formatDueDate = (dueAt: string): { text: string; color: string } => {
-    const date = new Date(dueAt);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const date = new Date(dueAt)
+    const now = new Date()
+    const diffTime = date.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)}d overdue`,
         color: 'var(--color-red-10)',
-      };
-    if (diffDays === 0) return { text: 'Due today', color: 'var(--color-orange-10)' };
-    if (diffDays === 1)
-      return { text: 'Due tomorrow', color: 'var(--color-orange-10)' };
-    if (diffDays <= 3)
-      return { text: `Due in ${diffDays}d`, color: 'var(--color-orange-10)' };
-    return { text: date.toLocaleDateString(), color: 'var(--color-text-muted)' };
-  };
+      }
+    if (diffDays === 0) return { text: 'Due today', color: 'var(--color-orange-10)' }
+    if (diffDays === 1) return { text: 'Due tomorrow', color: 'var(--color-orange-10)' }
+    if (diffDays <= 3) return { text: `Due in ${diffDays}d`, color: 'var(--color-orange-10)' }
+    return { text: date.toLocaleDateString(), color: 'var(--color-text-muted)' }
+  }
 
   const toggle = (tag: string) => {
-    setSelecteds((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  };
+    setSelecteds((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]))
+  }
 
   const clearFilters = () => {
-    setSearchQuery('');
-    setSelectedStatus('ALL');
-    setSelectedPriority('ALL');
-    setSelectedProject('ALL');
-    setSelecteds([]);
-  };
+    setSearchQuery('')
+    setSelectedStatus('ALL')
+    setSelectedPriority('ALL')
+    setSelectedProject('ALL')
+    setSelecteds([])
+  }
 
   const activeFilterCount = [
     selectedStatus !== 'ALL',
@@ -458,16 +472,19 @@ export default function ManagerTasksPage() {
     selectedProject !== 'ALL',
     selecteds.length > 0,
     searchQuery !== '',
-  ].filter(Boolean).length;
+  ].filter(Boolean).length
 
   const statusCounts = useMemo(() => {
     return {
       pending: tasks.filter((t) => t.status === 'pending').length,
-      in_progress: tasks.filter((t) => t.status === 'in_progress' || t.status === 'submitted' || t.status === 'in_review').length,
-      needs_attention: tasks.filter((t) => t.status === 'rejected' || t.status === 'needs_info').length,
+      in_progress: tasks.filter(
+        (t) => t.status === 'in_progress' || t.status === 'submitted' || t.status === 'in_review'
+      ).length,
+      needs_attention: tasks.filter((t) => t.status === 'rejected' || t.status === 'needs_info')
+        .length,
       completed: tasks.filter((t) => t.status === 'completed' || t.status === 'approved').length,
-    };
-  }, [tasks]);
+    }
+  }, [tasks])
 
   // Show loading state
   if (loading || loadingStatuses || loadingPriorities) {
@@ -478,7 +495,7 @@ export default function ManagerTasksPage() {
           <Text color="secondary">Loading tasks and filters...</Text>
         </Stack>
       </Stack>
-    );
+    )
   }
 
   // Show error state
@@ -489,70 +506,89 @@ export default function ManagerTasksPage() {
           <Stack align="center" style={{ marginBottom: 16 }}>
             <AlertCircle color="var(--color-red-10)" size={48} />
           </Stack>
-          <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
-            Failed to load tasks
-          </H3>
+          <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Failed to load tasks</H3>
           <Text color="secondary">{error.message}</Text>
         </Stack>
       </Stack>
-    );
+    )
   }
 
   return (
     <Stack gap={24}>
       <Row align="center" justify="space-between">
         <Stack>
-          <H1 style={{ fontSize: 32, fontWeight: 700 }}>
-            Tasks
-          </H1>
+          <H1 style={{ fontSize: 32, fontWeight: 700 }}>Tasks</H1>
           <Text color="secondary" style={{ fontSize: 18, marginTop: 4 }}>
             Manage compliance tasks across {allProjects.length} active projects
           </Text>
         </Stack>
-        <Button
-          color="primary"
-          iconStart={Plus}
-          onPress={() => setShowCreateTask(true)}
-        >
+        <Button color="primary" iconStart={Plus} onPress={() => setShowCreateTask(true)}>
           Create Task
         </Button>
       </Row>
 
       <Row align="center" gap={16} style={{ fontSize: 12 }}>
         <Row align="center" gap={8}>
-          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-blue-10)' }} />
-          <Text weight="semibold">
-            {statusCounts.pending}
-          </Text>
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              backgroundColor: 'var(--color-blue-10)',
+            }}
+          />
+          <Text weight="semibold">{statusCounts.pending}</Text>
           <Text color="secondary">Pending</Text>
         </Row>
         <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
         <Row align="center" gap={8}>
-          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-blue-10)' }} />
-          <Text weight="semibold">
-            {statusCounts.in_progress}
-          </Text>
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              backgroundColor: 'var(--color-blue-10)',
+            }}
+          />
+          <Text weight="semibold">{statusCounts.in_progress}</Text>
           <Text color="secondary">In Progress</Text>
         </Row>
         <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
         <Row align="center" gap={8}>
-          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-red-10)' }} />
-          <Text weight="semibold">
-            {statusCounts.needs_attention}
-          </Text>
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              backgroundColor: 'var(--color-red-10)',
+            }}
+          />
+          <Text weight="semibold">{statusCounts.needs_attention}</Text>
           <Text color="secondary">Needs Attention</Text>
         </Row>
         <Stack style={{ height: 16, width: 1, backgroundColor: 'var(--color-border)' }} />
         <Row align="center" gap={8}>
-          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: 'var(--color-green-10)' }} />
-          <Text weight="semibold">
-            {statusCounts.completed}
-          </Text>
+          <div
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              backgroundColor: 'var(--color-green-10)',
+            }}
+          />
+          <Text weight="semibold">{statusCounts.completed}</Text>
           <Text color="secondary">Completed</Text>
         </Row>
       </Row>
 
-      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 16, border: '1px solid var(--color-border)', padding: 16 }}>
+      <Card
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 16,
+          border: '1px solid var(--color-border)',
+          padding: 16,
+        }}
+      >
         <Stack gap={16}>
           <Row align="center" gap={12}>
             <Stack style={{ flex: 1 }}>
@@ -579,13 +615,14 @@ export default function ManagerTasksPage() {
 
           {showFilters && (
             <Stack style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }} gap={16}>
-              <Row style={{ flexWrap: 'wrap' }} gap={16}>
-                <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
+              <Grid columns={{ base: 1, sm: 2, lg: 3 }} gap={16}>
+                <Stack>
                   <SearchSelect
                     label="Status"
                     options={[
                       { value: 'ALL', label: 'All Statuses' },
-                      ...(taskStatuses?.map(s => ({ value: s.value, label: s.display_name })) || [])
+                      ...(taskStatuses?.map((s) => ({ value: s.value, label: s.display_name })) ||
+                        []),
                     ]}
                     value={selectedStatus}
                     onChange={(value) => setSelectedStatus(value as string)}
@@ -595,12 +632,13 @@ export default function ManagerTasksPage() {
                   />
                 </Stack>
 
-                <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
+                <Stack>
                   <SearchSelect
                     label="Priority"
                     options={[
                       { value: 'ALL', label: 'All Priorities' },
-                      ...(taskPriorities?.map(p => ({ value: p.value, label: p.display_name })) || [])
+                      ...(taskPriorities?.map((p) => ({ value: p.value, label: p.display_name })) ||
+                        []),
                     ]}
                     value={selectedPriority}
                     onChange={(value) => setSelectedPriority(value as string)}
@@ -610,12 +648,12 @@ export default function ManagerTasksPage() {
                   />
                 </Stack>
 
-                <Stack style={{ flex: 1, minWidth: 'calc(33.333% - 11px)' }}>
+                <Stack>
                   <SearchSelect
                     label="Project"
                     options={[
                       { value: 'ALL', label: 'All Projects' },
-                      ...allProjects.map(p => ({ value: p, label: p }))
+                      ...allProjects.map((p) => ({ value: p, label: p })),
                     ]}
                     value={selectedProject}
                     onChange={(value) => setSelectedProject(value as string)}
@@ -624,7 +662,7 @@ export default function ManagerTasksPage() {
                     testID="project-filter-select"
                   />
                 </Stack>
-              </Row>
+              </Grid>
 
               <Stack>
                 <Text size="xs" weight="medium" color="secondary" style={{ marginBottom: 8 }}>
@@ -659,16 +697,19 @@ export default function ManagerTasksPage() {
             </Stack>
           )}
 
-          <Row align="center" justify="space-between" style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+          <Row
+            align="center"
+            justify="space-between"
+            style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16 }}
+          >
             <Text size="sm" color="secondary">
-              Showing{' '}
-              <Text weight="semibold">
-                {filteredAndSortedTasks.length}
-              </Text>{' '}
-              of {tasks.length} tasks
+              Showing <Text weight="semibold">{filteredAndSortedTasks.length}</Text> of{' '}
+              {tasks.length} tasks
             </Text>
             <Row align="center" gap={12}>
-              <Text size="xs" color="secondary">Sort by:</Text>
+              <Text size="xs" color="secondary">
+                Sort by:
+              </Text>
               <SearchSelect
                 options={[
                   { value: 'due_date', label: 'Due Date' },
@@ -701,20 +742,24 @@ export default function ManagerTasksPage() {
 
       <Stack gap={12}>
         {filteredAndSortedTasks.map((task) => {
-          const dueDate = formatDueDate(task.due_date);
-          const taskTags = task.metadata?.tags || [];
-          const taskBlockers = task.metadata?.blockers || [];
-          const taskQuickActions = task.metadata?.quick_actions || [];
-          const projectName = task.metadata?.project_name || task.project_id;
+          const dueDate = formatDueDate(task.due_date)
+          const taskTags = task.metadata?.tags || []
+          const taskBlockers = task.metadata?.blockers || []
+          const taskQuickActions = task.metadata?.quick_actions || []
+          const projectName = task.metadata?.project_name || task.project_id
 
           // Format status for display (capitalize and replace underscores)
           const formatLabel = (value: string) => {
-            const enumItem = [...(taskStatuses || []), ...(taskPriorities || [])].find(item => item.value === value);
-            return enumItem ? enumItem.display_name : value
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ');
-          };
+            const enumItem = [...(taskStatuses || []), ...(taskPriorities || [])].find(
+              (item) => item.value === value
+            )
+            return enumItem
+              ? enumItem.display_name
+              : value
+                  .split('_')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ')
+          }
 
           return (
             <Card
@@ -730,9 +775,7 @@ export default function ManagerTasksPage() {
               <Stack style={{ padding: 20 }} gap={12}>
                 {/* Title row with badges */}
                 <Row align="center" gap={12} wrap={false}>
-                  <H3 style={{ fontSize: 16, fontWeight: 600, flex: 1 }}>
-                    {task.title}
-                  </H3>
+                  <H3 style={{ fontSize: 16, fontWeight: 600, flex: 1 }}>{task.title}</H3>
                   <Row align="center" gap={8} style={{ flexShrink: 0 }}>
                     <span
                       style={{
@@ -781,11 +824,17 @@ export default function ManagerTasksPage() {
                       {dueDate.text}
                     </Text>
                   </Row>
-                  <Text size="xs" color="secondary">·</Text>
-                  <Text size="xs" color="secondary">{projectName}</Text>
+                  <Text size="xs" color="secondary">
+                    ·
+                  </Text>
+                  <Text size="xs" color="secondary">
+                    {projectName}
+                  </Text>
                   {taskBlockers.length > 0 && (
                     <>
-                      <Text size="xs" color="secondary">·</Text>
+                      <Text size="xs" color="secondary">
+                        ·
+                      </Text>
                       <Row align="center" gap={4}>
                         <AlertCircle size={14} color="var(--color-red-10)" />
                         <Text size="xs" style={{ color: 'var(--color-red-10)' }}>
@@ -823,7 +872,7 @@ export default function ManagerTasksPage() {
                       <div
                         key={action}
                         onClick={(e) => {
-                          e.stopPropagation();
+                          e.stopPropagation()
                         }}
                         style={{
                           paddingLeft: 12,
@@ -845,21 +894,28 @@ export default function ManagerTasksPage() {
                 </Row>
               </Stack>
             </Card>
-          );
+          )
         })}
       </Stack>
 
       {filteredAndSortedTasks.length === 0 && (
-        <Card style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 64, paddingBottom: 64, backgroundColor: 'var(--color-background)', borderRadius: 16, border: '1px solid var(--color-border)' }}>
+        <Card
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingTop: 64,
+            paddingBottom: 64,
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 16,
+            border: '1px solid var(--color-border)',
+          }}
+        >
           <Stack align="center" style={{ marginBottom: 16 }}>
             <CheckCircle color="var(--color-text-muted)" size={64} />
           </Stack>
-          <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
-            No tasks found
-          </H3>
-          <Text color="secondary">
-            Try adjusting your filters or search criteria
-          </Text>
+          <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>No tasks found</H3>
+          <Text color="secondary">Try adjusting your filters or search criteria</Text>
         </Card>
       )}
 
@@ -871,26 +927,24 @@ export default function ManagerTasksPage() {
           try {
             const { error: updateError } = await forsured('tasks')
               .update({ ...updates, updated_at: new Date().toISOString() })
-              .eq('id', taskId);
+              .eq('id', taskId)
 
             if (updateError) {
-              throw updateError;
+              throw updateError
             }
 
             // Update local state
-            setTasks((prev) =>
-              prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
-            );
+            setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t)))
 
             // Update selected task to reflect changes
             if (selectedTask && selectedTask.id === taskId) {
-              setSelectedTask({ ...selectedTask, ...updates });
+              setSelectedTask({ ...selectedTask, ...updates })
             }
 
-            toast.success('Task updated successfully');
+            toast.success('Task updated successfully')
           } catch (err) {
-            const error = err as Error;
-            toast.error(error.message || 'Failed to update task');
+            const error = err as Error
+            toast.error(error.message || 'Failed to update task')
           }
         }}
       />
@@ -902,10 +956,7 @@ export default function ManagerTasksPage() {
         width={560}
         testID="create-task-modal"
       >
-        <ModalHeader
-          title="Create New Task"
-          onClose={handleCloseCreateTask}
-        />
+        <ModalHeader title="Create New Task" onClose={handleCloseCreateTask} />
         <ModalContent>
           <Stack gap={20}>
             {/* Title Field */}
@@ -937,7 +988,7 @@ export default function ManagerTasksPage() {
                   label="Project"
                   options={[
                     { value: '', label: 'Select a project...' },
-                    ...projects.map(p => ({ value: p.id, label: p.name }))
+                    ...projects.map((p) => ({ value: p.id, label: p.name })),
                   ]}
                   value={newTaskForm.project_id}
                   onChange={(value) => handleFormChange('project_id', value as string)}
@@ -954,7 +1005,7 @@ export default function ManagerTasksPage() {
                   label="Subcontractor"
                   options={[
                     { value: '', label: 'None (optional)' },
-                    ...subcontractors.map(s => ({ value: s.id, label: s.name }))
+                    ...subcontractors.map((s) => ({ value: s.id, label: s.name })),
                   ]}
                   value={newTaskForm.subcontractor_id}
                   onChange={(value) => handleFormChange('subcontractor_id', value as string)}
@@ -970,7 +1021,9 @@ export default function ManagerTasksPage() {
               <Stack style={{ flex: 1 }}>
                 <SearchSelect
                   label="Priority"
-                  options={taskPriorities?.map(p => ({ value: p.value, label: p.display_name })) || []}
+                  options={
+                    taskPriorities?.map((p) => ({ value: p.value, label: p.display_name })) || []
+                  }
                   value={newTaskForm.priority}
                   onChange={(value) => handleFormChange('priority', value as string)}
                   searchable={false}
@@ -980,11 +1033,7 @@ export default function ManagerTasksPage() {
               </Stack>
 
               <Stack style={{ flex: 1 }}>
-                <FormField
-                  label="Due Date"
-                  required
-                  error={formErrors.due_date}
-                >
+                <FormField label="Due Date" required error={formErrors.due_date}>
                   <input
                     type="date"
                     value={newTaskForm.due_date}
@@ -995,7 +1044,9 @@ export default function ManagerTasksPage() {
                       width: '100%',
                       padding: '10px 12px',
                       backgroundColor: 'var(--color-background)',
-                      border: formErrors.due_date ? '1px solid var(--color-red-8)' : '1px solid var(--color-border)',
+                      border: formErrors.due_date
+                        ? '1px solid var(--color-red-8)'
+                        : '1px solid var(--color-border)',
                       borderRadius: '8px',
                       fontSize: '14px',
                       color: 'var(--color-text)',
@@ -1022,5 +1073,5 @@ export default function ManagerTasksPage() {
         />
       </Modal>
     </Stack>
-  );
+  )
 }
