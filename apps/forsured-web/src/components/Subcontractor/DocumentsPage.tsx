@@ -1,4 +1,13 @@
-import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense, startTransition } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  lazy,
+  Suspense,
+  startTransition,
+} from 'react'
 import {
   FileText,
   Upload,
@@ -8,103 +17,98 @@ import {
   Calendar,
   Eye,
   RefreshCw,
-} from 'lucide-react';
-import { Stack, Row, Text, Card, Button, H1, Spinner } from '@unicornlove/beyond-ui';
-import CommonButton from '../Common/Button';
-import DocumentDetailModal from '../Document/DocumentDetailModal';
+} from 'lucide-react'
+import { Stack, Row, Text, Card, Button, H1, Spinner, Grid } from '@unicornlove/beyond-ui'
+import CommonButton from '../Common/Button'
+import DocumentDetailModal from '../Document/DocumentDetailModal'
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
-import { useUser } from '../../contexts/UserContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { DocumentService } from '../../lib/documents/documentService';
-import { scaffaldClient } from '../../lib/scaffald/client';
-import { getUserOrganizationId } from '../../lib/supabase';
-import type { Document } from '../../types/document';
+import { useUser } from '../../contexts/UserContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { DocumentService } from '../../lib/documents/documentService'
+import { scaffaldClient } from '../../lib/scaffald/client'
+import { getUserOrganizationId } from '../../lib/supabase'
+import type { Document } from '../../types/document'
 
 // Lazy load FileUploadZone to prevent blocking when modal opens
-const FileUploadZone = lazy(() => import('../documents/FileUploadZone').then(module => ({ default: module.FileUploadZone })));
+const FileUploadZone = lazy(() =>
+  import('../documents/FileUploadZone').then((module) => ({ default: module.FileUploadZone }))
+)
 
 interface DocumentItem {
-  id: string;
-  name: string;
-  type: 'coi' | 'license' | 'bond' | 'certification' | 'w9' | 'contract';
-  status: 'verified' | 'pending' | 'expired' | 'expiring';
-  uploadDate: string;
-  expiryDate?: string;
-  fileSize: string;
-  uploadedBy: string;
+  id: string
+  name: string
+  type: 'coi' | 'license' | 'bond' | 'certification' | 'w9' | 'contract'
+  status: 'verified' | 'pending' | 'expired' | 'expiring'
+  uploadDate: string
+  expiryDate?: string
+  fileSize: string
+  uploadedBy: string
 }
 
 const getStatusIconStyle = (status: string): React.CSSProperties => {
   switch (status) {
     case 'verified':
-      return { color: 'var(--color-green-10)' };
+      return { color: 'var(--color-green-10)' }
     case 'expiring':
     case 'expired':
-      return { color: 'var(--color-orange-10)' };
+      return { color: 'var(--color-orange-10)' }
     case 'pending':
-      return { color: 'var(--color-blue-10)' };
+      return { color: 'var(--color-blue-10)' }
     default:
-      return {};
+      return {}
   }
-};
+}
 
 export default function DocumentsPage() {
-  const { currentUser } = useUser();
-  const { user, profile } = useAuth();
-  const [filter, setFilter] = useState<
-    'all' | 'verified' | 'pending' | 'expiring'
-  >('all');
-  const [selectedDocument, setSelectedDocument] = useState<DocumentItem | null>(
-    null
-  );
-  const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const { currentUser } = useUser()
+  const { user, profile } = useAuth()
+  const [filter, setFilter] = useState<'all' | 'verified' | 'pending' | 'expiring'>('all')
+  const [selectedDocument, setSelectedDocument] = useState<DocumentItem | null>(null)
+  const [uploadModalOpen, setUploadModalOpen] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null)
+  const [documents, setDocuments] = useState<Document[]>([])
+  const [loading, setLoading] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   // Use useRef to maintain a stable DocumentService instance
-  const documentServiceRef = useRef<DocumentService | null>(null);
+  const documentServiceRef = useRef<DocumentService | null>(null)
   if (!documentServiceRef.current) {
-    documentServiceRef.current = new DocumentService();
+    documentServiceRef.current = new DocumentService()
   }
-  const documentService = documentServiceRef.current;
+  const documentService = documentServiceRef.current
 
   // Use ref to track loading state to prevent infinite loops
-  const isLoadingRef = useRef(false);
+  const isLoadingRef = useRef(false)
 
   // Get user ID from auth context
-  const userId = useMemo(() =>
-    currentUser?.id ?? user?.id ?? null,
-    [currentUser?.id, user?.id]
-  );
+  const userId = useMemo(() => currentUser?.id ?? user?.id ?? null, [currentUser?.id, user?.id])
 
   // State for organization ID - fetched from role_assignments
-  const [organizationId, setOrganizationId] = useState<string | null>(null);
-  const [orgLoading, setOrgLoading] = useState(true);
+  const [organizationId, setOrganizationId] = useState<string | null>(null)
+  const [orgLoading, setOrgLoading] = useState(true)
 
   // Fetch organization ID from role_assignments when user is available
   useEffect(() => {
     async function fetchOrganization() {
       if (!userId) {
-        setOrgLoading(false);
-        return;
+        setOrgLoading(false)
+        return
       }
 
       try {
-        const orgId = await getUserOrganizationId(userId);
-        console.log('[DocumentsPage] Fetched organization ID:', orgId, 'for user:', userId);
-        setOrganizationId(orgId);
+        const orgId = await getUserOrganizationId(userId)
+        console.log('[DocumentsPage] Fetched organization ID:', orgId, 'for user:', userId)
+        setOrganizationId(orgId)
       } catch (error) {
-        console.error('[DocumentsPage] Error fetching organization:', error);
+        console.error('[DocumentsPage] Error fetching organization:', error)
       } finally {
-        setOrgLoading(false);
+        setOrgLoading(false)
       }
     }
 
-    fetchOrganization();
-  }, [userId]);
+    fetchOrganization()
+  }, [userId])
 
   // Convert real documents to display format - memoized to prevent recalculation
   const displayDocuments: DocumentItem[] = useMemo(() => {
@@ -117,22 +121,24 @@ export default function DocumentsPage() {
       expiryDate: doc.expiresAt || undefined,
       fileSize: `${(doc.fileSize / 1024).toFixed(1)} KB`,
       uploadedBy: doc.uploadedBy || 'Unknown',
-    }));
-  }, [documents]);
+    }))
+  }, [documents])
 
   const filteredDocuments = useMemo(() => {
-    if (filter === 'all') return displayDocuments;
-    return displayDocuments.filter((doc) => doc.status === filter);
-  }, [displayDocuments, filter]);
+    if (filter === 'all') return displayDocuments
+    return displayDocuments.filter((doc) => doc.status === filter)
+  }, [displayDocuments, filter])
 
-  const stats = useMemo(() => ({
-    total: displayDocuments.length,
-    verified: displayDocuments.filter((d) => d.status === 'verified').length,
-    pending: displayDocuments.filter((d) => d.status === 'pending').length,
-    expiring: displayDocuments.filter(
-      (d) => d.status === 'expiring' || d.status === 'expired'
-    ).length,
-  }), [displayDocuments]);
+  const stats = useMemo(
+    () => ({
+      total: displayDocuments.length,
+      verified: displayDocuments.filter((d) => d.status === 'verified').length,
+      pending: displayDocuments.filter((d) => d.status === 'pending').length,
+      expiring: displayDocuments.filter((d) => d.status === 'expiring' || d.status === 'expired')
+        .length,
+    }),
+    [displayDocuments]
+  )
 
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -142,60 +148,58 @@ export default function DocumentsPage() {
       certification: 'Certification',
       w9: 'Tax Form',
       contract: 'Contract',
-    };
-    return labels[type] || type;
-  };
+    }
+    return labels[type] || type
+  }
 
   const getStatusIcon = (status: string) => {
-    const iconStyle = getStatusIconStyle(status);
+    const iconStyle = getStatusIconStyle(status)
     switch (status) {
       case 'verified':
-        return <CheckCircle style={iconStyle} size={20} />;
+        return <CheckCircle style={iconStyle} size={20} />
       case 'expiring':
       case 'expired':
-        return <AlertTriangle style={iconStyle} size={20} />;
+        return <AlertTriangle style={iconStyle} size={20} />
       case 'pending':
-        return <Calendar style={iconStyle} size={20} />;
+        return <Calendar style={iconStyle} size={20} />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   const getDaysUntilExpiry = (expiryDate?: string) => {
-    if (!expiryDate) return null;
-    const days = Math.ceil(
-      (new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-    );
-    return days;
-  };
+    if (!expiryDate) return null
+    const days = Math.ceil((new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    return days
+  }
 
   // Load documents from Scaffald API
   const loadDocuments = useCallback(async () => {
     if (!organizationId) {
-      console.log('[DocumentsPage] No organization ID, skipping document load');
-      return;
+      console.log('[DocumentsPage] No organization ID, skipping document load')
+      return
     }
 
     // Prevent multiple simultaneous loads
     if (isLoadingRef.current) {
-      console.log('[DocumentsPage] Load already in progress, skipping');
-      return;
+      console.log('[DocumentsPage] Load already in progress, skipping')
+      return
     }
 
     try {
-      isLoadingRef.current = true;
-      setLoading(true);
-      setLoadError(null);
-      console.log('[DocumentsPage] Loading documents for organization:', organizationId);
+      isLoadingRef.current = true
+      setLoading(true)
+      setLoadError(null)
+      console.log('[DocumentsPage] Loading documents for organization:', organizationId)
 
       // Fetch documents from Scaffald API
       const response = await scaffaldClient.documents.list({
         organizationId,
         category: 'compliance', // Focus on compliance documents (COIs, insurance)
         limit: 100,
-      });
+      })
 
-      console.log('[DocumentsPage] Loaded documents:', response.documents?.length || 0);
+      console.log('[DocumentsPage] Loaded documents:', response.documents?.length || 0)
 
       // Map Scaffald documents to our Document type
       const mappedDocs: Document[] = (response.documents || []).map((doc) => ({
@@ -217,60 +221,63 @@ export default function DocumentsPage() {
         expiresAt: null,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
-      }));
+      }))
 
-      setDocuments(mappedDocs);
+      setDocuments(mappedDocs)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load documents';
-      console.error('[DocumentsPage] Error loading documents:', errorMessage);
-      setLoadError(errorMessage);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load documents'
+      console.error('[DocumentsPage] Error loading documents:', errorMessage)
+      setLoadError(errorMessage)
     } finally {
-      isLoadingRef.current = false;
-      setLoading(false);
+      isLoadingRef.current = false
+      setLoading(false)
     }
-  }, [organizationId, userId]);
+  }, [organizationId, userId])
 
   // Load documents on mount and when organization changes
   // Use primitive values in dependency array to prevent infinite loops
   useEffect(() => {
     if (organizationId) {
-      loadDocuments();
+      loadDocuments()
     } else {
       // If no organization ID, set loading to false so page can render
-      setLoading(false);
-      console.log('[DocumentsPage] No organization ID available');
+      setLoading(false)
+      console.log('[DocumentsPage] No organization ID available')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [organizationId]);
+  }, [organizationId])
 
-  const handleUploadDocument = useCallback(async (document: Document) => {
-    console.log('[DocumentsPage] Document uploaded successfully:', document.id);
-    setUploadSuccess('Document uploaded successfully!');
+  const handleUploadDocument = useCallback(
+    async (document: Document) => {
+      console.log('[DocumentsPage] Document uploaded successfully:', document.id)
+      setUploadSuccess('Document uploaded successfully!')
 
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setUploadSuccess(null);
-    }, 3000);
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setUploadSuccess(null)
+      }, 3000)
 
-    // Refresh document list to show the newly uploaded document
-    await loadDocuments();
-  }, [loadDocuments]);
+      // Refresh document list to show the newly uploaded document
+      await loadDocuments()
+    },
+    [loadDocuments]
+  )
 
   const handleUploadError = useCallback((error: string) => {
-    setUploadError(error);
-    console.error('[DocumentsPage] Upload error:', error);
+    setUploadError(error)
+    console.error('[DocumentsPage] Upload error:', error)
 
     // Clear error after 5 seconds
     setTimeout(() => {
-      setUploadError(null);
-    }, 5000);
-  }, []);
+      setUploadError(null)
+    }, 5000)
+  }, [])
 
   // Memoize modal close handler to prevent re-renders
   const handleModalClose = useCallback(() => {
-    setUploadModalOpen(false);
-    setUploadError(null);
-  }, []);
+    setUploadModalOpen(false)
+    setUploadError(null)
+  }, [])
 
   const getFilterButtonStyle = (isActive: boolean): React.CSSProperties => ({
     paddingLeft: 16,
@@ -284,7 +291,7 @@ export default function DocumentsPage() {
     color: isActive ? 'white' : 'var(--color-gray-11)',
     border: 'none',
     cursor: 'pointer',
-  });
+  })
 
   const getActionButtonStyle = (): React.CSSProperties => ({
     padding: 4,
@@ -292,7 +299,7 @@ export default function DocumentsPage() {
     color: 'var(--color-blue-10)',
     border: 'none',
     cursor: 'pointer',
-  });
+  })
 
   return (
     <Stack gap={24}>
@@ -308,13 +315,13 @@ export default function DocumentsPage() {
         <Row gap={8}>
           <CommonButton
             onPress={() => {
-              console.log('[DocumentsPage] Upload button clicked');
+              console.log('[DocumentsPage] Upload button clicked')
               // Use startTransition to prevent blocking the UI
               startTransition(() => {
-                setUploadError(null);
-                setUploadSuccess(null);
-                setUploadModalOpen(true);
-              });
+                setUploadError(null)
+                setUploadSuccess(null)
+                setUploadModalOpen(true)
+              })
             }}
           >
             <Row alignItems="center" gap={8}>
@@ -322,11 +329,7 @@ export default function DocumentsPage() {
               <Text>Upload Document</Text>
             </Row>
           </CommonButton>
-          <CommonButton
-            variant="ghost"
-            onPress={loadDocuments}
-            disabled={loading}
-          >
+          <CommonButton variant="ghost" onPress={loadDocuments} disabled={loading}>
             <Row alignItems="center" gap={8}>
               <RefreshCw size={18} />
               {loading && <Spinner size="sm" />}
@@ -375,15 +378,13 @@ export default function DocumentsPage() {
         </Card>
       )}
 
-      <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+      <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
         <Card
           style={{
             backgroundColor: 'var(--color-background)',
             borderRadius: 12,
             border: '1px solid var(--color-border)',
             padding: 20,
-            flex: 1,
-            minWidth: 'calc(25% - 12px)',
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -402,8 +403,6 @@ export default function DocumentsPage() {
             borderRadius: 12,
             border: '1px solid var(--color-border)',
             padding: 20,
-            flex: 1,
-            minWidth: 'calc(25% - 12px)',
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -422,8 +421,6 @@ export default function DocumentsPage() {
             borderRadius: 12,
             border: '1px solid var(--color-border)',
             padding: 20,
-            flex: 1,
-            minWidth: 'calc(25% - 12px)',
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -442,8 +439,6 @@ export default function DocumentsPage() {
             borderRadius: 12,
             border: '1px solid var(--color-border)',
             padding: 20,
-            flex: 1,
-            minWidth: 'calc(25% - 12px)',
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -455,7 +450,7 @@ export default function DocumentsPage() {
             </Text>
           </div>
         </Card>
-      </Row>
+      </Grid>
 
       <Card
         style={{
@@ -487,182 +482,376 @@ export default function DocumentsPage() {
         </Row>
       </Card>
 
-      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 12, border: '1px solid var(--color-border)' }}>
+      <Card
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          border: '1px solid var(--color-border)',
+        }}
+      >
         {loading && (
           <Stack alignItems="center" style={{ paddingTop: 32, paddingBottom: 32 }}>
             <Spinner size="lg" />
-            <Text style={{ color: 'var(--color-gray-11)', marginTop: 16 }}>Loading documents...</Text>
+            <Text style={{ color: 'var(--color-gray-11)', marginTop: 16 }}>
+              Loading documents...
+            </Text>
           </Stack>
         )}
-        {!loading && <Stack style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%' }}>
-            <thead>
-              <tr>
-                <th>
-                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
-                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
-                      Document
-                    </Text>
-                  </Row>
-                </th>
-                <th>
-                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
-                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
-                      Type
-                    </Text>
-                  </Row>
-                </th>
-                <th>
-                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
-                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
-                      Status
-                    </Text>
-                  </Row>
-                </th>
-                <th>
-                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
-                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
-                      Upload Date
-                    </Text>
-                  </Row>
-                </th>
-                <th>
-                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
-                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
-                      Expiry
-                    </Text>
-                  </Row>
-                </th>
-                <th>
-                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12 }}>
-                    <Text style={{ textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
-                      Size
-                    </Text>
-                  </Row>
-                </th>
-                <th>
-                  <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 12, paddingBottom: 12, justifyContent: 'flex-end' }}>
-                    <Text style={{ textAlign: 'right', fontSize: 11, fontWeight: 500, color: 'var(--color-gray-11)', textTransform: 'uppercase', letterSpacing: 0.05 }}>
-                      Actions
-                    </Text>
-                  </Row>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredDocuments.map((doc) => {
-                const daysUntilExpiry = getDaysUntilExpiry(doc.expiryDate);
-                return (
-                  <tr key={doc.id}>
-                    <td>
-                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }} alignItems="center" gap={12}>
-                        <FileText style={{ color: 'var(--color-blue-10)' }} size={20} />
-                        <Stack>
-                          <Text style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-gray-12)' }}>
-                            {doc.name}
-                          </Text>
-                          <Text style={{ fontSize: 11, color: 'var(--color-gray-11)' }}>
-                            Uploaded by {doc.uploadedBy}
-                          </Text>
-                        </Stack>
-                      </Row>
-                    </td>
-                    <td>
-                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }}>
+        {!loading && (
+          <Stack style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%' }}>
+              <thead>
+                <tr>
+                  <th>
+                    <Row
+                      style={{
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: 'left',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          color: 'var(--color-gray-11)',
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.05,
+                        }}
+                      >
+                        Document
+                      </Text>
+                    </Row>
+                  </th>
+                  <th>
+                    <Row
+                      style={{
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: 'left',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          color: 'var(--color-gray-11)',
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.05,
+                        }}
+                      >
+                        Type
+                      </Text>
+                    </Row>
+                  </th>
+                  <th>
+                    <Row
+                      style={{
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: 'left',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          color: 'var(--color-gray-11)',
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.05,
+                        }}
+                      >
+                        Status
+                      </Text>
+                    </Row>
+                  </th>
+                  <th>
+                    <Row
+                      style={{
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: 'left',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          color: 'var(--color-gray-11)',
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.05,
+                        }}
+                      >
+                        Upload Date
+                      </Text>
+                    </Row>
+                  </th>
+                  <th>
+                    <Row
+                      style={{
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: 'left',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          color: 'var(--color-gray-11)',
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.05,
+                        }}
+                      >
+                        Expiry
+                      </Text>
+                    </Row>
+                  </th>
+                  <th>
+                    <Row
+                      style={{
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: 'left',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          color: 'var(--color-gray-11)',
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.05,
+                        }}
+                      >
+                        Size
+                      </Text>
+                    </Row>
+                  </th>
+                  <th>
+                    <Row
+                      style={{
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                        justifyContent: 'flex-end',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: 'right',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          color: 'var(--color-gray-11)',
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.05,
+                        }}
+                      >
+                        Actions
+                      </Text>
+                    </Row>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredDocuments.map((doc) => {
+                  const daysUntilExpiry = getDaysUntilExpiry(doc.expiryDate)
+                  return (
+                    <tr key={doc.id}>
+                      <td>
                         <Row
-                          alignItems="center"
                           style={{
-                            display: 'inline-flex',
-                            paddingLeft: 8,
-                            paddingRight: 8,
-                            paddingTop: 4,
-                            paddingBottom: 4,
-                            borderRadius: 4,
-                            backgroundColor: 'var(--color-blue-3)',
+                            paddingLeft: 24,
+                            paddingRight: 24,
+                            paddingTop: 16,
+                            paddingBottom: 16,
+                          }}
+                          alignItems="center"
+                          gap={12}
+                        >
+                          <FileText style={{ color: 'var(--color-blue-10)' }} size={20} />
+                          <Stack>
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                fontWeight: 500,
+                                color: 'var(--color-gray-12)',
+                              }}
+                            >
+                              {doc.name}
+                            </Text>
+                            <Text style={{ fontSize: 11, color: 'var(--color-gray-11)' }}>
+                              Uploaded by {doc.uploadedBy}
+                            </Text>
+                          </Stack>
+                        </Row>
+                      </td>
+                      <td>
+                        <Row
+                          style={{
+                            paddingLeft: 24,
+                            paddingRight: 24,
+                            paddingTop: 16,
+                            paddingBottom: 16,
                           }}
                         >
-                          <Text style={{ fontSize: 11, fontWeight: 500, color: 'var(--color-blue-11)' }}>
-                            {getTypeLabel(doc.type)}
+                          <Row
+                            alignItems="center"
+                            style={{
+                              display: 'inline-flex',
+                              paddingLeft: 8,
+                              paddingRight: 8,
+                              paddingTop: 4,
+                              paddingBottom: 4,
+                              borderRadius: 4,
+                              backgroundColor: 'var(--color-blue-3)',
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 11,
+                                fontWeight: 500,
+                                color: 'var(--color-blue-11)',
+                              }}
+                            >
+                              {getTypeLabel(doc.type)}
+                            </Text>
+                          </Row>
+                        </Row>
+                      </td>
+                      <td>
+                        <Row
+                          style={{
+                            paddingLeft: 24,
+                            paddingRight: 24,
+                            paddingTop: 16,
+                            paddingBottom: 16,
+                          }}
+                          alignItems="center"
+                          gap={8}
+                        >
+                          {getStatusIcon(doc.status)}
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              color: 'var(--color-gray-12)',
+                              textTransform: 'capitalize',
+                            }}
+                          >
+                            {doc.status}
                           </Text>
                         </Row>
-                      </Row>
-                    </td>
-                    <td>
-                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }} alignItems="center" gap={8}>
-                        {getStatusIcon(doc.status)}
-                        <Text style={{ fontSize: 14, color: 'var(--color-gray-12)', textTransform: 'capitalize' }}>
-                          {doc.status}
-                        </Text>
-                      </Row>
-                    </td>
-                    <td>
-                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }}>
-                        <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
-                          {new Date(doc.uploadDate).toLocaleDateString()}
-                        </Text>
-                      </Row>
-                    </td>
-                    <td>
-                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }}>
-                        {doc.expiryDate ? (
-                          <Stack>
-                            <Text style={{ fontSize: 14, color: 'var(--color-gray-12)' }}>
-                              {new Date(doc.expiryDate).toLocaleDateString()}
-                            </Text>
-                            {daysUntilExpiry !== null &&
-                              daysUntilExpiry <= 30 && (
+                      </td>
+                      <td>
+                        <Row
+                          style={{
+                            paddingLeft: 24,
+                            paddingRight: 24,
+                            paddingTop: 16,
+                            paddingBottom: 16,
+                          }}
+                        >
+                          <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
+                            {new Date(doc.uploadDate).toLocaleDateString()}
+                          </Text>
+                        </Row>
+                      </td>
+                      <td>
+                        <Row
+                          style={{
+                            paddingLeft: 24,
+                            paddingRight: 24,
+                            paddingTop: 16,
+                            paddingBottom: 16,
+                          }}
+                        >
+                          {doc.expiryDate ? (
+                            <Stack>
+                              <Text style={{ fontSize: 14, color: 'var(--color-gray-12)' }}>
+                                {new Date(doc.expiryDate).toLocaleDateString()}
+                              </Text>
+                              {daysUntilExpiry !== null && daysUntilExpiry <= 30 && (
                                 <Text style={{ fontSize: 11, color: 'var(--color-orange-10)' }}>
                                   {daysUntilExpiry} days left
                                 </Text>
                               )}
-                          </Stack>
-                        ) : (
-                          <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>N/A</Text>
-                        )}
-                      </Row>
-                    </td>
-                    <td>
-                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16 }}>
-                        <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
-                          {doc.fileSize}
-                        </Text>
-                      </Row>
-                    </td>
-                    <td>
-                      <Row style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 16, paddingBottom: 16, justifyContent: 'flex-end' }} alignItems="center" gap={8}>
-                        <button
-                          onClick={() => setSelectedDocument(doc)}
-                          style={getActionButtonStyle()}
+                            </Stack>
+                          ) : (
+                            <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>N/A</Text>
+                          )}
+                        </Row>
+                      </td>
+                      <td>
+                        <Row
+                          style={{
+                            paddingLeft: 24,
+                            paddingRight: 24,
+                            paddingTop: 16,
+                            paddingBottom: 16,
+                          }}
                         >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          style={getActionButtonStyle()}
+                          <Text style={{ fontSize: 14, color: 'var(--color-gray-11)' }}>
+                            {doc.fileSize}
+                          </Text>
+                        </Row>
+                      </td>
+                      <td>
+                        <Row
+                          style={{
+                            paddingLeft: 24,
+                            paddingRight: 24,
+                            paddingTop: 16,
+                            paddingBottom: 16,
+                            justifyContent: 'flex-end',
+                          }}
+                          alignItems="center"
+                          gap={8}
                         >
-                          <Download size={16} />
-                        </button>
-                      </Row>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                          <button
+                            onClick={() => setSelectedDocument(doc)}
+                            style={getActionButtonStyle()}
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button style={getActionButtonStyle()}>
+                            <Download size={16} />
+                          </button>
+                        </Row>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
 
-          {filteredDocuments.length === 0 && (
-            <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }} gap={16}>
-              <FileText style={{ color: 'var(--color-gray-10)' }} size={48} />
-              <Stack alignItems="center" gap={8}>
-                <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
-                No documents found
-              </Text>
-                <Text style={{ color: 'var(--color-gray-11)', fontSize: 14 }}>
-                  Upload documents to get started
-                </Text>
+            {filteredDocuments.length === 0 && (
+              <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }} gap={16}>
+                <FileText style={{ color: 'var(--color-gray-10)' }} size={48} />
+                <Stack alignItems="center" gap={8}>
+                  <Text style={{ color: 'var(--color-gray-12)', fontWeight: 500 }}>
+                    No documents found
+                  </Text>
+                  <Text style={{ color: 'var(--color-gray-11)', fontSize: 14 }}>
+                    Upload documents to get started
+                  </Text>
+                </Stack>
               </Stack>
-            </Stack>
-          )}
-        </Stack>}
+            )}
+          </Stack>
+        )}
       </Card>
 
       {/* Document Detail Modal */}
@@ -726,9 +915,7 @@ export default function DocumentsPage() {
                     padding: 16,
                   }}
                 >
-                  <Text style={{ color: 'var(--color-red-11)', fontSize: 14 }}>
-                    {uploadError}
-                  </Text>
+                  <Text style={{ color: 'var(--color-red-11)', fontSize: 14 }}>{uploadError}</Text>
                 </Card>
               )}
 
@@ -759,7 +946,8 @@ export default function DocumentsPage() {
                   }}
                 >
                   <Text style={{ color: 'var(--color-yellow-11)', fontSize: 14 }}>
-                    Unable to upload documents. Please ensure you are logged in and have a valid organization.
+                    Unable to upload documents. Please ensure you are logged in and have a valid
+                    organization.
                   </Text>
                   <Text style={{ color: 'var(--color-yellow-11)', fontSize: 12, marginTop: 8 }}>
                     Organization ID: {organizationId || 'Not available'}
@@ -771,10 +959,7 @@ export default function DocumentsPage() {
               )}
 
               <Row justifyContent="flex-end" style={{ paddingTop: 16 }}>
-                <Button
-                  variant="ghost"
-                  onPress={handleModalClose}
-                >
+                <Button variant="ghost" onPress={handleModalClose}>
                   Close
                 </Button>
               </Row>
@@ -783,5 +968,5 @@ export default function DocumentsPage() {
         </div>
       )}
     </Stack>
-  );
+  )
 }
