@@ -15,6 +15,7 @@ import {
   H3,
   Input,
   SaaSSectionHeader,
+  Grid,
 } from '@unicornlove/beyond-ui'
 import { Search, LayoutDashboard } from 'lucide-react'
 import { dashboardService } from '../../../lib/api/dashboard/dashboardService'
@@ -193,7 +194,11 @@ export default function DashboardPage() {
         </Card>
 
         {/* Overall Metrics */}
-        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
+        <Grid
+          columns={{ base: 1, sm: 2, lg: 4 }}
+          gap="var(--space-6)"
+          style={{ marginBottom: 'var(--space-8)' }}
+        >
           <MetricCard
             title="Overall Compliance Score"
             value={overview?.overall_compliance_score || 0}
@@ -222,10 +227,14 @@ export default function DashboardPage() {
             loading={loading}
             subtitle="Immediate action required"
           />
-        </Row>
+        </Grid>
 
         {/* Task Summary */}
-        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
+        <Grid
+          columns={{ base: 1, sm: 2, lg: 4 }}
+          gap="var(--space-6)"
+          style={{ marginBottom: 'var(--space-8)' }}
+        >
           <MetricCard
             title="Open Tasks"
             value={taskSummary?.total_open_tasks || 0}
@@ -250,7 +259,7 @@ export default function DashboardPage() {
             status="warning"
             loading={loading}
           />
-        </Row>
+        </Grid>
 
         {/* Charts Section */}
         {!loading && (
@@ -365,14 +374,18 @@ export default function DashboardPage() {
           </Row>
         )}
 
-        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
+        <Grid
+          columns={{ base: 1, lg: 2 }}
+          gap="var(--space-6)"
+          style={{ marginBottom: 'var(--space-8)' }}
+        >
           {/* Subcontractor Scores Table */}
           <Card
             variant="elevated"
             padding="none"
             radius="lg"
             elevation="sm"
-            style={{ flex: 1, minWidth: 400, overflow: 'hidden' }}
+            style={{ overflow: 'hidden' }}
           >
             <Stack
               style={{
@@ -532,7 +545,7 @@ export default function DashboardPage() {
             padding="none"
             radius="lg"
             elevation="sm"
-            style={{ flex: 1, minWidth: 400, overflow: 'hidden' }}
+            style={{ overflow: 'hidden' }}
           >
             <Stack
               style={{
@@ -692,7 +705,7 @@ export default function DashboardPage() {
               )}
             </Stack>
           </Card>
-        </Row>
+        </Grid>
 
         {/* Activity Feed */}
         <Card
