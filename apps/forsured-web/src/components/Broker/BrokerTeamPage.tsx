@@ -1,23 +1,23 @@
-import { useState } from 'react';
-import { Users, UserPlus, Shield, Mail } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, Card } from '@unicornlove/beyond-ui';
-import { useUsers } from '../../hooks/useUsers';
-import { useClients } from '../../hooks/useClients';
-import Button from '../Common/Button';
-import { DashboardSkeleton } from '../Common/SkeletonLoader';
-import InviteTeamMemberModal from './InviteTeamMemberModal';
+import { useState } from 'react'
+import { Users, UserPlus, Shield, Mail } from 'lucide-react'
+import { Stack, Row, Text, H1, H2, Card, Grid } from '@unicornlove/beyond-ui'
+import { useUsers } from '../../hooks/useUsers'
+import { useClients } from '../../hooks/useClients'
+import Button from '../Common/Button'
+import { DashboardSkeleton } from '../Common/SkeletonLoader'
+import InviteTeamMemberModal from './InviteTeamMemberModal'
 
 export default function BrokerTeamPage() {
-  const { users, loading: usersLoading, fetchUsers } = useUsers();
-  const { clients, loading: clientsLoading } = useClients();
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const { users, loading: usersLoading, fetchUsers } = useUsers()
+  const { clients, loading: clientsLoading } = useClients()
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
 
-  const brokerUsers = users.filter((u) => u.role === 'broker');
-  const adminUsers = brokerUsers.filter((u) => u.broker_role === 'admin');
-  const workerUsers = brokerUsers.filter((u) => u.broker_role === 'worker');
+  const brokerUsers = users.filter((u) => u.role === 'broker')
+  const adminUsers = brokerUsers.filter((u) => u.broker_role === 'admin')
+  const workerUsers = brokerUsers.filter((u) => u.broker_role === 'worker')
 
   if (usersLoading || clientsLoading) {
-    return <DashboardSkeleton />;
+    return <DashboardSkeleton />
   }
 
   const cardStyle: React.CSSProperties = {
@@ -25,15 +25,13 @@ export default function BrokerTeamPage() {
     borderRadius: 12,
     padding: 24,
     border: '1px solid var(--color-border)',
-    flex: 1,
-    minWidth: '30%',
-  };
+  }
 
   const iconBoxStyle = (color: string): React.CSSProperties => ({
     backgroundColor: `var(--color-${color}-3)`,
     padding: 12,
     borderRadius: 8,
-  });
+  })
 
   return (
     <Stack gap={24}>
@@ -42,20 +40,20 @@ export default function BrokerTeamPage() {
           <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>
             Team Management
           </H1>
-          <Text muted>
-            Manage your broker team and client assignments
-          </Text>
+          <Text muted>Manage your broker team and client assignments</Text>
         </Stack>
         <Button color="primary" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
           Invite Team Member
         </Button>
       </Row>
 
-      <Row gap={24} style={{ flexWrap: 'wrap' }}>
+      <Grid columns={{ base: 1, sm: 2, lg: 3 }} gap={24}>
         <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between">
             <Stack>
-              <Text size="sm" muted>Total Team Members</Text>
+              <Text size="sm" muted>
+                Total Team Members
+              </Text>
               <Text size="2xl" weight="bold" style={{ marginTop: 4 }}>
                 {brokerUsers.length}
               </Text>
@@ -69,8 +67,14 @@ export default function BrokerTeamPage() {
         <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between">
             <Stack>
-              <Text size="sm" muted>Administrators</Text>
-              <Text size="2xl" weight="bold" style={{ color: 'var(--color-purple-10)', marginTop: 4 }}>
+              <Text size="sm" muted>
+                Administrators
+              </Text>
+              <Text
+                size="2xl"
+                weight="bold"
+                style={{ color: 'var(--color-purple-10)', marginTop: 4 }}
+              >
                 {adminUsers.length}
               </Text>
             </Stack>
@@ -83,8 +87,14 @@ export default function BrokerTeamPage() {
         <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between">
             <Stack>
-              <Text size="sm" muted>Workers</Text>
-              <Text size="2xl" weight="bold" style={{ color: 'var(--color-blue-10)', marginTop: 4 }}>
+              <Text size="sm" muted>
+                Workers
+              </Text>
+              <Text
+                size="2xl"
+                weight="bold"
+                style={{ color: 'var(--color-blue-10)', marginTop: 4 }}
+              >
                 {workerUsers.length}
               </Text>
             </Stack>
@@ -93,7 +103,7 @@ export default function BrokerTeamPage() {
             </div>
           </Row>
         </Card>
-      </Row>
+      </Grid>
 
       <Card
         style={{
@@ -143,7 +153,9 @@ export default function BrokerTeamPage() {
                     <Row alignItems="center" gap={16} style={{ marginTop: 4 }}>
                       <Row alignItems="center" gap={4}>
                         <Mail size={14} style={{ color: 'var(--color-text-muted)' }} />
-                        <Text size="sm" muted>{user.email}</Text>
+                        <Text size="sm" muted>
+                          {user.email}
+                        </Text>
                       </Row>
                       <Text
                         style={{
@@ -157,9 +169,18 @@ export default function BrokerTeamPage() {
                           fontSize: 12,
                           fontWeight: 500,
                           border: '1px solid',
-                          backgroundColor: user.broker_role === 'admin' ? 'var(--color-purple-2)' : 'var(--color-blue-2)',
-                          color: user.broker_role === 'admin' ? 'var(--color-purple-11)' : 'var(--color-blue-11)',
-                          borderColor: user.broker_role === 'admin' ? 'var(--color-purple-6)' : 'var(--color-blue-6)',
+                          backgroundColor:
+                            user.broker_role === 'admin'
+                              ? 'var(--color-purple-2)'
+                              : 'var(--color-blue-2)',
+                          color:
+                            user.broker_role === 'admin'
+                              ? 'var(--color-purple-11)'
+                              : 'var(--color-blue-11)',
+                          borderColor:
+                            user.broker_role === 'admin'
+                              ? 'var(--color-purple-6)'
+                              : 'var(--color-blue-6)',
                         }}
                       >
                         {user.broker_role === 'admin' ? 'Administrator' : 'Worker'}
@@ -267,9 +288,9 @@ export default function BrokerTeamPage() {
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
         onSuccess={() => {
-          fetchUsers();
+          fetchUsers()
         }}
       />
     </Stack>
-  );
+  )
 }
