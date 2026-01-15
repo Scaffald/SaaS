@@ -8,40 +8,43 @@
  *   - Issues (20%): Open issue severity
  *   - History (15%): Trend over time
  */
-import React from 'react';
-import { Row, Stack, Text } from '@unicornlove/beyond-ui';
-import { CheckCircle, FileText, AlertTriangle, TrendingUp, AlertCircle } from 'lucide-react';
-import { RiskBreakdown as RiskBreakdownType, RiskLevel } from '../../lib/compliance/riskCalculationService';
-import { RiskBadge } from './RiskBadge';
+import React from 'react'
+import { Row, Stack, Text, Grid } from '@unicornlove/beyond-ui'
+import { CheckCircle, FileText, AlertTriangle, TrendingUp, AlertCircle } from 'lucide-react'
+import {
+  RiskBreakdown as RiskBreakdownType,
+  RiskLevel,
+} from '../../lib/compliance/riskCalculationService'
+import { RiskBadge } from './RiskBadge'
 
 export interface RiskBreakdownProps {
   /** The breakdown data from risk calculation */
-  breakdown: RiskBreakdownType;
+  breakdown: RiskBreakdownType
   /** Overall risk level */
-  riskLevel: RiskLevel;
+  riskLevel: RiskLevel
   /** Overall compliance score */
-  complianceScore: number;
+  complianceScore: number
   /** Whether to show detailed information */
-  showDetails?: boolean;
+  showDetails?: boolean
   /** Whether to show override alerts */
-  showOverrides?: boolean;
+  showOverrides?: boolean
 }
 
 interface ComponentRowProps {
-  label: string;
-  score: number;
-  weight: number;
-  weighted: number;
-  detail: string;
-  icon: React.ReactNode;
-  showDetails: boolean;
+  label: string
+  score: number
+  weight: number
+  weighted: number
+  detail: string
+  icon: React.ReactNode
+  showDetails: boolean
 }
 
 function getProgressColor(score: number): string {
-  if (score >= 90) return 'var(--color-green-9)';
-  if (score >= 70) return 'var(--color-yellow-9)';
-  if (score >= 50) return 'var(--color-orange-9)';
-  return 'var(--color-red-9)';
+  if (score >= 90) return 'var(--color-green-9)'
+  if (score >= 70) return 'var(--color-yellow-9)'
+  if (score >= 50) return 'var(--color-orange-9)'
+  return 'var(--color-red-9)'
 }
 
 const ComponentRow: React.FC<ComponentRowProps> = ({
@@ -53,16 +56,14 @@ const ComponentRow: React.FC<ComponentRowProps> = ({
   icon,
   showDetails,
 }) => {
-  const progressColor = getProgressColor(score);
+  const progressColor = getProgressColor(score)
 
   return (
     <Stack style={{ gap: 4 }}>
       <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Row style={{ alignItems: 'center', gap: 8 }}>
           {icon}
-          <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500 }}>
-            {label}
-          </Text>
+          <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 500 }}>{label}</Text>
         </Row>
         <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-9)' }}>
           {score}% x {(weight * 100).toFixed(0)}% = {weighted}
@@ -88,13 +89,11 @@ const ComponentRow: React.FC<ComponentRowProps> = ({
       </div>
 
       {showDetails && (
-        <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>
-          {detail}
-        </Text>
+        <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>{detail}</Text>
       )}
     </Stack>
-  );
-};
+  )
+}
 
 export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
   breakdown,
@@ -109,9 +108,10 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
       score: breakdown.coverage.score,
       weight: breakdown.coverage.weight,
       weighted: breakdown.coverage.weighted,
-      detail: breakdown.coverage.totalRequirements > 0
-        ? `${breakdown.coverage.metRequirements}/${breakdown.coverage.totalRequirements} requirements met`
-        : 'No requirements defined',
+      detail:
+        breakdown.coverage.totalRequirements > 0
+          ? `${breakdown.coverage.metRequirements}/${breakdown.coverage.totalRequirements} requirements met`
+          : 'No requirements defined',
       icon: <CheckCircle size={16} style={{ color: 'var(--color-9)' }} />,
     },
     {
@@ -131,9 +131,10 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
       score: breakdown.issues.score,
       weight: breakdown.issues.weight,
       weighted: breakdown.issues.weighted,
-      detail: breakdown.issues.criticalCount > 0
-        ? `${breakdown.issues.criticalCount} critical issue${breakdown.issues.criticalCount > 1 ? 's' : ''} open`
-        : 'No critical issues',
+      detail:
+        breakdown.issues.criticalCount > 0
+          ? `${breakdown.issues.criticalCount} critical issue${breakdown.issues.criticalCount > 1 ? 's' : ''} open`
+          : 'No critical issues',
       icon: <AlertTriangle size={16} style={{ color: 'var(--color-9)' }} />,
     },
     {
@@ -144,12 +145,19 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
       detail: `Trend: ${breakdown.history.trend}`,
       icon: <TrendingUp size={16} style={{ color: 'var(--color-9)' }} />,
     },
-  ];
+  ]
 
-  const hasOverride = breakdown.overrides.hasCriticalOverride;
+  const hasOverride = breakdown.overrides.hasCriticalOverride
 
   return (
-    <Stack style={{ gap: 'var(--space-4)', padding: 'var(--space-3)', backgroundColor: 'var(--color-background-hover)', borderRadius: 'var(--radius-3)' }}>
+    <Stack
+      style={{
+        gap: 'var(--space-4)',
+        padding: 'var(--space-3)',
+        backgroundColor: 'var(--color-background-hover)',
+        borderRadius: 'var(--radius-3)',
+      }}
+    >
       {/* Header with overall score */}
       <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Stack style={{ gap: 4 }}>
@@ -166,11 +174,7 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
       {/* Component rows */}
       <Stack style={{ gap: 'var(--space-3)' }}>
         {components.map((component) => (
-          <ComponentRow
-            key={component.label}
-            {...component}
-            showDetails={showDetails}
-          />
+          <ComponentRow key={component.label} {...component} showDetails={showDetails} />
         ))}
       </Stack>
 
@@ -188,7 +192,13 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
         >
           <Row style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
             <AlertCircle size={18} style={{ color: 'var(--color-red-10)' }} />
-            <Text style={{ fontSize: 'var(--font-size-2)', fontWeight: 600, color: 'var(--color-red-11)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-2)',
+                fontWeight: 600,
+                color: 'var(--color-red-11)',
+              }}
+            >
               Override Active
             </Text>
           </Row>
@@ -214,29 +224,46 @@ export const RiskBreakdown: React.FC<RiskBreakdownProps> = ({
 
       {/* Legend */}
       {showDetails && (
-        <Stack style={{ gap: 8, padding: 8, backgroundColor: 'var(--color-background)', borderRadius: 'var(--radius-2)' }}>
-          <Text style={{ fontSize: 'var(--font-size-1)', fontWeight: 600, color: 'var(--color-10)' }}>
+        <Stack
+          style={{
+            gap: 8,
+            padding: 8,
+            backgroundColor: 'var(--color-background)',
+            borderRadius: 'var(--radius-2)',
+          }}
+        >
+          <Text
+            style={{ fontSize: 'var(--font-size-1)', fontWeight: 600, color: 'var(--color-10)' }}
+          >
             Risk Level Thresholds
           </Text>
-          <Row style={{ flexWrap: 'wrap', gap: 8 }}>
-            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-green-10)' }}>90-100: LOW</Text>
-            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-yellow-10)' }}>70-89: MEDIUM</Text>
-            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-orange-10)' }}>50-69: HIGH</Text>
-            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-red-10)' }}>0-49: CRITICAL</Text>
-          </Row>
+          <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={8}>
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-green-10)' }}>
+              90-100: LOW
+            </Text>
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-yellow-10)' }}>
+              70-89: MEDIUM
+            </Text>
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-orange-10)' }}>
+              50-69: HIGH
+            </Text>
+            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-red-10)' }}>
+              0-49: CRITICAL
+            </Text>
+          </Grid>
         </Stack>
       )}
     </Stack>
-  );
-};
+  )
+}
 
 /**
  * Compact summary view of risk breakdown
  */
 export const RiskSummary: React.FC<{
-  breakdown: RiskBreakdownType;
-  riskLevel: RiskLevel;
-  complianceScore: number;
+  breakdown: RiskBreakdownType
+  riskLevel: RiskLevel
+  complianceScore: number
 }> = ({ breakdown, riskLevel, complianceScore }) => {
   return (
     <Stack style={{ gap: 8, padding: 8 }}>
@@ -245,7 +272,7 @@ export const RiskSummary: React.FC<{
         <RiskBadge level={riskLevel} score={complianceScore} showScore />
       </Row>
 
-      <Row style={{ gap: 8, flexWrap: 'wrap' }}>
+      <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={8}>
         <Row style={{ alignItems: 'center', gap: 4 }}>
           <CheckCircle size={12} />
           <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-10)' }}>
@@ -270,9 +297,9 @@ export const RiskSummary: React.FC<{
             Trend: {breakdown.history.trend}
           </Text>
         </Row>
-      </Row>
+      </Grid>
     </Stack>
-  );
-};
+  )
+}
 
-export default RiskBreakdown;
+export default RiskBreakdown
