@@ -15,8 +15,15 @@ import {
   Loader2,
   FolderPlus,
 } from 'lucide-react'
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui'
-import { EmptyState } from '../../ui/EmptyState'
+import { Stack, Row, Text, Button, Card, Grid } from '@unicornlove/beyond-ui'
+import {
+  EmptyState,
+  LoadingContainer,
+  ErrorContainer,
+  getPriorityColor,
+  getPriorityBackground,
+  formatDueDate,
+} from '../../ui'
 import StatusBadge from '../Common/StatusBadge'
 import { useDatabase } from '../../contexts/DatabaseContext'
 import { toast } from 'sonner'
@@ -222,64 +229,31 @@ export default function EnhancedManagerDashboard() {
     return items
   }, [complianceScores, subcontractors, projects])
 
-  const formatDueDate = (dueAt: string) => {
-    const date = new Date(dueAt)
-    const now = new Date()
-    const diffTime = date.getTime() - now.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    if (diffDays < 0)
-      return {
-        text: `${Math.abs(diffDays)}d overdue`,
-        color: '$red10' as const,
-      }
-    if (diffDays === 0) return { text: 'Due today', color: '$orange10' as const }
-    if (diffDays === 1) return { text: 'Due tomorrow', color: '$orange10' as const }
-    if (diffDays <= 3) return { text: `Due in ${diffDays}d`, color: '$orange10' as const }
-    return { text: date.toLocaleDateString(), color: '$color11' as const }
-  }
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent':
-        return '$red9' as const
-      case 'high':
-        return '$orange9' as const
-      case 'medium':
-        return '$blue9' as const
-      case 'low':
-        return '$gray9' as const
-      default:
-        return '$gray9' as const
-    }
-  }
+  // Utility functions imported from ../../ui
 
   // Show loading state
   if (loading) {
     return (
-      <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
-        <Stack alignItems="center" gap={16}>
-          <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--color-blue-10)' }} />
-          <Text muted>Loading dashboard...</Text>
-        </Stack>
-      </Stack>
+      <LoadingContainer>
+        <Loader2
+          size={32}
+          style={{ animation: 'spin 1s linear infinite', color: 'var(--color-blue-10)' }}
+        />
+        <Text muted>Loading dashboard...</Text>
+      </LoadingContainer>
     )
   }
 
   // Show error state
   if (error) {
     return (
-      <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
-        <Stack alignItems="center">
-          <Stack style={{ marginBottom: 16 }}>
-            <AlertTriangle size={48} style={{ color: 'var(--color-red-10)' }} />
-          </Stack>
-          <Text size="lg" weight="semibold" style={{ marginBottom: 8 }}>
-            Failed to load dashboard
-          </Text>
-          <Text muted>{error.message}</Text>
-        </Stack>
-      </Stack>
+      <ErrorContainer>
+        <AlertTriangle size={48} style={{ color: 'var(--color-red-10)' }} />
+        <Text size="lg" weight="semibold">
+          Failed to load dashboard
+        </Text>
+        <Text muted>{error.message}</Text>
+      </ErrorContainer>
     )
   }
 
@@ -320,20 +294,11 @@ export default function EnhancedManagerDashboard() {
     justifyContent: 'center',
   })
 
-  const priorityBgColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'var(--color-red-3)'
-      case 'high': return 'var(--color-orange-3)'
-      default: return 'var(--color-blue-3)'
-    }
-  }
+  // Priority colors now imported from ../../ui
 
-  const priorityTextColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'var(--color-red-11)'
-      case 'high': return 'var(--color-orange-11)'
-      default: return 'var(--color-blue-11)'
-    }
+  // Helper for priority text color (derived from background)
+  const getPriorityTextColor = (priority: string) => {
+    return getPriorityBackground(priority).replace('-3)', '-11)')
   }
 
   return (
@@ -342,71 +307,110 @@ export default function EnhancedManagerDashboard() {
         Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
       </Text>
 
-      <Row style={{ flexWrap: 'wrap', gap: 16 }}>
-        <Card style={{ ...cardStyle, flex: '1 1 200px', minWidth: 200 }}>
+      <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
+        <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
             <Stack style={iconBoxStyle('blue')}>
               <Users size={20} style={{ color: 'var(--color-blue-10)' }} />
             </Stack>
-            <Text size="2xl" weight="bold">{totalSubcontractors}</Text>
+            <Text size="2xl" weight="bold">
+              {totalSubcontractors}
+            </Text>
           </Row>
-          <Text size="sm" weight="medium" muted>Active {getContractorLabel(true)}</Text>
-          <Text size="xs" muted style={{ marginTop: 4 }}>Across {activeProjects} projects</Text>
+          <Text size="sm" weight="medium" muted>
+            Active {getContractorLabel(true)}
+          </Text>
+          <Text size="xs" muted style={{ marginTop: 4 }}>
+            Across {activeProjects} projects
+          </Text>
         </Card>
 
-        <Card style={{ ...cardStyle, flex: '1 1 200px', minWidth: 200 }}>
+        <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
             <Stack style={iconBoxStyle('green')}>
               <CheckCircle size={20} style={{ color: 'var(--color-green-10)' }} />
             </Stack>
-            <Text size="2xl" weight="bold">{tasks.length - tasksOverdue}</Text>
+            <Text size="2xl" weight="bold">
+              {tasks.length - tasksOverdue}
+            </Text>
           </Row>
-          <Text size="sm" weight="medium" muted>Tasks On Track</Text>
-          <Text size="xs" muted style={{ marginTop: 4 }}>{tasksInProgress} in progress</Text>
+          <Text size="sm" weight="medium" muted>
+            Tasks On Track
+          </Text>
+          <Text size="xs" muted style={{ marginTop: 4 }}>
+            {tasksInProgress} in progress
+          </Text>
         </Card>
 
-        <Card style={{ ...cardStyle, flex: '1 1 200px', minWidth: 200 }}>
+        <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
             <Stack style={iconBoxStyle('red')}>
               <Clock size={20} style={{ color: 'var(--color-red-10)' }} />
             </Stack>
-            <Text size="2xl" weight="bold" style={{ color: 'var(--color-red-10)' }}>{tasksOverdue}</Text>
+            <Text size="2xl" weight="bold" style={{ color: 'var(--color-red-10)' }}>
+              {tasksOverdue}
+            </Text>
           </Row>
-          <Text size="sm" weight="medium" muted>Overdue Tasks</Text>
-          <Text size="xs" muted style={{ marginTop: 4 }}>Require immediate action</Text>
+          <Text size="sm" weight="medium" muted>
+            Overdue Tasks
+          </Text>
+          <Text size="xs" muted style={{ marginTop: 4 }}>
+            Require immediate action
+          </Text>
         </Card>
 
-        <Card style={{ ...cardStyle, flex: '1 1 200px', minWidth: 200 }}>
+        <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
             <Stack style={iconBoxStyle('orange')}>
               <AlertTriangle size={20} style={{ color: 'var(--color-orange-10)' }} />
             </Stack>
-            <Text size="2xl" weight="bold" style={{ color: 'var(--color-orange-10)' }}>{tasksBlocked}</Text>
+            <Text size="2xl" weight="bold" style={{ color: 'var(--color-orange-10)' }}>
+              {tasksBlocked}
+            </Text>
           </Row>
-          <Text size="sm" weight="medium" muted>Blocked Tasks</Text>
-          <Text size="xs" muted style={{ marginTop: 4 }}>Waiting on dependencies</Text>
+          <Text size="sm" weight="medium" muted>
+            Blocked Tasks
+          </Text>
+          <Text size="xs" muted style={{ marginTop: 4 }}>
+            Waiting on dependencies
+          </Text>
         </Card>
-      </Row>
+      </Grid>
 
-      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 8, border: '1px solid var(--color-border)' }}>
+      <Card
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 8,
+          border: '1px solid var(--color-border)',
+        }}
+      >
         <Row
           alignItems="center"
           justifyContent="space-between"
           style={{ padding: 24, borderBottom: '1px solid var(--color-border)' }}
         >
           <Stack>
-            <Text size="xl" weight="semibold">Urgent Tasks</Text>
-            <Text size="sm" muted style={{ marginTop: 4 }}>High priority items requiring attention</Text>
+            <Text size="xl" weight="semibold">
+              Urgent Tasks
+            </Text>
+            <Text size="sm" muted style={{ marginTop: 4 }}>
+              High priority items requiring attention
+            </Text>
           </Stack>
           <Row alignItems="center" gap={8}>
-            <Text size="2xl" weight="bold" style={{ color: 'var(--color-orange-10)' }}>{urgentTasks.length}</Text>
+            <Text size="2xl" weight="bold" style={{ color: 'var(--color-orange-10)' }}>
+              {urgentTasks.length}
+            </Text>
             <AlertTriangle size={20} style={{ color: 'var(--color-orange-10)' }} />
           </Row>
         </Row>
         <Stack padding={24} gap={12}>
           {urgentTasks.map((task) => {
             const dueDate = formatDueDate(task.due_date)
-            const projectName = task.metadata?.project_name || projects.find((p) => p.id === task.project_id)?.name || 'Unknown Project'
+            const projectName =
+              task.metadata?.project_name ||
+              projects.find((p) => p.id === task.project_id)?.name ||
+              'Unknown Project'
             const blockers = task.metadata?.blockers || []
             return (
               <Row
@@ -422,33 +426,70 @@ export default function EnhancedManagerDashboard() {
                 }}
               >
                 <Row alignItems="flex-start" gap={12} flex={1}>
-                  <Stack style={{ width: 8, height: 8, borderRadius: '50%', marginTop: 6, backgroundColor: getPriorityColor(task.priority).replace('$', 'var(--color-').replace('9', '-9)') }} />
+                  <Stack
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      marginTop: 6,
+                      backgroundColor: getPriorityColor(task.priority),
+                    }}
+                  />
                   <Stack flex={1}>
                     <Row alignItems="center" gap={8} style={{ marginBottom: 4 }}>
-                      <Text size="sm" weight="semibold">{task.title}</Text>
-                      <span style={{ padding: '2px 8px', borderRadius: 4, backgroundColor: priorityBgColor(task.priority), color: priorityTextColor(task.priority), fontSize: 10, fontWeight: 500, textTransform: 'uppercase' }}>
+                      <Text size="sm" weight="semibold">
+                        {task.title}
+                      </Text>
+                      <span
+                        style={{
+                          padding: '2px 8px',
+                          borderRadius: 4,
+                          backgroundColor: getPriorityBackground(task.priority),
+                          color: getPriorityTextColor(task.priority),
+                          fontSize: 10,
+                          fontWeight: 500,
+                          textTransform: 'uppercase',
+                        }}
+                      >
                         {task.priority}
                       </span>
                       {blockers.length > 0 && (
-                        <span style={{ padding: '2px 8px', borderRadius: 4, backgroundColor: 'var(--color-red-3)', color: 'var(--color-red-11)', fontSize: 10, fontWeight: 500 }}>
+                        <span
+                          style={{
+                            padding: '2px 8px',
+                            borderRadius: 4,
+                            backgroundColor: 'var(--color-red-3)',
+                            color: 'var(--color-red-11)',
+                            fontSize: 10,
+                            fontWeight: 500,
+                          }}
+                        >
                           BLOCKED
                         </span>
                       )}
                     </Row>
-                    <Text size="sm" muted style={{ marginBottom: 8 }}>{task.description}</Text>
+                    <Text size="sm" muted style={{ marginBottom: 8 }}>
+                      {task.description}
+                    </Text>
                     <Row alignItems="center" gap={12}>
                       <Row alignItems="center" gap={4}>
                         <Building size={12} />
-                        <Text size="xs" muted>{projectName}</Text>
+                        <Text size="xs" muted>
+                          {projectName}
+                        </Text>
                       </Row>
                       <Row alignItems="center" gap={4}>
                         <Calendar size={12} />
-                        <Text size="xs" style={{ color: dueDate.color.replace('$', 'var(--color-').replace(/(10|11)/, (m) => `${m})`) }}>{dueDate.text}</Text>
+                        <Text size="xs" style={{ color: dueDate.color }}>
+                          {dueDate.text}
+                        </Text>
                       </Row>
                       {blockers.length > 0 && (
                         <Row alignItems="center" gap={4}>
                           <AlertTriangle size={12} style={{ color: 'var(--color-red-10)' }} />
-                          <Text size="xs" style={{ color: 'var(--color-red-10)' }}>{blockers.length} blocker{blockers.length > 1 ? 's' : ''}</Text>
+                          <Text size="xs" style={{ color: 'var(--color-red-10)' }}>
+                            {blockers.length} blocker{blockers.length > 1 ? 's' : ''}
+                          </Text>
                         </Row>
                       )}
                     </Row>
@@ -463,18 +504,30 @@ export default function EnhancedManagerDashboard() {
         </Stack>
       </Card>
 
-      <Card style={{ backgroundColor: 'var(--color-background)', borderRadius: 8, border: '1px solid var(--color-border)' }}>
+      <Card
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 8,
+          border: '1px solid var(--color-border)',
+        }}
+      >
         <Row
           alignItems="center"
           justifyContent="space-between"
           style={{ padding: 24, borderBottom: '1px solid var(--color-border)' }}
         >
           <Stack>
-            <Text size="xl" weight="semibold">Critical Compliance Items</Text>
-            <Text size="sm" muted style={{ marginTop: 4 }}>Issues requiring immediate attention</Text>
+            <Text size="xl" weight="semibold">
+              Critical Compliance Items
+            </Text>
+            <Text size="sm" muted style={{ marginTop: 4 }}>
+              Issues requiring immediate attention
+            </Text>
           </Stack>
           <Row alignItems="center" gap={8}>
-            <Text size="2xl" weight="bold" style={{ color: 'var(--color-red-10)' }}>{criticalItems.length}</Text>
+            <Text size="2xl" weight="bold" style={{ color: 'var(--color-red-10)' }}>
+              {criticalItems.length}
+            </Text>
             <Shield size={20} style={{ color: 'var(--color-red-10)' }} />
           </Row>
         </Row>
@@ -487,26 +540,48 @@ export default function EnhancedManagerDashboard() {
               style={{ padding: 16, border: '1px solid var(--color-border)', borderRadius: 8 }}
             >
               <Row alignItems="flex-start" gap={12} flex={1}>
-                <Stack style={{ width: 8, height: 8, borderRadius: '50%', marginTop: 6, backgroundColor: item.severity === 'critical' ? 'var(--color-red-9)' : 'var(--color-orange-9)' }} />
+                <Stack
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    marginTop: 6,
+                    backgroundColor:
+                      item.severity === 'critical' ? 'var(--color-red-9)' : 'var(--color-orange-9)',
+                  }}
+                />
                 <Stack flex={1}>
                   <Row alignItems="center" gap={8} style={{ marginBottom: 4 }}>
-                    <Text size="sm" weight="semibold">{item.type}</Text>
-                    <StatusBadge status={item.severity === 'critical' ? 'critical' : 'warning'} size="sm" />
+                    <Text size="sm" weight="semibold">
+                      {item.type}
+                    </Text>
+                    <StatusBadge
+                      status={item.severity === 'critical' ? 'critical' : 'warning'}
+                      size="sm"
+                    />
                   </Row>
-                  <Text size="sm" muted style={{ marginBottom: 4 }}>{item.subcontractor}</Text>
+                  <Text size="sm" muted style={{ marginBottom: 4 }}>
+                    {item.subcontractor}
+                  </Text>
                   <Row alignItems="center" gap={12}>
                     <Row alignItems="center" gap={4}>
                       <Building size={12} />
-                      <Text size="xs" muted>{item.project}</Text>
+                      <Text size="xs" muted>
+                        {item.project}
+                      </Text>
                     </Row>
                     <Row alignItems="center" gap={4}>
                       <Calendar size={12} />
-                      <Text size="xs" muted>Due {item.dueDate}</Text>
+                      <Text size="xs" muted>
+                        Due {item.dueDate}
+                      </Text>
                     </Row>
                   </Row>
                 </Stack>
               </Row>
-              <Button variant="secondary" size="sm">Review</Button>
+              <Button variant="secondary" size="sm">
+                Review
+              </Button>
             </Row>
           ))}
         </Stack>
