@@ -42,7 +42,7 @@ const config: StorybookConfig = {
       ...config.resolve.alias,
       'react-native$': 'react-native-web',
       // Alias react-native-svg to a mock for web to avoid React Native internals
-      'react-native-svg': require.resolve('./mocks/react-native-svg.js'),
+      'react-native-svg': require.resolve('./mocks/react-native-svg.jsx'),
       // Alias lucide-react-native to lucide-react for web compatibility
       'lucide-react-native': 'lucide-react',
       // Mock React Native internal modules that don't have web equivalents
@@ -100,6 +100,23 @@ const config: StorybookConfig = {
           ],
         })
       }
+
+      // Add babel-loader for .storybook mocks with JSX
+      rules.push({
+        test: /\.(js|jsx)$/,
+        include: /\.storybook\/mocks/,
+        use: [
+          {
+            loader: require.resolve('babel-loader'),
+            options: {
+              presets: [
+                [require.resolve('@babel/preset-env'), { targets: { browsers: ['last 2 versions'] } }],
+                [require.resolve('@babel/preset-react'), { runtime: 'automatic' }],
+              ],
+            },
+          },
+        ],
+      })
     }
 
     return config
