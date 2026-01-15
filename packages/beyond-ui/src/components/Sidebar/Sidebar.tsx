@@ -137,8 +137,10 @@ export function Sidebar({
           {children}
         </ScrollView>
 
-        {/* Footer */}
-        {footer}
+        {/* Footer - always at bottom */}
+        <View style={styles.footerContainer}>
+          {footer}
+        </View>
       </View>
     </SidebarContext.Provider>
   )
@@ -159,9 +161,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 0,
+    paddingVertical: spacing[8],
     gap: spacing[2],
+  },
+  footerContainer: {
+    paddingTop: spacing[8],
+    paddingBottom: spacing[12],
   },
 })
 

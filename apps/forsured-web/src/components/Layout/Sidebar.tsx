@@ -2,6 +2,7 @@
  * Sidebar - Navigation sidebar component using Beyond UI
  * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
  * Fully migrated to Beyond UI Sidebar components
+ * Updated to match Figma design system comps
  */
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -13,23 +14,26 @@ import {
   FileText,
   Building,
   Briefcase,
-  Bell,
   LogOut,
   CheckSquare,
   LifeBuoy,
   Shield,
+  Moon,
 } from 'lucide-react';
 import {
   Sidebar as BeyondSidebar,
   SidebarHeader,
   SidebarMenuItem,
   SidebarFooter,
+  SidebarWidget,
   Avatar,
+  useThemeContext,
 } from '@unicornlove/beyond-ui';
-import { User as UserType } from '../../types';
+import type { User as UserType } from '../../types';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLexicon } from '../../contexts/LexiconContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface SidebarProps {
   userRole: 'manager' | 'subcontractor' | 'broker';
@@ -55,14 +59,16 @@ const getInitials = (name: string | undefined | null): string => {
 export default function Sidebar({
   userRole,
   user,
-  onNotificationsClick,
-  alertCount,
+  onNotificationsClick: _onNotificationsClick,
+  alertCount: _alertCount,
   collapsed: controlledCollapsed,
   onCollapseChange,
 }: SidebarProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
+  const { toggleTheme } = useThemeContext();
 
   // Support both controlled and uncontrolled mode
   const isControlled = controlledCollapsed !== undefined;
@@ -160,18 +166,53 @@ export default function Sidebar({
     }
   };
 
+  // Handle dark mode toggle
+  const handleDarkModeToggle = (checked: boolean) => {
+    const newTheme = checked ? 'dark' : 'light';
+    setTheme(newTheme);
+    if (toggleTheme) {
+      toggleTheme();
+    }
+  };
+
+  // Check if dark mode is enabled
+  const isDarkMode = theme === 'dark';
+
+  // Mock storage data - in real app, this would come from API
+  const storageUsed = 178; // MB
+  const storageTotal = 445; // MB
+
   return (
     <BeyondSidebar
       variant="main"
       collapsed={isCollapsed}
       onCollapseChange={handleCollapseChange}
     >
+      {/* Logo/Brand Header */}
       <SidebarHeader
         title="Forsured"
         logo={<ForsuredLogo height={24} width={24} />}
         onCollapse={() => handleCollapseChange(!isCollapsed)}
       />
 
+      {/* User Profile Section at Top (matches Figma) */}
+      {!isCollapsed && (
+        <>
+          <SidebarMenuItem
+            type="double"
+            avatar={<Avatar initials={getInitials(user.name || user.email)} size={40} />}
+            label={user.name || user.email || 'User'}
+            supportingText={user.email || getRoleDisplay()}
+            showExpandIcon={true}
+            onPress={() => {
+              // User dropdown - could open a menu
+            }}
+          />
+          <SidebarMenuItem type="divider" />
+        </>
+      )}
+
+      {/* Primary Navigation Items */}
       {menuItems.map((item) => (
         <SidebarMenuItem
           key={item.path}
@@ -182,30 +223,49 @@ export default function Sidebar({
         />
       ))}
 
+      {/* Storage Widget (matches Figma "Storage Used" widget) */}
+      {!isCollapsed && (
+        <SidebarWidget
+          type="progress-horizontal"
+          label="Storage Used"
+          value={storageUsed}
+          max={storageTotal}
+          valueText={`${storageUsed}MB of ${storageTotal}MB`}
+          buttonText="Update"
+          onButtonPress={() => {
+            // Handle storage update
+          }}
+        />
+      )}
+
+      {/* Footer Actions: Settings, Dark Mode, Logout */}
       <SidebarFooter
-        user={{
-          name: user.name || user.email || 'User',
-          email: getRoleDisplay(),
-          avatar: <Avatar initials={getInitials(user.name || user.email)} size={40} />,
-        }}
         actions={[
-          {
-            icon: Bell,
-            onPress: onNotificationsClick,
-            badge: alertCount > 0 ? alertCount : undefined,
-            label: 'Notifications',
-          },
           {
             icon: Settings,
             onPress: () => navigate(getSettingsPath()),
             label: 'Settings',
           },
-          {
-            icon: LogOut,
-            onPress: handleLogout,
-            label: 'Sign Out',
-          },
         ]}
+      />
+
+      {/* Dark Mode Toggle */}
+      {!isCollapsed && (
+        <SidebarMenuItem
+          type="default"
+          icon={Moon}
+          label="Dark Mode"
+          showToggle={true}
+          toggleValue={isDarkMode}
+          onToggleChange={handleDarkModeToggle}
+        />
+      )}
+
+      {/* Logout */}
+      <SidebarMenuItem
+        icon={LogOut}
+        label={isCollapsed ? undefined : 'Logout'}
+        onPress={handleLogout}
       />
     </BeyondSidebar>
   );

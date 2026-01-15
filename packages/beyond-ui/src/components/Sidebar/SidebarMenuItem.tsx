@@ -108,8 +108,8 @@ export function SidebarMenuItem({
     const baseStyles: ViewStyle[] = [
       styles.item,
       {
-        paddingHorizontal: spacing[8],
-        paddingVertical: spacing[8],
+        paddingHorizontal: spacing[12],
+        paddingVertical: type === 'double' ? spacing[12] : spacing[8],
         marginHorizontal: spacing[16],
         marginVertical: 1,
         borderRadius: borderRadius.s,
@@ -131,6 +131,13 @@ export function SidebarMenuItem({
     if (type === 'child') {
       baseStyles.push({
         marginLeft: collapsed ? spacing[16] : spacing[24] + spacing[16],
+      })
+    }
+
+    // Additional spacing for double type (user profile)
+    if (type === 'double') {
+      baseStyles.push({
+        minHeight: 56,
       })
     }
 
@@ -252,26 +259,28 @@ export function SidebarMenuItem({
       {renderLeading()}
 
       {/* Text content */}
-      {!collapsed && (
-        <View style={[styles.textContainer, { flex: 1 }]}>
-          {label && (
-            <Text
-              style={[
-                styles.label,
-                { color: getTextColor() },
-                type === 'double' ? styles.labelWithSupport : null,
-                labelStyle,
-              ]}
-              numberOfLines={1}
-            >
-              {label}
-            </Text>
-          )}
+      {!collapsed && label && (
+        <View style={styles.textContainer}>
+          <Text
+            style={[
+              styles.label,
+              { color: getTextColor() },
+              type === 'double' ? styles.labelWithSupport : null,
+              labelStyle,
+            ]}
+            numberOfLines={1}
+          >
+            {label}
+          </Text>
           {supportingText && type === 'double' && (
             <Text
               style={[
                 styles.supportingText,
-                { color: actualState === 'active' ? colors.white : getTextColor() },
+                {
+                  color: actualState === 'active'
+                    ? colors.white
+                    : (isLight ? colors.text.light.secondary : colors.text.dark.secondary)
+                },
               ]}
               numberOfLines={1}
             >
@@ -355,7 +364,7 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[6],
+    gap: spacing[12],
     minHeight: 40,
   },
   headingContainer: {
@@ -376,6 +385,7 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     gap: spacing[2],
+    minWidth: 0, // Ensure text can shrink
   },
   label: {
     fontFamily: typography.body.fontFamily,
