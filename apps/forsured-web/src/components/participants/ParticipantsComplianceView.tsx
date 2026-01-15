@@ -2,32 +2,32 @@
  * ParticipantsComplianceView - Using Beyond UI
  * REQ-281: Participants Tab Compliance View - TASK-4
  */
-import React, { useState, useCallback } from 'react';
-import { Stack, Row, Text, Card, Button } from '@unicornlove/beyond-ui';
+import React, { useState, useCallback } from 'react'
+import { Stack, Row, Text, Card, Button, Grid } from '@unicornlove/beyond-ui'
 import {
   ParticipantsTable,
   ParticipantsFilter,
   type FilterOption,
   type Participant,
   type ComplianceStatus,
-} from '@unicornlove/compliance';
-import { trpc } from '../../lib/trpc';
-import SkeletonLoader from '../Common/SkeletonLoader';
+} from '@unicornlove/compliance'
+import { trpc } from '../../lib/trpc'
+import SkeletonLoader from '../Common/SkeletonLoader'
 
 interface ParticipantsComplianceViewProps {
-  organizationId: string;
-  projectId: string;
-  onParticipantClick?: (participant: Participant) => void;
+  organizationId: string
+  projectId: string
+  onParticipantClick?: (participant: Participant) => void
 }
 
 function mapToTableParticipant(data: {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
-  score: number;
-  lastUpdated: Date | null;
-  openIssues: number;
+  id: string
+  name: string
+  type: string
+  status: string
+  score: number
+  lastUpdated: Date | null
+  openIssues: number
 }): Participant {
   return {
     id: data.id,
@@ -36,7 +36,7 @@ function mapToTableParticipant(data: {
     status: data.status as ComplianceStatus,
     score: data.score,
     lastUpdated: data.lastUpdated?.toISOString() ?? new Date().toISOString(),
-  };
+  }
 }
 
 export function ParticipantsComplianceView({
@@ -44,7 +44,7 @@ export function ParticipantsComplianceView({
   projectId,
   onParticipantClick,
 }: ParticipantsComplianceViewProps) {
-  const [activeFilter, setActiveFilter] = useState<FilterOption>('all');
+  const [activeFilter, setActiveFilter] = useState<FilterOption>('all')
 
   const { data: participantsData, isLoading: participantsLoading } =
     trpc.participants.listByProject.useQuery(
@@ -58,7 +58,7 @@ export function ParticipantsComplianceView({
       {
         enabled: !!organizationId && !!projectId,
       }
-    );
+    )
 
   const { data: summaryData } = trpc.participants.getComplianceSummary.useQuery(
     {
@@ -68,21 +68,21 @@ export function ParticipantsComplianceView({
     {
       enabled: !!organizationId && !!projectId,
     }
-  );
+  )
 
   const handleFilterChange = useCallback((filter: FilterOption) => {
-    setActiveFilter(filter);
-  }, []);
+    setActiveFilter(filter)
+  }, [])
 
   const handleParticipantClick = useCallback(
     (participant: Participant) => {
-      onParticipantClick?.(participant);
+      onParticipantClick?.(participant)
     },
     [onParticipantClick]
-  );
+  )
 
   const participants: Participant[] =
-    participantsData?.participants.map(mapToTableParticipant) ?? [];
+    participantsData?.participants.map(mapToTableParticipant) ?? []
 
   const counts = summaryData
     ? {
@@ -92,7 +92,7 @@ export function ParticipantsComplianceView({
         'at-risk': summaryData.atRisk,
         'non-compliant': summaryData.nonCompliant,
       }
-    : undefined;
+    : undefined
 
   return (
     <Stack style={{ gap: 'var(--space-4)' }}>
@@ -107,32 +107,64 @@ export function ParticipantsComplianceView({
 
       {/* Summary Metrics */}
       {summaryData && (
-        <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
-          <Card style={{ padding: 'var(--space-4)', flex: 1, minWidth: 200 }}>
-            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-text-secondary)' }}>Total Participants</Text>
-            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-text-primary)' }}>
+        <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
+          <Card style={{ padding: 'var(--space-4)' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-text-secondary)' }}>
+              Total Participants
+            </Text>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-8)',
+                fontWeight: '700',
+                color: 'var(--color-text-primary)',
+              }}
+            >
               {summaryData.total}
             </Text>
           </Card>
-          <Card style={{ padding: 'var(--space-4)', flex: 1, minWidth: 200, borderColor: 'var(--color-green-6)' }}>
-            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-9)' }}>Compliant</Text>
-            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-green-11)' }}>
+          <Card style={{ padding: 'var(--space-4)', borderColor: 'var(--color-green-6)' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-green-9)' }}>
+              Compliant
+            </Text>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-8)',
+                fontWeight: '700',
+                color: 'var(--color-green-11)',
+              }}
+            >
               {summaryData.compliant}
             </Text>
           </Card>
-          <Card style={{ padding: 'var(--space-4)', flex: 1, minWidth: 200, borderColor: 'var(--color-yellow-6)' }}>
-            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow-9)' }}>At Risk</Text>
-            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-yellow-11)' }}>
+          <Card style={{ padding: 'var(--space-4)', borderColor: 'var(--color-yellow-6)' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow-9)' }}>
+              At Risk
+            </Text>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-8)',
+                fontWeight: '700',
+                color: 'var(--color-yellow-11)',
+              }}
+            >
               {summaryData.atRisk}
             </Text>
           </Card>
-          <Card style={{ padding: 'var(--space-4)', flex: 1, minWidth: 200, borderColor: 'var(--color-red-6)' }}>
-            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-red-9)' }}>Non-Compliant</Text>
-            <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: '700', color: 'var(--color-red-11)' }}>
+          <Card style={{ padding: 'var(--space-4)', borderColor: 'var(--color-red-6)' }}>
+            <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-red-9)' }}>
+              Non-Compliant
+            </Text>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-8)',
+                fontWeight: '700',
+                color: 'var(--color-red-11)',
+              }}
+            >
               {summaryData.nonCompliant}
             </Text>
           </Card>
-        </Row>
+        </Grid>
       )}
 
       {/* Results Count */}
@@ -160,10 +192,7 @@ export function ParticipantsComplianceView({
             <SkeletonLoader variant="table" count={5} />
           </Stack>
         ) : participants.length > 0 ? (
-          <ParticipantsTable
-            participants={participants}
-            onRowClick={handleParticipantClick}
-          />
+          <ParticipantsTable participants={participants} onRowClick={handleParticipantClick} />
         ) : (
           <Stack style={{ padding: 'var(--space-12)', alignItems: 'center' }}>
             <Text style={{ color: 'var(--color-text-secondary)' }}>
@@ -175,7 +204,7 @@ export function ParticipantsComplianceView({
         )}
       </Card>
     </Stack>
-  );
+  )
 }
 
-export default ParticipantsComplianceView;
+export default ParticipantsComplianceView
