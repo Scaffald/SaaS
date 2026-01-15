@@ -3,28 +3,14 @@
  * Matches Figma design system comps
  * Includes page title, action buttons, and user avatar
  */
-import { Row, Stack, Text, Button, Avatar } from '@unicornlove/beyond-ui'
-import { Search, MessageCircle, Bell, Sparkles } from 'lucide-react'
-import { useAuth } from '../../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { Row, Stack, Text, Button } from '@unicornlove/beyond-ui'
+import { Bell } from 'lucide-react'
 
 interface DashboardHeaderProps {
   /**
    * Page title to display
    */
   title?: string
-  /**
-   * Callback when upgrade plan button is pressed
-   */
-  onUpgradePress?: () => void
-  /**
-   * Callback when search is pressed
-   */
-  onSearchPress?: () => void
-  /**
-   * Callback when chat is pressed
-   */
-  onChatPress?: () => void
   /**
    * Callback when notifications are pressed
    */
@@ -35,52 +21,11 @@ interface DashboardHeaderProps {
   notificationCount?: number
 }
 
-// Helper to get initials from name
-const getInitials = (name: string | undefined | null): string => {
-  if (!name) return 'U'
-  return (
-    name
-      .split(' ')
-      .map((part) => part[0])
-      .filter(Boolean)
-      .join('')
-      .toUpperCase()
-      .slice(0, 2) || 'U'
-  )
-}
-
 export default function DashboardHeader({
   title = 'Dashboard',
-  onUpgradePress,
-  onSearchPress,
-  onChatPress,
   onNotificationsPress,
   notificationCount = 0,
 }: DashboardHeaderProps) {
-  const { user } = useAuth()
-  const navigate = useNavigate()
-
-  const handleUpgrade = () => {
-    if (onUpgradePress) {
-      onUpgradePress()
-    } else {
-      // Default behavior - navigate to upgrade page
-      navigate('/upgrade')
-    }
-  }
-
-  const handleSearch = () => {
-    if (onSearchPress) {
-      onSearchPress()
-    }
-  }
-
-  const handleChat = () => {
-    if (onChatPress) {
-      onChatPress()
-    }
-  }
-
   const handleNotifications = () => {
     if (onNotificationsPress) {
       onNotificationsPress()
@@ -112,43 +57,6 @@ export default function DashboardHeader({
 
       {/* Action Buttons */}
       <Row style={{ gap: 'var(--space-4)', alignItems: 'center' }}>
-        {/* Upgrade Plan Button */}
-        <Button
-          variant="primary"
-          size="md"
-          iconStart={Sparkles}
-          onPress={handleUpgrade}
-          style={{
-            backgroundColor: 'var(--color-primary-500)',
-          }}
-        >
-          Upgrade plan
-        </Button>
-
-        {/* Search Icon */}
-        <Button
-          variant="ghost"
-          size="md"
-          iconStart={Search}
-          onPress={handleSearch}
-          style={{
-            minWidth: 40,
-            padding: 'var(--space-2)',
-          }}
-        />
-
-        {/* Chat Icon */}
-        <Button
-          variant="ghost"
-          size="md"
-          iconStart={MessageCircle}
-          onPress={handleChat}
-          style={{
-            minWidth: 40,
-            padding: 'var(--space-2)',
-          }}
-        />
-
         {/* Notifications Icon with Badge */}
         <Stack style={{ position: 'relative' }}>
           <Button
@@ -188,15 +96,6 @@ export default function DashboardHeader({
             </Stack>
           )}
         </Stack>
-
-        {/* User Avatar */}
-        <Avatar
-          initials={getInitials(user?.email)}
-          size={40}
-          onPress={() => {
-            // Could open user menu
-          }}
-        />
       </Row>
     </Row>
   )

@@ -25,7 +25,6 @@ import {
   SidebarHeader,
   SidebarMenuItem,
   SidebarFooter,
-  SidebarWidget,
   Avatar,
   useThemeContext,
 } from '@unicornlove/beyond-ui';
@@ -178,10 +177,6 @@ export default function Sidebar({
   // Check if dark mode is enabled
   const isDarkMode = theme === 'dark';
 
-  // Mock storage data - in real app, this would come from API
-  const storageUsed = 178; // MB
-  const storageTotal = 445; // MB
-
   return (
     <BeyondSidebar
       variant="main"
@@ -222,21 +217,6 @@ export default function Sidebar({
           onPress={() => navigate(item.path)}
         />
       ))}
-
-      {/* Storage Widget (matches Figma "Storage Used" widget) */}
-      {!isCollapsed && (
-        <SidebarWidget
-          type="progress-horizontal"
-          label="Storage Used"
-          value={storageUsed}
-          max={storageTotal}
-          valueText={`${storageUsed}MB of ${storageTotal}MB`}
-          buttonText="Update"
-          onButtonPress={() => {
-            // Handle storage update
-          }}
-        />
-      )}
 
       {/* Footer Actions: Settings, Dark Mode, Logout */}
       <SidebarFooter
