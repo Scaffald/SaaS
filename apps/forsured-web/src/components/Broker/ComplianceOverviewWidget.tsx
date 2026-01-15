@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 import {
   TrendingUp,
   TrendingDown,
@@ -8,15 +8,15 @@ import {
   AlertCircle,
   Briefcase,
   ClipboardList,
-} from 'lucide-react';
-import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
-import { BrokerClient, PolicyData, Project, Task } from '../../types';
+} from 'lucide-react'
+import { Stack, Row, Text, H2, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { BrokerClient, PolicyData, Project, Task } from '../../types'
 
 interface ComplianceOverviewWidgetProps {
-  clients: BrokerClient[];
-  policies: PolicyData[];
-  projects: Project[];
-  tasks?: Task[];
+  clients: BrokerClient[]
+  policies: PolicyData[]
+  projects: Project[]
+  tasks?: Task[]
 }
 
 export default function ComplianceOverviewWidget({
@@ -25,87 +25,80 @@ export default function ComplianceOverviewWidget({
   projects,
   tasks = [],
 }: ComplianceOverviewWidgetProps) {
-  const navigate = useNavigate();
-  const totalClients = clients.length;
+  const navigate = useNavigate()
+  const totalClients = clients.length
 
   // Helper to safely get compliance score (default to 0 if undefined/null)
-  const getScore = (client: BrokerClient): number => client.compliance_score ?? 0;
+  const getScore = (client: BrokerClient): number => client.compliance_score ?? 0
 
   // Group clients by risk level
-  const compliantClientsList = clients.filter((c) => getScore(c) >= 90);
-  const warningClientsList = clients.filter(
-    (c) => getScore(c) >= 70 && getScore(c) < 90
-  );
-  const criticalClientsList = clients.filter((c) => getScore(c) < 70);
+  const compliantClientsList = clients.filter((c) => getScore(c) >= 90)
+  const warningClientsList = clients.filter((c) => getScore(c) >= 70 && getScore(c) < 90)
+  const criticalClientsList = clients.filter((c) => getScore(c) < 70)
 
-  const compliantClients = compliantClientsList.length;
-  const warningClients = warningClientsList.length;
-  const criticalClients = criticalClientsList.length;
+  const compliantClients = compliantClientsList.length
+  const warningClients = warningClientsList.length
+  const criticalClients = criticalClientsList.length
 
   // Calculate task counts for each risk category
   const getTaskCountForClients = (clientList: BrokerClient[]) => {
-    const clientIds = new Set(clientList.map((c) => c.id));
-    return tasks.filter((t) => t.client_id && clientIds.has(t.client_id)).length;
-  };
+    const clientIds = new Set(clientList.map((c) => c.id))
+    return tasks.filter((t) => t.client_id && clientIds.has(t.client_id)).length
+  }
 
-  const compliantTasks = getTaskCountForClients(compliantClientsList);
-  const warningTasks = getTaskCountForClients(warningClientsList);
-  const criticalTasks = getTaskCountForClients(criticalClientsList);
+  const compliantTasks = getTaskCountForClients(compliantClientsList)
+  const warningTasks = getTaskCountForClients(warningClientsList)
+  const criticalTasks = getTaskCountForClients(criticalClientsList)
 
   const percentCompliant =
-    totalClients > 0 ? Math.round((compliantClients / totalClients) * 100) : 0;
+    totalClients > 0 ? Math.round((compliantClients / totalClients) * 100) : 0
 
-  const today = new Date();
-  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const today = new Date()
+  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
 
   const expiringThisMonth = policies.filter((policy) => {
-    const endDate = new Date(policy.end_date);
-    return endDate >= today && endDate <= endOfMonth;
-  }).length;
+    const endDate = new Date(policy.end_date)
+    return endDate >= today && endDate <= endOfMonth
+  }).length
 
-  const activeProjects = projects.filter((p) => p.status === 'active').length;
+  const activeProjects = projects.filter((p) => p.status === 'active').length
 
   const overallScore =
     clients.length > 0
-      ? Math.round(
-          clients.reduce((sum, c) => sum + getScore(c), 0) /
-            clients.length
-        )
-      : 0;
+      ? Math.round(clients.reduce((sum, c) => sum + getScore(c), 0) / clients.length)
+      : 0
 
   // Navigate to tasks page with client filter for a risk category
   const handleRiskCategoryClick = (clientList: BrokerClient[]) => {
-    if (clientList.length === 0) return;
+    if (clientList.length === 0) return
 
     if (clientList.length === 1) {
-      navigate(`/broker/tasks?client=${clientList[0].id}`);
+      navigate(`/broker/tasks?client=${clientList[0].id}`)
     } else {
-      navigate('/broker/tasks');
+      navigate('/broker/tasks')
     }
-  };
+  }
 
   const getTrendIcon = () => {
     if (overallScore >= 90)
-      return <TrendingUp size={20} style={{ color: 'var(--color-green-10)' }} />;
+      return <TrendingUp size={20} style={{ color: 'var(--color-green-10)' }} />
     if (overallScore >= 70)
-      return <AlertTriangle size={20} style={{ color: 'var(--color-yellow-10)' }} />;
-    return <TrendingDown size={20} style={{ color: 'var(--color-red-10)' }} />;
-  };
+      return <AlertTriangle size={20} style={{ color: 'var(--color-yellow-10)' }} />
+    return <TrendingDown size={20} style={{ color: 'var(--color-red-10)' }} />
+  }
 
   const getTrendText = () => {
-    if (overallScore >= 90) return 'Excellent compliance';
-    if (overallScore >= 70) return 'Needs attention';
-    return 'Critical issues';
-  };
+    if (overallScore >= 90) return 'Excellent compliance'
+    if (overallScore >= 70) return 'Needs attention'
+    return 'Critical issues'
+  }
 
   const metricCardStyle = (color: string): React.CSSProperties => ({
     backgroundColor: `var(--color-${color}-2)`,
     borderRadius: 12,
     padding: 16,
     border: `1px solid var(--color-${color}-6)`,
-    flex: 1,
-    minWidth: '20%',
-  });
+  })
 
   const iconBoxStyle = (color: string): React.CSSProperties => ({
     width: 40,
@@ -115,7 +108,7 @@ export default function ComplianceOverviewWidget({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  });
+  })
 
   const riskCardStyle = (color: string, disabled: boolean): React.CSSProperties => ({
     alignItems: 'center',
@@ -125,7 +118,7 @@ export default function ComplianceOverviewWidget({
     border: `1px solid var(--color-${color}-6)`,
     cursor: disabled ? 'default' : 'pointer',
     opacity: disabled ? 0.5 : 1,
-  });
+  })
 
   return (
     <Card
@@ -155,7 +148,7 @@ export default function ComplianceOverviewWidget({
       </Stack>
 
       <Stack padding={24}>
-        <Row gap={24} style={{ flexWrap: 'wrap' }}>
+        <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={24}>
           <Card style={metricCardStyle('blue')}>
             <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
               <div style={iconBoxStyle('blue')}>
@@ -239,13 +232,17 @@ export default function ComplianceOverviewWidget({
               </Text>
             </Stack>
           </Card>
-        </Row>
+        </Grid>
 
-        <Stack style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}>
-          <H3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 16 }}>
+        <Stack
+          style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}
+        >
+          <H3
+            style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 16 }}
+          >
             Risk Distribution
           </H3>
-          <Row gap={16} style={{ flexWrap: 'wrap' }}>
+          <Grid columns={{ base: 1, sm: 3 }} gap={16}>
             <button
               onClick={() => handleRiskCategoryClick(compliantClientsList)}
               disabled={compliantClients === 0}
@@ -258,14 +255,22 @@ export default function ComplianceOverviewWidget({
               <Text size="xl" weight="bold" style={{ color: 'var(--color-green-11)' }}>
                 {compliantClients}
               </Text>
-              <Text size="xs" style={{ color: 'var(--color-green-10)', marginTop: 4 }}>Compliant</Text>
-              <Text size="xs" muted>&ge; 90%</Text>
+              <Text size="xs" style={{ color: 'var(--color-green-10)', marginTop: 4 }}>
+                Compliant
+              </Text>
+              <Text size="xs" muted>
+                &ge; 90%
+              </Text>
               {tasks.length > 0 && (
                 <Row
                   alignItems="center"
                   justifyContent="center"
                   gap={4}
-                  style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--color-green-6)' }}
+                  style={{
+                    marginTop: 8,
+                    paddingTop: 8,
+                    borderTop: '1px solid var(--color-green-6)',
+                  }}
                 >
                   <ClipboardList size={12} style={{ color: 'var(--color-green-10)' }} />
                   <Text size="xs" weight="medium" style={{ color: 'var(--color-green-11)' }}>
@@ -286,14 +291,22 @@ export default function ComplianceOverviewWidget({
               <Text size="xl" weight="bold" style={{ color: 'var(--color-yellow-11)' }}>
                 {warningClients}
               </Text>
-              <Text size="xs" style={{ color: 'var(--color-yellow-10)', marginTop: 4 }}>Warning</Text>
-              <Text size="xs" muted>70-89%</Text>
+              <Text size="xs" style={{ color: 'var(--color-yellow-10)', marginTop: 4 }}>
+                Warning
+              </Text>
+              <Text size="xs" muted>
+                70-89%
+              </Text>
               {tasks.length > 0 && (
                 <Row
                   alignItems="center"
                   justifyContent="center"
                   gap={4}
-                  style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--color-yellow-6)' }}
+                  style={{
+                    marginTop: 8,
+                    paddingTop: 8,
+                    borderTop: '1px solid var(--color-yellow-6)',
+                  }}
                 >
                   <ClipboardList size={12} style={{ color: 'var(--color-yellow-10)' }} />
                   <Text size="xs" weight="medium" style={{ color: 'var(--color-yellow-11)' }}>
@@ -314,8 +327,12 @@ export default function ComplianceOverviewWidget({
               <Text size="xl" weight="bold" style={{ color: 'var(--color-red-11)' }}>
                 {criticalClients}
               </Text>
-              <Text size="xs" style={{ color: 'var(--color-red-10)', marginTop: 4 }}>Critical</Text>
-              <Text size="xs" muted>&lt; 70%</Text>
+              <Text size="xs" style={{ color: 'var(--color-red-10)', marginTop: 4 }}>
+                Critical
+              </Text>
+              <Text size="xs" muted>
+                &lt; 70%
+              </Text>
               {tasks.length > 0 && (
                 <Row
                   alignItems="center"
@@ -330,9 +347,9 @@ export default function ComplianceOverviewWidget({
                 </Row>
               )}
             </button>
-          </Row>
+          </Grid>
         </Stack>
       </Stack>
     </Card>
-  );
+  )
 }
