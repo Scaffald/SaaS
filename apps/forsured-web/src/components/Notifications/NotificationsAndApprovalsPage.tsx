@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, no-case-declarations */
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Bell,
   CheckCircle,
@@ -16,109 +16,100 @@ import {
   DollarSign,
   CheckSquare,
   Square,
-} from 'lucide-react';
-import { Stack, Row, Text, Card, Spinner } from '@unicornlove/beyond-ui';
-import { Tabs as TabsCustom } from '../../ui/Tabs';
-import Button from '../Common/Button';
-import Input from '../Common/Input';
-import Select from '../Common/Select';
-import Textarea from '../Common/Textarea';
-import { useApprovals } from '../../hooks/useApprovals';
-import {
-  ApprovalItem,
-  ApprovalItemType,
-  ApprovalItemStatus,
-  ApprovalPriority,
-} from '../../types';
-import { formatDate } from '../../utils/dateHelpers';
-import { useUser } from '../../contexts/UserContext';
+} from 'lucide-react'
+import { Stack, Row, Text, Card, Spinner, Grid } from '@unicornlove/beyond-ui'
+import { Tabs as TabsCustom } from '../../ui/Tabs'
+import Button from '../Common/Button'
+import Input from '../Common/Input'
+import Select from '../Common/Select'
+import Textarea from '../Common/Textarea'
+import { useApprovals } from '../../hooks/useApprovals'
+import { ApprovalItem, ApprovalItemType, ApprovalItemStatus, ApprovalPriority } from '../../types'
+import { formatDate } from '../../utils/dateHelpers'
+import { useUser } from '../../contexts/UserContext'
 
 interface ApprovalFilter {
-  type?: ApprovalItemType;
-  status?: ApprovalItemStatus;
-  dateRange?: '7days' | '30days' | '90days' | 'custom';
-  assignedTo?: 'me' | 'my_team' | 'all';
-  priority?: ApprovalPriority;
+  type?: ApprovalItemType
+  status?: ApprovalItemStatus
+  dateRange?: '7days' | '30days' | '90days' | 'custom'
+  assignedTo?: 'me' | 'my_team' | 'all'
+  priority?: ApprovalPriority
 }
 
 export default function NotificationsAndApprovalsPage() {
-  const { currentUser } = useUser();
-  const [activeTab, setActiveTab] = useState<'notifications' | 'approvals'>(
-    'approvals'
-  );
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [filter, setFilter] = useState<ApprovalFilter>({});
-  const [showRequestMoreInfoModal, setShowRequestMoreInfoModal] = useState<
-    string | null
-  >(null);
-  const [requestInfoComment, setRequestInfoComment] = useState('');
-  const [showDeferModal, setShowDeferModal] = useState<string | null>(null);
-  const [deferAssignee, setDeferAssignee] = useState('');
-  const [sortBy, setSortBy] = useState<'date' | 'priority' | 'type'>('date');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const { currentUser } = useUser()
+  const [activeTab, setActiveTab] = useState<'notifications' | 'approvals'>('approvals')
+  const [selectedItems, setSelectedItems] = useState<string[]>([])
+  const [filter, setFilter] = useState<ApprovalFilter>({})
+  const [showRequestMoreInfoModal, setShowRequestMoreInfoModal] = useState<string | null>(null)
+  const [requestInfoComment, setRequestInfoComment] = useState('')
+  const [showDeferModal, setShowDeferModal] = useState<string | null>(null)
+  const [deferAssignee, setDeferAssignee] = useState('')
+  const [sortBy, setSortBy] = useState<'date' | 'priority' | 'type'>('date')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   const { approvals, loading, updateApproval } = useApprovals({
     status: filter.status,
     type: filter.type,
-  });
+  })
 
   // For now, show approvals as both notifications and approvals
   // In a real implementation, notifications would be separate informational items
-  const notifications = approvals.filter((a) => a.status === 'pending');
-  const approvalItems = approvals.filter((a) => a.status === 'pending');
+  const notifications = approvals.filter((a) => a.status === 'pending')
+  const approvalItems = approvals.filter((a) => a.status === 'pending')
 
   const getTypeIcon = (type: ApprovalItemType) => {
     switch (type) {
       case 'endorsement_review':
       case 'document_verification':
-        return <FileText size={16} />;
+        return <FileText size={16} />
       case 'waiver_request':
-        return <Shield size={16} />;
+        return <Shield size={16} />
       case 'policy_renewal':
-        return <Calendar size={16} />;
+        return <Calendar size={16} />
       case 'bid_approval':
-        return <DollarSign size={16} />;
+        return <DollarSign size={16} />
       case 'coverage_gap':
-        return <AlertCircle size={16} />;
+        return <AlertCircle size={16} />
       case 'user_invite':
-        return <UserPlus size={16} />;
+        return <UserPlus size={16} />
       default:
-        return <Bell size={16} />;
+        return <Bell size={16} />
     }
-  };
+  }
 
   const getTypeLabel = (type: ApprovalItemType) => {
     return type
       .split('_')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
+      .join(' ')
+  }
 
   const getPriorityColor = (priority: ApprovalPriority) => {
     switch (priority) {
       case 'urgent':
-        return 'text-error-600 bg-error-50 border-error-200';
+        return 'text-error-600 bg-error-50 border-error-200'
       case 'high':
-        return 'text-warning-600 bg-warning-50 border-warning-200';
+        return 'text-warning-600 bg-warning-50 border-warning-200'
       case 'normal':
-        return 'text-primary-600 bg-primary-50 border-primary-200';
+        return 'text-primary-600 bg-primary-50 border-primary-200'
       case 'low':
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return 'text-text-tertiary bg-gray-50 border-gray-200'
     }
-  };
+  }
 
   const getStatusColor = (status: ApprovalItemStatus) => {
     switch (status) {
       case 'pending':
-        return 'bg-warning-100 text-warning-700';
+        return 'bg-warning-100 text-warning-700'
       case 'approved':
-        return 'bg-success-100 text-success-700';
+        return 'bg-success-100 text-success-700'
       case 'rejected':
-        return 'bg-error-100 text-error-700';
+        return 'bg-error-100 text-error-700'
       case 'expired':
-        return 'bg-neutral-100 text-neutral-700';
+        return 'bg-neutral-100 text-neutral-700'
     }
-  };
+  }
 
   const handleApprove = async (id: string, comment?: string) => {
     try {
@@ -130,11 +121,11 @@ export default function NotificationsAndApprovalsPage() {
           approved_at: new Date().toISOString(),
           approved_by: currentUser?.id,
         },
-      });
+      })
     } catch (error) {
-      console.error('Failed to approve:', error);
+      console.error('Failed to approve:', error)
     }
-  };
+  }
 
   const handleReject = async (id: string, reason: string) => {
     try {
@@ -146,11 +137,11 @@ export default function NotificationsAndApprovalsPage() {
           rejected_at: new Date().toISOString(),
           rejected_by: currentUser?.id,
         },
-      });
+      })
     } catch (error) {
-      console.error('Failed to reject:', error);
+      console.error('Failed to reject:', error)
     }
-  };
+  }
 
   const handleRequestMoreInfo = async (id: string) => {
     if (requestInfoComment.trim()) {
@@ -162,14 +153,14 @@ export default function NotificationsAndApprovalsPage() {
             more_info_comment: requestInfoComment,
             requested_info_at: new Date().toISOString(),
           },
-        });
-        setShowRequestMoreInfoModal(null);
-        setRequestInfoComment('');
+        })
+        setShowRequestMoreInfoModal(null)
+        setRequestInfoComment('')
       } catch (error) {
-        console.error('Failed to request more info:', error);
+        console.error('Failed to request more info:', error)
       }
     }
-  };
+  }
 
   const handleDefer = async (id: string) => {
     if (deferAssignee) {
@@ -180,86 +171,74 @@ export default function NotificationsAndApprovalsPage() {
             deferred_to: deferAssignee,
             deferred_at: new Date().toISOString(),
           },
-        });
-        setShowDeferModal(null);
-        setDeferAssignee('');
+        })
+        setShowDeferModal(null)
+        setDeferAssignee('')
       } catch (error) {
-        console.error('Failed to defer:', error);
+        console.error('Failed to defer:', error)
       }
     }
-  };
+  }
 
   const handleBulkAction = async (action: 'approve' | 'reject') => {
     for (const id of selectedItems) {
       if (action === 'approve') {
-        await handleApprove(id);
+        await handleApprove(id)
       } else {
-        await handleReject(id, 'Bulk rejection');
+        await handleReject(id, 'Bulk rejection')
       }
     }
-    setSelectedItems([]);
-  };
+    setSelectedItems([])
+  }
 
   const toggleSelectItem = (id: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
+    setSelectedItems((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]))
+  }
 
   const toggleSelectAll = () => {
     if (selectedItems.length === approvalItems.length) {
-      setSelectedItems([]);
+      setSelectedItems([])
     } else {
-      setSelectedItems(approvalItems.map((a) => a.id));
+      setSelectedItems(approvalItems.map((a) => a.id))
     }
-  };
+  }
 
   const sortedApprovals = [...approvalItems].sort((a, b) => {
-    let comparison = 0;
+    let comparison = 0
 
     switch (sortBy) {
       case 'date':
-        comparison =
-          new Date(a.requested_at).getTime() -
-          new Date(b.requested_at).getTime();
-        break;
+        comparison = new Date(a.requested_at).getTime() - new Date(b.requested_at).getTime()
+        break
       case 'priority':
-        const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 };
-        comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
-        break;
+        const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 }
+        comparison = priorityOrder[a.priority] - priorityOrder[b.priority]
+        break
       case 'type':
-        comparison = a.type.localeCompare(b.type);
-        break;
+        comparison = a.type.localeCompare(b.type)
+        break
     }
 
-    return sortOrder === 'asc' ? comparison : -comparison;
-  });
+    return sortOrder === 'asc' ? comparison : -comparison
+  })
 
   const filteredApprovals = sortedApprovals.filter((approval) => {
     if (filter.dateRange && filter.dateRange !== 'custom') {
-      const daysAgo =
-        filter.dateRange === '7days'
-          ? 7
-          : filter.dateRange === '30days'
-            ? 30
-            : 90;
-      const cutoffDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
-      if (new Date(approval.requested_at) < cutoffDate) return false;
+      const daysAgo = filter.dateRange === '7days' ? 7 : filter.dateRange === '30days' ? 30 : 90
+      const cutoffDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
+      if (new Date(approval.requested_at) < cutoffDate) return false
     }
 
-    if (
-      filter.assignedTo === 'me' &&
-      approval.requested_by !== currentUser?.id
-    ) {
-      return false;
+    if (filter.assignedTo === 'me' && approval.requested_by !== currentUser?.id) {
+      return false
     }
 
     if (filter.priority && approval.priority !== filter.priority) {
-      return false;
+      return false
     }
 
-    return true;
-  });
+    return true
+  })
 
   const tabs = [
     {
@@ -270,9 +249,25 @@ export default function NotificationsAndApprovalsPage() {
       content: (
         <Stack style={{ gap: 'var(--space-4)' }}>
           {notifications.length === 0 ? (
-            <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
-              <Bell color="var(--color-text-secondary)" style={{ marginBottom: 'var(--space-4)' }} size={48} />
-              <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)' }}>
+            <Stack
+              style={{
+                alignItems: 'center',
+                paddingTop: 'var(--space-12)',
+                paddingBottom: 'var(--space-12)',
+              }}
+            >
+              <Bell
+                color="var(--color-text-secondary)"
+                style={{ marginBottom: 'var(--space-4)' }}
+                size={48}
+              />
+              <Text
+                style={{
+                  fontWeight: '500',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-2)',
+                }}
+              >
                 No notifications
               </Text>
               <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
@@ -293,19 +288,39 @@ export default function NotificationsAndApprovalsPage() {
                   }}
                 >
                   <Row style={{ alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                    <Stack style={{ marginTop: 2 }}>
-                      {getTypeIcon(notification.type)}
-                    </Stack>
+                    <Stack style={{ marginTop: 2 }}>{getTypeIcon(notification.type)}</Stack>
                     <Stack style={{ flex: 1 }}>
-                      <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-1)' }}>
-                        <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-text-primary)' }}>
+                      <Row
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: 'var(--space-1)',
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 'var(--font-size-3)',
+                            fontWeight: '500',
+                            color: 'var(--color-text-primary)',
+                          }}
+                        >
                           {notification.title}
                         </Text>
-                        <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-secondary)' }}>
+                        <Text
+                          style={{
+                            fontSize: 'var(--font-size-1)',
+                            color: 'var(--color-text-secondary)',
+                          }}
+                        >
                           {formatDate(notification.requested_at)}
                         </Text>
                       </Row>
-                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-3)',
+                          color: 'var(--color-text-tertiary)',
+                        }}
+                      >
                         {notification.description}
                       </Text>
                     </Stack>
@@ -325,8 +340,16 @@ export default function NotificationsAndApprovalsPage() {
       content: (
         <Stack style={{ gap: 'var(--space-4)' }}>
           {/* Filters and Sort */}
-          <Card style={{ backgroundColor: 'var(--color-background-secondary)', borderRadius: 'var(--radius-4)', padding: 'var(--space-4)', borderWidth: 1, borderColor: 'var(--color-border)' }}>
-            <Row style={{ flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+          <Card
+            style={{
+              backgroundColor: 'var(--color-background-secondary)',
+              borderRadius: 'var(--radius-4)',
+              padding: 'var(--space-4)',
+              borderWidth: 1,
+              borderColor: 'var(--color-border)',
+            }}
+          >
+            <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
               <Select
                 label="Type"
                 value={filter.type || 'all'}
@@ -334,9 +357,7 @@ export default function NotificationsAndApprovalsPage() {
                   setFilter({
                     ...filter,
                     type:
-                      e.target.value === 'all'
-                        ? undefined
-                        : (e.target.value as ApprovalItemType),
+                      e.target.value === 'all' ? undefined : (e.target.value as ApprovalItemType),
                   })
                 }
                 options={[
@@ -361,9 +382,7 @@ export default function NotificationsAndApprovalsPage() {
                   setFilter({
                     ...filter,
                     status:
-                      e.target.value === 'all'
-                        ? undefined
-                        : (e.target.value as ApprovalItemStatus),
+                      e.target.value === 'all' ? undefined : (e.target.value as ApprovalItemStatus),
                   })
                 }
                 options={[
@@ -381,10 +400,7 @@ export default function NotificationsAndApprovalsPage() {
                 onChange={(e) =>
                   setFilter({
                     ...filter,
-                    dateRange:
-                      e.target.value === 'all'
-                        ? undefined
-                        : (e.target.value as any),
+                    dateRange: e.target.value === 'all' ? undefined : (e.target.value as any),
                   })
                 }
                 options={[
@@ -406,14 +422,14 @@ export default function NotificationsAndApprovalsPage() {
                 ]}
                 fullWidth
               />
-            </Row>
-            <Row style={{ marginTop: 'var(--space-4)', alignItems: 'center', gap: 'var(--space-2)' }}>
+            </Grid>
+            <Row
+              style={{ marginTop: 'var(--space-4)', alignItems: 'center', gap: 'var(--space-2)' }}
+            >
               <Button
                 variant="ghost"
                 size="sm"
-                onPress={() =>
-                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-                }
+                onPress={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               >
                 {sortOrder === 'asc' ? '^ Ascending' : 'v Descending'}
               </Button>
@@ -433,26 +449,23 @@ export default function NotificationsAndApprovalsPage() {
                 justifyContent: 'space-between',
               }}
             >
-              <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '500', color: 'var(--color-blue-11)' }}>
-                {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''}{' '}
-                selected
+              <Text
+                style={{
+                  fontSize: 'var(--font-size-3)',
+                  fontWeight: '500',
+                  color: 'var(--color-blue-11)',
+                }}
+              >
+                {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''} selected
               </Text>
               <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onPress={() => handleBulkAction('approve')}
-                >
+                <Button variant="primary" size="sm" onPress={() => handleBulkAction('approve')}>
                   <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <CheckCircle size={16} />
                     <Text>Bulk Approve</Text>
                   </Row>
                 </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onPress={() => handleBulkAction('reject')}
-                >
+                <Button variant="danger" size="sm" onPress={() => handleBulkAction('reject')}>
                   <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <XCircle size={16} />
                     <Text>Bulk Reject</Text>
@@ -464,14 +477,39 @@ export default function NotificationsAndApprovalsPage() {
 
           {/* Approvals List */}
           {loading ? (
-            <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
-              <Spinner size="large" style={{ color: 'var(--color-blue-9)', marginBottom: 'var(--space-2)' }} />
+            <Stack
+              style={{
+                alignItems: 'center',
+                paddingTop: 'var(--space-12)',
+                paddingBottom: 'var(--space-12)',
+              }}
+            >
+              <Spinner
+                size="large"
+                style={{ color: 'var(--color-blue-9)', marginBottom: 'var(--space-2)' }}
+              />
               <Text style={{ color: 'var(--color-text-tertiary)' }}>Loading approvals...</Text>
             </Stack>
           ) : filteredApprovals.length === 0 ? (
-            <Stack style={{ alignItems: 'center', paddingTop: 'var(--space-12)', paddingBottom: 'var(--space-12)' }}>
-              <UserCheck color="var(--color-text-secondary)" style={{ marginBottom: 'var(--space-4)' }} size={48} />
-              <Text style={{ fontWeight: '500', color: 'var(--color-text-primary)', marginBottom: 'var(--space-2)' }}>
+            <Stack
+              style={{
+                alignItems: 'center',
+                paddingTop: 'var(--space-12)',
+                paddingBottom: 'var(--space-12)',
+              }}
+            >
+              <UserCheck
+                color="var(--color-text-secondary)"
+                style={{ marginBottom: 'var(--space-4)' }}
+                size={48}
+              />
+              <Text
+                style={{
+                  fontWeight: '500',
+                  color: 'var(--color-text-primary)',
+                  marginBottom: 'var(--space-2)',
+                }}
+              >
                 No approvals found
               </Text>
               <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)' }}>
@@ -509,7 +547,13 @@ export default function NotificationsAndApprovalsPage() {
                       )}
                     </button>
                     <Stack style={{ flex: 1 }}>
-                      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
+                      <Row
+                        style={{
+                          alignItems: 'flex-start',
+                          justifyContent: 'space-between',
+                          marginBottom: 'var(--space-2)',
+                        }}
+                      >
                         <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                           {getTypeIcon(approval.type)}
                           <span
@@ -522,7 +566,12 @@ export default function NotificationsAndApprovalsPage() {
                               borderRadius: 'var(--radius-2)',
                             }}
                           >
-                            <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-tertiary)' }}>
+                            <Text
+                              style={{
+                                fontSize: 'var(--font-size-1)',
+                                color: 'var(--color-text-tertiary)',
+                              }}
+                            >
                               {getTypeLabel(approval.type)}
                             </Text>
                           </span>
@@ -606,24 +655,55 @@ export default function NotificationsAndApprovalsPage() {
                           </Text>
                         </span>
                       </Row>
-                      <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-1)' }}>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-3)',
+                          fontWeight: '600',
+                          color: 'var(--color-text-primary)',
+                          marginBottom: 'var(--space-1)',
+                        }}
+                      >
                         {approval.title}
                       </Text>
-                      <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-text-tertiary)', marginBottom: 'var(--space-2)' }}>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-3)',
+                          color: 'var(--color-text-tertiary)',
+                          marginBottom: 'var(--space-2)',
+                        }}
+                      >
                         {approval.description}
                       </Text>
-                      <Row style={{ alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-3)' }}>
-                        <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-secondary)' }}>
+                      <Row
+                        style={{
+                          alignItems: 'center',
+                          gap: 'var(--space-4)',
+                          marginBottom: 'var(--space-3)',
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 'var(--font-size-1)',
+                            color: 'var(--color-text-secondary)',
+                          }}
+                        >
                           Requested {formatDate(approval.requested_at)}
                         </Text>
                         {approval.due_date && (
-                          <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-text-secondary)' }}>
+                          <Text
+                            style={{
+                              fontSize: 'var(--font-size-1)',
+                              color: 'var(--color-text-secondary)',
+                            }}
+                          >
                             Due {formatDate(approval.due_date)}
                           </Text>
                         )}
                       </Row>
                       {approval.status === 'pending' && (
-                        <Row style={{ alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+                        <Row
+                          style={{ alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}
+                        >
                           <Button
                             variant="primary"
                             size="sm"
@@ -675,24 +755,22 @@ export default function NotificationsAndApprovalsPage() {
         </Stack>
       ),
     },
-  ];
+  ]
 
   return (
     <Stack style={{ gap: 'var(--space-6)' }}>
       <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <Stack>
-          <h1 style={{ margin: 0, fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>Notifications & Approvals</h1>
+          <h1 style={{ margin: 0, fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>
+            Notifications & Approvals
+          </h1>
           <Text style={{ color: 'var(--color-text-tertiary)' }}>
             Manage your notifications and pending approvals
           </Text>
         </Stack>
       </Row>
 
-      <TabsCustom
-        tabs={tabs}
-        variant="enclosed"
-        onChange={(tabId) => setActiveTab(tabId as any)}
-      />
+      <TabsCustom tabs={tabs} variant="enclosed" onChange={(tabId) => setActiveTab(tabId as any)} />
 
       {/* Request More Info Modal */}
       {showRequestMoreInfoModal && (
@@ -720,7 +798,14 @@ export default function NotificationsAndApprovalsPage() {
               padding: 'var(--space-6)',
             }}
           >
-            <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-4)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-6)',
+                fontWeight: '600',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+              }}
+            >
               Request More Information
             </Text>
             <Textarea
@@ -736,8 +821,8 @@ export default function NotificationsAndApprovalsPage() {
               <Button
                 variant="secondary"
                 onPress={() => {
-                  setShowRequestMoreInfoModal(null);
-                  setRequestInfoComment('');
+                  setShowRequestMoreInfoModal(null)
+                  setRequestInfoComment('')
                 }}
                 style={{ flex: 1 }}
               >
@@ -782,7 +867,14 @@ export default function NotificationsAndApprovalsPage() {
               padding: 'var(--space-6)',
             }}
           >
-            <Text style={{ fontSize: 'var(--font-size-6)', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: 'var(--space-4)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-6)',
+                fontWeight: '600',
+                color: 'var(--color-text-primary)',
+                marginBottom: 'var(--space-4)',
+              }}
+            >
               Defer Approval
             </Text>
             <Input
@@ -797,8 +889,8 @@ export default function NotificationsAndApprovalsPage() {
               <Button
                 variant="secondary"
                 onPress={() => {
-                  setShowDeferModal(null);
-                  setDeferAssignee('');
+                  setShowDeferModal(null)
+                  setDeferAssignee('')
                 }}
                 style={{ flex: 1 }}
               >
@@ -817,5 +909,5 @@ export default function NotificationsAndApprovalsPage() {
         </Row>
       )}
     </Stack>
-  );
+  )
 }
