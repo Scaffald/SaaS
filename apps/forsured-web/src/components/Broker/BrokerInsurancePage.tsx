@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
   Shield,
   FileText,
@@ -10,84 +10,82 @@ import {
   DollarSign,
   ChevronRight,
   Plus,
-} from 'lucide-react';
-import { Stack, Row, Text, H1, H3, Card } from '@unicornlove/beyond-ui';
-import { Tabs as TabsCustom } from '../../ui/Tabs';
-import { usePolicies } from '../../hooks/usePolicies';
-import { useClients } from '../../hooks/useClients';
-import { Button } from '../Common/Button';
-import { DashboardSkeleton } from '../Common/SkeletonLoader';
+} from 'lucide-react'
+import { Stack, Row, Text, H1, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { Tabs as TabsCustom } from '../../ui/Tabs'
+import { usePolicies } from '../../hooks/usePolicies'
+import { useClients } from '../../hooks/useClients'
+import { Button } from '../Common/Button'
+import { DashboardSkeleton } from '../Common/SkeletonLoader'
 
 export default function BrokerInsurancePage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { policies, loading: policiesLoading } = usePolicies();
-  const { clients, loading: clientsLoading } = useClients();
+  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { policies, loading: policiesLoading } = usePolicies()
+  const { clients, loading: clientsLoading } = useClients()
 
-  const validTabs = ['overview', 'policies', 'coverage-requests'];
-  const tabFromUrl = searchParams.get('tab');
+  const validTabs = ['overview', 'policies', 'coverage-requests']
+  const tabFromUrl = searchParams.get('tab')
   const [activeTab, setActiveTab] = useState<string>(
     tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'overview'
-  );
+  )
 
   useEffect(() => {
-    const tabParam = searchParams.get('tab');
+    const tabParam = searchParams.get('tab')
     if (tabParam && validTabs.includes(tabParam)) {
-      setActiveTab(tabParam);
+      setActiveTab(tabParam)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams])
 
   const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
-    setSearchParams({ tab: tabId });
-  };
-
-  const isLoading = policiesLoading || clientsLoading;
-
-  if (isLoading) {
-    return <DashboardSkeleton />;
+    setActiveTab(tabId)
+    setSearchParams({ tab: tabId })
   }
 
-  const activePolicies = policies.filter((p) => p.status === 'active');
-  const expiringPolicies = policies.filter((p) => p.status === 'expiring');
-  const _expiredPolicies = policies.filter((p) => p.status === 'expired');
+  const isLoading = policiesLoading || clientsLoading
 
-  const totalCoverage = policies.reduce((sum, p) => sum + (p.coverage_limit || 0), 0);
-  const totalPremium = policies.reduce((sum, p) => sum + (p.premium || 0), 0);
+  if (isLoading) {
+    return <DashboardSkeleton />
+  }
+
+  const activePolicies = policies.filter((p) => p.status === 'active')
+  const expiringPolicies = policies.filter((p) => p.status === 'expiring')
+  const _expiredPolicies = policies.filter((p) => p.status === 'expired')
+
+  const totalCoverage = policies.reduce((sum, p) => sum + (p.coverage_limit || 0), 0)
+  const totalPremium = policies.reduce((sum, p) => sum + (p.premium || 0), 0)
 
   const getStatusStyle = (status: string): React.CSSProperties => {
     switch (status) {
       case 'active':
-        return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-11)' };
+        return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-11)' }
       case 'expiring':
-        return { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)' };
+        return { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)' }
       case 'expired':
-        return { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)' };
+        return { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)' }
       default:
-        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)' };
+        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)' }
     }
-  };
+  }
 
   const cardStyle: React.CSSProperties = {
     backgroundColor: 'var(--color-background)',
     borderRadius: 12,
     border: '1px solid var(--color-border)',
     padding: 24,
-    flex: 1,
-    minWidth: '20%',
-  };
+  }
 
   const iconBoxStyle = (color: string): React.CSSProperties => ({
     padding: 8,
     backgroundColor: `var(--color-${color}-2)`,
     borderRadius: 8,
-  });
+  })
 
   const getClientName = (clientId: string) => {
-    const client = clients.find((c) => c.id === clientId);
-    return client?.company_name || 'Unknown Client';
-  };
+    const client = clients.find((c) => c.id === clientId)
+    return client?.company_name || 'Unknown Client'
+  }
 
   const tabs = [
     {
@@ -96,16 +94,22 @@ export default function BrokerInsurancePage() {
       icon: Shield,
       content: (
         <Stack gap={24}>
-          <Row gap={16} style={{ flexWrap: 'wrap' }}>
+          <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
             <Card style={cardStyle}>
               <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
                 <div style={iconBoxStyle('green')}>
                   <CheckCircle color="var(--color-green-10)" size={24} />
                 </div>
-                <Text size="xs" weight="medium" style={{ color: 'var(--color-green-10)' }}>Active</Text>
+                <Text size="xs" weight="medium" style={{ color: 'var(--color-green-10)' }}>
+                  Active
+                </Text>
               </Row>
-              <Text size="2xl" weight="bold">{activePolicies.length}</Text>
-              <Text size="sm" muted style={{ marginTop: 4 }}>Active Policies</Text>
+              <Text size="2xl" weight="bold">
+                {activePolicies.length}
+              </Text>
+              <Text size="sm" muted style={{ marginTop: 4 }}>
+                Active Policies
+              </Text>
             </Card>
 
             <Card style={cardStyle}>
@@ -113,10 +117,16 @@ export default function BrokerInsurancePage() {
                 <div style={iconBoxStyle('yellow')}>
                   <Clock color="var(--color-yellow-10)" size={24} />
                 </div>
-                <Text size="xs" weight="medium" style={{ color: 'var(--color-yellow-10)' }}>Attention</Text>
+                <Text size="xs" weight="medium" style={{ color: 'var(--color-yellow-10)' }}>
+                  Attention
+                </Text>
               </Row>
-              <Text size="2xl" weight="bold">{expiringPolicies.length}</Text>
-              <Text size="sm" muted style={{ marginTop: 4 }}>Expiring Soon</Text>
+              <Text size="2xl" weight="bold">
+                {expiringPolicies.length}
+              </Text>
+              <Text size="sm" muted style={{ marginTop: 4 }}>
+                Expiring Soon
+              </Text>
             </Card>
 
             <Card style={cardStyle}>
@@ -128,7 +138,9 @@ export default function BrokerInsurancePage() {
               <Text size="2xl" weight="bold">
                 ${(totalCoverage / 1000000).toFixed(1)}M
               </Text>
-              <Text size="sm" muted style={{ marginTop: 4 }}>Total Coverage</Text>
+              <Text size="sm" muted style={{ marginTop: 4 }}>
+                Total Coverage
+              </Text>
             </Card>
 
             <Card style={cardStyle}>
@@ -140,9 +152,11 @@ export default function BrokerInsurancePage() {
               <Text size="2xl" weight="bold">
                 ${totalPremium.toLocaleString()}
               </Text>
-              <Text size="sm" muted style={{ marginTop: 4 }}>Annual Premium</Text>
+              <Text size="sm" muted style={{ marginTop: 4 }}>
+                Annual Premium
+              </Text>
             </Card>
-          </Row>
+          </Grid>
 
           {expiringPolicies.length > 0 && (
             <Card
@@ -188,8 +202,8 @@ export default function BrokerInsurancePage() {
             </Card>
           )}
 
-          <Row gap={24} style={{ flexWrap: 'wrap' }}>
-            <Card style={{ ...cardStyle, minWidth: '45%' }}>
+          <Grid columns={{ base: 1, lg: 2 }} gap={24}>
+            <Card style={cardStyle}>
               <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
                 <H3 style={{ fontSize: 18, fontWeight: 600 }}>Recent Policies</H3>
                 <Button variant="ghost" onPress={() => handleTabChange('policies')}>
@@ -198,7 +212,7 @@ export default function BrokerInsurancePage() {
               </Row>
               <Stack gap={12}>
                 {policies.slice(0, 5).map((policy) => {
-                  const statusStyle = getStatusStyle(policy.status);
+                  const statusStyle = getStatusStyle(policy.status)
                   return (
                     <Card
                       key={policy.id}
@@ -213,7 +227,9 @@ export default function BrokerInsurancePage() {
                       <Row alignItems="center" justifyContent="space-between">
                         <Stack>
                           <Text weight="medium">{policy.policy_type}</Text>
-                          <Text size="sm" muted>{policy.carrier}</Text>
+                          <Text size="sm" muted>
+                            {policy.carrier}
+                          </Text>
                         </Stack>
                         <span
                           style={{
@@ -232,26 +248,44 @@ export default function BrokerInsurancePage() {
                         </span>
                       </Row>
                     </Card>
-                  );
+                  )
                 })}
               </Stack>
             </Card>
 
-            <Card style={{ ...cardStyle, minWidth: '45%' }}>
+            <Card style={cardStyle}>
               <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
                 <H3 style={{ fontSize: 18, fontWeight: 600 }}>Coverage by Type</H3>
               </Row>
               <Stack gap={16}>
-                {['General Liability', 'Workers Compensation', 'Commercial Auto', 'Professional Liability'].map((type) => {
-                  const count = policies.filter((p) => p.policy_type === type).length;
-                  const percentage = policies.length > 0 ? (count / policies.length) * 100 : 0;
+                {[
+                  'General Liability',
+                  'Workers Compensation',
+                  'Commercial Auto',
+                  'Professional Liability',
+                ].map((type) => {
+                  const count = policies.filter((p) => p.policy_type === type).length
+                  const percentage = policies.length > 0 ? (count / policies.length) * 100 : 0
                   return (
                     <Stack key={type}>
-                      <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 4 }}>
+                      <Row
+                        alignItems="center"
+                        justifyContent="space-between"
+                        style={{ marginBottom: 4 }}
+                      >
                         <Text size="sm">{type}</Text>
-                        <Text size="sm" weight="medium">{count}</Text>
+                        <Text size="sm" weight="medium">
+                          {count}
+                        </Text>
                       </Row>
-                      <div style={{ width: '100%', backgroundColor: 'var(--color-gray-6)', borderRadius: 9999, height: 8 }}>
+                      <div
+                        style={{
+                          width: '100%',
+                          backgroundColor: 'var(--color-gray-6)',
+                          borderRadius: 9999,
+                          height: 8,
+                        }}
+                      >
                         <div
                           style={{
                             backgroundColor: 'var(--color-blue-9)',
@@ -262,11 +296,11 @@ export default function BrokerInsurancePage() {
                         />
                       </div>
                     </Stack>
-                  );
+                  )
                 })}
               </Stack>
             </Card>
-          </Row>
+          </Grid>
         </Stack>
       ),
     },
@@ -278,9 +312,7 @@ export default function BrokerInsurancePage() {
       content: (
         <Stack gap={16}>
           <Row alignItems="center" justifyContent="space-between">
-            <Text muted>
-              Showing {policies.length} policies
-            </Text>
+            <Text muted>Showing {policies.length} policies</Text>
             <Button variant="primary">
               <Row alignItems="center" gap={8}>
                 <Plus size={16} />
@@ -291,7 +323,7 @@ export default function BrokerInsurancePage() {
           {policies.length > 0 ? (
             <Stack gap={16}>
               {policies.map((policy) => {
-                const statusStyle = getStatusStyle(policy.status);
+                const statusStyle = getStatusStyle(policy.status)
                 return (
                   <Card
                     key={policy.id}
@@ -304,10 +336,18 @@ export default function BrokerInsurancePage() {
                       cursor: 'pointer',
                     }}
                   >
-                    <Row alignItems="flex-start" justifyContent="space-between" style={{ marginBottom: 16 }}>
+                    <Row
+                      alignItems="flex-start"
+                      justifyContent="space-between"
+                      style={{ marginBottom: 16 }}
+                    >
                       <Stack>
-                        <Text size="md" weight="semibold">{policy.policy_type}</Text>
-                        <Text size="sm" muted>{policy.carrier}</Text>
+                        <Text size="md" weight="semibold">
+                          {policy.policy_type}
+                        </Text>
+                        <Text size="sm" muted>
+                          {policy.carrier}
+                        </Text>
                       </Stack>
                       <span
                         style={{
@@ -325,36 +365,46 @@ export default function BrokerInsurancePage() {
                         {policy.status}
                       </span>
                     </Row>
-                    <Row gap={16} style={{ flexWrap: 'wrap' }}>
-                      <Stack style={{ flex: 1, minWidth: '18%' }}>
-                        <Text size="sm" muted>Client</Text>
+                    <Grid columns={{ base: 2, sm: 3, md: 5 }} gap={16}>
+                      <Stack>
+                        <Text size="sm" muted>
+                          Client
+                        </Text>
                         <Text weight="medium">{getClientName(policy.client_id)}</Text>
                       </Stack>
-                      <Stack style={{ flex: 1, minWidth: '18%' }}>
-                        <Text size="sm" muted>Policy Number</Text>
+                      <Stack>
+                        <Text size="sm" muted>
+                          Policy Number
+                        </Text>
                         <Text weight="medium">{policy.policy_number}</Text>
                       </Stack>
-                      <Stack style={{ flex: 1, minWidth: '18%' }}>
-                        <Text size="sm" muted>Coverage</Text>
+                      <Stack>
+                        <Text size="sm" muted>
+                          Coverage
+                        </Text>
                         <Text weight="medium">
                           ${(policy.coverage_limit / 1000000).toFixed(1)}M
                         </Text>
                       </Stack>
-                      <Stack style={{ flex: 1, minWidth: '18%' }}>
-                        <Text size="sm" muted>Start Date</Text>
+                      <Stack>
+                        <Text size="sm" muted>
+                          Start Date
+                        </Text>
                         <Text weight="medium">
                           {new Date(policy.start_date).toLocaleDateString()}
                         </Text>
                       </Stack>
-                      <Stack style={{ flex: 1, minWidth: '18%' }}>
-                        <Text size="sm" muted>End Date</Text>
+                      <Stack>
+                        <Text size="sm" muted>
+                          End Date
+                        </Text>
                         <Text weight="medium">
                           {new Date(policy.end_date).toLocaleDateString()}
                         </Text>
                       </Stack>
-                    </Row>
+                    </Grid>
                   </Card>
-                );
+                )
               })}
             </Stack>
           ) : (
@@ -369,7 +419,9 @@ export default function BrokerInsurancePage() {
             >
               <Stack alignItems="center">
                 <FileText color="var(--color-text-muted)" size={48} style={{ marginBottom: 16 }} />
-                <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>No Policies Found</H3>
+                <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
+                  No Policies Found
+                </H3>
                 <Text muted>No policies have been added yet.</Text>
               </Stack>
             </Card>
@@ -406,29 +458,23 @@ export default function BrokerInsurancePage() {
               <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
                 Coverage Requests Coming Soon
               </H3>
-              <Text muted>
-                Coverage request management will be available in a future update.
-              </Text>
+              <Text muted>Coverage request management will be available in a future update.</Text>
             </Stack>
           </Card>
         </Stack>
       ),
     },
-  ];
+  ]
 
   return (
     <Stack gap={24}>
       <Row alignItems="center" justifyContent="space-between">
         <Stack>
           <H1 style={{ fontSize: 24, fontWeight: 'bold' }}>Insurance Management</H1>
-          <Text muted>
-            Manage policies, coverage requirements, and renewals
-          </Text>
+          <Text muted>Manage policies, coverage requirements, and renewals</Text>
         </Stack>
         <Row alignItems="center" gap={12}>
-          <Button variant="outlined">
-            Export Report
-          </Button>
+          <Button variant="outlined">Export Report</Button>
           <Button variant="primary">
             <Row alignItems="center" gap={8}>
               <Plus size={16} />
@@ -440,5 +486,5 @@ export default function BrokerInsurancePage() {
 
       <TabsCustom tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
     </Stack>
-  );
+  )
 }
