@@ -1,28 +1,21 @@
-import { useState } from 'react';
-import {
-  X,
-  Upload,
-  FileText,
-  DollarSign,
-  Calendar,
-  CheckCircle,
-} from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
-import Modal from '../Common/Modal';
-import Button from '../Common/Button';
-import Input from '../Common/Input';
-import Textarea from '../Common/Textarea';
-import { useBids } from '../../hooks/useBids';
-import { useAttachments } from '../../hooks/useAttachments';
-import { useProjects } from '../../hooks/useProjects';
-import { useUser } from '../../contexts/UserContext';
-import { EntityType } from '../../types';
+import { useState } from 'react'
+import { X, Upload, FileText, DollarSign, Calendar, CheckCircle } from 'lucide-react'
+import { Stack, Row, Text, Card, Grid } from '@unicornlove/beyond-ui'
+import Modal from '../Common/Modal'
+import Button from '../Common/Button'
+import Input from '../Common/Input'
+import Textarea from '../Common/Textarea'
+import { useBids } from '../../hooks/useBids'
+import { useAttachments } from '../../hooks/useAttachments'
+import { useProjects } from '../../hooks/useProjects'
+import { useUser } from '../../contexts/UserContext'
+import { EntityType } from '../../types'
 
 interface BidSubmissionFormProps {
-  projectId: string;
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess?: () => void;
+  projectId: string
+  isOpen: boolean
+  onClose: () => void
+  onSuccess?: () => void
 }
 
 export default function BidSubmissionForm({
@@ -31,50 +24,50 @@ export default function BidSubmissionForm({
   onClose,
   onSuccess,
 }: BidSubmissionFormProps) {
-  const { currentUser } = useUser();
-  const { projects } = useProjects();
-  const { createBid } = useBids();
-  const { createAttachment } = useAttachments();
+  const { currentUser } = useUser()
+  const { projects } = useProjects()
+  const { createBid } = useBids()
+  const { createAttachment } = useAttachments()
 
-  const [bidAmount, setBidAmount] = useState('');
-  const [scopeOfWork, setScopeOfWork] = useState('');
-  const [timelineStart, setTimelineStart] = useState('');
-  const [timelineEnd, setTimelineEnd] = useState('');
-  const [additionalNotes, setAdditionalNotes] = useState('');
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [bidAmount, setBidAmount] = useState('')
+  const [scopeOfWork, setScopeOfWork] = useState('')
+  const [timelineStart, setTimelineStart] = useState('')
+  const [timelineEnd, setTimelineEnd] = useState('')
+  const [additionalNotes, setAdditionalNotes] = useState('')
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [submitted, setSubmitted] = useState(false)
 
-  const project = projects.find((p) => p.id === projectId);
+  const project = projects.find((p) => p.id === projectId)
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setUploadedFiles((prev) => [...prev, ...files]);
-  };
+    const files = Array.from(e.target.files || [])
+    setUploadedFiles((prev) => [...prev, ...files])
+  }
 
   const removeFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
-  };
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index))
+  }
 
   const handleSubmit = async () => {
-    setError(null);
+    setError(null)
 
     if (!bidAmount || !scopeOfWork || !timelineStart || !timelineEnd) {
-      setError('Please fill in all required fields');
-      return;
+      setError('Please fill in all required fields')
+      return
     }
 
     if (uploadedFiles.length === 0) {
-      setError('Please upload at least one document (proposal or COI)');
-      return;
+      setError('Please upload at least one document (proposal or COI)')
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
     try {
       // Upload attachments first
-      const attachmentIds: string[] = [];
+      const attachmentIds: string[] = []
       for (const file of uploadedFiles) {
         const attachment = await createAttachment({
           entity_type: 'bid' as EntityType,
@@ -84,8 +77,8 @@ export default function BidSubmissionForm({
           file_type: file.type,
           file_url: URL.createObjectURL(file),
           uploaded_by: currentUser?.id || '',
-        });
-        attachmentIds.push(attachment.id);
+        })
+        attachmentIds.push(attachment.id)
       }
 
       // Create bid proposal
@@ -109,54 +102,45 @@ export default function BidSubmissionForm({
           })),
           notes: additionalNotes,
         },
-      } as any);
+      } as any)
 
-      setSubmitted(true);
+      setSubmitted(true)
       setTimeout(() => {
-        handleClose();
-        onSuccess?.();
-      }, 2000);
+        handleClose()
+        onSuccess?.()
+      }, 2000)
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to submit bid. Please try again.'
-      );
+      setError(err instanceof Error ? err.message : 'Failed to submit bid. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleClose = () => {
-    setBidAmount('');
-    setScopeOfWork('');
-    setTimelineStart('');
-    setTimelineEnd('');
-    setAdditionalNotes('');
-    setUploadedFiles([]);
-    setError(null);
-    setSubmitted(false);
-    onClose();
-  };
+    setBidAmount('')
+    setScopeOfWork('')
+    setTimelineStart('')
+    setTimelineEnd('')
+    setAdditionalNotes('')
+    setUploadedFiles([])
+    setError(null)
+    setSubmitted(false)
+    onClose()
+  }
 
   const formatCurrency = (value: string) => {
-    const numericValue = value.replace(/[^0-9.]/g, '');
-    if (!numericValue) return '';
+    const numericValue = value.replace(/[^0-9.]/g, '')
+    if (!numericValue) return ''
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(parseFloat(numericValue));
-  };
+    }).format(parseFloat(numericValue))
+  }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="Submit Bid Proposal"
-      size="large"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title="Submit Bid Proposal" size="large">
       {submitted ? (
         <Stack align="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
           <div
@@ -177,8 +161,7 @@ export default function BidSubmissionForm({
             Bid Submitted Successfully!
           </Text>
           <Text muted>
-            Your bid has been submitted and will be reviewed by the project
-            manager.
+            Your bid has been submitted and will be reviewed by the project manager.
           </Text>
         </Stack>
       ) : (
@@ -195,7 +178,9 @@ export default function BidSubmissionForm({
               <Text weight="semibold" style={{ color: 'var(--color-blue-11)', marginBottom: 4 }}>
                 Project: {project.name}
               </Text>
-              <Text size="sm" style={{ color: 'var(--color-blue-10)' }}>{project.description}</Text>
+              <Text size="sm" style={{ color: 'var(--color-blue-10)' }}>
+                {project.description}
+              </Text>
             </Card>
           )}
 
@@ -208,53 +193,47 @@ export default function BidSubmissionForm({
                 padding: 16,
               }}
             >
-              <Text size="sm" style={{ color: 'var(--color-red-10)' }}>{error}</Text>
+              <Text size="sm" style={{ color: 'var(--color-red-10)' }}>
+                {error}
+              </Text>
             </Card>
           )}
 
-          <Row gap={16} style={{ flexWrap: 'wrap' }}>
-            <Stack style={{ flex: 1, minWidth: 200 }}>
-              <Input
-                label="Bid Amount"
-                type="text"
-                value={bidAmount}
-                onChange={(e) => {
-                  const formatted = formatCurrency(e.target.value);
-                  setBidAmount(formatted);
-                }}
-                placeholder="$0.00"
-                fullWidth
-                required
-                leftIcon={DollarSign}
-              />
-            </Stack>
+          <Grid columns={{ base: 1, sm: 2 }} gap={16}>
+            <Input
+              label="Bid Amount"
+              type="text"
+              value={bidAmount}
+              onChange={(e) => {
+                const formatted = formatCurrency(e.target.value)
+                setBidAmount(formatted)
+              }}
+              placeholder="$0.00"
+              fullWidth
+              required
+              leftIcon={DollarSign}
+            />
 
-            <Stack style={{ flex: 1, minWidth: 200 }}>
-              <Input
-                label="Timeline Start"
-                type="date"
-                value={timelineStart}
-                onChange={(e) => setTimelineStart(e.target.value)}
-                fullWidth
-                required
-                leftIcon={Calendar}
-              />
-            </Stack>
-          </Row>
+            <Input
+              label="Timeline Start"
+              type="date"
+              value={timelineStart}
+              onChange={(e) => setTimelineStart(e.target.value)}
+              fullWidth
+              required
+              leftIcon={Calendar}
+            />
+          </Grid>
 
-          <Row gap={16} style={{ flexWrap: 'wrap' }}>
-            <Stack style={{ flex: 1, minWidth: 200 }}>
-              <Input
-                label="Timeline End"
-                type="date"
-                value={timelineEnd}
-                onChange={(e) => setTimelineEnd(e.target.value)}
-                fullWidth
-                required
-                leftIcon={Calendar}
-              />
-            </Stack>
-          </Row>
+          <Input
+            label="Timeline End"
+            type="date"
+            value={timelineEnd}
+            onChange={(e) => setTimelineEnd(e.target.value)}
+            fullWidth
+            required
+            leftIcon={Calendar}
+          />
 
           <Textarea
             label="Scope of Work"
@@ -307,7 +286,11 @@ export default function BidSubmissionForm({
                 }}
               >
                 <Upload color="var(--color-blue-10)" size={32} style={{ marginBottom: 8 }} />
-                <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-10)', marginBottom: 4 }}>
+                <Text
+                  size="sm"
+                  weight="medium"
+                  style={{ color: 'var(--color-blue-10)', marginBottom: 4 }}
+                >
                   Click to upload or drag and drop
                 </Text>
                 <Text size="xs" muted>
@@ -365,12 +348,7 @@ export default function BidSubmissionForm({
           </Stack>
 
           <Row gap={12} style={{ paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
-            <Button
-              variant="secondary"
-              onPress={handleClose}
-              fullWidth
-              disabled={loading}
-            >
+            <Button variant="secondary" onPress={handleClose} fullWidth disabled={loading}>
               Cancel
             </Button>
             <Button
@@ -393,5 +371,5 @@ export default function BidSubmissionForm({
         </Stack>
       )}
     </Modal>
-  );
+  )
 }
