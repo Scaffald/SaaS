@@ -95,6 +95,23 @@ ON CONFLICT (id) DO NOTHING;
 -- are automatically created by the handle_new_user() trigger
 -- =========================================================
 
+-- =========================================================
+-- CREATE FORSURED USER PROFILES
+-- =========================================================
+-- The test login users need forsured.user_profiles records
+INSERT INTO forsured.user_profiles (
+  scaffald_user_id,
+  user_type,
+  onboarding_completed,
+  onboarding_step
+)
+VALUES
+  ('50000000-0000-0000-0000-000000000005', 'manager', true, 5),
+  ('50000000-0000-0000-0000-000000000015', 'contractor', true, 5),
+  ('50000000-0000-0000-0000-000000000023', 'broker', true, 5),
+  ('50000000-0000-0000-0000-000000000033', 'admin', true, 5)
+ON CONFLICT (scaffald_user_id) DO NOTHING;
+
 COMMIT;
 
 -- =========================================================
