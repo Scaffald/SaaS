@@ -10,23 +10,23 @@
  * - Empty states
  */
 
-'use client';
+'use client'
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { Search, Users as UsersIcon } from 'lucide-react';
-import { Stack, Row, Text, Card, Button, Input } from '@unicornlove/beyond-ui';
-import { TeamMemberCard, type TeamMember } from './TeamMemberCard';
+import React, { useState, useCallback, useMemo } from 'react'
+import { Search, Users as UsersIcon } from 'lucide-react'
+import { Stack, Row, Text, Card, Button, Input, Grid } from '@unicornlove/beyond-ui'
+import { TeamMemberCard, type TeamMember } from './TeamMemberCard'
 
-type RoleFilter = 'all' | TeamMember['role'];
+type RoleFilter = 'all' | TeamMember['role']
 
 interface TeamMembersListProps {
-  members: TeamMember[];
-  loading?: boolean;
-  onMemberClick?: (member: TeamMember) => void;
-  onMemberEdit?: (member: TeamMember) => void;
-  onMemberRemove?: (member: TeamMember) => void;
-  onSearch?: (query: string) => void;
-  onRoleFilter?: (role: RoleFilter) => void;
+  members: TeamMember[]
+  loading?: boolean
+  onMemberClick?: (member: TeamMember) => void
+  onMemberEdit?: (member: TeamMember) => void
+  onMemberRemove?: (member: TeamMember) => void
+  onSearch?: (query: string) => void
+  onRoleFilter?: (role: RoleFilter) => void
 }
 
 const ROLE_OPTIONS: { value: RoleFilter; label: string }[] = [
@@ -36,7 +36,7 @@ const ROLE_OPTIONS: { value: RoleFilter; label: string }[] = [
   { value: 'broker', label: 'Brokers' },
   { value: 'subcontractor', label: 'Subcontractors' },
   { value: 'user', label: 'Users' },
-];
+]
 
 export function TeamMembersList({
   members,
@@ -47,54 +47,54 @@ export function TeamMembersList({
   onSearch,
   onRoleFilter,
 }: TeamMembersListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeRole, setActiveRole] = useState<RoleFilter>('all');
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeRole, setActiveRole] = useState<RoleFilter>('all')
 
   // Handle search input
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setSearchQuery(value);
-      onSearch?.(value);
+      const value = e.target.value
+      setSearchQuery(value)
+      onSearch?.(value)
     },
     [onSearch]
-  );
+  )
 
   // Handle role filter change
   const handleRoleChange = useCallback(
     (role: RoleFilter) => {
-      setActiveRole(role);
-      onRoleFilter?.(role);
+      setActiveRole(role)
+      onRoleFilter?.(role)
     },
     [onRoleFilter]
-  );
+  )
 
   // Client-side filtering (if no onSearch/onRoleFilter provided)
   const filteredMembers = useMemo(() => {
     if (onSearch && onRoleFilter) {
       // Server-side filtering, return as-is
-      return members;
+      return members
     }
 
     return members.filter((member) => {
       // Search filter
       if (searchQuery && !onSearch) {
-        const query = searchQuery.toLowerCase();
+        const query = searchQuery.toLowerCase()
         const matchesSearch =
           member.name.toLowerCase().includes(query) ||
           member.email.toLowerCase().includes(query) ||
-          member.company?.toLowerCase().includes(query);
-        if (!matchesSearch) return false;
+          member.company?.toLowerCase().includes(query)
+        if (!matchesSearch) return false
       }
 
       // Role filter
       if (activeRole !== 'all' && !onRoleFilter) {
-        if (member.role !== activeRole) return false;
+        if (member.role !== activeRole) return false
       }
 
-      return true;
-    });
-  }, [members, searchQuery, activeRole, onSearch, onRoleFilter]);
+      return true
+    })
+  }, [members, searchQuery, activeRole, onSearch, onRoleFilter])
 
   // Loading skeleton
   if (loading) {
@@ -111,7 +111,7 @@ export function TeamMembersList({
         </Row>
 
         {/* Skeleton Cards */}
-        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+        <Grid columns={{ base: 1, md: 2, lg: 3 }} gap={16}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Card
               key={i}
@@ -120,22 +120,41 @@ export function TeamMembersList({
                 borderRadius: 8,
                 border: '1px solid var(--color-border)',
                 padding: 16,
-                width: '100%',
-                flexWrap: 'wrap',
               }}
             >
               <Row style={{ alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: 'var(--color-gray-3)' }} />
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--color-gray-3)',
+                  }}
+                />
                 <Stack style={{ flex: 1, gap: 8 }}>
-                  <div style={{ height: 16, backgroundColor: 'var(--color-gray-3)', borderRadius: 4, width: '75%' }} />
-                  <div style={{ height: 12, backgroundColor: 'var(--color-gray-3)', borderRadius: 4, width: '50%' }} />
+                  <div
+                    style={{
+                      height: 16,
+                      backgroundColor: 'var(--color-gray-3)',
+                      borderRadius: 4,
+                      width: '75%',
+                    }}
+                  />
+                  <div
+                    style={{
+                      height: 12,
+                      backgroundColor: 'var(--color-gray-3)',
+                      borderRadius: 4,
+                      width: '50%',
+                    }}
+                  />
                 </Stack>
               </Row>
             </Card>
           ))}
-        </Row>
+        </Grid>
       </Stack>
-    );
+    )
   }
 
   return (
@@ -193,10 +212,10 @@ export function TeamMembersList({
         {(searchQuery || activeRole !== 'all') && (
           <Button
             onPress={() => {
-              setSearchQuery('');
-              setActiveRole('all');
-              onSearch?.('');
-              onRoleFilter?.('all');
+              setSearchQuery('')
+              setActiveRole('all')
+              onSearch?.('')
+              onRoleFilter?.('all')
             }}
             variant="outline"
             size="sm"
@@ -208,24 +227,17 @@ export function TeamMembersList({
 
       {/* Member Cards Grid */}
       {filteredMembers.length > 0 ? (
-        <Row style={{ flexWrap: 'wrap', gap: 16 }}>
+        <Grid columns={{ base: 1, md: 2, lg: 3 }} gap={16}>
           {filteredMembers.map((member) => (
-            <Stack
+            <TeamMemberCard
               key={member.id}
-              style={{
-                width: '100%',
-                flexWrap: 'wrap',
-              }}
-            >
-              <TeamMemberCard
-                member={member}
-                onPress={onMemberClick}
-                onEdit={onMemberEdit}
-                onRemove={onMemberRemove}
-              />
-            </Stack>
+              member={member}
+              onPress={onMemberClick}
+              onEdit={onMemberEdit}
+              onRemove={onMemberRemove}
+            />
           ))}
-        </Row>
+        </Grid>
       ) : (
         <Card
           style={{
@@ -239,10 +251,19 @@ export function TeamMembersList({
           }}
         >
           <UsersIcon size={48} color="var(--color-gray-10)" />
-          <Text style={{ fontSize: 18, fontWeight: 500, color: 'var(--color-gray-12)', marginTop: 16 }}>
+          <Text
+            style={{ fontSize: 18, fontWeight: 500, color: 'var(--color-gray-12)', marginTop: 16 }}
+          >
             No team members found
           </Text>
-          <Text style={{ fontSize: 14, color: 'var(--color-gray-10)', marginTop: 8, textAlign: 'center' }}>
+          <Text
+            style={{
+              fontSize: 14,
+              color: 'var(--color-gray-10)',
+              marginTop: 8,
+              textAlign: 'center',
+            }}
+          >
             {searchQuery || activeRole !== 'all'
               ? 'Try adjusting your search or filters'
               : 'Get started by inviting team members'}
@@ -250,7 +271,7 @@ export function TeamMembersList({
         </Card>
       )}
     </Stack>
-  );
+  )
 }
 
-export default TeamMembersList;
+export default TeamMembersList
