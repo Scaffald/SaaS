@@ -44,7 +44,7 @@ export function EmptyState({
     <Stack
       style={{
         alignItems: 'center',
-        paddingVertical: spacing[48],
+        paddingVertical: spacing[24],
         paddingHorizontal: spacing[16],
       }}
     >

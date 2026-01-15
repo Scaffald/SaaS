@@ -15,7 +15,7 @@ import {
   Loader2,
   FolderPlus,
 } from 'lucide-react'
-import { Stack, Row, Text, Button, Card, H1, H2 } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui'
 import { EmptyState } from '../../ui/EmptyState'
 import StatusBadge from '../Common/StatusBadge'
 import { useDatabase } from '../../contexts/DatabaseContext'
@@ -115,7 +115,7 @@ export default function EnhancedManagerDashboard() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
   // REQ-4: Use lexicon for dynamic labels
-  const { t, getContractorLabel } = useLexicon()
+  const { getContractorLabel } = useLexicon()
 
   // Data state
   const [tasks, setTasks] = useState<Task[]>([])
@@ -286,15 +286,10 @@ export default function EnhancedManagerDashboard() {
   // Show empty state when no projects exist
   if (projects.length === 0) {
     return (
-      <Stack gap={24}>
-        <Stack>
-          <H1>
-            {t('nav.dashboard')}
-          </H1>
-          <Text size="lg" muted>
-            Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
-          </Text>
-        </Stack>
+      <Stack gap={16}>
+        <Text size="lg" muted>
+          Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
+        </Text>
         <EmptyState
           icon={FolderPlus}
           title="No Projects Yet"
@@ -343,12 +338,9 @@ export default function EnhancedManagerDashboard() {
 
   return (
     <Stack gap={24}>
-      <Stack>
-        <H1>{t('nav.dashboard')}</H1>
-        <Text size="lg" muted>
-          Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
-        </Text>
-      </Stack>
+      <Text size="lg" muted>
+        Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
+      </Text>
 
       <Row style={{ flexWrap: 'wrap', gap: 16 }}>
         <Card style={{ ...cardStyle, flex: '1 1 200px', minWidth: 200 }}>
@@ -403,7 +395,7 @@ export default function EnhancedManagerDashboard() {
           style={{ padding: 24, borderBottom: '1px solid var(--color-border)' }}
         >
           <Stack>
-            <H2>Urgent Tasks</H2>
+            <Text size="xl" weight="semibold">Urgent Tasks</Text>
             <Text size="sm" muted style={{ marginTop: 4 }}>High priority items requiring attention</Text>
           </Stack>
           <Row alignItems="center" gap={8}>
@@ -451,7 +443,7 @@ export default function EnhancedManagerDashboard() {
                       </Row>
                       <Row alignItems="center" gap={4}>
                         <Calendar size={12} />
-                        <Text size="xs" style={{ color: dueDate.color.replace('$', 'var(--color-').replace(/(10|11)/, (m) => m + ')') }}>{dueDate.text}</Text>
+                        <Text size="xs" style={{ color: dueDate.color.replace('$', 'var(--color-').replace(/(10|11)/, (m) => `${m})`) }}>{dueDate.text}</Text>
                       </Row>
                       {blockers.length > 0 && (
                         <Row alignItems="center" gap={4}>
@@ -478,7 +470,7 @@ export default function EnhancedManagerDashboard() {
           style={{ padding: 24, borderBottom: '1px solid var(--color-border)' }}
         >
           <Stack>
-            <H2>Critical Compliance Items</H2>
+            <Text size="xl" weight="semibold">Critical Compliance Items</Text>
             <Text size="sm" muted style={{ marginTop: 4 }}>Issues requiring immediate attention</Text>
           </Stack>
           <Row alignItems="center" gap={8}>

@@ -161,7 +161,7 @@ export default function Layout() {
             style={{
               overflowX: 'hidden',
               overflowY: 'auto',
-              padding: 24,
+              padding: '24px 32px',
               backgroundColor: 'var(--color-background)',
             }}
             tabIndex={-1}
