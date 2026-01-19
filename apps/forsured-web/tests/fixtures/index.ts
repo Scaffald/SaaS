@@ -55,3 +55,20 @@ export type {
   CreateSubcontractorInput,
   CreatePolicyInput,
 } from './supabase';
+
+// Manual user fixtures (REQ-12)
+export {
+  createTestManualUser,
+  createTestManualUserWithInvitation,
+  createMergeScenario,
+  getTestManualUser,
+  getManualUsersByCreator,
+  getMergeAuditLogs,
+  cleanupManualUserTestData,
+  cleanupManualUsersByPrefix,
+} from './manual-users';
+
+export type {
+  CreateManualUserInput,
+  MergeScenarioInput,
+} from './manual-users';
