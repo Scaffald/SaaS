@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Toaster } from 'sonner';
 import { LiveRegion } from '@unicornlove/beyond-ui';
 import AppRoutes from './router';
-import ThemeSwitcher from './components/Common/ThemeSwitcher';
+import { FeedbackButton, FeedbackModal } from './components/Feedback';
 import { CommandMenuProvider } from './contexts/CommandMenuContext';
 
 /**
@@ -10,15 +10,42 @@ import { CommandMenuProvider } from './contexts/CommandMenuContext';
  *
  * Includes:
  * - Application routes
- * - Theme switcher for light/dark mode
+ * - Feedback button and modal for user feedback
  * - Toast notifications (sonner) - styled with beyond-ui design tokens
  * - LiveRegion for screen reader announcements
  */
 function App() {
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackId, setFeedbackId] = useState<string | undefined>(undefined);
+
+  // Handle deep linking to feedback from URL params (e.g., from notifications)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fbId = params.get('feedback');
+    if (fbId) {
+      setFeedbackId(fbId);
+      setFeedbackOpen(true);
+      // Clean up URL
+      params.delete('feedback');
+      const newUrl = params.toString()
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, []);
+
   return (
     <CommandMenuProvider>
       <AppRoutes />
-      <ThemeSwitcher />
+      <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+      <FeedbackModal
+        isOpen={feedbackOpen}
+        onClose={() => {
+          setFeedbackOpen(false);
+          setFeedbackId(undefined);
+        }}
+        initialFeedbackId={feedbackId}
+      />
       <Toaster
         position="top-right"
         richColors

@@ -23,7 +23,7 @@ interface DashboardHeaderProps {
 }
 
 export default function DashboardHeader({
-  title = 'Dashboard',
+  title,
   onNotificationsPress,
   notificationCount = 0,
 }: DashboardHeaderProps) {
@@ -47,19 +47,23 @@ export default function DashboardHeader({
         minHeight: 72,
       }}
     >
-      {/* Page Title */}
-      <Text
-        style={{
-          fontSize: 'var(--font-size-7)',
-          fontWeight: 600,
-          color: 'var(--color-text-primary)',
-          letterSpacing: '-0.02em',
-        }}
-      >
-        {title}
-      </Text>
+      {/* Left section: Page Title or spacer */}
+      <Row style={{ flex: title ? 0 : 1 }}>
+        {title && (
+          <Text
+            style={{
+              fontSize: 'var(--font-size-7)',
+              fontWeight: 600,
+              color: 'var(--color-text-primary)',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            {title}
+          </Text>
+        )}
+      </Row>
 
-      {/* Action Buttons */}
+      {/* Right section: Action Buttons */}
       <Row style={{ gap: 'var(--space-4)', alignItems: 'center' }}>
         {/* Notifications Icon with Badge */}
         <NavIconButton

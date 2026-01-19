@@ -63,7 +63,6 @@ FROM (VALUES
   ('50000000-0000-0000-0000-000000000002', 'gc-onboarding@forsured-test.com', 'Onboarding GC User', 'Onboarding', 'GC', '+1 (555) 001-0002', 'Boston, MA, United States', 'gc'),
   ('50000000-0000-0000-0000-000000000003', 'gc-active@forsured-test.com', 'Active GC User', 'Active', 'GC', '+1 (555) 001-0003', 'Chicago, IL, United States', 'gc'),
   ('50000000-0000-0000-0000-000000000004', 'gc-multiproject@forsured-test.com', 'MultiProject GC User', 'MultiProject', 'GC', '+1 (555) 001-0004', 'Los Angeles, CA, United States', 'gc'),
-  ('50000000-0000-0000-0000-000000000005', 'test-gc@forsured.test', 'Test GC User', 'Test', 'GC', '+1 (555) 001-0005', 'San Francisco, CA, United States', 'gc'),
 
   -- =========================================================
   -- CONTRACTORS / SUBCONTRACTORS
@@ -72,21 +71,18 @@ FROM (VALUES
   ('50000000-0000-0000-0000-000000000012', 'contractor-active@forsured-test.com', 'Active Contractor', 'Active', 'Contractor', '+1 (555) 002-0002', 'Houston, TX, United States', 'contractor'),
   ('50000000-0000-0000-0000-000000000013', 'contractor-noncompliant@forsured-test.com', 'NonCompliant Contractor', 'NonCompliant', 'Contractor', '+1 (555) 002-0003', 'San Antonio, TX, United States', 'contractor'),
   ('50000000-0000-0000-0000-000000000014', 'contractor-multiproject@forsured-test.com', 'MultiProject Contractor', 'MultiProject', 'Contractor', '+1 (555) 002-0004', 'Dallas, TX, United States', 'contractor'),
-  ('50000000-0000-0000-0000-000000000015', 'test-contractor@forsured.test', 'Test Contractor', 'Test', 'Contractor', '+1 (555) 002-0005', 'Seattle, WA, United States', 'contractor'),
 
   -- =========================================================
   -- BROKERS
   -- =========================================================
   ('50000000-0000-0000-0000-000000000021', 'broker-fresh@forsured-test.com', 'Fresh Broker', 'Fresh', 'Broker', '+1 (555) 003-0001', 'San Diego, CA, United States', 'broker'),
   ('50000000-0000-0000-0000-000000000022', 'broker-active@forsured-test.com', 'Active Broker', 'Active', 'Broker', '+1 (555) 003-0002', 'San Jose, CA, United States', 'broker'),
-  ('50000000-0000-0000-0000-000000000023', 'test-broker@forsured.test', 'Test Broker', 'Test', 'Broker', '+1 (555) 003-0003', 'Portland, OR, United States', 'broker'),
 
   -- =========================================================
   -- ADMINS
   -- =========================================================
   ('50000000-0000-0000-0000-000000000031', 'admin@forsured-test.com', 'ForSured Admin', 'ForSured', 'Admin', '+1 (555) 004-0001', 'Austin, TX, United States', 'admin'),
   ('50000000-0000-0000-0000-000000000032', 'superadmin@forsured-test.com', 'ForSured SuperAdmin', 'ForSured', 'SuperAdmin', '+1 (555) 004-0002', 'Jacksonville, FL, United States', 'super_admin'),
-  ('50000000-0000-0000-0000-000000000033', 'test-admin@forsured.test', 'Test Admin', 'Test', 'Admin', '+1 (555) 004-0003', 'Denver, CO, United States', 'admin'),
 
   -- =========================================================
   -- SIMPLE TEST USERS (for Start.tsx quick login)
@@ -115,10 +111,6 @@ INSERT INTO forsured.user_profiles (
   onboarding_step
 )
 VALUES
-  ('50000000-0000-0000-0000-000000000005', 'manager', true, 5),
-  ('50000000-0000-0000-0000-000000000015', 'contractor', true, 5),
-  ('50000000-0000-0000-0000-000000000023', 'broker', true, 5),
-  ('50000000-0000-0000-0000-000000000033', 'admin', true, 5),
   -- Test users for Start.tsx quick login (10000000 IDs)
   ('10000000-0000-0000-0000-000000000001', 'manager', true, 5),
   ('10000000-0000-0000-0000-000000000002', 'contractor', true, 5),

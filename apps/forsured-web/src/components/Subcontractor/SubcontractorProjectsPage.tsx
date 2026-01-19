@@ -392,14 +392,16 @@ export default function SubcontractorProjectsPage() {
 
       <Grid columns={{ base: 1, md: 2, lg: 3 }} gap={24}>
         {filteredProjects.map((project) => (
-          <div key={project.id}>
-            <ProjectCard
-              project={project}
-              userRole="subcontractor"
-              showActions={false}
-              onPress={() => navigate(`/subcontractor/projects/${project.id}`)}
-            />
-          </div>
+          <ProjectCard
+            key={project.id}
+            project={project}
+            userRole="subcontractor"
+            showActions={false}
+            onClick={() => {
+              console.log('[SubcontractorProjectsPage] Navigating to project:', project.id);
+              navigate(`/subcontractor/projects/${project.id}`);
+            }}
+          />
         ))}
       </Grid>
 

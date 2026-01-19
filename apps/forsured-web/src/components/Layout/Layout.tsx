@@ -8,7 +8,7 @@
  * - Focus management
  */
 import { useState, useEffect } from 'react'
-import { Outlet, useNavigate, Navigate, useLocation } from 'react-router-dom'
+import { Outlet, useNavigate, Navigate } from 'react-router-dom'
 import { Stack, SkipLink, CommandMenu } from '@unicornlove/beyond-ui'
 import type { CommandMenuItemData } from '@unicornlove/beyond-ui'
 import Sidebar from './Sidebar'
@@ -48,7 +48,6 @@ function mapDbTypeToUiType(dbType: string): 'manager' | 'subcontractor' | 'broke
 export default function Layout() {
   const { user, profile, isLoading } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
   const { approvals } = useApprovals({ status: 'pending' })
   const pendingApprovalsCount = approvals.length
 
@@ -112,18 +111,6 @@ export default function Layout() {
     }
   }
 
-
-  // Get page title from current path
-  const getPageTitle = (pathname: string): string => {
-    // Extract page name from path
-    const segments = pathname.split('/').filter(Boolean)
-    if (segments.length === 0) return 'Dashboard'
-
-    // Get the last segment and capitalize it
-    const lastSegment = segments[segments.length - 1]
-    return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ')
-  }
-
   return (
     <>
       {/* Skip link for keyboard accessibility - allows users to skip navigation */}
@@ -160,7 +147,6 @@ export default function Layout() {
         >
           {/* Dashboard Header */}
           <DashboardHeader
-            title={getPageTitle(location.pathname)}
             onNotificationsPress={() => setIsNotificationsModalOpen(true)}
             notificationCount={unreadCount}
           />

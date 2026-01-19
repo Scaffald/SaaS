@@ -95,12 +95,42 @@ export default function ProjectCard({
     });
   };
 
-  return (
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!onClick) return;
+    
+    // Don't trigger if clicking on a button or interactive element
+    // But exclude the wrapper div itself (currentTarget) from the check
+    const target = e.target as HTMLElement;
+    const currentTarget = e.currentTarget as HTMLElement;
+    
+    // Check if we clicked directly on a button or link (excluding the wrapper div)
+    const clickedButton = target.closest('button');
+    const clickedLink = target.closest('a');
+    
+    // For role="button", only block if it's NOT the wrapper div itself
+    let clickedRoleButton = target.closest('[role="button"]');
+    if (clickedRoleButton === currentTarget) {
+      clickedRoleButton = null; // Don't block if it's the wrapper itself
+    }
+    
+    // Only block if we found a nested button/link
+    if (clickedButton || clickedLink || clickedRoleButton) {
+      return;
+    }
+    
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  };
+
+  const cardContent = (
     <Card
-      onPress={onClick}
+      pressable={false}
       style={{
         cursor: onClick ? 'pointer' : 'default',
         padding: 24,
+        width: '100%',
+        pointerEvents: 'auto' as any,
       }}
     >
       <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -269,7 +299,13 @@ export default function ProjectCard({
                 <CoreButton
                   variant="outlined"
                   onPress={(e: React.MouseEvent) => {
-                    e.stopPropagation();
+                    e?.stopPropagation?.();
+                    e?.preventDefault?.();
+                    onInviteUser(project.id);
+                  }}
+                  onClick={(e: React.MouseEvent) => {
+                    e?.stopPropagation?.();
+                    e?.preventDefault?.();
                     onInviteUser(project.id);
                   }}
                   style={{ fontSize: 14, flex: 1 }}
@@ -284,7 +320,13 @@ export default function ProjectCard({
                 <CoreButton
                   variant="outlined"
                   onPress={(e: React.MouseEvent) => {
-                    e.stopPropagation();
+                    e?.stopPropagation?.();
+                    e?.preventDefault?.();
+                    onCreateTask(project.id);
+                  }}
+                  onClick={(e: React.MouseEvent) => {
+                    e?.stopPropagation?.();
+                    e?.preventDefault?.();
                     onCreateTask(project.id);
                   }}
                   style={{ fontSize: 14, flex: 1 }}
@@ -316,4 +358,32 @@ export default function ProjectCard({
       )}
     </Card>
   );
+
+  // Wrap in clickable div for web if onClick is provided
+  if (onClick) {
+    return (
+      <div
+        onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        style={{
+          cursor: 'pointer',
+          width: '100%',
+          position: 'relative',
+          display: 'block',
+        }}
+        data-testid={`project-card-${project.id}`}
+      >
+        {cardContent}
+      </div>
+    );
+  }
+
+  return cardContent;
 }

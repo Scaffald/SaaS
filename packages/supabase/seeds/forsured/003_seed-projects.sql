@@ -229,6 +229,20 @@ VALUES
     '60000000-0000-0000-0000-000000000001',  -- Acme Construction
     '{"email": "amy@davis-painting.test", "phone": "+1 (555) 100-0022", "address": "800 Paint St, Cleveland, OH"}',
     NOW() - INTERVAL '250 days'
+  ),
+  -- =========================================================
+  -- TEST CONTRACTOR SUBCONTRACTOR (for test-contractor@forsured.test)
+  -- =========================================================
+  -- Note: organization_id must be the contractor's org (not GC's org)
+  -- so SubcontractorProjectsPage can find it via getUserOrganizationId()
+  (
+    '71000000-0000-0000-0000-000000000031',
+    'Test Contractor User',
+    'Test Contractor Services',
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services org (scaffald_company_id)
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services (contractor's org, not GC's)
+    '{"email": "test-contractor@forsured.test", "phone": "+1 (555) 005-0002", "address": "200 Contractor Ave, Houston, TX"}',
+    NOW() - INTERVAL '50 days'
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -439,6 +453,20 @@ VALUES
   ),
 
   -- =========================================================
+  -- CONTRACTOR PARTICIPANT ON GC PROJECT
+  -- =========================================================
+  -- Add contractor-active as participant on Downtown Office Tower (same project as Active GC)
+  (
+    '70000000-0000-0000-0000-000000000001',  -- Downtown Office Tower
+    '50000000-0000-0000-0000-000000000012',  -- contractor-active@forsured-test.com
+    '60000000-0000-0000-0000-000000000011',  -- Elite Electrical Services
+    'member',  -- Role must be one of: owner, manager, member, viewer
+    '50000000-0000-0000-0000-000000000003',  -- Invited by Active GC
+    NOW() - INTERVAL '85 days',
+    NOW() - INTERVAL '85 days'
+  ),
+
+  -- =========================================================
   -- PROJECT PARTICIPANTS FOR TEST-GC PROJECTS
   -- =========================================================
   -- Downtown Office Renovation participants
@@ -450,6 +478,16 @@ VALUES
     NULL,
     NOW() - INTERVAL '90 days',
     NOW() - INTERVAL '90 days'
+  ),
+  -- Add test-contractor as participant on Downtown Office Renovation (same project as test-gc)
+  (
+    '90000000-0000-0000-0000-000000000001',
+    '10000000-0000-0000-0000-000000000002',  -- test-contractor@forsured.test
+    '60000000-0000-0000-0000-000000000032',  -- Test Contractor Services
+    'member',  -- Role must be one of: owner, manager, member, viewer
+    '10000000-0000-0000-0000-000000000001',  -- Invited by test-gc
+    NOW() - INTERVAL '85 days',
+    NOW() - INTERVAL '85 days'
   ),
   -- Residential Complex participants
   (
@@ -472,6 +510,34 @@ VALUES
     NOW() - INTERVAL '30 days'
   )
 ON CONFLICT (project_id, user_id) DO NOTHING;
+
+-- =========================================================
+-- PROJECT-SUBCONTRACTOR LINKS
+-- =========================================================
+-- Link subcontractors to projects (required for SubcontractorProjectsPage)
+-- =========================================================
+
+INSERT INTO forsured.project_subcontractors (
+  project_id,
+  subcontractor_id,
+  invited_by,
+  status,
+  invited_at,
+  created_at,
+  updated_at
+)
+VALUES
+  -- Link test contractor to Downtown Office Renovation project
+  (
+    '90000000-0000-0000-0000-000000000001',  -- Downtown Office Renovation
+    '71000000-0000-0000-0000-000000000031',  -- Test Contractor Services subcontractor
+    '10000000-0000-0000-0000-000000000001',  -- Invited by test-gc@forsured.test
+    'active',
+    NOW() - INTERVAL '85 days',
+    NOW() - INTERVAL '85 days',
+    NOW() - INTERVAL '85 days'
+  )
+ON CONFLICT (project_id, subcontractor_id) DO NOTHING;
 
 COMMIT;
 

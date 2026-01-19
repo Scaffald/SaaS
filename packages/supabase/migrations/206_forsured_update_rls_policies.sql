@@ -43,16 +43,49 @@ ALTER TABLE forsured.tasks ENABLE ROW LEVEL SECURITY;
 -- 2. PROJECTS TABLE RLS POLICIES
 -- =============================================================================
 
+-- Helper function to check project subcontractor access without RLS recursion
+-- Uses SECURITY DEFINER to bypass RLS when checking project_subcontractors
+CREATE OR REPLACE FUNCTION forsured.check_project_subcontractor_access(
+  p_project_id UUID,
+  p_user_id UUID
+)
+RETURNS BOOLEAN
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public, forsured, core
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM forsured.project_subcontractors ps
+    INNER JOIN forsured.subcontractors s ON ps.subcontractor_id = s.id
+    INNER JOIN core.role_assignments ra ON s.organization_id = ra.scope_org_id
+    WHERE ps.project_id = p_project_id
+    AND ra.user_id = p_user_id
+    AND ra.scope_org_id IS NOT NULL
+  );
+$$;
+
+GRANT EXECUTE ON FUNCTION forsured.check_project_subcontractor_access(UUID, UUID) TO authenticated;
+
 -- SELECT: Users can view projects in their organization
+-- OR if they are a subcontractor on the project (via project_subcontractors)
 CREATE POLICY "Users can view projects in their organization"
   ON forsured.projects
   FOR SELECT
   TO authenticated
   USING (
+    -- Managers/GCs: User has role in project's organization
     organization_id IN (
       SELECT scope_org_id
       FROM core.role_assignments
       WHERE user_id = auth.uid()
+    )
+    OR
+    -- Subcontractors: Use security definer function to avoid RLS recursion
+    forsured.check_project_subcontractor_access(
+      forsured.projects.id,
+      auth.uid()
     )
   );
 

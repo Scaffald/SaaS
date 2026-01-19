@@ -27,6 +27,7 @@ import { useTasks } from '../../hooks/useTasks'
 import { useProjectParticipants } from '../../hooks/useProjectParticipants'
 import { useProjectSubcontractors } from '../../hooks/useProjectSubcontractors'
 import { useAuth } from '../../contexts/AuthContext'
+import { usePermissions } from '../../hooks/usePermissions'
 import ProjectActivityLog from './ProjectActivityLog'
 import ProjectNotesTab from './ProjectNotesTab'
 import ProjectAddTaskModal from './ProjectAddTaskModal'
@@ -39,8 +40,17 @@ export default function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>()
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { user: currentUser } = useAuth()
-  const { project, tasks, compliance, loading, error } = useProjectDetail(projectId || '')
+  const { user: currentUser, profile } = useAuth()
+  const { isSubcontractor, isManager } = usePermissions()
+  const { project, tasks: allTasks, compliance, loading, error } = useProjectDetail(projectId || '')
+  
+  // Filter tasks for subcontractors - they should only see tasks assigned to them
+  const tasks = useMemo(() => {
+    if (isSubcontractor() && currentUser?.id) {
+      return allTasks.filter((task) => task.assigned_to_user_id === currentUser.id)
+    }
+    return allTasks
+  }, [allTasks, isSubcontractor, currentUser?.id])
   const {
     comments: projectComments,
     createComment,
@@ -678,15 +688,17 @@ export default function ProjectDetailPage() {
             <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
               Project Subcontractors ({projectSubcontractors.length})
             </Text>
-            <Button
-              color="primary"
-              size="sm"
-              iconStart={Plus}
-              onPress={() => setIsAddSubcontractorModalOpen(true)}
-              disabled={!currentUser?.id || !project?.organization_id}
-            >
-              Add Subcontractor
-            </Button>
+            {isManager() && (
+              <Button
+                color="primary"
+                size="sm"
+                iconStart={Plus}
+                onPress={() => setIsAddSubcontractorModalOpen(true)}
+                disabled={!currentUser?.id || !project?.organization_id}
+              >
+                Add Subcontractor
+              </Button>
+            )}
           </Row>
 
           {/* Subcontractors List */}
@@ -1251,15 +1263,17 @@ export default function ProjectDetailPage() {
             <Text style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-12)' }}>
               Project Tasks ({tasks.length})
             </Text>
-            <Button
-              color="primary"
-              size="sm"
-              iconStart={Plus}
-              onPress={() => setIsAddTaskModalOpen(true)}
-              disabled={!currentUser?.id}
-            >
-              Add Task
-            </Button>
+            {isManager() && (
+              <Button
+                color="primary"
+                size="sm"
+                iconStart={Plus}
+                onPress={() => setIsAddTaskModalOpen(true)}
+                disabled={!currentUser?.id}
+              >
+                Add Task
+              </Button>
+            )}
           </Row>
 
           {/* Tasks List */}
@@ -1338,7 +1352,9 @@ export default function ProjectDetailPage() {
               <CheckCircle size={32} color="var(--color-10)" style={{ marginBottom: 8 }} />
               <Text>No tasks yet</Text>
               <Text style={{ fontSize: 12, marginTop: 4 }}>
-                Click "Add Task" to create the first task for this project
+                {isSubcontractor()
+                  ? 'No tasks have been assigned to you for this project yet'
+                  : 'Click "Add Task" to create the first task for this project'}
               </Text>
             </Stack>
           )}
