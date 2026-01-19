@@ -23,7 +23,7 @@
  */
 
 import { useState, useEffect, useCallback, forwardRef, useRef, useMemo } from 'react'
-import { View, Modal as RNModal, Platform } from 'react-native'
+import { View, Modal as RNModal, Platform, type ViewStyle } from 'react-native'
 import type { ModalProps } from './Modal.types'
 import { getModalStyles } from './Modal.styles'
 import { useThemeContext } from '../../theme'
@@ -43,6 +43,13 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
   const { theme } = useThemeContext()
   const styles = getModalStyles(theme, width)
   const modalContentRef = useRef<View>(null)
+  
+  // Track when modal was opened to prevent premature onRequestClose calls
+  // MUST be declared before any conditional returns to maintain hook order
+  const openedAtRef = useRef<number | null>(null)
+  
+  // Track last backdrop click time to prevent accidental closes from rapid events
+  const lastBackdropClickRef = useRef<number>(0)
 
   // Controlled/uncontrolled visibility state
   const [internalVisible, setInternalVisible] = useState(defaultVisible)
@@ -51,6 +58,12 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
 
   // Handle close - memoized to avoid recreating on each render
   const handleClose = useCallback(() => {
+    if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
+      // Log close events on web for debugging (only in dev)
+      console.log('[Modal] handleClose called', {
+        isControlled,
+      })
+    }
     if (!isControlled) {
       setInternalVisible(false)
     }
@@ -58,6 +71,8 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
   }, [isControlled, onClose])
 
   // Focus trap for accessibility - trap focus within modal when open
+  // Always call useFocusTrap with the same parameters to maintain hook order
+  // The hook internally handles the enabled state safely
   useFocusTrap(modalContentRef, {
     enabled: isVisible,
     returnFocus: true,
@@ -89,10 +104,13 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
     if (isVisible) {
       setModalScale(1)
       setModalOpacity(1)
+      // Track when modal opened
+      openedAtRef.current = Date.now()
     } else {
       // Reset for next open
       setModalScale(0.95)
       setModalOpacity(0)
+      openedAtRef.current = null
     }
   }, [isVisible])
 
@@ -104,23 +122,104 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
 
   // Escape key is now handled by useFocusTrap
 
-  // Handle backdrop press
-  const handleBackdropPress = () => {
+  // Handle onRequestClose from React Native Modal
+  // On web, this can be called inappropriately when focus changes or inputs are interacted with
+  // We completely ignore it on web since we handle closing via Escape (useFocusTrap) and backdrop click
+  // On native, it's used for the Android back button
+  // MUST be declared before any conditional returns to maintain hook order
+  const handleRequestClose = useCallback(() => {
+    // On web, completely ignore onRequestClose - it's unreliable and triggers on focus changes
+    // We handle closing via Escape key (useFocusTrap) and backdrop click instead
+    if (Platform.OS === 'web') {
+      return // No-op on web
+    }
+    // On native (Android back button), allow it
     if (closeOnBackdropPress) {
       handleClose()
     }
-  }
+  }, [closeOnBackdropPress, handleClose])
+
+  // Handle backdrop press
+  const handleBackdropPress = useCallback(() => {
+    if (closeOnBackdropPress) {
+      handleClose()
+    }
+  }, [closeOnBackdropPress, handleClose])
+
+  // Handle backdrop click for web - using View with onClick to avoid nested button issue
+  // Added defensive checks to prevent accidental closes from focus changes or rapid events
+  // MUST be declared before any conditional returns to maintain hook order
+  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
+    // Prevent if modal was just opened (within 200ms)
+    if (openedAtRef.current && Date.now() - openedAtRef.current < 200) {
+      if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
+        console.log('[Modal] Ignoring backdrop click - modal just opened')
+      }
+      return
+    }
+    
+    // Prevent rapid successive clicks (debounce)
+    const now = Date.now()
+    if (now - lastBackdropClickRef.current < 100) {
+      if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
+        console.log('[Modal] Ignoring backdrop click - too rapid')
+      }
+      return
+    }
+    lastBackdropClickRef.current = now
+    
+    // Only close if clicking directly on the backdrop, not on the modal content
+    // Verify it's an actual mouse click event (not a programmatic event)
+    const isDirectBackdropClick = e.target === e.currentTarget
+    const isValidClick = e.type === 'click' && (e.button === undefined || e.button === 0)
+    
+    // Additional check: ensure the click originated from a user interaction
+    // by checking if defaultPrevented is false (programmatic clicks often have this set)
+    const isUserClick = !e.defaultPrevented
+    
+    if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
+      console.log('[Modal] Backdrop click event', {
+        isDirectBackdropClick,
+        isValidClick,
+        isUserClick,
+        closeOnBackdropPress,
+        target: e.target?.constructor?.name,
+        currentTarget: e.currentTarget?.constructor?.name,
+        type: e.type,
+        button: e.button,
+        defaultPrevented: e.defaultPrevented,
+      })
+    }
+    
+    if (
+      isDirectBackdropClick && 
+      closeOnBackdropPress &&
+      isValidClick &&
+      isUserClick
+    ) {
+      if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
+        console.log('[Modal] Closing via backdrop click')
+      }
+      handleClose()
+    } else {
+      if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
+        console.log('[Modal] Ignoring backdrop click - conditions not met', {
+          isDirectBackdropClick,
+          isValidClick,
+          isUserClick,
+        })
+      }
+    }
+  }, [closeOnBackdropPress, handleClose])
+
+  // No-op function for web to prevent React Native Modal from closing unexpectedly
+  // MUST be declared before any conditional returns to maintain hook order
+  const noOpRequestClose = useCallback(() => {
+    // Intentionally do nothing - we handle closing via Escape key and backdrop click
+  }, [])
 
   if (!isVisible) {
     return null
-  }
-
-  // Handle backdrop click for web - using View with onClick to avoid nested button issue
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    // Only close if clicking directly on the backdrop, not on the modal content
-    if (e.target === e.currentTarget && closeOnBackdropPress) {
-      handleClose()
-    }
   }
 
   return (
@@ -128,7 +227,10 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
       visible={isVisible}
       transparent
       animationType="fade"
-      onRequestClose={handleClose}
+      {...(Platform.OS === 'web' 
+        ? { onRequestClose: noOpRequestClose } // Use no-op on web to prevent unwanted closes
+        : { onRequestClose: handleRequestClose }
+      )}
       statusBarTranslucent
       testID={testID}
     >

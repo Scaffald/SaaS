@@ -77,20 +77,19 @@ export function ManualUserCreateModal({
         email: data.email,
         phone: data.phone,
         company: data.company,
-        organizationId,
         userType: data.role,
         sendInvitation: data.sendInvitation,
       });
 
-      const roleLabel = data.role === 'contractor' ? 'Contractor' : 'Client';
+      const toastRoleLabel = data.role === 'contractor' ? 'Contractor' : data.role === 'broker' ? 'Broker' : data.role === 'manager' ? 'Manager' : 'Client';
 
       if (data.sendInvitation && data.email) {
-        toast.success(`${roleLabel} added and invitation sent`, {
+        toast.success(`${toastRoleLabel} added and invitation sent`, {
           description: `${data.name} will receive an invitation at ${data.email}`,
         });
       } else {
-        toast.success(`${roleLabel} added successfully`, {
-          description: `${data.name} has been added as a placeholder. They can be assigned tasks but won't receive notifications until they register.`,
+        toast.success(`${toastRoleLabel} added successfully`, {
+          description: `${data.name} has been added as a placeholder. They won't receive notifications until they register.`,
         });
       }
 
@@ -107,11 +106,30 @@ export function ManualUserCreateModal({
 
   if (!isOpen) return null;
 
-  const roleLabel = role === 'contractor' ? 'Contractor' : 'Client';
-  const roleDescription =
-    role === 'contractor'
-      ? 'Add a contractor to your organization. They can be assigned tasks immediately.'
-      : 'Add a client to your organization. You can manage their insurance and compliance.';
+  const getRoleLabel = () => {
+    switch (role) {
+      case 'contractor': return 'Contractor';
+      case 'broker': return 'Broker';
+      case 'manager': return 'Manager';
+      default: return 'Client';
+    }
+  };
+
+  const getRoleDescription = () => {
+    switch (role) {
+      case 'contractor':
+        return 'Add a contractor to your organization. They can be assigned tasks immediately.';
+      case 'broker':
+        return 'Add a broker to your network. You can invite them to connect later.';
+      case 'manager':
+        return 'Add a manager to your network. You can invite them to connect later.';
+      default:
+        return 'Add a client to your organization. You can manage their insurance and compliance.';
+    }
+  };
+
+  const roleLabel = getRoleLabel();
+  const roleDescription = getRoleDescription();
 
   return (
     <div

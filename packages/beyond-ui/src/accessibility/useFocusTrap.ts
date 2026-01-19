@@ -91,12 +91,19 @@ export function useFocusTrap<T extends { focus?: () => void } | null>(
       // Focus initial element or first focusable
       const container = containerRef.current as unknown as HTMLElement
       if (container) {
-        if (initialFocus?.current) {
-          initialFocus.current.focus()
-        } else {
-          const focusables = getFocusableElements(container)
-          if (focusables.length > 0) {
-            focusables[0].focus()
+        try {
+          if (initialFocus?.current) {
+            initialFocus.current.focus()
+          } else {
+            const focusables = getFocusableElements(container)
+            if (focusables.length > 0) {
+              focusables[0].focus()
+            }
+          }
+        } catch (error) {
+          // Silently fail if focus can't be set - modal content might not be ready yet
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('[useFocusTrap] Failed to set initial focus:', error)
           }
         }
       }

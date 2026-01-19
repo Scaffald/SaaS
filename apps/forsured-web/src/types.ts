@@ -731,15 +731,18 @@ export interface BidProposal {
 export interface UserInvitation {
   id: string;
   email: string;
-  name: string;
+  name?: string; // May not exist in database, derived from email if missing
   role: UserRoleRBAC;
   invited_by: string;
-  invited_at: string;
+  invited_at?: string; // May not exist, use created_at instead
   status: 'pending' | 'accepted' | 'expired';
   project_ids?: string[];
   client_ids?: string[];
   created_at: string;
   updated_at: string;
+  token?: string; // Invitation code/token from database
+  expires_at?: string; // Expiration date
+  organization_id?: string; // Organization ID
 }
 
 export interface IntegrationConnection {

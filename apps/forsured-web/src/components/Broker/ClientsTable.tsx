@@ -1,13 +1,89 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Search, Calendar, MessageSquare, Users, Shield, Building2, HardHat } from 'lucide-react';
-import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui';
+import { Pressable, View as RNView, type LayoutChangeEvent } from 'react-native';
+import { ChevronRight, ChevronDown, ChevronUp, Search, Calendar, MessageSquare, Users, Shield, Building2, HardHat } from 'lucide-react';
+import { Stack, Row, Text, H2, Card, ButtonGroup, Input, Button, Dropdown, DropdownMenu, DropdownItem, Chip, ProgressBarBase, Avatar } from '@unicornlove/beyond-ui';
 import type { BrokerClient, PolicyData, ComplianceData } from '../../types';
 import { formatDistanceToNow } from '../../utils/dateHelpers';
 import type { ClientBrokerCount } from '../../hooks/useClientBrokerCounts';
 
 type SortOption = 'default' | 'most-subs' | 'lowest-compliance' | 'recent-activity';
 type ClientTypeFilter = 'all' | 'manager' | 'subcontractor';
+
+// Helper component for custom dropdown with Button + DropdownMenu
+function CustomDropdown({
+  triggerText,
+  open,
+  onOpenChange,
+  children,
+  position = 'bottom-left',
+}: {
+  triggerText: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
+  position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+}) {
+  const triggerRef = useRef<RNView>(null);
+  const [triggerLayout, setTriggerLayout] = useState<{ x: number; y: number; width: number; height: number } | undefined>();
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const { width, height, x, y } = event.nativeEvent.layout;
+    if (triggerRef.current) {
+      // Use measureInWindow for absolute positioning
+      triggerRef.current.measureInWindow((fx, fy, fwidth, fheight) => {
+        setTriggerLayout({
+          x: fx || 0,
+          y: fy || 0,
+          width: fwidth || width || 200,
+          height: fheight || height || 40,
+        });
+      });
+    } else {
+      // Fallback to layout values
+      setTriggerLayout({ x: x || 0, y: y || 0, width: width || 200, height: height || 40 });
+    }
+  };
+
+  // Measure on open
+  useEffect(() => {
+    if (open && triggerRef.current) {
+      triggerRef.current.measureInWindow((fx, fy, fwidth, fheight) => {
+        setTriggerLayout({
+          x: fx || 0,
+          y: fy || 0,
+          width: fwidth || 200,
+          height: fheight || 40,
+        });
+      });
+    }
+  }, [open]);
+
+  return (
+    <Stack style={{ position: 'relative' }}>
+      <RNView ref={triggerRef} onLayout={handleLayout}>
+        <Button
+          variant="outlined"
+          size="md"
+          onPress={() => onOpenChange(!open)}
+          iconEnd={open ? ChevronUp : ChevronDown}
+        >
+          {triggerText}
+        </Button>
+      </RNView>
+      {open && triggerLayout && (
+        <DropdownMenu
+          position={position}
+          visible={open}
+          triggerLayout={triggerLayout}
+          onDismiss={() => onOpenChange(false)}
+        >
+          {children}
+        </DropdownMenu>
+      )}
+    </Stack>
+  );
+}
 
 interface GCSubcontractorStats {
   totalSubs: number;
@@ -25,28 +101,14 @@ interface ClientsTableProps {
   projects?: Array<{ id: string; client_id: string }>;
   /** Optional map of client organization ID to broker count info */
   brokerCounts?: Map<string, ClientBrokerCount>;
-  /** Initial client type filter */
+  /** Controlled client type filter - when provided, component is controlled */
+  clientTypeFilter?: ClientTypeFilter;
+  /** Initial client type filter - only used if clientTypeFilter is not provided */
   initialClientTypeFilter?: ClientTypeFilter;
   /** Callback when filter changes - useful for updating parent stats */
   onFilterChange?: (filter: ClientTypeFilter) => void;
 }
 
-// Orange button style for visibility
-const orangeButtonStyle: React.CSSProperties = {
-  padding: '8px 16px',
-  fontSize: 14,
-  fontWeight: 600,
-  color: 'white',
-  backgroundColor: 'var(--color-orange-9)',
-  border: 'none',
-  borderRadius: 8,
-  cursor: 'pointer',
-};
-
-const orangeButtonHoverStyle: React.CSSProperties = {
-  ...orangeButtonStyle,
-  backgroundColor: 'var(--color-orange-10)',
-};
 
 export default function ClientsTable({
   clients,
@@ -55,6 +117,7 @@ export default function ClientsTable({
   complianceData = [],
   projects = [],
   brokerCounts,
+  clientTypeFilter: controlledClientTypeFilter,
   initialClientTypeFilter = 'all',
   onFilterChange,
 }: ClientsTableProps) {
@@ -62,8 +125,17 @@ export default function ClientsTable({
   const [riskFilter, setRiskFilter] = useState<string>('all');
   const [complianceFilter, setComplianceFilter] = useState<string>('all');
   const [expiringFilter, setExpiringFilter] = useState<string>('all');
-  const [clientTypeFilter, setClientTypeFilter] = useState<ClientTypeFilter>(initialClientTypeFilter);
+  const [internalClientTypeFilter, setInternalClientTypeFilter] = useState<ClientTypeFilter>(initialClientTypeFilter);
   const [sortOption, setSortOption] = useState<SortOption>('default');
+  
+  // Dropdown open states
+  const [riskDropdownOpen, setRiskDropdownOpen] = useState(false);
+  const [complianceDropdownOpen, setComplianceDropdownOpen] = useState(false);
+  const [expiringDropdownOpen, setExpiringDropdownOpen] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+
+  // Use controlled value if provided, otherwise use internal state
+  const clientTypeFilter = controlledClientTypeFilter ?? internalClientTypeFilter;
 
   // Count clients by type
   const clientCounts = useMemo(() => {
@@ -249,12 +321,27 @@ export default function ClientsTable({
   ]);
 
   const handleClientTypeChange = (filter: ClientTypeFilter) => {
-    setClientTypeFilter(filter);
-    onFilterChange?.(filter);
+    // If controlled, only call callback. Otherwise update internal state.
+    if (controlledClientTypeFilter !== undefined) {
+      onFilterChange?.(filter);
+    } else {
+      setInternalClientTypeFilter(filter);
+      onFilterChange?.(filter);
+    }
   };
 
-  const getRiskBadgeStyle = (risk: string): React.CSSProperties => {
-    const styles: Record<string, React.CSSProperties> = {
+  // Calculate minimum table width based on column widths for horizontal scrolling
+  const tableMinWidth = useMemo(() => {
+    const baseWidth = 250 + 100; // client + type
+    const conditionalWidth = clientTypeFilter !== 'subcontractor' ? 120 : 0; // subsCompliant
+    const standardWidth = 100 + 100 + 120 + 120; // risk + openItems + nextRenewal + compliance
+    const brokerWidth = brokerCounts ? 100 : 0;
+    const otherWidth = 120 + 100; // lastActivity + actions
+    return baseWidth + conditionalWidth + standardWidth + brokerWidth + otherWidth;
+  }, [clientTypeFilter, brokerCounts]);
+
+  const getRiskChipStyle = (risk: string) => {
+    const styles: Record<string, { backgroundColor: string; color: string; borderColor: string }> = {
       low: { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-11)', borderColor: 'var(--color-green-6)' },
       medium: { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)', borderColor: 'var(--color-yellow-6)' },
       high: { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)', borderColor: 'var(--color-red-6)' },
@@ -316,47 +403,18 @@ export default function ClientsTable({
     return 'Sub';
   };
 
-  const selectStyle: React.CSSProperties = {
-    padding: '8px 16px',
-    border: '1px solid var(--color-border)',
-    borderRadius: 8,
-    fontSize: 14,
-    backgroundColor: 'var(--color-background)',
-  };
 
-  const thStyle: React.CSSProperties = {
-    padding: '12px 24px',
-    textAlign: 'left',
-    fontSize: 12,
-    fontWeight: 500,
-    color: 'var(--color-text-muted)',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-  };
 
-  const clientTypeButtonStyle = (isSelected: boolean): React.CSSProperties => ({
-    padding: '8px 16px',
-    fontSize: 14,
-    fontWeight: 600,
-    borderRadius: 8,
-    border: 'none',
-    backgroundColor: isSelected ? 'var(--color-orange-9)' : 'var(--color-gray-3)',
-    color: isSelected ? 'white' : 'var(--color-text-muted)',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-  });
 
   return (
-    <Card
-      style={{
-        backgroundColor: 'var(--color-background)',
-        borderRadius: 12,
-        border: '1px solid var(--color-border)',
-      }}
+    <Card 
+      variant="elevated" 
+      padding="none" 
+      radius="lg" 
+      elevation="sm"
+      style={{ overflow: 'hidden', width: '100%' }}
     >
-      <Stack padding={24} style={{ borderBottom: '1px solid var(--color-border)' }}>
+      <Stack padding={24} style={{ borderBottomWidth: 1, borderBottomColor: 'var(--color-border)' }}>
         {/* Header with counts and type filter */}
         <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
           <Row alignItems="center" gap={12}>
@@ -369,396 +427,549 @@ export default function ClientsTable({
           </Row>
           
           {/* Client Type Toggle */}
-          <Row alignItems="center" gap={8}>
-            <button
-              type="button"
-              onClick={() => handleClientTypeChange('all')}
-              style={clientTypeButtonStyle(clientTypeFilter === 'all')}
-            >
-              <Users size={16} />
-              All ({clientCounts.total})
-            </button>
-            <button
-              type="button"
-              onClick={() => handleClientTypeChange('manager')}
-              style={clientTypeButtonStyle(clientTypeFilter === 'manager')}
-            >
-              <Building2 size={16} />
-              Managers ({clientCounts.managers})
-            </button>
-            <button
-              type="button"
-              onClick={() => handleClientTypeChange('subcontractor')}
-              style={clientTypeButtonStyle(clientTypeFilter === 'subcontractor')}
-            >
-              <HardHat size={16} />
-              Contractors ({clientCounts.contractors})
-            </button>
-          </Row>
+          <ButtonGroup
+            items={[
+              {
+                id: 'all',
+                label: `All (${clientCounts.total})`,
+                icon: Users,
+                iconPosition: 'start',
+              },
+              {
+                id: 'manager',
+                label: `Managers (${clientCounts.managers})`,
+                icon: Building2,
+                iconPosition: 'start',
+              },
+              {
+                id: 'subcontractor',
+                label: `Contractors (${clientCounts.contractors})`,
+                icon: HardHat,
+                iconPosition: 'start',
+              },
+            ]}
+            value={clientTypeFilter}
+            onChange={(value) => handleClientTypeChange(value as ClientTypeFilter)}
+            size="md"
+            mode="single"
+          />
         </Row>
 
         {/* Filters Row */}
         <Row gap={16} style={{ flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative', flex: 1, minWidth: '18%' }}>
-            <div
-              style={{
-                position: 'absolute',
-                left: 12,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                pointerEvents: 'none',
-              }}
-            >
-              <Search size={18} style={{ color: 'var(--color-text-muted)' }} />
-            </div>
-            <input
-              type="text"
+          <Stack style={{ flex: 1, minWidth: '18%' }}>
+            <Input
               placeholder="Search clients..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                paddingLeft: 40,
-                paddingRight: 16,
-                paddingTop: 10,
-                paddingBottom: 10,
-                border: '1px solid var(--color-gray-4)',
-                borderRadius: 8,
-                fontSize: 14,
-                backgroundColor: 'white',
-                outline: 'none',
-              }}
+              onChangeText={setSearchTerm}
+              iconStart={Search}
+              fullWidth
             />
-          </div>
+          </Stack>
 
-          <select
-            value={riskFilter}
-            onChange={(e) => setRiskFilter(e.target.value)}
-            style={selectStyle}
+          <CustomDropdown
+            triggerText={
+              riskFilter === 'all'
+                ? `All Risk Levels (${filterCounts.total})`
+                : riskFilter === 'low'
+                  ? `Low Risk (${filterCounts.riskCounts.low})`
+                  : riskFilter === 'medium'
+                    ? `Medium Risk (${filterCounts.riskCounts.medium})`
+                    : `High Risk (${filterCounts.riskCounts.high})`
+            }
+            open={riskDropdownOpen}
+            onOpenChange={setRiskDropdownOpen}
+            position="bottom-left"
           >
-            <option value="all">All Risk Levels ({filterCounts.total})</option>
-            <option value="low">Low Risk ({filterCounts.riskCounts.low})</option>
-            <option value="medium">Medium Risk ({filterCounts.riskCounts.medium})</option>
-            <option value="high">High Risk ({filterCounts.riskCounts.high})</option>
-          </select>
+            <DropdownItem checked={riskFilter === 'all'} onPress={() => { setRiskFilter('all'); setRiskDropdownOpen(false); }}>
+              All Risk Levels ({filterCounts.total})
+            </DropdownItem>
+            <DropdownItem checked={riskFilter === 'low'} onPress={() => { setRiskFilter('low'); setRiskDropdownOpen(false); }}>
+              Low Risk ({filterCounts.riskCounts.low})
+            </DropdownItem>
+            <DropdownItem checked={riskFilter === 'medium'} onPress={() => { setRiskFilter('medium'); setRiskDropdownOpen(false); }}>
+              Medium Risk ({filterCounts.riskCounts.medium})
+            </DropdownItem>
+            <DropdownItem checked={riskFilter === 'high'} onPress={() => { setRiskFilter('high'); setRiskDropdownOpen(false); }}>
+              High Risk ({filterCounts.riskCounts.high})
+            </DropdownItem>
+          </CustomDropdown>
 
-          <select
-            value={complianceFilter}
-            onChange={(e) => setComplianceFilter(e.target.value)}
-            style={selectStyle}
+          <CustomDropdown
+            triggerText={
+              complianceFilter === 'all'
+                ? `All Compliance (${filterCounts.total})`
+                : complianceFilter === 'compliant'
+                  ? `Compliant 90%+ (${filterCounts.complianceCounts.compliant})`
+                  : complianceFilter === 'warning'
+                    ? `Warning 70-89% (${filterCounts.complianceCounts.warning})`
+                    : `Critical <70% (${filterCounts.complianceCounts.critical})`
+            }
+            open={complianceDropdownOpen}
+            onOpenChange={setComplianceDropdownOpen}
+            position="bottom-left"
           >
-            <option value="all">All Compliance ({filterCounts.total})</option>
-            <option value="compliant">Compliant 90%+ ({filterCounts.complianceCounts.compliant})</option>
-            <option value="warning">Warning 70-89% ({filterCounts.complianceCounts.warning})</option>
-            <option value="critical">Critical &lt;70% ({filterCounts.complianceCounts.critical})</option>
-          </select>
+            <DropdownItem checked={complianceFilter === 'all'} onPress={() => { setComplianceFilter('all'); setComplianceDropdownOpen(false); }}>
+              All Compliance ({filterCounts.total})
+            </DropdownItem>
+            <DropdownItem checked={complianceFilter === 'compliant'} onPress={() => { setComplianceFilter('compliant'); setComplianceDropdownOpen(false); }}>
+              Compliant 90%+ ({filterCounts.complianceCounts.compliant})
+            </DropdownItem>
+            <DropdownItem checked={complianceFilter === 'warning'} onPress={() => { setComplianceFilter('warning'); setComplianceDropdownOpen(false); }}>
+              Warning 70-89% ({filterCounts.complianceCounts.warning})
+            </DropdownItem>
+            <DropdownItem checked={complianceFilter === 'critical'} onPress={() => { setComplianceFilter('critical'); setComplianceDropdownOpen(false); }}>
+              Critical &lt;70% ({filterCounts.complianceCounts.critical})
+            </DropdownItem>
+          </CustomDropdown>
 
-          <select
-            value={expiringFilter}
-            onChange={(e) => setExpiringFilter(e.target.value)}
-            style={selectStyle}
+          <CustomDropdown
+            triggerText={
+              expiringFilter === 'all'
+                ? `All Policies (${filterCounts.total})`
+                : expiringFilter === '30'
+                  ? `Expiring 30 days (${filterCounts.expiringCounts['30']})`
+                  : expiringFilter === '60'
+                    ? `Expiring 60 days (${filterCounts.expiringCounts['60']})`
+                    : `Expiring 90 days (${filterCounts.expiringCounts['90']})`
+            }
+            open={expiringDropdownOpen}
+            onOpenChange={setExpiringDropdownOpen}
+            position="bottom-left"
           >
-            <option value="all">All Policies ({filterCounts.total})</option>
-            <option value="30">Expiring 30 days ({filterCounts.expiringCounts['30']})</option>
-            <option value="60">Expiring 60 days ({filterCounts.expiringCounts['60']})</option>
-            <option value="90">Expiring 90 days ({filterCounts.expiringCounts['90']})</option>
-          </select>
+            <DropdownItem checked={expiringFilter === 'all'} onPress={() => { setExpiringFilter('all'); setExpiringDropdownOpen(false); }}>
+              All Policies ({filterCounts.total})
+            </DropdownItem>
+            <DropdownItem checked={expiringFilter === '30'} onPress={() => { setExpiringFilter('30'); setExpiringDropdownOpen(false); }}>
+              Expiring 30 days ({filterCounts.expiringCounts['30']})
+            </DropdownItem>
+            <DropdownItem checked={expiringFilter === '60'} onPress={() => { setExpiringFilter('60'); setExpiringDropdownOpen(false); }}>
+              Expiring 60 days ({filterCounts.expiringCounts['60']})
+            </DropdownItem>
+            <DropdownItem checked={expiringFilter === '90'} onPress={() => { setExpiringFilter('90'); setExpiringDropdownOpen(false); }}>
+              Expiring 90 days ({filterCounts.expiringCounts['90']})
+            </DropdownItem>
+          </CustomDropdown>
 
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value as SortOption)}
-            style={selectStyle}
+          <CustomDropdown
+            triggerText={
+              sortOption === 'default'
+                ? 'Sort by: Default'
+                : sortOption === 'most-subs'
+                  ? 'Sort by: Most Subcontractors'
+                  : sortOption === 'lowest-compliance'
+                    ? 'Sort by: Lowest Compliance'
+                    : 'Sort by: Recent Activity'
+            }
+            open={sortDropdownOpen}
+            onOpenChange={setSortDropdownOpen}
+            position="bottom-left"
           >
-            <option value="default">Sort by: Default</option>
-            <option value="most-subs">Most Subcontractors</option>
-            <option value="lowest-compliance">Lowest Compliance</option>
-            <option value="recent-activity">Recent Activity</option>
-          </select>
+            <DropdownItem checked={sortOption === 'default'} onPress={() => { setSortOption('default'); setSortDropdownOpen(false); }}>
+              Sort by: Default
+            </DropdownItem>
+            <DropdownItem checked={sortOption === 'most-subs'} onPress={() => { setSortOption('most-subs'); setSortDropdownOpen(false); }}>
+              Most Subcontractors
+            </DropdownItem>
+            <DropdownItem checked={sortOption === 'lowest-compliance'} onPress={() => { setSortOption('lowest-compliance'); setSortDropdownOpen(false); }}>
+              Lowest Compliance
+            </DropdownItem>
+            <DropdownItem checked={sortOption === 'recent-activity'} onPress={() => { setSortOption('recent-activity'); setSortDropdownOpen(false); }}>
+              Recent Activity
+            </DropdownItem>
+          </CustomDropdown>
 
-          <button
-            type="button"
-            onClick={() => {
+          <Button
+            variant="outlined"
+            color="primary"
+            size="md"
+            onPress={() => {
               setSearchTerm('');
               setRiskFilter('all');
               setComplianceFilter('all');
               setExpiringFilter('all');
-              setClientTypeFilter('all');
-              setSortOption('default');
+              if (controlledClientTypeFilter === undefined) {
+                setInternalClientTypeFilter('all');
+              }
               onFilterChange?.('all');
-            }}
-            style={{
-              ...orangeButtonStyle,
-              backgroundColor: 'transparent',
-              color: 'var(--color-orange-10)',
-              border: '1px solid var(--color-orange-6)',
+              setSortOption('default');
+              setRiskDropdownOpen(false);
+              setComplianceDropdownOpen(false);
+              setExpiringDropdownOpen(false);
+              setSortDropdownOpen(false);
             }}
           >
             Clear Filters
-          </button>
+          </Button>
         </Row>
       </Stack>
 
-      <Stack style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%' }}>
-          <thead style={{ backgroundColor: 'var(--color-gray-3)' }}>
-            <tr>
-              <th style={thStyle}>Client</th>
-              <th style={thStyle}>Type</th>
-              {clientTypeFilter !== 'subcontractor' && <th style={thStyle}>Subs Compliant</th>}
-              <th style={thStyle}>Risk Score</th>
-              <th style={thStyle}>Open Items</th>
-              <th style={thStyle}>Next Renewal</th>
-              <th style={thStyle}>Compliance</th>
-              {brokerCounts && <th style={thStyle}>Brokers</th>}
-              <th style={thStyle}>Last Activity</th>
-              <th style={{ ...thStyle, textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody style={{ backgroundColor: 'var(--color-background)' }}>
-            {filteredClients.map((client, index) => {
-              const riskBadgeStyle = getRiskBadgeStyle(client.risk_level);
-              const isGC = client.client_type === 'general_contractor';
-              return (
-                <tr
-                  key={client.id}
+      {filteredClients.length === 0 ? (
+        <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
+          <Text muted>
+            No clients found matching your filters
+          </Text>
+        </Stack>
+      ) : (
+        <div style={{ overflowX: 'auto', width: '100%' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: tableMinWidth }}>
+            <thead style={{ backgroundColor: 'var(--color-gray-2)' }}>
+              <tr>
+                <th
+                  scope="col"
                   style={{
-                    borderTop: index > 0 ? '1px solid var(--color-border)' : 'none',
-                    cursor: 'pointer',
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: 250,
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--color-gray-2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                  onClick={() => onClientClick?.(client)}
                 >
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <Row alignItems="center">
-                      <Stack
-                        alignItems="center"
-                        justifyContent="center"
-                        style={{
-                          flexShrink: 0,
-                          width: 40,
-                          height: 40,
-                          backgroundColor: isGC ? 'var(--color-purple-3)' : 'var(--color-blue-3)',
-                          borderRadius: 9999,
-                        }}
-                      >
-                        <Text size="sm" weight="medium" style={{ color: isGC ? 'var(--color-purple-10)' : 'var(--color-blue-10)' }}>
-                          {(client.company_name || '')
-                            .split(' ')
-                            .map((n) => n[0] || '')
-                            .join('')
-                            .substring(0, 2) || '??'}
-                        </Text>
-                      </Stack>
-                      <Stack style={{ marginLeft: 16 }}>
-                        <Link
-                          to={`/broker/clients/${client.id}`}
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 500,
-                            color: 'var(--color-blue-10)',
-                            textDecoration: 'none',
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          data-testid="client-name-link"
-                        >
-                          {client.company_name}
-                        </Link>
-                        <Text size="xs" muted style={{ marginTop: 2 }}>
-                          {client.contact_email || client.contact_name || 'No contact info'}
-                        </Text>
-                      </Stack>
-                    </Row>
-                  </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        paddingLeft: 8,
-                        paddingRight: 8,
-                        paddingTop: 2,
-                        paddingBottom: 2,
-                        borderRadius: 4,
-                        fontSize: 12,
-                        fontWeight: 500,
-                        backgroundColor: isGC ? 'var(--color-purple-2)' : 'var(--color-blue-2)',
-                        color: isGC ? 'var(--color-purple-11)' : 'var(--color-blue-11)',
-                      }}
-                      title={getClientTypeLabel(client)}
-                    >
-                      {getClientTypeBadge(client)}
-                    </span>
-                  </td>
-                  {clientTypeFilter !== 'subcontractor' && (
-                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      {isGC ? (() => {
-                        const stats = gcSubStats.get(client.id);
-                        if (!stats || stats.totalSubs === 0) {
-                          return <Text size="sm" muted>No subs</Text>;
-                        }
-                        const color = stats.compliancePercent >= 80
-                          ? 'var(--color-green-10)'
-                          : stats.compliancePercent >= 50
-                          ? 'var(--color-yellow-10)'
-                          : 'var(--color-red-10)';
-                        return (
-                          <Row alignItems="center" gap={8}>
-                            <Users size={16} style={{ color: 'var(--color-text-muted)' }} />
-                            <Text size="sm" weight="medium" style={{ color }}>
-                              {stats.compliantSubs}/{stats.totalSubs} ({stats.compliancePercent}%)
-                            </Text>
-                          </Row>
-                        );
-                      })() : (
-                        <Text size="sm" muted>-</Text>
-                      )}
-                    </td>
-                  )}
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        paddingLeft: 12,
-                        paddingRight: 12,
-                        paddingTop: 4,
-                        paddingBottom: 4,
-                        borderRadius: 9999,
-                        fontSize: 12,
-                        fontWeight: 500,
-                        border: '1px solid',
-                        ...riskBadgeStyle,
-                      }}
-                    >
-                      {client.risk_level}
-                    </span>
-                  </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <Text size="sm" weight="medium">
-                      {getOpenItemsCount(client.id)}
-                    </Text>
-                  </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <Row alignItems="center" gap={4}>
-                      <Calendar size={14} style={{ color: 'var(--color-text-muted)' }} />
-                      <Text size="sm" muted>{getNextRenewal(client.id)}</Text>
-                    </Row>
-                  </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                    <Row alignItems="center" gap={8}>
-                      <Stack
-                        style={{
-                          width: 64,
-                          backgroundColor: 'var(--color-gray-6)',
-                          borderRadius: 9999,
-                          height: 8,
-                        }}
-                      >
-                        <Stack
-                          style={{
-                            height: 8,
-                            borderRadius: 9999,
-                            backgroundColor: getComplianceColor(client.compliance_score ?? 0),
-                            width: `${client.compliance_score ?? 0}%`,
-                          }}
-                        />
-                      </Stack>
-                      <Text size="sm" weight="medium">
-                        {client.compliance_score ?? 0}%
-                      </Text>
-                    </Row>
-                  </td>
-                  {brokerCounts && (
-                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
-                      {(() => {
-                        const brokerInfo = brokerCounts.get(client.id);
-                        if (!brokerInfo || brokerInfo.brokerCount === 0) {
-                          return (
-                            <Text size="sm" muted>-</Text>
-                          );
-                        }
-                        if (brokerInfo.hasMultipleBrokers) {
-                          return (
-                            <Row
-                              alignItems="center"
-                              gap={4}
-                              style={{
-                                backgroundColor: 'var(--color-orange-2)',
-                                paddingLeft: 8,
-                                paddingRight: 8,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                borderRadius: 4,
-                                display: 'inline-flex',
-                              }}
-                              title={`This client works with ${brokerInfo.brokerCount} brokers`}
-                            >
-                              <Shield size={14} style={{ color: 'var(--color-orange-10)' }} />
-                              <Text size="sm" weight="semibold" style={{ color: 'var(--color-orange-11)' }}>
-                                {brokerInfo.brokerCount}
-                              </Text>
-                            </Row>
-                          );
-                        }
-                        return (
-                          <Row alignItems="center" gap={4}>
-                            <Shield size={14} style={{ color: 'var(--color-text-muted)' }} />
-                            <Text size="sm" muted>1</Text>
-                          </Row>
-                        );
-                      })()}
-                    </td>
-                  )}
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: 14, color: 'var(--color-text-muted)' }}>
-                    <Row alignItems="center" gap={4}>
-                      <MessageSquare size={14} />
-                      <Text size="sm" muted>
-                        {client.last_activity_at ? formatDistanceToNow(client.last_activity_at) : 'No activity'}
-                      </Text>
-                    </Row>
-                  </td>
-                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right', fontSize: 14, fontWeight: 500 }}>
-                    <button
-                      type="button"
-                      style={{
-                        ...orangeButtonStyle,
-                        padding: '6px 12px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 4,
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onClientClick?.(client);
-                      }}
-                    >
-                      View
-                      <ChevronRight size={16} />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  Client
+                </th>
+                <th
+                  scope="col"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: 100,
+                  }}
+                >
+                  Type
+                </th>
+                {clientTypeFilter !== 'subcontractor' && (
+                  <th
+                    scope="col"
+                    style={{
+                      padding: '12px 24px',
+                      textAlign: 'left',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      color: 'var(--color-gray-11)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      width: 120,
+                    }}
+                  >
+                    Subs Compliant
+                  </th>
+                )}
+                <th
+                  scope="col"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: 100,
+                  }}
+                >
+                  Risk Score
+                </th>
+                <th
+                  scope="col"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: 100,
+                  }}
+                >
+                  Open Items
+                </th>
+                <th
+                  scope="col"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: 120,
+                  }}
+                >
+                  Next Renewal
+                </th>
+                <th
+                  scope="col"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: 120,
+                  }}
+                >
+                  Compliance
+                </th>
+                {brokerCounts && (
+                  <th
+                    scope="col"
+                    style={{
+                      padding: '12px 24px',
+                      textAlign: 'left',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      color: 'var(--color-gray-11)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      width: 100,
+                    }}
+                  >
+                    Brokers
+                  </th>
+                )}
+                <th
+                  scope="col"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: 120,
+                  }}
+                >
+                  Last Activity
+                </th>
+                <th
+                  scope="col"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'right',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: 100,
+                  }}
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredClients.map((client) => {
+                const isGC = client.client_type === 'general_contractor';
+                const initials = (client.company_name || '')
+                  .split(' ')
+                  .map((n) => n[0] || '')
+                  .join('')
+                  .substring(0, 2) || '??';
+                const riskStyle = getRiskChipStyle(client.risk_level);
+                const score = client.compliance_score ?? 0;
+                const progressColor = score >= 90 ? 'success' : score >= 70 ? 'primary' : 'error';
+                const fillColor = getComplianceColor(score);
+                const stats = gcSubStats.get(client.id);
+                const brokerInfo = brokerCounts?.get(client.id);
 
-        {filteredClients.length === 0 && (
-          <Stack alignItems="center" style={{ paddingTop: 48, paddingBottom: 48 }}>
-            <Text muted>
-              No clients found matching your filters
-            </Text>
-          </Stack>
-        )}
-      </Stack>
+                return (
+                  <tr
+                    key={client.id}
+                    style={{
+                      borderBottom: '1px solid var(--color-border)',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => onClientClick?.(client)}
+                  >
+                    <td style={{ padding: '16px 24px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <Avatar
+                          size={40}
+                          color={isGC ? 'primary' : 'info'}
+                          initials={initials}
+                        />
+                        <div>
+                          <Link
+                            to={`/broker/clients/${client.id}`}
+                            style={{
+                              fontSize: 14,
+                              fontWeight: 500,
+                              color: 'var(--color-blue-10)',
+                              textDecoration: 'none',
+                              display: 'block',
+                            }}
+                            onClick={(e) => {
+                              e?.stopPropagation();
+                              onClientClick?.(client);
+                            }}
+                            data-testid="client-name-link"
+                          >
+                            {client.company_name}
+                          </Link>
+                          <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 2 }}>
+                            {client.contact_email || client.contact_name || 'No contact info'}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: '16px 24px' }}>
+                      <Chip
+                        size="sm"
+                        type="default"
+                        style={{
+                          backgroundColor: isGC ? 'var(--color-purple-2)' : 'var(--color-blue-2)',
+                        }}
+                        textStyle={{
+                          color: isGC ? 'var(--color-purple-11)' : 'var(--color-blue-11)',
+                        }}
+                      >
+                        {getClientTypeBadge(client)}
+                      </Chip>
+                    </td>
+                    {clientTypeFilter !== 'subcontractor' && (
+                      <td style={{ padding: '16px 24px' }}>
+                        {!isGC ? (
+                          <span style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>-</span>
+                        ) : !stats || stats.totalSubs === 0 ? (
+                          <span style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>No subs</span>
+                        ) : (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Users size={16} style={{ color: 'var(--color-text-muted)' }} />
+                            <span
+                              style={{
+                                fontSize: 14,
+                                fontWeight: 500,
+                                color: stats.compliancePercent >= 80
+                                  ? 'var(--color-green-10)'
+                                  : stats.compliancePercent >= 50
+                                    ? 'var(--color-yellow-10)'
+                                    : 'var(--color-red-10)',
+                              }}
+                            >
+                              {stats.compliantSubs}/{stats.totalSubs} ({stats.compliancePercent}%)
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                    )}
+                    <td style={{ padding: '16px 24px' }}>
+                      <Chip
+                        size="sm"
+                        type="default"
+                        style={{
+                          backgroundColor: riskStyle.backgroundColor,
+                          borderColor: riskStyle.borderColor,
+                          borderWidth: 1,
+                        }}
+                        textStyle={{ color: riskStyle.color }}
+                      >
+                        {client.risk_level}
+                      </Chip>
+                    </td>
+                    <td style={{ padding: '16px 24px' }}>
+                      <span style={{ fontSize: 14, fontWeight: 500 }}>
+                        {getOpenItemsCount(client.id)}
+                      </span>
+                    </td>
+                    <td style={{ padding: '16px 24px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Calendar size={14} style={{ color: 'var(--color-text-muted)' }} />
+                        <span style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>
+                          {getNextRenewal(client.id)}
+                        </span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '16px 24px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <ProgressBarBase
+                          value={score}
+                          color={progressColor}
+                          style={{ width: 64, height: 8 }}
+                          fillStyle={{ backgroundColor: fillColor }}
+                        />
+                        <span style={{ fontSize: 14, fontWeight: 500 }}>
+                          {score}%
+                        </span>
+                      </div>
+                    </td>
+                    {brokerCounts && (
+                      <td style={{ padding: '16px 24px' }}>
+                        {!brokerInfo || brokerInfo.brokerCount === 0 ? (
+                          <span style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>-</span>
+                        ) : brokerInfo.hasMultipleBrokers ? (
+                          <div
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 4,
+                              backgroundColor: 'var(--color-orange-2)',
+                              paddingLeft: 8,
+                              paddingRight: 8,
+                              paddingTop: 4,
+                              paddingBottom: 4,
+                              borderRadius: 4,
+                            }}
+                          >
+                            <Shield size={14} style={{ color: 'var(--color-orange-10)' }} />
+                            <span
+                              style={{
+                                fontSize: 14,
+                                fontWeight: 600,
+                                color: 'var(--color-orange-11)',
+                              }}
+                            >
+                              {brokerInfo.brokerCount}
+                            </span>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <Shield size={14} style={{ color: 'var(--color-text-muted)' }} />
+                            <span style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>1</span>
+                          </div>
+                        )}
+                      </td>
+                    )}
+                    <td style={{ padding: '16px 24px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <MessageSquare size={14} style={{ color: 'var(--color-text-muted)' }} />
+                        <span style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>
+                          {client.last_activity_at ? formatDistanceToNow(client.last_activity_at) : 'No activity'}
+                        </span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        iconEnd={ChevronRight}
+                        onPress={() => {
+                          onClientClick?.(client);
+                        }}
+                      >
+                        View
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </Card>
   );
 }

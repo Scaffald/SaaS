@@ -6,6 +6,7 @@ import {
   CheckCircle,
   AlertCircle,
   UserPlus,
+  Users,
 } from 'lucide-react';
 import { Stack, Row, Text, H1, H3, Card, Input, Button, Spinner } from '@unicornlove/beyond-ui';
 import { useAuth } from '../../contexts/AuthContext';
@@ -19,6 +20,7 @@ import {
   type RelationshipInvitation,
 } from '../../lib/relationshipInvitations';
 import { generateRelationshipCode } from '../../lib/connectionCodes';
+import { ManualUserCreateModal } from '../../components/ManualUsers/ManualUserCreateModal';
 
 interface BrokerInfo {
   id: string;
@@ -52,6 +54,9 @@ export default function MyBrokerPage() {
   const [showCodeEntry, setShowCodeEntry] = useState(false);
   const [brokerCode, setBrokerCode] = useState('');
   const [connectingByCode, setConnectingByCode] = useState(false);
+
+  // Manual broker creation state
+  const [showManualBrokerModal, setShowManualBrokerModal] = useState(false);
 
   // Fetch organization ID
   useEffect(() => {
@@ -474,6 +479,41 @@ export default function MyBrokerPage() {
         </Stack>
       </Card>
 
+      {/* Add Broker Manually */}
+      <Card
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          border: '1px solid var(--color-border)',
+          padding: 24,
+        }}
+      >
+        <Stack gap={16}>
+          <Row justifyContent="space-between" alignItems="center">
+            <Stack gap={4}>
+              <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+                Add Broker Manually
+              </H3>
+              <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                Add a broker as a placeholder without sending an email
+              </Text>
+            </Stack>
+            <Button
+              size="sm"
+              variant="outline"
+              iconStart={Users}
+              onPress={() => setShowManualBrokerModal(true)}
+            >
+              Add Manually
+            </Button>
+          </Row>
+          <Text size="xs" style={{ color: 'var(--color-gray-10)' }}>
+            Manually added brokers are private to you. If they register later with the same email,
+            their accounts will be merged automatically.
+          </Text>
+        </Stack>
+      </Card>
+
       {/* Manager Code - For Contractors */}
       <Card
         style={{
@@ -601,11 +641,25 @@ export default function MyBrokerPage() {
             </Text>
           </Row>
           <Text size="xs" style={{ color: 'var(--color-gray-11)' }}>
-            You can connect with multiple insurance brokers if needed. Once connected, your brokers 
+            You can connect with multiple insurance brokers if needed. Once connected, your brokers
             will be able to manage your insurance policies and compliance requirements.
           </Text>
         </Stack>
       </Card>
+
+      {/* Manual Broker Creation Modal */}
+      {organizationId && (
+        <ManualUserCreateModal
+          isOpen={showManualBrokerModal}
+          onClose={() => setShowManualBrokerModal(false)}
+          role="broker"
+          organizationId={organizationId}
+          onSuccess={() => {
+            // Reload page to show new broker (if any changes)
+            window.location.reload();
+          }}
+        />
+      )}
     </Stack>
   );
 }

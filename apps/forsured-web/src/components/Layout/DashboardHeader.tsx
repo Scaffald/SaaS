@@ -3,7 +3,8 @@
  * Matches Figma design system comps
  * Includes page title, action buttons, and user avatar
  */
-import { Row, Stack, Text, Button } from '@unicornlove/beyond-ui'
+import { Row, Text } from '@unicornlove/beyond-ui'
+import { NavIconButton } from '@unicornlove/beyond-ui'
 import { Bell } from 'lucide-react'
 
 interface DashboardHeaderProps {
@@ -61,44 +62,15 @@ export default function DashboardHeader({
       {/* Action Buttons */}
       <Row style={{ gap: 'var(--space-4)', alignItems: 'center' }}>
         {/* Notifications Icon with Badge */}
-        <Stack style={{ position: 'relative' }}>
-          <Button
-            variant="ghost"
-            size="md"
-            iconStart={Bell}
-            onPress={handleNotifications}
-            style={{
-              minWidth: 40,
-              padding: 'var(--space-2)',
-            }}
-          />
-          {notificationCount > 0 && (
-            <Stack
-              style={{
-                position: 'absolute',
-                top: 4,
-                right: 4,
-                minWidth: 18,
-                height: 18,
-                borderRadius: 9,
-                backgroundColor: 'var(--color-error-500)',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingHorizontal: 4,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 10,
-                  fontWeight: 600,
-                  color: 'var(--color-white)',
-                }}
-              >
-                {notificationCount > 9 ? '9+' : notificationCount}
-              </Text>
-            </Stack>
-          )}
-        </Stack>
+        <NavIconButton
+          icon={Bell}
+          variant="light"
+          onPress={handleNotifications}
+          badge={notificationCount > 0 ? 'number' : undefined}
+          badgeValue={notificationCount > 0 ? notificationCount : undefined}
+          showBadge={notificationCount > 0}
+          accessibilityLabel="Notifications"
+        />
       </Row>
     </Row>
   )

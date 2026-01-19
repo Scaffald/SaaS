@@ -4,6 +4,39 @@ import { z } from 'zod'
 import type { Context } from '../context.ts'
 import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
+/**
+ * Log notification interaction to audit log
+ */
+async function logNotificationAudit(
+  supabase: Context['supabase'],
+  userId: string,
+  action: string,
+  notificationIds: string[],
+  metadata?: Record<string, unknown>
+) {
+  try {
+    // Insert into forsured.audit_log table
+    await supabase
+      .schema('forsured')
+      .from('audit_log')
+      .insert({
+        category: 'data_modification',
+        action: `notification_${action}`,
+        severity: 'low',
+        user_id: userId,
+        table_name: 'notifications',
+        operation: action.includes('delete') ? 'DELETE' : 'UPDATE',
+        metadata: {
+          notification_ids: notificationIds,
+          ...metadata,
+        },
+      } as never)
+  } catch (error) {
+    // Don't fail the main operation if audit logging fails
+    console.warn('[notifications] Failed to log audit event:', error)
+  }
+}
+
 const listInputSchema = z.object({
   status: z.enum(['all', 'unread', 'read', 'archived']).default('all'),
   limit: z.number().int().min(1).max(100).default(25),
@@ -59,6 +92,7 @@ const notificationSelection = `
   read,
   read_at,
   archived_at,
+  deleted_at,
   routed_channels,
   cta_label,
   cta_url,
@@ -76,6 +110,7 @@ function buildListQuery(
     .from('notifications')
     .select(notificationSelection)
     .eq('user_id', user.id)
+    .is('deleted_at', null) // Exclude soft-deleted notifications
     .order('created_at', { ascending: false })
     .limit(input.limit + 1)
 
@@ -149,6 +184,7 @@ export const notificationsRouter = t.router({
       .eq('user_id', user.id)
       .eq('read', false)
       .is('archived_at', null)
+      .is('deleted_at', null) // Exclude soft-deleted notifications
 
     if (error) {
       throw new TRPCError({
@@ -172,6 +208,7 @@ export const notificationsRouter = t.router({
         .update({ read: true, read_at: timestamp, updated_at: timestamp })
         .eq('id', input.id)
         .eq('user_id', user.id)
+        .is('deleted_at', null) // Don't allow modifying deleted notifications
         .select(notificationSelection)
         .single()
 
@@ -185,6 +222,12 @@ export const notificationsRouter = t.router({
       if (!data) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Notification not found' })
       }
+
+      // Audit log
+      await logNotificationAudit(supabase, user.id, 'mark_read', [input.id], {
+        notification_type: data.type,
+        notification_severity: data.severity,
+      })
 
       return data
     }),
@@ -200,6 +243,7 @@ export const notificationsRouter = t.router({
         .update({ read: false, read_at: null, updated_at: new Date().toISOString() })
         .eq('id', input.id)
         .eq('user_id', user.id)
+        .is('deleted_at', null) // Don't allow modifying deleted notifications
         .select(notificationSelection)
         .single()
 
@@ -214,6 +258,12 @@ export const notificationsRouter = t.router({
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Notification not found' })
       }
 
+      // Audit log
+      await logNotificationAudit(supabase, user.id, 'mark_unread', [input.id], {
+        notification_type: data.type,
+        notification_severity: data.severity,
+      })
+
       return data
     }),
 
@@ -227,6 +277,7 @@ export const notificationsRouter = t.router({
       .update({ read: true, read_at: timestamp, updated_at: timestamp })
       .eq('user_id', user.id)
       .in('id', input.ids)
+      .is('deleted_at', null) // Don't allow modifying deleted notifications
 
     if (error) {
       throw new TRPCError({
@@ -234,6 +285,11 @@ export const notificationsRouter = t.router({
         message: `Failed to mark notifications as read: ${error.message}`,
       })
     }
+
+    // Audit log
+    await logNotificationAudit(supabase, user.id, 'mark_many_read', input.ids, {
+      count: input.ids.length,
+    })
 
     return { success: true }
   }),
@@ -247,6 +303,7 @@ export const notificationsRouter = t.router({
       .update({ read: false, read_at: null, updated_at: new Date().toISOString() })
       .eq('user_id', user.id)
       .in('id', input.ids)
+      .is('deleted_at', null) // Don't allow modifying deleted notifications
 
     if (error) {
       throw new TRPCError({
@@ -254,6 +311,11 @@ export const notificationsRouter = t.router({
         message: `Failed to mark notifications as unread: ${error.message}`,
       })
     }
+
+    // Audit log
+    await logNotificationAudit(supabase, user.id, 'mark_many_unread', input.ids, {
+      count: input.ids.length,
+    })
 
     return { success: true }
   }),
@@ -268,6 +330,7 @@ export const notificationsRouter = t.router({
       .update({ archived_at: timestamp, updated_at: timestamp })
       .eq('user_id', user.id)
       .in('id', input.ids)
+      .is('deleted_at', null) // Don't allow modifying deleted notifications
 
     if (error) {
       throw new TRPCError({
@@ -275,6 +338,11 @@ export const notificationsRouter = t.router({
         message: `Failed to archive notifications: ${error.message}`,
       })
     }
+
+    // Audit log
+    await logNotificationAudit(supabase, user.id, 'archive_many', input.ids, {
+      count: input.ids.length,
+    })
 
     return { success: true }
   }),
@@ -288,6 +356,7 @@ export const notificationsRouter = t.router({
       .update({ archived_at: null, updated_at: new Date().toISOString() })
       .eq('user_id', user.id)
       .in('id', input.ids)
+      .is('deleted_at', null) // Don't allow modifying deleted notifications
 
     if (error) {
       throw new TRPCError({
@@ -295,6 +364,11 @@ export const notificationsRouter = t.router({
         message: `Failed to restore notifications: ${error.message}`,
       })
     }
+
+    // Audit log
+    await logNotificationAudit(supabase, user.id, 'restore_many', input.ids, {
+      count: input.ids.length,
+    })
 
     return { success: true }
   }),
@@ -310,6 +384,7 @@ export const notificationsRouter = t.router({
       .eq('user_id', user.id)
       .eq('read', false)
       .is('archived_at', null)
+      .is('deleted_at', null) // Don't allow modifying deleted notifications
 
     if (error) {
       throw new TRPCError({
@@ -318,7 +393,41 @@ export const notificationsRouter = t.router({
       })
     }
 
+    // Audit log
+    await logNotificationAudit(supabase, user.id, 'mark_all_read', [], {
+      count: count ?? 0,
+    })
+
     return { success: true, updated: count ?? 0 }
+  }),
+
+  deleteMany: protectedProcedure.input(bulkIdsInput).mutation(async ({ ctx, input }) => {
+    const { supabase, user } = ctx
+    const timestamp = new Date().toISOString()
+
+    // Soft delete: set deleted_at timestamp
+    const { error } = await supabase
+      .schema('core')
+      .from('notifications')
+      .update({ deleted_at: timestamp, updated_at: timestamp })
+      .eq('user_id', user.id)
+      .in('id', input.ids)
+      .is('deleted_at', null) // Don't allow double-deleting
+
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to delete notifications: ${error.message}`,
+      })
+    }
+
+    // Audit log
+    await logNotificationAudit(supabase, user.id, 'delete_many', input.ids, {
+      count: input.ids.length,
+      soft_delete: true,
+    })
+
+    return { success: true }
   }),
 
   preferences: t.router({

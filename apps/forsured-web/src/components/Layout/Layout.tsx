@@ -14,8 +14,10 @@ import type { CommandMenuItemData } from '@unicornlove/beyond-ui'
 import Sidebar from './Sidebar'
 import DashboardHeader from './DashboardHeader'
 import ProfileModal from '../Settings/ProfileModal'
+import { NotificationModal } from '../Notifications/NotificationModal'
 import { useAuth } from '../../contexts/AuthContext'
 import { useApprovals } from '../../hooks/useApprovals'
+import { useNotifications } from '../../hooks/useNotifications'
 import { useCommandMenu } from '../../hooks/useCommandMenu'
 import { getCommandMenuItems } from '../../utils/commandMenuItems'
 import LoadingSpinner from '../Common/LoadingSpinner'
@@ -61,6 +63,16 @@ export default function Layout() {
   // Profile modal state
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
+  // Notifications modal state
+  const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false)
+
+  // Fetch unread notification count
+  const { unreadCount } = useNotifications({
+    status: 'all',
+    limit: 1,
+    enabled: true, // Always fetch unread count
+  })
+
   // CommandMenu integration - MUST be called before any conditional returns
   const { isOpen, closeMenu } = useCommandMenu()
 
@@ -100,12 +112,6 @@ export default function Layout() {
     }
   }
 
-  const getNotificationsPath = () => {
-    if (uiUserType === 'manager') return '/manager/notifications'
-    if (uiUserType === 'broker') return '/broker/notifications'
-    if (uiUserType === 'subcontractor') return '/subcontractor/notifications'
-    return '/notifications'
-  }
 
   // Get page title from current path
   const getPageTitle = (pathname: string): string => {
@@ -135,7 +141,7 @@ export default function Layout() {
         <Sidebar
           userRole={uiUserType}
           user={profile}
-          onNotificationsClick={() => navigate(getNotificationsPath())}
+          onNotificationsClick={() => setIsNotificationsModalOpen(true)}
           onSettingsClick={() => setIsProfileModalOpen(true)}
           alertCount={pendingApprovalsCount}
           collapsed={sidebarCollapsed}
@@ -155,8 +161,8 @@ export default function Layout() {
           {/* Dashboard Header */}
           <DashboardHeader
             title={getPageTitle(location.pathname)}
-            onNotificationsPress={() => navigate(getNotificationsPath())}
-            notificationCount={pendingApprovalsCount}
+            onNotificationsPress={() => setIsNotificationsModalOpen(true)}
+            notificationCount={unreadCount}
           />
 
           <Stack
@@ -220,6 +226,12 @@ export default function Layout() {
       <ProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
+      />
+
+      {/* Notifications Modal */}
+      <NotificationModal
+        isOpen={isNotificationsModalOpen}
+        onClose={() => setIsNotificationsModalOpen(false)}
       />
     </>
   )

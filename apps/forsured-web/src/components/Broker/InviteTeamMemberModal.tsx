@@ -1,21 +1,31 @@
 /**
  * InviteTeamMemberModal - Broker-specific team member invitation modal
- * BUG-003: Incomplete Team Member Invite Implementation
- *
  * Modal for inviting team members to broker organization with role selection.
+ *
+ * Uses SimpleModal instead of React Native Modal to avoid focus trap issues
+ * that cause the modal to close unexpectedly on web.
  */
 
-import { useState, useEffect } from 'react';
-import { UserPlus, X } from 'lucide-react';
-import { Stack, Row, Text, Button, Card, H2, Input } from '@unicornlove/beyond-ui';
+import { useState, useCallback } from 'react';
+import { UserPlus } from 'lucide-react';
+import {
+  Stack,
+  Row,
+  Text,
+  Input,
+  Button,
+} from '@unicornlove/beyond-ui';
+import { SimpleModal } from '../Common/SimpleModal';
 import { useUserInvitations } from '../../hooks/useUserInvitations';
 import { useUser } from '../../contexts/UserContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'sonner';
 
 interface InviteTeamMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  organizationId?: string | null;
 }
 
 type BrokerRole = 'admin' | 'worker';
@@ -40,9 +50,14 @@ export default function InviteTeamMemberModal({
   isOpen,
   onClose,
   onSuccess,
+  organizationId,
 }: InviteTeamMemberModalProps) {
   const { currentUser } = useUser();
+  const { user: authUser } = useAuth();
   const { createInvitation } = useUserInvitations();
+
+  // Use either currentUser.id or authUser.id (from Supabase auth)
+  const inviterId = currentUser?.id || authUser?.id;
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -50,31 +65,8 @@ export default function InviteTeamMemberModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen && !loading) {
-        handleClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, loading]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
-  const handleClose = () => {
+  // Internal modal handler - completely separate from parent component handlers
+  const handleClose = useCallback(() => {
     if (loading) return;
 
     setEmail('');
@@ -82,13 +74,7 @@ export default function InviteTeamMemberModal({
     setBrokerRole('worker');
     setError(null);
     onClose();
-  };
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget && !loading) {
-      handleClose();
-    }
-  };
+  }, [loading, onClose]);
 
   const validateForm = (): boolean => {
     if (!email.trim()) {
@@ -124,13 +110,28 @@ export default function InviteTeamMemberModal({
     setLoading(true);
 
     try {
+      if (!organizationId) {
+        setError('Organization ID is required. Please refresh the page and try again.');
+        setLoading(false);
+        return;
+      }
+
+      if (!inviterId) {
+        setError('User session not found. Please refresh the page and try again.');
+        setLoading(false);
+        return;
+      }
+
+      // Create invitation with the same organization_id as the inviter
+      // The invited user will join the same broker organization/team
       await createInvitation({
         email: email.trim().toLowerCase(),
         name: name.trim(),
         role: 'broker', // User type is 'broker'
-        invited_by: currentUser?.id || '',
+        invited_by: inviterId,
         status: 'pending',
         invited_at: new Date().toISOString(),
+        organization_id: organizationId, // Same organization as the inviter
       });
 
       toast.success('Invitation sent successfully', {
@@ -143,8 +144,8 @@ export default function InviteTeamMemberModal({
       setBrokerRole('worker');
       setError(null);
 
+      // Notify parent of success - parent will handle closing and refreshing
       onSuccess?.();
-      onClose();
     } catch (err) {
       const errorMessage = err instanceof Error
         ? err.message
@@ -159,19 +160,7 @@ export default function InviteTeamMemberModal({
     }
   };
 
-  if (!isOpen) return null;
-
   const selectedRoleConfig = BROKER_ROLE_CONFIG.find((r) => r.value === brokerRole);
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '10px 12px',
-    border: '1px solid var(--color-border)',
-    borderRadius: 8,
-    backgroundColor: 'var(--color-background)',
-    color: 'var(--color-text)',
-    fontSize: 14,
-  };
 
   const selectStyle: React.CSSProperties = {
     width: '100%',
@@ -185,206 +174,132 @@ export default function InviteTeamMemberModal({
     opacity: loading ? 0.5 : 1,
   };
 
-  return (
-    <Stack
-      onPress={handleBackdropClick}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 50,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-      }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="invite-member-modal-title"
-    >
-      <Card
-        onPress={(e: React.MouseEvent) => e.stopPropagation()}
-        style={{
-          backgroundColor: 'var(--color-background)',
-          borderRadius: 12,
-          width: '100%',
-          maxWidth: 480,
-          marginLeft: 16,
-          marginRight: 16,
-        }}
+  const footer = (
+    <Row gap={12} justifyContent="flex-end" style={{ width: '100%' }}>
+      <Button
+        variant="ghost"
+        color="gray"
+        onPress={handleClose}
+        disabled={loading}
       >
-        {/* Header */}
-        <Row
-          alignItems="center"
-          justifyContent="space-between"
-          padding={16}
-          style={{ borderBottom: '1px solid var(--color-border)' }}
-        >
-          <Row alignItems="center" gap={12}>
-            <Stack
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 9999,
-                backgroundColor: 'var(--color-blue-2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <UserPlus size={20} style={{ color: 'var(--color-blue-10)' }} />
-            </Stack>
-            <Stack>
-              <H2
-                id="invite-member-modal-title"
-                style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}
-              >
-                Invite Team Member
-              </H2>
-              <Text size="sm" muted>
-                Send an invitation to join your broker team
-              </Text>
-            </Stack>
-          </Row>
+        Cancel
+      </Button>
+      <Button
+        color="primary"
+        onPress={handleSubmit}
+        disabled={loading || !email.trim() || !name.trim()}
+        loading={loading}
+      >
+        {loading ? 'Sending...' : 'Send Invitation'}
+      </Button>
+    </Row>
+  );
 
-          {/* Close Button */}
-          <Button
-            onPress={handleClose}
-            disabled={loading}
-            variant="ghost"
-            style={{ padding: 4, opacity: loading ? 0.5 : 1 }}
-            aria-label="Close modal"
-          >
-            <X size={20} />
-          </Button>
-        </Row>
-
-        {/* Form Content */}
-        <Stack padding={16} gap={16}>
-          {/* Error Message */}
-          {error && (
-            <Stack
-              style={{
-                backgroundColor: 'var(--color-red-2)',
-                border: '1px solid var(--color-red-6)',
-                borderRadius: 8,
-                padding: 12,
-              }}
-            >
-              <Text size="sm" style={{ color: 'var(--color-red-11)' }}>
-                {error}
-              </Text>
-            </Stack>
-          )}
-
-          {/* Name Field */}
-          <Stack gap={8}>
-            <Text size="sm" weight="medium" muted>
-              Full Name <span style={{ color: 'var(--color-red-10)' }}>*</span>
-            </Text>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter full name"
-              disabled={loading}
-              style={inputStyle}
-            />
-          </Stack>
-
-          {/* Email Field */}
-          <Stack gap={8}>
-            <Text size="sm" weight="medium" muted>
-              Email Address <span style={{ color: 'var(--color-red-10)' }}>*</span>
-            </Text>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@example.com"
-              disabled={loading}
-              style={inputStyle}
-            />
-          </Stack>
-
-          {/* Broker Role Selector */}
-          <Stack gap={8}>
-            <Text size="sm" weight="medium" muted>
-              Role <span style={{ color: 'var(--color-red-10)' }}>*</span>
-            </Text>
-            <select
-              value={brokerRole}
-              onChange={(e) => setBrokerRole(e.target.value as BrokerRole)}
-              disabled={loading}
-              style={selectStyle}
-            >
-              {BROKER_ROLE_CONFIG.map((role) => (
-                <option key={role.value} value={role.value}>
-                  {role.label}
-                </option>
-              ))}
-            </select>
-
-            {/* Role Description */}
-            {selectedRoleConfig && (
-              <Stack
-                style={{
-                  backgroundColor: 'var(--color-blue-2)',
-                  borderRadius: 6,
-                  padding: 8,
-                }}
-              >
-                <Text size="xs" style={{ color: 'var(--color-blue-11)' }}>
-                  {selectedRoleConfig.description}
-                </Text>
-              </Stack>
-            )}
-          </Stack>
-
-          {/* Info Message */}
+  return (
+    <SimpleModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Invite Team Member"
+      description="Send an invitation to join your broker team"
+      icon={<UserPlus size={20} style={{ color: 'var(--color-blue-10)' }} />}
+      width={480}
+      closeOnBackdropClick={!loading}
+      closeOnEscape={!loading}
+      footer={footer}
+      testID="invite-team-member-modal"
+    >
+      <Stack gap={16}>
+        {/* Error Message */}
+        {error && (
           <Stack
             style={{
-              backgroundColor: 'var(--color-blue-2)',
-              border: '1px solid var(--color-blue-6)',
+              backgroundColor: 'var(--color-red-2)',
+              border: '1px solid var(--color-red-6)',
               borderRadius: 8,
               padding: 12,
             }}
           >
-            <Text size="xs" style={{ color: 'var(--color-blue-11)' }}>
-              An invitation email will be sent to the user with instructions to join your broker team.
+            <Text size="sm" style={{ color: 'var(--color-red-11)' }}>
+              {error}
             </Text>
           </Stack>
+        )}
 
-          {/* Action Buttons */}
-          <Row gap={12} style={{ paddingTop: 8 }}>
-            <Button
-              variant="outlined"
-              onPress={handleClose}
-              disabled={loading}
-              style={{ flex: 1, opacity: loading ? 0.5 : 1 }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onPress={handleSubmit}
-              disabled={loading || !email.trim() || !name.trim()}
+        {/* Name Field */}
+        <Stack gap={8}>
+          <Text size="sm" weight="medium" muted>
+            Full Name <span style={{ color: 'var(--color-red-10)' }}>*</span>
+          </Text>
+          <Input
+            value={name}
+            onChangeText={setName}
+            placeholder="Enter full name"
+            disabled={loading}
+          />
+        </Stack>
+
+        {/* Email Field */}
+        <Stack gap={8}>
+          <Text size="sm" weight="medium" muted>
+            Email Address <span style={{ color: 'var(--color-red-10)' }}>*</span>
+          </Text>
+          <Input
+            type="email"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="user@example.com"
+            disabled={loading}
+          />
+        </Stack>
+
+        {/* Broker Role Selector */}
+        <Stack gap={8}>
+          <Text size="sm" weight="medium" muted>
+            Role <span style={{ color: 'var(--color-red-10)' }}>*</span>
+          </Text>
+          <select
+            value={brokerRole}
+            onChange={(e) => setBrokerRole(e.target.value as BrokerRole)}
+            disabled={loading}
+            style={selectStyle}
+          >
+            {BROKER_ROLE_CONFIG.map((role) => (
+              <option key={role.value} value={role.value}>
+                {role.label}
+              </option>
+            ))}
+          </select>
+
+          {/* Role Description */}
+          {selectedRoleConfig && (
+            <Stack
               style={{
-                flex: 1,
-                opacity: loading || !email.trim() || !name.trim() ? 0.5 : 1,
-                backgroundColor: 'var(--color-blue-10)',
+                backgroundColor: 'var(--color-blue-2)',
+                borderRadius: 6,
+                padding: 8,
               }}
             >
-              <Row alignItems="center" gap={8}>
-                <UserPlus size={16} />
-                <Text style={{ color: 'white' }}>
-                  {loading ? 'Sending...' : 'Send Invitation'}
-                </Text>
-              </Row>
-            </Button>
-          </Row>
+              <Text size="xs" style={{ color: 'var(--color-blue-11)' }}>
+                {selectedRoleConfig.description}
+              </Text>
+            </Stack>
+          )}
         </Stack>
-      </Card>
-    </Stack>
+
+        {/* Info Message */}
+        <Stack
+          style={{
+            backgroundColor: 'var(--color-blue-2)',
+            border: '1px solid var(--color-blue-6)',
+            borderRadius: 8,
+            padding: 12,
+          }}
+        >
+          <Text size="xs" style={{ color: 'var(--color-blue-11)' }}>
+            An invitation email will be sent to the user with instructions to join your broker team.
+          </Text>
+        </Stack>
+      </Stack>
+    </SimpleModal>
   );
 }

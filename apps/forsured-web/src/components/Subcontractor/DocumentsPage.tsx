@@ -307,6 +307,8 @@ export default function DocumentsPage() {
     <Stack gap={24}>
       <Row alignItems="center" justifyContent="flex-end" gap={8}>
         <CommonButton
+          color="primary"
+          variant="filled"
           iconStart={Upload}
           onPress={() => {
             console.log('[DocumentsPage] Upload button clicked')

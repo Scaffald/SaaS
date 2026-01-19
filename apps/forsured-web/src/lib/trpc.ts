@@ -59,6 +59,10 @@ export function createTRPCClient() {
       httpBatchLink({
         url: `${getBaseUrl()}/api/trpc`,
 
+        // Use SuperJSON for proper Date, Map, Set serialization
+        // NOTE: In tRPC v11+, transformer must be on the link, not createClient
+        transformer: superjson,
+
         // Add authentication headers
         async headers() {
           const headers: Record<string, string> = {
@@ -84,8 +88,5 @@ export function createTRPCClient() {
         },
       }),
     ],
-
-    // Use SuperJSON for proper Date, Map, Set serialization
-    transformer: superjson,
   });
 }

@@ -472,3 +472,80 @@ export async function cancelInvitation(
   return true;
 }
 
+/**
+ * Resend a relationship invitation
+ * Updates the invitation timestamp and sends a new email
+ * 
+ * @param invitationId - The invitation ID
+ * @param userId - The user ID performing the action
+ * @returns The updated invitation
+ */
+export async function resendRelationshipInvitation(
+  invitationId: string,
+  userId: string
+): Promise<RelationshipInvitation> {
+  // Fetch the invitation to verify ownership and get details
+  const { data: invitation, error: fetchError } = await forsured('relationship_invitations')
+    .select('*')
+    .eq('id', invitationId)
+    .eq('inviter_user_id', userId)
+    .eq('status', 'pending')
+    .single();
+
+  if (fetchError || !invitation) {
+    console.error('[RelationshipInvitations] Error fetching invitation:', fetchError);
+    throw new Error('Invitation not found or cannot be resent');
+  }
+
+  // Check if expired
+  if (invitation.expires_at && new Date(invitation.expires_at) < new Date()) {
+    // Extend expiration by 30 days
+    const newExpiresAt = new Date();
+    newExpiresAt.setDate(newExpiresAt.getDate() + 30);
+    
+    const { data: updated, error: updateError } = await forsured('relationship_invitations')
+      .update({
+        expires_at: newExpiresAt.toISOString(),
+        invited_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        metadata: {
+          ...invitation.metadata,
+          last_resent_at: new Date().toISOString(),
+          resend_count: ((invitation.metadata?.resend_count as number) || 0) + 1,
+        },
+      })
+      .eq('id', invitationId)
+      .select()
+      .single();
+
+    if (updateError || !updated) {
+      console.error('[RelationshipInvitations] Error updating invitation:', updateError);
+      throw new Error('Failed to update invitation');
+    }
+
+    return updated;
+  }
+
+  // Update invitation timestamp and metadata
+  const { data: updated, error: updateError } = await forsured('relationship_invitations')
+    .update({
+      invited_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      metadata: {
+        ...invitation.metadata,
+        last_resent_at: new Date().toISOString(),
+        resend_count: ((invitation.metadata?.resend_count as number) || 0) + 1,
+      },
+    })
+    .eq('id', invitationId)
+    .select()
+    .single();
+
+  if (updateError || !updated) {
+    console.error('[RelationshipInvitations] Error updating invitation:', updateError);
+    throw new Error('Failed to update invitation');
+  }
+
+  return updated;
+}
+

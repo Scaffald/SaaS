@@ -19,6 +19,7 @@ import {
 import { Stack, Row, Text, H1, H2, H3, Card, Grid } from '@unicornlove/beyond-ui'
 import Button from '../Common/Button'
 import SubcontractorDetailModal from './SubcontractorDetailModal'
+import { ManualUserCreateModal } from '../ManualUsers/ManualUserCreateModal'
 import { useDatabase } from '../../contexts/DatabaseContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getUserOrganizationId } from '../../lib/supabase'
@@ -95,6 +96,9 @@ export default function SubcontractorsPage() {
   const [managerCode, setManagerCode] = useState<string>('')
   const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([])
   const [showInviteSection, setShowInviteSection] = useState(false)
+
+  // Manual contractor creation state (REQ-12)
+  const [showManualContractorModal, setShowManualContractorModal] = useState(false)
   const [inviteFormData, setInviteFormData] = useState({
     email: '',
     name: '',
@@ -566,20 +570,41 @@ export default function SubcontractorsPage() {
                 Invite subcontractors to your projects to track their compliance and insurance
                 requirements.
               </Text>
-              <Button color="primary" iconStart={Plus} onPress={() => setShowAddModal(true)}>
-                Add Subcontractor
-              </Button>
+              <Row style={{ gap: 12 }}>
+                <Button variant="outlined" iconStart={UserPlus} onPress={() => setShowManualContractorModal(true)}>
+                  Add Manually
+                </Button>
+                <Button color="primary" iconStart={Plus} onPress={() => setShowAddModal(true)}>
+                  Add Subcontractor
+                </Button>
+              </Row>
             </Stack>
           </Stack>
         </Stack>
         {addSubcontractorModal}
+
+        {/* Manual Contractor Creation Modal (REQ-12) */}
+        {organizationId && (
+          <ManualUserCreateModal
+            isOpen={showManualContractorModal}
+            onClose={() => setShowManualContractorModal(false)}
+            role="contractor"
+            organizationId={organizationId}
+            onSuccess={() => {
+              fetchSubcontractors()
+            }}
+          />
+        )}
       </>
     )
   }
 
   return (
     <Stack style={{ gap: 24 }}>
-      <Row style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+      <Row style={{ alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+        <Button variant="outlined" iconStart={UserPlus} onPress={() => setShowManualContractorModal(true)}>
+          Add Contractor Manually
+        </Button>
         <Button color="primary" iconStart={Plus} onPress={() => setShowAddModal(true)}>
           Add Subcontractor
         </Button>
@@ -1221,6 +1246,20 @@ export default function SubcontractorsPage() {
       />
 
       {addSubcontractorModal}
+
+      {/* Manual Contractor Creation Modal (REQ-12) */}
+      {organizationId && (
+        <ManualUserCreateModal
+          isOpen={showManualContractorModal}
+          onClose={() => setShowManualContractorModal(false)}
+          role="contractor"
+          organizationId={organizationId}
+          onSuccess={() => {
+            // Refresh the list
+            fetchSubcontractors()
+          }}
+        />
+      )}
     </Stack>
   )
 }

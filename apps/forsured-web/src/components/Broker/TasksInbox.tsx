@@ -7,7 +7,8 @@ import {
   Building2,
   Plus,
 } from 'lucide-react';
-import { Stack, Row, Text, H2, Card, Button, useAnnouncer } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Card, Button, useAnnouncer, ButtonGroup, SearchSelect, Chip } from '@unicornlove/beyond-ui'
+import type { SearchSelectOption } from '@unicornlove/beyond-ui';
 import { Task } from '../../types';
 import { formatDate, getDaysUntil, isOverdue } from '../../utils/dateHelpers';
 import TaskStatusBadge from '../Common/TaskStatusBadge';
@@ -131,16 +132,36 @@ export default function TasksInbox({
 
   const displayedTasks = activeTab === 'urgent' ? urgentTasks : upcomingTasks;
 
-  const getPriorityStyle = (priority: string): React.CSSProperties => {
+  // Tab items for ButtonGroup
+  const tabItems = [
+    { id: 'urgent', label: `Urgent (${urgentTasks.length})` },
+    { id: 'upcoming', label: `Upcoming (${upcomingTasks.length})` },
+  ];
+
+  // Status options for SearchSelect
+  const statusOptions: SearchSelectOption[] = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'in_progress', label: 'In Progress' },
+    { value: 'submitted', label: 'Submitted' },
+    { value: 'in_review', label: 'In Review' },
+    { value: 'approved', label: 'Approved' },
+    { value: 'rejected', label: 'Rejected' },
+    { value: 'needs_info', label: 'Needs Info' },
+    { value: 'awaiting_response', label: 'Awaiting Response' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'escalated', label: 'Escalated' },
+  ];
+
+  const getPriorityChipProps = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)', borderColor: 'var(--color-red-6)' };
+        return { type: 'default' as const, style: { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)', borderColor: 'var(--color-red-6)' } };
       case 'high':
-        return { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)', borderColor: 'var(--color-yellow-6)' };
+        return { type: 'default' as const, style: { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)', borderColor: 'var(--color-yellow-6)' } };
       case 'normal':
-        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-11)', borderColor: 'var(--color-blue-6)' };
+        return { type: 'default' as const, style: { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-11)', borderColor: 'var(--color-blue-6)' } };
       default:
-        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)', borderColor: 'var(--color-gray-6)' };
+        return { type: 'default' as const, style: { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)', borderColor: 'var(--color-gray-6)' } };
     }
   };
 
@@ -192,39 +213,18 @@ export default function TasksInbox({
     );
   };
 
-  const tabButtonStyle = (isActive: boolean): React.CSSProperties => ({
-    paddingLeft: 16,
-    paddingRight: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
-    fontSize: 14,
-    fontWeight: 500,
-    borderRadius: 8,
-    backgroundColor: isActive ? 'var(--color-blue-9)' : 'transparent',
-    color: isActive ? 'white' : 'var(--color-text-muted)',
-    border: 'none',
-    cursor: 'pointer',
-  });
 
   return (
-    <Card
-      style={{
-        backgroundColor: 'var(--color-background)',
-        borderRadius: 12,
-        border: '1px solid var(--color-border)',
-      }}
-    >
-      <Stack padding={24} style={{ borderBottom: '1px solid var(--color-border)' }}>
+    <Card padding="xl">
+      <Stack style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 24, marginBottom: 0 }}>
         <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
           <Stack>
-            <H2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-text)' }}>
-              {headerText.title}
-            </H2>
+            <H2>{headerText.title}</H2>
             <Text size="sm" muted>
               {headerText.subtitle}
             </Text>
           </Stack>
-          <Button color="primary" iconStart={Plus} onPress={onCreateTask}>
+          <Button color="primary" iconStart={Plus} onPress={onCreateTask} style={{ marginLeft: 'auto' }}>
             New Task
           </Button>
         </Row>
@@ -239,57 +239,35 @@ export default function TasksInbox({
           />
         </Stack>
 
-        <Row gap={16}>
-          <button
-            onClick={() => setActiveTab('urgent')}
-            style={tabButtonStyle(activeTab === 'urgent')}
-          >
-            Urgent ({urgentTasks.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('upcoming')}
-            style={tabButtonStyle(activeTab === 'upcoming')}
-          >
-            Upcoming ({upcomingTasks.length})
-          </button>
-        </Row>
+        <ButtonGroup
+          items={tabItems}
+          value={activeTab}
+          onChange={(value) => setActiveTab(value as 'urgent' | 'upcoming')}
+          size="sm"
+          style={{ alignSelf: 'flex-start' }}
+        />
       </Stack>
 
-      <Stack padding={24} id="task-list" role="tabpanel">
+      <Stack id="task-list" role="tabpanel" style={{ paddingTop: 24, marginTop: 0 }}>
         <Stack gap={16}>
           {displayedTasks.map((task) => {
-            const priorityStyle = getPriorityStyle(task.priority);
             return (
               <Card
                 key={task.id}
+                pressable
+                padding="md"
                 onPress={() => onTaskClick?.(task)}
                 style={{
                   border: '1px solid var(--color-border)',
-                  borderRadius: 12,
-                  padding: 16,
                   cursor: 'pointer',
                 }}
               >
                 <Row alignItems="flex-start" justifyContent="space-between">
                   <Stack style={{ flex: 1 }}>
                     <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          paddingLeft: 8,
-                          paddingRight: 8,
-                          paddingTop: 2,
-                          paddingBottom: 2,
-                          borderRadius: 4,
-                          fontSize: 12,
-                          fontWeight: 500,
-                          border: '1px solid',
-                          ...priorityStyle,
-                        }}
-                      >
+                      <Chip {...getPriorityChipProps(task.priority)}>
                         {task.priority}
-                      </span>
+                      </Chip>
                       {task.due_date && getDueDateBadge(task.due_date)}
                     </Row>
 
@@ -340,22 +318,17 @@ export default function TasksInbox({
 
                     {task.document_link && (
                       <Stack style={{ marginTop: 8 }}>
-                        <a href={task.document_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            fontSize: 12,
-                            color: 'var(--color-blue-10)',
-                            textDecoration: 'none',
+                        <Button
+                          variant="text"
+                          size="sm"
+                          onPress={() => {
+                            window.open(task.document_link, '_blank', 'noopener,noreferrer')
                           }}
-                          onClick={(e) => e.stopPropagation()}
+                          iconStart={FileText}
+                          style={{ alignSelf: 'flex-start' }}
                         >
-                          <FileText size={12} />
-                          <span>View Document</span>
-                        </a>
+                          View Document
+                        </Button>
                       </Stack>
                     )}
                   </Stack>
@@ -369,35 +342,17 @@ export default function TasksInbox({
                     />
 
                     <Stack style={{ position: 'relative' }}>
-                      <select
+                      <SearchSelect
+                        options={statusOptions}
                         value={task.status}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          handleStatusChange(task.id, e.target.value, task.title);
+                        onChange={(value) => {
+                          handleStatusChange(task.id, value as string, task.title);
                         }}
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={`Change status for task: ${task.title}`}
-                        style={{
-                          fontSize: 12,
-                          border: '1px solid var(--color-border)',
-                          borderRadius: 4,
-                          padding: '4px 8px',
-                          backgroundColor: 'var(--color-background)',
-                        }}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="submitted">Submitted</option>
-                        <option value="in_review">In Review</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="needs_info">Needs Info</option>
-                        <option value="awaiting_response">
-                          Awaiting Response
-                        </option>
-                        <option value="completed">Completed</option>
-                        <option value="escalated">Escalated</option>
-                      </select>
+                        size="sm"
+                        searchable={false}
+                        placeholder="Status"
+                        style={{ minWidth: 120 }}
+                      />
                     </Stack>
                   </Stack>
                 </Row>

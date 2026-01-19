@@ -10,9 +10,22 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
-import { forsured } from '../../../lib/supabase'
+import { forsured, supabaseServiceRole } from '../../../lib/supabase'
 import { createRelationshipInvitation, type ConnectionType } from '../../../lib/relationshipInvitations'
 import { sendEmail } from '../../../lib/email/emailConfig'
+
+/**
+ * Get the appropriate Supabase client for privileged operations
+ * Uses service role client if available (bypasses RLS for admin operations)
+ */
+function getForsuredAdmin(tableName: string) {
+  if (supabaseServiceRole) {
+    return forsured(tableName, supabaseServiceRole)
+  }
+  // Fall back to regular client (will fail with RLS errors if policies don't allow)
+  console.warn('[ManualUsers] Service role client not available, using regular client')
+  return forsured(tableName)
+}
 
 /**
  * User types that can create manual users
@@ -150,8 +163,8 @@ export const manualUsersRouter = createTRPCRouter({
         }
       }
 
-      // Create the manual user profile
-      const { data: manualUser, error: createError } = await forsured('user_profiles')
+      // Create the manual user profile (using admin client to bypass RLS)
+      const { data: manualUser, error: createError } = await getForsuredAdmin('user_profiles')
         .insert({
           user_type: input.userType,
           is_manually_created: true,
@@ -295,7 +308,7 @@ export const manualUsersRouter = createTRPCRouter({
       if (input.phone !== undefined) updateData.phone = input.phone || null
       if (input.company !== undefined) updateData.company = input.company || null
 
-      const { data: updatedUser, error: updateError } = await forsured('user_profiles')
+      const { data: updatedUser, error: updateError } = await getForsuredAdmin('user_profiles')
         .update(updateData)
         .eq('id', input.userId)
         .select('id, name, email, phone, company, user_type, is_manually_created, updated_at')
@@ -372,7 +385,7 @@ export const manualUsersRouter = createTRPCRouter({
 
       // Update the manual user's email if requested
       if (input.updateProfile && input.email !== manualUser.email) {
-        const { error: updateError } = await forsured('user_profiles')
+        const { error: updateError } = await getForsuredAdmin('user_profiles')
           .update({
             email: input.email.toLowerCase().trim(),
             updated_at: new Date().toISOString(),
@@ -474,7 +487,7 @@ export const manualUsersRouter = createTRPCRouter({
       }
 
       // Delete the manual user (cascade will handle related records)
-      const { error: deleteError } = await forsured('user_profiles')
+      const { error: deleteError } = await getForsuredAdmin('user_profiles')
         .delete()
         .eq('id', input.userId)
 

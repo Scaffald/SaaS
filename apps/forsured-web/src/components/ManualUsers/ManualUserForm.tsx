@@ -17,7 +17,7 @@ import React, { useState, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Stack, Row, Text, Input, Button } from '@unicornlove/beyond-ui';
 
-export type ManualUserRole = 'contractor' | 'broker';
+export type ManualUserRole = 'contractor' | 'broker' | 'manager';
 
 export interface ManualUserFormData {
   name: string;
@@ -108,16 +108,14 @@ export function ManualUserForm({
   }, []);
 
   // Handle field changes with validation
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleNameChange = (value: string) => {
     setName(value);
     if (touched.name) {
       setErrors((prev) => ({ ...prev, name: validateName(value) }));
     }
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleEmailChange = (value: string) => {
     setEmail(value);
     if (touched.email) {
       setErrors((prev) => ({ ...prev, email: validateEmail(value) }));
@@ -128,16 +126,15 @@ export function ManualUserForm({
     }
   };
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handlePhoneChange = (value: string) => {
     setPhone(value);
     if (touched.phone) {
       setErrors((prev) => ({ ...prev, phone: validatePhone(value) }));
     }
   };
 
-  const handleCompanyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCompany(e.target.value);
+  const handleCompanyChange = (value: string) => {
+    setCompany(value);
   };
 
   // Handle blur events for validation
@@ -157,8 +154,8 @@ export function ManualUserForm({
   };
 
   // Handle form submit
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
 
     // Validate all fields
     const nameError = validateName(name);
@@ -189,7 +186,7 @@ export function ManualUserForm({
     }
   };
 
-  const roleLabel = role === 'contractor' ? 'Contractor' : 'Broker';
+  const roleLabel = role === 'contractor' ? 'Contractor' : role === 'manager' ? 'Manager' : 'Broker';
   const hasEmail = !!email.trim();
 
   return (
@@ -222,7 +219,7 @@ export function ManualUserForm({
             id="manual-user-name"
             type="text"
             value={name}
-            onChange={handleNameChange}
+            onChangeText={handleNameChange}
             onBlur={() => handleBlur('name')}
             placeholder={`Enter ${roleLabel.toLowerCase()} name`}
             disabled={loading}
@@ -252,7 +249,7 @@ export function ManualUserForm({
             id="manual-user-email"
             type="email"
             value={email}
-            onChange={handleEmailChange}
+            onChangeText={handleEmailChange}
             onBlur={() => handleBlur('email')}
             placeholder="Enter email address (optional)"
             disabled={loading}
@@ -286,7 +283,7 @@ export function ManualUserForm({
             id="manual-user-phone"
             type="tel"
             value={phone}
-            onChange={handlePhoneChange}
+            onChangeText={handlePhoneChange}
             onBlur={() => handleBlur('phone')}
             placeholder="Enter phone number (optional)"
             disabled={loading}
@@ -316,7 +313,7 @@ export function ManualUserForm({
             id="manual-user-company"
             type="text"
             value={company}
-            onChange={handleCompanyChange}
+            onChangeText={handleCompanyChange}
             placeholder="Enter company name (optional)"
             disabled={loading}
             style={{ width: '100%' }}
@@ -361,6 +358,7 @@ export function ManualUserForm({
           <Button
             type="submit"
             disabled={loading}
+            onPress={() => handleSubmit()}
             style={{
               flex: 1,
               backgroundColor: 'var(--color-blue-10)',

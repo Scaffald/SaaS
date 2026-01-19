@@ -17,3 +17,91 @@ html {
 body {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
+
+/* Sonner Toast Styling - Beyond UI Compliance */
+/* Style sonner toasts to match beyond-ui design tokens */
+/* Using beyond-ui design tokens: white background, 12px border radius, medium shadow, Roboto font */
+.beyond-ui-toast {
+  background: #ffffff !important;
+  border: 1px solid #e4e7ec !important; /* gray[200] */
+  border-radius: 12px !important; /* borderRadius.l */
+  box-shadow: 0 4px 6px -1px rgba(20, 28, 37, 0.078) !important; /* boxShadows.m */
+  padding: 16px !important; /* spacing[16] */
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  color: #1a232d !important; /* gray[800] - primary text */
+}
+
+.beyond-ui-toast-description {
+  color: #637083 !important; /* gray[500] - secondary text */
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin-top: 4px !important;
+}
+
+/* Success toast specific styling - using beyond-ui success colors */
+[data-sonner-toast][data-type="success"] {
+  background: #ffffff !important;
+  border-color: #a7f3d0 !important; /* success[200] */
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  background-color: #065f46 !important; /* success[800] */
+  color: white !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Error toast styling - using beyond-ui error colors */
+[data-sonner-toast][data-type="error"] {
+  background: #ffffff !important;
+  border-color: #fca5a5 !important; /* red[300] */
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  background-color: #991b1b !important; /* red[800] */
+  color: white !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Warning toast styling - using beyond-ui warning colors */
+[data-sonner-toast][data-type="warning"] {
+  background: #ffffff !important;
+  border-color: #fde047 !important; /* yellow[300] */
+}
+
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  background-color: #713f12 !important; /* yellow[900] */
+  color: white !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Info toast styling - using beyond-ui info/blue colors */
+[data-sonner-toast][data-type="info"] {
+  background: #ffffff !important;
+  border-color: #93c5fd !important; /* blue[300] */
+}
+
+[data-sonner-toast][data-type="info"] [data-icon] {
+  background-color: #1e40af !important; /* blue[800] */
+  color: white !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

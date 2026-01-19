@@ -227,6 +227,16 @@ export function Table({
     })
   }, [filteredData, sortConfig, columns])
 
+  // Calculate total column width for proper horizontal scrolling
+  const totalColumnWidth = useMemo(() => {
+    return columns.reduce((sum, col) => {
+      if (typeof col.width === 'number') {
+        return sum + col.width
+      }
+      return sum + 150 // Default width for columns without explicit width
+    }, 0)
+  }, [columns])
+
   // Render loading state
   if (loading && renderLoading) {
     return (
@@ -358,7 +368,7 @@ export function Table({
 
       {/* Body */}
       <ScrollView style={[styles.body, bodyStyle]} horizontal showsHorizontalScrollIndicator={false}>
-        <View>
+        <View style={{ width: totalColumnWidth || '100%', minWidth: totalColumnWidth }}>
           {/* Column Headers */}
           <View style={{ flexDirection: 'row' }}>
             {columns.map((column, _colIndex) => {
@@ -382,6 +392,7 @@ export function Table({
                   state={column.headerEmpty ? 'empty' : 'default'}
                   width={column.width}
                   align={column.align}
+                  style={{ flexShrink: 0, minWidth: typeof column.width === 'number' ? column.width : undefined }}
                 />
               )
             })}
@@ -409,6 +420,7 @@ export function Table({
                           type={cellType}
                           width={column.width}
                           align={column.align}
+                          style={{ flexShrink: 0, minWidth: typeof column.width === 'number' ? column.width : undefined }}
                           {...({ children: column.render(cellValue, row, rowIndex) } as any)}
                         />
                       )
@@ -423,6 +435,7 @@ export function Table({
                           width={column.width}
                           checked={isSelected}
                           onSelectionChange={(checked) => handleRowSelect(rowId, checked)}
+                          style={{ flexShrink: 0, minWidth: typeof column.width === 'number' ? column.width : undefined }}
                         />
                       )
                     }
@@ -436,6 +449,7 @@ export function Table({
                           type={isExpanded ? 'icon-close' : 'icon-open'}
                           width={column.width}
                           onIconPress={() => handleRowExpand(rowId, !isExpanded)}
+                          style={{ flexShrink: 0, minWidth: typeof column.width === 'number' ? column.width : undefined }}
                         />
                       )
                     }
@@ -443,7 +457,12 @@ export function Table({
                     // Skip rendering if column is empty state
                     if (column.headerEmpty) {
                       return (
-                        <TableCell key={column.id} type="empty" width={column.width} />
+                        <TableCell 
+                          key={column.id} 
+                          type="empty" 
+                          width={column.width}
+                          style={{ flexShrink: 0, minWidth: typeof column.width === 'number' ? column.width : undefined }}
+                        />
                       )
                     }
 
@@ -454,6 +473,7 @@ export function Table({
                         type={cellType}
                         width={column.width}
                         align={column.align}
+                        style={{ flexShrink: 0, minWidth: typeof column.width === 'number' ? column.width : undefined }}
                         {...({ text: cellValue !== null && cellValue !== undefined ? String(cellValue) : '' } as any)}
                       />
                     )

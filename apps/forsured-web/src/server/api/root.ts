@@ -19,6 +19,7 @@ import { participantsRouter } from './routers/participants'; // REQ-281
 import { teamMembersRouter } from './routers/teamMembers'; // REQ-283
 import { clientProfileRouter } from './routers/clientProfile'; // REQ-274
 import { notificationRouter } from './routers/notification'; // REQ-264
+import { notificationsProxyRouter } from './routers/notificationsProxy'; // Notifications modal/dropdown
 import { userSetTypesRouter } from './routers/userSetTypes'; // REQ-4
 import { complianceRequirementsRouter } from './routers/complianceRequirements'; // REQ-2
 import { complianceDependenciesRouter } from './routers/complianceDependencies'; // REQ-2
@@ -46,6 +47,7 @@ export const appRouter = createTRPCRouter({
   teamMembers: teamMembersRouter, // REQ-283: Team member management UI
   clientProfile: clientProfileRouter, // REQ-274: Client profile with GC relationships
   notification: notificationRouter, // REQ-264: Task history notifications
+  notifications: notificationsProxyRouter, // Notifications modal/dropdown (Edge Function proxy)
   userSetTypes: userSetTypesRouter, // REQ-4: Multi-industry user set types
   complianceRequirements: complianceRequirementsRouter, // REQ-2: Compliance requirements CRUD
   complianceDependencies: complianceDependenciesRouter, // REQ-2: Compliance dependencies management

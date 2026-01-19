@@ -5106,6 +5106,7 @@ export type Database = {
           cta_label: string | null
           cta_url: string | null
           dedupe_key: string | null
+          deleted_at: string | null
           id: string
           message: string
           metadata: Json
@@ -5126,6 +5127,7 @@ export type Database = {
           cta_label?: string | null
           cta_url?: string | null
           dedupe_key?: string | null
+          deleted_at?: string | null
           id?: string
           message: string
           metadata?: Json
@@ -5146,6 +5148,7 @@ export type Database = {
           cta_label?: string | null
           cta_url?: string | null
           dedupe_key?: string | null
+          deleted_at?: string | null
           id?: string
           message?: string
           metadata?: Json

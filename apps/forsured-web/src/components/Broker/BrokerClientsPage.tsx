@@ -9,8 +9,9 @@ import {
   Building2,
   HardHat,
   UserPlus,
+  Clock,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, Button, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, Button, Grid, Card, CardContent, Avatar } from '@unicornlove/beyond-ui'
 import { EmptyState } from '../../ui'
 import { useClients } from '../../hooks/useClients'
 import { usePolicies } from '../../hooks/usePolicies'
@@ -20,19 +21,13 @@ import { useClientBrokerCounts } from '../../hooks/useClientBrokerCounts'
 import { useAuth } from '../../contexts/AuthContext'
 import ClientsTable from './ClientsTable'
 import InviteClientsModal from './InviteClientsModal'
+import PendingInvitationsModal from './PendingInvitationsModal'
 import { DashboardSkeleton } from '../Common/SkeletonLoader'
 import type { BrokerClient } from '../../types'
 import { getUserOrganizationId } from '../../lib/supabase'
 import { getUserInvitations, type RelationshipInvitation } from '../../lib/relationshipInvitations'
 import { generateRelationshipCode } from '../../lib/connectionCodes'
 
-// Orange button style for visibility
-const orangeButtonStyle: React.CSSProperties = {
-  backgroundColor: 'var(--color-orange-9)',
-  color: 'white',
-  border: 'none',
-  fontWeight: 600,
-}
 
 type ClientTypeFilter = 'all' | 'manager' | 'subcontractor'
 
@@ -58,6 +53,7 @@ export default function BrokerClientsPage() {
   const [brokerCode, setBrokerCode] = useState<string>('')
   const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([])
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+  const [isPendingInvitationsModalOpen, setIsPendingInvitationsModalOpen] = useState(false)
 
   // Fetch organization ID on mount
   useEffect(() => {
@@ -153,44 +149,15 @@ export default function BrokerClientsPage() {
     return <DashboardSkeleton />
   }
 
-  const statCardStyle: React.CSSProperties = {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
-    border: '1px solid var(--color-gray-4)',
-    cursor: 'pointer',
-    transition: 'all 0.15s ease',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
-  }
-
-  const iconBoxStyle = (color: string): React.CSSProperties => ({
-    backgroundColor: `var(--color-${color}-3)`,
-    padding: 10,
-    borderRadius: 8,
-  })
 
   if (clients.length === 0) {
     return (
       <>
         <Stack gap={24}>
           <Row alignItems="center" justifyContent="flex-end">
-            <button
-              type="button"
-              onClick={() => setIsInviteModalOpen(true)}
-              style={{
-                ...orangeButtonStyle,
-                padding: '10px 16px',
-                borderRadius: 8,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                fontSize: 14,
-              }}
-            >
-              <UserPlus size={16} />
+            <Button color="primary" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
               Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
-            </button>
+            </Button>
           </Row>
           <EmptyState
             icon={Users}
@@ -206,10 +173,15 @@ export default function BrokerClientsPage() {
           isOpen={isInviteModalOpen}
           onClose={() => setIsInviteModalOpen(false)}
           brokerCode={brokerCode}
-          pendingInvitations={pendingInvitations}
           userId={user?.id || ''}
           organizationId={organizationId || ''}
           onInvitationSent={refreshPendingInvitations}
+        />
+        <PendingInvitationsModal
+          isOpen={isPendingInvitationsModalOpen}
+          onClose={() => setIsPendingInvitationsModalOpen(false)}
+          pendingInvitations={pendingInvitations}
+          onInvitationResent={refreshPendingInvitations}
         />
       </>
     )
@@ -225,170 +197,197 @@ export default function BrokerClientsPage() {
         </Row>
 
         {/* Stats Overview */}
-        <Grid columns={{ base: 1, sm: 2, lg: 3, xl: 5 }} gap={16}>
-          <div
-            style={{
-              ...statCardStyle,
-              border:
-                activeFilter === 'manager'
-                  ? '2px solid var(--color-orange-9)'
-                  : '1px solid var(--color-gray-4)',
-              boxShadow:
-                activeFilter === 'manager'
-                  ? '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)'
-                  : '0 1px 3px rgba(0, 0, 0, 0.08)',
-            }}
-            onClick={() => setActiveFilter('manager')}
-            onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
-              if (activeFilter !== 'manager') {
-                e.currentTarget.style.borderColor = 'var(--color-orange-6)'
-              }
-            }}
-            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
-              if (activeFilter !== 'manager') {
-                e.currentTarget.style.borderColor = 'var(--color-gray-4)'
-              }
-            }}
+        <Grid columns={{ base: 1, sm: 2, lg: 3, xl: 6 }} gap={16}>
+          {/* Managers Card - Clickable */}
+          <Card
+            pressable
+            onPress={() => setActiveFilter('manager')}
+            variant={activeFilter === 'manager' ? 'outlined' : 'elevated'}
+            padding="md"
+            radius="lg"
+            elevation="sm"
+            style={
+              activeFilter === 'manager'
+                ? {
+                    borderWidth: 2,
+                    borderColor: 'var(--color-orange-9)',
+                    boxShadow: '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)',
+                  }
+                : undefined
+            }
           >
-            <Row alignItems="center" justifyContent="space-between">
-              <Stack>
-                <Text size="sm" muted>
-                  Managers
-                </Text>
-                <Text
-                  size="2xl"
-                  weight="bold"
-                  style={{ color: 'var(--color-purple-10)', marginTop: 4 }}
-                >
-                  {stats.managersCount}
-                </Text>
-              </Stack>
-              <div style={iconBoxStyle('purple')}>
-                <Building2 size={20} style={{ color: 'var(--color-purple-10)' }} />
-              </div>
-            </Row>
-            <Text size="sm" muted style={{ marginTop: 12 }}>
-              GCs, Property Managers
-            </Text>
-          </div>
-
-          <div
-            style={{
-              ...statCardStyle,
-              border:
-                activeFilter === 'subcontractor'
-                  ? '2px solid var(--color-orange-9)'
-                  : '1px solid var(--color-gray-4)',
-              boxShadow:
-                activeFilter === 'subcontractor'
-                  ? '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)'
-                  : '0 1px 3px rgba(0, 0, 0, 0.08)',
-            }}
-            onClick={() => setActiveFilter('subcontractor')}
-            onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
-              if (activeFilter !== 'subcontractor') {
-                e.currentTarget.style.borderColor = 'var(--color-orange-6)'
-              }
-            }}
-            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
-              if (activeFilter !== 'subcontractor') {
-                e.currentTarget.style.borderColor = 'var(--color-gray-4)'
-              }
-            }}
-          >
-            <Row alignItems="center" justifyContent="space-between">
-              <Stack>
-                <Text size="sm" muted>
-                  Contractors
-                </Text>
-                <Text
-                  size="2xl"
-                  weight="bold"
-                  style={{ color: 'var(--color-blue-10)', marginTop: 4 }}
-                >
-                  {stats.contractorsCount}
-                </Text>
-              </Stack>
-              <div style={iconBoxStyle('blue')}>
-                <HardHat size={20} style={{ color: 'var(--color-blue-10)' }} />
-              </div>
-            </Row>
-            <Text size="sm" muted style={{ marginTop: 12 }}>
-              Subcontractors, Vendors
-            </Text>
-          </div>
-
-          <div style={{ ...statCardStyle, cursor: 'default' }}>
-            <Row alignItems="center" justifyContent="space-between">
-              <Stack>
-                <Text size="sm" muted>
-                  Avg Compliance
-                </Text>
-                <Text
-                  size="2xl"
-                  weight="bold"
-                  style={{ color: 'var(--color-green-10)', marginTop: 4 }}
-                >
-                  {stats.avgCompliance}%
-                </Text>
-              </Stack>
-              <div style={iconBoxStyle('green')}>
-                <Shield size={20} style={{ color: 'var(--color-green-10)' }} />
-              </div>
-            </Row>
-            <Row alignItems="center" gap={4} style={{ marginTop: 12 }}>
-              <TrendingUp size={14} style={{ color: 'var(--color-green-10)' }} />
-              <Text size="sm" style={{ color: 'var(--color-green-10)' }}>
-                Above target
+            <CardContent>
+              <Row alignItems="center" justifyContent="space-between">
+                <Stack>
+                  <Text size="sm" muted>
+                    Managers
+                  </Text>
+                  <Text
+                    size="2xl"
+                    weight="bold"
+                    style={{ color: 'var(--color-purple-10)', marginTop: 4 }}
+                  >
+                    {stats.managersCount}
+                  </Text>
+                </Stack>
+                <Avatar size={40} color="primary" icon={<Building2 size={20} color="var(--color-purple-10)" />} />
+              </Row>
+              <Text size="sm" muted style={{ marginTop: 12 }}>
+                GCs, Property Managers
               </Text>
-            </Row>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div style={{ ...statCardStyle, cursor: 'default' }}>
-            <Row alignItems="center" justifyContent="space-between">
-              <Stack>
-                <Text size="sm" muted>
-                  High Risk
-                </Text>
-                <Text
-                  size="2xl"
-                  weight="bold"
-                  style={{ color: 'var(--color-red-10)', marginTop: 4 }}
-                >
-                  {stats.highRisk}
-                </Text>
-              </Stack>
-              <div style={iconBoxStyle('red')}>
-                <AlertTriangle size={20} style={{ color: 'var(--color-red-10)' }} />
-              </div>
-            </Row>
-            <Text size="sm" muted style={{ marginTop: 12 }}>
-              Require attention
-            </Text>
-          </div>
+          {/* Contractors Card - Clickable */}
+          <Card
+            pressable
+            onPress={() => setActiveFilter('subcontractor')}
+            variant={activeFilter === 'subcontractor' ? 'outlined' : 'elevated'}
+            padding="md"
+            radius="lg"
+            elevation="sm"
+            style={
+              activeFilter === 'subcontractor'
+                ? {
+                    borderWidth: 2,
+                    borderColor: 'var(--color-orange-9)',
+                    boxShadow: '0 0 0 3px var(--color-orange-3), 0 1px 3px rgba(0, 0, 0, 0.08)',
+                  }
+                : undefined
+            }
+          >
+            <CardContent>
+              <Row alignItems="center" justifyContent="space-between">
+                <Stack>
+                  <Text size="sm" muted>
+                    Contractors
+                  </Text>
+                  <Text
+                    size="2xl"
+                    weight="bold"
+                    style={{ color: 'var(--color-blue-10)', marginTop: 4 }}
+                  >
+                    {stats.contractorsCount}
+                  </Text>
+                </Stack>
+                <Avatar size={40} color="info" icon={<HardHat size={20} color="var(--color-blue-10)" />} />
+              </Row>
+              <Text size="sm" muted style={{ marginTop: 12 }}>
+                Subcontractors, Vendors
+              </Text>
+            </CardContent>
+          </Card>
 
-          <div style={{ ...statCardStyle, cursor: 'default' }}>
-            <Row alignItems="center" justifyContent="space-between">
-              <Stack>
-                <Text size="sm" muted>
-                  Active Projects
+          {/* Avg Compliance Card - Not clickable */}
+          <Card variant="elevated" padding="md" radius="lg" elevation="sm">
+            <CardContent>
+              <Row alignItems="center" justifyContent="space-between">
+                <Stack>
+                  <Text size="sm" muted>
+                    Avg Compliance
+                  </Text>
+                  <Text
+                    size="2xl"
+                    weight="bold"
+                    style={{ color: 'var(--color-green-10)', marginTop: 4 }}
+                  >
+                    {stats.avgCompliance}%
+                  </Text>
+                </Stack>
+                <Avatar size={40} color="success" icon={<Shield size={20} color="var(--color-green-10)" />} />
+              </Row>
+              <Row alignItems="center" gap={4} style={{ marginTop: 12 }}>
+                <TrendingUp size={14} style={{ color: 'var(--color-green-10)' }} />
+                <Text size="sm" style={{ color: 'var(--color-green-10)' }}>
+                  Above target
                 </Text>
-                <Text
-                  size="2xl"
-                  weight="bold"
-                  style={{ color: 'var(--color-blue-10)', marginTop: 4 }}
-                >
-                  {projects.filter((p) => p.status === 'active').length}
-                </Text>
-              </Stack>
-              <div style={iconBoxStyle('blue')}>
-                <Briefcase size={20} style={{ color: 'var(--color-blue-10)' }} />
-              </div>
-            </Row>
-            <Text size="sm" muted style={{ marginTop: 12 }}>
-              Across all clients
-            </Text>
-          </div>
+              </Row>
+            </CardContent>
+          </Card>
+
+          {/* High Risk Card - Not clickable */}
+          <Card variant="elevated" padding="md" radius="lg" elevation="sm">
+            <CardContent>
+              <Row alignItems="center" justifyContent="space-between">
+                <Stack>
+                  <Text size="sm" muted>
+                    High Risk
+                  </Text>
+                  <Text
+                    size="2xl"
+                    weight="bold"
+                    style={{ color: 'var(--color-red-10)', marginTop: 4 }}
+                  >
+                    {stats.highRisk}
+                  </Text>
+                </Stack>
+                <Avatar size={40} color="error" icon={<AlertTriangle size={20} color="var(--color-red-10)" />} />
+              </Row>
+              <Text size="sm" muted style={{ marginTop: 12 }}>
+                Require attention
+              </Text>
+            </CardContent>
+          </Card>
+
+          {/* Active Projects Card - Not clickable */}
+          <Card variant="elevated" padding="md" radius="lg" elevation="sm">
+            <CardContent>
+              <Row alignItems="center" justifyContent="space-between">
+                <Stack>
+                  <Text size="sm" muted>
+                    Active Projects
+                  </Text>
+                  <Text
+                    size="2xl"
+                    weight="bold"
+                    style={{ color: 'var(--color-blue-10)', marginTop: 4 }}
+                  >
+                    {projects.filter((p) => p.status === 'active').length}
+                  </Text>
+                </Stack>
+                <Avatar size={40} color="info" icon={<Briefcase size={20} color="var(--color-blue-10)" />} />
+              </Row>
+              <Text size="sm" muted style={{ marginTop: 12 }}>
+                Across all clients
+              </Text>
+            </CardContent>
+          </Card>
+
+          {/* Pending Invitations Card - Clickable if there are invitations */}
+          <Card
+            pressable={pendingInvitations.length > 0}
+            onPress={() => pendingInvitations.length > 0 && setIsPendingInvitationsModalOpen(true)}
+            variant="elevated"
+            padding="md"
+            radius="lg"
+            elevation="sm"
+            disabled={pendingInvitations.length === 0}
+          >
+            <CardContent>
+              <Row alignItems="center" justifyContent="space-between">
+                <Stack>
+                  <Text size="sm" muted>
+                    Pending Invitations
+                  </Text>
+                  <Text
+                    size="2xl"
+                    weight="bold"
+                    style={{ color: 'var(--color-orange-10)', marginTop: 4 }}
+                  >
+                    {pendingInvitations.length}
+                  </Text>
+                </Stack>
+                <Avatar size={40} color="warning" icon={<Clock size={20} color="var(--color-orange-10)" />} />
+              </Row>
+              <Text size="sm" muted style={{ marginTop: 12 }}>
+                {pendingInvitations.length === 0
+                  ? 'No pending invites'
+                  : pendingInvitations.length === 1
+                    ? '1 invitation pending'
+                    : `${pendingInvitations.length} invitations pending`}
+              </Text>
+            </CardContent>
+          </Card>
         </Grid>
 
         {/* Unified Clients Table */}
@@ -398,7 +397,7 @@ export default function BrokerClientsPage() {
           complianceData={complianceData}
           projects={projects}
           brokerCounts={brokerCounts}
-          initialClientTypeFilter={activeFilter}
+          clientTypeFilter={activeFilter}
           onFilterChange={setActiveFilter}
           onClientClick={(client: BrokerClient) => {
             navigate(`/broker/clients/${client.id}`)
@@ -409,10 +408,15 @@ export default function BrokerClientsPage() {
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
         brokerCode={brokerCode}
-        pendingInvitations={pendingInvitations}
         userId={user?.id || ''}
         organizationId={organizationId || ''}
         onInvitationSent={refreshPendingInvitations}
+      />
+      <PendingInvitationsModal
+        isOpen={isPendingInvitationsModalOpen}
+        onClose={() => setIsPendingInvitationsModalOpen(false)}
+        pendingInvitations={pendingInvitations}
+        onInvitationResent={refreshPendingInvitations}
       />
     </>
   )

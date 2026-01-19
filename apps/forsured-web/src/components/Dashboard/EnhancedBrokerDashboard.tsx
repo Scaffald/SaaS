@@ -4,9 +4,10 @@
  * Migrated from Tamagui to Beyond UI
  * REQ-12: Manual user creation support
  */
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { RefreshCw, Filter, Users } from 'lucide-react'
-import { Stack, Row, Text } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, SearchSelect } from '@unicornlove/beyond-ui'
+import type { SearchSelectOption } from '@unicornlove/beyond-ui'
 import { EmptyState } from '../../ui/EmptyState'
 import { useLexicon } from '../../contexts/LexiconContext'
 import { useClients } from '../../hooks/useClients'
@@ -72,6 +73,17 @@ export default function EnhancedBrokerDashboard() {
       ? clients
       : clients.filter((c) => projects.some((p) => p.id === projectFilter && p.client_id === c.id))
 
+  // Convert projects to SearchSelect options
+  const projectOptions = useMemo<SearchSelectOption[]>(() => {
+    return [
+      { value: 'all', label: 'All Projects' },
+      ...projects.map((project) => ({
+        value: project.id,
+        label: project.name,
+      })),
+    ]
+  }, [projects])
+
   const isLoading =
     clientsLoading || policiesLoading || tasksLoading || projectsLoading || usersLoading
 
@@ -119,41 +131,17 @@ export default function EnhancedBrokerDashboard() {
             </Text>
             <Text muted>Comprehensive compliance and task management</Text>
           </Stack>
-          <Row alignItems="center" gap={12}>
-            <Row
-              alignItems="center"
-              gap={8}
-              style={{
-                backgroundColor: 'var(--color-background)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 8,
-                paddingLeft: 16,
-                paddingRight: 16,
-                paddingTop: 8,
-                paddingBottom: 8,
-              }}
-            >
-              <Filter size={18} />
-              <select
-                value={projectFilter}
-                onChange={(e) => setProjectFilter(e.target.value)}
-                style={{
-                  background: 'transparent',
-                  outline: 'none',
-                  fontSize: '14px',
-                  color: 'var(--color-text)',
-                  border: 'none',
-                }}
-              >
-                <option value="all">All Projects</option>
-                {projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    {project.name}
-                  </option>
-                ))}
-              </select>
-            </Row>
-            <Button variant="ghost" onPress={fetchClients}>
+          <Row alignItems="center" gap={12} style={{ marginLeft: 'auto' }}>
+            <SearchSelect
+              options={projectOptions}
+              value={projectFilter}
+              onChange={(value) => setProjectFilter(value as string)}
+              placeholder="All Projects"
+              size="sm"
+              searchable={false}
+              style={{ minWidth: 150 }}
+            />
+            <Button variant="text" size="sm" onPress={fetchClients}>
               <Row alignItems="center" gap={8}>
                 <RefreshCw size={18} />
                 <Text>Refresh</Text>
