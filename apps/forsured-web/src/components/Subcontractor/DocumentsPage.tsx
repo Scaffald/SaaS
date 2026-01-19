@@ -316,6 +316,7 @@ export default function DocumentsPage() {
         </Stack>
         <Row gap={8}>
           <CommonButton
+            iconStart={Upload}
             onPress={() => {
               console.log('[DocumentsPage] Upload button clicked')
               // Use startTransition to prevent blocking the UI
@@ -326,17 +327,16 @@ export default function DocumentsPage() {
               })
             }}
           >
-            <Row alignItems="center" gap={8}>
-              <Upload size={18} />
-              <Text>Upload Document</Text>
-            </Row>
+            Upload Document
           </CommonButton>
-          <CommonButton variant="ghost" onPress={loadDocuments} disabled={loading}>
-            <Row alignItems="center" gap={8}>
-              <RefreshCw size={18} />
-              {loading && <Spinner size="sm" />}
-              {!loading && <Text>Refresh</Text>}
-            </Row>
+          <CommonButton
+            variant="ghost"
+            iconStart={RefreshCw}
+            onPress={loadDocuments}
+            disabled={loading}
+            loading={loading}
+          >
+            Refresh
           </CommonButton>
         </Row>
       </Row>
