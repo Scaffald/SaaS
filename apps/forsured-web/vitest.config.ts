@@ -56,6 +56,8 @@ export default defineConfig({
       '@': resolve(packageRoot, 'src'),
       // Use mock for @unicornlove/ui to avoid react-native dependency chain
       '@unicornlove/ui': resolve(packageRoot, 'src/test/__mocks__/@unicornlove/ui.tsx'),
+      // Use mock for @unicornlove/beyond-ui to avoid react-native dependency chain
+      '@unicornlove/beyond-ui': resolve(packageRoot, 'src/test/__mocks__/@unicornlove/beyond-ui.tsx'),
       // Shim expo-router (forsured-web uses react-router-dom)
       'expo-router': resolve(packageRoot, 'src/shims/expo-router-shim.ts'),
       // Point to source for forsured packages (not yet built)

@@ -28,6 +28,7 @@ import { ccpaAdminRouter } from './routers/ccpaAdmin'; // REQ-6: CCPA Admin UI
 import { genericInvitationsRouter } from './routers/genericInvitations'; // REQ-128: Flexible Invitation System
 import { manualUsersRouter } from './routers/manualUsers'; // REQ-12: Manual user management
 import { userMergeRouter } from './routers/userMerge'; // REQ-12: User merge workflow
+import { feedbackRouter } from './routers/feedback'; // Feedback modal system
 
 /**
  * Root tRPC router
@@ -56,6 +57,7 @@ export const appRouter = createTRPCRouter({
   genericInvitations: genericInvitationsRouter, // REQ-128: Flexible Invitation System
   manualUsers: manualUsersRouter, // REQ-12: Manual user management
   userMerge: userMergeRouter, // REQ-12: User merge workflow
+  feedback: feedbackRouter, // Feedback modal system
 });
 
 /**

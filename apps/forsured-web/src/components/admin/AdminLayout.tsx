@@ -4,6 +4,7 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { AdminFeedbackHeader } from './AdminFeedbackHeader';
 
 const adminMenuItems = [
   { path: '/admin/dashboard', label: 'Dashboard' },
@@ -13,6 +14,7 @@ const adminMenuItems = [
   { path: '/admin/lexicon', label: 'Lexicon Editor' },
   { path: '/admin/enums', label: 'Enums' },
   { path: '/admin/audit-log', label: 'Audit Log' },
+  { path: '/admin/feedback', label: 'Feedback' },
   { path: '/admin/settings', label: 'Settings' },
 ];
 
@@ -42,9 +44,12 @@ function AdminLayout() {
           gap: 24,
         }}
       >
-        <Text style={{ fontSize: 18, fontWeight: 600, marginBottom: 24 }}>
-          Admin Panel
-        </Text>
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+          <Text style={{ fontSize: 18, fontWeight: 600 }}>
+            Admin Panel
+          </Text>
+          <AdminFeedbackHeader />
+        </Row>
         <Stack as="nav" style={{ gap: 8 }}>
           {adminMenuItems.map((item) => (
             <NavLink key={item.path} to={item.path}>
