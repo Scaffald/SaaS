@@ -29,6 +29,7 @@ const CallbackPage = lazy(() => import('./pages/Callback'))
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmail'))
 const UnauthorizedPage = lazy(() => import('./pages/Unauthorized'))
 const InvitationLandingPage = lazy(() => import('./pages/InvitationLanding'))
+const BrokerInviteLandingPage = lazy(() => import('./pages/BrokerInviteLanding'))
 
 // Dashboards
 const EnhancedManagerDashboard = lazy(
@@ -172,6 +173,8 @@ const AppRoutes = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/invite/:code" element={<InvitationLandingPage />} />
+        {/* REQ-13: Broker invitation landing page for insurance document uploads */}
+        <Route path="/broker/invite/:referralCode" element={<BrokerInviteLandingPage />} />
         <Route path="/colors" element={<Colors />} />
         <Route path="/testing" element={<TestingPage />} />
         <Route path="/test-supabase" element={<TestSupabase />} />

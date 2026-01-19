@@ -29,6 +29,7 @@ import { userMergeRouter } from './routers/userMerge'; // REQ-12: User merge wor
 import { feedbackRouter } from './routers/feedback'; // Feedback modal system
 import { procoreRouter } from './routers/procore'; // Procore integration
 import { conversationRouter } from './routers/conversation'; // Task 4: Conversation CRUD
+import { brokerInvitationRouter } from './routers/brokerInvitation'; // REQ-13: Broker invitation document upload
 
 /**
  * Root tRPC router
@@ -60,6 +61,7 @@ export const appRouter = createTRPCRouter({
   feedback: feedbackRouter, // Feedback modal system
   procore: procoreRouter, // Procore integration
   conversation: conversationRouter, // Task 4: Conversation CRUD
+  brokerInvitation: brokerInvitationRouter, // REQ-13: Broker invitation document upload
 });
 
 /**

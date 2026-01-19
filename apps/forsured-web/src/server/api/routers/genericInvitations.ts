@@ -60,15 +60,21 @@ function getInvitationService(ctx?: { db?: unknown }) {
 
 /**
  * Build invitation email HTML
+ * REQ-13: Enhanced to include insurance document upload options for contractors
  */
 function buildInvitationEmailHtml(params: {
-  inviterName: string;
-  inviterOrganization?: string;
-  targetRole: string;
-  personalMessage?: string;
-  acceptUrl: string;
-  declineUrl: string;
-  projectName?: string;
+  inviterName: string
+  inviterOrganization?: string
+  targetRole: string
+  personalMessage?: string
+  acceptUrl: string
+  declineUrl: string
+  projectName?: string
+  // REQ-13: Contractor-specific options
+  isContractor?: boolean
+  inviteeEmail?: string
+  inboundEmailAddress?: string
+  brokerInvitationUrl?: string
 }): string {
   const personalMessageSection = params.personalMessage
     ? `
@@ -87,6 +93,102 @@ function buildInvitationEmailHtml(params: {
     ? `<p>For project: <strong>${params.projectName}</strong></p>`
     : "";
 
+  // REQ-13: Build contractor-specific sections
+  let contractorOptionsSection = ''
+  if (params.isContractor && params.inboundEmailAddress && params.brokerInvitationUrl) {
+    contractorOptionsSection = `
+      <!-- REQ-13: Insurance Document Upload Options -->
+      <div style="margin: 32px 0; padding: 24px; background: #f9fafb; border-radius: 12px;">
+        <h3 style="margin: 0 0 16px 0; color: #1e40af; font-size: 18px;">
+          Ways to Get Started
+        </h3>
+
+        <!-- Option 1: Create Profile -->
+        <div style="margin-bottom: 24px; padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: flex-start;">
+            <div style="width: 32px; height: 32px; background: #2563eb; border-radius: 50%; color: white; text-align: center; line-height: 32px; font-weight: 600; flex-shrink: 0;">1</div>
+            <div style="margin-left: 12px; flex: 1;">
+              <p style="margin: 0 0 8px 0; font-weight: 600; color: #111827;">Create Your ForSured Profile</p>
+              <p style="margin: 0 0 12px 0; font-size: 14px; color: #6b7280;">Set up your account to manage projects, communicate with your team, and track compliance.</p>
+              <a href="${params.acceptUrl}"
+                 style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 14px;">
+                Create Profile
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 2: Forward Insurance Documents -->
+        <div style="margin-bottom: 24px; padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: flex-start;">
+            <div style="width: 32px; height: 32px; background: #059669; border-radius: 50%; color: white; text-align: center; line-height: 32px; font-weight: 600; flex-shrink: 0;">2</div>
+            <div style="margin-left: 12px; flex: 1;">
+              <p style="margin: 0 0 8px 0; font-weight: 600; color: #111827;">Email Your Insurance Documents</p>
+              <p style="margin: 0 0 12px 0; font-size: 14px; color: #6b7280;">Forward your insurance files directly to this address:</p>
+              <div style="background: #ecfdf5; padding: 12px 16px; border-radius: 6px; font-family: monospace; font-size: 14px; color: #065f46; word-break: break-all;">
+                ${params.inboundEmailAddress}
+              </div>
+              <p style="margin: 12px 0 0 0; font-size: 12px; color: #9ca3af;">
+                Only emails from <strong>${params.inviteeEmail}</strong> will be accepted.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 3: Invite Your Broker -->
+        <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+          <div style="display: flex; align-items: flex-start;">
+            <div style="width: 32px; height: 32px; background: #7c3aed; border-radius: 50%; color: white; text-align: center; line-height: 32px; font-weight: 600; flex-shrink: 0;">3</div>
+            <div style="margin-left: 12px; flex: 1;">
+              <p style="margin: 0 0 8px 0; font-weight: 600; color: #111827;">Have Your Broker Upload Documents</p>
+              <p style="margin: 0 0 12px 0; font-size: 14px; color: #6b7280;">Forward this email to your insurance broker so they can upload your documents directly.</p>
+              <a href="${params.brokerInvitationUrl}"
+                 style="display: inline-block; padding: 10px 20px; background: #7c3aed; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 14px;">
+                Copy Broker Link
+              </a>
+              <p style="margin: 12px 0 0 0; font-size: 12px; color: #9ca3af;">
+                Your broker can upload documents and optionally create a ForSured account.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  }
+
+  // Build standard or enhanced email based on whether it's for a contractor
+  if (params.isContractor && contractorOptionsSection) {
+    return `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #1e40af; margin-bottom: 24px;">You've Been Invited to ForSured</h2>
+
+        <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+          <strong>${params.inviterName}</strong>${params.inviterOrganization ? ` from ${params.inviterOrganization}` : ''}
+          has invited you to join ForSured as a <strong>${params.targetRole}</strong>.
+        </p>
+
+        ${projectSection}
+        ${personalMessageSection}
+
+        ${contractorOptionsSection}
+
+        <div style="margin: 24px 0; text-align: center; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+          <a href="${params.declineUrl}"
+             style="display: inline-block; padding: 10px 20px; background: #f3f4f6; color: #374151; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 14px;">
+            Decline Invitation
+          </a>
+        </div>
+
+        <hr style="margin: 32px 0; border: none; border-top: 1px solid #e5e7eb;">
+
+        <p style="font-size: 12px; color: #9ca3af;">
+          This invitation was sent by ForSured. If you did not expect this invitation, you can safely ignore it.
+        </p>
+      </div>
+    `
+  }
+
+  // Standard email for non-contractor invitations
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <h2 style="color: #1e40af; margin-bottom: 24px;">You've Been Invited</h2>
@@ -167,6 +269,7 @@ export const genericInvitationsRouter = createTRPCRouter({
 
   /**
    * Create a new invitation
+   * REQ-13: Enhanced to create manual user profile for contractors with inbound email address
    */
   create: protectedProcedure
     .input(
@@ -200,6 +303,69 @@ export const genericInvitationsRouter = createTRPCRouter({
       const declineUrl =
         `${baseUrl}/invite/${invitation.referral_code}?action=decline`;
 
+      // REQ-13: Check if this is a contractor invitation and get/create their profile
+      const isContractor = ['subcontractor', 'contractor'].includes(rule.target_role.toLowerCase())
+      let inboundEmailAddress: string | undefined
+      let brokerInvitationUrl: string | undefined
+      let contractorProfileId: string | undefined
+
+      if (isContractor && ctx.supabase) {
+        try {
+          // Check if contractor profile already exists
+          const { data: existingProfile } = await ctx.supabase
+            .schema('forsured')
+            .from('user_profiles')
+            .select('id, inbound_email_address')
+            .eq('email', input.inviteeEmail.toLowerCase())
+            .maybeSingle()
+
+          if (existingProfile) {
+            // Use existing profile's data
+            contractorProfileId = existingProfile.id
+            inboundEmailAddress = existingProfile.inbound_email_address || undefined
+          } else {
+            // Create a manual user profile for the contractor
+            // This will auto-generate the inbound email address via the trigger
+            const { data: newProfile, error: createError } = await ctx.supabase
+              .schema('forsured')
+              .from('user_profiles')
+              .insert({
+                user_type: 'contractor',
+                email: input.inviteeEmail.toLowerCase(),
+                name: input.inviteeName || null,
+                is_manually_created: true,
+                created_by_user_id: ctx.userProfile?.id || null,
+              })
+              .select('id, inbound_email_address')
+              .single()
+
+            if (!createError && newProfile) {
+              contractorProfileId = newProfile.id
+              inboundEmailAddress = newProfile.inbound_email_address || undefined
+
+              // If no inbound email address was generated (shouldn't happen but just in case),
+              // generate one manually
+              if (!inboundEmailAddress) {
+                inboundEmailAddress = `insurance-${newProfile.id}@inbound.forsured.com`
+                await ctx.supabase
+                  .schema('forsured')
+                  .from('user_profiles')
+                  .update({ inbound_email_address: inboundEmailAddress })
+                  .eq('id', newProfile.id)
+              }
+            }
+          }
+
+          // Build broker invitation URL using the contractor's profile ID
+          if (contractorProfileId && inboundEmailAddress) {
+            brokerInvitationUrl = `${baseUrl}/broker/invite/${contractorProfileId}`
+          }
+        } catch (profileError) {
+          console.error('[genericInvitations] Failed to create/get contractor profile:', profileError)
+          // Continue without contractor-specific options
+        }
+      }
+
       try {
         await sendEmail({
           to: input.inviteeEmail,
@@ -210,6 +376,11 @@ export const genericInvitationsRouter = createTRPCRouter({
             personalMessage: input.personalMessage,
             acceptUrl,
             declineUrl,
+            // REQ-13: Contractor-specific options
+            isContractor,
+            inviteeEmail: input.inviteeEmail,
+            inboundEmailAddress,
+            brokerInvitationUrl,
           }),
           metadata: {
             invitationId: invitation.id,
