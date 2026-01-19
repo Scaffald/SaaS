@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   X,
   AlertCircle,
+  AlertTriangle,
   Calendar,
   User,
   Building,
@@ -14,6 +15,7 @@ import Button from '../Common/Button';
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
+import { ManualUserBadge } from '../ManualUsers';
 
 // New database schema types
 type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'submitted' | 'in_review' | 'approved' | 'rejected' | 'needs_info';
@@ -51,6 +53,8 @@ interface UserRecord {
   name: string;
   email: string;
   organization_id: string;
+  /** REQ-12: Flag for manually-added users */
+  is_manually_created?: boolean;
 }
 
 interface Project {
@@ -162,11 +166,15 @@ export default function EnhancedTaskDetailModal({
   }, [forsured, isOpen]);
 
   // Get assignee details from users data - MUST be before any early returns
+  // REQ-12: Include is_manually_created flag for manual user indicators
   const assigneeDetails = useMemo(() => {
     if (!task?.assigned_to_user_id) return [];
     const user = users.find(u => u.id === task.assigned_to_user_id);
-    return user ? [{ id: user.id, name: user.name, email: user.email }] : [];
+    return user ? [{ id: user.id, name: user.name, email: user.email, is_manually_created: user.is_manually_created }] : [];
   }, [task?.assigned_to_user_id, users]);
+
+  // REQ-12: Check if any assignee is a manual user
+  const hasManualAssignee = assigneeDetails.some(a => a.is_manually_created);
 
   // Early return if not open or no task
   if (!isOpen || !task) return null;
@@ -401,6 +409,35 @@ export default function EnhancedTaskDetailModal({
                 </Text>
               </div>
             </Row>
+
+            {/* REQ-12: Warning banner for manual user assignees */}
+            {hasManualAssignee && (
+              <Card
+                style={{
+                  padding: 12,
+                  backgroundColor: 'var(--color-orange-2)',
+                  border: '1px solid var(--color-orange-6)',
+                  borderRadius: 12,
+                }}
+              >
+                <Row alignItems="flex-start" gap={12}>
+                  <AlertTriangle
+                    size={16}
+                    style={{ color: 'var(--color-orange-10)', flexShrink: 0, marginTop: 2 }}
+                  />
+                  <Stack gap={4}>
+                    <Text size="sm" weight="medium" style={{ color: 'var(--color-orange-11)' }}>
+                      Assigned to Manual User
+                    </Text>
+                    <Text size="xs" style={{ color: 'var(--color-orange-11)' }}>
+                      This task is assigned to a manually added user who will not receive
+                      notifications until they complete registration.
+                    </Text>
+                  </Stack>
+                </Row>
+              </Card>
+            )}
+
             {assigneeDetails.length > 0 ? (
               <Stack gap={8}>
                 {assigneeDetails.map((person) => (
@@ -410,8 +447,13 @@ export default function EnhancedTaskDetailModal({
                     gap={12}
                     style={{
                       padding: 12,
-                      backgroundColor: 'var(--color-gray-2)',
+                      backgroundColor: person?.is_manually_created
+                        ? 'var(--color-orange-2)'
+                        : 'var(--color-gray-2)',
                       borderRadius: 12,
+                      border: person?.is_manually_created
+                        ? '1px solid var(--color-orange-6)'
+                        : undefined,
                     }}
                   >
                     <Stack
@@ -420,7 +462,9 @@ export default function EnhancedTaskDetailModal({
                       style={{
                         width: 36,
                         height: 36,
-                        backgroundColor: 'var(--color-blue-10)',
+                        backgroundColor: person?.is_manually_created
+                          ? 'var(--color-orange-10)'
+                          : 'var(--color-blue-10)',
                         borderRadius: 9999,
                       }}
                     >
@@ -431,10 +475,16 @@ export default function EnhancedTaskDetailModal({
                           .join('')}
                       </Text>
                     </Stack>
-                    <Stack>
-                      <Text size="sm" weight="medium">
-                        {person?.name}
-                      </Text>
+                    <Stack style={{ flex: 1 }}>
+                      <Row alignItems="center" gap={8}>
+                        <Text size="sm" weight="medium">
+                          {person?.name}
+                        </Text>
+                        {/* REQ-12: Show badge for manual users */}
+                        {person?.is_manually_created && (
+                          <ManualUserBadge size="sm" showTooltip={false} />
+                        )}
+                      </Row>
                       <Text size="xs" muted>
                         {person?.email}
                       </Text>

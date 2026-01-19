@@ -1,19 +1,31 @@
 /**
  * REQ-166: Task Management Workflow & UI
+ * REQ-12: Manual user indicators in task assignment
  * TaskAssignment component for user picker with search and filtering
  */
 
 import { useState, useMemo, useRef, useEffect } from 'react'
 import type { User, UserRole } from '../../types'
-import { User as UserIcon, ChevronDown, Check, Loader2 } from 'lucide-react'
+import { User as UserIcon, ChevronDown, Check, Loader2, AlertTriangle } from 'lucide-react'
 import { Stack, Row, Text, Input, Button, Card } from '@unicornlove/beyond-ui'
+import { ManualUserBadge } from '../ManualUsers'
+
+/**
+ * Extended user type with manual user flag
+ * REQ-12: Manual users need special indicators
+ */
+interface AssignableUser extends User {
+  is_manually_created?: boolean
+}
 
 interface TaskAssignmentProps {
-  users: User[]
+  users: AssignableUser[]
   assignedUserId?: string
   onAssign: (userId: string) => void
   allowedRoles?: UserRole[]
   loading?: boolean
+  /** REQ-12: Require acknowledgment when assigning to manual users */
+  requireManualUserAcknowledgment?: boolean
 }
 
 export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
@@ -22,10 +34,15 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
   onAssign,
   allowedRoles,
   loading = false,
+  requireManualUserAcknowledgment = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // REQ-12: Track pending manual user selection for acknowledgment
+  const [pendingManualUserId, setPendingManualUserId] = useState<string | null>(null)
+  const [manualUserAcknowledged, setManualUserAcknowledged] = useState(false)
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -68,10 +85,47 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
     return filtered
   }, [users, allowedRoles, searchQuery])
 
+  // REQ-12: Get pending manual user for warning display
+  const pendingManualUser = pendingManualUserId
+    ? filteredUsers.find((u) => u.id === pendingManualUserId)
+    : null
+
   const handleUserSelect = (userId: string) => {
+    const selectedUser = filteredUsers.find((u) => u.id === userId)
+
+    // REQ-12: If selecting a manual user and acknowledgment is required
+    if (
+      selectedUser?.is_manually_created &&
+      requireManualUserAcknowledgment &&
+      !manualUserAcknowledged
+    ) {
+      setPendingManualUserId(userId)
+      return // Don't close dropdown yet, show warning
+    }
+
+    // Proceed with assignment
     onAssign(userId)
     setIsOpen(false)
     setSearchQuery('')
+    setPendingManualUserId(null)
+    setManualUserAcknowledged(false)
+  }
+
+  // REQ-12: Confirm manual user assignment after acknowledgment
+  const handleConfirmManualUserAssignment = () => {
+    if (pendingManualUserId) {
+      onAssign(pendingManualUserId)
+      setIsOpen(false)
+      setSearchQuery('')
+      setPendingManualUserId(null)
+      setManualUserAcknowledged(false)
+    }
+  }
+
+  // REQ-12: Cancel manual user selection
+  const handleCancelManualUserSelection = () => {
+    setPendingManualUserId(null)
+    setManualUserAcknowledged(false)
   }
 
   const handleToggle = () => {
@@ -138,9 +192,15 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                   </Text>
                 </div>
                 <Stack style={{ alignItems: 'flex-start' }}>
-                  <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)' }}>
-                    {assignedUser.name}
-                  </Text>
+                  <Row style={{ alignItems: 'center', gap: '6px' }}>
+                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)' }}>
+                      {assignedUser.name}
+                    </Text>
+                    {/* REQ-12: Show badge for manual users */}
+                    {(assignedUser as AssignableUser).is_manually_created && (
+                      <ManualUserBadge size="sm" showTooltip={false} />
+                    )}
+                  </Row>
                   <Text style={{ fontSize: '12px', color: 'var(--color-color10)' }}>
                     {assignedUser.role}
                   </Text>
@@ -201,6 +261,70 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
           </Stack>
 
           <Stack style={{ maxHeight: '256px', overflow: 'auto' }} role="listbox">
+            {/* REQ-12: Warning banner when manual user selected */}
+            {pendingManualUser && (
+              <Stack
+                style={{
+                  padding: '12px',
+                  backgroundColor: 'var(--color-orange-2)',
+                  borderBottom: '1px solid var(--color-orange-6)',
+                }}
+              >
+                <Row style={{ alignItems: 'flex-start', gap: '8px' }}>
+                  <AlertTriangle
+                    size={16}
+                    style={{ color: 'var(--color-orange-10)', flexShrink: 0, marginTop: 2 }}
+                  />
+                  <Stack style={{ gap: '8px', flex: 1 }}>
+                    <Text style={{ fontSize: '13px', color: 'var(--color-orange-11)' }}>
+                      <strong>{pendingManualUser.name}</strong> is a manually added user and will
+                      not receive task notifications.
+                    </Text>
+                    <Row style={{ alignItems: 'center', gap: '8px' }}>
+                      <input
+                        type="checkbox"
+                        id="acknowledge-manual-user"
+                        checked={manualUserAcknowledged}
+                        onChange={(e) => setManualUserAcknowledged(e.target.checked)}
+                        style={{ width: 16, height: 16, cursor: 'pointer' }}
+                      />
+                      <label
+                        htmlFor="acknowledge-manual-user"
+                        style={{ fontSize: '12px', color: 'var(--color-orange-11)', cursor: 'pointer' }}
+                      >
+                        I understand this user won't be notified
+                      </label>
+                    </Row>
+                    <Row style={{ gap: '8px', paddingTop: '4px' }}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="primary"
+                        onPress={handleConfirmManualUserAssignment}
+                        disabled={!manualUserAcknowledged}
+                        style={{
+                          opacity: manualUserAcknowledged ? 1 : 0.5,
+                          fontSize: '12px',
+                          padding: '4px 12px',
+                        }}
+                      >
+                        Confirm Assignment
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onPress={handleCancelManualUserSelection}
+                        style={{ fontSize: '12px', padding: '4px 12px' }}
+                      >
+                        Cancel
+                      </Button>
+                    </Row>
+                  </Stack>
+                </Row>
+              </Stack>
+            )}
+
             {users.length === 0 ? (
               <Stack style={{ padding: '16px', alignItems: 'center' }}>
                 <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
@@ -227,7 +351,10 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                     paddingRight: '16px',
                     paddingTop: '12px',
                     paddingBottom: '12px',
-                    background: 'none',
+                    background:
+                      user.id === pendingManualUserId
+                        ? 'var(--color-orange-2)'
+                        : 'none',
                     border: 'none',
                     cursor: 'pointer',
                   }}
@@ -252,18 +379,22 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                       </Text>
                     </div>
                     <Stack style={{ flex: 1, minWidth: 0 }}>
-                      <Text
-                        style={{
-                          fontSize: '14px',
-                          fontWeight: 500,
-                          color: 'var(--color-color12)',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {user.name}
-                      </Text>
+                      <Row style={{ alignItems: 'center', gap: '6px' }}>
+                        <Text
+                          style={{
+                            fontSize: '14px',
+                            fontWeight: 500,
+                            color: 'var(--color-color12)',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {user.name}
+                        </Text>
+                        {/* REQ-12: Badge for manual users in dropdown */}
+                        {user.is_manually_created && <ManualUserBadge size="sm" showTooltip={false} />}
+                      </Row>
                       <Text
                         style={{
                           fontSize: '12px',
