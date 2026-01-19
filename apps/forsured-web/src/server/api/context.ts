@@ -21,6 +21,8 @@ export interface Context {
   session: User | null;
   userId: string | null;
   organizationId: string | null;
+  accessToken: string | null; // Access token for calling Edge Functions
+  req?: Request; // Request object for accessing headers
 }
 
 /**
@@ -39,6 +41,7 @@ export async function createContext(
   let session: User | null = null;
   let userId: string | null = null;
   let organizationId: string | null = null;
+  let accessToken: string | null = token || null;
 
   if (token) {
     try {
@@ -82,5 +85,7 @@ export async function createContext(
     session,
     userId,
     organizationId,
+    accessToken, // Store access token for Edge Function calls
+    req, // Include request for accessing headers in routers
   };
 }
