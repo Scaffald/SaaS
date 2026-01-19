@@ -147,16 +147,22 @@ function getFilledStyles(
   const colorMap = {
     gray: {
       bg: disabled ? colors.gray[200] : colors.gray[900],
+      hoverBg: colors.gray[800],
+      pressedBg: colors.gray[700],
       text: disabled ? colors.text[theme].disabled : colors.white,
       icon: disabled ? colors.text[theme].disabled : colors.white,
     },
     primary: {
       bg: disabled ? colors.primary[200] : colors.primary[600],
+      hoverBg: colors.primary[700],
+      pressedBg: colors.primary[800],
       text: disabled ? colors.white : colors.white,
       icon: disabled ? colors.white : colors.white,
     },
     error: {
       bg: disabled ? colors.error[200] : colors.error[600],
+      hoverBg: colors.error[700],
+      pressedBg: colors.error[800],
       text: disabled ? colors.white : colors.white,
       icon: disabled ? colors.white : colors.white,
     },
@@ -175,6 +181,12 @@ function getFilledStyles(
       color: styles.text,
     },
     iconColor: styles.icon,
+    hover: {
+      backgroundColor: disabled ? styles.bg : styles.hoverBg,
+    },
+    pressed: {
+      backgroundColor: disabled ? styles.bg : styles.pressedBg,
+    },
   }
 }
 
@@ -195,18 +207,24 @@ function getOutlineStyles(
       text: disabled ? colors.text[theme].disabled : colors.gray[700],
       icon: disabled ? colors.text[theme].disabled : colors.gray[700],
       bg: colors.bg[theme].default,
+      hoverBg: theme === 'light' ? colors.gray[50] : colors.gray[900],
+      pressedBg: theme === 'light' ? colors.gray[100] : colors.gray[800],
     },
     primary: {
       border: disabled ? colors.primary[200] : colors.primary[600],
       text: disabled ? colors.primary[300] : colors.primary[600],
       icon: disabled ? colors.primary[300] : colors.primary[600],
       bg: colors.bg[theme].default,
+      hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[950],
+      pressedBg: theme === 'light' ? colors.primary[100] : colors.primary[900],
     },
     error: {
       border: disabled ? colors.error[200] : colors.error[600],
       text: disabled ? colors.error[300] : colors.error[600],
       icon: disabled ? colors.error[300] : colors.error[600],
       bg: colors.bg[theme].default,
+      hoverBg: theme === 'light' ? colors.error[50] : colors.error[950],
+      pressedBg: theme === 'light' ? colors.error[100] : colors.error[900],
     },
   }
 
@@ -224,6 +242,12 @@ function getOutlineStyles(
       color: styles.text,
     },
     iconColor: styles.icon,
+    hover: {
+      backgroundColor: disabled ? styles.bg : styles.hoverBg,
+    },
+    pressed: {
+      backgroundColor: disabled ? styles.bg : styles.pressedBg,
+    },
   }
 }
 
@@ -241,16 +265,22 @@ function getLightStyles(
   const colorMap = {
     gray: {
       bg: disabled ? colors.gray[50] : colors.gray[100],
+      hoverBg: colors.gray[200],
+      pressedBg: colors.gray[300],
       text: disabled ? colors.text[theme].disabled : colors.gray[700],
       icon: disabled ? colors.text[theme].disabled : colors.gray[700],
     },
     primary: {
       bg: disabled ? colors.primary[50] : colors.primary[100],
+      hoverBg: colors.primary[200],
+      pressedBg: colors.primary[300],
       text: disabled ? colors.primary[300] : colors.primary[700],
       icon: disabled ? colors.primary[300] : colors.primary[700],
     },
     error: {
       bg: disabled ? colors.error[50] : colors.error[100],
+      hoverBg: colors.error[200],
+      pressedBg: colors.error[300],
       text: disabled ? colors.error[300] : colors.error[700],
       icon: disabled ? colors.error[300] : colors.error[700],
     },
@@ -268,6 +298,12 @@ function getLightStyles(
       color: styles.text,
     },
     iconColor: styles.icon,
+    hover: {
+      backgroundColor: disabled ? styles.bg : styles.hoverBg,
+    },
+    pressed: {
+      backgroundColor: disabled ? styles.bg : styles.pressedBg,
+    },
   }
 }
 
@@ -286,14 +322,20 @@ function getTextStyles(
     gray: {
       text: disabled ? colors.text[theme].disabled : colors.gray[700],
       icon: disabled ? colors.text[theme].disabled : colors.gray[700],
+      hoverBg: theme === 'light' ? colors.gray[50] : colors.gray[900],
+      pressedBg: theme === 'light' ? colors.gray[100] : colors.gray[800],
     },
     primary: {
       text: disabled ? colors.primary[300] : colors.primary[600],
       icon: disabled ? colors.primary[300] : colors.primary[600],
+      hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[950],
+      pressedBg: theme === 'light' ? colors.primary[100] : colors.primary[900],
     },
     error: {
       text: disabled ? colors.error[300] : colors.error[600],
       icon: disabled ? colors.error[300] : colors.error[600],
+      hoverBg: theme === 'light' ? colors.error[50] : colors.error[950],
+      pressedBg: theme === 'light' ? colors.error[100] : colors.error[900],
     },
   }
 
@@ -309,5 +351,11 @@ function getTextStyles(
       color: styles.text,
     },
     iconColor: styles.icon,
+    hover: {
+      backgroundColor: disabled ? 'transparent' : styles.hoverBg,
+    },
+    pressed: {
+      backgroundColor: disabled ? 'transparent' : styles.pressedBg,
+    },
   }
 }

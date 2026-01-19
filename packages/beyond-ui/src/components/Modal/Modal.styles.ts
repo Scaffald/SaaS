@@ -27,12 +27,12 @@ export function getModalStyles(
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      // Use semi-transparent backdrop for the overlay
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      // Use semi-transparent backdrop for the overlay - increased from 0.5 to 0.7 for better visibility
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     backdrop: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     container: {
       width: width as DimensionValue,
