@@ -35,7 +35,10 @@ export default function DashboardHeader({
   return (
     <Row
       style={{
-        padding: '20px 32px',
+        paddingTop: '20px',
+        paddingBottom: '20px',
+        paddingLeft: 'clamp(24px, 4vw, 48px)', // Responsive: 24-48px based on viewport
+        paddingRight: 'clamp(32px, 5vw, 64px)', // Responsive: 32-64px based on viewport
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: 'var(--color-background)',
