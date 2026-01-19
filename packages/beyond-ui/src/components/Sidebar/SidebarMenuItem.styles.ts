@@ -4,6 +4,7 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
+import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
