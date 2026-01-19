@@ -18,7 +18,7 @@ import {
   Trash2,
   Loader2,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H3, Card, Grid, Chip, CardHeader, CardContent, ButtonGroup } from '@unicornlove/beyond-ui'
 import { Tabs as TabsCustom } from '../../ui/Tabs'
 import { useClients } from '../../hooks/useClients'
 import { usePolicies } from '../../hooks/usePolicies'
@@ -82,20 +82,19 @@ export default function BrokerClientProfilePage() {
 
   if (!client) {
     return (
-      <Stack gap={24}>
+      <Stack gap={24} style={{ width: '100%' }}>
         <Row alignItems="center" gap={8} onPress={() => navigate(-1)} style={{ cursor: 'pointer' }}>
           <ArrowLeft size={20} color="var(--color-text-muted)" />
           <Text muted>Back</Text>
         </Row>
         <Card
+          variant="outlined"
+          padding="xl"
+          radius="lg"
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: '48px 24px',
-            backgroundColor: 'var(--color-background)',
-            borderRadius: 12,
-            border: '1px solid var(--color-border)',
           }}
         >
           <AlertTriangle color="var(--color-red-10)" size={64} style={{ marginBottom: 16 }} />
@@ -139,11 +138,6 @@ export default function BrokerClientProfilePage() {
     return 'var(--color-red-9)'
   }
 
-  const cardStyle: React.CSSProperties = {
-    backgroundColor: 'var(--color-gray-2)',
-    borderRadius: 12,
-    padding: 16,
-  }
 
   const getStatusStyle = (status: string): React.CSSProperties => {
     switch (status) {
@@ -164,9 +158,9 @@ export default function BrokerClientProfilePage() {
       label: 'Overview',
       icon: Building,
       content: (
-        <Stack gap={24}>
+        <Stack gap={24} style={{ width: '100%' }}>
           <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
-            <Card style={cardStyle}>
+            <Card variant="elevated" padding="md" radius="lg" elevation="sm">
               <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
                 <Shield color="var(--color-text-muted)" size={18} />
                 <Text size="sm" weight="medium" muted>
@@ -181,7 +175,7 @@ export default function BrokerClientProfilePage() {
                 {client.compliance_score}%
               </Text>
             </Card>
-            <Card style={cardStyle}>
+            <Card variant="elevated" padding="md" radius="lg" elevation="sm">
               <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
                 <FileText color="var(--color-text-muted)" size={18} />
                 <Text size="sm" weight="medium" muted>
@@ -192,7 +186,7 @@ export default function BrokerClientProfilePage() {
                 {clientPolicies.filter((p) => p.status === 'active').length}
               </Text>
             </Card>
-            <Card style={cardStyle}>
+            <Card variant="elevated" padding="md" radius="lg" elevation="sm">
               <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
                 <Building color="var(--color-text-muted)" size={18} />
                 <Text size="sm" weight="medium" muted>
@@ -203,42 +197,34 @@ export default function BrokerClientProfilePage() {
                 {clientProjects.filter((p) => p.status === 'active').length}
               </Text>
             </Card>
-            <Card style={cardStyle}>
+            <Card variant="elevated" padding="md" radius="lg" elevation="sm">
               <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
                 <TrendingUp color="var(--color-text-muted)" size={18} />
                 <Text size="sm" weight="medium" muted>
                   Risk Level
                 </Text>
               </Row>
-              <Text
+              <Chip
+                size="sm"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                  paddingTop: 4,
-                  paddingBottom: 4,
-                  borderRadius: 9999,
-                  fontSize: 14,
-                  fontWeight: 500,
-                  border: '1px solid',
-                  ...getRiskBadge(client.risk_level),
+                  backgroundColor: getRiskBadge(client.risk_level).backgroundColor,
+                  borderColor: getRiskBadge(client.risk_level).borderColor,
+                  borderWidth: 1,
+                }}
+                textStyle={{
+                  color: getRiskBadge(client.risk_level).color,
                 }}
               >
                 {client.risk_level.charAt(0).toUpperCase() + client.risk_level.slice(1)}
-              </Text>
+              </Chip>
             </Card>
           </Grid>
 
-          <Card
-            style={{
-              backgroundColor: 'var(--color-background)',
-              borderRadius: 12,
-              border: '1px solid var(--color-border)',
-              padding: 24,
-            }}
-          >
-            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Contact Information</H3>
+          <Card variant="outlined" padding="lg" radius="lg">
+            <CardHeader>
+              <H3 style={{ fontSize: 18, fontWeight: 600 }}>Contact Information</H3>
+            </CardHeader>
+            <CardContent>
             <Grid columns={{ base: 1, sm: 2 }} gap={16}>
               {client.primary_contact && (
                 <Row alignItems="center" gap={12}>
@@ -285,19 +271,17 @@ export default function BrokerClientProfilePage() {
                 </Row>
               )}
             </Grid>
+            </CardContent>
           </Card>
 
           {client.notes && (
-            <Card
-              style={{
-                backgroundColor: 'var(--color-background)',
-                borderRadius: 12,
-                border: '1px solid var(--color-border)',
-                padding: 24,
-              }}
-            >
-              <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Notes</H3>
-              <Text muted>{client.notes}</Text>
+            <Card variant="outlined" padding="lg" radius="lg">
+              <CardHeader>
+                <H3 style={{ fontSize: 18, fontWeight: 600 }}>Notes</H3>
+              </CardHeader>
+              <CardContent>
+                <Text muted>{client.notes}</Text>
+              </CardContent>
             </Card>
           )}
         </Stack>
@@ -308,16 +292,12 @@ export default function BrokerClientProfilePage() {
       label: 'Compliance',
       icon: Shield,
       content: (
-        <Stack gap={24}>
-          <Card
-            style={{
-              backgroundColor: 'var(--color-background)',
-              borderRadius: 12,
-              border: '1px solid var(--color-border)',
-              padding: 24,
-            }}
-          >
-            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Compliance Overview</H3>
+        <Stack gap={24} style={{ width: '100%' }}>
+          <Card variant="outlined" padding="lg" radius="lg">
+            <CardHeader>
+              <H3 style={{ fontSize: 18, fontWeight: 600 }}>Compliance Overview</H3>
+            </CardHeader>
+            <CardContent>
             <Row alignItems="center" gap={16} style={{ marginBottom: 24 }}>
               <Stack style={{ width: 128, height: 128, position: 'relative' }}>
                 <Stack
@@ -375,17 +355,14 @@ export default function BrokerClientProfilePage() {
                 </Row>
               </Stack>
             </Row>
+            </CardContent>
           </Card>
 
-          <Card
-            style={{
-              backgroundColor: 'var(--color-background)',
-              borderRadius: 12,
-              border: '1px solid var(--color-border)',
-              padding: 24,
-            }}
-          >
-            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Coverage Status</H3>
+          <Card variant="outlined" padding="lg" radius="lg">
+            <CardHeader>
+              <H3 style={{ fontSize: 18, fontWeight: 600 }}>Coverage Status</H3>
+            </CardHeader>
+            <CardContent>
             <Stack gap={16}>
               {clientPolicies.length > 0 ? (
                 clientPolicies.map((policy) => {
@@ -393,11 +370,10 @@ export default function BrokerClientProfilePage() {
                   return (
                     <Card
                       key={policy.id}
-                      style={{
-                        backgroundColor: 'var(--color-gray-2)',
-                        borderRadius: 12,
-                        padding: 16,
-                      }}
+                      variant="elevated"
+                      padding="md"
+                      radius="lg"
+                      elevation="sm"
                     >
                       <Row alignItems="center" justifyContent="space-between">
                         <Stack>
@@ -406,20 +382,17 @@ export default function BrokerClientProfilePage() {
                             {policy.carrier} - {policy.policy_number}
                           </Text>
                         </Stack>
-                        <Text
+                        <Chip
+                          size="sm"
                           style={{
-                            paddingLeft: 12,
-                            paddingRight: 12,
-                            paddingTop: 4,
-                            paddingBottom: 4,
-                            borderRadius: 9999,
-                            fontSize: 12,
-                            fontWeight: 500,
-                            ...statusStyle,
+                            backgroundColor: statusStyle.backgroundColor,
+                          }}
+                          textStyle={{
+                            color: statusStyle.color,
                           }}
                         >
                           {policy.status}
-                        </Text>
+                        </Chip>
                       </Row>
                     </Card>
                   )
@@ -430,6 +403,7 @@ export default function BrokerClientProfilePage() {
                 </Text>
               )}
             </Stack>
+            </CardContent>
           </Card>
         </Stack>
       ),
@@ -440,20 +414,19 @@ export default function BrokerClientProfilePage() {
       icon: FileText,
       badge: clientPolicies.length,
       content: (
-        <Stack gap={16}>
+        <Stack gap={16} style={{ width: '100%' }}>
           {clientPolicies.length > 0 ? (
             clientPolicies.map((policy) => {
               const statusStyle = getStatusStyle(policy.status)
               return (
                 <Card
                   key={policy.id}
-                  style={{
-                    backgroundColor: 'var(--color-background)',
-                    borderRadius: 12,
-                    border: '1px solid var(--color-border)',
-                    padding: 24,
-                    cursor: 'pointer',
-                  }}
+                  variant="outlined"
+                  padding="lg"
+                  radius="lg"
+                  pressable
+                  onPress={() => navigate(`/broker/policies/${policy.id}`)}
+                  style={{ cursor: 'pointer' }}
                 >
                   <Row
                     alignItems="flex-start"
@@ -468,20 +441,17 @@ export default function BrokerClientProfilePage() {
                         {policy.carrier}
                       </Text>
                     </Stack>
-                    <Text
+                    <Chip
+                      size="sm"
                       style={{
-                        paddingLeft: 12,
-                        paddingRight: 12,
-                        paddingTop: 4,
-                        paddingBottom: 4,
-                        borderRadius: 9999,
-                        fontSize: 12,
-                        fontWeight: 500,
-                        ...statusStyle,
+                        backgroundColor: statusStyle.backgroundColor,
+                      }}
+                      textStyle={{
+                        color: statusStyle.color,
                       }}
                     >
                       {policy.status}
-                    </Text>
+                    </Chip>
                   </Row>
                   <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
                     <Stack>
@@ -516,14 +486,13 @@ export default function BrokerClientProfilePage() {
             })
           ) : (
             <Card
+              variant="outlined"
+              padding="xl"
+              radius="lg"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                padding: '48px 24px',
-                backgroundColor: 'var(--color-background)',
-                borderRadius: 12,
-                border: '1px solid var(--color-border)',
               }}
             >
               <FileText color="var(--color-text-muted)" size={48} style={{ marginBottom: 16 }} />
@@ -540,21 +509,19 @@ export default function BrokerClientProfilePage() {
       icon: Building,
       badge: clientProjects.length,
       content: (
-        <Stack gap={16}>
+        <Stack gap={16} style={{ width: '100%' }}>
           {clientProjects.length > 0 ? (
             clientProjects.map((project) => {
               const statusStyle = getStatusStyle(project.status)
               return (
                 <Card
                   key={project.id}
+                  variant="outlined"
+                  padding="lg"
+                  radius="lg"
+                  pressable
                   onPress={() => navigate(`/broker/projects/${project.id}`)}
-                  style={{
-                    backgroundColor: 'var(--color-background)',
-                    borderRadius: 12,
-                    border: '1px solid var(--color-border)',
-                    padding: 24,
-                    cursor: 'pointer',
-                  }}
+                  style={{ cursor: 'pointer' }}
                 >
                   <Row
                     alignItems="flex-start"
@@ -574,20 +541,17 @@ export default function BrokerClientProfilePage() {
                         </Row>
                       )}
                     </Stack>
-                    <Text
+                    <Chip
+                      size="sm"
                       style={{
-                        paddingLeft: 12,
-                        paddingRight: 12,
-                        paddingTop: 4,
-                        paddingBottom: 4,
-                        borderRadius: 9999,
-                        fontSize: 12,
-                        fontWeight: 500,
-                        ...statusStyle,
+                        backgroundColor: statusStyle.backgroundColor,
+                      }}
+                      textStyle={{
+                        color: statusStyle.color,
                       }}
                     >
                       {project.status}
-                    </Text>
+                    </Chip>
                   </Row>
                   <Row alignItems="center" gap={24}>
                     <Row alignItems="center" gap={4}>
@@ -609,14 +573,13 @@ export default function BrokerClientProfilePage() {
             })
           ) : (
             <Card
+              variant="outlined"
+              padding="xl"
+              radius="lg"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                padding: '48px 24px',
-                backgroundColor: 'var(--color-background)',
-                borderRadius: 12,
-                border: '1px solid var(--color-border)',
               }}
             >
               <Building color="var(--color-text-muted)" size={48} style={{ marginBottom: 16 }} />
@@ -633,41 +596,25 @@ export default function BrokerClientProfilePage() {
       icon: FileText,
       badge: documents.length || undefined,
       content: (
-        <Stack gap={24}>
+        <Stack gap={24} style={{ width: '100%' }}>
           {/* Upload Section */}
-          <Card
-            style={{
-              backgroundColor: 'var(--color-background)',
-              borderRadius: 12,
-              border: '1px solid var(--color-border)',
-              padding: 24,
-            }}
-          >
-            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Upload Documents</H3>
-
+          <Card variant="outlined" padding="lg" radius="lg">
+            <CardHeader>
+              <H3 style={{ fontSize: 18, fontWeight: 600 }}>Upload Documents</H3>
+            </CardHeader>
+            <CardContent>
             {/* Category Selection */}
-            <Grid columns={{ base: 2, sm: 4 }} gap={8} style={{ marginBottom: 16 }}>
-              {(['compliance', 'insurance', 'contract', 'general'] as const).map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setUploadCategory(cat)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: 8,
-                    border: 'none',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    backgroundColor:
-                      uploadCategory === cat ? 'var(--color-orange-9)' : 'var(--color-gray-3)',
-                    color: uploadCategory === cat ? 'white' : 'var(--color-text-muted)',
-                  }}
-                >
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                </button>
-              ))}
-            </Grid>
+            <ButtonGroup
+              items={(['compliance', 'insurance', 'contract', 'general'] as const).map((cat) => ({
+                id: cat,
+                label: cat.charAt(0).toUpperCase() + cat.slice(1),
+              }))}
+              mode="single"
+              value={uploadCategory}
+              onChange={(value) => setUploadCategory(value as typeof uploadCategory)}
+              size="sm"
+              style={{ marginBottom: 16 }}
+            />
 
             {/* Drop Zone */}
             <div
@@ -740,20 +687,17 @@ export default function BrokerClientProfilePage() {
                 </Stack>
               )}
             </div>
+            </CardContent>
           </Card>
 
           {/* Documents Table */}
-          <Card
-            style={{
-              backgroundColor: 'var(--color-background)',
-              borderRadius: 12,
-              border: '1px solid var(--color-border)',
-              padding: 24,
-            }}
-          >
-            <H3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
-              Client Documents ({documents.length})
-            </H3>
+          <Card variant="outlined" padding="lg" radius="lg">
+            <CardHeader>
+              <H3 style={{ fontSize: 18, fontWeight: 600 }}>
+                Client Documents ({documents.length})
+              </H3>
+            </CardHeader>
+            <CardContent>
 
             {documentsLoading ? (
               <Row alignItems="center" justifyContent="center" style={{ padding: 48 }}>
@@ -766,14 +710,13 @@ export default function BrokerClientProfilePage() {
             ) : documents.length > 0 ? (
               <Stack gap={8}>
                 {documents.map((doc) => (
-                  <Card
-                    key={doc.id}
-                    style={{
-                      backgroundColor: 'var(--color-gray-2)',
-                      borderRadius: 8,
-                      padding: 16,
-                    }}
-                  >
+                    <Card
+                      key={doc.id}
+                      variant="elevated"
+                      padding="md"
+                      radius="md"
+                      elevation="sm"
+                    >
                     <Row alignItems="center" justifyContent="space-between">
                       <Row alignItems="center" gap={12} style={{ flex: 1 }}>
                         <FileText size={20} style={{ color: 'var(--color-text-muted)' }} />
@@ -788,59 +731,44 @@ export default function BrokerClientProfilePage() {
                             <Text size="xs" muted>
                               {new Date(doc.uploaded_at).toLocaleDateString()}
                             </Text>
-                            <Text
+                            <Chip
+                              size="sm"
                               style={{
-                                fontSize: 11,
-                                padding: '2px 6px',
-                                borderRadius: 4,
                                 backgroundColor: 'var(--color-blue-2)',
+                              }}
+                              textStyle={{
                                 color: 'var(--color-blue-11)',
+                                fontSize: 11,
                               }}
                             >
                               {doc.category}
-                            </Text>
+                            </Chip>
                           </Row>
                         </Stack>
                       </Row>
                       <Row gap={8}>
-                        <button
-                          type="button"
-                          onClick={() => window.open(doc.file_url, '_blank')}
-                          style={{
-                            padding: 8,
-                            borderRadius: 8,
-                            border: 'none',
-                            backgroundColor: 'var(--color-gray-3)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                          title="Download"
-                        >
-                          <Download size={16} style={{ color: 'var(--color-text-muted)' }} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
+                        <Button
+                          variant="text"
+                          color="gray"
+                          size="sm"
+                          iconOnly
+                          onPress={() => window.open(doc.file_url, '_blank')}
+                          iconStart={Download}
+                          accessibilityLabel="Download"
+                        />
+                        <Button
+                          variant="text"
+                          color="error"
+                          size="sm"
+                          iconOnly
+                          onPress={() => {
                             if (window.confirm('Are you sure you want to delete this document?')) {
                               deleteDocument(doc.id)
                             }
                           }}
-                          style={{
-                            padding: 8,
-                            borderRadius: 8,
-                            border: 'none',
-                            backgroundColor: 'var(--color-red-2)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                          title="Delete"
-                        >
-                          <Trash2 size={16} style={{ color: 'var(--color-red-10)' }} />
-                        </button>
+                          iconStart={Trash2}
+                          accessibilityLabel="Delete"
+                        />
                       </Row>
                     </Row>
                   </Card>
@@ -860,6 +788,7 @@ export default function BrokerClientProfilePage() {
                 </Text>
               </Stack>
             )}
+            </CardContent>
           </Card>
         </Stack>
       ),
@@ -867,7 +796,7 @@ export default function BrokerClientProfilePage() {
   ]
 
   return (
-    <Stack gap={24}>
+    <Stack gap={24} style={{ width: '100%' }}>
       <Row alignItems="center" justifyContent="space-between">
         <Row alignItems="center" gap={16}>
           <Button
@@ -882,21 +811,15 @@ export default function BrokerClientProfilePage() {
           <Stack>
             <H1 style={{ fontSize: 28, fontWeight: 'bold' }}>{client.company_name}</H1>
             <Row alignItems="center" gap={12} style={{ marginTop: 4 }}>
-              <Text
+              <Chip
+                size="sm"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  paddingLeft: 8,
-                  paddingRight: 8,
-                  paddingTop: 2,
-                  paddingBottom: 2,
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 500,
                   backgroundColor:
                     client.client_type === 'subcontractor'
                       ? 'var(--color-blue-2)'
                       : 'var(--color-purple-2)',
+                }}
+                textStyle={{
                   color:
                     client.client_type === 'subcontractor'
                       ? 'var(--color-blue-11)'
@@ -904,24 +827,20 @@ export default function BrokerClientProfilePage() {
                 }}
               >
                 {client.client_type === 'subcontractor' ? 'Subcontractor' : 'General Contractor'}
-              </Text>
-              <Text
+              </Chip>
+              <Chip
+                size="sm"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  paddingLeft: 8,
-                  paddingRight: 8,
-                  paddingTop: 2,
-                  paddingBottom: 2,
-                  borderRadius: 9999,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  border: '1px solid',
-                  ...getRiskBadge(client.risk_level),
+                  backgroundColor: getRiskBadge(client.risk_level).backgroundColor,
+                  borderColor: getRiskBadge(client.risk_level).borderColor,
+                  borderWidth: 1,
+                }}
+                textStyle={{
+                  color: getRiskBadge(client.risk_level).color,
                 }}
               >
                 {client.risk_level} risk
-              </Text>
+              </Chip>
             </Row>
           </Stack>
         </Row>
