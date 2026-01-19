@@ -1,6 +1,7 @@
 /**
  * EnhancedManagerDashboard - Manager dashboard using Beyond UI
  * Migrated from Tamagui to Beyond UI
+ * REQ-12: Manual user creation support
  */
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +15,7 @@ import {
   CheckCircle,
   Loader2,
   FolderPlus,
+  UserPlus,
 } from 'lucide-react'
 import { Stack, Row, Text, Button, Card, Grid } from '@unicornlove/beyond-ui'
 import {
@@ -29,6 +31,7 @@ import { useDatabase } from '../../contexts/DatabaseContext'
 import { toast } from 'sonner'
 import EnhancedTaskDetailModal from '../Manager/EnhancedTaskDetailModal'
 import { useLexicon } from '../../contexts/LexiconContext'
+import { ManualUserCreateModal } from '../ManualUsers'
 
 // Type definitions for database schema
 type TaskStatus =
@@ -120,6 +123,7 @@ export default function EnhancedManagerDashboard() {
   const { forsured } = useDatabase()
   const navigate = useNavigate()
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [showAddContractorModal, setShowAddContractorModal] = useState(false)
 
   // REQ-4: Use lexicon for dynamic labels
   const { getContractorLabel } = useLexicon()
@@ -301,11 +305,41 @@ export default function EnhancedManagerDashboard() {
     return getPriorityBackground(priority).replace('-3)', '-11)')
   }
 
+  // Get organization ID from first project (GC's organization)
+  const organizationId = projects[0]?.manager_org_id || ''
+
+  // Get existing emails for validation
+  const existingEmails = useMemo(() => {
+    return subcontractors
+      .map((s) => s.contact_info?.email?.toLowerCase())
+      .filter((email): email is string => !!email)
+  }, [subcontractors])
+
   return (
     <Stack gap={24}>
-      <Text size="lg" muted>
-        Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
-      </Text>
+      <Row alignItems="center" justifyContent="space-between">
+        <Text size="lg" muted>
+          Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
+        </Text>
+        {organizationId && (
+          <Button
+            variant="primary"
+            size="sm"
+            onPress={() => setShowAddContractorModal(true)}
+            style={{
+              backgroundColor: 'var(--color-blue-10)',
+              color: 'white',
+            }}
+          >
+            <Row alignItems="center" gap={6}>
+              <UserPlus size={16} />
+              <Text style={{ color: 'white', fontSize: 14 }}>
+                Add {getContractorLabel(false)}
+              </Text>
+            </Row>
+          </Button>
+        )}
+      </Row>
 
       <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
         <Card style={cardStyle}>
@@ -596,6 +630,26 @@ export default function EnhancedManagerDashboard() {
           setSelectedTask(null)
         }}
       />
+
+      {/* REQ-12: Manual contractor creation modal */}
+      {organizationId && (
+        <ManualUserCreateModal
+          isOpen={showAddContractorModal}
+          onClose={() => setShowAddContractorModal(false)}
+          role="contractor"
+          organizationId={organizationId}
+          existingEmails={existingEmails}
+          onSuccess={(userId) => {
+            console.log('Manual contractor created:', userId)
+            // Refresh subcontractors list
+            forsured('subcontractors')
+              .select('*')
+              .then(({ data }) => {
+                if (data) setSubcontractors(data)
+              })
+          }}
+        />
+      )}
     </Stack>
   )
 }
