@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Stack, Row, Text, Card, Button, Input, Spinner, H1, H3 } from '@unicornlove/beyond-ui';
-import { Mail, Phone, Building2, Copy, CheckCircle, AlertCircle, Briefcase } from 'lucide-react';
+import { Mail, Copy, Clock, CheckCircle, AlertCircle, UserPlus, Users } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useUser } from '../../contexts/UserContext';
 import { toast } from 'sonner';
@@ -21,22 +21,43 @@ import {
   type RelationshipInvitation,
 } from '../../lib/relationshipInvitations';
 import { getUserOrganizationId } from '../../lib/supabase';
+import { ManualUserCreateModal } from '../../components/ManualUsers/ManualUserCreateModal';
+
+interface BrokerInfo {
+  id: string;
+  name: string;
+  company: string;
+  email: string;
+  phone?: string;
+  status: 'connected' | 'pending';
+}
 
 export default function MyBrokerPage() {
   const { user } = useAuth();
   const { currentUser } = useUser();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [invitations, setInvitations] = useState<RelationshipInvitation[]>([]);
   const [organizationId, setOrganizationId] = useState<string | null>(null);
+  const [connectedBrokers, setConnectedBrokers] = useState<BrokerInfo[]>([]);
+  const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([]);
 
   // Invite form state
-  const [brokerEmail, setBrokerEmail] = useState('');
-  const [brokerName, setBrokerName] = useState('');
-  const [brokerCompany, setBrokerCompany] = useState('');
-  const [brokerPhone, setBrokerPhone] = useState('');
+  const [showInviteForm, setShowInviteForm] = useState(false);
+  const [inviteFormData, setInviteFormData] = useState({
+    email: '',
+    name: '',
+    company: '',
+    phone: '',
+  });
+  const [sendingInvite, setSendingInvite] = useState(false);
 
   // Connect form state
-  const [connectionCode, setConnectionCode] = useState('');
+  const [showCodeEntry, setShowCodeEntry] = useState(false);
+  const [brokerCode, setBrokerCode] = useState('');
+  const [connectingByCode, setConnectingByCode] = useState(false);
+
+  // Manual broker creation state
+  const [showManualBrokerModal, setShowManualBrokerModal] = useState(false);
 
   const userId = currentUser?.id ?? user?.id ?? null;
 
@@ -56,19 +77,43 @@ export default function MyBrokerPage() {
     fetchOrganization();
   }, [userId]);
 
-  // Fetch invitations
+  // Fetch invitations and connected brokers
   const fetchInvitations = useCallback(async () => {
     if (!userId) return;
 
     try {
+      setLoading(true);
       const userInvitations = await getUserInvitations(userId);
       // Filter for broker invitations
       const brokerInvitations = userInvitations.filter(
         (inv) => inv.invitee_type === 'broker' || inv.inviter_type === 'broker'
       );
       setInvitations(brokerInvitations);
+
+      // Extract connected brokers
+      const connected = brokerInvitations
+        .filter((inv) => inv.status === 'connected')
+        .map((inv) => {
+          const metadata = inv.metadata as Record<string, unknown>;
+          return {
+            id: inv.id,
+            name: inv.invitee_name || inv.invitee_email,
+            company: inv.invitee_company || '',
+            email: inv.invitee_email,
+            phone: (metadata?.phone as string) || undefined,
+            status: 'connected' as const,
+          };
+        });
+      setConnectedBrokers(connected);
+
+      // Extract pending invitations
+      const pending = brokerInvitations.filter((inv) => inv.status === 'pending');
+      setPendingInvitations(pending);
     } catch (error) {
       console.error('[MyBrokerPage] Error fetching invitations:', error);
+      toast.error('Failed to load broker information');
+    } finally {
+      setLoading(false);
     }
   }, [userId]);
 
@@ -76,54 +121,52 @@ export default function MyBrokerPage() {
     fetchInvitations();
   }, [fetchInvitations]);
 
-  const handleInviteBroker = async () => {
+  const handleSendInvitation = async () => {
     if (!userId || !organizationId) {
       toast.error('Unable to send invitation. Please ensure you are logged in.');
       return;
     }
 
-    if (!brokerEmail.trim()) {
-      toast.error('Broker email is required');
+    if (!inviteFormData.email || !inviteFormData.name) {
+      toast.error('Broker email and name are required');
       return;
     }
 
-    if (!brokerName.trim()) {
-      toast.error('Broker name is required');
-      return;
-    }
-
-    setLoading(true);
+    setSendingInvite(true);
 
     try {
       const invitation = await createRelationshipInvitation({
         inviterOrgId: organizationId,
         inviterUserId: userId,
         inviterType: 'subcontractor',
-        inviteeEmail: brokerEmail.trim(),
-        inviteeName: brokerName.trim(),
-        inviteeCompany: brokerCompany.trim(),
-        inviteePhone: brokerPhone.trim(),
+        inviteeEmail: inviteFormData.email.trim(),
+        inviteeName: inviteFormData.name.trim(),
+        inviteeCompany: inviteFormData.company.trim(),
+        inviteePhone: inviteFormData.phone.trim(),
         inviteeType: 'broker',
         connectionMethod: 'both',
       });
 
       toast.success('Broker invitation sent!', {
-        description: `Your broker can connect using code ${invitation.relationship_code} or via email.`,
+        description: `${inviteFormData.name} can connect using your broker code`,
       });
 
       // Reset form
-      setBrokerEmail('');
-      setBrokerName('');
-      setBrokerCompany('');
-      setBrokerPhone('');
+      setInviteFormData({
+        email: '',
+        name: '',
+        company: '',
+        phone: '',
+      });
+      setShowInviteForm(false);
 
-      // Refresh invitations
-      await fetchInvitations();
+      // Update pending invitations
+      setPendingInvitations([...pendingInvitations, invitation]);
     } catch (error) {
-      console.error('[MyBrokerPage] Error inviting broker:', error);
+      console.error('[MyBrokerPage] Error sending invitation:', error);
       toast.error('Failed to send invitation. Please try again.');
     } finally {
-      setLoading(false);
+      setSendingInvite(false);
     }
   };
 
@@ -133,48 +176,63 @@ export default function MyBrokerPage() {
       return;
     }
 
-    if (!connectionCode.trim()) {
-      toast.error('Connection code is required');
+    if (!brokerCode.trim()) {
+      toast.error('Please enter a broker code');
       return;
     }
 
-    setLoading(true);
+    setConnectingByCode(true);
 
     try {
-      const result = await connectByRelationshipCode(connectionCode.trim(), organizationId, userId);
+      const result = await connectByRelationshipCode(brokerCode.trim(), organizationId, userId);
 
       if (result.success) {
         toast.success('Connected to broker successfully!');
-        setConnectionCode('');
-        await fetchInvitations();
+        setBrokerCode('');
+        setShowCodeEntry(false);
+
+        // Reload page to show new broker
+        window.location.reload();
       } else {
-        toast.error(result.error || 'Failed to connect using code');
+        toast.error(result.error || 'Failed to connect. Please check the code and try again.');
       }
     } catch (error) {
       console.error('[MyBrokerPage] Error connecting by code:', error);
       toast.error('Failed to connect. Please try again.');
     } finally {
-      setLoading(false);
+      setConnectingByCode(false);
     }
   };
 
-  const copyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
-    toast.success('Code copied to clipboard');
-  };
-
-  const connectedBrokers = invitations.filter((inv) => inv.status === 'connected');
-  const pendingInvitations = invitations.filter((inv) => inv.status === 'pending');
+  if (loading) {
+    return (
+      <Stack
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          padding: 'var(--space-6)',
+        }}
+      >
+        <Spinner size="lg" />
+        <Text style={{ marginTop: 'var(--space-4)', color: 'var(--color-11)' }}>
+          Loading broker information...
+        </Text>
+      </Stack>
+    );
+  }
 
   return (
     <Stack gap={24} style={{ padding: 24 }}>
       {/* Header */}
       <Stack gap={8}>
         <H1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-gray-12)' }}>
-          My Broker
+          My Insurance Broker
         </H1>
         <Text size="lg" style={{ color: 'var(--color-gray-11)' }}>
-          Invite your insurance broker to Forsured or connect using their code
+          {connectedBrokers.length > 0 
+            ? 'Manage your insurance broker relationships' 
+            : 'Connect with your insurance brokers'}
         </Text>
       </Stack>
 
@@ -190,12 +248,13 @@ export default function MyBrokerPage() {
         >
           <Stack gap={16}>
             <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
-              Connected Brokers
+              Your Brokers ({connectedBrokers.length})
             </H3>
+
             <Stack gap={12}>
-              {connectedBrokers.map((inv) => (
+              {connectedBrokers.map((broker) => (
                 <Card
-                  key={inv.id}
+                  key={broker.id}
                   style={{
                     backgroundColor: 'var(--color-green-2)',
                     border: '1px solid var(--color-green-6)',
@@ -203,32 +262,108 @@ export default function MyBrokerPage() {
                     padding: 16,
                   }}
                 >
-                  <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
-                    <CheckCircle size={20} color="var(--color-green-10)" />
-                    <Text size="md" weight="semibold" style={{ color: 'var(--color-gray-12)' }}>
-                      {inv.inviter_type === 'broker'
-                        ? inv.invitee_name
-                        : inv.invitee_name || inv.invitee_email}
-                    </Text>
-                  </Row>
-                  {inv.invitee_company && (
-                    <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
-                      {inv.invitee_company}
-                    </Text>
-                  )}
-                  {inv.referral_credit_granted && (
-                    <Row alignItems="center" gap={8} style={{ marginTop: 8 }}>
-                      <Text size="xs" weight="medium" style={{ color: 'var(--color-green-11)' }}>
-                        Referral credit earned
+                  <Row justifyContent="space-between" alignItems="flex-start">
+                    <Stack gap={8} style={{ flex: 1 }}>
+                      <Row alignItems="center" gap={8}>
+                        <CheckCircle size={18} color="var(--color-green-10)" />
+                        <Text size="md" weight="semibold" style={{ color: 'var(--color-gray-12)' }}>
+                          {broker.name}
+                        </Text>
+                      </Row>
+                      {broker.company && (
+                        <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                          {broker.company}
+                        </Text>
+                      )}
+                      <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                        {broker.email}
+                      </Text>
+                      {broker.phone && (
+                        <Text size="sm" style={{ color: 'var(--color-gray-10)' }}>
+                          {broker.phone}
+                        </Text>
+                      )}
+                    </Stack>
+                    <Row
+                      style={{
+                        gap: 8,
+                        alignItems: 'center',
+                        backgroundColor: 'var(--color-green-3)',
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 4,
+                      }}
+                    >
+                      <Text size="xs" weight="semibold" style={{ color: 'var(--color-green-11)' }}>
+                        Connected
                       </Text>
                     </Row>
-                  )}
+                  </Row>
                 </Card>
               ))}
             </Stack>
           </Stack>
         </Card>
       )}
+
+      {/* Connect by Code */}
+      <Card
+        style={{
+          backgroundColor: 'var(--color-background)',
+          borderRadius: 12,
+          border: '1px solid var(--color-border)',
+          padding: 24,
+        }}
+      >
+        <Stack gap={16}>
+          <Row justifyContent="space-between" alignItems="center">
+            <Stack gap={4}>
+              <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+                Connect with Broker Code
+              </H3>
+              <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                If your broker has given you a code, enter it here
+              </Text>
+            </Stack>
+            <Button
+              size="sm"
+              variant="outline"
+              onPress={() => setShowCodeEntry(!showCodeEntry)}
+            >
+              {showCodeEntry ? 'Hide' : 'Enter Code'}
+            </Button>
+          </Row>
+
+          {showCodeEntry && (
+            <Stack
+              gap={12}
+              style={{
+                borderTop: '1px solid var(--color-border)',
+                paddingTop: 16,
+              }}
+            >
+              <Input
+                label="Broker Code (BKR-XXXXXX)"
+                placeholder="BKR-123456"
+                value={brokerCode}
+                onChangeText={(text) => setBrokerCode(text.toUpperCase())}
+                disabled={connectingByCode}
+              />
+
+              <Button
+                variant="filled"
+                color="primary"
+                disabled={connectingByCode || !brokerCode.trim()}
+                loading={connectingByCode}
+                iconStart={CheckCircle}
+                onPress={handleConnectByCode}
+              >
+                {connectingByCode ? 'Connecting...' : 'Connect with Broker'}
+              </Button>
+            </Stack>
+          )}
+        </Stack>
+      </Card>
 
       {/* Invite Broker */}
       <Card
@@ -240,68 +375,97 @@ export default function MyBrokerPage() {
         }}
       >
         <Stack gap={16}>
-          <Row alignItems="center" gap={12}>
-            <Mail size={24} color="var(--color-blue-10)" />
-            <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
-              Invite Your Broker
-            </H3>
-          </Row>
-          <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
-            Enter your broker's information. They can connect using your email or the generated
-            connection code.
-          </Text>
-
-          <Stack gap={16}>
-            <Input
-              label="Broker Email"
-              required
-              type="email"
-              value={brokerEmail}
-              onChangeText={setBrokerEmail}
-              placeholder="broker@example.com"
-              disabled={loading}
-            />
-            <Input
-              label="Broker Name"
-              required
-              type="text"
-              value={brokerName}
-              onChangeText={setBrokerName}
-              placeholder="John Doe"
-              disabled={loading}
-            />
-            <Input
-              label="Broker Company"
-              type="text"
-              value={brokerCompany}
-              onChangeText={setBrokerCompany}
-              placeholder="ABC Insurance Agency"
-              disabled={loading}
-            />
-            <Input
-              label="Broker Phone (Optional)"
-              type="tel"
-              value={brokerPhone}
-              onChangeText={setBrokerPhone}
-              placeholder="(555) 123-4567"
-              disabled={loading}
-            />
-
+          <Row justifyContent="space-between" alignItems="center">
+            <Stack gap={4}>
+              <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+                Invite Your Broker
+              </H3>
+              <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                Send an email invitation to your insurance broker
+              </Text>
+            </Stack>
             <Button
-              variant="filled"
-              color="primary"
-              onPress={handleInviteBroker}
-              disabled={loading || !brokerEmail || !brokerName}
-              loading={loading}
-              iconStart={Mail}
+              size="sm"
+              variant="outline"
+              iconStart={UserPlus}
+              onPress={() => setShowInviteForm(!showInviteForm)}
             >
-              Send Invitation
+              {showInviteForm ? 'Cancel' : 'Invite Broker'}
             </Button>
-          </Stack>
+          </Row>
+
+          {showInviteForm && (
+            <Stack
+              gap={12}
+              style={{
+                borderTop: '1px solid var(--color-border)',
+                paddingTop: 16,
+              }}
+            >
+              <Input
+                label="Broker Email"
+                required
+                placeholder="broker@example.com"
+                value={inviteFormData.email}
+                onChangeText={(text) =>
+                  setInviteFormData({ ...inviteFormData, email: text })
+                }
+                disabled={sendingInvite}
+              />
+
+              <Input
+                label="Broker Name"
+                required
+                placeholder="John Smith"
+                value={inviteFormData.name}
+                onChangeText={(text) =>
+                  setInviteFormData({ ...inviteFormData, name: text })
+                }
+                disabled={sendingInvite}
+              />
+
+              <Row gap={12}>
+                <Stack gap={8} style={{ flex: 1 }}>
+                  <Input
+                    label="Company (Optional)"
+                    placeholder="ABC Insurance"
+                    value={inviteFormData.company}
+                    onChangeText={(text) =>
+                      setInviteFormData({ ...inviteFormData, company: text })
+                    }
+                    disabled={sendingInvite}
+                  />
+                </Stack>
+
+                <Stack gap={8} style={{ flex: 1 }}>
+                  <Input
+                    label="Phone (Optional)"
+                    placeholder="(555) 123-4567"
+                    value={inviteFormData.phone}
+                    onChangeText={(text) =>
+                      setInviteFormData({ ...inviteFormData, phone: text })
+                    }
+                    disabled={sendingInvite}
+                  />
+                </Stack>
+              </Row>
+
+              <Button
+                variant="filled"
+                color="primary"
+                disabled={sendingInvite || !inviteFormData.email || !inviteFormData.name}
+                loading={sendingInvite}
+                iconStart={Mail}
+                onPress={handleSendInvitation}
+              >
+                {sendingInvite ? 'Sending...' : 'Send Invitation'}
+              </Button>
+            </Stack>
+          )}
         </Stack>
       </Card>
 
-      {/* Connect Using Broker's Code */}
+      {/* Add Broker Manually */}
       <Card
         style={{
           backgroundColor: 'var(--color-background)',
@@ -311,37 +475,28 @@ export default function MyBrokerPage() {
         }}
       >
         <Stack gap={16}>
-          <Row alignItems="center" gap={12}>
-            <Briefcase size={24} color="var(--color-blue-10)" />
-            <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
-              Connect Using Broker's Code
-            </H3>
-          </Row>
-          <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
-            If your broker gave you a connection code, enter it here to connect.
-          </Text>
-
-          <Stack gap={16}>
-            <Input
-              label="Connection Code"
-              type="text"
-              value={connectionCode}
-              onChangeText={(text) => setConnectionCode(text.toUpperCase())}
-              placeholder="BKR-XXXXXX"
-              disabled={loading}
-            />
-
+          <Row justifyContent="space-between" alignItems="center">
+            <Stack gap={4}>
+              <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+                Add Broker Manually
+              </H3>
+              <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                Add a broker as a placeholder without sending an email
+              </Text>
+            </Stack>
             <Button
-              variant="filled"
-              color="primary"
-              onPress={handleConnectByCode}
-              disabled={loading || !connectionCode}
-              loading={loading}
-              iconStart={CheckCircle}
+              size="sm"
+              variant="outline"
+              iconStart={Users}
+              onPress={() => setShowManualBrokerModal(true)}
             >
-              Connect
+              Add Manually
             </Button>
-          </Stack>
+          </Row>
+          <Text size="xs" style={{ color: 'var(--color-gray-10)' }}>
+            Manually added brokers are private to you. If they register later with the same email,
+            their accounts will be merged automatically.
+          </Text>
         </Stack>
       </Card>
 
@@ -355,72 +510,87 @@ export default function MyBrokerPage() {
             padding: 24,
           }}
         >
-          <Stack gap={16}>
+          <Stack gap={12}>
             <H3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-gray-12)' }}>
-              Pending Invitations
+              Pending Broker Invitations ({pendingInvitations.length})
             </H3>
-            <Stack gap={12}>
-              {pendingInvitations.map((inv) => (
-                <Card
-                  key={inv.id}
-                  style={{
-                    backgroundColor: 'var(--color-yellow-2)',
-                    border: '1px solid var(--color-yellow-6)',
-                    borderRadius: 8,
-                    padding: 16,
-                  }}
-                >
-                  <Row
-                    alignItems="center"
-                    justifyContent="space-between"
-                    style={{ marginBottom: 8 }}
-                  >
-                    <Stack style={{ flex: 1 }}>
-                      <Text size="md" weight="semibold" style={{ color: 'var(--color-gray-12)' }}>
-                        {inv.invitee_name || inv.invitee_email}
-                      </Text>
-                      {inv.invitee_company && (
-                        <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
-                          {inv.invitee_company}
-                        </Text>
-                      )}
-                    </Stack>
-                    <AlertCircle size={20} color="var(--color-yellow-10)" />
-                  </Row>
-
-                  <Row alignItems="center" gap={8} style={{ marginTop: 8 }}>
-                    <Text
-                      size="sm"
-                      style={{
-                        color: 'var(--color-gray-11)',
-                        fontFamily: 'var(--font-mono)',
-                      }}
-                    >
-                      {inv.relationship_code}
-                    </Text>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      color="gray"
-                      onPress={() => copyCode(inv.relationship_code)}
-                      iconStart={Copy}
-                    />
-                  </Row>
-
-                  <Text
-                    size="xs"
+            <Stack gap={8}>
+              {pendingInvitations.map((inv) => {
+                const metadata = inv.metadata as Record<string, unknown>;
+                return (
+                  <Card
+                    key={inv.id}
                     style={{
-                      color: 'var(--color-gray-10)',
-                      marginTop: 8,
+                      backgroundColor: 'var(--color-background)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 8,
+                      padding: 12,
                     }}
                   >
-                    Invited {new Date(inv.invited_at).toLocaleDateString()}
-                  </Text>
-                </Card>
-              ))}
+                    <Row justifyContent="space-between" alignItems="center">
+                      <Stack gap={4} style={{ flex: 1 }}>
+                        <Text size="sm" weight="semibold" style={{ color: 'var(--color-gray-12)' }}>
+                          {(metadata?.name as string) || inv.invitee_email}
+                        </Text>
+                        <Text size="xs" style={{ color: 'var(--color-gray-11)' }}>
+                          {inv.invitee_email}
+                        </Text>
+                        {metadata?.company && (
+                          <Text size="xs" style={{ color: 'var(--color-gray-10)' }}>
+                            {metadata.company as string}
+                          </Text>
+                        )}
+                      </Stack>
+                      <Row gap={8} alignItems="center">
+                        <Clock size={14} color="var(--color-orange-10)" />
+                        <Text size="xs" style={{ color: 'var(--color-orange-10)' }}>
+                          Pending
+                        </Text>
+                      </Row>
+                    </Row>
+                  </Card>
+                );
+              })}
             </Stack>
           </Stack>
         </Card>
+      )}
+
+      {/* Help Text */}
+      <Card
+        style={{
+          backgroundColor: 'var(--color-gray-2)',
+          borderRadius: 12,
+          border: '1px solid var(--color-gray-6)',
+          padding: 16,
+        }}
+      >
+        <Stack gap={8}>
+          <Row gap={8} alignItems="center">
+            <AlertCircle size={16} color="var(--color-gray-11)" />
+            <Text size="sm" weight="semibold" style={{ color: 'var(--color-gray-12)' }}>
+              About Broker Connections
+            </Text>
+          </Row>
+          <Text size="xs" style={{ color: 'var(--color-gray-11)' }}>
+            You can connect with multiple insurance brokers if needed. Once connected, your brokers
+            will be able to manage your insurance policies and compliance requirements.
+          </Text>
+        </Stack>
+      </Card>
+
+      {/* Manual Broker Creation Modal */}
+      {organizationId && (
+        <ManualUserCreateModal
+          isOpen={showManualBrokerModal}
+          onClose={() => setShowManualBrokerModal(false)}
+          role="broker"
+          organizationId={organizationId}
+          onSuccess={() => {
+            // Reload page to show new broker (if any changes)
+            window.location.reload();
+          }}
+        />
       )}
     </Stack>
   );
