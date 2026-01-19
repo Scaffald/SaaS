@@ -22,6 +22,7 @@ interface SidebarProps {
   userRole: UserRole;
   user: UserType;
   onNotificationsClick?: () => void;
+  onSettingsClick?: () => void;
   alertCount?: number;
   collapsed?: boolean;
   onCollapseChange?: (collapsed: boolean) => void;
@@ -32,6 +33,7 @@ export default function Sidebar({
   userRole,
   user,
   onNotificationsClick: _onNotificationsClick,
+  onSettingsClick,
   alertCount: _alertCount,
   collapsed: controlledCollapsed,
   onCollapseChange,
@@ -63,7 +65,7 @@ export default function Sidebar({
     userInitials,
     userDisplayName,
     userSupportingText,
-  } = useSidebar({ userRole, user, badges });
+  } = useSidebar({ userRole, user, badges, onSettingsClick });
 
   // Memoized menu items to prevent re-renders
   const renderedMenuItems = useMemo(

@@ -16,6 +16,7 @@ export interface UseSidebarOptions {
   userRole: UserRole;
   user: UserType;
   badges?: Partial<Record<string, number>>;
+  onSettingsClick?: () => void;
 }
 
 export interface UseSidebarReturn {
@@ -36,7 +37,7 @@ export interface UseSidebarReturn {
 /**
  * Custom hook to manage sidebar logic
  */
-export function useSidebar({ userRole, user, badges }: UseSidebarOptions): UseSidebarReturn {
+export function useSidebar({ userRole, user, badges, onSettingsClick }: UseSidebarOptions): UseSidebarReturn {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -94,9 +95,9 @@ export function useSidebar({ userRole, user, badges }: UseSidebarOptions): UseSi
       {
         id: 'settings',
         icon: Settings,
-        onPress: () => navigate(getSettingsPath(userRole)),
+        onPress: onSettingsClick || (() => navigate(getSettingsPath(userRole))),
         label: 'Settings',
-        tooltip: 'Settings',
+        tooltip: 'Profile Settings',
       },
       {
         id: 'theme',
@@ -116,7 +117,7 @@ export function useSidebar({ userRole, user, badges }: UseSidebarOptions): UseSi
         tooltip: 'Logout',
       },
     ],
-    [theme, setTheme, userRole, logout, navigate]
+    [theme, setTheme, userRole, logout, navigate, onSettingsClick]
   );
 
   return {

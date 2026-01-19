@@ -13,6 +13,7 @@ import { Stack, SkipLink, CommandMenu } from '@unicornlove/beyond-ui'
 import type { CommandMenuItemData } from '@unicornlove/beyond-ui'
 import Sidebar from './Sidebar'
 import DashboardHeader from './DashboardHeader'
+import ProfileModal from '../Settings/ProfileModal'
 import { useAuth } from '../../contexts/AuthContext'
 import { useApprovals } from '../../hooks/useApprovals'
 import { useCommandMenu } from '../../hooks/useCommandMenu'
@@ -56,6 +57,9 @@ export default function Layout() {
     }
     return false
   })
+
+  // Profile modal state
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   // CommandMenu integration - MUST be called before any conditional returns
   const { isOpen, closeMenu } = useCommandMenu()
@@ -132,6 +136,7 @@ export default function Layout() {
           userRole={uiUserType}
           user={profile}
           onNotificationsClick={() => navigate(getNotificationsPath())}
+          onSettingsClick={() => setIsProfileModalOpen(true)}
           alertCount={pendingApprovalsCount}
           collapsed={sidebarCollapsed}
           onCollapseChange={setSidebarCollapsed}
@@ -210,6 +215,12 @@ export default function Layout() {
           </Stack>
         </Stack>
       )}
+
+      {/* Profile Settings Modal */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
     </>
   )
 }
