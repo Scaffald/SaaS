@@ -7,3 +7,7 @@ export { ManualUserForm } from './ManualUserForm';
 export type { ManualUserRole, ManualUserFormData } from './ManualUserForm';
 
 export { ManualUserCreateModal } from './ManualUserCreateModal';
+
+export { ManualUserBadge } from './ManualUserBadge';
+
+export { ManualUserProfile } from './ManualUserProfile';

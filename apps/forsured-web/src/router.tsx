@@ -112,6 +112,9 @@ const AdminInvitationRules = lazy(() => import('./app/(dashboard)/admin/invitati
 // Privacy Settings (REQ-3: CCPA Compliance)
 const PrivacySettings = lazy(() => import('./app/(dashboard)/settings/privacy/page'));
 
+// Manual Users (REQ-12: Manual Broker and Contractor Registration)
+const ManualUserProfile = lazy(() => import('./components/ManualUsers/ManualUserProfile'));
+
 // Documentation (public)
 const DocsHome = lazy(() => import('./pages/docs/index'));
 const DocsComponents = lazy(() => import('./pages/docs/Components'));
@@ -610,6 +613,16 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedTypes={['manager', 'subcontractor', 'broker']}>
               <PrivacySettings />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Manual Users (REQ-12: Manual Broker and Contractor Registration) */}
+        <Route
+          path="manual-users/:userId"
+          element={
+            <ProtectedRoute allowedTypes={['manager', 'broker']}>
+              <ManualUserProfile />
             </ProtectedRoute>
           }
         />
