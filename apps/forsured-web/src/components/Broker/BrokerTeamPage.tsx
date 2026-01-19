@@ -1,22 +1,100 @@
-import { useState } from 'react'
-import { Users, UserPlus, Shield, Mail } from 'lucide-react'
-import { Stack, Row, Text, H1, H2, Card, Grid } from '@unicornlove/beyond-ui'
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { Users, UserPlus, Shield, Mail, Clock } from 'lucide-react'
+import { Stack, Row, Text, H2, Card, Grid } from '@unicornlove/beyond-ui'
 import { useUsers } from '../../hooks/useUsers'
 import { useClients } from '../../hooks/useClients'
+import { useUserInvitations } from '../../hooks/useUserInvitations'
+import { useUser } from '../../contexts/UserContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { getUserOrganizationId } from '../../lib/supabase'
 import Button from '../Common/Button'
 import { DashboardSkeleton } from '../Common/SkeletonLoader'
 import InviteTeamMemberModal from './InviteTeamMemberModal'
+import PendingTeamInvitationsModal from './PendingTeamInvitationsModal'
+import ErrorBoundary from '../Common/ErrorBoundary'
 
 export default function BrokerTeamPage() {
   const { users, loading: usersLoading, fetchUsers } = useUsers()
   const { clients, loading: clientsLoading } = useClients()
+  const { currentUser } = useUser()
+  const { user } = useAuth()
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+  const [isPendingInvitationsModalOpen, setIsPendingInvitationsModalOpen] = useState(false)
+  const [organizationId, setOrganizationId] = useState<string | null>(null)
+
+  // Use either currentUser or auth user ID - try both to catch invitations
+  const userId = currentUser?.id || user?.id
+  
+  // Query invitations by both user ID and organization ID to catch all relevant invitations
+  // Must be called before handlers that use fetchInvitations
+  const { invitations, loading: invitationsLoading, fetchInvitations, resendInvitation } = useUserInvitations({
+    status: 'pending',
+    invitedBy: userId,
+    organizationId: organizationId,
+  })
+
+  // Separate handler for opening the modal - completely isolated from modal internals
+  const handleOpenInviteModal = useCallback(() => {
+    setIsInviteModalOpen(true)
+  }, [])
+
+  // Separate handler for closing the modal - isolated from modal internals
+  const handleCloseInviteModal = useCallback(() => {
+    setIsInviteModalOpen(false)
+  }, [])
+
+  // Separate handler for modal success - isolated from modal internals
+  // Must be defined after fetchInvitations is available from the hook
+  const handleInviteSuccess = useCallback(() => {
+    fetchUsers()
+    fetchInvitations()
+    setIsInviteModalOpen(false)
+  }, [fetchUsers, fetchInvitations])
+
+  // Fetch organization ID - this is the broker's organization
+  // When inviting team members, they will join this same organization
+  useEffect(() => {
+    async function fetchOrg() {
+      const userId = currentUser?.id || user?.id
+      if (userId) {
+        try {
+          const orgId = await getUserOrganizationId(userId)
+          setOrganizationId(orgId)
+        } catch (error) {
+          console.error('[BrokerTeamPage] Error fetching organization:', error)
+        }
+      }
+    }
+    fetchOrg()
+  }, [currentUser?.id, user?.id])
 
   const brokerUsers = users.filter((u) => u.role === 'broker')
   const adminUsers = brokerUsers.filter((u) => u.broker_role === 'admin')
   const workerUsers = brokerUsers.filter((u) => u.broker_role === 'worker')
 
-  if (usersLoading || clientsLoading) {
+  // Filter invitations for broker role and pending status
+  const brokerInvitations = useMemo(() => {
+    console.log('[BrokerTeamPage] All invitations:', invitations)
+    console.log('[BrokerTeamPage] User ID:', userId)
+    const filtered = invitations.filter((inv) => {
+      const isBroker = inv.role === 'broker'
+      const isPending = inv.status === 'pending'
+      console.log('[BrokerTeamPage] Invitation:', {
+        id: inv.id,
+        email: inv.email,
+        role: inv.role,
+        status: inv.status,
+        invited_by: inv.invited_by,
+        isBroker,
+        isPending,
+      })
+      return isBroker && isPending
+    })
+    console.log('[BrokerTeamPage] Filtered broker invitations:', filtered)
+    return filtered
+  }, [invitations, userId])
+
+  if (usersLoading || clientsLoading || invitationsLoading) {
     return <DashboardSkeleton />
   }
 
@@ -36,12 +114,12 @@ export default function BrokerTeamPage() {
   return (
     <Stack gap={24}>
       <Row alignItems="center" justifyContent="flex-end">
-        <Button color="primary" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
+        <Button color="primary" iconStart={UserPlus} onPress={handleOpenInviteModal}>
           Invite Team Member
         </Button>
       </Row>
 
-      <Grid columns={{ base: 1, sm: 2, lg: 3 }} gap={24}>
+      <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={24}>
         <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between">
             <Stack>
@@ -97,6 +175,56 @@ export default function BrokerTeamPage() {
             </div>
           </Row>
         </Card>
+
+        {/* Pending Invitations Card - Clickable */}
+        <div
+          style={{
+            ...cardStyle,
+            cursor: brokerInvitations.length > 0 ? 'pointer' : 'default',
+            border: brokerInvitations.length > 0
+              ? '1px solid var(--color-yellow-6)'
+              : '1px solid var(--color-border)',
+            transition: 'all 0.15s ease',
+          }}
+          onClick={() => brokerInvitations.length > 0 && setIsPendingInvitationsModalOpen(true)}
+          onMouseEnter={(e) => {
+            if (brokerInvitations.length > 0) {
+              e.currentTarget.style.borderColor = 'var(--color-yellow-8)'
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (brokerInvitations.length > 0) {
+              e.currentTarget.style.borderColor = 'var(--color-yellow-6)'
+              e.currentTarget.style.boxShadow = 'none'
+            }
+          }}
+        >
+          <Row alignItems="center" justifyContent="space-between">
+            <Stack>
+              <Text size="sm" muted>
+                Pending Invitations
+              </Text>
+              <Text
+                size="2xl"
+                weight="bold"
+                style={{ color: 'var(--color-yellow-10)', marginTop: 4 }}
+              >
+                {brokerInvitations.length}
+              </Text>
+            </Stack>
+            <div style={iconBoxStyle('yellow')}>
+              <Clock size={24} style={{ color: 'var(--color-yellow-10)' }} />
+            </div>
+          </Row>
+          <Text size="sm" muted style={{ marginTop: 8 }}>
+            {brokerInvitations.length === 0
+              ? 'No pending invites'
+              : brokerInvitations.length === 1
+                ? 'Click to view'
+                : `Click to view all`}
+          </Text>
+        </div>
       </Grid>
 
       <Card
@@ -270,7 +398,7 @@ export default function BrokerTeamPage() {
             <Text size="sm" muted style={{ marginBottom: 16 }}>
               Invite team members to collaborate
             </Text>
-            <Button color="primary" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
+            <Button color="primary" iconStart={UserPlus} onPress={handleOpenInviteModal}>
               Invite Team Member
             </Button>
           </Stack>
@@ -278,11 +406,32 @@ export default function BrokerTeamPage() {
       )}
 
       {/* Invite Team Member Modal */}
-      <InviteTeamMemberModal
-        isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
-        onSuccess={() => {
-          fetchUsers()
+      <ErrorBoundary>
+        <InviteTeamMemberModal
+          isOpen={isInviteModalOpen}
+          onClose={handleCloseInviteModal}
+          onSuccess={handleInviteSuccess}
+          organizationId={organizationId}
+        />
+      </ErrorBoundary>
+
+      {/* Pending Team Invitations Modal */}
+      <PendingTeamInvitationsModal
+        isOpen={isPendingInvitationsModalOpen}
+        onClose={() => setIsPendingInvitationsModalOpen(false)}
+        pendingInvitations={brokerInvitations.map((inv) => ({
+          id: inv.id,
+          email: inv.email,
+          name: inv.name,
+          role: inv.role,
+          status: inv.status,
+          invited_by: inv.invited_by,
+          organization_id: inv.organization_id,
+          created_at: inv.created_at,
+        }))}
+        onResendInvitation={async (invitationId: string) => {
+          await resendInvitation(invitationId)
+          fetchInvitations()
         }}
       />
     </Stack>
