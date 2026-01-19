@@ -515,13 +515,7 @@ export default function ManagerTasksPage() {
 
   return (
     <Stack gap={24}>
-      <Row align="center" justify="space-between">
-        <Stack>
-          <H1 style={{ fontSize: 32, fontWeight: 700 }}>Tasks</H1>
-          <Text color="secondary" style={{ fontSize: 18, marginTop: 4 }}>
-            Manage compliance tasks across {allProjects.length} active projects
-          </Text>
-        </Stack>
+      <Row align="center" justify="flex-end">
         <Button color="primary" iconStart={Plus} onPress={() => setShowCreateTask(true)}>
           Create Task
         </Button>

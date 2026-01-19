@@ -309,12 +309,6 @@ export default function ManagerProjectsPage() {
   if (projects.length === 0) {
     return (
       <Stack style={{ gap: 24 }}>
-        <Stack>
-          <H1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-12)' }}>Projects</H1>
-          <Text style={{ color: 'var(--color-11)', fontSize: 16 }}>
-            Manage projects and insurance requirements
-          </Text>
-        </Stack>
         <Stack
           style={{
             alignItems: 'center',
@@ -346,13 +340,7 @@ export default function ManagerProjectsPage() {
 
   return (
     <Stack style={{ gap: 24 }}>
-      <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
-        <Stack style={{ flex: 1 }}>
-          <H1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-12)' }}>Projects</H1>
-          <Text style={{ color: 'var(--color-11)', fontSize: 16 }}>
-            Manage projects and insurance requirements
-          </Text>
-        </Stack>
+      <Row style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
         <Button
           color="primary"
           iconStart={FolderPlus}

@@ -305,40 +305,30 @@ export default function DocumentsPage() {
 
   return (
     <Stack gap={24}>
-      <Row alignItems="center" justifyContent="space-between" style={{ flexWrap: 'wrap' }}>
-        <Stack>
-          <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
-            Documents
-          </H1>
-          <Text style={{ color: 'var(--color-gray-11)' }}>
-            Manage your certificates, licenses, and compliance documents
-          </Text>
-        </Stack>
-        <Row gap={8}>
-          <CommonButton
-            iconStart={Upload}
-            onPress={() => {
-              console.log('[DocumentsPage] Upload button clicked')
-              // Use startTransition to prevent blocking the UI
-              startTransition(() => {
-                setUploadError(null)
-                setUploadSuccess(null)
-                setUploadModalOpen(true)
-              })
-            }}
-          >
-            Upload Document
-          </CommonButton>
-          <CommonButton
-            variant="ghost"
-            iconStart={RefreshCw}
-            onPress={loadDocuments}
-            disabled={loading}
-            loading={loading}
-          >
-            Refresh
-          </CommonButton>
-        </Row>
+      <Row alignItems="center" justifyContent="flex-end" gap={8}>
+        <CommonButton
+          iconStart={Upload}
+          onPress={() => {
+            console.log('[DocumentsPage] Upload button clicked')
+            // Use startTransition to prevent blocking the UI
+            startTransition(() => {
+              setUploadError(null)
+              setUploadSuccess(null)
+              setUploadModalOpen(true)
+            })
+          }}
+        >
+          Upload Document
+        </CommonButton>
+        <CommonButton
+          variant="ghost"
+          iconStart={RefreshCw}
+          onPress={loadDocuments}
+          disabled={loading}
+          loading={loading}
+        >
+          Refresh
+        </CommonButton>
       </Row>
 
       {/* Success message */}
