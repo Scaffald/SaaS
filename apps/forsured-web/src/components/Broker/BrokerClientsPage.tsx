@@ -173,13 +173,7 @@ export default function BrokerClientsPage() {
     return (
       <>
         <Stack gap={24}>
-          <Row alignItems="center" justifyContent="space-between">
-            <Stack>
-              <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>
-                Clients
-              </H1>
-              <Text muted>Manage your client portfolio and monitor compliance</Text>
-            </Stack>
+          <Row alignItems="center" justifyContent="flex-end">
             <button
               type="button"
               onClick={() => setIsInviteModalOpen(true)}
@@ -224,13 +218,7 @@ export default function BrokerClientsPage() {
   return (
     <>
       <Stack gap={24}>
-        <Row alignItems="center" justifyContent="space-between">
-          <Stack>
-            <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>
-              Clients
-            </H1>
-            <Text muted>Manage your client portfolio and monitor compliance</Text>
-          </Stack>
+        <Row alignItems="center" justifyContent="flex-end">
           <Button color="primary" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
             Invite Client{pendingInvitations.length > 0 ? ` (${pendingInvitations.length})` : ''}
           </Button>

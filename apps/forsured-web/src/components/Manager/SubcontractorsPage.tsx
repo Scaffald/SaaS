@@ -556,14 +556,6 @@ export default function SubcontractorsPage() {
     return (
       <>
         <Stack style={{ gap: 24 }}>
-          <Stack>
-            <H1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-12)' }}>
-              Subcontractors
-            </H1>
-            <Text style={{ color: 'var(--color-11)', fontSize: 18, marginTop: 4 }}>
-              Manage your project subcontractors
-            </Text>
-          </Stack>
           <Stack style={{ alignItems: 'center', justifyContent: 'center', padding: 48 }}>
             <Stack style={{ alignItems: 'center', gap: 16 }}>
               <UserPlus size={48} color="var(--color-10)" />
@@ -587,15 +579,7 @@ export default function SubcontractorsPage() {
 
   return (
     <Stack style={{ gap: 24 }}>
-      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        <Stack>
-          <H1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--color-12)' }}>
-            Subcontractors
-          </H1>
-          <Text style={{ color: 'var(--color-11)', fontSize: 18, marginTop: 4 }}>
-            Manage {subcontractors.length} subcontractors across your projects
-          </Text>
-        </Stack>
+      <Row style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
         <Button color="primary" iconStart={Plus} onPress={() => setShowAddModal(true)}>
           Add Subcontractor
         </Button>

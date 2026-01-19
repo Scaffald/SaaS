@@ -296,35 +296,7 @@ export default function ProjectCoverageRequirementsPage({
       </Stack>
 
       {/* Header */}
-      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        <Stack>
-          <Row style={{ alignItems: 'center', gap: 12 }}>
-            <H1 style={{ fontSize: 32, fontWeight: 'bold', color: 'var(--color-color12)' }}>
-              Coverage Requirements
-            </H1>
-            <Row
-              style={{
-                paddingLeft: 12,
-                paddingRight: 12,
-                paddingTop: 4,
-                paddingBottom: 4,
-                borderRadius: 9999,
-                fontSize: 14,
-                fontWeight: 600,
-                backgroundColor: 'var(--color-purple2)',
-                color: 'var(--color-purple11)',
-                alignItems: 'center',
-                gap: 4,
-              }}
-            >
-              <FolderKanban size={14} />
-              <Text>PROJECT</Text>
-            </Row>
-          </Row>
-          <Text style={{ color: 'var(--color-color11)', fontSize: 18, marginTop: 4 }}>
-            Set project-specific coverage requirements for <Text style={{ fontWeight: 600 }}>{projectName}</Text>
-          </Text>
-        </Stack>
+      <Row style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
         <ButtonCommon variant="primary" leftIcon={Plus} onPress={() => setShowForm(true)}>
           Add Project Requirement
         </ButtonCommon>

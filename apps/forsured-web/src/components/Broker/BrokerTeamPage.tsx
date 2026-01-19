@@ -35,13 +35,7 @@ export default function BrokerTeamPage() {
 
   return (
     <Stack gap={24}>
-      <Row alignItems="center" justifyContent="space-between">
-        <Stack>
-          <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>
-            Team Management
-          </H1>
-          <Text muted>Manage your broker team and client assignments</Text>
-        </Stack>
+      <Row alignItems="center" justifyContent="flex-end">
         <Button color="primary" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
           Invite Team Member
         </Button>

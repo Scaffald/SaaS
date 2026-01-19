@@ -235,11 +235,6 @@ export default function SubcontractorProjectsPage() {
 
   return (
     <Stack style={{ gap: 24 }}>
-      <Stack>
-        <H1>My Projects</H1>
-        <Text style={{ color: 'var(--color-11)' }}>Track your active and completed projects</Text>
-      </Stack>
-
       <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={24}>
         <Card
           variant="outlined"

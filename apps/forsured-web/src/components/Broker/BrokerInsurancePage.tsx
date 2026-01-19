@@ -468,20 +468,14 @@ export default function BrokerInsurancePage() {
 
   return (
     <Stack gap={24}>
-      <Row alignItems="center" justifyContent="space-between">
-        <Stack>
-          <H1 style={{ fontSize: 24, fontWeight: 'bold' }}>Insurance Management</H1>
-          <Text muted>Manage policies, coverage requirements, and renewals</Text>
-        </Stack>
-        <Row alignItems="center" gap={12}>
-          <Button variant="outlined">Export Report</Button>
-          <Button variant="primary">
-            <Row alignItems="center" gap={8}>
-              <Plus size={16} />
-              <span>Add Policy</span>
-            </Row>
-          </Button>
-        </Row>
+      <Row alignItems="center" justifyContent="flex-end" gap={12}>
+        <Button variant="outlined">Export Report</Button>
+        <Button variant="primary">
+          <Row alignItems="center" gap={8}>
+            <Plus size={16} />
+            <span>Add Policy</span>
+          </Row>
+        </Button>
       </Row>
 
       <TabsCustom tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
