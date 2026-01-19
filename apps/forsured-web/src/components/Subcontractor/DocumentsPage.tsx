@@ -8,6 +8,7 @@ import {
   Suspense,
   startTransition,
 } from 'react'
+import { useTheme } from '../../contexts/ThemeContext'
 import {
   FileText,
   Upload,
@@ -62,6 +63,7 @@ const getStatusIconStyle = (status: string): React.CSSProperties => {
 export default function DocumentsPage() {
   const { currentUser } = useUser()
   const { user, profile } = useAuth()
+  const { theme } = useTheme()
   const [filter, setFilter] = useState<'all' | 'verified' | 'pending' | 'expiring'>('all')
   const [selectedDocument, setSelectedDocument] = useState<DocumentItem | null>(null)
   const [uploadModalOpen, setUploadModalOpen] = useState(false)
@@ -886,7 +888,7 @@ export default function DocumentsPage() {
         >
           <Card
             style={{
-              backgroundColor: 'var(--color-background)',
+              backgroundColor: theme === 'dark' ? '#141c25' : '#ffffff',
               padding: 24,
               borderRadius: 8,
               width: 560,
