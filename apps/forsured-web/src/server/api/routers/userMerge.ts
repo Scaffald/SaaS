@@ -12,6 +12,7 @@ import { TRPCError } from '@trpc/server'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
 import { forsured, core } from '../../../lib/supabase'
 import { AuditService } from '../../../lib/audit/AuditService'
+import { sendMergeCompletionNotifications } from '../../../lib/mergeNotifications'
 
 /**
  * Fields that can have conflicts during merge
@@ -565,6 +566,43 @@ export const userMergeRouter = createTRPCRouter({
             ...mergeResults,
           }
         )
+
+        // TASK-11: Send merge completion notifications
+        // Get the established user who created the manual user
+        const { data: establishedUserData } = await forsured('user_profiles')
+          .select('id, name, email, organization_id, created_by_user_id')
+          .eq('id', input.manualUserId)
+          .single()
+
+        if (establishedUserData?.created_by_user_id) {
+          const { data: creatorProfile } = await forsured('user_profiles')
+            .select('id, name, email, organization_id')
+            .eq('id', establishedUserData.created_by_user_id)
+            .single()
+
+          if (creatorProfile) {
+            // Send notifications to both users (non-blocking)
+            sendMergeCompletionNotifications({
+              establishedUser: {
+                id: creatorProfile.id,
+                name: creatorProfile.name || 'Unknown',
+                email: creatorProfile.email || '',
+                organizationId: creatorProfile.organization_id,
+              },
+              newUser: {
+                id: currentProfile.id,
+                name: currentProfile.name || 'Unknown',
+                email: currentProfile.email || '',
+                organizationId: ctx.organizationId,
+              },
+              manualUserId: input.manualUserId,
+              stats: mergeResults,
+            }).catch((err) => {
+              // Log but don't fail the merge if notifications fail
+              console.error('[UserMerge] Failed to send notifications:', err)
+            })
+          }
+        }
 
         return {
           success: true,
