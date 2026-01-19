@@ -36,8 +36,8 @@ export type { IconSize } from './utils/icon'
 export { invariant, warning, deprecated } from './utils/invariant'
 
 // Export hooks
-export { useResponsive } from './hooks'
-export type { ResponsiveValue, UseResponsiveReturn } from './hooks'
+export { useResponsive, useSidebarState } from './hooks'
+export type { ResponsiveValue, UseResponsiveReturn, UseSidebarStateOptions } from './hooks'
 
 // Export animation utilities
 export {
