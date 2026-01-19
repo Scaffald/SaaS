@@ -7,6 +7,7 @@
  */
 
 import { Task, DueDateSource, Notification } from '../../types';
+import { filterManualUsers, logSkippedManualUserNotification } from '../notifications/manualUserFilter';
 
 /**
  * User info for notification purposes
@@ -125,6 +126,8 @@ export function buildNotificationMessage(
 
 /**
  * Identify recipients for due date change notification
+ * Note: Returns raw recipients. Use getNotificationRecipientsFiltered for
+ * production use which excludes manual users.
  *
  * @param task - The task that changed
  * @param changedBy - User who made the change (excluded from recipients)
@@ -154,6 +157,40 @@ export function getNotificationRecipients(task: Task, changedBy: NotificationUse
   }
 
   return Array.from(recipients);
+}
+
+/**
+ * Identify recipients for due date change notification with manual user filtering
+ * REQ-12: Manual users cannot receive notifications
+ *
+ * @param task - The task that changed
+ * @param changedBy - User who made the change (excluded from recipients)
+ * @returns Array of user IDs to notify (excluding manual users)
+ */
+export async function getNotificationRecipientsFiltered(
+  task: Task,
+  changedBy: NotificationUser
+): Promise<string[]> {
+  const rawRecipients = getNotificationRecipients(task, changedBy);
+
+  if (rawRecipients.length === 0) {
+    return [];
+  }
+
+  // Filter out manual users
+  const filteredRecipients = await filterManualUsers(rawRecipients);
+
+  // Log any skipped manual users
+  const skippedCount = rawRecipients.length - filteredRecipients.length;
+  if (skippedCount > 0) {
+    logSkippedManualUserNotification(
+      rawRecipients.filter(id => !filteredRecipients.includes(id)).join(', '),
+      'due_date_change',
+      { taskId: task.id, taskTitle: task.title }
+    );
+  }
+
+  return filteredRecipients;
 }
 
 /**
@@ -191,7 +228,8 @@ export async function notifyDueDateChange(
   source: DueDateSource
 ): Promise<NotificationResult> {
   const errors: string[] = [];
-  const recipients = getNotificationRecipients(task, changedBy);
+  // REQ-12: Filter out manual users who cannot receive notifications
+  const recipients = await getNotificationRecipientsFiltered(task, changedBy);
 
   if (recipients.length === 0) {
     return {
@@ -272,6 +310,7 @@ export const dueDateNotificationService = {
   formatDateForDisplay,
   buildNotificationMessage,
   getNotificationRecipients,
+  getNotificationRecipientsFiltered,
   sendNotificationToUser,
   notifyDueDateChange,
   notifyAutoRecalculatedDueDate,

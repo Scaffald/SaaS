@@ -17,6 +17,7 @@ import {
   NotificationRecipient,
   StatusTransitionConfig,
 } from './statusNotificationConfig';
+import { filterManualUsers, logSkippedManualUserNotification } from '../notifications/manualUserFilter';
 
 /**
  * Notification record structure matching the database schema
@@ -48,6 +49,8 @@ export interface StatusNotificationResult {
 
 /**
  * Determine notification recipients based on config and task
+ * Note: This returns raw recipients. Use determineRecipientsFiltered for
+ * production use which excludes manual users.
  *
  * @param config - The notification configuration
  * @param task - The task being updated
@@ -85,6 +88,42 @@ export function determineRecipients(
   }
 
   return Array.from(recipients);
+}
+
+/**
+ * Determine notification recipients with manual user filtering
+ * REQ-12: Manual users cannot receive notifications
+ *
+ * @param config - The notification configuration
+ * @param task - The task being updated
+ * @param changerId - The user making the change
+ * @returns Array of user IDs to notify (excluding manual users)
+ */
+export async function determineRecipientsFiltered(
+  config: StatusTransitionConfig,
+  task: Task,
+  changerId?: string
+): Promise<string[]> {
+  const rawRecipients = determineRecipients(config, task, changerId);
+
+  if (rawRecipients.length === 0) {
+    return [];
+  }
+
+  // Filter out manual users
+  const filteredRecipients = await filterManualUsers(rawRecipients);
+
+  // Log any skipped manual users
+  const skippedCount = rawRecipients.length - filteredRecipients.length;
+  if (skippedCount > 0) {
+    logSkippedManualUserNotification(
+      rawRecipients.filter(id => !filteredRecipients.includes(id)).join(', '),
+      'status_change',
+      { taskId: task.id, taskTitle: task.title }
+    );
+  }
+
+  return filteredRecipients;
 }
 
 /**
@@ -140,8 +179,9 @@ export async function createStatusChangeNotifications(
       };
     }
 
-    // Determine who should receive the notification
-    const recipientIds = determineRecipients(config, task, changerId);
+    // Determine who should receive the notification (excluding manual users)
+    // REQ-12: Manual users cannot receive notifications
+    const recipientIds = await determineRecipientsFiltered(config, task, changerId);
 
     if (recipientIds.length === 0) {
       // No recipients to notify (e.g., creator is the one making the change)
@@ -193,4 +233,5 @@ export const statusNotificationService = {
   createStatusChangeNotifications,
   shouldNotifyStatusChange,
   determineRecipients,
+  determineRecipientsFiltered,
 };
