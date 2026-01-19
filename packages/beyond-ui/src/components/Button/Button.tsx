@@ -71,10 +71,10 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
       style={({ pressed }) => [
         styles.container,
         fullWidth && { width: '100%' },
-        // Hover state (web only)
-        isHovered && !isDisabled && Platform.OS === 'web' && { opacity: 0.9 },
-        // Pressed state
-        pressed && !isDisabled && { opacity: 0.8 },
+        // Hover state (web only) - darken background instead of reducing opacity
+        isHovered && !isDisabled && Platform.OS === 'web' && styles.hover,
+        // Pressed state - darken background more instead of reducing opacity
+        pressed && !isDisabled && styles.pressed,
         style,
       ]}
       {...pressableProps}

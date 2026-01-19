@@ -557,13 +557,7 @@ export default function BrokerTasksPage() {
 
   return (
     <Stack gap={24}>
-      <Row alignItems="center" justifyContent="space-between">
-        <Stack>
-          <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-text)' }}>Tasks</H1>
-          <Text muted style={{ marginTop: 4 }}>
-            Manage compliance tasks across {allProjects.length} active projects
-          </Text>
-        </Stack>
+      <Row alignItems="center" justifyContent="flex-end">
         <Button color="primary" iconStart={Plus} onPress={handleCreateTask}>
           Create Task
         </Button>

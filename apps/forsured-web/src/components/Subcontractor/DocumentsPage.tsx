@@ -8,6 +8,7 @@ import {
   Suspense,
   startTransition,
 } from 'react'
+import { useTheme } from '../../contexts/ThemeContext'
 import {
   FileText,
   Upload,
@@ -62,6 +63,7 @@ const getStatusIconStyle = (status: string): React.CSSProperties => {
 export default function DocumentsPage() {
   const { currentUser } = useUser()
   const { user, profile } = useAuth()
+  const { theme } = useTheme()
   const [filter, setFilter] = useState<'all' | 'verified' | 'pending' | 'expiring'>('all')
   const [selectedDocument, setSelectedDocument] = useState<DocumentItem | null>(null)
   const [uploadModalOpen, setUploadModalOpen] = useState(false)
@@ -303,40 +305,30 @@ export default function DocumentsPage() {
 
   return (
     <Stack gap={24}>
-      <Row alignItems="center" justifyContent="space-between" style={{ flexWrap: 'wrap' }}>
-        <Stack>
-          <H1 style={{ fontSize: 28, fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
-            Documents
-          </H1>
-          <Text style={{ color: 'var(--color-gray-11)' }}>
-            Manage your certificates, licenses, and compliance documents
-          </Text>
-        </Stack>
-        <Row gap={8}>
-          <CommonButton
-            onPress={() => {
-              console.log('[DocumentsPage] Upload button clicked')
-              // Use startTransition to prevent blocking the UI
-              startTransition(() => {
-                setUploadError(null)
-                setUploadSuccess(null)
-                setUploadModalOpen(true)
-              })
-            }}
-          >
-            <Row alignItems="center" gap={8}>
-              <Upload size={18} />
-              <Text>Upload Document</Text>
-            </Row>
-          </CommonButton>
-          <CommonButton variant="ghost" onPress={loadDocuments} disabled={loading}>
-            <Row alignItems="center" gap={8}>
-              <RefreshCw size={18} />
-              {loading && <Spinner size="sm" />}
-              {!loading && <Text>Refresh</Text>}
-            </Row>
-          </CommonButton>
-        </Row>
+      <Row alignItems="center" justifyContent="flex-end" gap={8}>
+        <CommonButton
+          iconStart={Upload}
+          onPress={() => {
+            console.log('[DocumentsPage] Upload button clicked')
+            // Use startTransition to prevent blocking the UI
+            startTransition(() => {
+              setUploadError(null)
+              setUploadSuccess(null)
+              setUploadModalOpen(true)
+            })
+          }}
+        >
+          Upload Document
+        </CommonButton>
+        <CommonButton
+          variant="ghost"
+          iconStart={RefreshCw}
+          onPress={loadDocuments}
+          disabled={loading}
+          loading={loading}
+        >
+          Refresh
+        </CommonButton>
       </Row>
 
       {/* Success message */}
@@ -876,7 +868,7 @@ export default function DocumentsPage() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -886,7 +878,7 @@ export default function DocumentsPage() {
         >
           <Card
             style={{
-              backgroundColor: 'var(--color-background)',
+              backgroundColor: theme === 'dark' ? '#141c25' : '#ffffff',
               padding: 24,
               borderRadius: 8,
               width: 560,

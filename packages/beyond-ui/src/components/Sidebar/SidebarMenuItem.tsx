@@ -90,6 +90,10 @@ export function SidebarMenuItem({
   // Render leading content (icon or avatar)
   const renderLeading = () => {
     if (avatar) {
+      // For double type (user profile), don't constrain avatar size
+      if (type === 'double') {
+        return avatar
+      }
       return <View style={{ width: iconSize, height: iconSize }}>{avatar}</View>
     }
     if (IconComponent) {

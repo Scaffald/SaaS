@@ -122,14 +122,6 @@ export default function ProjectCreatePage() {
         >
           Back
         </Button>
-        <Stack>
-          <H1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--color-12)' }}>
-            Create New Project
-          </H1>
-          <Text style={{ color: 'var(--color-11)', fontSize: 14 }}>
-            Set up a new project with insurance requirements
-          </Text>
-        </Stack>
       </Row>
 
       {error && (

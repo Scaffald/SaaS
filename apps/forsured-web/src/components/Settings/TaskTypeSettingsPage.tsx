@@ -250,15 +250,7 @@ export default function TaskTypeSettingsPage({
       </Stack>
 
       {/* Header */}
-      <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        <Stack>
-          <H1 style={{ fontSize: 32, fontWeight: 'bold', color: 'var(--color-color12)' }}>
-            Task Type Settings
-          </H1>
-          <Text style={{ color: 'var(--color-color11)', fontSize: 18, marginTop: 4 }}>
-            Manage task types and their default configurations
-          </Text>
-        </Stack>
+      <Row style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
         <ButtonCommon variant="primary" leftIcon={Plus} onPress={() => setShowForm(true)}>
           Create Task Type
         </ButtonCommon>

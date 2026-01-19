@@ -4,6 +4,7 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
+import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -41,22 +42,30 @@ export function getSidebarMenuItemStyles(
 ): SidebarMenuItemStyleConfig {
   const isLight = theme === 'light'
 
-  // Base item styles
+  // Base item styles with improved aesthetics
   const item: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[12],
-    minHeight: 40,
+    minHeight: 44,
     paddingHorizontal: spacing[12],
-    paddingVertical: type === 'double' ? spacing[12] : spacing[8],
-    marginHorizontal: spacing[16],
-    marginVertical: 1,
-    borderRadius: borderRadius.s,
+    paddingVertical: spacing[10],
+    marginHorizontal: spacing[12],
+    marginVertical: spacing[2],
+    borderRadius: borderRadius.m,
+    ...(Platform.OS === 'web' && {
+      transition: 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+      cursor: 'pointer',
+    } as any),
   }
 
-  // Add background color based on state
+  // Add background color based on state with improved colors
   if (state === 'active') {
     item.backgroundColor = activeColor
+    // Add subtle shadow for active state
+    if (Platform.OS === 'web') {
+      item.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
+    }
   } else if (state === 'hover') {
     item.backgroundColor = isLight ? colors.bg.light.subtle : colors.bg.dark.subtle
   }
@@ -66,9 +75,11 @@ export function getSidebarMenuItemStyles(
     item.marginLeft = collapsed ? spacing[16] : spacing[24] + spacing[16]
   }
 
-  // Double type spacing (user profile)
+  // Double type spacing (user profile) with improved spacing
   if (type === 'double') {
-    item.minHeight = 56
+    item.minHeight = 60
+    item.paddingVertical = spacing[10]
+    item.paddingHorizontal = spacing[16]
   }
 
   // Heading container styles

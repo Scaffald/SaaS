@@ -28,6 +28,7 @@ import type { SidebarFooterProps } from './Sidebar.types'
 import { useSidebarContext } from './Sidebar'
 import { getSidebarFooterStyles } from './SidebarFooter.styles'
 import { colors } from '../../tokens/colors'
+import { Tooltip } from '../Tooltip/Tooltip'
 
 /**
  * SidebarFooter component
@@ -50,38 +51,63 @@ export function SidebarFooter({
       {actions.length > 0 && (
         <View style={styles.actionsWrapper}>
           <View style={styles.actions}>
-            {actions.map((action, index) => (
-              <Pressable
-                key={index}
-                onPress={action.onPress}
-                style={({ pressed }) => [
-                  styles.actionButton,
-                  pressed && { opacity: 0.7 },
-                ]}
-                accessibilityRole="button"
-                accessibilityLabel={action.label || `Action ${index + 1}`}
-              >
-                <View style={{ width: actionIconSize, height: actionIconSize, position: 'relative' }}>
-                  <action.icon size={actionIconSize} color={styles.iconColor} />
-                  {action.badge !== undefined && action.badge > 0 && (
-                    <View
-                      style={[
-                        styles.actionBadge,
-                        {
-                          backgroundColor: colors.error[500],
-                          minWidth: action.badge > 9 ? 16 : 12,
-                          height: action.badge > 9 ? 16 : 12,
-                        },
-                      ]}
-                    >
-                      <Text style={styles.actionBadgeText}>
-                        {action.badge > 9 ? '9+' : action.badge}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              </Pressable>
-            ))}
+            {actions.map((action) => {
+              // Determine tooltip configuration
+              const tooltipConfig = typeof action.tooltip === 'string'
+                ? { content: action.tooltip, position: 'down-center' as const, delay: 200 }
+                : action.tooltip
+                ? { content: action.tooltip.content, position: action.tooltip.position || 'down-center' as const, delay: action.tooltip.delay || 200 }
+                : null
+
+              const actionButton = (
+                <Pressable
+                  key={action.id}
+                  onPress={action.onPress}
+                  style={({ pressed }) => [
+                    styles.actionButton,
+                    pressed && { opacity: 0.7 },
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={action.label || action.id}
+                >
+                  <View style={{ width: actionIconSize, height: actionIconSize, position: 'relative' }}>
+                    <action.icon size={actionIconSize} color={styles.iconColor} />
+                    {action.badge !== undefined && action.badge > 0 && (
+                      <View
+                        style={[
+                          styles.actionBadge,
+                          {
+                            backgroundColor: colors.error[500],
+                            minWidth: action.badge > 9 ? 16 : 12,
+                            height: action.badge > 9 ? 16 : 12,
+                          },
+                        ]}
+                      >
+                        <Text style={styles.actionBadgeText}>
+                          {action.badge > 9 ? '9+' : action.badge}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </Pressable>
+              )
+
+              // Wrap with Tooltip if tooltip config is provided
+              if (tooltipConfig) {
+                return (
+                  <Tooltip
+                    key={action.id}
+                    content={tooltipConfig.content}
+                    arrowPosition={tooltipConfig.position}
+                    delay={tooltipConfig.delay}
+                  >
+                    {actionButton}
+                  </Tooltip>
+                )
+              }
+
+              return actionButton
+            })}
           </View>
         </View>
       )}

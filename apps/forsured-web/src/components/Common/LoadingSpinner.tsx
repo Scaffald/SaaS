@@ -10,10 +10,17 @@ import { Stack, Spinner } from '@unicornlove/beyond-ui';
 function LoadingSpinner() {
   return (
     <Stack
-      flex={1}
-      alignItems="center"
-      justifyContent="center"
-      style={{ minHeight: '100vh' }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100vw',
+        height: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        backgroundColor: 'var(--color-background)',
+      }}
     >
       <Spinner size="lg" />
     </Stack>

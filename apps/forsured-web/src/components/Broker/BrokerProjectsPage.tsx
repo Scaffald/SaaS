@@ -69,11 +69,6 @@ export default function BrokerProjectsPage() {
 
   return (
     <Stack gap={24}>
-      <Stack>
-        <H1 style={{ fontSize: 24, fontWeight: 'bold' }}>Projects</H1>
-        <Text muted>Manage all client projects and monitor compliance</Text>
-      </Stack>
-
       <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={24}>
         <Card style={cardStyle}>
           <Row alignItems="center" justifyContent="space-between">

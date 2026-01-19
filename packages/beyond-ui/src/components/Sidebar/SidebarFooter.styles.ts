@@ -3,6 +3,7 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
+import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -39,23 +40,34 @@ export function getSidebarFooterStyles(
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing[16],
-    paddingVertical: 0,
-    justifyContent: collapsed ? 'center' : 'space-between',
+    paddingVertical: spacing[8],
+    justifyContent: collapsed ? 'center' : 'flex-start',
   }
 
   const actions: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 0,
+    justifyContent: 'space-between',
+    flex: 1,
+    gap: spacing[4],
   }
 
   const actionButton: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: borderRadius.s,
-    paddingHorizontal: spacing[12],
-    paddingVertical: spacing[8],
+    borderRadius: borderRadius.m,
+    paddingHorizontal: spacing[10],
+    paddingVertical: spacing[10],
+    minWidth: 40,
+    minHeight: 40,
+    ...(Platform.OS === 'web' && {
+      transition: 'all 150ms ease-in-out',
+      cursor: 'pointer',
+      ':hover': {
+        backgroundColor: isLight ? colors.bg.light.subtle : colors.bg.dark.subtle,
+      },
+    } as any),
   }
 
   const actionBadge: ViewStyle = {

@@ -133,16 +133,7 @@ export default function ManagerAcknowledgementsList() {
 
   return (
     <Stack gap={24}>
-      <Row alignItems="center" justifyContent="space-between">
-        <Stack>
-          <H1 style={{ fontSize: 32, fontWeight: 700 }}>
-            Broker Acknowledgements
-          </H1>
-          <Text muted style={{ fontSize: 18, marginTop: 4 }}>
-            Review and manage broker acknowledgement packets for compliance
-            verification
-          </Text>
-        </Stack>
+      <Row alignItems="center" justifyContent="flex-end">
         <Button color="primary" iconStart={Plus} onPress={() => setShowCreateModal(true)}>
           Create Packet
         </Button>

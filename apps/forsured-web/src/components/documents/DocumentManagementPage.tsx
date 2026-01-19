@@ -135,15 +135,6 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
         paddingBottom: '32px',
       }}
     >
-      <Stack style={{ marginBottom: '32px' }}>
-        <H1 style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--color-gray-12)' }}>
-          Documents
-        </H1>
-        <Text style={{ marginTop: '8px', fontSize: '14px', color: 'var(--color-gray-11)' }}>
-          Upload and manage insurance certificates for this project.
-        </Text>
-      </Stack>
-
       {error && (
         <Card
           style={{

@@ -104,4 +104,6 @@ export interface ButtonStyleConfig {
   container: ViewStyle
   text: TextStyle
   iconColor: string
+  hover: ViewStyle
+  pressed: ViewStyle
 }
