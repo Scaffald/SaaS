@@ -184,7 +184,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
                 paddingVertical: 48,
               }}
             >
-              <Bell size={48} color="#9CA3AF" /> {/* gray-400 */}
+              <Bell size={48} color="#9CA3AF" />
               <Text
                 style={{
                   marginTop: 16,

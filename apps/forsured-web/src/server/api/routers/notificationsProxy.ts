@@ -116,11 +116,13 @@ export const notificationsProxyRouter = createTRPCRouter({
       return callEdgeFunctionTRPC('list', queryInput, ctx.accessToken)
     }),
 
-  getUnreadCount: protectedProcedure.query(async ({ ctx }) => {
+  getUnreadCount: protectedProcedure
+    .input(z.object({}).optional().default({}))
+    .query(async ({ ctx }) => {
       if (!ctx.accessToken) {
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No access token' })
       }
-      return callEdgeFunctionTRPC('getUnreadCount', undefined, ctx.accessToken)
+      return callEdgeFunctionTRPC('getUnreadCount', {}, ctx.accessToken)
     }),
 
   markAsRead: protectedProcedure

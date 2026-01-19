@@ -108,7 +108,7 @@ export function NotificationItem({
               </Text>
               <Row style={{ alignItems: 'center', gap: 8 }}>
                 <Row style={{ alignItems: 'center', gap: 4 }}>
-                  <Clock size={12} color="#637083" /> {/* gray-500 */}
+                  <Clock size={12} color="#637083" />
                   <Text
                     style={{
                       fontSize: 12,

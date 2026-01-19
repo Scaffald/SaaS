@@ -41,7 +41,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
 
   // Fetch unread count
   const { data: unreadCountData, refetch: refetchUnreadCount } =
-    trpc.notifications.getUnreadCount.useQuery(undefined, { enabled })
+    trpc.notifications.getUnreadCount.useQuery({}, { enabled })
 
   const utils = trpc.useUtils()
 

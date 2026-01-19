@@ -194,7 +194,6 @@ export default function EnhancedSubcontractorDashboard() {
   const handleCompleteTask = async (taskId: string) => {
     await updateTask(taskId, {
       status: 'completed',
-      completed_at: new Date().toISOString(),
     })
   }
 
@@ -308,28 +307,10 @@ export default function EnhancedSubcontractorDashboard() {
         </Text>
       </Stack>
 
-      {/* Account State Cards - TEST */}
-      <Card style={cardStyle}>
-        <Text size="lg" weight="bold">TEST CARD - Should appear</Text>
-      </Card>
-
       {/* Account State Cards */}
       <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap={16}>
         <Card style={cardStyle}>
-          <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 12 }}>
-            <Stack style={iconBoxStyle('blue')}>
-              <Shield size={20} style={{ color: 'var(--color-blue-10)' }} />
-            </Stack>
-            <Text size="2xl" weight="bold">
-              {complianceScore}
-            </Text>
-          </Row>
-          <Text size="sm" weight="medium" style={{ color: 'var(--color-gray-11)' }}>
-            Compliance Score
-          </Text>
-          <Text size="xs" style={{ color: 'var(--color-gray-11)', marginTop: 4 }}>
-            Overall health
-          </Text>
+          <Text size="lg" weight="bold">Compliance Score: {complianceScore}</Text>
         </Card>
 
         <Card style={cardStyle}>
