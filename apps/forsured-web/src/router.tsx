@@ -115,6 +115,9 @@ const PrivacySettings = lazy(() => import('./app/(dashboard)/settings/privacy/pa
 // Manual Users (REQ-12: Manual Broker and Contractor Registration)
 const ManualUserProfile = lazy(() => import('./components/ManualUsers/ManualUserProfile'));
 
+// Merge Workflow (REQ-12: Manual Broker and Contractor Registration)
+const MergeProfile = lazy(() => import('./pages/MergeProfile'));
+
 // Documentation (public)
 const DocsHome = lazy(() => import('./pages/docs/index'));
 const DocsComponents = lazy(() => import('./pages/docs/Components'));
@@ -137,6 +140,8 @@ const AppRoutes = () => {
         <Route path="/callback" element={<CallbackPage />} />
         <Route path="/auth/callback" element={<CallbackPage />} />
         <Route path="/auth/verify" element={<VerifyEmailPage />} />
+        {/* Merge workflow - accessed after login when manual user match is detected (REQ-12) */}
+        <Route path="/merge-profile" element={<MergeProfile />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/invite/:code" element={<InvitationLandingPage />} />
