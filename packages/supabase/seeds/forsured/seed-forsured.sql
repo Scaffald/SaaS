@@ -69,9 +69,17 @@
 -- =========================================================
 -- Step 7: Seed Comprehensive Data for Test Users
 -- =========================================================
-\echo 'Step 7/7: Seeding comprehensive data for test users...'
+\echo 'Step 7/8: Seeding comprehensive data for test users...'
 \i seeds/forsured/008_seed-test-users-comprehensive.sql
 \echo '✅ Test users comprehensive data seeded'
+\echo ''
+
+-- =========================================================
+-- Step 8: Seed Notifications for All Users
+-- =========================================================
+\echo 'Step 8/8: Seeding notifications for all users...'
+\i seeds/forsured/009_seed-notifications.sql
+\echo '✅ Notifications seeded'
 \echo ''
 
 -- =========================================================
