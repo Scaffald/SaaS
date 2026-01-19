@@ -19,6 +19,7 @@ import {
   LifeBuoy,
   Shield,
   Moon,
+  Sun,
 } from 'lucide-react';
 import {
   Sidebar as BeyondSidebar,
@@ -165,9 +166,9 @@ export default function Sidebar({
     }
   };
 
-  // Handle dark mode toggle
-  const handleDarkModeToggle = (checked: boolean) => {
-    const newTheme = checked ? 'dark' : 'light';
+  // Handle dark mode toggle (for icon click)
+  const handleDarkModeToggle = () => {
+    const newTheme = isDarkMode ? 'light' : 'dark';
     setTheme(newTheme);
     if (toggleTheme) {
       toggleTheme();
@@ -182,15 +183,38 @@ export default function Sidebar({
       variant="main"
       collapsed={isCollapsed}
       onCollapseChange={handleCollapseChange}
+      header={
+        <SidebarHeader
+          logo={<ForsuredLogo height={32} />}
+          onCollapse={() => handleCollapseChange(!isCollapsed)}
+        />
+      }
+      footer={
+        <SidebarFooter
+          actions={[
+            {
+              icon: Settings,
+              onPress: () => navigate(getSettingsPath()),
+              label: 'Settings',
+              tooltip: 'Settings',
+            },
+            {
+              icon: isDarkMode ? Sun : Moon,
+              onPress: handleDarkModeToggle,
+              label: isDarkMode ? 'Light Mode' : 'Dark Mode',
+              tooltip: isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            },
+            {
+              icon: LogOut,
+              onPress: handleLogout,
+              label: 'Logout',
+              tooltip: 'Logout',
+            },
+          ]}
+        />
+      }
     >
-      {/* Logo/Brand Header */}
-      <SidebarHeader
-        title="Forsured"
-        logo={<ForsuredLogo height={24} width={24} />}
-        onCollapse={() => handleCollapseChange(!isCollapsed)}
-      />
-
-      {/* User Profile Section at Top (matches Figma) */}
+      {/* User Profile Section at Top */}
       {!isCollapsed && (
         <>
           <SidebarMenuItem
@@ -198,10 +222,6 @@ export default function Sidebar({
             avatar={<Avatar initials={getInitials(user.name || user.email)} size={40} />}
             label={user.name || user.email || 'User'}
             supportingText={user.email || getRoleDisplay()}
-            showExpandIcon={true}
-            onPress={() => {
-              // User dropdown - could open a menu
-            }}
           />
           <SidebarMenuItem type="divider" />
         </>
@@ -217,36 +237,6 @@ export default function Sidebar({
           onPress={() => navigate(item.path)}
         />
       ))}
-
-      {/* Footer Actions: Settings, Dark Mode, Logout */}
-      <SidebarFooter
-        actions={[
-          {
-            icon: Settings,
-            onPress: () => navigate(getSettingsPath()),
-            label: 'Settings',
-          },
-        ]}
-      />
-
-      {/* Dark Mode Toggle */}
-      {!isCollapsed && (
-        <SidebarMenuItem
-          type="default"
-          icon={Moon}
-          label="Dark Mode"
-          showToggle={true}
-          toggleValue={isDarkMode}
-          onToggleChange={handleDarkModeToggle}
-        />
-      )}
-
-      {/* Logout */}
-      <SidebarMenuItem
-        icon={LogOut}
-        label={isCollapsed ? undefined : 'Logout'}
-        onPress={handleLogout}
-      />
     </BeyondSidebar>
   );
 }

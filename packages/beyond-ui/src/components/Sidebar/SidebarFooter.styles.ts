@@ -40,13 +40,14 @@ export function getSidebarFooterStyles(
     alignItems: 'center',
     paddingHorizontal: spacing[16],
     paddingVertical: 0,
-    justifyContent: collapsed ? 'center' : 'space-between',
+    justifyContent: collapsed ? 'center' : 'flex-start',
   }
 
   const actions: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 0,
+    justifyContent: 'space-between',
+    flex: 1,
   }
 
   const actionButton: ViewStyle = {

@@ -48,7 +48,7 @@ export function getSidebarMenuItemStyles(
     gap: spacing[12],
     minHeight: 40,
     paddingHorizontal: spacing[12],
-    paddingVertical: type === 'double' ? spacing[12] : spacing[8],
+    paddingVertical: spacing[8],
     marginHorizontal: spacing[16],
     marginVertical: 1,
     borderRadius: borderRadius.s,
@@ -69,6 +69,7 @@ export function getSidebarMenuItemStyles(
   // Double type spacing (user profile)
   if (type === 'double') {
     item.minHeight = 56
+    item.paddingVertical = spacing[8]
   }
 
   // Heading container styles

@@ -41,15 +41,15 @@ export function SidebarHeader({
 
   return (
     <View style={[styles.container, style]}>
-      {/* Logo and title */}
-      <View style={styles.content}>
-        {logo && <View style={styles.logoContainer}>{logo}</View>}
-        {!collapsed && title && (
-          <Text style={styles.title}>
-            {title}
-          </Text>
-        )}
-      </View>
+      {/* Logo */}
+      {logo && <View style={styles.logoContainer}>{logo}</View>}
+
+      {/* Title (optional) */}
+      {!collapsed && title && (
+        <Text style={styles.title}>
+          {title}
+        </Text>
+      )}
 
       {/* Collapse toggle button */}
       {showCollapseButton && onCollapse && !collapsed && (

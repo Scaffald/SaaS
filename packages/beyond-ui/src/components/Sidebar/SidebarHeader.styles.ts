@@ -12,7 +12,6 @@ import { typography } from '../../tokens/typography'
 
 export interface SidebarHeaderStyleConfig {
   container: ViewStyle
-  content: ViewStyle
   logoContainer: ViewStyle
   title: TextStyle
   collapseButton: ViewStyle
@@ -32,19 +31,12 @@ export function getSidebarHeaderStyles(
     minHeight: 56,
     paddingHorizontal: collapsed ? spacing[8] : 24,
     paddingVertical: spacing[16],
-  }
-
-  const content: ViewStyle = {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: spacing[12],
-    flex: 1,
   }
 
   const logoContainer: ViewStyle = {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
+    flex: 1,
+    alignItems: collapsed ? 'center' : 'flex-start',
     justifyContent: 'center',
   }
 
@@ -71,7 +63,6 @@ export function getSidebarHeaderStyles(
 
   return {
     container,
-    content,
     logoContainer,
     title,
     collapseButton,

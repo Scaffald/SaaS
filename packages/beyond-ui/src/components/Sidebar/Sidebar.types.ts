@@ -297,6 +297,7 @@ export interface SidebarFooterProps {
     label?: string
     onPress: () => void
     badge?: number
+    tooltip?: string
   }>
 
   /**
