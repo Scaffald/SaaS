@@ -51,17 +51,24 @@ export function SidebarFooter({
       {actions.length > 0 && (
         <View style={styles.actionsWrapper}>
           <View style={styles.actions}>
-            {actions.map((action, index) => {
+            {actions.map((action) => {
+              // Determine tooltip configuration
+              const tooltipConfig = typeof action.tooltip === 'string'
+                ? { content: action.tooltip, position: 'down-center' as const, delay: 200 }
+                : action.tooltip
+                ? { content: action.tooltip.content, position: action.tooltip.position || 'down-center' as const, delay: action.tooltip.delay || 200 }
+                : null
+
               const actionButton = (
                 <Pressable
-                  key={index}
+                  key={action.id}
                   onPress={action.onPress}
                   style={({ pressed }) => [
                     styles.actionButton,
                     pressed && { opacity: 0.7 },
                   ]}
                   accessibilityRole="button"
-                  accessibilityLabel={action.label || `Action ${index + 1}`}
+                  accessibilityLabel={action.label || action.id}
                 >
                   <View style={{ width: actionIconSize, height: actionIconSize, position: 'relative' }}>
                     <action.icon size={actionIconSize} color={styles.iconColor} />
@@ -85,13 +92,14 @@ export function SidebarFooter({
                 </Pressable>
               )
 
-              // Wrap with Tooltip if tooltip text is provided
-              if (action.tooltip) {
+              // Wrap with Tooltip if tooltip config is provided
+              if (tooltipConfig) {
                 return (
                   <Tooltip
-                    key={index}
-                    content={action.tooltip}
-                    arrowPosition="down-center"
+                    key={action.id}
+                    content={tooltipConfig.content}
+                    arrowPosition={tooltipConfig.position}
+                    delay={tooltipConfig.delay}
                   >
                     {actionButton}
                   </Tooltip>

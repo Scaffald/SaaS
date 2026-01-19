@@ -28,16 +28,21 @@ export function getSidebarHeaderStyles(
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 56,
-    paddingHorizontal: collapsed ? spacing[8] : 24,
-    paddingVertical: spacing[16],
+    minHeight: 64,
+    paddingHorizontal: collapsed ? spacing[16] : spacing[20],
+    paddingVertical: spacing[20],
     gap: spacing[12],
+    borderBottomWidth: 1,
+    borderBottomColor: isLight ? colors.border.light.subtle : colors.border.dark.subtle,
   }
 
   const logoContainer: ViewStyle = {
     flex: 1,
     alignItems: collapsed ? 'center' : 'flex-start',
     justifyContent: 'center',
+    ...(Platform.OS === 'web' && {
+      transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+    } as any),
   }
 
   const title: TextStyle = {

@@ -59,6 +59,33 @@ export interface SidebarStyleConfig {
 }
 
 /**
+ * Sidebar display mode
+ */
+export type SidebarMode = 'fixed' | 'overlay' | 'auto'
+
+/**
+ * Keyboard navigation options
+ */
+export interface SidebarKeyboardOptions {
+  /**
+   * Enable keyboard shortcuts
+   * @default true
+   */
+  enabled?: boolean
+
+  /**
+   * Keyboard shortcut to toggle sidebar (e.g., 'ctrl+b', 'cmd+b')
+   */
+  toggleShortcut?: string
+
+  /**
+   * Enable arrow key navigation through menu items
+   * @default true
+   */
+  arrowNavigation?: boolean
+}
+
+/**
  * Main Sidebar component props
  */
 export interface SidebarProps {
@@ -116,6 +143,49 @@ export interface SidebarProps {
    * @default 80
    */
   collapsedWidth?: number
+
+  /**
+   * Display mode
+   * - fixed: Always visible, pushes content
+   * - overlay: Appears over content
+   * - auto: Overlay on mobile, fixed on desktop
+   * @default 'fixed'
+   */
+  mode?: SidebarMode
+
+  /**
+   * Callback when overlay backdrop is pressed (overlay mode only)
+   */
+  onOverlayPress?: () => void
+
+  /**
+   * Show hamburger menu button
+   * @default false
+   */
+  showHamburger?: boolean
+
+  /**
+   * Hamburger button position
+   * @default 'header'
+   */
+  hamburgerPosition?: 'header' | 'outside'
+
+  /**
+   * Keyboard navigation options
+   */
+  keyboard?: SidebarKeyboardOptions
+
+  /**
+   * Enable smooth collapse/expand animations
+   * @default true
+   */
+  animated?: boolean
+
+  /**
+   * Animation duration in milliseconds
+   * @default 200
+   */
+  animationDuration?: number
 }
 
 /**
@@ -277,6 +347,15 @@ export interface SidebarHeaderProps {
 }
 
 /**
+ * Tooltip configuration for footer actions
+ */
+export type FooterActionTooltip = string | {
+  content: string
+  position?: 'up-center' | 'up-left' | 'up-right' | 'down-center' | 'down-left' | 'down-right'
+  delay?: number
+}
+
+/**
  * Sidebar footer props
  */
 export interface SidebarFooterProps {
@@ -293,11 +372,15 @@ export interface SidebarFooterProps {
    * Action buttons (chat, notifications, settings, etc.)
    */
   actions?: Array<{
+    /**
+     * Unique identifier for the action (required for proper React keys)
+     */
+    id: string
     icon: IconComponent
     label?: string
     onPress: () => void
     badge?: number
-    tooltip?: string
+    tooltip?: FooterActionTooltip
   }>
 
   /**

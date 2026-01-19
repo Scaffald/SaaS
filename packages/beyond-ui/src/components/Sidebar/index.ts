@@ -26,5 +26,8 @@ export type {
   SidebarItemType,
   SidebarItemState,
   SidebarWidgetType,
+  SidebarMode,
+  SidebarKeyboardOptions,
+  FooterActionTooltip,
 } from './Sidebar.types'
 
