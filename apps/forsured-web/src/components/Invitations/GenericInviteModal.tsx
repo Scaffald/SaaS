@@ -8,11 +8,12 @@
  */
 
 import { useState, useEffect } from 'react'
-import { UserPlus, AlertTriangle, Check } from 'lucide-react'
-import { Stack, Row, Text, Button, Input } from '@unicornlove/beyond-ui'
+import { UserPlus, AlertTriangle, Check, Users } from 'lucide-react'
+import { Stack, Row, Text, Button, Input, Card } from '@unicornlove/beyond-ui'
 import Modal from '../Common/Modal'
 import { trpc } from '../../lib/trpc'
 import type { InvitationRule } from '../../lib/invitations/types'
+import { ManualUserBadge } from '../ManualUsers'
 
 interface GenericInviteModalProps {
   /** Whether the modal is open */
@@ -48,10 +49,29 @@ export function GenericInviteModal({
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
+  // REQ-12: Manual user selection state
+  type InviteMode = 'new' | 'manual'
+  const [inviteMode, setInviteMode] = useState<InviteMode>('new')
+  const [selectedManualUserId, setSelectedManualUserId] = useState<string | null>(null)
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false)
+  const [promptedEmail, setPromptedEmail] = useState('')
+
   // Fetch available rules
   const { data: allRules } = trpc.genericInvitations.getRules.useQuery(undefined, {
     enabled: isOpen,
   })
+
+  // REQ-12: Fetch manual users for selection
+  const { data: manualUsersData } = trpc.manualUsers.list.useQuery(
+    { limit: 100 },
+    { enabled: isOpen && inviteMode === 'manual' }
+  )
+  const manualUsers = manualUsersData?.users || []
+
+  // Get selected manual user details
+  const selectedManualUser = selectedManualUserId
+    ? manualUsers.find((u) => u.id === selectedManualUserId)
+    : null
 
   // Filter rules based on source role
   const availableRules = sourceRole
@@ -138,7 +158,43 @@ export function GenericInviteModal({
     setSelectedRuleId(preSelectedRuleId || '')
     setError(null)
     setSuccessMessage(null)
+    // REQ-12: Reset manual user state
+    setInviteMode('new')
+    setSelectedManualUserId(null)
+    setShowEmailPrompt(false)
+    setPromptedEmail('')
     onClose()
+  }
+
+  // REQ-12: Handle manual user selection
+  const handleManualUserSelect = (userId: string) => {
+    const user = manualUsers.find((u) => u.id === userId)
+    if (user) {
+      setSelectedManualUserId(userId)
+      setName(user.name || '')
+
+      if (user.email) {
+        setEmail(user.email)
+        setShowEmailPrompt(false)
+      } else {
+        // User has no email - show prompt
+        setEmail('')
+        setShowEmailPrompt(true)
+      }
+    }
+  }
+
+  // REQ-12: Handle email prompt submission
+  const handleEmailPromptSubmit = async () => {
+    if (!promptedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(promptedEmail)) {
+      setError('Please enter a valid email address')
+      return
+    }
+
+    // Update manual user with the email (if API supports it)
+    // For now, just use the email for the invitation
+    setEmail(promptedEmail)
+    setShowEmailPrompt(false)
   }
 
   const isLoading = createInvitationMutation.isPending
@@ -286,32 +342,191 @@ export function GenericInviteModal({
           </Stack>
         )}
 
-        {/* Email Input */}
+        {/* REQ-12: Invite Mode Toggle */}
         <Stack style={{ gap: 'var(--space-2)' }}>
           <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
-            Email Address *
+            Invite From
           </Text>
-          <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="user@example.com"
-            type="email"
-            disabled={isLoading}
-          />
+          <Row style={{ gap: 'var(--space-2)' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setInviteMode('new')
+                setSelectedManualUserId(null)
+                setEmail('')
+                setName('')
+                setShowEmailPrompt(false)
+              }}
+              style={{
+                flex: 1,
+                padding: 'var(--space-3)',
+                border: `1px solid ${inviteMode === 'new' ? 'var(--color-blue8)' : 'var(--color-border)'}`,
+                borderRadius: 'var(--radius-3)',
+                backgroundColor: inviteMode === 'new' ? 'var(--color-blue2)' : 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 'var(--space-2)',
+              }}
+            >
+              <UserPlus size={16} color={inviteMode === 'new' ? 'var(--color-blue11)' : 'var(--color-color11)'} />
+              <Text style={{ fontSize: 'var(--font-size-2)', color: inviteMode === 'new' ? 'var(--color-blue11)' : 'var(--color-color11)' }}>
+                New User
+              </Text>
+            </button>
+            <button
+              type="button"
+              onClick={() => setInviteMode('manual')}
+              style={{
+                flex: 1,
+                padding: 'var(--space-3)',
+                border: `1px solid ${inviteMode === 'manual' ? 'var(--color-blue8)' : 'var(--color-border)'}`,
+                borderRadius: 'var(--radius-3)',
+                backgroundColor: inviteMode === 'manual' ? 'var(--color-blue2)' : 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 'var(--space-2)',
+              }}
+            >
+              <Users size={16} color={inviteMode === 'manual' ? 'var(--color-blue11)' : 'var(--color-color11)'} />
+              <Text style={{ fontSize: 'var(--font-size-2)', color: inviteMode === 'manual' ? 'var(--color-blue11)' : 'var(--color-color11)' }}>
+                Manually Added
+              </Text>
+            </button>
+          </Row>
         </Stack>
 
-        {/* Name Input (Optional) */}
-        <Stack style={{ gap: 'var(--space-2)' }}>
-          <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
-            Name (Optional)
-          </Text>
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="John Doe"
-            disabled={isLoading}
-          />
-        </Stack>
+        {/* REQ-12: Manual User Selection */}
+        {inviteMode === 'manual' && (
+          <Stack style={{ gap: 'var(--space-2)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+              Select Manual User
+            </Text>
+            {manualUsers.length === 0 ? (
+              <Card style={{
+                padding: 'var(--space-4)',
+                backgroundColor: 'var(--color-gray2)',
+                textAlign: 'center',
+              }}>
+                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
+                  No manually added users found. Create one first.
+                </Text>
+              </Card>
+            ) : (
+              <Stack style={{ gap: 'var(--space-2)', maxHeight: '200px', overflowY: 'auto' }}>
+                {manualUsers.map((user) => (
+                  <Row
+                    key={user.id}
+                    onPress={() => handleManualUserSelect(user.id)}
+                    style={{
+                      padding: 'var(--space-3)',
+                      border: `1px solid ${selectedManualUserId === user.id ? 'var(--color-blue8)' : 'var(--color-border)'}`,
+                      borderRadius: 'var(--radius-3)',
+                      backgroundColor: selectedManualUserId === user.id ? 'var(--color-blue2)' : 'transparent',
+                      cursor: 'pointer',
+                      alignItems: 'center',
+                      gap: 'var(--space-3)',
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      checked={selectedManualUserId === user.id}
+                      onChange={() => handleManualUserSelect(user.id)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <Stack style={{ flex: 1 }}>
+                      <Row alignItems="center" style={{ gap: 'var(--space-2)' }}>
+                        <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+                          {user.name}
+                        </Text>
+                        <ManualUserBadge size="sm" showTooltip={false} />
+                      </Row>
+                      {user.email ? (
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
+                          {user.email}
+                        </Text>
+                      ) : (
+                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange11)' }}>
+                          No email - will prompt to add
+                        </Text>
+                      )}
+                    </Stack>
+                  </Row>
+                ))}
+              </Stack>
+            )}
+          </Stack>
+        )}
+
+        {/* REQ-12: Email Prompt for manual users without email */}
+        {showEmailPrompt && selectedManualUser && (
+          <Card style={{
+            padding: 'var(--space-4)',
+            backgroundColor: 'var(--color-orange2)',
+            border: '1px solid var(--color-orange6)',
+          }}>
+            <Stack style={{ gap: 'var(--space-3)' }}>
+              <Row alignItems="flex-start" style={{ gap: 'var(--space-2)' }}>
+                <AlertTriangle size={16} color="var(--color-orange11)" style={{ marginTop: 2 }} />
+                <Stack style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-orange11)' }}>
+                    Email Required
+                  </Text>
+                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange11)' }}>
+                    {selectedManualUser.name} doesn't have an email address. Please enter one to send the invitation.
+                  </Text>
+                </Stack>
+              </Row>
+              <Input
+                value={promptedEmail}
+                onChange={(e) => setPromptedEmail(e.target.value)}
+                placeholder="Enter email address"
+                type="email"
+              />
+              <Button
+                onPress={handleEmailPromptSubmit}
+                variant="secondary"
+                size="sm"
+              >
+                Use This Email
+              </Button>
+            </Stack>
+          </Card>
+        )}
+
+        {/* Email Input - only show for new user mode or when email is set */}
+        {(inviteMode === 'new' || (inviteMode === 'manual' && email && !showEmailPrompt)) && (
+          <Stack style={{ gap: 'var(--space-2)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+              Email Address *
+            </Text>
+            <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="user@example.com"
+              type="email"
+              disabled={isLoading || inviteMode === 'manual'}
+            />
+          </Stack>
+        )}
+
+        {/* Name Input (Optional) - only show for new user mode or when manual user selected */}
+        {(inviteMode === 'new' || (inviteMode === 'manual' && selectedManualUserId)) && (
+          <Stack style={{ gap: 'var(--space-2)' }}>
+            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+              Name {inviteMode === 'new' ? '(Optional)' : ''}
+            </Text>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="John Doe"
+              disabled={isLoading || inviteMode === 'manual'}
+            />
+          </Stack>
+        )}
 
         {/* Personal Message */}
         <Stack style={{ gap: 'var(--space-2)' }}>
