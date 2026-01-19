@@ -33,6 +33,8 @@ import {
   ArrowRight,
   Briefcase,
   Eye,
+  Bell,
+  Settings,
 } from 'lucide-react';
 
 interface QuickLinkProps {
@@ -211,6 +213,18 @@ export default function ContractorHelp() {
             description="Complete compliance tasks and requirements"
             onClick={() => scrollToSection('tasks')}
           />
+          <QuickLink
+            icon={Bell}
+            title="Notifications"
+            description="View approvals and important updates"
+            onClick={() => scrollToSection('notifications')}
+          />
+          <QuickLink
+            icon={Settings}
+            title="Settings"
+            description="Manage your profile and preferences"
+            onClick={() => scrollToSection('settings')}
+          />
         </Row>
       </Stack>
 
@@ -252,19 +266,13 @@ export default function ContractorHelp() {
               Accepting Invitations
             </H3>
             <Paragraph style={{ color: 'var(--color-gray-11)' }}>
-              Managers (General Contractors) will invite you to work on their projects. You can accept invitations in two ways:
+              Managers (General Contractors) will invite you to work on their projects. You can accept invitations via email:
             </Paragraph>
             <Stack gap={12} style={{ marginTop: 8 }}>
               <Row alignItems="center" gap={12}>
                 <Mail size={18} style={{ color: 'var(--color-orange-9)' }} />
                 <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
-                  <strong>Email Invitation:</strong> Click the link in the invitation email to automatically connect
-                </Text>
-              </Row>
-              <Row alignItems="center" gap={12}>
-                <Users size={18} style={{ color: 'var(--color-orange-9)' }} />
-                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
-                  <strong>Connection Code:</strong> Go to the Managers page and enter the code provided by your manager
+                  <strong>Email Invitation:</strong> Click the link in the invitation email to automatically connect. The email will include a connection code if you need to connect manually.
                 </Text>
               </Row>
             </Stack>
@@ -549,7 +557,7 @@ export default function ContractorHelp() {
               Completing Tasks
             </H3>
             <Paragraph style={{ color: 'var(--color-gray-11)' }}>
-              To complete a task:
+              When tasks are available, you can complete them by:
             </Paragraph>
             <Stack gap={8} style={{ marginTop: 8, marginLeft: 16 }}>
               <Row alignItems="center" gap={8}>
@@ -568,6 +576,86 @@ export default function ContractorHelp() {
                 <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
                 <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
                   Mark the task as complete when all requirements are met
+                </Text>
+              </Row>
+            </Stack>
+            <Paragraph style={{ color: 'var(--color-gray-11)', marginTop: 12, fontStyle: 'italic' }}>
+              Note: Tasks are assigned by managers as needed. If you don&apos;t see any tasks, check back later or contact your manager.
+            </Paragraph>
+          </Stack>
+        </Stack>
+      </HelpSection>
+
+      {/* Notifications */}
+      <HelpSection id="notifications" icon={Bell} title="Notifications & Approvals">
+        <Stack gap={20}>
+          <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+            The Notifications page keeps you informed about important updates, approvals, and action items
+            from managers and your broker.
+          </Paragraph>
+
+          <Stack gap={8}>
+            <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Notification Types
+            </H3>
+            <Stack gap={8} style={{ marginTop: 8 }}>
+              <Row alignItems="center" gap={12}>
+                <CheckCircle size={18} style={{ color: 'var(--color-green-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Document Approvals:</strong> Notifications when managers approve or request changes to your documents
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={12}>
+                <Building size={18} style={{ color: 'var(--color-blue-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Project Updates:</strong> Updates about projects you&apos;re assigned to
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={12}>
+                <Shield size={18} style={{ color: 'var(--color-orange-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Compliance Alerts:</strong> Warnings about expiring documents or compliance gaps
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={12}>
+                <Users size={18} style={{ color: 'var(--color-purple-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Relationship Updates:</strong> New manager connections or broker invitations
+                </Text>
+              </Row>
+            </Stack>
+          </Stack>
+
+          <Stack gap={8}>
+            <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Managing Notifications
+            </H3>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+              You can:
+            </Paragraph>
+            <Stack gap={8} style={{ marginTop: 8, marginLeft: 16 }}>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  View all notifications in one place
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  Filter by type or status
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  Mark notifications as read or unread
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  Configure notification preferences in Settings
                 </Text>
               </Row>
             </Stack>
@@ -676,7 +764,107 @@ export default function ContractorHelp() {
                   <strong>Manager Connections:</strong> Number of managers you&apos;re working with
                 </Text>
               </Row>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Broker Connections:</strong> Your connected insurance brokers
+                </Text>
+              </Row>
             </Stack>
+          </Stack>
+        </Stack>
+      </HelpSection>
+
+      {/* Settings */}
+      <HelpSection id="settings" icon={Settings} title="Settings & Preferences">
+        <Stack gap={20}>
+          <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+            Manage your account settings, company information, insurance details, and notification preferences
+            from the Settings section.
+          </Paragraph>
+
+          <Stack gap={8}>
+            <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Available Settings Pages
+            </H3>
+            <Stack gap={12} style={{ marginTop: 8 }}>
+              <Row alignItems="flex-start" gap={12}>
+                <Users size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Profile Settings
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Update your personal information, contact details, and account preferences
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Building size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Company Settings
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Manage your company information, business details, and organization profile
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Shield size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Insurance Info
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    View and manage your insurance policies and coverage information
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Bell size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Notification Settings
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Configure how and when you receive notifications about approvals, tasks, and updates
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <FileText size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Document Settings
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Manage document preferences and default upload settings
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Briefcase size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Referrals
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    View and manage your referral program participation and credits
+                  </Text>
+                </Stack>
+              </Row>
+            </Stack>
+          </Stack>
+
+          <Stack gap={8}>
+            <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Accessing Settings
+            </H3>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+              Navigate to Settings from the main menu or command palette. You can access any settings page
+              directly, and changes are saved automatically.
+            </Paragraph>
           </Stack>
         </Stack>
       </HelpSection>
@@ -690,10 +878,9 @@ export default function ContractorHelp() {
             </Accordion.Trigger>
             <Accordion.Content>
               <Paragraph style={{ color: 'var(--color-gray-11)' }}>
-                Managers will send you an invitation via email or provide a connection code. Go to the
-                Managers page and either click the link in the email invitation or enter the connection
-                code to accept the invitation. Once connected, you&apos;ll see their projects and can
-                start working together.
+                Managers will send you an invitation via email. Click the link in the invitation email
+                to automatically connect. Once connected, you&apos;ll see their projects on the Projects
+                page and can start working together.
               </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
@@ -730,9 +917,36 @@ export default function ContractorHelp() {
             </Accordion.Trigger>
             <Accordion.Content>
               <Paragraph style={{ color: 'var(--color-gray-11)' }}>
-                Go to the Tasks page and click on a task to view its details. Follow the instructions,
-                upload any required documents, and mark the task as complete when all requirements are met.
-                Managers will be notified when you complete tasks.
+                When tasks are assigned by managers, go to the Tasks page and click on a task to view its details.
+                Follow the instructions, upload any required documents, and mark the task as complete when all
+                requirements are met. Managers will be notified when you complete tasks. If you don&apos;t see
+                any tasks, check back later or contact your manager.
+              </Paragraph>
+            </Accordion.Content>
+          </Accordion.Item>
+
+          <Accordion.Item value="notifications">
+            <Accordion.Trigger>
+              How do I view my notifications?
+            </Accordion.Trigger>
+            <Accordion.Content>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+                Go to the Notifications page to see all your notifications in one place. You can filter by type,
+                mark items as read or unread, and configure notification preferences in Settings. Notifications
+                include document approvals, project updates, compliance alerts, and relationship updates.
+              </Paragraph>
+            </Accordion.Content>
+          </Accordion.Item>
+
+          <Accordion.Item value="settings">
+            <Accordion.Trigger>
+              Where can I update my account settings?
+            </Accordion.Trigger>
+            <Accordion.Content>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+                Navigate to Settings from the main menu to access all your account settings. You can update your
+                profile, company information, insurance details, notification preferences, document settings, and
+                referral program participation. Changes are saved automatically.
               </Paragraph>
             </Accordion.Content>
           </Accordion.Item>

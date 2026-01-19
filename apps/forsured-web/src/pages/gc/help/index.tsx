@@ -34,6 +34,11 @@ import {
   Briefcase,
   Send,
   Link,
+  Bell,
+  Settings,
+  Plug,
+  Palette,
+  Gift,
 } from 'lucide-react';
 
 interface QuickLinkProps {
@@ -211,6 +216,18 @@ export default function GCHelp() {
             title="Tasks"
             description="Stay on top of action items and deadlines"
             onClick={() => scrollToSection('tasks')}
+          />
+          <QuickLink
+            icon={Bell}
+            title="Notifications"
+            description="View approvals and important updates"
+            onClick={() => scrollToSection('notifications')}
+          />
+          <QuickLink
+            icon={Settings}
+            title="Settings"
+            description="Manage your profile and preferences"
+            onClick={() => scrollToSection('settings')}
           />
         </Row>
       </Stack>
@@ -686,6 +703,205 @@ export default function GCHelp() {
         </Stack>
       </HelpSection>
 
+      {/* Notifications */}
+      <HelpSection id="notifications" icon={Bell} title="Notifications & Approvals">
+        <Stack gap={20}>
+          <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+            The Notifications page keeps you informed about important updates, approvals, and action items
+            from subcontractors, your broker, and system alerts.
+          </Paragraph>
+
+          <Stack gap={8}>
+            <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Notification Types
+            </H3>
+            <Stack gap={8} style={{ marginTop: 8 }}>
+              <Row alignItems="center" gap={12}>
+                <CheckCircle size={18} style={{ color: 'var(--color-green-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Document Approvals:</strong> Notifications when subcontractors upload documents requiring your review
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={12}>
+                <Building size={18} style={{ color: 'var(--color-blue-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Project Updates:</strong> Changes to project status, assignments, or requirements
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={12}>
+                <Shield size={18} style={{ color: 'var(--color-orange-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Compliance Alerts:</strong> Warnings about expiring documents or compliance gaps
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={12}>
+                <Users size={18} style={{ color: 'var(--color-purple-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Subcontractor Activity:</strong> New connections, invitations accepted, or profile updates
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={12}>
+                <Briefcase size={18} style={{ color: 'var(--color-teal-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  <strong>Broker Updates:</strong> Messages or updates from your connected insurance broker
+                </Text>
+              </Row>
+            </Stack>
+          </Stack>
+
+          <Stack gap={8}>
+            <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Managing Notifications
+            </H3>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+              You can:
+            </Paragraph>
+            <Stack gap={8} style={{ marginTop: 8, marginLeft: 16 }}>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  View all notifications in one centralized location
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  Filter by type, project, or subcontractor
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  Mark notifications as read or unread
+                </Text>
+              </Row>
+              <Row alignItems="center" gap={8}>
+                <ArrowRight size={14} style={{ color: 'var(--color-gray-9)' }} />
+                <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                  Configure notification preferences in Settings
+                </Text>
+              </Row>
+            </Stack>
+          </Stack>
+        </Stack>
+      </HelpSection>
+
+      {/* Settings */}
+      <HelpSection id="settings" icon={Settings} title="Settings & Preferences">
+        <Stack gap={20}>
+          <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+            Manage your account settings, company information, insurance requirements, team members,
+            and notification preferences from the Settings section.
+          </Paragraph>
+
+          <Stack gap={8}>
+            <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Available Settings Pages
+            </H3>
+            <Stack gap={12} style={{ marginTop: 8 }}>
+              <Row alignItems="flex-start" gap={12}>
+                <Users size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Profile Settings
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Update your personal information, contact details, and account preferences
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Building size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Company Settings
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Manage your company information, business details, and organization profile
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Shield size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Insurance Requirements
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Set default insurance requirements for your projects and subcontractors
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Bell size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Notification Settings
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Configure how and when you receive notifications about compliance, approvals, and updates
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Users size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Team Settings
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Manage team members, roles, and permissions for your organization
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Plug size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Integrations
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Connect with third-party tools and services to streamline your workflow
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Palette size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Appearance
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    Customize the look and feel of your ForSured interface
+                  </Text>
+                </Stack>
+              </Row>
+              <Row alignItems="flex-start" gap={12}>
+                <Gift size={18} style={{ color: 'var(--color-orange-9)', marginTop: 2 }} />
+                <Stack gap={4}>
+                  <Text weight="semibold" size="sm" style={{ color: 'var(--color-gray-12)' }}>
+                    Referrals
+                  </Text>
+                  <Text size="sm" style={{ color: 'var(--color-gray-11)' }}>
+                    View and manage your referral program participation and credits
+                  </Text>
+                </Stack>
+              </Row>
+            </Stack>
+          </Stack>
+
+          <Stack gap={8}>
+            <H3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-gray-12)' }}>
+              Accessing Settings
+            </H3>
+            <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+              Navigate to Settings from the main menu or command palette. You can access any settings page
+              directly, and changes are saved automatically. Team settings require appropriate permissions.
+            </Paragraph>
+          </Stack>
+        </Stack>
+      </HelpSection>
+
       {/* FAQ */}
       <HelpSection id="faq" icon={HelpCircle} title="Frequently Asked Questions">
         <Accordion mode="single" width="full">
@@ -768,6 +984,34 @@ export default function GCHelp() {
                 you can connect using their broker code or accept an invitation from them.
                 Once connected, your broker can help manage your insurance needs and view
                 your compliance status.
+              </Paragraph>
+            </Accordion.Content>
+          </Accordion.Item>
+
+          <Accordion.Item value="notifications">
+            <Accordion.Trigger>
+              How do I view my notifications?
+            </Accordion.Trigger>
+            <Accordion.Content>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+                Go to the Notifications page to see all your notifications in one place. You can filter by type,
+                project, or subcontractor, mark items as read or unread, and configure notification preferences
+                in Settings. Notifications include document approvals, project updates, compliance alerts,
+                subcontractor activity, and broker updates.
+              </Paragraph>
+            </Accordion.Content>
+          </Accordion.Item>
+
+          <Accordion.Item value="settings">
+            <Accordion.Trigger>
+              Where can I update my account settings?
+            </Accordion.Trigger>
+            <Accordion.Content>
+              <Paragraph style={{ color: 'var(--color-gray-11)' }}>
+                Navigate to Settings from the main menu to access all your account settings. You can update your
+                profile, company information, insurance requirements, notification preferences, team members,
+                integrations, appearance, and referral program participation. Changes are saved automatically.
+                Team settings require appropriate permissions.
               </Paragraph>
             </Accordion.Content>
           </Accordion.Item>
