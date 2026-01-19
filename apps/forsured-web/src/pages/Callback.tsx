@@ -1,6 +1,7 @@
 /**
  * Callback Page - OAuth callback handler using Beyond UI
  * REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
+ * REQ-12: Manual User Merge Detection - Check for manual users to merge
  */
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +12,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { getProfile, createProfile } from '../services/userProfileService';
 import { exchangeCodeForTokens, clearMemoryTokens } from '../lib/scaffald/auth';
 import { supabase } from '../lib/supabase';
+import { trpc } from '../lib/trpc';
+
+/**
+ * Session storage key for merge workflow context
+ */
+const MERGE_CONTEXT_KEY = 'forsured_merge_context';
 
 const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
 
@@ -27,6 +34,74 @@ const USER_TYPE_TO_ROUTE: Record<string, string> = {
   broker: 'broker',
   admin: 'admin',
 };
+
+/**
+ * Merge context stored in sessionStorage for the merge workflow
+ */
+interface MergeContext {
+  realUserId: string;
+  realUserEmail: string;
+  matches: Array<{
+    manualUserId: string;
+    name: string;
+    email: string;
+    organizationId: string;
+    organizationName: string;
+    matchReason: string;
+  }>;
+  detectedAt: string;
+}
+
+/**
+ * Check for manual user matches and store context if found
+ * REQ-12: Manual users can be merged when they register with same email
+ *
+ * @param userEmail - The authenticated user's email
+ * @param userId - The authenticated user's ID
+ * @returns True if matches were found and merge workflow should start
+ */
+async function checkForManualUserMatches(
+  userEmail: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    console.log('[Callback] Checking for manual user matches for:', userEmail);
+
+    // Call the merge detection endpoint
+    const result = await trpc.userMerge.detectMatches.query({ email: userEmail });
+
+    if (result.matches.length === 0) {
+      console.log('[Callback] No manual user matches found');
+      return false;
+    }
+
+    console.log(`[Callback] Found ${result.matches.length} manual user match(es)`);
+
+    // Store the merge context in sessionStorage
+    const mergeContext: MergeContext = {
+      realUserId: userId,
+      realUserEmail: userEmail,
+      matches: result.matches.map((match) => ({
+        manualUserId: match.manualUserId,
+        name: match.name,
+        email: match.email,
+        organizationId: match.organizationId,
+        organizationName: match.organizationName,
+        matchReason: match.matchReason,
+      })),
+      detectedAt: new Date().toISOString(),
+    };
+
+    sessionStorage.setItem(MERGE_CONTEXT_KEY, JSON.stringify(mergeContext));
+    console.log('[Callback] Merge context stored, redirecting to merge workflow');
+
+    return true;
+  } catch (error) {
+    // Non-blocking: log error but continue with normal flow
+    console.error('[Callback] Error checking for manual user matches:', error);
+    return false;
+  }
+}
 
 function CallbackPage() {
   const navigate = useNavigate();
@@ -96,6 +171,19 @@ function CallbackPage() {
 
         // Set user and profile in AuthContext
         login({ user: scaffaldUser, profile: forsuredProfile });
+
+        // REQ-12: Check for manual user matches before proceeding
+        // This allows users who were created manually to merge their accounts
+        const hasMatches = await checkForManualUserMatches(
+          scaffaldUser.email,
+          forsuredProfile.id
+        );
+
+        if (hasMatches) {
+          console.log('[Callback] Redirecting to merge workflow: /merge-profile');
+          navigate('/merge-profile');
+          return;
+        }
 
         // Map user_type to route prefix
         const routePrefix = USER_TYPE_TO_ROUTE[forsuredProfile.user_type] || forsuredProfile.user_type;
@@ -201,6 +289,19 @@ function CallbackPage() {
 
         // Set user and profile in AuthContext
         login({ user: scaffaldUser, profile: forsuredProfile });
+
+        // REQ-12: Check for manual user matches before proceeding
+        // This allows users who were created manually to merge their accounts
+        const hasMatches = await checkForManualUserMatches(
+          scaffaldUser.email,
+          forsuredProfile.id
+        );
+
+        if (hasMatches) {
+          console.log('[Callback] Redirecting to merge workflow: /merge-profile');
+          navigate('/merge-profile');
+          return;
+        }
 
         // Map user_type to route prefix
         const routePrefix = USER_TYPE_TO_ROUTE[forsuredProfile.user_type] || forsuredProfile.user_type;
