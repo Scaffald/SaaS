@@ -336,6 +336,17 @@ export type { IconSelectorProps, DefaultIconName } from './components/IconSelect
 export { NotificationTag } from './components/NotificationTag'
 export type { NotificationTagProps, NotificationTagSize } from './components/NotificationTag'
 
+export { MapContainer, MapPin, MapTooltip, MapFallback } from './components/Maps'
+export type {
+  MapContainerProps,
+  MapPinProps,
+  MapTooltipProps,
+  MapTooltipData,
+  MapFallbackProps,
+  MapCoordinate,
+  ViewportBounds,
+} from './components/Maps'
+
 // Components
 export { Button } from './components/Button'
 export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './components/Button'
