@@ -95,8 +95,8 @@
     "vitest": "^4.0.15"
   },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-native": ">=0.74.0",
+    "react": ">=19.0.0",
+    "react-native": ">=0.83.0",
     "react-native-svg": ">=13.0.0",
     "react-native-reanimated": ">=3.0.0",
     "react-native-gesture-handler": ">=2.0.0",

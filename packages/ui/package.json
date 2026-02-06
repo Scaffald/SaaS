@@ -116,9 +116,9 @@
   "peerDependencies": {
     "@tamagui/core": ">=1.138.6",
     "expo": ">=51.0.0",
-    "react": ">=18.0.0",
+    "react": ">=19.0.0",
     "react-hook-form": ">=7.0.0",
-    "react-native": ">=0.74.0",
+    "react-native": ">=0.83.0",
     "tamagui": ">=1.138.6",
     "zod": ">=3.0.0"
   },

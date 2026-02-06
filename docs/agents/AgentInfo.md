@@ -129,7 +129,7 @@ pnpm supa:seed:onet   # Import O*NET database (1,016+ occupations)
 # Deployment (environment-specific)
 pnpm supa:db:push:preview   # Push migrations to preview environment
 pnpm supa:db:push:prod      # Push migrations to production
-pnpm supa:config:push       # Push configuration to environments
+pnpm supa:config:push       # Push config (local); supa:config:push:preview / supa:config:push:prod for remote
 ```
 
 ### Testing Commands
