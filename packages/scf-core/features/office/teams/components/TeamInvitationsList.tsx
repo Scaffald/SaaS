@@ -88,7 +88,7 @@ export function TeamInvitationsList({
       return
     }
     void invitationsQuery.refetch()
-  }, [refreshKey, invitationsQuery.isFetched, invitationsQuery.refetch])
+  }, [refreshKey, invitationsQuery.isFetched, invitationsQuery.refetch, invitationsQuery])
 
   const invitations = useMemo<InvitationRecord[]>(() => {
     return (invitationsQuery.data?.invitations ?? []) as InvitationRecord[]

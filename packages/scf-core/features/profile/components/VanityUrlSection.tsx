@@ -126,7 +126,7 @@ export function VanityUrlSection() {
     }, 500) // 500ms debounce
 
     return () => clearTimeout(timeoutId)
-  }, [slugInput, isEditing, profileData?.slug, utils.profile.vanity.checkSlug.fetch])
+  }, [slugInput, isEditing, profileData?.slug, utils.profile.vanity.checkSlug.fetch, utils.profile.vanity.checkSlug])
 
   const handleCopyUrl = async () => {
     if (!profileData?.slug) return

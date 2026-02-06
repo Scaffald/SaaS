@@ -48,7 +48,7 @@ export function useResumeWizard(resumeId: string) {
     if (index < 0) return 0;
     if (index >= steps.length) return steps.length - 1;
     return index;
-  }, [wizardQuery.data, steps.length]);
+  }, [wizardQuery.data]);
 
   const [currentIndex, setCurrentIndex] = useState<number>(initialIndex);
 

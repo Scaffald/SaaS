@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { GetThemeValueForKey } from '@tamagui/core'
 import type { XStackProps } from '@tamagui/stacks'
 import { YStack, XStack } from '@tamagui/stacks'
@@ -257,12 +257,12 @@ export function TabsCustom({
                       ? (theme.color1?.val ?? '#fff')
                       : (theme.color11?.val ?? '#374151')) as GetThemeValueForKey<'color'>
                   }
-                  fontSize="$2"
-                  px="$2"
-                  py="$1"
-                >
-                  {tab.badge}
-                </Chip>
+                fontSize="$2"
+                px="$2"
+                py="$1"
+              >
+                {tab.badge}
+              </Chip>
               )}
             </XStack>
           )
