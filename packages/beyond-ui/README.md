@@ -272,6 +272,13 @@ gradients.named['warm-flame'].colors  // ['#fb923c', '#fb7185']
 ### Phase 4+ (📅 Future)
 - Alert, Toast, Dialog, Popover, Select, and more...
 
+## Documentation
+
+- [Why Beyond-UI?](docs/WHY_BEYOND_UI.md) – Comparison with the Tamagui-based UI and when to use beyond-ui.
+- [ARCHITECTURE.md](ARCHITECTURE.md) – Design principles, tokens, component structure.
+- [MIGRATION.md](MIGRATION.md) – Migrating from @unicornlove/ui to beyond-ui.
+- [CONTRIBUTING.md](CONTRIBUTING.md) – How to contribute.
+
 ## Development Roadmap
 
 See the [full roadmap](/Users/clay/.claude/plans/abstract-spinning-bachman.md) for detailed implementation plans.
