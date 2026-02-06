@@ -28,7 +28,19 @@ let lastDebugFlag = false;
 
 export { isAnalyticsAvailable };
 export const analyticsEnv = APP_ENV;
-export const getAnalyticsClient = () => client;
+
+// Type for the client with guaranteed getDistinctId method
+type WrappedPostHogClient = PostHog & {
+  getDistinctId: () => string;
+};
+
+export const getAnalyticsClient = (): WrappedPostHogClient | null => {
+  if (!client) return null;
+
+  // Ensure getDistinctId is available (it should already be on the native client)
+  return client as WrappedPostHogClient;
+};
+
 export const isAnalyticsInitialized = () => Boolean(client);
 
 type RegisterProperties = Parameters<PostHog["register"]>[0];

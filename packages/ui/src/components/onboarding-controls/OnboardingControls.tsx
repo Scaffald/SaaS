@@ -51,7 +51,7 @@ export const OnboardingControls = ({
         bottom={0}
         left={0}
         right={0}
-        $ltMd={{ display: 'none' }}
+        $md={{ display: 'none' }}
       >
         <Button
           chromeless

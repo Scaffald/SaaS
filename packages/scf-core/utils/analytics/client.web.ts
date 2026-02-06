@@ -18,7 +18,21 @@ let client: PostHog | null = null;
 
 export { isAnalyticsAvailable };
 export const analyticsEnv = APP_ENV;
-export const getAnalyticsClient = () => client;
+
+// Wrapper to provide consistent API across platforms
+type WrappedPostHogClient = PostHog & {
+  getDistinctId: () => string;
+};
+
+export const getAnalyticsClient = (): WrappedPostHogClient | null => {
+  if (!client) return null;
+
+  // Add getDistinctId method that matches the native client API
+  return Object.assign(client, {
+    getDistinctId: () => client?.get_distinct_id() || '',
+  });
+};
+
 export const isAnalyticsInitialized = () => Boolean(client);
 
 export async function initAnalytics(
