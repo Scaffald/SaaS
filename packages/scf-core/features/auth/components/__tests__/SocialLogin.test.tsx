@@ -17,10 +17,17 @@ vi.mock('@unicornlove/beyond-ui', () => ({
     <span data-testid="caption">{children}</span>
   ),
   usePlatform: () => ({ platform: mockPlatform }),
+  useThemeContext: () => ({ theme: 'light' as const, setTheme: () => {}, toggleTheme: () => {} }),
 }))
 
 vi.mock('@unicornlove/beyond-ui/tokens', () => ({
-  colors: { bg: { primary: '#fff' } },
+  colors: {
+    bg: { primary: '#fff' },
+    text: {
+      light: { secondary: '#414e62', tertiary: '#97a1af' },
+      dark: { secondary: '#97a1af', tertiary: '#6b7280' },
+    },
+  },
 }))
 
 vi.mock('@scf/core/utils/useTranslation', () => ({

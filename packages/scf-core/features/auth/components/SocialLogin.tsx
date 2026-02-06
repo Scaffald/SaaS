@@ -1,19 +1,16 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Caption, Row, Separator, Stack } from '@unicornlove/beyond-ui'
-import { usePlatform } from '@unicornlove/beyond-ui'
+import { Caption, Row, Separator, Stack, useThemeContext } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 
 import { AppleSignIn } from './AppleSignIn'
 import { GoogleSignIn } from './GoogleSignIn'
 
 export function SocialLogin() {
-  const { platform } = usePlatform()
-  const isWeb = platform === 'web'
   const { t } = useTranslation()
 
   return (
     <Stack gap={20}>
-      <OrSeparator label={t('common.or')} isWeb={isWeb} />
+      <OrSeparator label={t('common.or')} />
       <Row gap={12}>
         <AppleSignIn />
         <GoogleSignIn />
@@ -22,7 +19,10 @@ export function SocialLogin() {
   )
 }
 
-function OrSeparator({ label, isWeb }: { label: string; isWeb: boolean }) {
+function OrSeparator({ label }: { label: string }) {
+  const { theme } = useThemeContext()
+  const textTertiary = colors.text[theme].tertiary
+
   return (
     <Stack style={{ position: 'relative' }}>
       <Stack
@@ -39,10 +39,11 @@ function OrSeparator({ label, isWeb }: { label: string; isWeb: boolean }) {
       <Stack align="center" justify="center">
         <Caption
           style={{
-            backgroundColor: isWeb ? colors.bg.primary : 'transparent',
+            backgroundColor: 'transparent',
             paddingHorizontal: 12,
             textTransform: 'uppercase',
             textAlign: 'center',
+            color: textTertiary,
           }}
         >
           {label}

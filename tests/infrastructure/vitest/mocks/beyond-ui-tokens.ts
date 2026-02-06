@@ -5,4 +5,8 @@ export const colors = {
   blue: { 600: '#2563eb' },
   bg: { primary: '#ffffff' },
   border: { light: { default: '#e4e7ec' } },
+  text: {
+    light: { secondary: '#414e62', tertiary: '#97a1af' },
+    dark: { secondary: '#97a1af', tertiary: '#6b7280' },
+  },
 }

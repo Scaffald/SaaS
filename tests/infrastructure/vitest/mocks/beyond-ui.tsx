@@ -65,6 +65,9 @@ export function Text({ children }: { children?: ReactNode }) {
 export function Spinner() {
   return <span data-testid="spinner" />
 }
+export function LoadingOverlay() {
+  return <div data-testid="loading-overlay" />
+}
 export function Separator() {
   return <hr />
 }
@@ -82,6 +85,9 @@ export function usePlatform() {
 }
 export function useToast() {
   return { show: () => '' }
+}
+export function useThemeContext() {
+  return { theme: 'light' as const, setTheme: () => {}, toggleTheme: () => {} }
 }
 export const ToastProvider = ({ children }: { children?: ReactNode }) => <>{children}</>
 export const ToastContainer = () => null

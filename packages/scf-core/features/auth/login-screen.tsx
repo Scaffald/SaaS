@@ -15,6 +15,7 @@ import {
   Input,
   Paragraph,
   Stack,
+  useThemeContext,
 } from '@unicornlove/beyond-ui'
 import { colors } from '@unicornlove/beyond-ui/tokens'
 import type { AuthChangeEvent } from '@supabase/auth-js'
@@ -23,7 +24,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { LoadingOverlay } from './components/LoadingOverlay'
+import { LoadingOverlay } from '@unicornlove/beyond-ui'
 import { SocialLogin } from './components/SocialLogin'
 
 applyZodErrorMap()
@@ -43,6 +44,9 @@ export const LoginScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const requestMagicLink = api.auth.requestMagicLink.useMutation()
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
+  const textSecondary = colors.text[theme].secondary
+  const textTertiary = colors.text[theme].tertiary
 
   useEffect(() => {
     if (params?.email) {
@@ -131,7 +135,14 @@ export const LoginScreen = () => {
         <Stack gap={16} marginBottom={12} align="center">
           <ScaffaldLogo width={200} height={33} />
           <Stack gap={8} align="center">
-            <Paragraph style={{ textAlign: 'center' }}>{t('auth.login.description')}</Paragraph>
+            <Paragraph
+              style={{
+                textAlign: 'center',
+                color: textSecondary,
+              }}
+            >
+              {t('auth.login.description')}
+            </Paragraph>
           </Stack>
         </Stack>
 
@@ -167,7 +178,14 @@ export const LoginScreen = () => {
             </Button>
 
             <SocialLogin />
-            <Paragraph style={{ textAlign: 'center' }}>{t('auth.login.socialDescription')}</Paragraph>
+            <Paragraph
+              style={{
+                textAlign: 'center',
+                color: textTertiary,
+              }}
+            >
+              {t('auth.login.socialDescription')}
+            </Paragraph>
           </Stack>
         </Form>
       </Stack>

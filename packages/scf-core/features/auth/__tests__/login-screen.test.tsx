@@ -41,10 +41,6 @@ vi.mock('@scf/core/utils/useTranslation', () => ({
   }),
 }))
 
-vi.mock('../components/LoadingOverlay', () => ({
-  LoadingOverlay: () => <div data-testid="loading-overlay" />,
-}))
-
 vi.mock('expo-router', () => ({
   useRouter: () => ({
     replace: mockReplace,

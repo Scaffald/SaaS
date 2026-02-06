@@ -24,7 +24,6 @@ export default function Layout() {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <Stack.Screen options={{ headerShown: false }} />
         <Stack />
         <ToastContainer />
       </ToastProvider>
