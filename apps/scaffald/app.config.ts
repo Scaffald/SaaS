@@ -182,7 +182,7 @@ export default {
       [
         "@rnmapbox/maps",
         {
-          RNMapboxMapsDownloadToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
+          RNMapboxMapsDownloadToken: process.env.MAPBOX_DOWNLOADS_TOKEN || process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
         },
       ],
     ],
@@ -191,7 +191,7 @@ export default {
         origin: false,
       },
       eas: {
-        projectId: "b5f02af2-6475-4d9e-81b3-664f89564580",
+        // projectId: "b5f02af2-6475-4d9e-81b3-664f89564580", // Old project - commented out to create new project
       },
       mapbox: {
         accessToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
@@ -231,6 +231,6 @@ export default {
     experiments: {
       autolinkingModuleResolution: true,
     },
-    owner: "Unicorn",
+    owner: "unicorn-love",
   },
 };

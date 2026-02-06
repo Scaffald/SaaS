@@ -1267,7 +1267,7 @@ export const handlers = [
       error_requests: 70,
       error_rate: '5.60',
       avg_response_time_ms: 245,
-      period_days: Number.parseInt(days),
+      period_days: Number.parseInt(days, 10),
       usage: [
         {
           endpoint: '/v1/jobs',
