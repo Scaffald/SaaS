@@ -1,9 +1,5 @@
 import { Resource } from './base.js'
 import type {
-  Webhook,
-  WebhookWithSecret,
-  WebhookDelivery,
-  WebhookEventTypeInfo,
   CreateWebhookParams,
   UpdateWebhookParams,
   ListDeliveriesParams,
