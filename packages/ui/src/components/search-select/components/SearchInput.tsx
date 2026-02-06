@@ -42,13 +42,12 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
     > & { textAlign?: string }
 
     return (
-      <XStack position="relative" width="100%">
+      <XStack style={{ position: 'relative' }} width="100%">
         <Input
           ref={ref}
           width="100%"
           borderWidth={1}
           borderColor={isInvalid ? '$red8' : '$borderColor'}
-          borderRadius="$4"
           background="$background"
           px="$4"
           py="$3"
@@ -65,17 +64,14 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
           focusStyle={{ borderColor: '$color8' }}
           opacity={disabled ? 0.75 : 1}
           pr={shouldShowClear || loading ? '$10' : '$4'}
+          style={{ borderRadius: 16 }}
           {...cleanInputProps}
         />
 
         {(loading || shouldShowClear) && (
           <XStack
-            position="absolute"
-            right="$3"
-            top={0}
-            bottom={0}
-            style={{ alignItems: 'center' }}
             gap="$2"
+            style={{ position: 'absolute', right: '$3', top: 0, bottom: 0, alignItems: 'center' }}
           >
             {loading ? (
               <Spinner size="small" color="$color9" />

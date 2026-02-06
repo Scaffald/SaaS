@@ -41,15 +41,15 @@ export interface RangeSliderProps {
 const trackSizeStyles: Record<NonNullable<RangeSliderProps['size']>, Partial<ViewProps>> = {
   small: {
     height: 8,
-    minWidth: 120,
+    style: { minWidth: 120 },
   },
   medium: {
     height: 10,
-    minWidth: 180,
+    style: { minWidth: 180 },
   },
   large: {
     height: 12,
-    minWidth: 220,
+    style: { minWidth: 220 },
   },
 }
 
@@ -67,21 +67,24 @@ const activeTrackSizeStyles: Record<NonNullable<RangeSliderProps['size']>, Parti
 }
 
 // Size styles for the thumb
-const thumbSizeStyles: Record<NonNullable<RangeSliderProps['size']>, Partial<ViewProps>> = {
+const thumbSizeStyles: Record<
+  NonNullable<RangeSliderProps['size']>,
+  { width: number; height: number; style: { top: number } }
+> = {
   small: {
     width: 18,
     height: 18,
-    top: -5,
+    style: { top: -5 },
   },
   medium: {
     width: 22,
     height: 22,
-    top: -6,
+    style: { top: -6 },
   },
   large: {
     width: 26,
     height: 26,
-    top: -7,
+    style: { top: -7 },
   },
 }
 
@@ -169,7 +172,7 @@ export function RangeSlider({
       {...trackSizeStyles[size]}
       position="relative"
       background={disabled ? '$color3' : '$color4'}
-      br={6}
+      style={{ borderRadius: 6 }}
       opacity={disabled ? 0.5 : 1}
       onLayout={handleTrackLayout}
       onPress={handleTrackPress}
@@ -184,21 +187,21 @@ export function RangeSlider({
         {...activeTrackSizeStyles[size]}
         position="absolute"
         background="$color10"
-        br={6}
+        style={{ borderRadius: 6 }}
         width={activeTrackWidth}
       />
       <View
-        {...thumbSizeStyles[size]}
+        width={thumbSizeStyles[size].width}
+        height={thumbSizeStyles[size].height}
         position="absolute"
         background="white"
-        br={50}
         borderWidth={2}
         borderColor={disabled ? '$color4' : '$color10'}
         cursor={disabled ? 'not-allowed' : 'pointer'}
         animation="100ms"
         boxShadow="0 2px 4px rgba(0,0,0,0.1)"
         opacity={disabled ? 0.5 : 1}
-        style={{ left: thumbPosition }}
+        style={{ borderRadius: 50, left: thumbPosition, ...thumbSizeStyles[size].style }}
         onPress={handleThumbPress}
         onPressIn={handleThumbPress}
         onPressOut={handleThumbRelease}

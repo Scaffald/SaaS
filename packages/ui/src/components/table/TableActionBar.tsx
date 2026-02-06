@@ -87,10 +87,8 @@ export function TableActionBar({
     <YStack gap="$2" width="100%">
       <XStack
         width="100%"
-        style={{ alignItems: 'center' }}
-        style={{ justifyContent: 'space-between' }}
         gap="$4"
-        style={{ flexWrap: 'wrap' }}
+        style={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}
       >
         <YStack gap="$2">
           <XStack gap="$2" style={{ alignItems: 'center' }}>

@@ -46,29 +46,28 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
     <Tabs.Tab
       value={value}
       disabled={disabled}
-      position="relative"
       py="$2"
       px="$4"
-      style={{ minHeight: '$2' }}
       background={isUnderlined ? 'transparent' : '$color2'}
       borderWidth={isUnderlined ? 0 : 1}
       borderColor={isUnderlined ? 'transparent' : '$color4'}
       borderBottomWidth={isUnderlined ? 2 : undefined}
       borderBottomColor={isUnderlined ? (isActive ? '$blue9' : 'transparent') : undefined}
       cursor={disabled ? 'not-allowed' : 'pointer'}
+      style={{ position: 'relative', minHeight: '$2' }}
       hoverStyle={
         isUnderlined
-          ? { borderBottomColor: '$yellow9', backgroundColor: 'transparent' }
-          : { backgroundColor: '$blue3' }
+          ? { borderBottomColor: '$yellow9', background: 'transparent' }
+          : { background: '$blue3' }
       }
       pressStyle={
         isUnderlined
           ? {
-              backgroundColor: 'transparent',
+              background: 'transparent',
               borderBottomColor: '$blue9',
             }
           : {
-              backgroundColor: '$blue3',
+              background: '$blue3',
               scale: 0.98,
             }
       }
@@ -78,7 +77,7 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
       }}
       {...props}
     >
-      <XStack gap="$2" style={{ alignItems: 'center' }} style={{ justifyContent: 'center' }}>
+      <XStack gap="$2" style={{ alignItems: 'center', justifyContent: 'center' }}>
         {children || (
           <Text fontSize="$3" fontWeight={isActive ? '600' : '500'} color={textColor}>
             {label}
@@ -88,10 +87,8 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
           <YStack
             px="$2"
             py="$1"
-            br="$10"
             width={20}
-            style={{ alignItems: 'center' }}
-            style={{ justifyContent: 'center' }}
+            style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 40 }}
             background={isActive ? '$color5' : '$color4'}
           >
             <Text fontSize="$2" fontWeight="600">
@@ -121,12 +118,9 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
  */
 const _TabBadge = styled(YStack, {
   name: 'TabBadge',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$10',
+  px: '$2',
+  py: '$1',
   width: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
 
   variants: {
     active: {

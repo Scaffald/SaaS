@@ -30,7 +30,7 @@ export const CardDescription = styled(Text, {
 export const CardContent = styled(YStack, {
   name: 'CardContent',
   gap: '$2',
-} as any)
+} as object)
 
 // Apply padding via defaultProps to avoid type issues
 CardContent.defaultProps = {

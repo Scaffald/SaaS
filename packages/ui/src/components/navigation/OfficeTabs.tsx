@@ -4,6 +4,7 @@ import { ScrollView } from '@tamagui/scroll-view'
 import { useWindowDimensions } from '@tamagui/use-window-dimensions'
 import { XStack, YStack } from '@tamagui/stacks'
 import { type JSX, useMemo } from 'react'
+import { Button, type ButtonProps } from '../buttons/Button'
 
 export type OfficeTabsItem = {
   key: string
@@ -74,10 +75,10 @@ export const OfficeTabs = ({
         borderColor={active ? '$color9' : '$borderColor'}
         background={active ? '$color9' : 'transparent'}
         hoverStyle={{
-          backgroundColor: active ? '$color9' : '$color3',
+          background: active ? '$color9' : '$color3',
         }}
         pressStyle={{
-          backgroundColor: active ? '$color9' : '$color4',
+          background: active ? '$color9' : '$color4',
         }}
         {...buttonProps}
       >
@@ -90,9 +91,7 @@ export const OfficeTabs = ({
               px="$2"
               py="$1"
               background={active ? '$color2' : '$color4'}
-              br="$10"
-              style={{ alignItems: 'center' }}
-              style={{ justifyContent: 'center' }}
+              style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 40 }}
             >
               <Paragraph size="$1" color={active ? '$color10' : '$color11'}>
                 {badge}

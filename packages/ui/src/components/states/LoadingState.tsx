@@ -64,12 +64,10 @@ export function LoadingState({ message, size = 'medium', fullScreen = false }: L
   return (
     <YStack
       flex={fullScreen ? 1 : undefined}
-      alignItems="center"
-      justifyContent="center"
       gap={spacing.md}
-      padding={spacing.xl}
+      p={spacing.xl}
       background={fullScreen ? '$background' : 'transparent'}
-      style={containerStyles}
+      style={{ alignItems: 'center', justifyContent: 'center', ...containerStyles }}
     >
       {/* Spinner with teal color */}
       <Spinner size={spinnerSize} color="$blue7" />

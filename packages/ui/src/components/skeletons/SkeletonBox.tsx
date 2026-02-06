@@ -19,16 +19,17 @@ export const SkeletonBox = ({
   borderRadius = '$2',
   ...props
 }: SkeletonBoxProps) => {
+  const borderRadiusValue = borderRadius === '$2' ? 8 : borderRadius
   return (
     <View
       background="$color3"
-      br={borderRadius}
       overflow="hidden"
       opacity={animated ? 0.6 : 0.5}
-      width={width}
-      height={height}
+      width={width as any}
+      height={height as any}
       aria-busy={true}
       aria-label="Loading content"
+      style={{ borderRadius: borderRadiusValue as number }}
       {...props}
     />
   )

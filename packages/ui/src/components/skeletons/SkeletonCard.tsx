@@ -14,11 +14,11 @@ export function SkeletonCard({ variant: _variant = 'job' }: SkeletonCardProps) {
   return (
     <YStack
       gap={spacing.md}
-      padding={spacing.lg}
+      p={spacing.lg}
       background="$background"
       borderWidth={1}
       borderColor="$borderColor"
-      br={borderRadius['3xl']}
+      style={{ borderRadius: borderRadius['3xl'] as unknown as number }}
     >
       {/* Header with avatar and title */}
       <XStack gap={spacing.md} style={{ alignItems: 'center' }}>

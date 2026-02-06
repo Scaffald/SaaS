@@ -97,8 +97,8 @@ function ResultItemComponent<T>({
       style={{ alignItems: 'flex-start' }}
       width="100%"
       background={isActive ? '$color4' : 'transparent'}
-      hoverStyle={{ backgroundColor: '$color4' }}
-      pressStyle={{ backgroundColor: '$color5' }}
+      hoverStyle={{ background: '$color4' }}
+      pressStyle={{ background: '$color5' }}
       borderWidth={0}
       borderBottomWidth={isLast ? 0 : 1}
       borderBottomColor={isLast ? 'transparent' : '$borderColor'}
@@ -110,8 +110,7 @@ function ResultItemComponent<T>({
     >
       <XStack
         flex={1}
-        style={{ alignItems: 'flex-start' }}
-        style={{ justifyContent: 'space-between' }}
+        style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}
         width="100%"
       >
         {content}

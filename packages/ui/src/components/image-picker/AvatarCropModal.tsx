@@ -597,11 +597,10 @@ export function AvatarCropModal({
                       width={displaySize}
                       height={displaySize}
                       background="$color2"
-                      br="$4"
+                      style={{ borderRadius: 12, position: 'relative' }}
                       overflow="hidden"
                       aria-role="image"
                       aria-label="Avatar crop area. Drag to reposition and pinch to zoom."
-                      style={{ position: 'relative' }}
                     >
                       <TamaguiImage
                         source={{ uri: imageUri }}
@@ -670,13 +669,13 @@ export function AvatarCropModal({
                         height={cropDisplaySize}
                         borderWidth={2}
                         borderColor="$blue10"
-                        br="$2"
                         shadowColor="$shadowColor"
                         shadowOffset={{ width: 0, height: 2 }}
                         shadowOpacity={0.3}
                         shadowRadius={8}
                         pointerEvents="none"
                         style={{
+                          borderRadius: 8,
                           position: 'absolute',
                           left: (displaySize - cropDisplaySize) / 2,
                           top: (displaySize - cropDisplaySize) / 2,
@@ -784,8 +783,7 @@ export function AvatarCropModal({
             {error ? (
               <YStack
                 gap="$3"
-                minHeight={displaySize}
-                style={{ alignItems: 'center', justifyContent: 'center' }}
+                style={{ minHeight: displaySize, alignItems: 'center', justifyContent: 'center' }}
               >
                 <Text fontSize="$4" color="$red10" fontWeight="600" style={{ textAlign: 'center' }}>
                   Error
@@ -946,8 +944,7 @@ export function AvatarCropModal({
               </>
             ) : (
               <YStack
-                minHeight={displaySize}
-                style={{ alignItems: 'center', justifyContent: 'center' }}
+                style={{ minHeight: displaySize, alignItems: 'center', justifyContent: 'center' }}
               >
                 <Text>Loading image...</Text>
               </YStack>

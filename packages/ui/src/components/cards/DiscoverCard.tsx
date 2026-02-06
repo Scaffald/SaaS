@@ -169,12 +169,12 @@ export const DiscoverCard = memo(
           bordered
           cursor={resolvedInteractive ? (cursorProp ?? 'pointer') : cursorProp}
           p={resolvedPadding as any}
-          background={resolvedBg as any}
+          background={resolvedBg as string}
           borderColor={resolvedBorderColor as any}
           borderWidth={resolvedBorderWidth}
           boxShadow={resolvedShadow}
-          hoverStyle={resolvedInteractive ? (hoverStyle as any) : hoverStyleProp}
-          pressStyle={resolvedInteractive ? (pressStyle as any) : pressStyleProp}
+          hoverStyle={resolvedInteractive ? (hoverStyle as Record<string, unknown>) : hoverStyleProp}
+          pressStyle={resolvedInteractive ? (pressStyle as Record<string, unknown>) : pressStyleProp}
           animation="quick"
           width={width ?? '100%'}
           onPress={onPress}

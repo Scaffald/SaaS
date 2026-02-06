@@ -71,11 +71,9 @@ export function ErrorState({
   return (
     <YStack
       flex={1}
-      alignItems="center"
-      justifyContent="center"
       gap={spacing.md}
-      padding={spacing['2xl']}
-      style={{ minHeight: 300 }}
+      p={spacing['2xl']}
+      style={{ alignItems: 'center', justifyContent: 'center', minHeight: 300 }}
     >
       {/* Icon */}
       <YStack style={{ alignItems: 'center' }}>
@@ -108,11 +106,10 @@ export function ErrorState({
       {errorMessage && (
         <XStack
           background="$red2"
-          padding={spacing.md}
-          br={borderRadius.md}
-          style={{ maxWidth: 500 }}
+          p={spacing.md}
           borderWidth={1}
           borderColor="$red5"
+          style={{ maxWidth: 500, borderRadius: borderRadius.md as unknown as number }}
         >
           <Text fontSize={typography.sm} color="$red11" style={{ fontFamily: 'monospace' }}>
             {errorMessage}

@@ -9,6 +9,7 @@ import { useWindowDimensions } from '@tamagui/use-window-dimensions'
 import { XStack, YStack } from '@tamagui/stacks'
 import { useCallback, useMemo, useState } from 'react'
 
+import { Button } from '../buttons/Button'
 import { Dialog } from '../dialog/Dialog'
 import { Sheet } from '../sheets/Sheet'
 
@@ -307,7 +308,7 @@ export function SkillSearchModal({
     if (depth === 0 || !label) return null
 
     return (
-      <XStack background={bgColor} px="$2" py="$0.5" br="$2" borderWidth={1} borderColor={bgColor}>
+      <XStack background={bgColor} px="$2" py="$0.5" style={{ borderRadius: 8 }} borderWidth={1} borderColor={bgColor}>
         <Text color="$background" fontSize="$1" fontWeight="600">
           {label}
         </Text>
@@ -367,12 +368,11 @@ export function SkillSearchModal({
                       onPress={() => handleParentSelect(skill)}
                     >
                       <Card.Header>
-                        <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+                        <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                           <YStack flex={1} gap="$1">
                             <XStack
                               gap="$2"
-                              style={{ alignItems: 'center' }}
-                              style={{ flexWrap: 'wrap' }}
+                              style={{ alignItems: 'center', flexWrap: 'wrap' }}
                             >
                               <Text fontSize="$4" fontWeight="600">
                                 {skill.name}
@@ -416,15 +416,12 @@ export function SkillSearchModal({
                           <Card.Header>
                             <YStack gap="$1">
                               <XStack
-                                justifyContent="space-between"
-                                style={{ alignItems: 'center' }}
-                                style={{ flexWrap: 'wrap' }}
+                                style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}
                               >
                                 <XStack
                                   gap="$2"
-                                  style={{ alignItems: 'center' }}
-                                  style={{ flexWrap: 'wrap' }}
                                   flex={1}
+                                  style={{ alignItems: 'center', flexWrap: 'wrap' }}
                                 >
                                   <Text fontSize="$3" fontWeight="600">
                                     {skill.name}
@@ -475,15 +472,12 @@ export function SkillSearchModal({
                           <Card.Header>
                             <YStack gap="$1">
                               <XStack
-                                justifyContent="space-between"
-                                style={{ alignItems: 'center' }}
-                                style={{ flexWrap: 'wrap' }}
+                                style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}
                               >
                                 <XStack
                                   gap="$2"
-                                  style={{ alignItems: 'center' }}
-                                  style={{ flexWrap: 'wrap' }}
                                   flex={1}
+                                  style={{ alignItems: 'center', flexWrap: 'wrap' }}
                                 >
                                   <Text fontSize="$3" fontWeight="600">
                                     {skill.name}
@@ -534,15 +528,12 @@ export function SkillSearchModal({
                           <Card.Header>
                             <YStack gap="$1">
                               <XStack
-                                justifyContent="space-between"
-                                style={{ alignItems: 'center' }}
-                                style={{ flexWrap: 'wrap' }}
+                                style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}
                               >
                                 <XStack
                                   gap="$2"
-                                  style={{ alignItems: 'center' }}
-                                  style={{ flexWrap: 'wrap' }}
                                   flex={1}
+                                  style={{ alignItems: 'center', flexWrap: 'wrap' }}
                                 >
                                   <Text fontSize="$3" fontWeight="600">
                                     {skill.name}
@@ -581,9 +572,8 @@ export function SkillSearchModal({
           {isLoadingChildren ? (
             <YStack
               flex={1}
-              style={{ alignItems: 'center' }}
-              style={{ justifyContent: 'center' }}
               gap="$3"
+              style={{ alignItems: 'center', justifyContent: 'center' }}
             >
               <Spinner size="large" />
               <Text color="$color11">Loading skills...</Text>
@@ -592,7 +582,7 @@ export function SkillSearchModal({
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
               <YStack gap="$2">
                 {children.length === 0 && (
-                  <YStack p="$4" style={{ alignItems: 'center' }} gap="$2">
+                  <YStack p="$4" gap="$2" style={{ alignItems: 'center' }}>
                     <Text color="$color11">No sub-skills found</Text>
                   </YStack>
                 )}
@@ -612,7 +602,7 @@ export function SkillSearchModal({
                     >
                       <Card.Header>
                         <YStack gap="$1">
-                          <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+                          <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                             <Text fontSize="$3" fontWeight="600">
                               {child.name}
                             </Text>
@@ -646,7 +636,7 @@ export function SkillSearchModal({
           {/* Selected Skill Details */}
           <Card bordered>
             <Card.Header>
-              <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+              <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <YStack flex={1}>
                   <Text fontSize="$4" fontWeight="600">
                     {selectedChild.name}
@@ -683,7 +673,7 @@ export function SkillSearchModal({
               size="$3"
             >
               <Slider.Track background="$color4" height={6}>
-                <Slider.TrackActive background={getProficiencyColor(proficiency)} />
+                <Slider.TrackActive background={getProficiencyColor(proficiency) as any} />
               </Slider.Track>
               <Slider.Thumb index={0} circular size="$1" />
             </Slider>
@@ -691,7 +681,7 @@ export function SkillSearchModal({
             {/* Current Level Display */}
             <Card bordered background="$color3">
               <Card.Header>
-                <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+                <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                   <YStack>
                     <Text fontWeight="600" fontSize="$5" color="$green9">
                       {currentLevel?.label}
@@ -764,7 +754,7 @@ export function SkillSearchModal({
           <Sheet.Handle />
 
           {/* Header */}
-          <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+          <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
             <XStack gap="$2" style={{ alignItems: 'center' }}>
               {step !== 'search-parent' && (
                 <Button size="$3" circular chromeless icon={ArrowLeft} onPress={handleBack} />
@@ -790,14 +780,16 @@ export function SkillSearchModal({
         <Dialog.Overlay key="overlay" />
         <Dialog.Content
           key="content"
-          style={{ minWidth: 500 }}
-          style={{ maxWidth: 600 }}
-          style={{ minHeight: 500 }}
-          style={{ maxHeight: '80vh' }}
+          style={{
+            minWidth: 500,
+            maxWidth: 600,
+            minHeight: 500,
+            maxHeight: '80vh',
+          }}
         >
           {/* Header */}
           <Dialog.Title>
-            <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+            <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
               <XStack gap="$2" style={{ alignItems: 'center' }}>
                 {step !== 'search-parent' && (
                   <Button size="$3" circular chromeless icon={ArrowLeft} onPress={handleBack} />

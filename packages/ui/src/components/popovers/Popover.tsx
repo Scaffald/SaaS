@@ -8,7 +8,7 @@ import type { PopoverProps } from 'tamagui'
  * This ensures all popovers have a consistent background globally
  */
 const PopoverContent = styled(TamaguiPopover.Content, {
-  backgroundColor: '$gray1',
+  background: '$gray1',
   borderWidth: 0,
   borderColor: 'transparent',
   boxShadow: '$shadowColor',

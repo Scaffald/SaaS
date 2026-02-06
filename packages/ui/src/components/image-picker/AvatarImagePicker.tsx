@@ -149,7 +149,7 @@ export function AvatarImagePicker({
                 aria-label={previewUri || value ? 'Current avatar preview' : 'Avatar placeholder'}
               >
                 {previewUri ? (
-                  <Image source={{ uri: previewUri }} width={size} height={size} br={size / 2} />
+                  <Image source={{ uri: previewUri }} width={size} height={size} style={{ borderRadius: size / 2 }} />
                 ) : (
                   <YStack
                     flex={1}
@@ -187,10 +187,10 @@ export function AvatarImagePicker({
 
                 <View
                   background="$color9"
-                  br={size / 2}
                   opacity={0}
                   hoverStyle={{ opacity: disabled ? 0 : 1 }}
                   style={{
+                    borderRadius: size / 2,
                     position: 'absolute',
                     top: 0,
                     left: 0,

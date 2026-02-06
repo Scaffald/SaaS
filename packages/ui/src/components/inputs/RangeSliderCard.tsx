@@ -119,7 +119,7 @@ export function RangeSliderCard({
       background="$background"
       borderWidth={1}
       borderColor="$borderColor"
-      br="$3"
+      style={{ borderRadius: 12 }}
       px="$4"
       py="$3"
       gap="$2.5"
@@ -187,7 +187,7 @@ export function RangeSliderCard({
 
         {/* Value Labels */}
         {showLabels && (
-          <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+          <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Text fontSize="$2" color="$color9">
               {formatMinFn(min)}
             </Text>

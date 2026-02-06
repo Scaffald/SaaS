@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Circle } from '@tamagui/shapes'
+import { AnimatePresence } from '@tamagui/animate-presence'
 import { Image } from '@tamagui/image'
 import { useTheme } from '@tamagui/core'
 import { useWindowDimensions } from '@tamagui/use-window-dimensions'
@@ -123,7 +124,7 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
 const Point = ({ active, onPress }: { active: boolean; onPress: () => void }) => {
   return (
     <YStack
-      br="$10"
+      style={{ borderRadius: 40 }}
       width={active ? 30 : 10}
       height={10}
       onPress={onPress}
@@ -150,18 +151,14 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
           flex={1}
           height="100%"
           resizeMode="cover"
-          position="absolute"
-          style={{ top: 0 }}
-          style={{ left: 0 }}
-          style={{ right: 0 }}
-          style={{ bottom: 0 }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
         />
         {/* Theme-sensitive overlay with blur for better text readability */}
         <YStack
           fullscreen
           background={isDarkTheme ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)'}
-          position="absolute"
           style={{
+            position: 'absolute',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
           }}
@@ -171,7 +168,7 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
   }
 
   return (
-    <YStack fullscreen justifyContent="center" style={{ alignItems: 'center' }}>
+    <YStack fullscreen style={{ justifyContent: 'center', alignItems: 'center' }}>
       <Circle
         animation="lazy"
         x={0}

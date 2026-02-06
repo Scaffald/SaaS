@@ -95,7 +95,7 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
         onPress={() => !disabled && setIsOpen(!isOpen)}
         borderWidth={1}
         borderColor="$borderColor"
-        br="$2"
+        style={{ borderRadius: 8 }}
         gap="$2"
         background="$background"
         p="$3"
@@ -114,11 +114,10 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
         <YStack
           borderWidth={1}
           borderColor="$borderColor"
-          br="$2"
+          style={{ borderRadius: 8, zIndex: 1000 }}
           background="$background"
           p="$2"
           gap="$2"
-          style={{ zIndex: 1000 }}
         >
           {/* Search input */}
           <XStack gap="$2" px="$2" style={{ alignItems: 'center' }}>
@@ -155,7 +154,7 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
                     background={isSelected ? '$blue4' : '$background'}
                     borderWidth={1}
                     borderColor={isSelected ? '$blue8' : '$borderColor'}
-                    br="$2"
+                    style={{ borderRadius: 8, alignItems: 'center', justifyContent: 'center' }}
                     width={44}
                     height={44}
                     cursor="pointer"
@@ -165,7 +164,6 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
                     pressStyle={{
                       background: isSelected ? '$blue6' : '$backgroundPress',
                     }}
-                    style={{ alignItems: 'center', justifyContent: 'center' }}
                   >
                     {IconComponent && <IconComponent size={20} />}
                   </YStack>

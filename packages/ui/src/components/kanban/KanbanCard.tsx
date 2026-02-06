@@ -115,7 +115,7 @@ export const KanbanCard = memo(
         opacity={isDragging ? 0.5 : 1}
         elevate={isDragging}
         hoverStyle={{
-          backgroundColor: isSelected ? '$blue4' : '$gray2',
+          background: isSelected ? '$blue4' : '$gray2',
           elevate: true,
         }}
         pressStyle={{ scale: 0.98 }}
@@ -125,7 +125,7 @@ export const KanbanCard = memo(
         cursor="pointer"
       >
         {/* Header: Selection checkbox and quick actions */}
-        <XStack justifyContent="space-between" style={{ alignItems: 'flex-start' }}>
+        <XStack style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
           {onToggleSelection && (
             <Button
               size="$2"
@@ -159,11 +159,10 @@ export const KanbanCard = memo(
                     onView()
                   }}
                   background="$color5"
-                  style={{ alignItems: 'center' }}
-                  style={{ justifyContent: 'center' }}
+                  style={{ alignItems: 'center', justifyContent: 'center' }}
                   width={24}
                   height={24}
-                  hoverStyle={{ backgroundColor: '$color6' }}
+                  hoverStyle={{ background: '$color6' }}
                 >
                   <Eye size={14} color="$color11" />
                 </Button>
@@ -178,11 +177,10 @@ export const KanbanCard = memo(
                     onEdit()
                   }}
                   background="$color5"
-                  style={{ alignItems: 'center' }}
-                  style={{ justifyContent: 'center' }}
+                  style={{ alignItems: 'center', justifyContent: 'center' }}
                   width={24}
                   height={24}
-                  hoverStyle={{ backgroundColor: '$color6' }}
+                  hoverStyle={{ background: '$color6' }}
                 >
                   <MoreVertical size={14} color="$color11" />
                 </Button>
@@ -214,7 +212,7 @@ export const KanbanCard = memo(
 
         {/* Score Badge and Progress */}
         <YStack gap="$2">
-          <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+          <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Chip priority={scorePriority} fontSize="$2" px="$2" py="$1">
               {`Score: ${score}`}
             </Chip>

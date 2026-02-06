@@ -64,10 +64,9 @@ export const DroppableColumn = ({
         data-testid={`kanban-column-${id}`}
         width={320}
         background="$gray2"
-        br="$4"
+        style={{ borderRadius: 12, minHeight: 200 }}
         p="$4"
         gap="$3"
-        style={{ minHeight: 200 }}
       >
         {title && (
           <KanbanColumnHeader

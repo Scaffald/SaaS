@@ -11,12 +11,11 @@ interface MapFallbackProps {
 
 export function MapFallback({ pinsCount, message, style }: MapFallbackProps) {
   return (
-    <View flex={1} alignItems="center" justifyContent="center" style={style}>
+    <View flex={1} style={{ alignItems: 'center', justifyContent: 'center', ...style }}>
       <YStack
         background="$backgroundHover"
-        br="$4"
         p="$4"
-        style={{ alignItems: 'center' }}
+        style={{ alignItems: 'center', borderRadius: 16 }}
         gap="$2"
       >
         <Text fontSize="$6" fontWeight="bold" color="$color12">

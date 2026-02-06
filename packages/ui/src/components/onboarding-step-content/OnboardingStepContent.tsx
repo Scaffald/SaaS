@@ -46,7 +46,7 @@ export const StepContent = ({
         style={{ textAlign: 'center' }}
         $md={{
           size: '$10',
-          marginTop: '$4',
+          mt: '$4',
           color: '$color10',
         }}
       >
@@ -54,7 +54,6 @@ export const StepContent = ({
       </H2>
       <Paragraph
         mt="$4"
-        style={{ maxWidth: 520 }}
         mx="auto"
         animation="bouncy"
         y={0}
@@ -64,11 +63,11 @@ export const StepContent = ({
         scale={1}
         size="$6"
         lineHeight="$8"
-        textAlign="center"
         color="$color9"
         selectable={false}
+        style={{ maxWidth: 520, textAlign: 'center' }}
         $md={{
-          marginTop: '$3',
+          mt: '$3',
           color: '$color9',
         }}
       >

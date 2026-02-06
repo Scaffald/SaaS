@@ -53,6 +53,6 @@ const ChipBase = styled(Text, {
   defaultVariants: {
     variant: 'default',
   },
-} as any)
+} as object)
 
 export const Chip = ChipBase as unknown as typeof Text & ((props: ChipProps) => ReactElement)

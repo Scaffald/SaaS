@@ -33,25 +33,22 @@ const containerSizeStyles: Record<NonNullable<RadioProps['size']>, Partial<ViewP
 // Size styles for the radio dot
 const dotSizeStyles: Record<
   NonNullable<RadioProps['size']>,
-  { width: number; height: number; top: number; left: number }
+  { width: number; height: number; style: { top: number; left: number } }
 > = {
   small: {
     width: 8,
     height: 8,
-    top: 2,
-    left: 2,
+    style: { top: 2, left: 2 },
   },
   medium: {
     width: 10,
     height: 10,
-    top: 3,
-    left: 3,
+    style: { top: 3, left: 3 },
   },
   large: {
     width: 12,
     height: 12,
-    top: 4,
-    left: 4,
+    style: { top: 4, left: 4 },
   },
 }
 
@@ -96,7 +93,6 @@ export function Radio({
       cursor={disabled ? 'not-allowed' : 'pointer'}
       animation="quick"
       borderWidth={2}
-      br={50}
       background="transparent"
       borderColor={checked ? '$blue7' : '$borderColor'}
       opacity={disabled ? 0.5 : 1}
@@ -123,15 +119,13 @@ export function Radio({
             }
           : undefined
       }
-      style={{ position: 'relative' }}
+      style={{ borderRadius: 50, position: 'relative' }}
     >
       <View
-        width={dotStyle.width}
-        height={dotStyle.height}
+        {...dotStyle}
         background="$blue7"
-        br={50}
         opacity={checked ? 1 : 0}
-        style={{ position: 'absolute', top: dotStyle.top, left: dotStyle.left }}
+        style={{ borderRadius: 50, position: 'absolute', ...dotStyle.style }}
       />
     </View>
   )

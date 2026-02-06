@@ -23,9 +23,8 @@ export const ErrorState = ({
     <YStack
       p="$4"
       gap="$3"
-      style={{ alignItems: 'center' }}
+      style={{ alignItems: 'center', borderRadius: 16 }}
       background="$red3"
-      br="$4"
       aria-live="assertive"
     >
       {icon ?? <AlertTriangle size={28} color="$red10" aria-hidden={true} />}

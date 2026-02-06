@@ -39,10 +39,10 @@ export interface KanbanColumnHeaderProps {
 export const KanbanColumnHeader = memo(
   ({ title, count, color, onAdd, onMenuClick }: KanbanColumnHeaderProps) => {
     return (
-      <XStack justifyContent="space-between" style={{ alignItems: 'center' }} mb="$3">
+      <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }} mb="$3">
         <XStack gap="$2" style={{ alignItems: 'center' }} flex={1}>
           {/* Status color indicator */}
-          <YStack width={8} height={8} br="$10" background={color} />
+          <YStack width={8} height={8} style={{ borderRadius: 50 }} background={color as string} />
 
           {/* Title */}
           <Text fontWeight="600" fontSize="$4" flex={1}>
@@ -50,7 +50,7 @@ export const KanbanColumnHeader = memo(
           </Text>
 
           {/* Count badge */}
-          <YStack background="$color5" px="$2" py="$1" br="$2">
+          <YStack background="$color5" px="$2" py="$1" style={{ borderRadius: 6 }}>
             <Text fontSize="$2" fontWeight="600" color="$color11">
               {count}
             </Text>
@@ -69,7 +69,7 @@ export const KanbanColumnHeader = memo(
               style={{ alignItems: 'center', justifyContent: 'center' }}
               width={24}
               height={24}
-              hoverStyle={{ backgroundColor: '$color6' }}
+              hoverStyle={{ background: '$color6' }}
             >
               <Plus size={14} color="$color11" />
             </Button>
@@ -84,7 +84,7 @@ export const KanbanColumnHeader = memo(
               style={{ alignItems: 'center', justifyContent: 'center' }}
               width={24}
               height={24}
-              hoverStyle={{ backgroundColor: '$color6' }}
+              hoverStyle={{ background: '$color6' }}
             >
               <MoreVertical size={14} color="$color11" />
             </Button>

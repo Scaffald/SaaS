@@ -3,7 +3,12 @@ import { View, useThemeName } from '@tamagui/core'
 
 // useThemeSetting has domain dependencies - use tamagui's useThemeName instead
 
-import { logger } from '@scf/core'
+// Logger placeholder - replace with proper logging solution
+const logger = {
+  error: console.error,
+  warn: console.warn,
+  info: console.info,
+}
 import {
   purpleDark,
   purpleLight,
@@ -1352,7 +1357,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     }, [pins, isMapReady])
 
     return (
-      <View flex={1} position="relative" overflow="hidden" br="$5" style={style}>
+      <View flex={1} position="relative" overflow="hidden" style={{ borderRadius: 20, ...style }}>
         <div
           ref={mapContainerRef}
           style={{

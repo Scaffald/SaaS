@@ -100,7 +100,7 @@ export default function Alert({
   const Icon = config.icon
 
   return (
-    <YStack borderRadius="$4" borderWidth={1} padding="$4" {...(variantStyles[variant] as any)}>
+    <YStack {...(variantStyles[variant] as Record<string, unknown>)} style={{ borderRadius: 16 }} borderWidth={1} p="$4">
       <XStack>
         {icon && (
           <XStack style={{ flexShrink: 0 }}>
@@ -124,7 +124,7 @@ export default function Alert({
         </YStack>
         {closable && onClose && (
           <XStack style={{ flexShrink: 0, marginLeft: 12 }}>
-            <Button {...(closeButtonStyle as any)} onPress={onClose} aria-label="Dismiss">
+            <Button {...(closeButtonStyle as Record<string, unknown>)} onPress={onClose} aria-label="Dismiss">
               <X size={16} color={config.iconColor} />
             </Button>
           </XStack>

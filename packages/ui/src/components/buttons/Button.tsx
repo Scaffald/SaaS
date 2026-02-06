@@ -273,6 +273,7 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
     const iconAfterElement = RightIcon ? <RightIcon size={16} /> : undefined
 
     return (
+      // @ts-expect-error - Complex type intersection from variant/tone styles and width prop
       <TamaguiButton
         ref={ref}
         fontWeight="600" // Semibold for all buttons
@@ -281,7 +282,7 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
         iconAfter={iconAfterElement}
         {...variantStyles[variant]}
         {...toneStyle}
-        {...(widthProp as any)}
+        {...(widthProp as { width?: string })}
         {...cleanProps}
       />
     )

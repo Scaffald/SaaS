@@ -43,22 +43,22 @@ export const OnboardingControls = ({
   return (
     <>
       <XStack
+        p="$5"
+        gap="$5"
+        $md={{ display: 'none' }}
         style={{
+          position: 'absolute',
           alignItems: 'center',
           justifyContent: 'space-between',
           bottom: 0,
           left: 0,
           right: 0,
         }}
-        p="$5"
-        gap="$5"
-        position="absolute"
-        $md={{ display: 'none' }}
       >
         <Button
           chromeless
           flex={1}
-          br="$10"
+          style={{ borderRadius: 40 }}
           circular
           onPress={() => handleGoPrev()}
           iconAfter={ChevronLeft}
@@ -67,7 +67,7 @@ export const OnboardingControls = ({
         <Button
           chromeless
           flex={1}
-          br="$10"
+          style={{ borderRadius: 40 }}
           circular
           onPress={() => handleGoNext()}
           iconAfter={ChevronRight}
@@ -86,7 +86,7 @@ export const OnboardingControls = ({
           pressStyle={{
             background: '$color6',
           }}
-          br="$10"
+          style={{ borderRadius: 40 }}
           onPress={() => handleSkip()}
         >
           <Button.Text color="$blue8">Skip</Button.Text>
@@ -102,7 +102,7 @@ export const OnboardingControls = ({
             borderColor: isLastStep ? 'transparent' : '$color6',
           }}
           flex={1}
-          br="$10"
+          style={{ borderRadius: 40 }}
           onPress={() => handleGoNext()}
           iconAfter={ChevronRight}
         >

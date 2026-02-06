@@ -46,11 +46,10 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
           <View
             width={48}
             height={48}
-            background={backgroundColor}
+            background={backgroundColor as string}
             borderWidth={selected ? 3 : 2}
             borderColor={selected ? '$color12' : '$color1'}
-            position="relative"
-            style={{ alignItems: 'center', justifyContent: 'center' }}
+            style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}
             transform={[{ rotate: '45deg' }]}
           >
             <View
@@ -83,12 +82,10 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
           <View
             width={48}
             height={48}
-            br="$12"
-            background={backgroundColor}
+            background={backgroundColor as string}
             borderWidth={selected ? 3 : 2}
             borderColor={selected ? '$color12' : '$color1'}
-            position="relative"
-            style={{ alignItems: 'center', justifyContent: 'center' }}
+            style={{ position: 'relative', alignItems: 'center', justifyContent: 'center', borderRadius: 48 }}
           >
             <User size={22} color="white" />
           </View>

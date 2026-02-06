@@ -168,7 +168,7 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
         <Sheet.Overlay />
         <Sheet.Frame gap="$3" p="$4">
           <Sheet.Handle />
-          <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+          <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Button variant="outlined" onPress={handleCancel} size="$2">
               Cancel
             </Button>

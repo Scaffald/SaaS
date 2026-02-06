@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Text } from 'tamagui'
+import { AnimatePresence, Text } from 'tamagui'
 import type { ThemeName } from '@tamagui/core'
 import { View } from '@tamagui/core'
 import { XStack, YStack } from '@tamagui/stacks'
@@ -91,13 +91,16 @@ export function ToggleCard({
         borderWidth={1}
         px="$4"
         py="$3"
-        $sm={{ marginHorizontal: '$0' }}
-        br="$3"
-        borderBottomLeftRadius={checked && expandedContent ? 0 : undefined}
-        borderBottomRightRadius={checked && expandedContent ? 0 : undefined}
         flex={1}
         height="auto"
-        style={{ alignItems: 'center' }}
+        style={{
+          borderRadius: checked && expandedContent ? undefined : 12,
+          borderBottomLeftRadius: checked && expandedContent ? 0 : undefined,
+          borderBottomRightRadius: checked && expandedContent ? 0 : undefined,
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          alignItems: 'center',
+        }}
         gap="$2.5"
         theme={theme}
         animation="medium"
@@ -108,10 +111,10 @@ export function ToggleCard({
         // Hover and press states
         hoverStyle={{
           borderColor: '$borderColorHover',
-          backgroundColor: '$backgroundHover',
+          background: '$backgroundHover',
         }}
         pressStyle={{
-          backgroundColor: '$backgroundPress',
+          background: '$backgroundPress',
         }}
       >
         {/* Icon */}

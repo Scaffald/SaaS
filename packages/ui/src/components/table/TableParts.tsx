@@ -101,7 +101,7 @@ const HeaderCell = styled(Stack, {
   tag: 'th',
   flexDirection: 'row',
   context: TableContext,
-  paddingVertical: '$3',
+  py: '$3',
 
   variants: {
     cellWidth: {
@@ -159,7 +159,7 @@ const TableComp = styled(Stack, {
   tag: 'table',
   context: TableContext,
   borderWidth: 1,
-  backgrounded: true,
+  background: '$background',
   variants: {
     /** just added these empty variants to avoid ts errors on Table */
     cellWidth: {

@@ -203,7 +203,6 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
               headerContent={listHeader}
               emptyContent={emptyContent}
               virtualizationThreshold={props.virtualizationThreshold}
-              style={{ maxHeight: 320 }}
             />
           </Popover.Content>
         )}

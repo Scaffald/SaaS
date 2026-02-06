@@ -55,9 +55,9 @@ const getTabsListStyles = (variant: 'line' | 'pill' | 'enclosed') => {
     return {
       ...baseStyles,
       backgroundColor: '$backgroundSecondary',
-      borderRadius: '$4',
       padding: '$1',
-    }
+      borderRadius: 16,
+    } as any
   }
 
   // enclosed
@@ -144,58 +144,64 @@ export function TabsCustom({
     tabVariant: 'line' | 'pill' | 'enclosed',
     isDisabled?: boolean
   ): XStackProps => {
-    const baseProps: XStackProps = {
-      paddingHorizontal: '$4',
-      paddingVertical: '$2',
-      cursor: isDisabled ? 'not-allowed' : 'pointer',
-      alignItems: 'center',
-      gap: '$2',
-      opacity: isDisabled ? 0.5 : 1,
-      pressStyle: { opacity: isDisabled ? 0.5 : 0.8 },
-    }
+    const baseStyle = { alignItems: 'center' as const }
 
     if (tabVariant === 'line') {
       return {
-        ...baseProps,
+        px: '$4',
+        py: '$2',
+        cursor: isDisabled ? 'not-allowed' : 'pointer',
+        gap: '$2',
+        opacity: isDisabled ? 0.5 : 1,
+        pressStyle: { opacity: isDisabled ? 0.5 : 0.8 },
         borderBottomWidth: 2,
         borderBottomColor: isActive ? (theme.primary9?.val ?? '#0ea5e9') : 'transparent',
-        borderRadius: 0,
+        style: { ...baseStyle, borderRadius: 0 },
         hoverStyle: {
           borderBottomColor: isActive ? theme.primary9?.val : theme.borderColorHover?.val,
         },
-      }
+      } as any
     }
 
     if (tabVariant === 'pill') {
       return {
-        ...baseProps,
-        borderRadius: '$3',
+        px: '$4',
+        py: '$2',
+        cursor: isDisabled ? 'not-allowed' : 'pointer',
+        gap: '$2',
+        opacity: isDisabled ? 0.5 : 1,
+        pressStyle: { opacity: isDisabled ? 0.5 : 0.8 },
         backgroundColor: isActive ? (theme.primary9?.val ?? '#0ea5e9') : 'transparent',
         shadowColor: isActive ? theme.shadowColor?.val : undefined,
         shadowRadius: isActive ? 2 : 0,
         shadowOffset: isActive ? { width: 0, height: 1 } : undefined,
+        style: { ...baseStyle, borderRadius: 12 },
         hoverStyle: {
           backgroundColor: isActive
             ? theme.primary9?.val
             : (theme.backgroundTertiary?.val ?? '#f3f4f6'),
         },
-      }
+      } as any
     }
 
     // enclosed variant
     return {
-      ...baseProps,
+      px: '$4',
+      py: '$2',
+      cursor: isDisabled ? 'not-allowed' : 'pointer',
+      gap: '$2',
+      opacity: isDisabled ? 0.5 : 1,
+      pressStyle: { opacity: isDisabled ? 0.5 : 0.8 },
       borderWidth: 1,
       borderColor: isActive ? theme.borderColor?.val : 'transparent',
       borderBottomColor: isActive ? theme.background?.val : undefined,
-      borderTopLeftRadius: '$4',
-      borderTopRightRadius: '$4',
       marginBottom: -1,
       backgroundColor: isActive ? theme.background?.val : 'transparent',
+      style: { ...baseStyle, borderTopLeftRadius: 16, borderTopRightRadius: 16 },
       hoverStyle: {
         borderColor: theme.borderColorHover?.val,
       },
-    }
+    } as any
   }
 
   return (
@@ -244,8 +250,8 @@ export function TabsCustom({
                   }
                   color={
                     isActive && variant === 'pill'
-                      ? (theme.color1?.val ?? '#fff')
-                      : (theme.color11?.val ?? '#374151')
+                      ? (theme.color1?.val as any ?? '#fff')
+                      : (theme.color11?.val as any ?? '#374151')
                   }
                   fontSize="$2"
                   px="$2"

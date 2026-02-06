@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react'
-import type { ColorTokens, ThemeName } from '@tamagui/core'
+import type { ColorTokens, ThemeName, SpaceTokens, FontSizeTokens } from '@tamagui/core'
 import { Theme } from '@tamagui/core'
 import type { XStackProps } from '@tamagui/stacks'
 import { XStack } from '@tamagui/stacks'
@@ -35,8 +35,7 @@ export const NotificationTag = ({
       <XStack
         {...rest}
         background="$color3"
-        br="$3"
-        style={{ alignItems: 'center' }}
+        style={{ alignItems: 'center', borderRadius: 12 }}
         px={sizing.paddingHorizontal}
         py={sizing.paddingVertical}
       >

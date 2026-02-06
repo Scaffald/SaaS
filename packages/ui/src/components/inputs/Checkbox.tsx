@@ -24,22 +24,22 @@ export interface CheckboxProps {
 // Size styles for the checkbox container
 const sizeStyles: Record<
   NonNullable<CheckboxProps['size']>,
-  { width: string; height: string; br: string }
+  { width: number; height: number; style: { borderRadius: number } }
 > = {
   small: {
-    width: '$1',
-    height: '$1',
-    br: '$1',
+    width: 20,
+    height: 20,
+    style: { borderRadius: 4 },
   },
   medium: {
-    width: '$1',
-    height: '$1',
-    br: '$2',
+    width: 24,
+    height: 24,
+    style: { borderRadius: 6 },
   },
   large: {
-    width: '$2',
-    height: '$2',
-    br: '$2',
+    width: 28,
+    height: 28,
+    style: { borderRadius: 8 },
   },
 }
 
@@ -112,8 +112,10 @@ export function Checkbox({
 
   return (
     <View
-      {...sizeStyles[size]}
-      {...checkedStyles[checked ? 'checked' : 'unchecked']}
+      width={sizeStyles[size].width}
+      height={sizeStyles[size].height}
+      background={checkedStyles[checked ? 'checked' : 'unchecked'].background as any}
+      borderColor={checkedStyles[checked ? 'checked' : 'unchecked'].borderColor as any}
       cursor={disabled ? 'not-allowed' : 'pointer'}
       animation="quick"
       overflow="hidden"
@@ -141,7 +143,7 @@ export function Checkbox({
             }
           : undefined
       }
-      style={{ alignItems: 'center', justifyContent: 'center' }}
+      style={{ alignItems: 'center', justifyContent: 'center', ...sizeStyles[size].style }}
       {...accessibilityProps}
     >
       <View

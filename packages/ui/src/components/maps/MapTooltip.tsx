@@ -16,20 +16,20 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
 
   return (
     <View
-      position="absolute"
       background="$background"
       borderColor="$color6"
       borderWidth={1}
-      br="$4"
       p="$3"
-      minWidth={200}
-      maxWidth={280}
-      zIndex={1000}
       style={{
+        position: 'absolute',
+        minWidth: 200,
+        maxWidth: 280,
         transform: 'translate(-50%, -100%)',
         top: position?.y ?? 0,
         left: position?.x ?? 0,
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        borderRadius: 16,
+        zIndex: 1000,
       }}
     >
       <YStack gap="$2">
@@ -89,7 +89,7 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
             </Text>
             <XStack gap="$1" style={{ flexWrap: 'wrap' }}>
               {data.skills.slice(0, 3).map((skill) => (
-                <View key={skill} background="$blue4" px="$2" py="$1" br="$2">
+                <View key={skill} background="$blue4" px="$2" py="$1" style={{ borderRadius: 8 }}>
                   <Text fontSize="$1" color="$blue11">
                     {skill}
                   </Text>
@@ -123,7 +123,7 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
                   }
                   px="$2"
                   py="$1"
-                  br="$2"
+                  style={{ borderRadius: 8 }}
                 >
                   <Text
                     fontSize="$1"

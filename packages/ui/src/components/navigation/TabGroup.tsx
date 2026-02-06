@@ -93,21 +93,20 @@ export const TabGroup = ({
  */
 const BaseTabListStyled = styled(Tabs.List, {
   name: 'TabList',
-  borderRadius: '$4',
   flexWrap: 'wrap',
 
   variants: {
     variant: {
       default: {
-        backgroundColor: '$color2',
+        background: '$color2',
         gap: '$1',
+        borderRadius: '$4',
       },
       underlined: {
-        borderRadius: 0,
         borderWidth: 0,
-        backgroundColor: 'transparent',
+        background: 'transparent',
         gap: '$3',
-        paddingHorizontal: 0,
+        px: 0,
       },
     },
     bordered: {

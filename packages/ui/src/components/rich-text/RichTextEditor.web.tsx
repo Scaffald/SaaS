@@ -209,12 +209,12 @@ export function RichTextEditor({
     <YStack
       borderWidth={1}
       borderColor={error ? '$red9' : '$borderColor'}
-      br="$4"
       background="$background"
       overflow="hidden"
       opacity={disabled ? 0.6 : 1}
       cursor={disabled ? 'not-allowed' : undefined}
       testID={testID}
+      style={{ borderRadius: 16 }}
     >
       {/* Toolbar */}
       {!readOnly && (

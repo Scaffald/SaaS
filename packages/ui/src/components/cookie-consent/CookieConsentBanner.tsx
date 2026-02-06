@@ -8,17 +8,70 @@ import { XStack, YStack } from '@tamagui/stacks'
 import { useCookieConsent } from './CookieConsentProvider'
 import { Button } from '../buttons/Button'
 
+/** Explicit colors so the banner has good contrast and responds to light/dark */
+const BANNER_THEMES = {
+  light: {
+    cardBg: '#ffffff',
+    cardBorder: '#e4e7ec',
+    titleColor: '#141c25',
+    bodyColor: '#344051',
+    linkColor: '#2563eb',
+    manageBg: 'transparent',
+    manageColor: '#141c25',
+    manageBorder: '#414e62',
+    acceptBg: '#16a34a',
+    acceptColor: '#ffffff',
+    rejectBg: '#dc2626',
+    rejectColor: '#ffffff',
+  },
+  dark: {
+    cardBg: '#1a232d',
+    cardBorder: '#344051',
+    titleColor: '#ffffff',
+    bodyColor: '#e4e7ec',
+    linkColor: '#60a5fa',
+    manageBg: 'transparent',
+    manageColor: '#e4e7ec',
+    manageBorder: '#97a1af',
+    acceptBg: '#16a34a',
+    acceptColor: '#ffffff',
+    rejectBg: '#dc2626',
+    rejectColor: '#ffffff',
+  },
+} as const
+
 export interface CookieConsentBannerProps extends CardProps {
   containerProps?: StackProps
+  /** When provided, banner uses explicit light/dark styling for contrast and theme consistency */
+  theme?: 'light' | 'dark'
 }
 
-export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieConsentBannerProps) => {
+export const CookieConsentBanner = ({
+  containerProps,
+  theme: themeProp = 'light',
+  ...cardProps
+}: CookieConsentBannerProps) => {
   const { shouldShowBanner, acceptAll, rejectAll, openPreferences, isReady } = useCookieConsent()
   const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null)
+  const t = BANNER_THEMES[themeProp]
 
   if (!isReady) {
     return null
   }
+
+  const containerStyle = {
+    position: 'fixed' as const,
+    bottom: 24,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    width: '100%',
+    maxWidth: 500,
+    marginLeft: 'auto' as const,
+    marginRight: 'auto' as const,
+  }
+
+  const { style: _containerStyleProp, ...restContainerProps } = containerProps ?? {}
 
   return (
     <AnimatePresence>
@@ -29,28 +82,31 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
           enterStyle={{ opacity: 0, y: 16 }}
           exitStyle={{ opacity: 0, y: 16 }}
           flex={1}
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            left: '50%',
-            zIndex: 1000,
-            transform: 'translateX(-50%)',
-            maxWidth: 500,
-          }}
-          {...containerProps}
+          style={containerStyle}
+          {...restContainerProps}
         >
-          <Card elevate size="$4" p="$5" gap="$3" {...cardProps}>
+          <Card
+            elevate
+            size="$4"
+            p="$5"
+            gap="$3"
+            backgroundColor={t.cardBg}
+            borderWidth={1}
+            borderColor={t.cardBorder}
+            {...cardProps}
+          >
             <XStack gap="$4" style={{ alignItems: 'flex-start', flexWrap: 'wrap' }}>
               <YStack flex={1} gap="$2" style={{ minWidth: 220 }}>
-                <SizableText size="$6" fontWeight="700">
+                <SizableText size="$6" fontWeight="700" color={t.titleColor}>
                   This site uses cookies
                 </SizableText>
-                <Paragraph size="$3" lineHeight="$4" color="$color11">
+                <Paragraph size="$3" lineHeight="$4" color={t.bodyColor}>
                   We use cookies to make things work smoothly and help us learn.{' '}
                   <Anchor
                     href="https://scaffald.com/privacy"
                     target="_blank"
                     rel="noreferrer noopener"
+                    color={t.linkColor}
                   >
                     Review our privacy policy
                   </Anchor>{' '}
@@ -58,7 +114,14 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                 </Paragraph>
               </YStack>
               <XStack gap="$2" width="100%" style={{ justifyContent: 'space-between' }}>
-                <Button size="$3" onPress={openPreferences} borderColor="$color6" type="button">
+                <Button
+                  size="$3"
+                  onPress={openPreferences}
+                  background={t.manageBg}
+                  color={t.manageColor}
+                  borderWidth={1}
+                  borderColor={t.manageBorder}
+                >
                   Manage
                 </Button>
 
@@ -75,6 +138,8 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                   }}
                   disabled={pendingAction !== null}
                   flex={1}
+                  background={t.acceptBg}
+                  color={t.acceptColor}
                 >
                   Accept
                 </Button>
@@ -91,6 +156,8 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                   }}
                   disabled={pendingAction !== null}
                   flex={1}
+                  background={t.rejectBg}
+                  color={t.rejectColor}
                 >
                   Reject
                 </Button>

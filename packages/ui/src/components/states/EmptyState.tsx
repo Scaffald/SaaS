@@ -82,10 +82,8 @@ export function EmptyState({
           <XStack
             width={64}
             height={64}
-            br="$full"
             background="$gray3"
-            style={{ alignItems: 'center' }}
-            style={{ justifyContent: 'center' }}
+            style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 9999 }}
           >
             <Icon size={32} color="$gray9" />
           </XStack>
@@ -102,10 +100,9 @@ export function EmptyState({
       {children}
       {(action || secondaryAction) && (
         <XStack
-          style={{ alignItems: 'center' }}
-          style={{ justifyContent: 'center' }}
           gap="$3"
           mt="$6"
+          style={{ alignItems: 'center', justifyContent: 'center' }}
         >
           {action && (
             <Button

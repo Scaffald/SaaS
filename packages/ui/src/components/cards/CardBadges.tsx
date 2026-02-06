@@ -59,7 +59,7 @@ export const CardBadges = memo(
               background={badge.bg ?? '$blue10'}
               color={(badge.color as any) ?? '$color1'}
               fontSize="$2"
-              style={{ paddingHorizontal: 8, paddingVertical: 4 } as any}
+              style={{ paddingHorizontal: 8, paddingVertical: 4 }}
             >
               {badge.label}
             </Chip>

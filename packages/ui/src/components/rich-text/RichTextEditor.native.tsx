@@ -67,7 +67,7 @@ export const RichTextEditor: FC<RichTextEditorProps> = ({
       />
 
       {/* Character Count and Error */}
-      <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+      <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         {error && (
           <Text color="$red10" fontSize="$2" flex={1}>
             {error}

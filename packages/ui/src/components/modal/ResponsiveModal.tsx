@@ -111,10 +111,9 @@ export function ResponsiveModal({
               px="$4"
               pt="$3"
               pb="$2"
-              justifyContent="space-between"
-              style={{ alignItems: 'center' }}
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
+              style={{ justifyContent: 'space-between', alignItems: 'center' }}
             >
               <Text fontSize="$6" fontWeight="700" flex={1}>
                 {title}
@@ -150,10 +149,9 @@ export function ResponsiveModal({
           {showHeader && (
             <XStack
               p="$4"
-              justifyContent="space-between"
-              style={{ alignItems: 'center' }}
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
+              style={{ justifyContent: 'space-between', alignItems: 'center' }}
             >
               <Dialog.Title fontSize="$6" fontWeight="700" flex={1}>
                 {title}

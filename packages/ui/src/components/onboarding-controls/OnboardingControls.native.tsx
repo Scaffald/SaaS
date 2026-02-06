@@ -26,13 +26,13 @@ export const OnboardingControls = ({
 
   return (
     <Theme name="primary">
-      <XStack justifyContent="space-between" style={{ alignItems: 'center' }} p="$5" gap="$5">
+      <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }} p="$5" gap="$5">
         <Button
           chromeless
           pressStyle={{
-            backgroundColor: '$color4',
+            background: '$color4',
           }}
-          br="$10"
+          style={{ borderRadius: 40 }}
           onPress={() => handleSkip()}
         >
           <Button.Text color="$color10" fontWeight="700">
@@ -42,11 +42,11 @@ export const OnboardingControls = ({
 
         <Button
           flex={1}
-          br="$10"
+          style={{ borderRadius: 40 }}
           borderWidth={0}
           background="$color8"
           pressStyle={{
-            backgroundColor: '$color9',
+            background: '$color9',
             scale: 0.98,
           }}
           onPress={() => handleGoNext()}

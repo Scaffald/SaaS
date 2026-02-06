@@ -71,12 +71,11 @@ export const OfficeAccordion = ({
             px="$4"
             py="$3"
             background="$color2"
-            pressStyle={{ backgroundColor: '$color3' }}
+            pressStyle={{ background: '$color3' }}
           >
             {({ open }: { open: boolean }) => (
               <XStack
-                style={{ alignItems: 'center' }}
-                style={{ justifyContent: 'space-between' }}
+                style={{ alignItems: 'center', justifyContent: 'space-between' }}
                 gap="$2"
               >
                 <YStack gap="$1">
@@ -104,15 +103,14 @@ export const OfficeAccordion = ({
                       borderColor={active ? '$color9' : '$borderColor'}
                       background={active ? '$color9' : 'transparent'}
                       hoverStyle={{
-                        backgroundColor: active ? '$color9' : '$color3',
+                        background: active ? '$color9' : '$color3',
                       }}
                       pressStyle={{
-                        backgroundColor: active ? '$color9' : '$color4',
+                        background: active ? '$color9' : '$color4',
                       }}
                     >
                       <XStack
-                        style={{ alignItems: 'center' }}
-                        style={{ justifyContent: 'space-between' }}
+                        style={{ alignItems: 'center', justifyContent: 'space-between' }}
                         flex={1}
                       >
                         <YStack gap="$1" style={{ alignItems: 'flex-start' }} flex={1}>

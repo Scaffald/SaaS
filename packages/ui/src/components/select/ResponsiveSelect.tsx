@@ -7,6 +7,7 @@ import { useWindowDimensions } from '@tamagui/use-window-dimensions'
 import { XStack, YStack } from '@tamagui/stacks'
 import { useState } from 'react'
 
+import { Button } from '../buttons/Button'
 import { AdaptiveSelectSheet } from './AdaptiveSelectSheet'
 
 export interface ResponsiveSelectOption {
@@ -140,10 +141,9 @@ export function ResponsiveSelect({
               px="$4"
               pt="$3"
               pb="$2"
-              justifyContent="space-between"
-              style={{ alignItems: 'center' }}
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
+              style={{ justifyContent: 'space-between', alignItems: 'center' }}
             >
               <Text fontSize="$6" fontWeight="700" flex={1}>
                 {sheetTitle ?? label ?? placeholder}
@@ -171,7 +171,7 @@ export function ResponsiveSelect({
                       borderWidth={isSelected ? 1 : 0}
                       borderColor="$blue8"
                       pressStyle={{
-                        backgroundColor: isSelected ? '$blue3' : '$backgroundHover',
+                        background: isSelected ? '$blue3' : '$backgroundHover',
                       }}
                     >
                       <Text
