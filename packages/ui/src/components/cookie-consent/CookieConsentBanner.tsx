@@ -90,7 +90,7 @@ export const CookieConsentBanner = ({
             size="$4"
             p="$5"
             gap="$3"
-            backgroundColor={t.cardBg}
+            background={t.cardBg}
             borderWidth={1}
             borderColor={t.cardBorder}
             {...cardProps}

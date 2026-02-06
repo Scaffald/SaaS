@@ -285,7 +285,9 @@ export const CookieConsentProvider = ({
   )
 
   const openPreferences = useCallback(() => {
-    setIsPreferencesOpen(true)
+    // Defer opening so the click handler completes and focus trap doesn't run in the same
+    // synchronous turn as the button press (avoids Radix/Tamagui dialog freeze on web).
+    setTimeout(() => setIsPreferencesOpen(true), 0)
   }, [])
 
   const closePreferences = useCallback(() => {
