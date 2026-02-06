@@ -6,6 +6,7 @@ import { loadThemePromise, Provider } from '@scf/core/provider'
 import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { logger } from '@scf/core'
+import { ThemeProvider } from '@unicornlove/beyond-ui'
 import type { Session } from '@supabase/auth-js'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
@@ -63,36 +64,38 @@ export default function DashboardLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        <Provider initialSession={initialSession}>
-          <ErrorBoundary
-            context={{
-              environment: process.env.APP_ENV,
-              route: segments.join('/') || '/',
-            }}
-          >
-            <Stack
-              screenOptions={{
-                headerShown: false,
+    <ThemeProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <Provider initialSession={initialSession}>
+            <ErrorBoundary
+              context={{
+                environment: process.env.APP_ENV,
+                route: segments.join('/') || '/',
               }}
             >
-              <Stack.Screen
-                name="auth"
-                options={{
+              <Stack
+                screenOptions={{
                   headerShown: false,
                 }}
-              />
-              <Stack.Screen
-                name="dashboard"
-                options={{
-                  headerShown: false,
-                }}
-              />
-            </Stack>
-          </ErrorBoundary>
-        </Provider>
-      </View>
-    </GestureHandlerRootView>
+              >
+                <Stack.Screen
+                  name="auth"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="dashboard"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+              </Stack>
+            </ErrorBoundary>
+          </Provider>
+        </View>
+      </GestureHandlerRootView>
+    </ThemeProvider>
   )
 }

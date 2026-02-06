@@ -4,9 +4,10 @@ import type { WelcomeSlide } from '@scf/schemas'
 import {
   Onboarding,
   OnboardingStepContent,
-  type OnboardingStepInfo,
   Stack,
   Spinner,
+  ThemeProvider,
+  type OnboardingStepInfo,
 } from '@unicornlove/beyond-ui'
 import { UserSearch, Share2, Sprout } from 'lucide-react-native'
 import type { ComponentType } from 'react'
@@ -57,9 +58,11 @@ export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
 
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center">
-        <Spinner size="large" />
-      </Stack>
+      <ThemeProvider>
+        <Stack flex={1} align="center" justify="center">
+          <Spinner size="large" />
+        </Stack>
+      </ThemeProvider>
     )
   }
 
@@ -86,5 +89,9 @@ export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
         })
       : createDefaultSlides(t)
 
-  return <Onboarding autoSwipe onOnboarded={onOnboarded} steps={steps} />
+  return (
+    <ThemeProvider>
+      <Onboarding autoSwipe onOnboarded={onOnboarded} steps={steps} />
+    </ThemeProvider>
+  )
 }

@@ -16,7 +16,10 @@ export function Button({
   children,
   onPress,
   ...rest
-}: { children?: ReactNode; onPress?: () => void }) {
+}: {
+  children?: ReactNode
+  onPress?: () => void
+}) {
   return (
     <button type="button" onClick={onPress} {...rest}>
       {children}
@@ -41,10 +44,7 @@ export function Input({
     />
   )
 }
-export function Form({
-  children,
-  onSubmit,
-}: { children?: ReactNode; onSubmit?: () => void }) {
+export function Form({ children, onSubmit }: { children?: ReactNode; onSubmit?: () => void }) {
   return (
     <form
       onSubmit={(e) => {
@@ -91,3 +91,37 @@ export function useThemeContext() {
 }
 export const ToastProvider = ({ children }: { children?: ReactNode }) => <>{children}</>
 export const ToastContainer = () => null
+
+// Onboarding (for WelcomeScreen tests)
+export function Onboarding({
+  steps,
+  onOnboarded,
+}: {
+  steps: Array<{ Content: () => ReactNode }>
+  onOnboarded?: () => void
+}) {
+  const first = steps[0]
+  return (
+    <div data-testid="onboarding">
+      {first ? <first.Content /> : null}
+      <button type="button" onClick={onOnboarded} data-testid="onboarding-finish">
+        Finish
+      </button>
+    </div>
+  )
+}
+export function OnboardingStepContent({
+  title,
+  description,
+}: {
+  title?: string
+  description?: string
+}) {
+  return (
+    <div data-testid="onboarding-step-content">
+      {title ? <h2>{title}</h2> : null}
+      {description ? <p>{description}</p> : null}
+    </div>
+  )
+}
+export const OnboardingControls = () => null

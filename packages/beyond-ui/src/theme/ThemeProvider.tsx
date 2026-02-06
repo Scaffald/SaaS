@@ -20,10 +20,22 @@ export interface ThemeContextValue {
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
+const DEFAULT_THEME_VALUE: ThemeContextValue = {
+  theme: 'light',
+  setTheme: () => {},
+  toggleTheme: () => {},
+}
+
 export function useThemeContext(): ThemeContextValue {
   const context = useContext(ThemeContext)
   if (!context) {
-    throw new Error('useThemeContext must be used within a ThemeProvider')
+    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+      console.warn(
+        '[beyond-ui] useThemeContext was used outside a ThemeProvider. Wrap your app (or the component tree that uses theme) with <ThemeProvider> from @unicornlove/beyond-ui.',
+        new Error().stack
+      )
+    }
+    return DEFAULT_THEME_VALUE
   }
   return context
 }
