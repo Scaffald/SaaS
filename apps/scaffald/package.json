@@ -31,6 +31,7 @@
     "ios:run": "cross-env LANG=en_US.UTF-8 RCT_NEW_ARCH_ENABLED=1 expo run:ios",
     "lint": "biome lint ./app",
     "lint:fix": "biome lint --write ./app",
+    "postinstall": "bash scripts/fix-expo-callinvoker.sh",
     "prebuild": "expo prebuild --skip-dependency-update react-native,react",
     "start": "expo start -c",
     "start:debug": "DEBUG=tamagui expo start -c",
