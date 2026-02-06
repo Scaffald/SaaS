@@ -920,6 +920,16 @@ export type { MiniLinearChartProps } from './components/Chart'
 export { SmallCircleChart } from './components/Chart'
 export type { SmallCircleChartProps } from './components/Chart'
 
+export { StackedBarChart } from './components/Chart'
+export type {
+  StackedBarChartProps,
+  StackedBarChartData,
+  StackedBarChartStack,
+} from './components/Chart'
+
+export { PopulationPyramid } from './components/Chart'
+export type { PopulationPyramidProps, PopulationPyramidData } from './components/Chart'
+
 export { Chart } from './components/Chart'
 export type { ChartProps } from './components/Chart'
 

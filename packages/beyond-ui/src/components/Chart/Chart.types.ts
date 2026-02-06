@@ -395,6 +395,57 @@ export interface SmallCircleChartProps {
 }
 
 /**
+ * Stacked bar chart stack segment
+ */
+export interface StackedBarChartStack {
+  value: number
+  color?: string
+  label?: string
+}
+
+/**
+ * Stacked bar chart data item (one bar = multiple stacked segments)
+ */
+export interface StackedBarChartData {
+  stacks: StackedBarChartStack[]
+  label?: string
+}
+
+/**
+ * StackedBarChart props (SVG-based, no gifted-charts)
+ */
+export interface StackedBarChartProps {
+  data: StackedBarChartData[]
+  height?: number
+  width?: number
+  barWidth?: number
+  spacing?: number
+  maxValue?: number
+  colors?: string[]
+}
+
+/**
+ * Population pyramid data item (one row: left and right values)
+ */
+export interface PopulationPyramidData {
+  left: number
+  right: number
+  label?: string
+}
+
+/**
+ * PopulationPyramid props (SVG-based, no gifted-charts)
+ */
+export interface PopulationPyramidProps {
+  data: PopulationPyramidData[]
+  height?: number
+  width?: number
+  leftBarColor?: string
+  rightBarColor?: string
+  maxValue?: number
+}
+
+/**
  * Chart component props (main chart with grid and axes)
  */
 export interface ChartProps {

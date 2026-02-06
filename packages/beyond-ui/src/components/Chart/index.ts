@@ -27,6 +27,12 @@ export type { MiniLinearChartProps } from './Chart.types'
 export { SmallCircleChart } from './SmallCircleChart'
 export type { SmallCircleChartProps } from './Chart.types'
 
+export { StackedBarChart } from './StackedBarChart'
+export type { StackedBarChartProps, StackedBarChartData, StackedBarChartStack } from './Chart.types'
+
+export { PopulationPyramid } from './PopulationPyramid'
+export type { PopulationPyramidProps, PopulationPyramidData } from './Chart.types'
+
 export { Chart } from './Chart'
 export type { ChartProps } from './Chart.types'
 
