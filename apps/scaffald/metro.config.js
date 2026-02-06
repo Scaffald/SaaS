@@ -20,8 +20,27 @@ try {
   configPath = path.resolve(__dirname, '../../packages/ui/src/tamagui.config.ts')
 }
 
-module.exports = withTamagui(config, {
+const finalConfig = withTamagui(config, {
   components: ['@unicornlove/ui', 'tamagui'],
   config: configPath,
   outputCSS: './tamagui-web.css',
 })
+
+// Configure minifier to strip console in production
+if (process.env.NODE_ENV === 'production') {
+  finalConfig.transformer = {
+    ...finalConfig.transformer,
+    minifierConfig: {
+      ...finalConfig.transformer?.minifierConfig,
+      compress: {
+        ...finalConfig.transformer?.minifierConfig?.compress,
+        // Remove console.* calls except error/warn
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        // Remove dead code
+        dead_code: true,
+      },
+    },
+  }
+}
+
+module.exports = finalConfig

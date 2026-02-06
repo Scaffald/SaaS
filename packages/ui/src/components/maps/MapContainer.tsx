@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState }
 import { View } from '@unicornlove/ui'
 // useThemeSetting has domain dependencies - use tamagui's useThemeName instead
 import { useThemeName } from '@unicornlove/ui'
+import { logger } from '@scf/core'
 import {
   purpleDark,
   purpleLight,
@@ -592,7 +593,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
         // Handle map errors
         map.on('error', (e) => {
-          console.error('Mapbox error:', e.error)
+          logger.error('Mapbox error', e.error, { context: 'MapContainer' })
         })
 
         mapRef.current = map
@@ -615,7 +616,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           }
         }
       } catch (error) {
-        console.error('Failed to initialize map:', error)
+        logger.error('Map initialization failed', error, { context: 'MapContainer' })
       }
     }, [center, zoom, mapStyle, themeMode])
 
@@ -782,7 +783,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                   ],
                 })
               } catch (error) {
-                console.warn('Error updating selected pin pulse:', error)
+                logger.warn('Error updating selected pin pulse', { error, context: 'MapContainer' })
               }
             }
           }
@@ -814,7 +815,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           try {
             map.resize()
           } catch (error) {
-            console.error('Error resizing map:', error)
+            logger.error('Error resizing map', error, { context: 'MapContainer' })
           }
         }, 150)
       }
@@ -844,7 +845,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       try {
         if (!Array.isArray(pins)) {
-          console.warn('Invalid pins data: expected array')
+          logger.warn('Invalid pins data: expected array', { context: 'MapContainer' })
           return
         }
 
@@ -910,10 +911,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             try {
               source.setData(geojsonData)
             } catch (error) {
-              console.warn(`Error updating ${type} pins source:`, error)
+              logger.warn(`Error updating ${type} pins source`, { error, type, context: 'MapContainer' })
             }
           } else {
-            console.warn(`Invalid GeoJSON data generated from ${type} pins`)
+            logger.warn(`Invalid GeoJSON data generated from ${type} pins`, { type, context: 'MapContainer' })
           }
         }
 
@@ -966,7 +967,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                     }
                   }
                 } catch (error) {
-                  console.warn(`Failed to query clusters for source ${sourceId}:`, error)
+                  logger.warn(`Failed to query clusters for source ${sourceId}`, { error, sourceId, context: 'MapContainer' })
                 }
               }
 
@@ -1013,7 +1014,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                 })
               }
             } catch (error) {
-              console.warn('Error processing clusters:', error)
+              logger.warn('Error processing clusters', { error, context: 'MapContainer' })
               onClustersChangeRef.current?.([])
             }
           })
@@ -1025,12 +1026,12 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               marker.remove()
               markersRef.current.delete(pinId)
             } catch (error) {
-              console.warn('Error removing marker:', error)
+              logger.warn('Error removing marker', { error, pinId, context: 'MapContainer' })
             }
           }
         }
       } catch (error) {
-        console.error('Error updating markers:', error)
+        logger.error('Error updating markers', error, { context: 'MapContainer' })
       }
     }, [pins, isMapReady])
 
@@ -1130,7 +1131,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             // Extract ImageData from canvas for Mapbox
             const ctx = canvas.getContext('2d')
             if (!ctx) {
-              console.warn('Unable to get 2D context from canvas')
+              logger.warn('Unable to get 2D context from canvas', { context: 'MapContainer' })
               return
             }
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
@@ -1141,7 +1142,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             })
           })
           .catch((error) => {
-            console.warn('Failed to load avatar marker image:', error)
+            logger.warn('Failed to load avatar marker image', { error, imageId, context: 'MapContainer' })
             avatarImageCacheRef.current.delete(imageId)
           })
           .finally(() => {
@@ -1207,12 +1208,12 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           Number.isNaN(lng) ||
           Number.isNaN(lat)
         ) {
-          console.warn('Invalid centerLocation coordinates:', centerLocation)
+          logger.warn('Invalid centerLocation coordinates', { centerLocation, context: 'MapContainer' })
           return
         }
 
         if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
-          console.warn('centerLocation coordinates out of range:', centerLocation)
+          logger.warn('centerLocation coordinates out of range', { centerLocation, context: 'MapContainer' })
           return
         }
 
@@ -1234,7 +1235,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           .setLngLat(centerLocation)
           .addTo(map)
       } catch (error) {
-        console.error('Error updating center location marker:', error)
+        logger.error('Error updating center location marker', error, { context: 'MapContainer' })
       }
     }, [centerLocation, isMapReady])
 
@@ -1273,7 +1274,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             lat < -90 ||
             lat > 90
           ) {
-            console.warn('Invalid selected pin coordinates:', selectedPin.coordinate)
+            logger.warn('Invalid selected pin coordinates', { coordinate: selectedPin.coordinate, context: 'MapContainer' })
             try {
               source.setData({
                 type: 'FeatureCollection',
@@ -1304,7 +1305,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             })
           } catch (e) {
             // Source might be in invalid state during style transition
-            console.warn('Failed to update selected pin pulse source:', e)
+            logger.warn('Failed to update selected pin pulse source', { error: e, context: 'MapContainer' })
           }
         } else {
           // No pin selected - clear the source
@@ -1318,7 +1319,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           }
         }
       } catch (error) {
-        console.error('Error updating selected pin pulse:', error)
+        logger.error('Error updating selected pin pulse', error, { context: 'MapContainer' })
       }
     }, [pins, isMapReady])
 

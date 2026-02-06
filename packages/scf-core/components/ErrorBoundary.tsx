@@ -2,6 +2,7 @@ import type { ErrorInfo, ReactNode } from 'react'
 import { Component } from 'react'
 
 import { ErrorFallback } from './ErrorFallback'
+import { logger } from '../utils/logger'
 
 type ErrorBoundaryContext = Record<string, unknown>
 
@@ -29,7 +30,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     if (__DEV__) {
-      console.error('[ErrorBoundary] Caught error', error, errorInfo)
+      logger.error('ErrorBoundary caught error', error, errorInfo)
     }
 
     this.props.onError?.(error, errorInfo)

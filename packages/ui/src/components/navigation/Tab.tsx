@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { Link } from 'expo-router'
-import { styled, Tabs, Text, useTabsContext, XStack, YStack } from '@unicornlove/ui'
+import { styled } from '@tamagui/core'
+import { Tabs, Text, useTabsContext, XStack, YStack } from 'tamagui'
 import { useTabGroupVariant } from './TabGroup'
 
 export type TabProps = {
@@ -94,7 +95,7 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
             backgroundColor={isActive ? '$color5' : '$color4'}
           >
             <Text fontSize="$2" fontWeight="600">
-              {typeof badge === 'number' ? badge : badge}
+              {badge}
             </Text>
           </YStack>
         )}

@@ -8,7 +8,8 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { type GetThemeValueForKey, Text, XStack, YStack } from '@unicornlove/ui'
+import { type GetThemeValueForKey, Text, XStack, YStack, useToastController } from '@unicornlove/ui'
+import { logger } from '@scf/core'
 import { JobCard } from './JobCard'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
@@ -39,6 +40,7 @@ interface JobsKanbanBoardProps {
 
 export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
   const router = useRouter()
+  const toast = useToastController()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [updatingJobId, setUpdatingJobId] = useState<string | null>(null)
 
@@ -48,9 +50,12 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
       onJobUpdate?.()
     },
     onError: (error: unknown) => {
-      console.error('Failed to update job status:', error)
+      logger.error('Failed to update job status', error, { context: 'JobsKanbanBoard' })
       setUpdatingJobId(null)
-      // TODO: Show error toast
+      toast.show('Failed to update job status. Please try again.', {
+        type: 'error',
+        duration: 5000,
+      })
     },
   })
 

@@ -1,13 +1,15 @@
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Button, Theme } from '@unicornlove/ui'
+import { Button, Theme, useToastController } from '@unicornlove/ui'
+import { logger } from '@scf/core'
 
 import { IconGoogle } from './IconGoogle'
 
 export function GoogleSignIn() {
   // Using supabase directly from import
   const { t } = useTranslation()
+  const toast = useToastController()
   const handleOAuthSignIn = async () => {
     captureEvent('auth_social_sign_in_started', { provider: 'google' })
     const { error } = await supabase.auth.signInWithOAuth({
@@ -17,13 +19,16 @@ export function GoogleSignIn() {
       },
     })
     if (error) {
-      console.error('Google Sign-In Error:', error)
+      logger.error('Google Sign-In Error', error, { provider: 'google' })
       captureEvent('auth_social_sign_in_failed', {
         provider: 'google',
         error_code: error.name ?? null,
         message: error.message ?? null,
       })
-      // TODO: Add proper error handling/toast notification
+      toast.show(t('auth.errors.googleSignInFailed'), {
+        type: 'error',
+        duration: 5000,
+      })
     }
   }
 

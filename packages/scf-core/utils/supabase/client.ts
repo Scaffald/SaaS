@@ -2,6 +2,7 @@ import type { Database } from '@scf/supabase/types'
 import { createClient } from '@supabase/supabase-js'
 import Constants from 'expo-constants'
 import { Platform } from 'react-native'
+import { logger } from '../logger'
 
 // Platform-specific imports
 type AsyncStorageType = typeof import('@react-native-async-storage/async-storage').default
@@ -42,9 +43,14 @@ if (!resolvedSupabaseAnonKey) {
 const supabaseUrl = resolvedSupabaseUrl
 const supabaseAnonKey = resolvedSupabaseAnonKey
 
-// Debug logging
-console.log(`[${Platform.OS}] Supabase URL:`, supabaseUrl)
-console.log(`[${Platform.OS}] Supabase Key:`, supabaseAnonKey ? 'Present' : 'Missing')
+// Debug logging (development only)
+if (__DEV__) {
+  logger.debug('Supabase client initialized', {
+    platform: Platform.OS,
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseAnonKey,
+  })
+}
 
 // Create unified Supabase client with platform-specific storage
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {

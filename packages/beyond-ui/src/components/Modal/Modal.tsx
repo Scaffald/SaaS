@@ -28,6 +28,7 @@ import type { ModalProps } from './Modal.types'
 import { getModalStyles } from './Modal.styles'
 import { useThemeContext } from '../../theme'
 import { useFocusTrap } from '../../accessibility/useFocusTrap'
+import { logger } from '@scf/core'
 
 export const Modal = forwardRef<View, ModalProps>(function Modal({
   visible: controlledVisible,
@@ -60,7 +61,7 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
   const handleClose = useCallback(() => {
     if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
       // Log close events on web for debugging (only in dev)
-      console.log('[Modal] handleClose called', {
+      logger.debug('Modal handleClose called', {
         isControlled,
       })
     }
@@ -153,16 +154,16 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
     // Prevent if modal was just opened (within 200ms)
     if (openedAtRef.current && Date.now() - openedAtRef.current < 200) {
       if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
-        console.log('[Modal] Ignoring backdrop click - modal just opened')
+        logger.debug('Modal: Ignoring backdrop click - modal just opened')
       }
       return
     }
-    
+
     // Prevent rapid successive clicks (debounce)
     const now = Date.now()
     if (now - lastBackdropClickRef.current < 100) {
       if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
-        console.log('[Modal] Ignoring backdrop click - too rapid')
+        logger.debug('Modal: Ignoring backdrop click - too rapid')
       }
       return
     }
@@ -178,7 +179,7 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
     const isUserClick = !e.defaultPrevented
     
     if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
-      console.log('[Modal] Backdrop click event', {
+      logger.debug('Modal: Backdrop click event', {
         isDirectBackdropClick,
         isValidClick,
         isUserClick,
@@ -190,20 +191,20 @@ export const Modal = forwardRef<View, ModalProps>(function Modal({
         defaultPrevented: e.defaultPrevented,
       })
     }
-    
+
     if (
-      isDirectBackdropClick && 
+      isDirectBackdropClick &&
       closeOnBackdropPress &&
       isValidClick &&
       isUserClick
     ) {
       if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
-        console.log('[Modal] Closing via backdrop click')
+        logger.debug('Modal: Closing via backdrop click')
       }
       handleClose()
     } else {
       if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
-        console.log('[Modal] Ignoring backdrop click - conditions not met', {
+        logger.debug('Modal: Ignoring backdrop click - conditions not met', {
           isDirectBackdropClick,
           isValidClick,
           isUserClick,

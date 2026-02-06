@@ -82,6 +82,7 @@
     "@hookform/resolvers": "~3.1.0",
     "@tamagui/animations-moti": "^1.138.6",
     "@tamagui/animations-react-native": "^1.138.6",
+    "@tamagui/core": "^1.138.6",
     "@tamagui/font-inter": "^1.138.6",
     "@tamagui/helpers-icon": "^1.138.6",
     "@tamagui/lucide-icons": "^1.138.6",
@@ -100,7 +101,8 @@
     "moti": "~0.25.3",
     "react-dom": "19.2.0",
     "react-dropzone": "~14.3.8",
-    "react-native-reanimated": "~4.1.2"
+    "react-native-reanimated": "~4.1.2",
+    "tamagui": "^1.138.6"
   },
   "devDependencies": {
     "@biomejs/biome": "~2.3.6",

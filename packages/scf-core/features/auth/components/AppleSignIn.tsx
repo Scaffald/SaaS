@@ -1,13 +1,15 @@
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Button, Theme } from '@unicornlove/ui'
+import { Button, Theme, useToastController } from '@unicornlove/ui'
+import { logger } from '@scf/core'
 
 import { IconApple } from './IconApple'
 
 export function AppleSignIn() {
   // Using supabase directly from import
   const { t } = useTranslation()
+  const toast = useToastController()
   const handleOAuthSignIn = async () => {
     captureEvent('auth_social_sign_in_started', { provider: 'apple' })
     const { error } = await supabase.auth.signInWithOAuth({
@@ -17,13 +19,16 @@ export function AppleSignIn() {
       },
     })
     if (error) {
-      console.error('Apple Sign-In Error:', error)
+      logger.error('Apple Sign-In Error', error, { provider: 'apple' })
       captureEvent('auth_social_sign_in_failed', {
         provider: 'apple',
         error_code: error.name ?? null,
         message: error.message ?? null,
       })
-      // TODO: Add proper error handling/toast notification
+      toast.show(t('auth.errors.appleSignInFailed'), {
+        type: 'error',
+        duration: 5000,
+      })
       return
     }
   }

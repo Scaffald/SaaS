@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from 'react'
-import type { TextProps } from '@unicornlove/ui'
-import { styled, Text } from '@unicornlove/ui'
+import { styled } from '@tamagui/core'
+import { Text } from 'tamagui'
+import type { TextProps } from 'tamagui'
 
 export type ChipProps = TextProps & {
   variant?: 'default' | 'filled'

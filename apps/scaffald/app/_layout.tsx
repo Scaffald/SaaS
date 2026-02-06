@@ -5,6 +5,7 @@ import { getVersionDebugPayload } from '@scf/core/constants/appVersion'
 import { loadThemePromise, Provider } from '@scf/core/provider'
 import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { logger } from '@scf/core'
 import type { Session } from '@supabase/auth-js'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
@@ -28,7 +29,9 @@ export default function DashboardLayout() {
   const [sessionLoadAttempted, setSessionLoadAttempted] = useState(false)
   const [initialSession, setInitialSession] = useState<Session | null>(null)
   useEffect(() => {
-    console.info('[app version]', getVersionDebugPayload())
+    if (__DEV__) {
+      logger.info('App initialized', getVersionDebugPayload())
+    }
   }, [])
   useEffect(() => {
     supabase.auth

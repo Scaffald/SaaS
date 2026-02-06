@@ -1,6 +1,5 @@
-// @ts-nocheck
-import type { SizeTokens } from '@unicornlove/ui'
-import { createStyledContext, styled, ThemeableStack, withStaticProperties } from '@unicornlove/ui'
+import type { SizeTokens } from 'tamagui'
+import { createStyledContext, styled, Stack, withStaticProperties } from '@tamagui/core'
 
 type AlignCells = {
   y: 'center' | 'start' | 'end'
@@ -30,7 +29,7 @@ const TableContext = createStyledContext<{
 })
 
 /** Table Components */
-const Row = styled(ThemeableStack, {
+const Row = styled(Stack, {
   tag: 'tr',
   flexDirection: 'row',
   context: TableContext,
@@ -55,7 +54,7 @@ const Row = styled(ThemeableStack, {
   },
 })
 
-const Cell = styled(ThemeableStack, {
+const Cell = styled(Stack, {
   tag: 'td',
   flexDirection: 'row',
   context: TableContext,
@@ -98,7 +97,7 @@ const Cell = styled(ThemeableStack, {
   } as const,
 })
 
-const HeaderCell = styled(ThemeableStack, {
+const HeaderCell = styled(Stack, {
   tag: 'th',
   flexDirection: 'row',
   context: TableContext,
@@ -138,25 +137,25 @@ const HeaderCell = styled(ThemeableStack, {
   } as const,
 })
 
-const TableBody = styled(ThemeableStack, {
+const TableBody = styled(Stack, {
   tag: 'tbody',
   flexDirection: 'column',
   context: TableContext,
 })
 
-const TableHead = styled(ThemeableStack, {
+const TableHead = styled(Stack, {
   tag: 'thead',
   flexDirection: 'column',
   context: TableContext,
 })
 
-const TableFoot = styled(ThemeableStack, {
+const TableFoot = styled(Stack, {
   tag: 'tfoot',
   flexDirection: 'column',
   context: TableContext,
 })
 
-const TableComp = styled(ThemeableStack, {
+const TableComp = styled(Stack, {
   tag: 'table',
   context: TableContext,
   borderWidth: 1,
