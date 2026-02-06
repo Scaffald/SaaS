@@ -8,7 +8,7 @@ import type { ViewStyle, TextStyle, PressableProps } from 'react-native'
 /**
  * Button color variants
  */
-export type ButtonColor = 'gray' | 'primary' | 'error'
+export type ButtonColor = 'gray' | 'primary' | 'success' | 'error'
 
 /**
  * Button style variants

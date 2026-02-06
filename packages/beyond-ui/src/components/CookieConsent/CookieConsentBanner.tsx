@@ -3,11 +3,14 @@ import { View, Text, Platform } from 'react-native'
 import { Stack } from '../Layout'
 import { Row } from '../Layout'
 import { Button } from '../Button'
+import { Heading } from '../Typography'
 import { Paragraph } from '../Typography'
 import { useCookieConsent } from './CookieConsentProvider'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
+import { fontSize, lineHeight, fontFamily } from '../../tokens/typography'
+import { useThemeContext } from '../../theme'
 
 export interface CookieConsentBannerProps {
   /** Privacy policy URL for the link in the description */
@@ -19,6 +22,7 @@ export interface CookieConsentBannerProps {
 export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: CookieConsentBannerProps) {
   const { shouldShowBanner, acceptAll, rejectAll, openPreferences, isReady } = useCookieConsent()
   const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null)
+  const { theme } = useThemeContext()
 
   if (!isReady || !shouldShowBanner) {
     return null
@@ -28,13 +32,19 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
   const maxWidth = styleProp?.maxWidth ?? 500
   const containerStyle = {
     position: 'absolute' as const,
-    bottom: 24,
+    bottom: spacing[6],
     left: 0,
     right: 0,
     zIndex: 1000,
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing[5],
     alignItems: 'center' as const,
   }
+
+  const cardBg = colors.bg[theme].default
+  const cardBorder = colors.border[theme].default
+  const titleColor = colors.text[theme].primary
+  const bodyColor = colors.text[theme].secondary
+  const linkColor = theme === 'light' ? colors.primary[600] : colors.primary[400]
 
   return (
     <View style={containerStyle}>
@@ -42,11 +52,11 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
         style={{
           width: '100%',
           maxWidth,
-          backgroundColor: colors.bg.light.default,
+          backgroundColor: cardBg,
           borderRadius: borderRadius.l,
-          padding: spacing[5],
+          padding: spacing[6],
           borderWidth: 1,
-          borderColor: colors.border.light.default,
+          borderColor: cardBorder,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.1,
@@ -54,24 +64,24 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
           elevation: 4,
         }}
       >
-        <Stack gap={spacing[3]}>
-          <Stack gap={spacing[2]}>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text.light.primary }}>
+        <Stack gap={spacing[5]}>
+          <Stack gap={spacing[3]}>
+            <Heading level={5} style={{ color: titleColor }}>
               This site uses cookies
-            </Text>
-            <Paragraph
-              style={{
-                fontSize: 14,
-                color: colors.text.light.secondary,
-                lineHeight: 20,
-              }}
-            >
+            </Heading>
+            <Paragraph size="sm" style={{ color: bodyColor }}>
               We use cookies to make things work smoothly and help us learn.
               {privacyPolicyUrl ? (
                 <>
                   {' '}
                   <Text
-                    style={{ color: colors.primary[600], textDecorationLine: 'underline' }}
+                    style={{
+                      fontFamily: fontFamily.body,
+                      fontSize: fontSize.sm,
+                      lineHeight: lineHeight.sm,
+                      color: linkColor,
+                      textDecorationLine: 'underline',
+                    }}
                     onPress={() => isWeb && window.open(privacyPolicyUrl, '_blank')}
                   >
                     Review our privacy policy
@@ -82,13 +92,14 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
               to learn more.
             </Paragraph>
           </Stack>
-          <Row gap={spacing[2]} justify="space-between" align="center" style={{ flexWrap: 'wrap' }}>
+          <Row gap={spacing[3]} justify="space-between" align="center" style={{ flexWrap: 'wrap' }}>
             <Button variant="outline" color="gray" size="md" onPress={openPreferences}>
               Manage
             </Button>
-            <Row gap={spacing[2]}>
+            <Row gap={spacing[3]}>
               <Button
-                color="primary"
+                color="success"
+                variant="filled"
                 size="md"
                 onPress={async () => {
                   setPendingAction('accept')
@@ -103,8 +114,8 @@ export function CookieConsentBanner({ privacyPolicyUrl, style: styleProp }: Cook
                 Accept
               </Button>
               <Button
-                color="gray"
-                variant="outline"
+                color="error"
+                variant="filled"
                 size="md"
                 onPress={async () => {
                   setPendingAction('reject')

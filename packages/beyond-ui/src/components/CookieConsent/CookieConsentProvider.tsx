@@ -279,7 +279,9 @@ export function CookieConsentProvider({
     [consentState]
   )
 
-  const openPreferences = useCallback(() => setIsPreferencesOpen(true), [])
+  const openPreferences = useCallback(() => {
+    setTimeout(() => setIsPreferencesOpen(true), 0)
+  }, [])
   const closePreferences = useCallback(() => setIsPreferencesOpen(false), [])
 
   const shouldShowBanner = isReady && !consentState

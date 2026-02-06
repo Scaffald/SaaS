@@ -17,7 +17,7 @@ import {
   Stack,
   useThemeContext,
 } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
 import type { AuthChangeEvent } from '@supabase/auth-js'
 import { TRPCClientError } from '@trpc/client'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -131,23 +131,18 @@ export const LoginScreen = () => {
 
   return (
     <FormProvider {...form}>
-      <Stack gap={16} padding={16}>
-        <Stack gap={16} marginBottom={12} align="center">
+      <Stack gap={spacing[5]} padding={spacing[5]}>
+        <Stack gap={spacing[5]} marginBottom={spacing[3]} align="center">
           <ScaffaldLogo width={200} height={33} />
-          <Stack gap={8} align="center">
-            <Paragraph
-              style={{
-                textAlign: 'center',
-                color: textSecondary,
-              }}
-            >
+          <Stack gap={spacing[2]} align="center">
+            <Paragraph size="sm" style={{ textAlign: 'center', color: textSecondary }}>
               {t('auth.login.description')}
             </Paragraph>
           </Stack>
         </Stack>
 
-        <Form onSubmit={handleSubmit} gap={16}>
-          <Stack gap={16}>
+        <Form onSubmit={handleSubmit} gap={spacing[5]}>
+          <Stack gap={spacing[5]}>
             <Input
               placeholder={t('auth.login.emailPlaceholder')}
               value={form.watch('email')}
@@ -158,7 +153,7 @@ export const LoginScreen = () => {
             />
 
             {form.formState.errors.email && (
-              <Paragraph style={{ color: colors.error[600], fontSize: 14 }}>
+              <Paragraph size="sm" style={{ color: colors.error[600] }}>
                 {form.formState.errors.email.message}
               </Paragraph>
             )}
@@ -178,12 +173,7 @@ export const LoginScreen = () => {
             </Button>
 
             <SocialLogin />
-            <Paragraph
-              style={{
-                textAlign: 'center',
-                color: textTertiary,
-              }}
-            >
+            <Paragraph size="sm" style={{ textAlign: 'center', color: textTertiary }}>
               {t('auth.login.socialDescription')}
             </Paragraph>
           </Stack>

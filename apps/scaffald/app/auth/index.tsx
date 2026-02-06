@@ -2,7 +2,7 @@ import { LoginScreen } from '@scf/core/features/auth/login-screen'
 import { WelcomeScreen } from '@scf/core/features/auth/welcome-screen'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { Button, Row, Stack, useThemeContext } from '@unicornlove/beyond-ui'
-import { colors } from '@unicornlove/beyond-ui/tokens'
+import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
 import { Stack as RouterStack } from 'expo-router'
 import { useState } from 'react'
 import { useWindowDimensions } from 'react-native'
@@ -54,7 +54,7 @@ export default function Screen() {
       />
       <Row flex={1}>
         <Stack flex={2} flexBasis={0} justify="center">
-          <Stack paddingHorizontal={16}>
+          <Stack paddingHorizontal={spacing[16]}>
             <LoginScreen />
           </Stack>
         </Stack>

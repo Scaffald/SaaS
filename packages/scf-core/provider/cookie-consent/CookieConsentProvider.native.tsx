@@ -2,12 +2,10 @@ import {
   CookieConsentBanner,
   type CookieConsentStorage,
   CookiePreferencesDialog,
-  CookieConsentProvider as UICookieConsentProvider,
-} from '@unicornlove/ui'
+  CookieConsentProvider as BeyondCookieConsentProvider,
+} from '@unicornlove/beyond-ui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import type { ReactNode } from 'react'
-
-import { useThemeSetting } from '../theme/UniversalThemeProvider'
 
 const STORAGE_KEY = 'scf-cookie-consent'
 const POLICY_VERSION = '1'
@@ -38,17 +36,15 @@ const storageAdapter: CookieConsentStorage = {
 }
 
 export const CookieConsentProvider = ({ children }: { children: ReactNode }) => {
-  const { resolvedTheme } = useThemeSetting()
-
   return (
-    <UICookieConsentProvider
+    <BeyondCookieConsentProvider
       storage={storageAdapter}
       storageKey={STORAGE_KEY}
       policyVersion={POLICY_VERSION}
     >
       {children}
-      <CookieConsentBanner theme={resolvedTheme} />
+      <CookieConsentBanner />
       <CookiePreferencesDialog />
-    </UICookieConsentProvider>
+    </BeyondCookieConsentProvider>
   )
 }

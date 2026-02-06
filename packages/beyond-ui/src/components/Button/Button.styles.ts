@@ -159,6 +159,13 @@ function getFilledStyles(
       text: disabled ? colors.white : colors.white,
       icon: disabled ? colors.white : colors.white,
     },
+    success: {
+      bg: disabled ? colors.success[200] : colors.success[600],
+      hoverBg: colors.success[700],
+      pressedBg: colors.success[800],
+      text: disabled ? colors.white : colors.white,
+      icon: disabled ? colors.white : colors.white,
+    },
     error: {
       bg: disabled ? colors.error[200] : colors.error[600],
       hoverBg: colors.error[700],
@@ -168,7 +175,7 @@ function getFilledStyles(
     },
   }
 
-  const styles = colorMap[color]
+  const styles = colorMap[color as keyof typeof colorMap]
 
   return {
     container: {
@@ -218,6 +225,14 @@ function getOutlineStyles(
       hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[950],
       pressedBg: theme === 'light' ? colors.primary[100] : colors.primary[900],
     },
+    success: {
+      border: disabled ? colors.success[200] : colors.success[600],
+      text: disabled ? colors.success[300] : colors.success[600],
+      icon: disabled ? colors.success[300] : colors.success[600],
+      bg: colors.bg[theme].default,
+      hoverBg: theme === 'light' ? colors.success[50] : colors.success[900],
+      pressedBg: theme === 'light' ? colors.success[100] : colors.success[800],
+    },
     error: {
       border: disabled ? colors.error[200] : colors.error[600],
       text: disabled ? colors.error[300] : colors.error[600],
@@ -228,7 +243,7 @@ function getOutlineStyles(
     },
   }
 
-  const styles = colorMap[color]
+  const styles = colorMap[color as keyof typeof colorMap]
 
   return {
     container: {
@@ -277,6 +292,13 @@ function getLightStyles(
       text: disabled ? colors.primary[300] : colors.primary[700],
       icon: disabled ? colors.primary[300] : colors.primary[700],
     },
+    success: {
+      bg: disabled ? colors.success[50] : colors.success[100],
+      hoverBg: colors.success[200],
+      pressedBg: colors.success[300],
+      text: disabled ? colors.success[300] : colors.success[700],
+      icon: disabled ? colors.success[300] : colors.success[700],
+    },
     error: {
       bg: disabled ? colors.error[50] : colors.error[100],
       hoverBg: colors.error[200],
@@ -286,7 +308,7 @@ function getLightStyles(
     },
   }
 
-  const styles = colorMap[color]
+  const styles = colorMap[color as keyof typeof colorMap]
 
   return {
     container: {
@@ -331,6 +353,12 @@ function getTextStyles(
       hoverBg: theme === 'light' ? colors.primary[50] : colors.primary[950],
       pressedBg: theme === 'light' ? colors.primary[100] : colors.primary[900],
     },
+    success: {
+      text: disabled ? colors.success[300] : colors.success[600],
+      icon: disabled ? colors.success[300] : colors.success[600],
+      hoverBg: theme === 'light' ? colors.success[50] : colors.success[900],
+      pressedBg: theme === 'light' ? colors.success[100] : colors.success[800],
+    },
     error: {
       text: disabled ? colors.error[300] : colors.error[600],
       icon: disabled ? colors.error[300] : colors.error[600],
@@ -339,7 +367,7 @@ function getTextStyles(
     },
   }
 
-  const styles = colorMap[color]
+  const styles = colorMap[color as keyof typeof colorMap]
 
   return {
     container: {
