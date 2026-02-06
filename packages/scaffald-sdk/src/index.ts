@@ -16,6 +16,8 @@ export type {
   JobListParams,
   JobListResponse,
   CreateJobParams,
+  ExternalJob,
+  ExternalJobFilterOptions,
 } from './resources/jobs.js'
 
 export type {

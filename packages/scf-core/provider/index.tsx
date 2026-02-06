@@ -8,6 +8,7 @@ import { QueryClientProvider } from './react-query'
 import { TamaguiProvider } from './tamagui'
 import { UniversalThemeProvider } from './theme'
 import { ToastProvider } from './toast'
+import { ScaffaldJobsSdkProviderFromSession } from '../utils/jobs-sdk-context'
 
 export { loadThemePromise } from './theme/UniversalThemeProvider'
 
@@ -22,7 +23,9 @@ export function Provider({
     // Note: DatePickerProvider Conflicted with Popover so this is just a temporary solution
     <DatePickerProvider config={{ selectedDates: [], onDatesChange: () => {} }}>
       <Providers>
-        <AuthProvider initialSession={initialSession}>{children}</AuthProvider>
+        <AuthProvider initialSession={initialSession}>
+          <ScaffaldJobsSdkProviderFromSession>{children}</ScaffaldJobsSdkProviderFromSession>
+        </AuthProvider>
       </Providers>
     </DatePickerProvider>
   )

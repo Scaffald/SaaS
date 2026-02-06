@@ -71,7 +71,7 @@
 
 | Module | Router File | Endpoints | REST | Tests | SDK | Clients | Notes |
 |--------|-------------|-----------|------|-------|-----|---------|-------|
-| Jobs | jobs.router.ts | 4 | ✅ | 🔴 No tests | ✅ | ⏳ | packages/supabase/functions/api/routes/jobs.ts |
+| Jobs | (removed) | - | ✅ | 🔴 No tests | ✅ | ✅ SDK | packages/supabase/functions/api/routes/jobs.ts; tRPC removed, clients use @scaffald/sdk |
 | Applications | applications.router.ts | 4 | ✅ | 🔴 No tests | ✅ | ⏳ | packages/supabase/functions/api/routes/applications.ts |
 | Profiles | profile/general.router.ts | 3 | ✅ | 🔴 No tests | ✅ | ⏳ | packages/supabase/functions/api/routes/profiles.ts |
 | OAuth | oauth.router.ts | 5 | ✅ | 🔴 No tests | ✅ | ⏳ | packages/supabase/functions/api/routes/oauth.ts |
@@ -209,6 +209,14 @@
 - ✅ 100% test coverage mandate documented (ADR-003)
 - ⏳ Feature flag infrastructure (Phase 4)
 - ⏳ Performance monitoring (Phase 2)
+
+---
+
+## Typing Strategy
+
+- **REST**: Zod schemas in Hono routes; OpenAPI spec at `/openapi.json` (see `packages/supabase/functions/api/openapi.ts`).
+- **SDK**: Types are hand-maintained in `packages/scaffald-sdk/src/types/` and resource files. Optional codegen from OpenAPI is documented in `packages/scaffald-sdk/docs/type-generation.md`.
+- **When changing REST**: Sync SDK types manually or run `pnpm generate:types` from the SDK package (see type-generation.md). Checklist: after adding or changing a REST endpoint, update the corresponding SDK resource types and re-export in `src/index.ts` if needed.
 
 ---
 

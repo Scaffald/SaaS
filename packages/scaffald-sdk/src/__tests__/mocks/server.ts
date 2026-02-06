@@ -4,7 +4,7 @@ import { setupServer } from 'msw/node'
 const BASE_URL = 'https://api.scaffald.com'
 
 export const handlers = [
-  // GET /v1/jobs - List jobs
+  // GET /v1/jobs - List jobs (API returns data + pagination)
   http.get(`${BASE_URL}/v1/jobs`, () => {
     return HttpResponse.json({
       data: [
@@ -45,79 +45,122 @@ export const handlers = [
           published_at: '2024-01-01T00:00:00Z',
         },
       ],
-      total: 2,
-      limit: 20,
-      offset: 0,
+      pagination: { total: 2, limit: 20, offset: 0, hasMore: false },
     })
   }),
 
-  // GET /v1/jobs/:id - Get job
+  // GET /v1/jobs/slug/:slug - Get job by slug (must be before :id)
+  http.get(`${BASE_URL}/v1/jobs/slug/:slug`, ({ params }) => {
+    const { slug } = params
+    if (slug === 'nonexistent-slug-xyz') {
+      return HttpResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    return HttpResponse.json({
+      data: {
+        id: 'job_slug_1',
+        title: 'Software Engineer',
+        description: 'We are looking for a software engineer...',
+        status: 'published',
+        slug: slug as string,
+        organization_id: 'org_1',
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+      },
+    })
+  }),
+
+  // GET /v1/jobs/filter-options - Get filter options (must be before :id)
+  http.get(`${BASE_URL}/v1/jobs/filter-options`, () => {
+    return HttpResponse.json({
+      data: {
+        employmentTypes: ['full_time', 'part_time'],
+        locations: ['San Francisco', 'New York'],
+        remoteOptions: ['remote', 'hybrid', 'on_site'],
+      },
+    })
+  }),
+
+  // GET /v1/jobs/external - List external jobs (must be before :id)
+  http.get(`${BASE_URL}/v1/jobs/external`, () => {
+    return HttpResponse.json({
+      data: [
+        {
+          id: 'ext_1',
+          title: 'External Software Engineer',
+          company_name: 'Acme Corp',
+          job_location: 'Remote',
+          job_type: 'full_time',
+          industries: [{ industry_name: 'Technology', confidence_score: 0.9 }],
+        },
+      ],
+    })
+  }),
+
+  // GET /v1/jobs/external/filter-options - External job filter options
+  http.get(`${BASE_URL}/v1/jobs/external/filter-options`, () => {
+    return HttpResponse.json({
+      data: {
+        jobTypes: ['full_time', 'contract'],
+        locations: ['San Francisco', 'New York'],
+        industries: ['Technology', 'Healthcare'],
+      },
+    })
+  }),
+
+  // GET /v1/jobs/:id - Get job (API returns { data: job }) - after static segments
   http.get(`${BASE_URL}/v1/jobs/:id`, ({ params }) => {
     const { id } = params
     return HttpResponse.json({
-      id,
-      title: 'Software Engineer',
-      description: 'We are looking for a software engineer...',
-      status: 'published',
-      location: {
-        city: 'San Francisco',
-        state: 'CA',
-        country: 'US',
+      data: {
+        id,
+        title: 'Software Engineer',
+        description: 'We are looking for a software engineer...',
+        status: 'published',
+        location: {
+          city: 'San Francisco',
+          state: 'CA',
+          country: 'US',
+        },
+        salary_min: 120000,
+        salary_max: 160000,
+        employment_type: 'full_time',
+        organization_id: 'org_1',
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+        published_at: '2024-01-01T00:00:00Z',
       },
-      salary_min: 120000,
-      salary_max: 160000,
-      employment_type: 'full_time',
-      organization_id: 'org_1',
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z',
-      published_at: '2024-01-01T00:00:00Z',
     })
   }),
 
-  // GET /v1/jobs/filter-options - Get filter options
-  http.get(`${BASE_URL}/v1/jobs/filter-options`, () => {
-    return HttpResponse.json({
-      industries: [
-        { value: 'technology', label: 'Technology' },
-        { value: 'finance', label: 'Finance' },
-      ],
-      locations: [
-        { value: 'san-francisco', label: 'San Francisco' },
-        { value: 'new-york', label: 'New York' },
-      ],
-      experienceLevels: [
-        { value: 'junior', label: 'Junior' },
-        { value: 'mid', label: 'Mid-Level' },
-        { value: 'senior', label: 'Senior' },
-      ],
-    })
-  }),
-
-  // POST /v1/jobs - Create job
+  // POST /v1/jobs - Create job (API returns { data: job })
   http.post(`${BASE_URL}/v1/jobs`, async ({ request }) => {
     const body = (await request.json()) as Record<string, any>
     return HttpResponse.json(
       {
-        id: 'job_new_123',
-        ...body,
-        organization_id: 'org_1',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        data: {
+          id: 'job_new_123',
+          ...body,
+          organization_id: 'org_1',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
       },
       { status: 201 }
     )
   }),
 
-  // PATCH /v1/jobs/:id - Update job
+  // PATCH /v1/jobs/:id - Update job (API returns { data: job })
   http.patch(`${BASE_URL}/v1/jobs/:id`, async ({ params, request }) => {
     const { id } = params
     const body = (await request.json()) as Record<string, any>
     return HttpResponse.json({
-      id,
-      ...body,
-      organization_id: 'org_1',
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: new Date().toISOString(),
+      data: {
+        id,
+        ...body,
+        organization_id: 'org_1',
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: new Date().toISOString(),
+      },
     })
   }),
 
@@ -126,7 +169,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
-  // GET /v1/jobs/:id/similar - Get similar jobs
+  // GET /v1/jobs/:id/similar - Get similar jobs (API returns { data: Job[] })
   http.get(`${BASE_URL}/v1/jobs/:id/similar`, () => {
     return HttpResponse.json({
       data: [
@@ -149,9 +192,6 @@ export const handlers = [
           updated_at: '2024-01-01T00:00:00Z',
         },
       ],
-      total: 2,
-      limit: 10,
-      offset: 0,
     })
   }),
 
@@ -232,31 +272,34 @@ export const handlers = [
 
   // ===== Industries Endpoints =====
 
-  // GET /v1/industries - List all industries
+  // GET /v1/industries - List all industries (API returns { data, total })
   http.get(`${BASE_URL}/v1/industries`, () => {
-    return HttpResponse.json([
-      {
-        id: 'ind_1',
-        name: 'Healthcare',
-        slug: 'healthcare',
-        description: 'Healthcare and medical services industry',
-      },
-      {
-        id: 'ind_2',
-        name: 'Technology',
-        slug: 'technology',
-        description: 'Technology and software development industry',
-      },
-      {
-        id: 'ind_3',
-        name: 'Transportation',
-        slug: 'transportation',
-        description: 'Transportation and logistics industry',
-      },
-    ])
+    return HttpResponse.json({
+      data: [
+        {
+          id: 'ind_1',
+          name: 'Healthcare',
+          slug: 'healthcare',
+          description: 'Healthcare and medical services industry',
+        },
+        {
+          id: 'ind_2',
+          name: 'Technology',
+          slug: 'technology',
+          description: 'Technology and software development industry',
+        },
+        {
+          id: 'ind_3',
+          name: 'Transportation',
+          slug: 'transportation',
+          description: 'Transportation and logistics industry',
+        },
+      ],
+      total: 3,
+    })
   }),
 
-  // GET /v1/industries/:slug - Get industry by slug
+  // GET /v1/industries/:slug - Get industry by slug (API returns { data })
   http.get(`${BASE_URL}/v1/industries/:slug`, ({ params }) => {
     const { slug } = params
 
@@ -283,10 +326,10 @@ export const handlers = [
 
     const industry = industries[slug as string]
     if (!industry) {
-      return HttpResponse.json(null)
+      return new HttpResponse(null, { status: 404 })
     }
 
-    return HttpResponse.json(industry)
+    return HttpResponse.json({ data: industry })
   }),
 
   // ===== Organizations Endpoints =====

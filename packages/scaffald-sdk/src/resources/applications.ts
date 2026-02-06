@@ -107,4 +107,19 @@ export class Applications extends Resource {
   async withdraw(id: string, params?: WithdrawApplicationParams): Promise<Application> {
     return this.post<Application>(`/v1/applications/${id}/withdraw`, params)
   }
+
+  /**
+   * Get the current user's application for a job (parity with tRPC jobs.getMyApplicationForJob).
+   * Returns null if the user has not applied to the job.
+   */
+  async getMyForJob(jobId: string): Promise<Application | null> {
+    try {
+      const res = await this.get<{ data: Application }>(
+        `/v1/jobs/${encodeURIComponent(jobId)}/applications/me`
+      )
+      return res?.data ?? null
+    } catch {
+      return null
+    }
+  }
 }

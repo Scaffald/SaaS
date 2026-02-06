@@ -2,7 +2,10 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { ApplicationWizard, QuickApplyModal } from '@scf/core/features/applications/components'
 import { getApplicationFlow } from '@scf/core/features/applications/utils/getApplicationFlow'
 import { captureEvent } from '@scf/core/utils/analytics/client'
-import { api } from '@scf/core/utils/api'
+import {
+  useExternalJobs,
+  useJobDetails,
+} from '@scf/core/utils/jobs-sdk-hooks'
 import { ExternalLink } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -22,22 +25,18 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // Hooks must be called unconditionally at the top level
   const [showQuickApply, setShowQuickApply] = useState(false)
 
-  // Try fetching as internal job first
-  const { data: internalJobData, isLoading: internalLoading } = api.jobs.getJobDetails.useQuery(
-    { id: jobId },
-    { enabled: !!jobId }
-  )
+  // Try fetching as internal job first (SDK)
+  const { data: internalJob, isLoading: internalLoading } = useJobDetails(jobId, {
+    enabled: !!jobId,
+  })
 
-  const internalJob = internalJobData?.job
-
-  // If not found as internal, try external
-  const { data: externalJobs, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
-    undefined,
-    { enabled: !!jobId && !internalJob && !internalLoading }
-  )
+  // If not found as internal, try external (SDK)
+  const { data: externalJobsList, isLoading: externalLoading } = useExternalJobs({
+    enabled: !!jobId && !internalJob && !internalLoading,
+  })
 
   const isLoading = internalLoading || externalLoading
-  const externalJob = externalJobs?.jobs?.find((j: { id: string }) => j.id === jobId)
+  const externalJob = externalJobsList?.find((j: { id: string }) => j.id === jobId)
   const job = internalJob || externalJob
   const isExternal = !!externalJob
 

@@ -26,7 +26,6 @@ import { feedbackRouter } from './feedback.router.ts'
 import { followsRouter } from './follows.router.ts'
 import { idVerificationRouter } from './id-verification.router.ts'
 import { inquiriesRouter } from './inquiries.router.ts'
-import { jobsRouter } from './jobs.router.ts'
 import { legalAgreementsRouter } from './legal-agreements.router.ts'
 import { mapRouter } from './map.router.ts'
 import { newsRouter } from './news.router.ts'
@@ -66,7 +65,6 @@ export const appRouter = t.router({
   cms: cmsRouter,
   documents: documentsRouter,
   office: officeRouter,
-  jobs: jobsRouter,
   applications: applicationsRouter,
   employers: employersRouter,
   engagement: engagementRouter,

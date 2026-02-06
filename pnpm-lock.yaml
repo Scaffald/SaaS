@@ -180,9 +180,6 @@ catalogs:
     react:
       specifier: 19.2.0
       version: 19.2.0
-    react-dom:
-      specifier: ^19.2.0
-      version: 19.2.0
     react-dropzone:
       specifier: ~14.3.8
       version: 14.3.8
@@ -258,6 +255,9 @@ catalogs:
     zustand:
       specifier: ~5.0.2
       version: 5.0.9
+
+overrides:
+  react-dom: 19.2.0
 
 importers:
 
@@ -418,7 +418,7 @@ importers:
         specifier: 'catalog:'
         version: 19.2.0
       react-dom:
-        specifier: 'catalog:'
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       react-native-web:
         specifier: 'catalog:'
@@ -605,7 +605,7 @@ importers:
         specifier: 'catalog:'
         version: 19.2.0
       react-dom:
-        specifier: 'catalog:'
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       react-native:
         specifier: 'catalog:'
@@ -693,6 +693,9 @@ importers:
       react-native-reanimated:
         specifier: '>=3.0.0'
         version: 4.1.5(@babel/core@7.28.5)(react-native-worklets@0.6.0(@babel/core@7.28.5)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
+      react-native-safe-area-context:
+        specifier: '>=4.0.0'
+        version: 5.6.2(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
       react-native-svg:
         specifier: '>=13.0.0'
         version: 15.15.1(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
@@ -767,7 +770,7 @@ importers:
         specifier: ^0.344.0
         version: 0.344.0(react@19.2.0)
       react-dom:
-        specifier: 'catalog:'
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       react-native-web:
         specifier: ^0.21.2
@@ -794,7 +797,7 @@ importers:
         specifier: workspace:*
         version: link:../ui
       react-dom:
-        specifier: '>=18.0.0'
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       tamagui:
         specifier: 'catalog:'
@@ -828,7 +831,7 @@ importers:
         specifier: workspace:*
         version: link:../tasks
       react-dom:
-        specifier: '>=18.0.0'
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
     devDependencies:
       '@types/node':
@@ -856,7 +859,7 @@ importers:
         specifier: workspace:*
         version: link:../ui
       react-dom:
-        specifier: '>=18.0.0'
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       tamagui:
         specifier: 'catalog:'
@@ -932,7 +935,7 @@ importers:
         version: 5.90.11(react@18.3.1)
       '@testing-library/react':
         specifier: ^14.1.2
-        version: 14.3.1(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.3.1(@types/react@18.3.27)(react-dom@19.2.0(react@18.3.1))(react@18.3.1)
       '@types/node':
         specifier: ^20.10.6
         version: 20.19.27
@@ -952,8 +955,8 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1
       react-dom:
-        specifier: ^18.2.0
-        version: 18.3.1(react@18.3.1)
+        specifier: 19.2.0
+        version: 19.2.0(react@18.3.1)
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.19.4)(typescript@5.9.3)(yaml@2.8.2)
@@ -975,6 +978,9 @@ importers:
       '@rehookify/datepicker':
         specifier: ^6.6.6
         version: 6.6.8(react@19.2.0)
+      '@scaffald/sdk':
+        specifier: workspace:*
+        version: link:../scaffald-sdk
       '@scf/schemas':
         specifier: workspace:*
         version: link:../scf-schemas
@@ -1084,7 +1090,7 @@ importers:
         specifier: 'catalog:'
         version: 19.2.0
       react-dom:
-        specifier: 'catalog:'
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       react-dropzone:
         specifier: 'catalog:'
@@ -1241,7 +1247,7 @@ importers:
         specifier: workspace:*
         version: link:../ui
       react-dom:
-        specifier: '>=18.0.0'
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       tamagui:
         specifier: 'catalog:'
@@ -2295,7 +2301,7 @@ packages:
     resolution: {integrity: sha512-xkGBRQQab4RLwgXxoqETICr6S5JlogafbhNsidmrkVv2YRs5MLwpjoF2qpiGjQt8S9AoxtIV603s0GIUpY5eYQ==}
     peerDependencies:
       react: '>=16.8.0'
-      react-dom: '>=16.8.0'
+      react-dom: 19.2.0
 
   '@dnd-kit/sortable@10.0.0':
     resolution: {integrity: sha512-+xqhmIIzvAYMGfBYYnbKuNicfSsk4RksY2XdmJhT+HAC01nix6fHCztU68jooFiMUB01Ky3F0FyOvhG/BZrWkg==}
@@ -2850,7 +2856,7 @@ packages:
     peerDependencies:
       expo: '*'
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
       react-native: '*'
     peerDependenciesMeta:
       react-dom:
@@ -2915,7 +2921,7 @@ packages:
     resolution: {integrity: sha512-4JX6rEatQEvlmgU80wZyq9RT96HZJa88q8hp0pBd+LrczeDI4o6uA2M+uvxngVHo4Ihr8uibXxH6+70zhAFrVw==}
     peerDependencies:
       react: '>=16.8.0'
-      react-dom: '>=16.8.0'
+      react-dom: 19.2.0
 
   '@floating-ui/react-native@0.10.7':
     resolution: {integrity: sha512-deSecLPrdfl8RL1yyNJlbgqDDZFPuhBtJhY2aTnOZOoJWaal2vVOad9EBVIa0QV/YordgTyFPgDI8oLfyLZuZA==}
@@ -2927,7 +2933,7 @@ packages:
     resolution: {integrity: sha512-9O8N4SeG2z++TSM8QA/KTeKFBVCNEz/AGS7gWPJf6KFRzmRWixFRnCnkPHRDwSVZW6QPDO6uT0P2SpWNKCc9/g==}
     peerDependencies:
       react: '>=17.0.0'
-      react-dom: '>=17.0.0'
+      react-dom: 19.2.0
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
@@ -3316,7 +3322,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3347,7 +3353,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3369,7 +3375,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3391,7 +3397,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3413,7 +3419,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3426,7 +3432,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3439,7 +3445,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3452,7 +3458,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3483,7 +3489,7 @@ packages:
       '@types/react': '*'
       '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3693,7 +3699,7 @@ packages:
       expo: '>=47.0.0'
       mapbox-gl: ^2.9.0
       react: '>=16.6.1'
-      react-dom: '>= 17.0.0'
+      react-dom: 19.2.0
       react-native: '>=0.59.9'
     peerDependenciesMeta:
       expo:
@@ -4103,7 +4109,7 @@ packages:
     resolution: {integrity: sha512-nc5jQkvPo0EirteHsrmcx9on/0lGQ8F4lUNky7kN2I5WM8Frr3cPTeRoAvzjUkOwrqt/vm3g+T4zSbmDq/OEDA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: 19.2.0
       storybook: ^8.6.15
     peerDependenciesMeta:
       react:
@@ -4151,7 +4157,7 @@ packages:
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react-dom: 19.2.0
 
   '@storybook/instrumenter@8.6.15':
     resolution: {integrity: sha512-TvHR/+yyIAOp/1bLulFai2kkhIBtAlBw7J6Jd9DKyInoGhTWNE1G1Y61jD5GWXX29AlwaHfzGUaX5NL1K+FJpg==}
@@ -4168,7 +4174,7 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react-dom: 19.2.0
       storybook: ^8.6.15
       typescript: '*'
     peerDependenciesMeta:
@@ -4190,7 +4196,7 @@ packages:
     resolution: {integrity: sha512-m2trBmmd4iom1qwrp1F109zjRDc0cPaHYhDQxZR4Qqdz8pYevYJTlipDbH/K4NVB6Rn687RT29OoOPfJh6vkFA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react-dom: 19.2.0
       storybook: ^8.6.15
 
   '@storybook/react-webpack5@8.6.15':
@@ -4198,7 +4204,7 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react-dom: 19.2.0
       storybook: ^8.6.15
       typescript: '>= 4.2.x'
     peerDependenciesMeta:
@@ -4211,7 +4217,7 @@ packages:
     peerDependencies:
       '@storybook/test': 8.6.15
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+      react-dom: 19.2.0
       storybook: ^8.6.15
       typescript: '>= 4.2.x'
     peerDependenciesMeta:
@@ -4235,7 +4241,7 @@ packages:
     peerDependencies:
       '@stripe/stripe-js': '>=8.0.0 <9.0.0'
       react: '>=16.8.0 <20.0.0'
-      react-dom: '>=16.8.0 <20.0.0'
+      react-dom: 19.2.0
 
   '@stripe/stripe-js@8.5.3':
     resolution: {integrity: sha512-UM0GHAxlTN7v0lCK2P6t0VOlvBIdApIQxhnM3yZ2kupQ4PpSrLsK/n/NyYKtw2NJGMaNRRD1IicWS7fSL2sFtA==}
@@ -4295,7 +4301,7 @@ packages:
     resolution: {integrity: sha512-wWZyrV7z8jQ20/39xskDFL/NqVb46YN6wwtdwErMZhTK+wnRvHcud7miPRtdLljYeso31fNguPZLwQ4pYZ+NNw==}
     peerDependencies:
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
 
   '@tamagui/animations-moti@1.138.6':
     resolution: {integrity: sha512-dng652Cd7IZ+LCOAOEVRG4jX2PRLV5YIxj+geWkwitFRx0C5Fi+TD8kKg7b/lC/3ampsxcvREIeSuZcjJYxeEA==}
@@ -4400,7 +4406,7 @@ packages:
     resolution: {integrity: sha512-ecYLcMI3N2qgGIXr9zcYdfuVut5XyMgofjjdUH0v6KGsMCIJFL7y85y12qwe3h2e6pKyvakO4+dAEG59jKLvPw==}
     peerDependencies:
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
 
   '@tamagui/elements@1.138.6':
     resolution: {integrity: sha512-uL8tp82gznJIN6Np3oNJ/0SsBxxR0VZPX6MwmMXgjSa3C1yuyp7pv1DwaUq+8Y7h+8KQc17TBPdnzrGYJy1w/g==}
@@ -4545,7 +4551,7 @@ packages:
     resolution: {integrity: sha512-Ne13GWpUHcUSm56LCIYCW2ROZs/MJFsE27X6Zg7k6Nw5O0KFFiXkCALN9rQXPn/7U1nAkksDeRt6kBCD3zu5+g==}
     peerDependencies:
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
       react-native: '*'
 
   '@tamagui/progress@1.138.6':
@@ -4587,13 +4593,13 @@ packages:
     resolution: {integrity: sha512-YqBYjD4aZ06mBpx/vJSrSov5E4cqePj9dlKZu5zbUXpDso81Bv2+ebv6FgI5BSesAjlUqtpBqyZV7EYzXXhWnw==}
     peerDependencies:
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
 
   '@tamagui/react-native-web-lite@1.138.6':
     resolution: {integrity: sha512-5HGb9oRadxnmbBdxpCDJ2JvaSayZa/Kpej5PMXekhOdpuPNwGmFPmBn1ScdgPXT58MmOOrNvaDb7Tex7TTn3YA==}
     peerDependencies:
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
 
   '@tamagui/remove-scroll@1.138.6':
     resolution: {integrity: sha512-SKKKeUuysVl1D3EeRsxjWM8thh7lA76cKMJbm2widjWgdcEVm+HSQMUHjJK0fD67akePAfNwZrIeq7muBE6iuA==}
@@ -4615,7 +4621,7 @@ packages:
     resolution: {integrity: sha512-8G77AvXQdrOX+ihQ8b4gCUta19BDT8B+j4xoWkjIAGOv1Ja3p0drsL0euQHzSEqgkjBvdhOC+uMvuOV+45Tfag==}
     peerDependencies:
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
       react-native: '*'
 
   '@tamagui/separator@1.138.6':
@@ -4808,7 +4814,7 @@ packages:
     resolution: {integrity: sha512-Jmbro+9ttLZuOR+e19Oj6Q2SU4ZWBxXgsiw8Dj1JuAqKGEXmNwHUySHpFrHmKd95w9nSLgHKG35RFpoCGIz+EA==}
     peerDependencies:
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
       react-native: '*'
 
   '@tamagui/z-index-stack@1.138.6':
@@ -4829,7 +4835,7 @@ packages:
     engines: {node: '>=12'}
     peerDependencies:
       react: '>=16.8'
-      react-dom: '>=16.8'
+      react-dom: 19.2.0
 
   '@tanstack/table-core@8.20.5':
     resolution: {integrity: sha512-P9dF7XbibHph2PFRz8gfBKEXEY/HJPOhym8CHmjF8y3q5mWpKx9xtZapXQUWCgkqvsK0R46Azuz+VaxD4Xl+Tg==}
@@ -4872,7 +4878,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       react: ^18.0.0
-      react-dom: ^18.0.0
+      react-dom: 19.2.0
 
   '@testing-library/react@16.3.0':
     resolution: {integrity: sha512-kFSyxiEDwv1WLl2fgsq6pPBbw5aWKrsY2/noi1Id0TK0UParSF62oFQFGHXIyaG4pp2tEub/Zlel+fjjZILDsw==}
@@ -4882,7 +4888,7 @@ packages:
       '@types/react': ^18.0.0 || ^19.0.0
       '@types/react-dom': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
+      react-dom: 19.2.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -5038,7 +5044,7 @@ packages:
       '@tiptap/core': ^2.7.0
       '@tiptap/pm': ^2.7.0
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: 19.2.0
 
   '@tiptap/starter-kit@2.27.1':
     resolution: {integrity: sha512-uQQlP0Nmn9eq19qm8YoOeloEfmcGbPpB1cujq54Q6nPgxaBozR7rE7tXbFTinxRW2+Hr7XyNWhpjB7DMNkdU2Q==}
@@ -5056,7 +5062,7 @@ packages:
       '@trpc/client': 11.7.2
       '@trpc/server': 11.7.2
       react: '>=18.2.0'
-      react-dom: '>=18.2.0'
+      react-dom: 19.2.0
       typescript: '>=5.7.2'
 
   '@trpc/server@11.8.0':
@@ -7138,7 +7144,7 @@ packages:
       expo-constants: ^18.0.10
       expo-linking: ^8.0.9
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
       react-native: '*'
       react-native-gesture-handler: '*'
       react-native-reanimated: '*'
@@ -7450,7 +7456,7 @@ packages:
     resolution: {integrity: sha512-o1BGqqposwi7cgDrtg0dNONhkmPsUFDaLcKXigzuTFC5x58mE8iyTazxSudFzmT6MEyJKfjjU8ItoMe3W+3fiw==}
     peerDependencies:
       react: '>=16.8 || ^17.0.0 || ^18.0.0'
-      react-dom: '>=16.8 || ^17.0.0 || ^18.0.0'
+      react-dom: 19.2.0
 
   framesync@6.0.1:
     resolution: {integrity: sha512-fUY88kXvGiIItgNC7wcTOl0SNRCVXMKSWW2Yzfmn7EKNc+MpCzcz9DhdHcdjbrtN3c6R4H5dTY2jiCpPdysEjA==}
@@ -8839,7 +8845,7 @@ packages:
     peerDependencies:
       react: 16.x.x
       react-art: 16.x.x
-      react-dom: 16.x.x
+      react-dom: 19.2.0
       react-native-web: 0.9.x
 
   moti@0.25.4:
@@ -9905,11 +9911,6 @@ packages:
     resolution: {integrity: sha512-hlSJDQ2synMPKFZOsKo9Hi8WWZTC7POR8EmWvTSjow+VDgKzkmjQvFm2fk0tmRw+f0vTOIYKlarR0iL4996pdg==}
     engines: {node: '>=16.14.0'}
 
-  react-dom@18.3.1:
-    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
-    peerDependencies:
-      react: ^18.3.1
-
   react-dom@19.2.0:
     resolution: {integrity: sha512-UlbRu4cAiGaIewkPyiRGJk0imDN2T3JjieT6spoL2UeSf5od4n5LB/mQ4ejmxhCFT1tYe8IvaFulzynWovsEFQ==}
     peerDependencies:
@@ -9976,7 +9977,7 @@ packages:
     resolution: {integrity: sha512-p0wfkKx1mOCEkn3Qm2/FA8TrxSdUw/nqaCcT6KYvIGmPtPdia1Ce+iWh5G0j2hZcDs6yJSkYAx+7lrZ0HwixAw==}
     peerDependencies:
       react: '*'
-      react-dom: '*'
+      react-dom: 19.2.0
       react-native: '*'
       react-native-web: '*'
 
@@ -10076,7 +10077,7 @@ packages:
     resolution: {integrity: sha512-SO2t9/17zM4iEnFvlu2DA9jqNbzNhoUP+AItkoCOyFmDMOhUnBBznBDCYN92fGdfAkfQlWzPoez6+zLxFNsZEg==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
+      react-dom: 19.2.0
 
   react-native-webview@13.15.0:
     resolution: {integrity: sha512-Vzjgy8mmxa/JO6l5KZrsTC7YemSdq+qB01diA0FqjUTaWGAGwuykpJ73MDj3+mzBSlaDxAEugHzTtkUQkQEQeQ==}
@@ -10145,14 +10146,14 @@ packages:
     engines: {node: '>=20.0.0'}
     peerDependencies:
       react: '>=18'
-      react-dom: '>=18'
+      react-dom: 19.2.0
 
   react-router@7.10.1:
     resolution: {integrity: sha512-gHL89dRa3kwlUYtRQ+m8NmxGI6CgqN+k4XyGjwcFoQwwCWF6xXpOCUlDovkXClS0d0XJN/5q7kc5W3kiFEd0Yw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       react: '>=18'
-      react-dom: '>=18'
+      react-dom: 19.2.0
     peerDependenciesMeta:
       react-dom:
         optional: true
@@ -10403,9 +10404,6 @@ packages:
   scheduler@0.19.1:
     resolution: {integrity: sha512-n/zwRWRYSUj0/3g/otKDRPMh6qv2SYMWNq85IEa8iZyAv8od9zDYpGSnpBEjNgcMNq6Scbu5KfIPxNF72R/2EA==}
 
-  scheduler@0.23.2:
-    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
-
   scheduler@0.26.0:
     resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
 
@@ -10606,13 +10604,13 @@ packages:
     resolution: {integrity: sha512-DIS8z4PfJRbIyfVFDVnK9rO3eYDtse4Omcm6bt0oEr5/jtLgysmjuBl1frJ9E/EQZrFmKx2A8m/s5s9CRXIzhw==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: 19.2.0
 
   sonner@2.0.7:
     resolution: {integrity: sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: 19.2.0
 
   sort-object-keys@2.0.1:
     resolution: {integrity: sha512-R89fO+z3x7hiKPXX5P0qim+ge6Y60AjtlW+QQpRozrrNcR1lw9Pkpm5MLB56HoNvdcLHL4wbpq16OcvGpEDJIg==}
@@ -11445,7 +11443,7 @@ packages:
     resolution: {integrity: sha512-ZFkClGpWyI2WUQjdLJ/BaGuV6AVQiJ3uELGk3OYtP+B6yCO7Cmn9vPFXVJkRaGkOJu3m8bQMgtyzNHixULceQA==}
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: 19.2.0
 
   vfile-location@5.0.3:
     resolution: {integrity: sha512-5yXvWDEgqeiYiBe1lbxYF7UMAIm/IcopxMHrMQDq3nvKcjPKIhZklUKL+AE7J7uApI4kwe2snsK+eI6UTj9EHg==}
@@ -18164,13 +18162,13 @@ snapshots:
       react-test-renderer: 19.2.0(react@19.2.0)
       redent: 3.0.0
 
-  '@testing-library/react@14.3.1(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@testing-library/react@14.3.1(@types/react@18.3.27)(react-dom@19.2.0(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@testing-library/dom': 9.3.4
       '@types/react-dom': 18.3.7(@types/react@18.3.27)
       react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react-dom: 19.2.0(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -24278,12 +24276,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  react-dom@18.3.1(react@18.3.1):
-    dependencies:
-      loose-envify: 1.4.0
-      react: 18.3.1
-      scheduler: 0.23.2
-
   react-dom@19.2.0(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -25066,10 +25058,6 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-
-  scheduler@0.23.2:
-    dependencies:
-      loose-envify: 1.4.0
 
   scheduler@0.26.0: {}
 

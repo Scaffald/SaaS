@@ -414,6 +414,41 @@ Deno.test('GET /v1/jobs/:id/similar - returns empty array if no similar jobs', a
 })
 
 /**
+ * GET /v1/jobs/slug/:slug - Get job by slug
+ */
+
+Deno.test('GET /v1/jobs/slug/:slug - returns job when slug exists and status is open', async () => {
+  markTestStart()
+
+  const job = await createTestJob({
+    status: 'open',
+    slug: 'test-job-by-slug-' + Date.now().toString(36),
+  })
+
+  const client = createTestClient()
+  const response = await client.get(`/v1/jobs/slug/${job.slug ?? job.id}`)
+
+  assertSuccessResponse(response)
+  assertEquals(response.body.data.id, job.id)
+  assertEquals(response.body.data.slug, job.slug)
+  assertExists(response.body.data.title)
+
+  await cleanupCurrentTestData()
+})
+
+Deno.test('GET /v1/jobs/slug/:slug - returns 404 for unknown slug', async () => {
+  markTestStart()
+
+  const client = createTestClient()
+  const response = await client.get('/v1/jobs/slug/nonexistent-slug-12345')
+
+  assertStatus(response, 404)
+  assertErrorResponse(response)
+
+  await cleanupCurrentTestData()
+})
+
+/**
  * GET /v1/jobs/filter-options - Get available filter values
  */
 

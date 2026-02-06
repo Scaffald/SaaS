@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useCalculateSoftSkillsMatch } from '@scf/core/utils/jobs-sdk-hooks'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { Chip, DiscoverCard, extractPlainText } from '@unicornlove/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
@@ -202,14 +202,10 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
     return Array.isArray(requirements) && requirements.length > 0
   }, [job.required_soft_skills])
 
-  // Fetch soft skills match if job has requirements
-  const { data: matchData } = api.jobs.calculateSoftSkillsMatch.useQuery(
-    { jobId: job.id },
-    {
-      enabled: hasSoftSkillsRequirements,
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  // Fetch soft skills match if job has requirements (SDK)
+  const { data: matchData } = useCalculateSoftSkillsMatch(job.id, {
+    enabled: hasSoftSkillsRequirements,
+  })
 
   // Extract plain text from description (handles both string and rich text JSON)
   const descriptionText =

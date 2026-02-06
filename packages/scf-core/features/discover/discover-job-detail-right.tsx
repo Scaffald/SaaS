@@ -1,4 +1,9 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useCalculateSoftSkillsMatch,
+  useExternalJobs,
+  useJobDetails,
+  useMyApplicationForJob,
+} from '@scf/core/utils/jobs-sdk-hooks'
 import { SoftSkillsMatchIndicator } from '@scf/core/features/profile/components/SoftSkillsMatchIndicator'
 import { ROUTES } from '@scf/core/constants/routes'
 import { Button, Chip, extractPlainText } from '@unicornlove/ui'
@@ -121,46 +126,38 @@ function formatEducationLevel(level?: string): string {
 export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
   const router = useRouter()
 
-  // Try fetching as internal job first
-  const { data: internalJobData, isLoading: internalLoading } = api.jobs.getJobDetails.useQuery(
-    { id: jobId },
-    { enabled: !!jobId }
-  )
+  // Try fetching as internal job first (SDK)
+  const { data: internalJob, isLoading: internalLoading } = useJobDetails(jobId, {
+    enabled: !!jobId,
+  })
 
-  const internalJob = internalJobData?.job
-  const hasApplied = internalJobData?.hasApplied || false
+  // User's application for this job (to show hasApplied)
+  const { data: myApplication } = useMyApplicationForJob(jobId, { enabled: !!jobId })
+  const hasApplied = !!myApplication
 
-  // If not found as internal, try external
-  const { data: externalJobs, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
-    undefined,
-    { enabled: !!jobId && !internalJob && !internalLoading }
-  )
+  // If not found as internal, try external (SDK)
+  const { data: externalJobsList, isLoading: externalLoading } = useExternalJobs({
+    enabled: !!jobId && !internalJob && !internalLoading,
+  })
 
   const isLoading = internalLoading || externalLoading
-  const externalJob = externalJobs?.jobs?.find((j: { id: string }) => j.id === jobId)
+  const externalJob = externalJobsList?.find((j: { id: string }) => j.id === jobId)
   const job = internalJob || externalJob
   const isExternal = !!externalJob
 
   // Check if job has required soft skills
   const hasSoftSkillsRequirements = useMemo(() => {
     if (!internalJob || isExternal) return false
-    if (!internalJob.required_soft_skills || typeof internalJob.required_soft_skills !== 'object')
-      return false
-    const requirements = internalJob.required_soft_skills as Array<{
-      skill_id: string
-      importance: number
-    }>
+    const rqs = (internalJob as { required_soft_skills?: unknown }).required_soft_skills
+    if (!rqs || typeof rqs !== 'object') return false
+    const requirements = rqs as Array<{ skill_id: string; importance: number }>
     return Array.isArray(requirements) && requirements.length > 0
   }, [internalJob, isExternal])
 
-  // Fetch soft skills match for internal jobs with requirements
-  const { data: matchData, isLoading: isLoadingMatch } = api.jobs.calculateSoftSkillsMatch.useQuery(
-    { jobId },
-    {
-      enabled: !!jobId && hasSoftSkillsRequirements && !isExternal,
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  // Fetch soft skills match for internal jobs with requirements (SDK)
+  const { data: matchData, isLoading: isLoadingMatch } = useCalculateSoftSkillsMatch(jobId, {
+    enabled: !!jobId && hasSoftSkillsRequirements && !isExternal,
+  })
 
   if (isLoading) {
     return (

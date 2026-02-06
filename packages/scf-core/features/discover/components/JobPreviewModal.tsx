@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
 import { ResponsiveModal } from '@unicornlove/ui'
 import {
   Briefcase,
@@ -42,8 +42,8 @@ interface JobPreviewModalProps {
 export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalProps) {
   const router = useRouter()
 
-  // Fetch job data
-  const query = api.jobs.getJobDetails.useQuery({ id: jobId || '' }, { enabled: !!jobId && open })
+  // Fetch job data (SDK)
+  const query = useJobDetails(jobId ?? '', { enabled: !!jobId && open })
   const job = query.data as JobData | undefined
   const isLoading = query.isLoading
 

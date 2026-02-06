@@ -1,3 +1,8 @@
+import {
+  useExternalJobs,
+  useJobsWithSoftSkillsMatch,
+  usePublishedJobs,
+} from '@scf/core/utils/jobs-sdk-hooks'
 import { api } from '@scf/core/utils/api'
 import { extractPlainText, SkeletonList } from '@unicornlove/ui'
 import type { JSONContent } from '@tiptap/core'
@@ -35,37 +40,27 @@ export function DiscoverJobsLeft({
   const shouldUseSoftSkillsMatch =
     useSoftSkillsFilter && (jobSource === 'all' || jobSource === 'internal')
 
-  // Fetch external jobs (not affected by soft skills filter)
-  const { data: externalData, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
-    undefined,
-    {
-      enabled: jobSource === 'all' || jobSource === 'external',
-    }
-  )
+  // Fetch external jobs (SDK)
+  const { data: externalData, isLoading: externalLoading } = useExternalJobs({
+    enabled: jobSource === 'all' || jobSource === 'external',
+  })
 
-  // Fetch internal jobs with soft skills match if filter is active
+  // Fetch internal jobs with soft skills match if filter is active (SDK)
   const { data: softSkillsMatchData, isLoading: isLoadingSoftSkillsMatch } =
-    api.jobs.getJobsWithSoftSkillsMatch.useQuery(
+    useJobsWithSoftSkillsMatch(
       {
         minMatchScore: minSoftSkillsMatch ?? undefined,
         sortBy: sortBy === 'match_score' ? 'match_score' : undefined,
         limit: 100,
         offset: 0,
       },
-      {
-        enabled: shouldUseSoftSkillsMatch,
-      }
+      { enabled: shouldUseSoftSkillsMatch }
     )
 
-  // Fetch regular internal jobs - always fetch to get full job data
-  // If soft skills filter is active, we'll filter client-side using matching job IDs
-  const { data: internalData, isLoading: internalLoading } = api.jobs.getPublishedJobs.useQuery(
-    {
-      search: searchQuery,
-    },
-    {
-      enabled: jobSource === 'all' || jobSource === 'internal',
-    }
+  // Fetch regular internal jobs (SDK)
+  const { data: internalData, isLoading: internalLoading } = usePublishedJobs(
+    { search: searchQuery },
+    { enabled: jobSource === 'all' || jobSource === 'internal' }
   )
 
   // Fetch user's applications to show applied status
@@ -74,9 +69,9 @@ export function DiscoverJobsLeft({
     { enabled: true }
   )
 
-  const externalJobs = externalData?.jobs || []
-  let internalJobs = internalData?.jobs || []
-  const matchingJobs = softSkillsMatchData?.jobs || []
+  const externalJobs = externalData ?? []
+  let internalJobs = internalData?.data ?? []
+  const matchingJobs = softSkillsMatchData?.jobs ?? []
 
   // If soft skills filter is active, filter internal jobs to only matching ones
   if (shouldUseSoftSkillsMatch && matchingJobs.length > 0) {

@@ -107,4 +107,56 @@ describe('Jobs Resource', () => {
       expect(response.data).toBeDefined()
     })
   })
+
+  describe('retrieveBySlug', () => {
+    it('should retrieve a job by slug', async () => {
+      const job = await client.jobs.retrieveBySlug('senior-engineer')
+
+      expect(job).not.toBeNull()
+      expect(job).toHaveProperty('id')
+      expect(job).toHaveProperty('title')
+      expect(job).toHaveProperty('slug')
+    })
+
+    it('should return null for unknown slug', async () => {
+      const job = await client.jobs.retrieveBySlug('nonexistent-slug-xyz')
+      expect(job).toBeNull()
+    })
+  })
+
+  describe('listExternal', () => {
+    it('should list external jobs', async () => {
+      const jobs = await client.jobs.listExternal()
+
+      expect(Array.isArray(jobs)).toBe(true)
+      expect(jobs.length).toBeGreaterThan(0)
+      expect(jobs[0]).toHaveProperty('id')
+      expect(jobs[0]).toHaveProperty('title')
+      expect(jobs[0]).toHaveProperty('company_name')
+    })
+  })
+
+  describe('externalFilterOptions', () => {
+    it('should return external job filter options', async () => {
+      const options = await client.jobs.externalFilterOptions()
+
+      expect(options).toHaveProperty('jobTypes')
+      expect(options).toHaveProperty('locations')
+      expect(options).toHaveProperty('industries')
+      expect(Array.isArray(options.jobTypes)).toBe(true)
+      expect(Array.isArray(options.locations)).toBe(true)
+      expect(Array.isArray(options.industries)).toBe(true)
+    })
+  })
+
+  describe('filterOptions', () => {
+    it('should return filter options with employmentTypes, locations, remoteOptions', async () => {
+      const options = await client.jobs.filterOptions()
+
+      expect(options).toHaveProperty('employmentTypes')
+      expect(options).toHaveProperty('locations')
+      expect(options).toHaveProperty('remoteOptions')
+      expect(Array.isArray(options.employmentTypes)).toBe(true)
+    })
+  })
 })

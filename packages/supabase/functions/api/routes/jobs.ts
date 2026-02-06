@@ -1,5 +1,12 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { authMiddleware } from '../middleware/auth.ts'
+import {
+  computeSoftSkillMatch,
+  fetchSoftSkillMetadata,
+  loadUserSoftSkillsForMatching,
+  parseRequiredSoftSkills,
+  type SoftSkillRequirement,
+} from '../../_shared/soft-skills-matching.ts'
 
 const app = new OpenAPIHono()
 
@@ -206,6 +213,552 @@ app.openapi(getJobsRoute, async (c) => {
 })
 
 /**
+ * GET /v1/jobs/slug/:slug
+ * Get job by slug (public, for vanity URLs). Parity with tRPC jobs.bySlug.
+ */
+const getJobBySlugRoute = createRoute({
+  method: 'get',
+  path: '/slug/{slug}',
+  tags: ['Jobs'],
+  summary: 'Get job by slug',
+  description: 'Retrieve public job data by slug for vanity URLs. Only open jobs are returned.',
+  request: {
+    params: z.object({
+      slug: z.string().min(3).max(50).openapi({ description: 'Job slug', example: 'senior-engineer' }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Job details',
+      content: { 'application/json': { schema: jobResponseSchema } },
+    },
+    404: {
+      description: 'Job not found',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+    500: {
+      description: 'Internal server error',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getJobBySlugRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const slug = c.req.param('slug').toLowerCase()
+
+  const { data, error } = await supabase
+    .schema('core')
+    .from('jobs')
+    .select(
+      `
+      id,
+      title,
+      slug,
+      description,
+      employment_type,
+      location,
+      pay_range_min_cents,
+      pay_range_max_cents,
+      pay_range_type,
+      status,
+      created_at,
+      updated_at,
+      organization:organizations(
+        id,
+        name,
+        slug,
+        logo_url
+      )
+    `
+    )
+    .eq('slug', slug)
+    .eq('status', 'open')
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      return c.json(
+        { error: `Job with slug "${slug}" not found or not available` },
+        404
+      )
+    }
+    return c.json({ error: error.message }, 500)
+  }
+
+  return c.json({ data }, 200)
+})
+
+/**
+ * GET /v1/jobs/external
+ * List external jobs (parity with tRPC jobs.getExternalJobs).
+ */
+const getExternalJobsRoute = createRoute({
+  method: 'get',
+  path: '/external',
+  tags: ['Jobs'],
+  summary: 'List external jobs',
+  description: 'Returns active external jobs with industry information.',
+  responses: {
+    200: {
+      description: 'List of external jobs',
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.array(z.record(z.unknown())),
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal server error',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getExternalJobsRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const { data, error } = await supabase
+    .schema('core')
+    .from('external_jobs')
+    .select(
+      `
+      id,
+      title,
+      company_name,
+      company_logo,
+      job_location,
+      job_type,
+      job_category,
+      description,
+      compensation_min,
+      compensation_max,
+      compensation_currency,
+      posted_date,
+      application_url,
+      external_url,
+      featured,
+      external_job_industries(
+        industry:industries(id, name),
+        confidence_score
+      )
+    `
+    )
+    .eq('is_active', true)
+    .order('posted_date', { ascending: false })
+    .limit(50)
+
+  if (error) {
+    console.error('Error fetching external jobs:', error)
+    return c.json({ error: error.message }, 500)
+  }
+
+  const jobs = (data || []).map(
+    (job: {
+      id: string
+      title?: string | null
+      company_name?: string | null
+      company_logo?: string | null
+      job_location?: string | null
+      job_type?: string | null
+      job_category?: string | null
+      description?: string | null
+      compensation_min?: number | null
+      compensation_max?: number | null
+      compensation_currency?: string | null
+      posted_date?: string | null
+      application_url?: string | null
+      external_url?: string | null
+      featured?: boolean | null
+      external_job_industries?: Array<{ industry?: { name?: string } | null; confidence_score?: number | null }>
+    }) => ({
+      id: job.id,
+      title: job.title,
+      company_name: job.company_name,
+      company_logo: job.company_logo,
+      job_location: job.job_location,
+      job_type: job.job_type,
+      job_category: job.job_category,
+      description: job.description,
+      compensation_min: job.compensation_min,
+      compensation_max: job.compensation_max,
+      compensation_currency: job.compensation_currency,
+      posted_date: job.posted_date,
+      application_url: job.application_url,
+      external_url: job.external_url,
+      featured: job.featured,
+      industries: Array.isArray(job.external_job_industries)
+        ? job.external_job_industries.map((eji) => ({
+            industry_name: eji.industry?.name ?? '',
+            confidence_score: eji.confidence_score ?? 0,
+          }))
+        : [],
+    })
+  )
+
+  return c.json({ data: jobs }, 200)
+})
+
+/**
+ * GET /v1/jobs/external/filter-options
+ * Get filter options for external jobs (parity with tRPC jobs.getFilterOptions).
+ */
+const getExternalFilterOptionsRoute = createRoute({
+  method: 'get',
+  path: '/external/filter-options',
+  tags: ['Jobs'],
+  summary: 'Get external job filter options',
+  description: 'Returns unique job types, locations, and industries from external jobs.',
+  responses: {
+    200: {
+      description: 'Filter options',
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.object({
+              jobTypes: z.array(z.string()),
+              locations: z.array(z.string()),
+              industries: z.array(z.string()),
+            }),
+          }),
+        },
+      },
+    },
+    500: {
+      description: 'Internal server error',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getExternalFilterOptionsRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const { data, error } = await supabase
+    .schema('core')
+    .from('external_jobs')
+    .select(
+      `
+      job_type,
+      job_location,
+      external_job_industries(industry:industries(name))
+    `
+    )
+    .eq('is_active', true)
+
+  if (error) {
+    console.error('Error fetching external filter options:', error)
+    return c.json({ error: error.message }, 500)
+  }
+
+  const jobTypes = new Set<string>()
+  const locations = new Set<string>()
+  const industries = new Set<string>()
+
+  for (const job of data || []) {
+    if (job.job_type) jobTypes.add(job.job_type)
+    if (job.job_location) locations.add(job.job_location)
+    if (Array.isArray(job.external_job_industries)) {
+      for (const eji of job.external_job_industries) {
+        const industry = Array.isArray(eji.industry) ? eji.industry[0] : eji.industry
+        if (industry?.name) industries.add(industry.name)
+      }
+    }
+  }
+
+  return c.json(
+    {
+      data: {
+        jobTypes: Array.from(jobTypes).sort(),
+        locations: Array.from(locations).sort(),
+        industries: Array.from(industries).sort(),
+      },
+    },
+    200
+  )
+})
+
+/**
+ * GET /v1/jobs/soft-skills-match
+ * List open jobs with soft skills match scores (parity with tRPC jobs.getJobsWithSoftSkillsMatch).
+ */
+const getJobsWithSoftSkillsMatchRoute = createRoute({
+  method: 'get',
+  path: '/soft-skills-match',
+  tags: ['Jobs'],
+  summary: 'List jobs with soft skills match',
+  description:
+    'Returns open jobs with soft skills match scores for the current user. Requires user auth.',
+  request: {
+    query: z.object({
+      minMatchScore: z.coerce.number().int().min(0).max(100).optional(),
+      sortBy: z.enum(['match_score']).optional(),
+      limit: z.coerce.number().int().min(1).max(100).optional().default(25),
+      offset: z.coerce.number().int().min(0).optional().default(0),
+    }),
+  },
+  responses: {
+    200: { description: 'Jobs with match scores' },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: errorResponseSchema } } },
+    500: { description: 'Internal server error', content: { 'application/json': { schema: errorResponseSchema } } },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getJobsWithSoftSkillsMatchRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  const query = c.req.valid('query')
+  if (!user?.id) {
+    return c.json({ error: 'Unauthorized', message: 'User authentication required' }, 401)
+  }
+  try {
+    const { ratings, hasAssessment } = await loadUserSoftSkillsForMatching(supabase, user.id)
+    if (!hasAssessment) {
+      return c.json(
+        { data: { total: 0, needsSelfAssessment: true, jobs: [] } },
+        200
+      )
+    }
+    const { data, error } = await supabase
+      .schema('core')
+      .from('jobs')
+      .select(
+        'id, title, slug, created_at, organization:organizations!jobs_organization_id_fkey(id, name, slug), required_soft_skills'
+      )
+      .eq('status', 'open')
+      .order('created_at', { ascending: false })
+    if (error) throw new Error(error.message)
+    const jobsWithRequirements = (data || []).map((job: { required_soft_skills?: unknown; [k: string]: unknown }) => ({
+      job,
+      requirements: parseRequiredSoftSkills(job.required_soft_skills),
+    }))
+    const skillIds = Array.from(
+      new Set(
+        jobsWithRequirements.flatMap((e: { requirements: { skill_id: string }[] }) =>
+          e.requirements.map((r) => r.skill_id)
+        )
+      )
+    )
+    const metadata = await fetchSoftSkillMetadata(supabase, skillIds)
+    const enriched = jobsWithRequirements
+      .filter((e: { requirements: unknown[] }) => e.requirements.length > 0)
+      .map(
+        (e: {
+          job: { id: string; title?: string | null; slug?: string | null; organization?: unknown }
+          requirements: SoftSkillRequirement[]
+        }) => {
+          const match = computeSoftSkillMatch(e.requirements, ratings, metadata)
+          return {
+            jobId: e.job.id,
+            title: e.job.title,
+            slug: e.job.slug ?? null,
+            organization: e.job.organization,
+            matchScore: match.score,
+            totalRequirements: e.requirements.length,
+            details: match.details,
+          }
+        }
+      )
+      .filter((e: { matchScore: number | null }) => e.matchScore !== null)
+    const minScore = query.minMatchScore ?? null
+    const filtered =
+      minScore !== null ? enriched.filter((e: { matchScore: number | null }) => (e.matchScore ?? 0) >= minScore) : enriched
+    if (query.sortBy === 'match_score') {
+      filtered.sort(
+        (a: { matchScore: number | null }, b: { matchScore: number | null }) =>
+          (b.matchScore ?? 0) - (a.matchScore ?? 0)
+      )
+    }
+    const total = filtered.length
+    const jobs = filtered.slice(query.offset, query.offset + query.limit)
+    return c.json({ data: { total, needsSelfAssessment: false, jobs } }, 200)
+  } catch (err) {
+    console.error('getJobsWithSoftSkillsMatch error:', err)
+    return c.json(
+      { error: err instanceof Error ? err.message : 'Internal server error' },
+      500
+    )
+  }
+})
+
+/**
+ * GET /v1/jobs/:jobId/soft-skills-match
+ * Get soft skills match for a single job (parity with tRPC jobs.calculateSoftSkillsMatch).
+ */
+const calculateSoftSkillsMatchRoute = createRoute({
+  method: 'get',
+  path: '/{jobId}/soft-skills-match',
+  tags: ['Jobs'],
+  summary: 'Calculate soft skills match for job',
+  description: 'Returns soft skills match details for the given job and user.',
+  request: {
+    params: z.object({
+      jobId: z.string().uuid().openapi({ description: 'Job ID' }),
+    }),
+    query: z.object({
+      userId: z.string().uuid().optional().openapi({ description: 'User ID (default: current user)' }),
+    }),
+  },
+  responses: {
+    200: { description: 'Match result' },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: errorResponseSchema } } },
+    404: { description: 'Job not found', content: { 'application/json': { schema: errorResponseSchema } } },
+    500: { description: 'Internal server error', content: { 'application/json': { schema: errorResponseSchema } } },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(calculateSoftSkillsMatchRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  const { jobId } = c.req.valid('param')
+  const { userId } = c.req.valid('query')
+  const targetUserId = userId ?? user?.id
+  if (!targetUserId) {
+    return c.json({ error: 'Unauthorized', message: 'User authentication required' }, 401)
+  }
+  try {
+    const { ratings, hasAssessment } = await loadUserSoftSkillsForMatching(supabase, targetUserId)
+    const { data: job, error } = await supabase
+      .schema('core')
+      .from('jobs')
+      .select(
+        'id, title, slug, organization:organizations!jobs_organization_id_fkey(id, name, slug), required_soft_skills'
+      )
+      .eq('id', jobId)
+      .maybeSingle()
+    if (error) throw new Error(error.message)
+    if (!job) return c.json({ error: 'Job not found' }, 404)
+    const requirements = parseRequiredSoftSkills(job.required_soft_skills)
+    if (requirements.length === 0) {
+      return c.json(
+        {
+          data: {
+            jobId: job.id,
+            jobTitle: job.title,
+            organization: job.organization,
+            score: null,
+            needsSelfAssessment: !hasAssessment,
+            totalRequirements: 0,
+            details: [],
+          },
+        },
+        200
+      )
+    }
+    const metadata = await fetchSoftSkillMetadata(
+      supabase,
+      requirements.map((r) => r.skill_id)
+    )
+    const match = computeSoftSkillMatch(requirements, ratings, metadata)
+    return c.json(
+      {
+        data: {
+          jobId: job.id,
+          jobTitle: job.title,
+          organization: job.organization,
+          score: match.score,
+          needsSelfAssessment: !hasAssessment,
+          totalRequirements: requirements.length,
+          details: match.details,
+        },
+      },
+      200
+    )
+  } catch (err) {
+    console.error('calculateSoftSkillsMatch error:', err)
+    return c.json(
+      { error: err instanceof Error ? err.message : 'Internal server error' },
+      500
+    )
+  }
+})
+
+/**
+ * GET /v1/jobs/:jobId/applications/me
+ * Get current user's application for a job (parity with tRPC jobs.getMyApplicationForJob).
+ */
+const getMyApplicationForJobRoute = createRoute({
+  method: 'get',
+  path: '/{jobId}/applications/me',
+  tags: ['Jobs'],
+  summary: "Get my application for job",
+  description: "Returns the current user's application for the given job, or 404 if none.",
+  request: {
+    params: z.object({
+      jobId: z.string().uuid().openapi({
+        description: 'Job ID',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Application found',
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.record(z.unknown()),
+          }),
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized - user authentication required',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+    404: {
+      description: 'No application found for this job',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+    500: {
+      description: 'Internal server error',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getMyApplicationForJobRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  const { jobId } = c.req.valid('param')
+
+  if (!user?.id) {
+    return c.json(
+      { error: 'Unauthorized', message: 'User authentication required' },
+      401
+    )
+  }
+
+  const { data: application, error } = await supabase
+    .schema('core')
+    .from('applications')
+    .select('*')
+    .eq('job_id', jobId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Error fetching application:', error)
+    return c.json({ error: error.message }, 500)
+  }
+
+  if (!application) {
+    return c.json(
+      { error: 'Not found', message: 'No application found for this job' },
+      404
+    )
+  }
+
+  return c.json({ data: application }, 200)
+})
+
+/**
  * GET /v1/jobs/:id
  * Get job details by ID
  */
@@ -263,7 +816,9 @@ app.openapi(getJobByIdRoute, async (c) => {
   const { data, error } = await supabase
     .schema('core')
     .from('jobs')
-    .select('*')
+    .select(
+      '*, organization:organizations!jobs_organization_id_fkey(id, name, slug, logo_url)'
+    )
     .eq('id', id)
     .single()
 

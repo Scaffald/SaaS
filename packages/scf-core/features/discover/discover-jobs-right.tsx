@@ -1,3 +1,4 @@
+import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
 import { api } from '@scf/core/utils/api'
 import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@unicornlove/ui'
 import { ChevronsUpDown, Filter, Search, X } from '@tamagui/lucide-icons'
@@ -35,10 +36,10 @@ export function DiscoverJobsRight({
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
 
-  // Fetch filter options from API
-  const { data: filterData, isLoading: filtersLoading } = api.jobs.getFilterOptions.useQuery()
-  const INDUSTRIES = filterData?.industries || []
-  const JOB_TYPES = filterData?.jobTypes || []
+  // Fetch filter options from API (SDK)
+  const { data: filterData, isLoading: filtersLoading } = useFilterOptions()
+  const INDUSTRIES = filterData?.industries ?? []
+  const JOB_TYPES = filterData?.jobTypes ?? []
 
   // Check if user has soft skills assessment
   const { data: softSkillsData } = api.profile.skills.getSoftSkills.useQuery(undefined, {

@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@scf/core/components/layouts'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@scf/core/features/discover/discover-job-detail-screen'
-import { api } from '@scf/core/utils/api'
+import { useJobBySlug } from '@scf/core/utils/useJobBySlug'
 import type { BreadcrumbItem } from '@unicornlove/ui'
 import { useLocalSearchParams } from 'expo-router'
 import { Spinner, Text, YStack } from '@unicornlove/ui'
@@ -9,24 +9,15 @@ import { Spinner, Text, YStack } from '@unicornlove/ui'
 /**
  * Public Job Detail Route (Vanity URL)
  * Accessible at /jobs/[slug] - no authentication required
- * Shows public job details based on job's slug
+ * Shows public job details based on job's slug.
+ * Uses SDK when EXPO_PUBLIC_USE_SDK_JOBS=true, otherwise tRPC.
  */
 export default function PublicJobDetailPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>()
 
-  // Fetch job by slug
-  const {
-    data: jobData,
-    isLoading,
-    error,
-  } = api.jobs.bySlug.useQuery(
-    { slug: slug || '' },
-    {
-      enabled: !!slug,
-      retry: false, // Don't retry on 404
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  const { data: jobData, isLoading, error } = useJobBySlug(slug, {
+    enabled: !!slug,
+  })
 
   // Build breadcrumb items
   const breadcrumbItems: BreadcrumbItem[] = [
