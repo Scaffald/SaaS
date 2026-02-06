@@ -347,6 +347,20 @@ export type {
   ViewportBounds,
 } from './components/Maps'
 
+export { AddressAutocomplete, AddressForm, LocationListInput, useAddressAutocomplete } from './components/Address'
+export type {
+  AddressResult,
+  AddressSearchOptions,
+  GeocodingProvider,
+  AddressAutocompleteProps,
+  AddressFormProps,
+  LocationListInputProps,
+} from './components/Address'
+export type { UseAddressAutocompleteConfig, UseAddressAutocompleteReturn } from './components/Address'
+
+export { RichTextEditor } from './components/RichTextEditor'
+export type { RichTextEditorProps } from './components/RichTextEditor'
+
 // Components
 export { Button } from './components/Button'
 export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './components/Button'

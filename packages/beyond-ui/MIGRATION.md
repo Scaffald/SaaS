@@ -426,6 +426,65 @@ After migration, verify:
 
 ---
 
+## Migrating from @unicornlove/ui (Tamagui)
+
+If you are moving from the Tamagui-based `@unicornlove/ui` to `@unicornlove/beyond-ui`, use the following mappings.
+
+### OfficeTabs and OfficeAccordion
+
+**@unicornlove/ui** exposes office-specific navigation: `OfficeTabs`, `OfficeAccordion`, `Tab`, `TabGroup`.
+
+**Beyond-UI** does not ship separate "Office" components. Use the standard layout primitives instead:
+
+| UI (Tamagui)       | Beyond-UI replacement |
+|--------------------|------------------------|
+| `OfficeTabs`       | `Tabs` – same pattern; use `type`, `color`, `size`, `orientation` for styling. |
+| `OfficeAccordion`  | `Accordion` – same pattern; use `type`, `size` and item props for styling. |
+| `Tab` / `TabGroup` | `Tabs.Item`, `Tabs.Trigger`, `Tabs.Content` (see Tabs docs). |
+
+**Example (Tabs):**
+```tsx
+// Before (ui)
+<OfficeTabs defaultValue="overview">
+  <Tab value="overview" label="Overview" />
+  <Tab value="team" label="Team" />
+</OfficeTabs>
+
+// After (beyond-ui)
+import { Tabs } from '@unicornlove/beyond-ui'
+<Tabs defaultValue="overview">
+  <Tabs.Item value="overview">
+    <Tabs.Trigger>Overview</Tabs.Trigger>
+    <Tabs.Content>...</Tabs.Content>
+  </Tabs.Item>
+  <Tabs.Item value="team">
+    <Tabs.Trigger>Team</Tabs.Trigger>
+    <Tabs.Content>...</Tabs.Content>
+  </Tabs.Item>
+</Tabs>
+```
+
+**Example (Accordion):**
+```tsx
+// Before (ui)
+<OfficeAccordion items={items} />
+
+// After (beyond-ui)
+import { Accordion } from '@unicornlove/beyond-ui'
+<Accordion type="single" collapsible>
+  {items.map((item) => (
+    <Accordion.Item key={item.value} value={item.value}>
+      <Accordion.Trigger>{item.title}</Accordion.Trigger>
+      <Accordion.Content>{item.content}</Accordion.Content>
+    </Accordion.Item>
+  ))}
+</Accordion>
+```
+
+Theme tokens and styling differences are covered in [Theme migration (Tamagui → Beyond)](docs/THEME_MIGRATION_TAMAGUI_TO_BEYOND.md).
+
+---
+
 ## Need Help?
 
 - **Documentation**: https://beyond-ui.unicorn.com/docs

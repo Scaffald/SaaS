@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **NotificationTag** – Small badge component (sm/md sizes).
 - **Charts** – StackedBarChart and PopulationPyramid (SVG-based, no gifted-charts).
 - **Maps** – MapContainer, MapPin, MapTooltip, MapFallback (provider-agnostic; no map library dependency).
+- **Address** – AddressAutocomplete, AddressForm, LocationListInput, useAddressAutocomplete (provider-agnostic; inject GeocodingProvider from your app).
+- **Rich text** – RichTextEditor (minimal plain-text default; render TipTap as children for full rich text).
+- **OfficeTabs/OfficeAccordion** – Migration note in MIGRATION.md (use Tabs/Accordion).
 - **CONTRIBUTING.md** – Contribution guide (setup, code standards, testing, PR process).
 - **Theme migration guide** – Tamagui `$tokens` → beyond-ui tokens ([docs/THEME_MIGRATION_TAMAGUI_TO_BEYOND.md](docs/THEME_MIGRATION_TAMAGUI_TO_BEYOND.md)).
 - **Imports and exports** – Subpath usage for tree-shaking ([docs/IMPORTS_AND_EXPORTS.md](docs/IMPORTS_AND_EXPORTS.md)).

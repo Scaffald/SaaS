@@ -282,6 +282,20 @@ gradients.named['warm-flame'].colors  // ['#fb923c', '#fb7185']
 - [MIGRATION.md](MIGRATION.md) – Migrating from @unicornlove/ui to beyond-ui.
 - [CONTRIBUTING.md](CONTRIBUTING.md) – How to contribute.
 
+## Feature parity with @unicornlove/ui
+
+Beyond-UI is built to reach parity with the Tamagui-based `@unicornlove/ui` while staying dependency-light. The following areas are implemented or documented:
+
+| Area | Status | Notes |
+|------|--------|--------|
+| **Phase A** (quick wins) | ✅ | FieldError, LoadingOverlay, FullscreenSpinner, SaveStatusIndicator, SavingModal, EmptyState, ErrorState, LoadingState, useWindowDimensions, SkeletonForm/SkeletonList/SkeletonBox, TableActionBar, TableAddRecordModal, TableColumnVisibilityModal |
+| **Phase B** (form/input) | ✅ | ResponsiveSelect, AdaptiveSelectSheet, PhoneNumberInput, RangeSlider, Checklist; ToggleCard → SelectionCard |
+| **Phase C** (composites) | ✅ | Image picker, Kanban, Onboarding, Cookie consent |
+| **Phase D** (domain) | ✅ | Address (AddressAutocomplete, AddressForm, LocationListInput), Maps, Rich text (minimal + TipTap as children), IconSelector, Charts (StackedBarChart, PopulationPyramid), NotificationTag; OfficeTabs/OfficeAccordion → [Tabs/Accordion](MIGRATION.md#officetabs-and-officeaccordion) |
+| **Phase E** (polish) | ✅ | CONTRIBUTING, CHANGELOG, WHY_BEYOND_UI, theme migration guide, dependency audit, subpath exports |
+
+See [Why Beyond-UI?](docs/WHY_BEYOND_UI.md) and [MIGRATION.md](MIGRATION.md) for migration from ui to beyond-ui.
+
 ## Development Roadmap
 
 See the [full roadmap](/Users/clay/.claude/plans/abstract-spinning-bachman.md) for detailed implementation plans.
