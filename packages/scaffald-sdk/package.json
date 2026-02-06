@@ -2,13 +2,6 @@
   "name": "@scaffald/sdk",
   "version": "0.2.0",
   "description": "Official JavaScript/TypeScript SDK for the Scaffald API",
-  "author": "Scaffald <dev@scaffald.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Unicorn/UNI-Construct.git",
-    "directory": "packages/scaffald-sdk"
-  },
   "keywords": [
     "scaffald",
     "api",
@@ -18,9 +11,14 @@
     "oauth",
     "typescript"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Unicorn/UNI-Construct.git",
+    "directory": "packages/scaffald-sdk"
+  },
+  "license": "MIT",
+  "author": "Scaffald <dev@scaffald.com>",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -33,6 +31,9 @@
       "require": "./dist/react/index.js"
     }
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
@@ -41,17 +42,17 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "generate:types": "tsx scripts/generate-types.ts",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
-    "generate:types": "tsx scripts/generate-types.ts",
     "prepublishOnly": "pnpm build && pnpm test",
     "prerelease": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "release:dry": "npm publish --dry-run",
-    "size": "size-limit"
+    "size": "size-limit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "^3.22.4"
@@ -76,15 +77,14 @@
     "react": "^18.0.0"
   },
   "peerDependenciesMeta": {
-    "react": {
+    "@tanstack/react-query": {
       "optional": true
     },
-    "@tanstack/react-query": {
+    "react": {
       "optional": true
     }
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "sideEffects": false
+  }
 }

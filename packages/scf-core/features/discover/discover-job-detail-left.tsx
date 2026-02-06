@@ -118,7 +118,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         console.warn('Failed to track job view:', error)
       }
     }
-  }, [job, isExternal, trackEventMutation.mutate])
+  }, [job, isExternal, trackEventMutation.mutate, trackEventMutation])
 
   if (isLoading) {
     return (

@@ -63,7 +63,7 @@ export function FollowingList() {
         await unfollowMutation.mutateAsync({ targetUserId: userId })
       }
     },
-    [unfollowMutation.mutateAsync]
+    [unfollowMutation.mutateAsync, unfollowMutation]
   )
 
   const columns = useMemo<ColumnDef<Following>[]>(

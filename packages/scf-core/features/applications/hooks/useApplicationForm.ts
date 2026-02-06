@@ -130,7 +130,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       }))
       throw error
     }
-  }, [jobId, state, createDraftMutation.mutateAsync])
+  }, [jobId, state, createDraftMutation.mutateAsync, createDraftMutation])
 
   /**
    * Save progress for current step

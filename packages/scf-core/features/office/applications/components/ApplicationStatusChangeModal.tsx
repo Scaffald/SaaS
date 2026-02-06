@@ -179,6 +179,7 @@ export const ApplicationStatusChangeModal = ({
     successFeeStatus?.status,
     successFeeStatusQuery.isLoading,
     resumeAttempted,
+    successFeeMutation,
   ])
 
   const handleConfirm = async () => {

@@ -116,7 +116,7 @@ export function ApplicationWizard({
       // Silent error handling - don't impact user flow
       console.warn('Failed to track application started:', error)
     }
-  }, [jobId, jobTitle, organizationName, trackEventMutation.mutate])
+  }, [jobId, jobTitle, organizationName, trackEventMutation.mutate, trackEventMutation])
 
   // Define application steps - only include custom questions if there are any
   const steps: Array<{ id: ApplicationStepType; label: string }> = [

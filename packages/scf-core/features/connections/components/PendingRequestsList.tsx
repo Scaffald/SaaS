@@ -110,14 +110,14 @@ export function PendingRequestsList() {
     async (connectionId: string) => {
       await acceptMutation.mutateAsync({ connectionId })
     },
-    [acceptMutation.mutateAsync]
+    [acceptMutation.mutateAsync, acceptMutation]
   )
 
   const handleDecline = useCallback(
     async (connectionId: string) => {
       await declineMutation.mutateAsync({ connectionId })
     },
-    [declineMutation.mutateAsync]
+    [declineMutation.mutateAsync, declineMutation]
   )
 
   const handleCancel = useCallback(
@@ -126,7 +126,7 @@ export function PendingRequestsList() {
         await cancelMutation.mutateAsync({ connectionId })
       }
     },
-    [cancelMutation.mutateAsync]
+    [cancelMutation.mutateAsync, cancelMutation]
   )
 
   const columns = useMemo<ColumnDef<RequestRow>[]>(

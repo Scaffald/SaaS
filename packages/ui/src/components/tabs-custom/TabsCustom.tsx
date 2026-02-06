@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
+import type { GetThemeValueForKey } from '@tamagui/core'
 import type { XStackProps } from '@tamagui/stacks'
 import { YStack, XStack } from '@tamagui/stacks'
 import { Text } from 'tamagui'
@@ -57,7 +58,7 @@ const getTabsListStyles = (variant: 'line' | 'pill' | 'enclosed') => {
       backgroundColor: '$backgroundSecondary',
       padding: '$1',
       borderRadius: 16,
-    } as any
+    } as unknown as XStackProps
   }
 
   // enclosed
@@ -155,12 +156,12 @@ export function TabsCustom({
         opacity: isDisabled ? 0.5 : 1,
         pressStyle: { opacity: isDisabled ? 0.5 : 0.8 },
         borderBottomWidth: 2,
-        borderBottomColor: isActive ? (theme.primary9?.val ?? '#0ea5e9') : 'transparent',
+        borderBottomColor: (isActive ? (theme.primary9?.val ?? '#0ea5e9') : 'transparent') as GetThemeValueForKey<'borderBottomColor'>,
         style: { ...baseStyle, borderRadius: 0 },
         hoverStyle: {
-          borderBottomColor: isActive ? theme.primary9?.val : theme.borderColorHover?.val,
+          borderBottomColor: (isActive ? (theme.primary9?.val ?? '') : (theme.borderColorHover?.val ?? '')) as GetThemeValueForKey<'borderBottomColor'>,
         },
-      } as any
+      } as unknown as XStackProps
     }
 
     if (tabVariant === 'pill') {
@@ -181,7 +182,7 @@ export function TabsCustom({
             ? theme.primary9?.val
             : (theme.backgroundTertiary?.val ?? '#f3f4f6'),
         },
-      } as any
+      } as unknown as XStackProps
     }
 
     // enclosed variant
@@ -201,7 +202,7 @@ export function TabsCustom({
       hoverStyle: {
         borderColor: theme.borderColorHover?.val,
       },
-    } as any
+    } as unknown as XStackProps
   }
 
   return (
@@ -249,9 +250,9 @@ export function TabsCustom({
                       : (theme.backgroundTertiary?.val ?? '#f3f4f6')
                   }
                   color={
-                    isActive && variant === 'pill'
-                      ? (theme.color1?.val as any ?? '#fff')
-                      : (theme.color11?.val as any ?? '#374151')
+                    (isActive && variant === 'pill'
+                      ? (theme.color1?.val ?? '#fff')
+                      : (theme.color11?.val ?? '#374151')) as GetThemeValueForKey<'color'>
                   }
                   fontSize="$2"
                   px="$2"

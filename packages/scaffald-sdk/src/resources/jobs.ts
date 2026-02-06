@@ -235,19 +235,28 @@ export class Jobs extends Resource {
       }>
     }>
   }> {
+    type JobWithDetails = {
+      jobId: string
+      title: string | null
+      slug: string | null
+      organization: unknown
+      matchScore: number | null
+      totalRequirements: number
+      details: Array<{
+        skillId: string
+        skillName: string | null
+        category: string | null
+        requiredImportance: number
+        userRating: number | null
+        meetsRequirement: boolean | null
+        contribution: number
+      }>
+    }
     const res = await this.get<{
       data: {
         total: number
         needsSelfAssessment: boolean
-        jobs: Array<{
-          jobId: string
-          title: string | null
-          slug: string | null
-          organization: unknown
-          matchScore: number | null
-          totalRequirements: number
-          details: unknown[]
-        }>
+        jobs: JobWithDetails[]
       }
     }>('/v1/jobs/soft-skills-match', params as Record<string, string | number | undefined>)
     const data = res.data

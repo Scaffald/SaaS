@@ -673,7 +673,7 @@ export function SkillSearchModal({
               size="$3"
             >
               <Slider.Track background="$color4" height={6}>
-                <Slider.TrackActive background={getProficiencyColor(proficiency) as any} />
+                <Slider.TrackActive background={getProficiencyColor(proficiency) as string} />
               </Slider.Track>
               <Slider.Thumb index={0} circular size="$1" />
             </Slider>

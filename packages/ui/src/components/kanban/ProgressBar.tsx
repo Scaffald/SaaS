@@ -33,11 +33,11 @@ export const ProgressBar = memo(
       <Progress
         value={clampedValue}
         max={100}
-        background={backgroundColor as any}
+        background={backgroundColor as string}
         style={{ borderRadius: 4 }}
         height={size}
       >
-        <Progress.Indicator background={color as any} style={{ borderRadius: 4 }} animation="quick" />
+        <Progress.Indicator background={color as string} style={{ borderRadius: 4 }} animation="quick" />
       </Progress>
     )
   }

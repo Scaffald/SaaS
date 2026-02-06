@@ -18,9 +18,9 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@scaffald/sdk": "workspace:*",
     "@react-navigation/drawer": "^7.5.8",
     "@rehookify/datepicker": "^6.6.6",
+    "@scaffald/sdk": "workspace:*",
     "@scf/schemas": "workspace:*",
     "@scf/supabase": "workspace:*",
     "@sentry/react": "^10.28.0",

@@ -56,8 +56,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "build-storybook": "storybook build",
     "build:esbuild": "node scripts/build.mjs",
+    "build-storybook": "storybook build",
     "check": "tamagui check",
     "check:type": "tsc --noEmit",
     "format": "biome format ./src",

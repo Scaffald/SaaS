@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { CheckCircle, AlertTriangle, XCircle, Info, X } from 'lucide-react'
-import { Text } from 'tamagui'
+import type { GetThemeValueForKey } from '@tamagui/core'
 import { useTheme } from '@tamagui/core'
+import { Text } from 'tamagui'
 import { YStack, XStack } from '@tamagui/stacks'
 import { Button } from '../buttons/Button'
 
@@ -113,12 +114,12 @@ export default function Alert({
               fontSize="$2"
               fontWeight="600"
               style={{ marginBottom: 4 }}
-              color={config.titleColor as any}
+              color={config.titleColor as GetThemeValueForKey<'color'>}
             >
               {title}
             </Text>
           )}
-          <Text fontSize="$2" color={config.textColor as any}>
+          <Text fontSize="$2" color={config.textColor as GetThemeValueForKey<'color'>}>
             {children}
           </Text>
         </YStack>

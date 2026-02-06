@@ -25,7 +25,8 @@
       "!!**/tests/reports/coverage",
       "!!**/.turbo",
       "!!**/.nx",
-      "!!**/.storybook"
+      "!!**/.storybook",
+      "!!**/packages/supabase/scripts/seed-universities.json"
     ]
   },
   "formatter": {

@@ -113,10 +113,9 @@ export const CookiePreferencesDialog = () => {
             bg="$background"
             p="$5"
             gap="$4"
-            borderRadius="$4"
-            maxHeight={600}
-            elevate
             style={{
+              borderRadius: 16,
+              maxHeight: 600,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.15,
@@ -136,7 +135,7 @@ export const CookiePreferencesDialog = () => {
               <Button size="$2" circular chromeless icon={X} onPress={closePreferences} />
             </XStack>
 
-            <Paragraph size="$4" marginBottom="$4">
+            <Paragraph size="$4" style={{ marginBottom: 16 }}>
               Choose which categories of cookies to allow. Required cookies stay active because they
               keep critical features running safely.
             </Paragraph>
@@ -153,7 +152,7 @@ export const CookiePreferencesDialog = () => {
                 ))}
               </YStack>
             </ScrollView>
-            <Separator marginVertical="$4" />
+            <Separator style={{ marginVertical: 16 }} />
             <XStack
               gap="$3"
               style={{ justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap' }}

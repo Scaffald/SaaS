@@ -1,4 +1,5 @@
 import { Check } from '@tamagui/lucide-icons'
+import type { GetThemeValueForKey } from '@tamagui/core'
 import { View } from '@tamagui/core'
 import { Platform } from 'react-native'
 
@@ -114,8 +115,8 @@ export function Checkbox({
     <View
       width={sizeStyles[size].width}
       height={sizeStyles[size].height}
-      background={checkedStyles[checked ? 'checked' : 'unchecked'].background as any}
-      borderColor={checkedStyles[checked ? 'checked' : 'unchecked'].borderColor as any}
+      background={checkedStyles[checked ? 'checked' : 'unchecked'].background as string}
+      borderColor={checkedStyles[checked ? 'checked' : 'unchecked'].borderColor as GetThemeValueForKey<'borderColor'>}
       cursor={disabled ? 'not-allowed' : 'pointer'}
       animation="quick"
       overflow="hidden"

@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import type { GetThemeValueForKey } from '@tamagui/core'
 import { Text } from 'tamagui'
 import { XStack } from '@tamagui/stacks'
 
@@ -38,7 +39,7 @@ export const CardBadges = memo(
             <XStack
               key={badge.key}
               background={badge.bg ?? '$blue10'}
-              borderColor={(badge.bg ?? '$blue10') as any}
+              borderColor={(badge.bg ?? '$blue10') as GetThemeValueForKey<'borderColor'>}
               borderWidth={1}
               style={{
                 alignItems: 'center',
@@ -49,7 +50,7 @@ export const CardBadges = memo(
               gap="$1"
             >
               <XStack style={{ alignItems: 'center' }}>{badge.icon}</XStack>
-              <Text fontSize="$2" color={(badge.color as any) ?? '$color1'}>
+              <Text fontSize="$2" color={(badge.color as GetThemeValueForKey<'color'>) ?? '$color1'}>
                 {badge.label}
               </Text>
             </XStack>
@@ -57,7 +58,7 @@ export const CardBadges = memo(
             <Chip
               key={badge.key}
               background={badge.bg ?? '$blue10'}
-              color={(badge.color as any) ?? '$color1'}
+              color={(badge.color as GetThemeValueForKey<'color'>) ?? '$color1'}
               fontSize="$2"
               style={{ paddingHorizontal: 8, paddingVertical: 4 }}
             >

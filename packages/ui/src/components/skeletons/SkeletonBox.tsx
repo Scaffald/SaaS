@@ -1,4 +1,4 @@
-import type { SizeTokens } from '@tamagui/core'
+import type { GetThemeValueForKey, SizeTokens } from '@tamagui/core'
 import { View } from '@tamagui/core'
 
 export interface SkeletonBoxProps {
@@ -25,8 +25,8 @@ export const SkeletonBox = ({
       background="$color3"
       overflow="hidden"
       opacity={animated ? 0.6 : 0.5}
-      width={width as any}
-      height={height as any}
+      width={width as GetThemeValueForKey<'width'> | number | undefined}
+      height={height as GetThemeValueForKey<'height'> | number | undefined}
       aria-busy={true}
       aria-label="Loading content"
       style={{ borderRadius: borderRadiusValue as number }}

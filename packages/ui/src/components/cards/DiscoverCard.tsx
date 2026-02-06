@@ -1,5 +1,5 @@
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@tamagui/core'
+import type { GetThemeValueForKey, TamaguiElement } from '@tamagui/core'
 import type { CardProps } from '@tamagui/card'
 import { Card } from '@tamagui/card'
 
@@ -168,9 +168,9 @@ export const DiscoverCard = memo(
           ref={ref}
           bordered
           cursor={resolvedInteractive ? (cursorProp ?? 'pointer') : cursorProp}
-          p={resolvedPadding as any}
+          p={resolvedPadding as GetThemeValueForKey<'padding'> | number}
           background={resolvedBg as string}
-          borderColor={resolvedBorderColor as any}
+          borderColor={resolvedBorderColor as GetThemeValueForKey<'borderColor'>}
           borderWidth={resolvedBorderWidth}
           boxShadow={resolvedShadow}
           hoverStyle={resolvedInteractive ? (hoverStyle as Record<string, unknown>) : hoverStyleProp}

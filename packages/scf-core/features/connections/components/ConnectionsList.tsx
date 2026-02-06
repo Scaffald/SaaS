@@ -81,7 +81,7 @@ export function ConnectionsList() {
         await removeConnectionMutation.mutateAsync({ connectionId })
       }
     },
-    [removeConnectionMutation.mutateAsync]
+    [removeConnectionMutation.mutateAsync, removeConnectionMutation]
   )
 
   const handleExportCSV = () => {

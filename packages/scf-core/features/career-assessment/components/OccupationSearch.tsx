@@ -83,7 +83,7 @@ export function OccupationSearch({
         console.warn('Failed to track occupation search:', error)
       }
     }
-  }, [debouncedSearch, data?.occupations, isLoading, trackEventMutation.mutate])
+  }, [debouncedSearch, data?.occupations, isLoading, trackEventMutation.mutate, trackEventMutation])
 
   // Get selected occupation title
   useEffect(() => {
