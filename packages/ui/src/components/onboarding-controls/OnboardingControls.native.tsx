@@ -1,5 +1,7 @@
 import { ChevronRight } from '@tamagui/lucide-icons'
-import { Theme, XStack } from '@unicornlove/ui'
+import { Theme } from '@tamagui/core'
+import { XStack } from '@tamagui/stacks'
+
 import { Button } from '../buttons/Button'
 
 import type { OnboardingControlsProps } from './OnboardingControls'
@@ -24,13 +26,13 @@ export const OnboardingControls = ({
 
   return (
     <Theme name="primary">
-      <XStack justifyContent="space-between" alignItems="center" padding="$5" gap="$5">
+      <XStack justifyContent="space-between" style={{ alignItems: 'center' }} p="$5" gap="$5">
         <Button
           chromeless
           pressStyle={{
             backgroundColor: '$color4',
           }}
-          borderRadius="$10"
+          br="$10"
           onPress={() => handleSkip()}
         >
           <Button.Text color="$color10" fontWeight="700">
@@ -40,9 +42,9 @@ export const OnboardingControls = ({
 
         <Button
           flex={1}
-          borderRadius="$10"
+          br="$10"
           borderWidth={0}
-          backgroundColor="$color8"
+          background="$color8"
           pressStyle={{
             backgroundColor: '$color9',
             scale: 0.98,

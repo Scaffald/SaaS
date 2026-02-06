@@ -118,7 +118,7 @@ export function AddressAutocomplete({
         }
 
         return (
-          <YStack gap="$1" flex={1} alignItems="flex-start">
+          <YStack gap="$1" flex={1} style={{ alignItems: 'flex-start' }}>
             <SizableText fontSize="$4" color="$color12" fontWeight="600" numberOfLines={1}>
               {address.streetAddress}
             </SizableText>

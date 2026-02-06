@@ -43,9 +43,8 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>((props, ref
     enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 } as const}
     exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 } as const}
     gap="$4"
-    backgroundColor="$background"
-    minWidth={400}
-    maxWidth="90vw"
+    background="$background"
+    style={{ minWidth: 400, maxWidth: '90vw' }}
     {...props}
   />
 ))

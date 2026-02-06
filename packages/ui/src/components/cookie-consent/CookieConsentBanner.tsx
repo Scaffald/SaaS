@@ -1,18 +1,12 @@
 import { useState } from 'react'
-import {
-  Anchor,
-  AnimatePresence,
-  Button,
-  Card,
-  type CardProps,
-  Paragraph,
-  SizableText,
-  type StackProps,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+import type { CardProps } from '@tamagui/card'
+import { Card } from '@tamagui/card'
+import { Paragraph, SizableText, AnimatePresence, Anchor } from 'tamagui'
+import type { StackProps } from '@tamagui/core'
+import { XStack, YStack } from '@tamagui/stacks'
 
 import { useCookieConsent } from './CookieConsentProvider'
+import { Button } from '../buttons/Button'
 
 export interface CookieConsentBannerProps extends CardProps {
   containerProps?: StackProps
@@ -34,18 +28,20 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
           animation="quick"
           enterStyle={{ opacity: 0, y: 16 }}
           exitStyle={{ opacity: 0, y: 16 }}
-          position="absolute"
-          bottom="$6"
-          left="50%"
-          maxWidth={500}
           flex={1}
-          zIndex={1000}
-          transform={[{ translateX: '-50%' }]}
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            left: '50%',
+            zIndex: 1000,
+            transform: 'translateX(-50%)',
+            maxWidth: 500,
+          }}
           {...containerProps}
         >
-          <Card elevate size="$4" padding="$5" gap="$3" {...cardProps}>
-            <XStack gap="$4" alignItems="flex-start" flexWrap="wrap" $sm={{ alignItems: 'center' }}>
-              <YStack flex={1} gap="$2" minWidth={220}>
+          <Card elevate size="$4" p="$5" gap="$3" {...cardProps}>
+            <XStack gap="$4" style={{ alignItems: 'flex-start', flexWrap: 'wrap' }}>
+              <YStack flex={1} gap="$2" style={{ minWidth: 220 }}>
                 <SizableText size="$6" fontWeight="700">
                   This site uses cookies
                 </SizableText>
@@ -61,8 +57,8 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                   to learn more.
                 </Paragraph>
               </YStack>
-              <XStack gap="$2" width="100%" justifyContent="space-between">
-                <Button size="$3" onPress={openPreferences} borderColor="$color6">
+              <XStack gap="$2" width="100%" style={{ justifyContent: 'space-between' }}>
+                <Button size="$3" onPress={openPreferences} borderColor="$color6" type="button">
                   Manage
                 </Button>
 

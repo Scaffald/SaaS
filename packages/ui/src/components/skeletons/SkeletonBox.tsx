@@ -1,5 +1,5 @@
-import type { SizeTokens } from '@unicornlove/ui'
-import { View } from '@unicornlove/ui'
+import type { SizeTokens } from '@tamagui/core'
+import { View } from '@tamagui/core'
 
 export interface SkeletonBoxProps {
   /** Width of the skeleton box */
@@ -22,7 +22,7 @@ export const SkeletonBox = ({
   return (
     <View
       background="$color3"
-      borderRadius={borderRadius}
+      br={borderRadius}
       overflow="hidden"
       opacity={animated ? 0.6 : 0.5}
       width={width}

@@ -1,6 +1,8 @@
 import { memo } from 'react'
-import type { SizeTokens } from '@unicornlove/ui'
-import { Avatar, Text, XStack } from '@unicornlove/ui'
+import type { SizeTokens } from '@tamagui/core'
+import { Avatar } from '@tamagui/avatar'
+import { Text } from 'tamagui'
+import { XStack } from '@tamagui/stacks'
 
 export interface AvatarGroupAvatar {
   /** Optional image source URL */
@@ -46,7 +48,7 @@ export const AvatarGroup = memo(({ avatars, maxVisible = 5, size = '$4' }: Avata
   const overflowCount = avatars.length - maxVisible
 
   return (
-    <XStack alignItems="center" gap="$1">
+    <XStack style={{ alignItems: 'center' }} gap="$1">
       {displayAvatars.map((avatar, index) => (
         <Avatar
           key={`${avatar.name}-${index}`}

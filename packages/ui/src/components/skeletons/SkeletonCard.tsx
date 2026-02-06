@@ -1,5 +1,5 @@
-import { XStack, YStack } from '@unicornlove/ui'
 import { borderRadius } from '../../config/radii'
+import { XStack, YStack } from '@tamagui/stacks'
 import { spacing } from '../../config/spacing'
 import { SkeletonAvatar } from './SkeletonAvatar'
 import { SkeletonBox } from './SkeletonBox'
@@ -15,13 +15,13 @@ export function SkeletonCard({ variant: _variant = 'job' }: SkeletonCardProps) {
     <YStack
       gap={spacing.md}
       padding={spacing.lg}
-      backgroundColor="$background"
+      background="$background"
       borderWidth={1}
       borderColor="$borderColor"
-      borderRadius={borderRadius['3xl']}
+      br={borderRadius['3xl']}
     >
       {/* Header with avatar and title */}
-      <XStack gap={spacing.md} alignItems="center">
+      <XStack gap={spacing.md} style={{ alignItems: 'center' }}>
         <SkeletonAvatar size="medium" />
         <YStack flex={1} gap={spacing.sm}>
           <SkeletonText width="70%" />

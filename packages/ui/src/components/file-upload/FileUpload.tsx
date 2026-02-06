@@ -1,6 +1,8 @@
 import { AlertCircle, Upload, X } from '@tamagui/lucide-icons'
+import { Spinner, Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 import { type MouseEvent, type ReactNode, useId, useMemo, useState } from 'react'
-import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+
 import { Button } from '../buttons/Button'
 import type { UploadSelection } from '../upload/UploadSurface'
 import { UploadSurface } from '../upload/UploadSurface'
@@ -82,11 +84,13 @@ export function FileUpload({
           <YStack
             borderWidth={2}
             borderColor={isDragActive ? '$blue8' : displayError ? '$red8' : '$borderColor'}
-            borderStyle={isDragActive ? 'solid' : 'dashed'}
-            borderRadius="$4"
-            padding="$4"
-            backgroundColor={isDragActive ? '$blue2' : '$background'}
+            p="$4"
+            background={isDragActive ? '$blue2' : '$background'}
             opacity={disabled ? 0.5 : 1}
+            style={{
+              borderStyle: isDragActive ? 'solid' : 'dashed',
+              borderRadius: 16,
+            }}
             {...(getRootProps({
               onClick: (event: MouseEvent) => event.preventDefault(),
             }) as Record<string, unknown>)}
@@ -100,19 +104,21 @@ export function FileUpload({
               }) as Record<string, unknown>)}
             />
 
-            <YStack gap="$3" alignItems="center">
+            <YStack gap="$3" style={{ alignItems: 'center' }}>
               <YStack
                 width={48}
                 height={48}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="$4"
-                backgroundColor="$blue3"
+                background="$blue3"
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 16,
+                }}
               >
                 {isProcessing ? <Spinner size="large" /> : resolvedIcon}
               </YStack>
 
-              <YStack gap="$1" alignItems="center">
+              <YStack gap="$1" style={{ alignItems: 'center' }}>
                 <Text fontWeight="600">
                   {fileNameToShow
                     ? fileNameToShow
@@ -160,10 +166,12 @@ export function FileUpload({
           {displayError && (
             <XStack
               gap="$2"
-              alignItems="center"
-              padding="$2"
-              backgroundColor="$red2"
-              borderRadius="$3"
+              p="$2"
+              background="$red2"
+              style={{
+                alignItems: 'center',
+                borderRadius: 12,
+              }}
             >
               <AlertCircle size={16} color="$red10" />
               <Text fontSize="$2" color="$red10">

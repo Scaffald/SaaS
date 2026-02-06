@@ -1,5 +1,6 @@
-import { Spinner, Text, YStack } from '@unicornlove/ui'
 import { ChecklistHeader } from './ChecklistHeader'
+import { Spinner, Text } from 'tamagui'
+import { YStack } from '@tamagui/stacks'
 import { ChecklistList } from './ChecklistList'
 import { ChecklistProgress } from './ChecklistProgress'
 import type { ChecklistProps } from './types'
@@ -28,7 +29,7 @@ export const Checklist = ({
 }: ChecklistProps) => {
   if (isLoading) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+      <YStack gap="$4" p="$4" flex={1} style={{ justifyContent: 'center', alignItems: 'center' }}>
         <Spinner size="large" />
         <Text color="$color10">Loading...</Text>
       </YStack>
@@ -36,7 +37,7 @@ export const Checklist = ({
   }
 
   return (
-    <YStack gap="$4" padding="$4">
+    <YStack gap="$4" p="$4">
       {(title || subtitle) && <ChecklistHeader title={title} subtitle={subtitle} />}
       {showProgress && <ChecklistProgress completionPercentage={completionPercentage} />}
       <ChecklistList items={items} onItemPress={onItemPress} />

@@ -1,17 +1,13 @@
 import type { AdaptWhen } from '@tamagui/adapt'
+import { Adapt } from '@tamagui/adapt'
 import { ChevronRight } from '@tamagui/lucide-icons'
+import { Popover } from '@tamagui/popover'
+import { Sheet } from '@tamagui/sheet'
+import { XStack, YStack } from '@tamagui/stacks'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
 import { Link, useRouter } from 'expo-router'
 import { Fragment, memo, useCallback, useMemo, useState } from 'react'
-import {
-  Adapt,
-  Popover,
-  ScrollView,
-  Sheet,
-  Text,
-  useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+import { ScrollView, Text } from 'tamagui'
 import { Button } from '../buttons/Button'
 
 export interface BreadcrumbSibling {
@@ -173,8 +169,8 @@ export const Breadcrumb = memo(function Breadcrumb({
     }
 
     const dropdownContent = (
-      <YStack gap="$2" padding="$2" minWidth={200} maxHeight={300}>
-        <ScrollView maxHeight={300}>
+      <YStack gap="$2" style={{ padding: 8, minWidth: 200, maxHeight: 300 }}>
+        <ScrollView style={{ height: 300 }}>
           {hiddenItems.map((item, idx) => {
             const actualIndex = hiddenStartIndex + idx
             const isActive = item.isActive ?? false
@@ -184,7 +180,7 @@ export const Breadcrumb = memo(function Breadcrumb({
                 size="$3"
                 variant={isActive ? 'outlined' : 'ghost'}
                 onPress={() => handleHiddenItemPress(item, actualIndex)}
-                justifyContent="flex-start"
+                style={{ justifyContent: 'flex-start' }}
                 aria-label={`Navigate to ${item.label}`}
                 role="menuitem"
               >
@@ -213,7 +209,7 @@ export const Breadcrumb = memo(function Breadcrumb({
           <XStack
             cursor="pointer"
             pressStyle={{ opacity: 0.7 }}
-            alignItems="center"
+            style={{ alignItems: 'center' }}
             gap="$1"
             aria-label="Show hidden breadcrumb items"
             aria-expanded={ellipsisOpen}
@@ -232,10 +228,10 @@ export const Breadcrumb = memo(function Breadcrumb({
             snapPoints={[50]}
           >
             <Sheet.Overlay />
-            <Sheet.Frame padding="$4">
+            <Sheet.Frame style={{ padding: 16 }}>
               <Sheet.Handle />
-              <YStack gap="$2" paddingTop="$2">
-                <Text fontSize={16} fontWeight="600" marginBottom="$2">
+              <YStack gap="$2" style={{ paddingTop: 8 }}>
+                <Text fontSize={16} fontWeight="600" style={{ marginBottom: 8 }}>
                   Hidden Breadcrumb Items
                 </Text>
                 {dropdownContent}
@@ -244,10 +240,10 @@ export const Breadcrumb = memo(function Breadcrumb({
           </Sheet>
         </Adapt>
         <Popover.Content
-          padding={0}
+          style={{ padding: 0 }}
           borderWidth={1}
           borderColor="$borderColor"
-          backgroundColor="$background"
+          background="$background"
           elevation={4}
           enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
           exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
@@ -260,7 +256,12 @@ export const Breadcrumb = memo(function Breadcrumb({
   }
 
   return (
-    <XStack alignItems="center" gap="$2" flexWrap="wrap" aria-label="Breadcrumb navigation">
+    <XStack
+      style={{ alignItems: 'center' }}
+      gap="$2"
+      flexWrap="wrap"
+      aria-label="Breadcrumb navigation"
+    >
       {showEllipsis && showEllipsisDropdown && hiddenItems.length > 0 ? (
         <>
           {renderEllipsisDropdown()}

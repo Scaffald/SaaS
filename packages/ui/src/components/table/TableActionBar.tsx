@@ -1,6 +1,9 @@
 import { Plus, SlidersHorizontal } from '@tamagui/lucide-icons'
+import { Input, Paragraph } from 'tamagui'
+import { Separator } from '@tamagui/separator'
+import { XStack, YStack } from '@tamagui/stacks'
 import type { ReactNode } from 'react'
-import { Input, Paragraph, Separator, XStack, YStack } from '@unicornlove/ui'
+
 import { Button } from '../buttons/Button'
 
 export interface TableActionBarProps {
@@ -84,13 +87,13 @@ export function TableActionBar({
     <YStack gap="$2" width="100%">
       <XStack
         width="100%"
-        alignItems="center"
-        justifyContent="space-between"
+        style={{ alignItems: 'center' }}
+        style={{ justifyContent: 'space-between' }}
         gap="$4"
-        flexWrap="wrap"
+        style={{ flexWrap: 'wrap' }}
       >
         <YStack gap="$2">
-          <XStack gap="$2" alignItems="center">
+          <XStack gap="$2" style={{ alignItems: 'center' }}>
             {leftAccessory}
             <Button icon={Plus} disabled={addDisabled} onPress={onAddPress}>
               {addLabel}
@@ -107,7 +110,7 @@ export function TableActionBar({
           {helperText ? <Paragraph size="$3">{helperText}</Paragraph> : null}
         </YStack>
 
-        <XStack gap="$2" alignItems="center">
+        <XStack gap="$2" style={{ alignItems: 'center' }}>
           <Input
             width={280}
             value={searchValue}

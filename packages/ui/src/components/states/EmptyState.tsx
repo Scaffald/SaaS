@@ -1,30 +1,31 @@
-import type { ComponentType, ReactNode } from 'react';
-import { YStack, XStack, Text } from '@unicornlove/ui';
-import { Button } from '../buttons';
-import type { ButtonProps } from '../buttons';
+import type { ComponentType, ReactNode } from 'react'
+import { YStack, XStack } from '@tamagui/stacks'
+import { Text } from 'tamagui'
+import { Button } from '../buttons'
+import type { ButtonProps } from '../buttons'
 
 /**
  * EmptyState component props
  */
 export interface EmptyStateProps {
   /** Icon component to display (receives size and color props) */
-  icon?: ComponentType<{ size?: number; color?: string }>;
+  icon?: ComponentType<{ size?: number; color?: string }>
   /** Primary message */
-  title: string;
+  title: string
   /** Optional descriptive text */
-  description?: string;
+  description?: string
   /** Primary action button configuration */
   action?: {
-    label: string;
-    onClick: () => void;
-  } & Partial<ButtonProps>;
+    label: string
+    onClick: () => void
+  } & Partial<ButtonProps>
   /** Secondary action button configuration */
   secondaryAction?: {
-    label: string;
-    onClick: () => void;
-  } & Partial<ButtonProps>;
+    label: string
+    onClick: () => void
+  } & Partial<ButtonProps>
   /** Optional custom content to display below description */
-  children?: ReactNode;
+  children?: ReactNode
 }
 
 /**
@@ -75,43 +76,37 @@ export function EmptyState({
   children,
 }: EmptyStateProps) {
   return (
-    <YStack alignItems="center" paddingVertical="$12" paddingHorizontal="$4">
+    <YStack style={{ alignItems: 'center' }} py="$12" px="$4">
       {Icon && (
-        <XStack justifyContent="center" marginBottom="$4">
+        <XStack style={{ justifyContent: 'center' }} mb="$4">
           <XStack
             width={64}
             height={64}
-            borderRadius="$full"
-            backgroundColor="$gray3"
-            alignItems="center"
-            justifyContent="center"
+            br="$full"
+            background="$gray3"
+            style={{ alignItems: 'center' }}
+            style={{ justifyContent: 'center' }}
           >
             <Icon size={32} color="$gray9" />
           </XStack>
         </XStack>
       )}
-      <Text
-        fontSize="$4"
-        fontWeight="600"
-        color="$color11"
-        marginBottom="$2"
-        style={{ textAlign: 'center' }}
-      >
+      <Text fontSize="$4" fontWeight="600" color="$color11" mb="$2" style={{ textAlign: 'center' }}>
         {title}
       </Text>
       {description && (
-        <Text
-          color="$color10"
-          marginHorizontal="auto"
-          marginBottom="$6"
-          style={{ textAlign: 'center', maxWidth: 448 }}
-        >
+        <Text color="$color10" mx="auto" mb="$6" style={{ textAlign: 'center', maxWidth: 448 }}>
           {description}
         </Text>
       )}
       {children}
       {(action || secondaryAction) && (
-        <XStack alignItems="center" justifyContent="center" gap="$3" marginTop="$6">
+        <XStack
+          style={{ alignItems: 'center' }}
+          style={{ justifyContent: 'center' }}
+          gap="$3"
+          mt="$6"
+        >
           {action && (
             <Button
               onPress={action.onClick}
@@ -135,5 +130,5 @@ export function EmptyState({
         </XStack>
       )}
     </YStack>
-  );
+  )
 }

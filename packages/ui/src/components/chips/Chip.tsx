@@ -11,10 +11,9 @@ export type ChipProps = TextProps & {
 
 const ChipBase = styled(Text, {
   name: 'Chip',
-  backgroundColor: '$background',
+  background: '$background',
   borderColor: '$borderColor',
   borderWidth: 1,
-  borderRadius: '$4',
   paddingHorizontal: '$3',
   paddingVertical: '$2',
   fontSize: '$3',
@@ -23,28 +22,28 @@ const ChipBase = styled(Text, {
   variants: {
     variant: {
       default: {
-        backgroundColor: '$background',
+        background: '$background',
         borderColor: '$borderColor',
       },
       filled: {
-        backgroundColor: '$blue9',
+        background: '$blue9',
         color: '$blue1',
         borderColor: '$blue9',
       },
     },
     priority: {
       high: {
-        backgroundColor: '$green3',
+        background: '$green3',
         color: '$green10',
         borderColor: '$green10',
       },
       medium: {
-        backgroundColor: '$blue3',
+        background: '$blue3',
         color: '$blue10',
         borderColor: '$blue10',
       },
       low: {
-        backgroundColor: '$red3',
+        background: '$red3',
         color: '$red10',
         borderColor: '$red10',
       },
@@ -54,6 +53,6 @@ const ChipBase = styled(Text, {
   defaultVariants: {
     variant: 'default',
   },
-})
+} as any)
 
 export const Chip = ChipBase as unknown as typeof Text & ((props: ChipProps) => ReactElement)

@@ -1,5 +1,7 @@
-import { Text, View, XStack, YStack } from '@unicornlove/ui'
 import { Button } from '../buttons/Button'
+import { Text } from 'tamagui'
+import { View } from '@tamagui/core'
+import { XStack, YStack } from '@tamagui/stacks'
 import type { ChecklistItemProps } from './types'
 
 /**
@@ -13,37 +15,41 @@ export const ChecklistItem = ({ item, onPress }: ChecklistItemProps) => {
   return (
     <Button
       onPress={onPress}
-      backgroundColor="$color1"
+      background="$color1"
       borderColor="$color6"
       borderWidth={1}
-      borderRadius="$4"
-      paddingVertical="$4"
-      paddingHorizontal="$3"
+      py="$4"
+      px="$3"
       height="auto"
       pressStyle={{
-        backgroundColor: '$color2',
+        background: '$color2',
         borderColor: '$color7',
       }}
       hoverStyle={{
-        backgroundColor: '$color2',
+        background: '$color2',
         borderColor: '$color7',
       }}
-      justifyContent="flex-start"
-      alignItems="flex-start"
+      style={{
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        borderRadius: 16,
+      }}
       disabled={!onPress}
     >
-      <XStack alignItems="flex-start" gap="$3" flex={1}>
+      <XStack style={{ alignItems: 'flex-start' }} gap="$3" flex={1}>
         {/* Status Indicator */}
         <View
           width={24}
           height={24}
-          backgroundColor={item.complete ? '$green9' : '$color6'}
+          background={item.complete ? '$green9' : '$color6'}
           borderColor={item.complete ? '$green9' : '$color6'}
           borderWidth={1}
-          borderRadius="$10"
-          alignItems="center"
-          justifyContent="center"
-          marginTop="$1"
+          mt="$1"
+          style={{
+            borderRadius: 100,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
           {item.complete && (
             <Text fontSize="$1" color="white" fontWeight="bold">

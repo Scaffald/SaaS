@@ -1,6 +1,10 @@
 import { Clock, Eye, MessageSquare, MoreVertical, Paperclip } from '@tamagui/lucide-icons'
+import { Avatar } from '@tamagui/avatar'
+import { Card } from '@tamagui/card'
+import { Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 import { memo, useState } from 'react'
-import { Avatar, Card, Text, XStack, YStack } from '@unicornlove/ui'
+
 import { Button } from '../buttons/Button'
 import { Chip } from '../chips/Chip'
 import { ProgressBar } from './ProgressBar'
@@ -102,8 +106,8 @@ export const KanbanCard = memo(
     return (
       <Card
         data-testid={`kanban-card-${id}`}
-        padding="$4"
-        backgroundColor={isSelected ? '$blue3' : '$background'}
+        p="$4"
+        background={isSelected ? '$blue3' : '$background'}
         borderWidth={isSelected ? 2 : 0}
         borderColor="$blue9"
         borderRadius="$4"
@@ -121,7 +125,7 @@ export const KanbanCard = memo(
         cursor="pointer"
       >
         {/* Header: Selection checkbox and quick actions */}
-        <XStack justifyContent="space-between" alignItems="flex-start">
+        <XStack justifyContent="space-between" style={{ alignItems: 'flex-start' }}>
           {onToggleSelection && (
             <Button
               size="$2"
@@ -131,9 +135,8 @@ export const KanbanCard = memo(
                 e.stopPropagation()
                 onToggleSelection()
               }}
-              backgroundColor={isSelected ? '$blue9' : '$color5'}
-              alignItems="center"
-              justifyContent="center"
+              background={isSelected ? '$blue9' : '$color5'}
+              style={{ alignItems: 'center', justifyContent: 'center' }}
               width={24}
               height={24}
             >
@@ -155,9 +158,9 @@ export const KanbanCard = memo(
                     e.stopPropagation()
                     onView()
                   }}
-                  backgroundColor="$color5"
-                  alignItems="center"
-                  justifyContent="center"
+                  background="$color5"
+                  style={{ alignItems: 'center' }}
+                  style={{ justifyContent: 'center' }}
                   width={24}
                   height={24}
                   hoverStyle={{ backgroundColor: '$color6' }}
@@ -174,9 +177,9 @@ export const KanbanCard = memo(
                     e.stopPropagation()
                     onEdit()
                   }}
-                  backgroundColor="$color5"
-                  alignItems="center"
-                  justifyContent="center"
+                  background="$color5"
+                  style={{ alignItems: 'center' }}
+                  style={{ justifyContent: 'center' }}
                   width={24}
                   height={24}
                   hoverStyle={{ backgroundColor: '$color6' }}
@@ -189,10 +192,10 @@ export const KanbanCard = memo(
         </XStack>
 
         {/* Applicant Info */}
-        <XStack gap="$3" alignItems="flex-start">
+        <XStack gap="$3" style={{ alignItems: 'flex-start' }}>
           <Avatar circular size="$4">
             {applicantAvatar ? <Avatar.Image src={applicantAvatar} /> : null}
-            <Avatar.Fallback backgroundColor="$blue9">
+            <Avatar.Fallback background="$blue9">
               <Text color="white" fontWeight="600" fontSize="$3">
                 {applicantName.charAt(0).toUpperCase()}
               </Text>
@@ -211,13 +214,8 @@ export const KanbanCard = memo(
 
         {/* Score Badge and Progress */}
         <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
-            <Chip
-              priority={scorePriority}
-              fontSize="$2"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-            >
+          <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
+            <Chip priority={scorePriority} fontSize="$2" px="$2" py="$1">
               {`Score: ${score}`}
             </Chip>
             <Text fontSize="$1" color="$color10">
@@ -229,15 +227,9 @@ export const KanbanCard = memo(
 
         {/* Tags */}
         {tags.length > 0 && (
-          <XStack gap="$2" flexWrap="wrap">
+          <XStack gap="$2" style={{ flexWrap: 'wrap' }}>
             {tags.slice(0, 3).map((tag) => (
-              <Chip
-                key={tag}
-                variant="default"
-                fontSize="$1"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-              >
+              <Chip key={tag} variant="default" fontSize="$1" px="$2" py="$1">
                 {tag}
               </Chip>
             ))}
@@ -250,9 +242,9 @@ export const KanbanCard = memo(
         )}
 
         {/* Metadata Footer */}
-        <XStack gap="$3" alignItems="center" marginTop="$1">
+        <XStack gap="$3" style={{ alignItems: 'center' }} mt="$1">
           {attachmentCount > 0 && (
-            <XStack gap="$1" alignItems="center">
+            <XStack gap="$1" style={{ alignItems: 'center' }}>
               <Paperclip size={12} color="$color10" />
               <Text fontSize="$1" color="$color10">
                 {attachmentCount}
@@ -260,7 +252,7 @@ export const KanbanCard = memo(
             </XStack>
           )}
           {commentCount > 0 && (
-            <XStack gap="$1" alignItems="center">
+            <XStack gap="$1" style={{ alignItems: 'center' }}>
               <MessageSquare size={12} color="$color10" />
               <Text fontSize="$1" color="$color10">
                 {commentCount}
@@ -268,7 +260,7 @@ export const KanbanCard = memo(
             </XStack>
           )}
           {durationText && (
-            <XStack gap="$1" alignItems="center">
+            <XStack gap="$1" style={{ alignItems: 'center' }}>
               <Clock size={12} color="$color10" />
               <Text fontSize="$1" color="$color10">
                 {durationText}

@@ -1,5 +1,7 @@
 import { AlertCircle } from '@tamagui/lucide-icons'
-import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Spinner, Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
+
 import { Button } from '../buttons/Button'
 import { ResponsiveModal } from '../modal/ResponsiveModal'
 
@@ -52,14 +54,14 @@ export function SavingModal({
       size="small"
       showCloseButton={isError}
     >
-      <YStack gap="$4" alignItems="center" padding="$4">
+      <YStack gap="$4" style={{ alignItems: 'center' }} p="$4">
         {isError ? (
           <>
             <AlertCircle size={48} color="$red9" />
             <Text fontSize="$4" color="$color12" style={{ textAlign: 'center' }}>
               {errorMessage || 'Failed to save your changes. Please try again.'}
             </Text>
-            <XStack gap="$3" paddingTop="$2">
+            <XStack gap="$3" pt="$2">
               <Button variant="outlined" onPress={onClose}>
                 Cancel
               </Button>

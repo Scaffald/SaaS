@@ -1,7 +1,9 @@
 import { MoreVertical, Plus } from '@tamagui/lucide-icons'
+import type { GetThemeValueForKey } from '@tamagui/core'
+import { Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 import { memo } from 'react'
-import type { GetThemeValueForKey } from '@unicornlove/ui'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+
 import { Button } from '../buttons/Button'
 
 export interface KanbanColumnHeaderProps {
@@ -37,10 +39,10 @@ export interface KanbanColumnHeaderProps {
 export const KanbanColumnHeader = memo(
   ({ title, count, color, onAdd, onMenuClick }: KanbanColumnHeaderProps) => {
     return (
-      <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
-        <XStack gap="$2" alignItems="center" flex={1}>
+      <XStack justifyContent="space-between" style={{ alignItems: 'center' }} mb="$3">
+        <XStack gap="$2" style={{ alignItems: 'center' }} flex={1}>
           {/* Status color indicator */}
-          <YStack width={8} height={8} borderRadius="$10" backgroundColor={color} />
+          <YStack width={8} height={8} br="$10" background={color} />
 
           {/* Title */}
           <Text fontWeight="600" fontSize="$4" flex={1}>
@@ -48,12 +50,7 @@ export const KanbanColumnHeader = memo(
           </Text>
 
           {/* Count badge */}
-          <YStack
-            backgroundColor="$color5"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
-          >
+          <YStack background="$color5" px="$2" py="$1" br="$2">
             <Text fontSize="$2" fontWeight="600" color="$color11">
               {count}
             </Text>
@@ -61,16 +58,15 @@ export const KanbanColumnHeader = memo(
         </XStack>
 
         {/* Action buttons */}
-        <XStack gap="$1" alignItems="center">
+        <XStack gap="$1" style={{ alignItems: 'center' }}>
           {onAdd && (
             <Button
               size="$2"
               circular
               unstyled
               onPress={onAdd}
-              backgroundColor="$color5"
-              alignItems="center"
-              justifyContent="center"
+              background="$color5"
+              style={{ alignItems: 'center', justifyContent: 'center' }}
               width={24}
               height={24}
               hoverStyle={{ backgroundColor: '$color6' }}
@@ -84,9 +80,8 @@ export const KanbanColumnHeader = memo(
               circular
               unstyled
               onPress={onMenuClick}
-              backgroundColor="$color5"
-              alignItems="center"
-              justifyContent="center"
+              background="$color5"
+              style={{ alignItems: 'center', justifyContent: 'center' }}
               width={24}
               height={24}
               hoverStyle={{ backgroundColor: '$color6' }}

@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
 import { CheckCircle, AlertTriangle, XCircle, Info, X } from 'lucide-react'
-import { Text, useTheme, Button } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import { useTheme } from '@tamagui/core'
 import { YStack, XStack } from '@tamagui/stacks'
+import { Button } from '../buttons/Button'
 
 export type AlertVariant = 'info' | 'success' | 'warning' | 'error'
 
@@ -16,19 +18,19 @@ export interface AlertProps {
 
 const variantStyles = {
   info: {
-    backgroundColor: '$blue2',
+    background: '$blue2',
     borderColor: '$blue4',
   },
   success: {
-    backgroundColor: '$green2',
+    background: '$green2',
     borderColor: '$green4',
   },
   warning: {
-    backgroundColor: '$orange2',
+    background: '$orange2',
     borderColor: '$orange4',
   },
   error: {
-    backgroundColor: '$red2',
+    background: '$red2',
     borderColor: '$red4',
   },
 } as const
@@ -36,13 +38,13 @@ const variantStyles = {
 const closeButtonStyle = {
   padding: '$1.5',
   borderRadius: '$3',
-  backgroundColor: 'transparent',
+  background: 'transparent',
   borderWidth: 0,
   hoverStyle: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    background: 'rgba(0, 0, 0, 0.05)',
   },
   pressStyle: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    background: 'rgba(0, 0, 0, 0.1)',
   },
 } as const
 
@@ -98,26 +100,31 @@ export default function Alert({
   const Icon = config.icon
 
   return (
-    <YStack borderRadius="$4" borderWidth={1} padding="$4" {...variantStyles[variant]}>
+    <YStack borderRadius="$4" borderWidth={1} padding="$4" {...(variantStyles[variant] as any)}>
       <XStack>
         {icon && (
-          <XStack flexShrink={0}>
+          <XStack style={{ flexShrink: 0 }}>
             <Icon color={config.iconColor} size={20} />
           </XStack>
         )}
-        <YStack flex={1} marginLeft={icon ? '$3' : '$0'}>
+        <YStack flex={1} style={{ marginLeft: icon ? 12 : 0 }}>
           {title && (
-            <Text fontSize="$2" fontWeight="600" marginBottom="$1" color={config.titleColor}>
+            <Text
+              fontSize="$2"
+              fontWeight="600"
+              style={{ marginBottom: 4 }}
+              color={config.titleColor as any}
+            >
               {title}
             </Text>
           )}
-          <Text fontSize="$2" color={config.textColor}>
+          <Text fontSize="$2" color={config.textColor as any}>
             {children}
           </Text>
         </YStack>
         {closable && onClose && (
-          <XStack flexShrink={0} marginLeft="$3">
-            <Button {...closeButtonStyle} onPress={onClose} aria-label="Dismiss">
+          <XStack style={{ flexShrink: 0, marginLeft: 12 }}>
+            <Button {...(closeButtonStyle as any)} onPress={onClose} aria-label="Dismiss">
               <X size={16} color={config.iconColor} />
             </Button>
           </XStack>

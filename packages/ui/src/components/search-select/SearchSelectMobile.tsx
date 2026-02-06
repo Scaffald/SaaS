@@ -99,11 +99,11 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
 
   const listHeader = multiMode ? (
     <XStack
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      justifyContent="space-between"
+      px="$3"
+      py="$2"
+      style={{ justifyContent: 'space-between' }}
       gap="$3"
-      backgroundColor="$color3"
+      background="$color3"
     >
       {props.allowSelectAll !== false && (
         <Button size="$2" variant="outlined" onPress={handleSelectAll} disabled={!canSelectMore}>
@@ -124,7 +124,7 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
   ) : undefined
 
   const emptyContent = requiresAdditionalCharacters ? (
-    <YStack padding="$4" gap="$2" alignItems="center">
+    <YStack p="$4" gap="$2" style={{ alignItems: 'center' }}>
       <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
         {strings.minCharacters(minSearchLength)}
       </Text>
@@ -166,9 +166,9 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
         dismissOnSnapToBottom
       >
         <Sheet.Overlay />
-        <Sheet.Frame gap="$3" padding="$4">
+        <Sheet.Frame gap="$3" p="$4">
           <Sheet.Handle />
-          <XStack justifyContent="space-between" alignItems="center">
+          <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
             <Button variant="outlined" onPress={handleCancel} size="$2">
               Cancel
             </Button>
@@ -192,7 +192,7 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
           />
 
           {multiMode && selectedOptions.length > 0 ? (
-            <XStack gap="$2" flexWrap="wrap">
+            <XStack gap="$2" style={{ flexWrap: 'wrap' }}>
               {selectedOptions.map((option) => (
                 <FilterChip
                   key={option.value}
@@ -218,7 +218,7 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
 
           {multiMode && props.allowClearAll !== false && selectedOptions.length > 0 ? (
             <Button
-              marginTop="$2"
+              mt="$2"
               size="$2"
               variant="outlined"
               onPress={handleClearSelection}

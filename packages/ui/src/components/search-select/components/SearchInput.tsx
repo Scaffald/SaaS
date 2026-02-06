@@ -37,10 +37,9 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
 
     // Filter out textAlign from props to prevent React warnings
     // If textAlign is needed, it should be passed via style prop
-    const {
-      textAlign: _textAlign,
-      ...cleanInputProps
-    } = inputProps as ComponentProps<typeof Input> & { textAlign?: string };
+    const { textAlign: _textAlign, ...cleanInputProps } = inputProps as ComponentProps<
+      typeof Input
+    > & { textAlign?: string }
 
     return (
       <XStack position="relative" width="100%">
@@ -50,9 +49,9 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
           borderWidth={1}
           borderColor={isInvalid ? '$red8' : '$borderColor'}
           borderRadius="$4"
-          backgroundColor="$background"
-          paddingHorizontal="$4"
-          paddingVertical="$3"
+          background="$background"
+          px="$4"
+          py="$3"
           placeholder={placeholder}
           value={value}
           onChangeText={onChangeText}
@@ -65,12 +64,19 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
           autoCapitalize="none"
           focusStyle={{ borderColor: '$color8' }}
           opacity={disabled ? 0.75 : 1}
-          paddingRight={shouldShowClear || loading ? '$10' : '$4'}
+          pr={shouldShowClear || loading ? '$10' : '$4'}
           {...cleanInputProps}
         />
 
         {(loading || shouldShowClear) && (
-          <XStack position="absolute" right="$3" top={0} bottom={0} alignItems="center" gap="$2">
+          <XStack
+            position="absolute"
+            right="$3"
+            top={0}
+            bottom={0}
+            style={{ alignItems: 'center' }}
+            gap="$2"
+          >
             {loading ? (
               <Spinner size="small" color="$color9" />
             ) : shouldShowClear ? (

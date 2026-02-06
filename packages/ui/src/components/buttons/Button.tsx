@@ -58,7 +58,8 @@ import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 
 
 type ButtonTone = 'blue' | 'gray' | 'info' | 'success' | 'error' | 'accent'
 
-export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme' | 'fullWidth' | 'fullwidth' | 'icon'> {
+export interface ButtonProps
+  extends Omit<TamaguiButtonProps, 'variant' | 'theme' | 'fullWidth' | 'fullwidth' | 'icon'> {
   /**
    * Visual style variant
    * @default 'primary'
@@ -89,7 +90,18 @@ export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme
 }
 
 const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', theme, fullWidth, leftIcon: LeftIcon, rightIcon: RightIcon, icon, ...restProps }, ref) => {
+  (
+    {
+      variant = 'primary',
+      theme,
+      fullWidth,
+      leftIcon: LeftIcon,
+      rightIcon: RightIcon,
+      icon,
+      ...restProps
+    },
+    ref
+  ) => {
     // Extract fullWidth to prevent it from being passed to DOM
     // Convert fullWidth to width prop for Tamagui
     const widthProp = fullWidth ? { width: '100%' } : {}
@@ -104,16 +116,16 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
       rightIcon: _rightIcon,
       ...cleanProps
     } = restProps as {
-      fullWidth?: unknown;
-      fullwidth?: unknown;
-      leftIcon?: unknown;
-      rightIcon?: unknown;
-      [key: string]: unknown;
+      fullWidth?: unknown
+      fullwidth?: unknown
+      leftIcon?: unknown
+      rightIcon?: unknown
+      [key: string]: unknown
     }
 
     // Handle icon prop - leftIcon takes precedence for backwards compatibility
     const iconElement = LeftIcon ? <LeftIcon size={16} /> : icon
-    
+
     /**
      * Variant style definitions
      * Each variant has specific colors, borders, and interaction states
@@ -127,14 +139,14 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for main actions (submit, confirm, save)
        */
       primary: {
-        backgroundColor: '$blue7',
+        background: '$blue7',
         color: '$color1',
         borderWidth: 0,
         hoverStyle: {
-          backgroundColor: '$blue8',
+          background: '$blue8',
         },
         pressStyle: {
-          backgroundColor: '$blue9',
+          background: '$blue9',
           scale: 0.97,
         },
       },
@@ -144,14 +156,14 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for secondary actions (back, skip)
        */
       secondary: {
-        backgroundColor: '$color3',
+        background: '$color3',
         color: '$color11',
         borderWidth: 0,
         hoverStyle: {
-          backgroundColor: '$color4',
+          background: '$color4',
         },
         pressStyle: {
-          backgroundColor: '$color5',
+          background: '$color5',
           scale: 0.97,
         },
       },
@@ -161,16 +173,16 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for tertiary actions (cancel, optional)
        */
       outlined: {
-        backgroundColor: 'transparent',
+        background: 'transparent',
         borderWidth: 1,
         borderColor: '$borderColor',
         color: '$color11',
         hoverStyle: {
-          backgroundColor: '$backgroundHover',
+          background: '$backgroundHover',
           borderColor: '$borderColorHover',
         },
         pressStyle: {
-          backgroundColor: '$backgroundPress',
+          background: '$backgroundPress',
           scale: 0.97,
         },
       },
@@ -180,14 +192,14 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for subtle actions (show more, collapse)
        */
       ghost: {
-        backgroundColor: 'transparent',
+        background: 'transparent',
         borderWidth: 0,
         color: '$color11',
         hoverStyle: {
-          backgroundColor: '$backgroundHover',
+          background: '$backgroundHover',
         },
         pressStyle: {
-          backgroundColor: '$backgroundPress',
+          background: '$backgroundPress',
           scale: 0.97,
         },
       },
@@ -197,14 +209,14 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for irreversible actions (delete, remove)
        */
       danger: {
-        backgroundColor: '$red8',
+        background: '$red8',
         color: '$color1',
         borderWidth: 0,
         hoverStyle: {
-          backgroundColor: '$red9',
+          background: '$red9',
         },
         pressStyle: {
-          backgroundColor: '$red10',
+          background: '$red10',
           scale: 0.97,
         },
       },
@@ -212,46 +224,46 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const toneStyles: Record<ButtonTone, Partial<TamaguiButtonProps>> = {
       blue: {
-        backgroundColor: '$blue7',
+        background: '$blue7',
         color: '$color1',
         borderWidth: 0,
-        hoverStyle: { backgroundColor: '$blue8' },
-        pressStyle: { backgroundColor: '$blue9', scale: 0.97 },
+        hoverStyle: { background: '$blue8' },
+        pressStyle: { background: '$blue9', scale: 0.97 },
       },
       gray: {
-        backgroundColor: '$color3',
+        background: '$color3',
         color: '$color11',
         borderWidth: 0,
-        hoverStyle: { backgroundColor: '$color4' },
-        pressStyle: { backgroundColor: '$color5', scale: 0.97 },
+        hoverStyle: { background: '$color4' },
+        pressStyle: { background: '$color5', scale: 0.97 },
       },
       info: {
-        backgroundColor: '$blue6',
+        background: '$blue6',
         color: '$color1',
         borderWidth: 0,
-        hoverStyle: { backgroundColor: '$blue7' },
-        pressStyle: { backgroundColor: '$blue8', scale: 0.97 },
+        hoverStyle: { background: '$blue7' },
+        pressStyle: { background: '$blue8', scale: 0.97 },
       },
       success: {
-        backgroundColor: '$green8',
+        background: '$green8',
         color: '$color1',
         borderWidth: 0,
-        hoverStyle: { backgroundColor: '$green9' },
-        pressStyle: { backgroundColor: '$green10', scale: 0.97 },
+        hoverStyle: { background: '$green9' },
+        pressStyle: { background: '$green10', scale: 0.97 },
       },
       error: {
-        backgroundColor: '$red8',
+        background: '$red8',
         color: '$color1',
         borderWidth: 0,
-        hoverStyle: { backgroundColor: '$red9' },
-        pressStyle: { backgroundColor: '$red10', scale: 0.97 },
+        hoverStyle: { background: '$red9' },
+        pressStyle: { background: '$red10', scale: 0.97 },
       },
       accent: {
-        backgroundColor: '$purple8',
+        background: '$purple8',
         color: '$color1',
         borderWidth: 0,
-        hoverStyle: { backgroundColor: '$purple9' },
-        pressStyle: { backgroundColor: '$purple10', scale: 0.97 },
+        hoverStyle: { background: '$purple9' },
+        pressStyle: { background: '$purple10', scale: 0.97 },
       },
     }
 
@@ -269,7 +281,7 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
         iconAfter={iconAfterElement}
         {...variantStyles[variant]}
         {...toneStyle}
-        {...widthProp}
+        {...(widthProp as any)}
         {...cleanProps}
       />
     )

@@ -1,5 +1,6 @@
-import { Spinner, Text, YStack } from '@unicornlove/ui'
 import { spacing } from '../../config/spacing'
+import { Spinner, Text } from 'tamagui'
+import { YStack } from '@tamagui/stacks'
 import { typography } from '../../config/typography'
 
 /**
@@ -67,7 +68,7 @@ export function LoadingState({ message, size = 'medium', fullScreen = false }: L
       justifyContent="center"
       gap={spacing.md}
       padding={spacing.xl}
-      backgroundColor={fullScreen ? '$background' : 'transparent'}
+      background={fullScreen ? '$background' : 'transparent'}
       style={containerStyles}
     >
       {/* Spinner with teal color */}

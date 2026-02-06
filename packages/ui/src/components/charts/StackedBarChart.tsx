@@ -1,6 +1,6 @@
 import type { TextStyle } from 'react-native'
+import { View } from '@tamagui/core'
 import { BarChart as GiftedBarChart } from 'react-native-gifted-charts'
-import { View } from '@unicornlove/ui'
 
 export interface StackedBarChartData {
   stacks: Array<{

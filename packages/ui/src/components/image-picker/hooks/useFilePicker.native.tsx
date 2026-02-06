@@ -1,6 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker'
 import * as ImagePicker from 'expo-image-picker'
-import { useEvent } from '@unicornlove/ui'
+import { useCallback } from 'react'
 
 import type { MediaTypeOptionsString, UseFilePickerControl, UseFilePickerProps } from '../types'
 import { useDropZone } from './useDropZone'
@@ -10,11 +10,14 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
 ): UseFilePickerControl {
   const { onPick, typeOfPicker, mediaTypes: _mediaTypes, ...rest } = props || {}
 
-  const _onOpenNative = useEvent((nativeFiles) => {
-    if (onPick) {
-      onPick({ webFiles: null, nativeFiles })
-    }
-  })
+  const _onOpenNative = useCallback(
+    (nativeFiles) => {
+      if (onPick) {
+        onPick({ webFiles: null, nativeFiles })
+      }
+    },
+    [onPick]
+  )
 
   const { isDragAccept, isDragActive, isDragReject } = useDropZone({
     onOpen: _onOpenNative,

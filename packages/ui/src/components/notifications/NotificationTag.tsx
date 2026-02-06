@@ -1,6 +1,9 @@
 import type { ComponentProps } from 'react'
-import type { ColorTokens, FontSizeTokens, SpaceTokens, ThemeName, XStackProps } from '@unicornlove/ui'
-import { Text, Theme, XStack } from '@unicornlove/ui'
+import type { ColorTokens, ThemeName } from '@tamagui/core'
+import { Theme } from '@tamagui/core'
+import type { XStackProps } from '@tamagui/stacks'
+import { XStack } from '@tamagui/stacks'
+import { Text } from 'tamagui'
 
 const badgeSizing: Record<
   'sm' | 'md',
@@ -31,11 +34,11 @@ export const NotificationTag = ({
     <Theme name={themeName}>
       <XStack
         {...rest}
-        backgroundColor="$color3"
-        borderRadius="$3"
-        alignItems="center"
-        paddingHorizontal={sizing.paddingHorizontal}
-        paddingVertical={sizing.paddingVertical}
+        background="$color3"
+        br="$3"
+        style={{ alignItems: 'center' }}
+        px={sizing.paddingHorizontal}
+        py={sizing.paddingVertical}
       >
         <Text fontSize={sizing.fontSize} fontWeight="600" color={textColorToken} {...textProps}>
           {children}

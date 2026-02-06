@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { forwardRef, type ReactNode } from 'react'
-import { Text, type TextProps } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+
 import { typography } from '../../config/typography'
 
 /**

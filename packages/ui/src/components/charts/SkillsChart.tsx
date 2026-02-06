@@ -1,4 +1,7 @@
 import { type FC, useEffect, useMemo, useState } from 'react'
+import type { GetThemeValueForKey } from '@tamagui/core'
+import { useTheme, View } from '@tamagui/core'
+import { Text } from 'tamagui'
 import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-native-reanimated'
 import {
   Circle,
@@ -11,7 +14,6 @@ import {
   Text as SvgText,
   type TextAnchor,
 } from 'react-native-svg'
-import { type GetThemeValueForKey, useTheme, View, Text } from '@unicornlove/ui'
 
 // Data interfaces
 export interface SkillsChartDataItem {
@@ -185,7 +187,10 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   // Return empty state if no data
   if (!datasets || datasets.length === 0 || !datasets[0]?.data?.length) {
     return (
-      <View alignItems="center" justifyContent="center" minHeight={chartHeight} width={chartWidth}>
+      <View
+        style={{ alignItems: 'center', justifyContent: 'center', minHeight: chartHeight }}
+        width={chartWidth}
+      >
         <Text color="$red10">No data available</Text>
       </View>
     )
@@ -318,12 +323,14 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
   return (
     <View
-      alignItems="center"
-      justifyContent="center"
-      minHeight={height || 300}
       width={width || '100%'}
-      backgroundColor={bg}
-      overflow="hidden"
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: height || 300,
+        overflow: 'hidden',
+        background: bg as string,
+      }}
       onLayout={(event) => {
         const { width: layoutWidth, height: layoutHeight } = event.nativeEvent.layout
         setDimensions({ width: layoutWidth, height: layoutHeight })

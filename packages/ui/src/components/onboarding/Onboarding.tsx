@@ -1,16 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Circle } from '@tamagui/shapes'
+import { Image } from '@tamagui/image'
+import { useTheme } from '@tamagui/core'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
+import { XStack, YStack } from '@tamagui/stacks'
 import type { FC } from 'react'
 import { PanResponder } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  AnimatePresence,
-  Circle,
-  Image,
-  useTheme,
-  useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
 
 import { OnboardingControls } from '../onboarding-controls/OnboardingControls'
 
@@ -85,12 +81,12 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
   return (
     <YStack
       flex={1}
-      backgroundColor="$color3"
+      background="$color3"
       overflow="hidden"
-      paddingBottom={safeAreaInsets.bottom}
-      paddingRight={safeAreaInsets.right}
-      paddingTop={safeAreaInsets.top}
-      paddingLeft={safeAreaInsets.left}
+      pb={safeAreaInsets.bottom}
+      pr={safeAreaInsets.right}
+      pt={safeAreaInsets.top}
+      pl={safeAreaInsets.left}
     >
       <AnimatePresence>
         <Background key={key} backgroundImage={currentStep.backgroundImage} />
@@ -102,7 +98,7 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
         </AnimatePresence>
       </YStack>
 
-      <XStack gap={10} justifyContent="center" marginVertical="$4">
+      <XStack gap={10} style={{ justifyContent: 'center' }} my="$4">
         {Array.from({ length: stepsCount }, (_, idx) => {
           const isActive = idx === stepIdx
           return (
@@ -127,11 +123,11 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
 const Point = ({ active, onPress }: { active: boolean; onPress: () => void }) => {
   return (
     <YStack
-      borderRadius="$10"
+      br="$10"
       width={active ? 30 : 10}
       height={10}
       onPress={onPress}
-      backgroundColor={active ? '$color7' : '$color6'}
+      background={active ? '$color7' : '$color6'}
     />
   )
 }
@@ -155,15 +151,15 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
           height="100%"
           resizeMode="cover"
           position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
+          style={{ top: 0 }}
+          style={{ left: 0 }}
+          style={{ right: 0 }}
+          style={{ bottom: 0 }}
         />
         {/* Theme-sensitive overlay with blur for better text readability */}
         <YStack
           fullscreen
-          backgroundColor={isDarkTheme ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)'}
+          background={isDarkTheme ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)'}
           position="absolute"
           style={{
             backdropFilter: 'blur(8px)',
@@ -175,14 +171,14 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
   }
 
   return (
-    <YStack fullscreen justifyContent="center" alignItems="center">
+    <YStack fullscreen justifyContent="center" style={{ alignItems: 'center' }}>
       <Circle
         animation="lazy"
         x={0}
         y={0}
         opacity={1}
         scale={1}
-        backgroundColor="$color3"
+        background="$color3"
         enterStyle={{
           scale: 0,
         }}

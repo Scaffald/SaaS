@@ -1,5 +1,7 @@
 import { memo } from 'react'
-import { Text, XStack } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import { XStack } from '@tamagui/stacks'
+
 import type { CardMetadataProps } from './types'
 
 /**
@@ -26,9 +28,9 @@ export const CardMetadata = memo(({ items, isSelected = false, maxItems }: CardM
   }
 
   return (
-    <XStack gap="$3" flexWrap="wrap" alignItems="center">
+    <XStack gap="$3" style={{ flexWrap: 'wrap', alignItems: 'center' }}>
       {displayItems.map((item) => (
-        <XStack key={item.key} alignItems="center" gap="$1.5">
+        <XStack key={item.key} style={{ alignItems: 'center' }} gap="$1.5">
           {item.icon}
           <Text fontSize="$2" color={item.color ?? textColor}>
             {item.label}

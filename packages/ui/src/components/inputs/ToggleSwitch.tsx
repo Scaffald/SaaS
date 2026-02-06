@@ -1,4 +1,4 @@
-import { View, type ViewProps } from '@unicornlove/ui'
+import { View } from '@tamagui/core'
 
 export interface ToggleSwitchProps {
   /** Whether the toggle is checked */
@@ -14,7 +14,10 @@ export interface ToggleSwitchProps {
 }
 
 // Size styles for the toggle container
-const toggleSizeStyles: Record<NonNullable<ToggleSwitchProps['size']>, Partial<ViewProps>> = {
+const toggleSizeStyles: Record<
+  NonNullable<ToggleSwitchProps['size']>,
+  { width: number; height: number; borderRadius: number }
+> = {
   small: {
     width: 32,
     height: 18,
@@ -33,7 +36,10 @@ const toggleSizeStyles: Record<NonNullable<ToggleSwitchProps['size']>, Partial<V
 }
 
 // Size styles for the toggle thumb
-const thumbSizeStyles: Record<NonNullable<ToggleSwitchProps['size']>, Partial<ViewProps>> = {
+const thumbSizeStyles: Record<
+  NonNullable<ToggleSwitchProps['size']>,
+  { width: number; height: number; borderRadius: number; top: number }
+> = {
   small: {
     width: 12,
     height: 12,
@@ -101,14 +107,16 @@ export function ToggleSwitch({
   }
 
   const thumbPosition = getThumbPosition()
+  const toggleStyle = toggleSizeStyles[size]
+  const thumbStyle = thumbSizeStyles[size]
 
   return (
     <View
-      {...toggleSizeStyles[size]}
-      backgroundColor={disabled ? '$color4' : checked ? '$blue7' : '$color5'}
+      width={toggleStyle.width}
+      height={toggleStyle.height}
+      background={disabled ? '$color4' : checked ? '$blue7' : '$color5'}
       borderWidth={1}
       borderColor={disabled ? '$color4' : checked ? '$blue7' : '$color6'}
-      position="relative"
       cursor={disabled ? 'not-allowed' : 'pointer'}
       animation="quick"
       opacity={disabled ? 0.5 : 1}
@@ -127,13 +135,19 @@ export function ToggleSwitch({
             }
           : undefined
       }
+      style={{ position: 'relative', borderRadius: toggleStyle.borderRadius }}
     >
       <View
-        {...thumbSizeStyles[size]}
-        backgroundColor="white"
-        position="absolute"
-        left={thumbPosition}
+        width={thumbStyle.width}
+        height={thumbStyle.height}
+        background="white"
         animation="200ms"
+        style={{
+          position: 'absolute',
+          left: thumbPosition,
+          top: thumbStyle.top,
+          borderRadius: thumbStyle.borderRadius,
+        }}
       />
     </View>
   )

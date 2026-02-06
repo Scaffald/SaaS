@@ -1,5 +1,9 @@
 import type { ReactNode } from 'react'
-import { Slider, Text, type ThemeName, View, XStack, YStack } from '@unicornlove/ui'
+import { Slider } from '@tamagui/slider'
+import { Text } from 'tamagui'
+import type { ThemeName } from '@tamagui/core'
+import { View } from '@tamagui/core'
+import { XStack, YStack } from '@tamagui/stacks'
 
 export interface RangeSliderCardProps {
   /** Icon to display on the left side */
@@ -112,20 +116,20 @@ export function RangeSliderCard({
     <YStack
       {...(typeof width === 'number' ? { width } : { flex: 1, minWidth: 0 })}
       testID={testID}
-      backgroundColor="$background"
+      background="$background"
       borderWidth={1}
       borderColor="$borderColor"
-      borderRadius="$3"
-      paddingHorizontal="$4"
-      paddingVertical="$3"
+      br="$3"
+      px="$4"
+      py="$3"
       gap="$2.5"
       theme={theme}
       opacity={disabled ? 0.5 : 1}
     >
       {/* Header: Icon, Title, Description */}
-      <XStack gap="$2.5" alignItems="flex-start">
+      <XStack gap="$2.5" style={{ alignItems: 'flex-start' }}>
         {icon && (
-          <View flexShrink={0} paddingTop="$0.5">
+          <View style={{ flexShrink: 0 }} pt="$0.5">
             {icon}
           </View>
         )}
@@ -142,7 +146,7 @@ export function RangeSliderCard({
       </XStack>
 
       {/* Slider */}
-      <YStack gap="$5" paddingTop="$4" paddingBottom="$4">
+      <YStack gap="$5" pt="$4" pb="$4">
         <Slider
           value={[clampedValue]}
           onValueChange={(values) => {
@@ -157,13 +161,13 @@ export function RangeSliderCard({
           height={16}
           testID={testID ? `${testID}-slider` : undefined}
         >
-          <Slider.Track backgroundColor="$color4" borderRadius="$1" height={track}>
-            <Slider.TrackActive backgroundColor="$blue9" borderRadius="$1" />
+          <Slider.Track background="$color4" borderRadius="$1" height={track}>
+            <Slider.TrackActive background="$blue9" borderRadius="$1" />
           </Slider.Track>
           <Slider.Thumb
             index={0}
             circular
-            backgroundColor="white"
+            background="white"
             borderWidth={2}
             borderColor="$blue9"
             width={thumb}
@@ -183,7 +187,7 @@ export function RangeSliderCard({
 
         {/* Value Labels */}
         {showLabels && (
-          <XStack justifyContent="space-between" alignItems="center">
+          <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
             <Text fontSize="$2" color="$color9">
               {formatMinFn(min)}
             </Text>

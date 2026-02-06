@@ -1,7 +1,9 @@
 import type { MapView } from '@rnmapbox/maps'
+import { Text } from 'tamagui'
+import { useThemeName, View } from '@tamagui/core'
 import MapboxGL from '@rnmapbox/maps'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { Text, useThemeName, View } from '@unicornlove/ui'
+
 import { MapFallback } from './MapFallback'
 import { getMapStyleUrl } from './mapboxStyleConfig'
 import type { MapContainerProps, MapContainerRef } from './types'
@@ -145,10 +147,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               <View
                 width={48}
                 height={48}
-                borderRadius="$12"
-                backgroundColor={pin.selected ? '$blue10' : '$color9'}
-                alignItems="center"
-                justifyContent="center"
+                br="$12"
+                background={pin.selected ? '$blue10' : '$color9'}
+                style={{ alignItems: 'center' }}
+                style={{ justifyContent: 'center' }}
                 shadowColor="black"
                 shadowOffset={{ width: 0, height: 2 }}
                 shadowOpacity={0.25}

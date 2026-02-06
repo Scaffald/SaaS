@@ -1,6 +1,7 @@
 import { AlertCircle, Check } from '@tamagui/lucide-icons'
+import { Spinner, Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 import { useEffect, useState } from 'react'
-import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 
@@ -103,9 +104,9 @@ export function SaveStatusIndicator({
   }
 
   return (
-    <YStack gap="$1" alignItems="flex-end">
+    <YStack gap="$1" style={{ alignItems: 'flex-end' }}>
       {status === 'saving' && (
-        <XStack gap="$2" alignItems="center">
+        <XStack gap="$2" style={{ alignItems: 'center' }}>
           <Spinner size="small" color="$color11" />
           <Text fontSize="$2" color="$color11">
             Saving...
@@ -114,7 +115,7 @@ export function SaveStatusIndicator({
       )}
 
       {status === 'saved' && showSavedState && (
-        <XStack gap="$2" alignItems="center">
+        <XStack gap="$2" style={{ alignItems: 'center' }}>
           <Check size={16} color="$green9" />
           <Text fontSize="$2" color="$green9" fontWeight="600">
             Saved
@@ -123,7 +124,7 @@ export function SaveStatusIndicator({
       )}
 
       {status === 'error' && (
-        <XStack gap="$2" alignItems="center">
+        <XStack gap="$2" style={{ alignItems: 'center' }}>
           <AlertCircle size={16} color="$red9" />
           <Text fontSize="$2" color="$red9">
             {error || 'Failed to save'}

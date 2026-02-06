@@ -1,4 +1,5 @@
-import { View, type ViewProps } from '@unicornlove/ui'
+import type { ViewProps } from '@tamagui/core'
+import { View } from '@tamagui/core'
 
 export interface RadioProps {
   /** Whether the radio is selected */
@@ -30,7 +31,10 @@ const containerSizeStyles: Record<NonNullable<RadioProps['size']>, Partial<ViewP
 }
 
 // Size styles for the radio dot
-const dotSizeStyles: Record<NonNullable<RadioProps['size']>, Partial<ViewProps>> = {
+const dotSizeStyles: Record<
+  NonNullable<RadioProps['size']>,
+  { width: number; height: number; top: number; left: number }
+> = {
   small: {
     width: 8,
     height: 8,
@@ -84,15 +88,16 @@ export function Radio({
     }
   }
 
+  const dotStyle = dotSizeStyles[size]
+
   return (
     <View
       {...containerSizeStyles[size]}
-      position="relative"
       cursor={disabled ? 'not-allowed' : 'pointer'}
       animation="quick"
       borderWidth={2}
-      borderRadius={50}
-      backgroundColor="transparent"
+      br={50}
+      background="transparent"
       borderColor={checked ? '$blue7' : '$borderColor'}
       opacity={disabled ? 0.5 : 1}
       onPress={handlePress}
@@ -118,13 +123,15 @@ export function Radio({
             }
           : undefined
       }
+      style={{ position: 'relative' }}
     >
       <View
-        {...dotSizeStyles[size]}
-        position="absolute"
-        backgroundColor="$blue7"
-        borderRadius={50}
+        width={dotStyle.width}
+        height={dotStyle.height}
+        background="$blue7"
+        br={50}
         opacity={checked ? 1 : 0}
+        style={{ position: 'absolute', top: dotStyle.top, left: dotStyle.left }}
       />
     </View>
   )

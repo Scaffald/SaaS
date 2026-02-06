@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
-import { XStack } from '@unicornlove/ui'
+import { XStack } from '@tamagui/stacks'
 import { Button } from '../buttons/Button'
 
 export type OnboardingControlsProps = {
@@ -43,20 +43,22 @@ export const OnboardingControls = ({
   return (
     <>
       <XStack
-        justifyContent="space-between"
-        alignItems="center"
-        padding="$5"
+        style={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+        p="$5"
         gap="$5"
         position="absolute"
-        bottom={0}
-        left={0}
-        right={0}
         $md={{ display: 'none' }}
       >
         <Button
           chromeless
           flex={1}
-          borderRadius="$10"
+          br="$10"
           circular
           onPress={() => handleGoPrev()}
           iconAfter={ChevronLeft}
@@ -65,16 +67,15 @@ export const OnboardingControls = ({
         <Button
           chromeless
           flex={1}
-          borderRadius="$10"
+          br="$10"
           circular
           onPress={() => handleGoNext()}
           iconAfter={ChevronRight}
         />
       </XStack>
       <XStack
-        justifyContent="space-between"
-        alignItems="center"
-        padding="$5"
+        style={{ alignItems: 'center', justifyContent: 'space-between' }}
+        p="$5"
         gap="$5"
         display="none"
         $xs={{ display: 'flex' }}
@@ -83,9 +84,9 @@ export const OnboardingControls = ({
         <Button
           chromeless
           pressStyle={{
-            backgroundColor: '$color6',
+            background: '$color6',
           }}
-          borderRadius="$10"
+          br="$10"
           onPress={() => handleSkip()}
         >
           <Button.Text color="$blue8">Skip</Button.Text>
@@ -95,13 +96,13 @@ export const OnboardingControls = ({
           chromeless={!isLastStep}
           bordered={!isLastStep}
           borderColor={isLastStep ? 'transparent' : '$color'}
-          backgroundColor={isLastStep ? '$blue7' : 'transparent'}
+          background={isLastStep ? '$blue7' : 'transparent'}
           pressStyle={{
-            backgroundColor: isLastStep ? '$blue8' : '$color6',
+            background: isLastStep ? '$blue8' : '$color6',
             borderColor: isLastStep ? 'transparent' : '$color6',
           }}
           flex={1}
-          borderRadius="$10"
+          br="$10"
           onPress={() => handleGoNext()}
           iconAfter={ChevronRight}
         >

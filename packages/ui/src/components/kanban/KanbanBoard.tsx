@@ -1,10 +1,11 @@
 import type { DragEndEvent, DragStartEvent, UniqueIdentifier } from '@dnd-kit/core'
+import type { GetThemeValueForKey } from '@tamagui/core'
+import { XStack } from '@tamagui/stacks'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import type { GetThemeValueForKey } from '@unicornlove/ui'
-import { XStack } from '@unicornlove/ui'
+
 import { DraggableCard } from './DraggableCard'
 import { DroppableColumn } from './DroppableColumn'
 import type { KanbanCardProps } from './KanbanCard'
@@ -140,7 +141,7 @@ export const KanbanBoard = ({
       onDragCancel={handleDragCancel}
     >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack gap="$3" paddingBottom="$4">
+        <XStack gap="$3" pb="$4">
           {columns.map((column) => {
             const columnItems = itemsByColumn[column.id] || []
             return (

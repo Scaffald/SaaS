@@ -1,6 +1,7 @@
 import type { AdaptWhen } from '@tamagui/adapt'
+import { Adapt } from '@tamagui/adapt'
 import type { ReactNode } from 'react'
-import { Adapt } from '@unicornlove/ui'
+
 import { Sheet } from '../sheets/Sheet'
 
 interface AdaptiveSelectSheetProps {

@@ -1,15 +1,12 @@
 import { ChevronDown, Check } from '@tamagui/lucide-icons'
+import { ScrollView } from '@tamagui/scroll-view'
+import { Select } from '@tamagui/select'
+import { Sheet } from '@tamagui/sheet'
+import { Text } from 'tamagui'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
+import { XStack, YStack } from '@tamagui/stacks'
 import { useState } from 'react'
-import {
-  Button,
-  ScrollView,
-  Select,
-  Sheet,
-  Text,
-  useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+
 import { AdaptiveSelectSheet } from './AdaptiveSelectSheet'
 
 export interface ResponsiveSelectOption {
@@ -113,7 +110,7 @@ export function ResponsiveSelect({
           size={size}
           disabled={disabled}
           onPress={() => !disabled && setIsOpen(true)}
-          justifyContent="space-between"
+          style={{ justifyContent: 'space-between' }}
           width="100%"
           {...triggerProps}
         >
@@ -140,11 +137,11 @@ export function ResponsiveSelect({
           <Sheet.Frame>
             <Sheet.Handle />
             <XStack
-              paddingHorizontal="$4"
-              paddingTop="$3"
-              paddingBottom="$2"
+              px="$4"
+              pt="$3"
+              pb="$2"
               justifyContent="space-between"
-              alignItems="center"
+              style={{ alignItems: 'center' }}
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
             >
@@ -157,7 +154,7 @@ export function ResponsiveSelect({
             </XStack>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-              <YStack padding="$4" gap="$2">
+              <YStack p="$4" gap="$2">
                 {options.map((option) => {
                   const isSelected = value === option.value
                   return (
@@ -169,8 +166,8 @@ export function ResponsiveSelect({
                         onValueChange(option.value)
                         setIsOpen(false)
                       }}
-                      justifyContent="space-between"
-                      backgroundColor={isSelected ? '$blue2' : 'transparent'}
+                      style={{ justifyContent: 'space-between' }}
+                      background={isSelected ? '$blue2' : 'transparent'}
                       borderWidth={isSelected ? 1 : 0}
                       borderColor="$blue8"
                       pressStyle={{

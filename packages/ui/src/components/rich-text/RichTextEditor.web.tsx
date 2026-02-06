@@ -4,12 +4,14 @@
  */
 
 import { Bold, Italic, List, ListOrdered, Underline as UnderlineIcon } from '@tamagui/lucide-icons'
+import { Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useEffect, useMemo } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+
 import { Button } from '../buttons/Button'
 import type { RichTextEditorProps } from './types'
 import { RICH_TEXT_LIMITS, RICH_TEXT_PLACEHOLDERS } from './utils/constants'
@@ -101,8 +103,8 @@ const CharacterCount = ({ current, max }: { current: number; max: number }) => {
     <Text
       fontSize="$2"
       color={isOverLimit ? '$red10' : isNearLimit ? '$yellow10' : '$color'}
-      paddingHorizontal="$3"
-      paddingVertical="$2"
+      px="$3"
+      py="$2"
     >
       {current} / {max}
     </Text>
@@ -207,7 +209,7 @@ export function RichTextEditor({
     <YStack
       borderWidth={1}
       borderColor={error ? '$red9' : '$borderColor'}
-      borderRadius="$4"
+      br="$4"
       background="$background"
       overflow="hidden"
       opacity={disabled ? 0.6 : 1}
@@ -219,8 +221,8 @@ export function RichTextEditor({
         <XStack
           borderBottomWidth={1}
           borderColor="$borderColor"
-          paddingHorizontal="$2"
-          paddingVertical="$2"
+          px="$2"
+          py="$2"
           gap="$1"
           background="$gray2"
         >
@@ -245,7 +247,7 @@ export function RichTextEditor({
             disabled={disabled}
             onPress={() => editor.chain().focus().toggleUnderline().run()}
           />
-          <XStack width={1} background="$borderColor" marginHorizontal="$2" />
+          <XStack width={1} background="$borderColor" mx="$2" />
           <ToolbarButtonComponent
             icon={List}
             label="Bullet List"
@@ -298,7 +300,7 @@ export function RichTextEditor({
 
       {/* Error Message */}
       {error && (
-        <Text fontSize="$2" color="$red10" paddingHorizontal="$3" paddingTop="$2">
+        <Text fontSize="$2" color="$red10" px="$3" pt="$2">
           {error}
         </Text>
       )}

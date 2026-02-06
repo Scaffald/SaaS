@@ -1,5 +1,8 @@
 import { memo } from 'react'
-import { SizableText, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
+import { SizableText } from 'tamagui'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
+import { XStack, YStack } from '@tamagui/stacks'
+
 import type { CardHeaderProps } from './types'
 
 /**
@@ -29,8 +32,8 @@ export const CardHeader = memo(
     const subtitleNumberOfLines = width <= 800 ? 2 : 1
 
     return (
-      <XStack justifyContent="space-between" alignItems="flex-start" gap="$2">
-        <XStack alignItems="center" gap="$2" flex={1}>
+      <XStack style={{ justifyContent: 'space-between', alignItems: 'flex-start' }} gap="$2">
+        <XStack style={{ alignItems: 'center' }} gap="$2" flex={1}>
           {icon && <YStack>{icon}</YStack>}
           <YStack flex={1} gap="$1">
             <SizableText

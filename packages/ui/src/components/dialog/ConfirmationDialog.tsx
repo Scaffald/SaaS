@@ -1,5 +1,5 @@
-import { XStack } from '@unicornlove/ui'
 import { Button, type ButtonProps } from '../buttons/Button'
+import { XStack } from '@tamagui/stacks'
 import { Dialog } from './Dialog'
 
 interface ConfirmationDialogProps {
@@ -68,7 +68,7 @@ export function ConfirmationDialog({
         <Dialog.Content width={500}>
           <Dialog.Title>{title}</Dialog.Title>
           <Dialog.Description>{message}</Dialog.Description>
-          <XStack gap="$3" alignItems="center" justifyContent="flex-end">
+          <XStack gap="$3" style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
             <Dialog.Close asChild>
               <Button variant="outlined" disabled={isLoading}>
                 {cancelLabel}

@@ -1,6 +1,7 @@
 import type { IconProps } from '@tamagui/helpers-icon'
 import type { ComponentType } from 'react'
-import { H2, Paragraph, YStack } from '@unicornlove/ui'
+import { YStack } from '@tamagui/stacks'
+import { H2, Paragraph } from 'tamagui'
 
 export const StepContent = ({
   icon: Icon,
@@ -13,11 +14,10 @@ export const StepContent = ({
 }) => {
   return (
     <YStack
-      alignItems="center"
-      padding="$8"
+      style={{ alignItems: 'center', justifyContent: 'center' }}
+      p="$8"
       fullscreen
-      marginHorizontal="auto"
-      justifyContent="center"
+      mx="auto"
       animation="100ms"
       exitStyle={{ opacity: 0 }}
       opacity={1}
@@ -33,7 +33,7 @@ export const StepContent = ({
         <Icon color="$color9" size={96} />
       </YStack>
       <H2
-        marginTop="$5"
+        mt="$5"
         animation="bouncy"
         y={0}
         enterStyle={{ scale: 0.95, y: 4, opacity: 0 }}
@@ -53,9 +53,9 @@ export const StepContent = ({
         {title}
       </H2>
       <Paragraph
-        marginTop="$4"
-        maxWidth={520}
-        marginHorizontal="auto"
+        mt="$4"
+        style={{ maxWidth: 520 }}
+        mx="auto"
         animation="bouncy"
         y={0}
         enterStyle={{ scale: 0.95, y: -2, opacity: 0 }}

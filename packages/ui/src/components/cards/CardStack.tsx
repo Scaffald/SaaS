@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { type ComponentType, type ReactNode, useEffect, useState } from 'react'
-import { Text, View, XStack } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import { View } from '@tamagui/core'
+import { XStack } from '@tamagui/stacks'
 
 // Platform-agnostic UUID generator
 const randomUUID = (): string => {

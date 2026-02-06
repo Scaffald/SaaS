@@ -47,10 +47,10 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
       value={value}
       disabled={disabled}
       position="relative"
-      paddingVertical="$2"
-      paddingHorizontal="$4"
-      minHeight="$2"
-      backgroundColor={isUnderlined ? 'transparent' : '$color2'}
+      py="$2"
+      px="$4"
+      style={{ minHeight: '$2' }}
+      background={isUnderlined ? 'transparent' : '$color2'}
       borderWidth={isUnderlined ? 0 : 1}
       borderColor={isUnderlined ? 'transparent' : '$color4'}
       borderBottomWidth={isUnderlined ? 2 : undefined}
@@ -78,7 +78,7 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
       }}
       {...props}
     >
-      <XStack gap="$2" alignItems="center" justifyContent="center">
+      <XStack gap="$2" style={{ alignItems: 'center' }} style={{ justifyContent: 'center' }}>
         {children || (
           <Text fontSize="$3" fontWeight={isActive ? '600' : '500'} color={textColor}>
             {label}
@@ -86,13 +86,13 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
         )}
         {badge !== undefined && (
           <YStack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$10"
+            px="$2"
+            py="$1"
+            br="$10"
             width={20}
-            alignItems="center"
-            justifyContent="center"
-            backgroundColor={isActive ? '$color5' : '$color4'}
+            style={{ alignItems: 'center' }}
+            style={{ justifyContent: 'center' }}
+            background={isActive ? '$color5' : '$color4'}
           >
             <Text fontSize="$2" fontWeight="600">
               {badge}

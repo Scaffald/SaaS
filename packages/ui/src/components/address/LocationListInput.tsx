@@ -1,6 +1,7 @@
 import { Plus, X } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 import { Button } from '../buttons/Button'
 import { AddressAutocomplete } from './AddressAutocomplete'
 import type { AddressResult } from './types'
@@ -114,7 +115,7 @@ export function LocationListInput({
   )
 
   return (
-    <YStack gap="$3" position="relative" zIndex={999}>
+    <YStack gap="$3" position="relative" style={{ zIndex: 999 }}>
       {/* Help Text */}
       {helpText && (
         <Text fontSize="$3" color="$color11" lineHeight="$1">
@@ -126,7 +127,11 @@ export function LocationListInput({
       <YStack gap="$2">
         {value.length > 0 ? (
           value.map((location, index) => (
-            <XStack key={`location-input-${index}-${location}`} gap="$2" alignItems="flex-start">
+            <XStack
+              key={`location-input-${index}-${location}`}
+              gap="$2"
+              style={{ alignItems: 'flex-start' }}
+            >
               <YStack flex={1}>
                 <AddressAutocomplete
                   value={value[index] || ''}
@@ -152,9 +157,9 @@ export function LocationListInput({
                   onPress={() => handleRemoveLocation(index)}
                   disabled={disabled}
                   circular
-                  backgroundColor="transparent"
+                  background="transparent"
                   borderColor="$color8"
-                  marginTop="$1"
+                  mt="$1"
                 >
                   <Button.Icon>
                     <X size={16} color="$color11" />
@@ -165,41 +170,43 @@ export function LocationListInput({
           ))
         ) : (
           /* Empty state - show Add Location button */
-          <Button
-            variant="outlined"
-            size="$3"
-            onPress={handleAddLocation}
-            disabled={disabled}
-            alignSelf="flex-start"
-            backgroundColor="transparent"
-            borderColor="$color8"
-          >
-            <Button.Icon>
-              <Plus size={16} color="$color11" />
-            </Button.Icon>
-            <Button.Text color="$color11">Add Preferred Work Location</Button.Text>
-          </Button>
+          <XStack style={{ alignSelf: 'flex-start' }}>
+            <Button
+              variant="outlined"
+              size="$3"
+              onPress={handleAddLocation}
+              disabled={disabled}
+              background="transparent"
+              borderColor="$color8"
+            >
+              <Button.Icon>
+                <Plus size={16} color="$color11" />
+              </Button.Icon>
+              <Button.Text color="$color11">Add Preferred Work Location</Button.Text>
+            </Button>
+          </XStack>
         )}
       </YStack>
 
       {/* Add Location Button (only show when there are existing locations) */}
       {value.length > 0 && fieldCount < maxLocations && (
-        <Button
-          variant="outlined"
-          size="$3"
-          onPress={handleAddLocation}
-          disabled={disabled}
-          alignSelf="flex-start"
-          backgroundColor="transparent"
-          borderColor="$color8"
-        >
-          <Button.Icon>
-            <Plus size={16} color="$color11" />
-          </Button.Icon>
-          <Button.Text color="$color11">
-            Add Location ({fieldCount}/{maxLocations})
-          </Button.Text>
-        </Button>
+        <XStack style={{ alignSelf: 'flex-start' }}>
+          <Button
+            variant="outlined"
+            size="$3"
+            onPress={handleAddLocation}
+            disabled={disabled}
+            background="transparent"
+            borderColor="$color8"
+          >
+            <Button.Icon>
+              <Plus size={16} color="$color11" />
+            </Button.Icon>
+            <Button.Text color="$color11">
+              Add Location ({fieldCount}/{maxLocations})
+            </Button.Text>
+          </Button>
+        </XStack>
       )}
     </YStack>
   )

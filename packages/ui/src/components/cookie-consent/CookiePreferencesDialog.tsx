@@ -1,20 +1,15 @@
 import { X } from '@tamagui/lucide-icons'
+import { Dialog } from '@tamagui/dialog'
+import { Paragraph, SizableText } from 'tamagui'
+import { ScrollView } from '@tamagui/scroll-view'
+import { Separator } from '@tamagui/separator'
+import { Switch } from '@tamagui/switch'
+import { XStack, YStack } from '@tamagui/stacks'
 import { useEffect, useMemo, useState } from 'react'
-import {
-  Button,
-  Dialog,
-  Paragraph,
-  ScrollView,
-  Separator,
-  SizableText,
-  Switch,
-  Unspaced,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
 
 import { useCookieConsent } from './CookieConsentProvider'
 import type { CookieConsentCategory, CookieConsentSelections } from './types'
+import { Button } from '../buttons/Button'
 
 const CategoryRow = ({
   category,
@@ -27,8 +22,8 @@ const CategoryRow = ({
 }) => {
   const disabled = category.required
   return (
-    <YStack gap="$2" padding="$3" borderRadius="$4" backgroundColor="$color2">
-      <XStack alignItems="center" justifyContent="space-between" gap="$3">
+    <YStack gap="$2" p="$3" background="$color2" style={{ borderRadius: 16 }}>
+      <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }} gap="$3">
         <SizableText size="$5" fontWeight="600">
           {category.label}
         </SizableText>
@@ -100,6 +95,7 @@ export const CookiePreferencesDialog = () => {
           opacity={0.5}
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
+          style={{ zIndex: 1001 }}
         />
         <Dialog.Content
           key="content"
@@ -108,8 +104,7 @@ export const CookiePreferencesDialog = () => {
           size="$5"
           gap="$4"
           width="100%"
-          maxWidth={520}
-          maxHeight={600}
+          style={{ maxWidth: 520, maxHeight: 600, zIndex: 1002 }}
         >
           <Dialog.Title>Manage Cookies</Dialog.Title>
 
@@ -118,7 +113,7 @@ export const CookiePreferencesDialog = () => {
             keep critical features running safely.
           </Paragraph>
 
-          <ScrollView maxHeight={360} showsVerticalScrollIndicator={false}>
+          <ScrollView style={{ maxHeight: 360 }} showsVerticalScrollIndicator={false}>
             <YStack gap="$3">
               {categories.map((category) => (
                 <CategoryRow
@@ -131,7 +126,10 @@ export const CookiePreferencesDialog = () => {
             </YStack>
           </ScrollView>
           <Separator />
-          <XStack gap="$3" justifyContent="flex-end" alignItems="center" flexWrap="wrap">
+          <XStack
+            gap="$3"
+            style={{ justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap' }}
+          >
             <Button size="$3" disabled={isSubmitting} onPress={handleSave}>
               Save
             </Button>
@@ -154,11 +152,14 @@ export const CookiePreferencesDialog = () => {
             </Button>
           </XStack>
 
-          <Unspaced>
-            <Dialog.Close asChild>
-              <Button position="absolute" top="$3" right="$3" size="$2" circular icon={X} />
-            </Dialog.Close>
-          </Unspaced>
+          <Dialog.Close asChild>
+            <Button
+              style={{ position: 'absolute', top: 12, right: 12 }}
+              size="$2"
+              circular
+              icon={X}
+            />
+          </Dialog.Close>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>

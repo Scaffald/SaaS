@@ -10,13 +10,13 @@ import type { SheetProps } from 'tamagui'
  * This ensures all action sheets have a consistent background globally
  */
 const SheetFrame = forwardRef<unknown, React.ComponentProps<typeof TamaguiSheet.Frame>>(
-  (props, _ref) => <TamaguiSheet.Frame backgroundColor="$color1" {...props} />
+  (props, _ref) => <TamaguiSheet.Frame background="$color1" {...props} />
 )
 
 SheetFrame.displayName = 'SheetFrame'
 
 const SheetOverlay = forwardRef<unknown, React.ComponentProps<typeof TamaguiSheet.Overlay>>(
-  (props, _ref) => <TamaguiSheet.Overlay backgroundColor="$color12" opacity={0.7} {...props} />
+  (props, _ref) => <TamaguiSheet.Overlay background="$color12" opacity={0.7} {...props} />
 )
 
 SheetOverlay.displayName = 'SheetOverlay'
@@ -28,7 +28,7 @@ SheetOverlay.displayName = 'SheetOverlay'
  * all Sheet.Frame instances have a consistent background color by default.
  *
  * Usage: Import Sheet from '@unicornlove/ui' and use it like Tamagui's Sheet.
- * All Sheet.Frame components will automatically have backgroundColor="$color1" applied.
+ * All Sheet.Frame components will automatically have background="$color1" applied.
  */
 // Type definition for Sheet with static properties
 type SheetComponent = ComponentType<SheetProps> & {

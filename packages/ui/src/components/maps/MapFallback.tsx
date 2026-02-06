@@ -1,5 +1,7 @@
 import type { ViewStyle } from 'react-native'
-import { Text, View, YStack } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import { View } from '@tamagui/core'
+import { YStack } from '@tamagui/stacks'
 
 interface MapFallbackProps {
   pinsCount: number
@@ -11,10 +13,10 @@ export function MapFallback({ pinsCount, message, style }: MapFallbackProps) {
   return (
     <View flex={1} alignItems="center" justifyContent="center" style={style}>
       <YStack
-        backgroundColor="$backgroundHover"
-        borderRadius="$4"
-        padding="$4"
-        alignItems="center"
+        background="$backgroundHover"
+        br="$4"
+        p="$4"
+        style={{ alignItems: 'center' }}
         gap="$2"
       >
         <Text fontSize="$6" fontWeight="bold" color="$color12">

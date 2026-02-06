@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import { YStack } from '@tamagui/stacks'
+
 import { AvatarImagePicker } from './AvatarImagePicker'
 
 /**
@@ -10,7 +12,7 @@ export function AvatarImagePickerExample() {
   const [avatarUri, setAvatarUri] = useState<string>('')
 
   return (
-    <YStack padding="$4" gap="$4" alignItems="center">
+    <YStack p="$4" gap="$4" style={{ alignItems: 'center' }}>
       <Text fontSize="$6" fontWeight="bold">
         Avatar Image Picker Example
       </Text>
@@ -23,11 +25,11 @@ export function AvatarImagePickerExample() {
       />
 
       {avatarUri && (
-        <YStack gap="$2" alignItems="center">
+        <YStack gap="$2" style={{ alignItems: 'center' }}>
           <Text fontSize="$4" fontWeight="600">
             Selected Image URI:
           </Text>
-          <Text fontSize="$3" color="$color10" textAlign="center">
+          <Text fontSize="$3" color="$color10" style={{ textAlign: 'center' }}>
             {avatarUri}
           </Text>
         </YStack>

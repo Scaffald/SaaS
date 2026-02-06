@@ -1,6 +1,7 @@
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Card, type CardProps } from '@unicornlove/ui'
+import type { TamaguiElement } from '@tamagui/core'
+import type { CardProps } from '@tamagui/card'
+import { Card } from '@tamagui/card'
 
 import { cardShadows } from '../../config/shadows'
 
@@ -15,7 +16,7 @@ type DiscoverCardProps = Omit<CardProps, 'children'> & {
   tone?: DiscoverCardTone
   variant?: DiscoverCardTone
   elevationLevel?: DiscoverCardElevation
-  p?: CardProps['padding']
+  p?: string | number
 }
 
 const elevationShadow = {
@@ -39,12 +40,12 @@ const elevationPressShadow = {
 const tonePalette: Record<
   DiscoverCardTone,
   {
-    baseBg: CardProps['backgroundColor']
-    hoverBg: CardProps['backgroundColor']
-    pressBg: CardProps['backgroundColor']
-    selectedBg: CardProps['backgroundColor']
-    selectedBorderColor: CardProps['borderColor']
-    hoverBorderColor: CardProps['borderColor']
+    baseBg: string
+    hoverBg: string
+    pressBg: string
+    selectedBg: string
+    selectedBorderColor: string
+    hoverBorderColor: string
     selectedShadow: string
   }
 > = {
@@ -108,7 +109,6 @@ export const DiscoverCard = memo(
         cursor: cursorProp,
         p,
         width,
-        backgroundColor: bgProp,
         borderColor: borderColorProp,
         borderWidth: borderWidthProp,
         boxShadow: boxShadowProp,
@@ -123,7 +123,7 @@ export const DiscoverCard = memo(
       const resolvedElevation: DiscoverCardElevation = elevationLevel ?? 'none'
       const resolvedInteractive = interactiveProp ?? Boolean(onPress)
       const resolvedPadding = p ?? '$4'
-      const resolvedBg = bgProp ?? (resolvedSelected ? palette.selectedBg : palette.baseBg)
+      const resolvedBg = resolvedSelected ? palette.selectedBg : palette.baseBg
       const resolvedBorderColor =
         borderColorProp ?? (resolvedSelected ? palette.selectedBorderColor : '$borderColor')
       const resolvedBorderWidth = borderWidthProp ?? 1
@@ -147,7 +147,7 @@ export const DiscoverCard = memo(
               borderColor: resolvedSelected
                 ? palette.selectedBorderColor
                 : palette.hoverBorderColor,
-              backgroundColor: resolvedSelected ? palette.selectedBg : palette.hoverBg,
+              background: resolvedSelected ? palette.selectedBg : palette.hoverBg,
               boxShadow: hoverShadow,
               ...(hoverStyleProp ?? {}),
             }
@@ -157,7 +157,7 @@ export const DiscoverCard = memo(
         resolvedInteractive && pressStyleProp !== null
           ? {
               scale: 0.98,
-              backgroundColor: resolvedSelected ? palette.selectedBg : palette.pressBg,
+              background: resolvedSelected ? palette.selectedBg : palette.pressBg,
               boxShadow: pressShadow,
               ...(pressStyleProp ?? {}),
             }
@@ -168,13 +168,13 @@ export const DiscoverCard = memo(
           ref={ref}
           bordered
           cursor={resolvedInteractive ? (cursorProp ?? 'pointer') : cursorProp}
-          padding={resolvedPadding}
-          backgroundColor={resolvedBg}
-          borderColor={resolvedBorderColor}
+          p={resolvedPadding as any}
+          background={resolvedBg as any}
+          borderColor={resolvedBorderColor as any}
           borderWidth={resolvedBorderWidth}
           boxShadow={resolvedShadow}
-          hoverStyle={resolvedInteractive ? hoverStyle : hoverStyleProp}
-          pressStyle={resolvedInteractive ? pressStyle : pressStyleProp}
+          hoverStyle={resolvedInteractive ? (hoverStyle as any) : hoverStyleProp}
+          pressStyle={resolvedInteractive ? (pressStyle as any) : pressStyleProp}
           animation="quick"
           width={width ?? '100%'}
           onPress={onPress}

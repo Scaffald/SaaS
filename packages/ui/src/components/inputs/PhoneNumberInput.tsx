@@ -1,11 +1,15 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Input, Text } from 'tamagui'
+import { Select } from '@tamagui/select'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
+import { XStack, YStack } from '@tamagui/stacks'
 import {
   formatPhoneNumber,
   getE164Format,
   getPhoneRegionCode,
   isValidPhoneNumber,
 } from '../../types/phone'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Input, Select, Text, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
+
 import {
   COUNTRIES,
   type Country,
@@ -229,9 +233,9 @@ export const PhoneNumberInput = ({
           borderColor={resolvedError ? '$red8' : '$borderColor'}
           disabled={disabled}
           inputMode="tel"
-          paddingLeft={50} // Make space for country selector
-          paddingRight="$3"
-          paddingVertical="$3"
+          pl={50} // Make space for country selector
+          pr="$3"
+          py="$3"
           focusStyle={{
             borderColor: '$blue7',
             outlineColor: '$blue7',
@@ -241,20 +245,22 @@ export const PhoneNumberInput = ({
 
         {/* Country Selector - absolutely positioned */}
         <YStack
-          left={4}
-          position="absolute"
           width={78}
-          height="calc(100% - 2px)"
-          backgroundColor="transparent"
-          style={{ pointerEvents: disabled ? 'none' : 'auto' }}
+          background="transparent"
+          style={{
+            left: 4,
+            position: 'absolute',
+            height: 'calc(100% - 2px)',
+            pointerEvents: disabled ? 'none' : 'auto',
+          }}
         >
           <Select value={selectedCountry.code} onValueChange={handleCountryChange} size="$4">
             <Select.Trigger
               borderWidth={0}
-              backgroundColor="transparent"
-              hoverStyle={{ backgroundColor: 'transparent', transform: 'scale(1.5)' }}
-              paddingHorizontal="$3"
-              paddingVertical="$2"
+              background="transparent"
+              hoverStyle={{ background: 'transparent', transform: 'scale(1.5)' }}
+              px="$3"
+              py="$2"
               opacity={disabled ? 0.5 : 1}
               width={40}
             >
@@ -277,7 +283,7 @@ export const PhoneNumberInput = ({
                 <Select.Viewport>
                   {countries.map((country, index) => (
                     <Select.Item key={country.code} value={country.code} index={index}>
-                      <XStack alignItems="center" gap="$2">
+                      <XStack gap="$2" style={{ alignItems: 'center' }}>
                         <Text fontSize="$3">{country.flag}</Text>
                         <Text fontSize="$3">{country.dialCode}</Text>
                         <Text fontSize="$3">{country.name}</Text>

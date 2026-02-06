@@ -73,8 +73,8 @@ function ResultItemComponent<T>({
     }
 
     return (
-      <YStack gap="$1" flex={1} alignItems="flex-start">
-        <XStack gap="$2" alignItems="center">
+      <YStack gap="$1" flex={1} style={{ alignItems: 'flex-start' }}>
+        <XStack gap="$2" style={{ alignItems: 'center' }}>
           <SizableText fontSize="$4" fontWeight="600">
             {highlightText(option.label, option.meta?.highlightRanges)}
           </SizableText>
@@ -92,11 +92,11 @@ function ResultItemComponent<T>({
     <Button
       unstyled
       id={itemId}
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      alignItems="flex-start"
+      px="$3"
+      py="$2"
+      style={{ alignItems: 'flex-start' }}
       width="100%"
-      backgroundColor={isActive ? '$color4' : 'transparent'}
+      background={isActive ? '$color4' : 'transparent'}
       hoverStyle={{ backgroundColor: '$color4' }}
       pressStyle={{ backgroundColor: '$color5' }}
       borderWidth={0}
@@ -108,7 +108,12 @@ function ResultItemComponent<T>({
       aria-selected={isSelected}
       aria-posinset={index + 1}
     >
-      <XStack flex={1} alignItems="flex-start" justifyContent="space-between" width="100%">
+      <XStack
+        flex={1}
+        style={{ alignItems: 'flex-start' }}
+        style={{ justifyContent: 'space-between' }}
+        width="100%"
+      >
         {content}
         {showSelectionIcon ? (
           <Check

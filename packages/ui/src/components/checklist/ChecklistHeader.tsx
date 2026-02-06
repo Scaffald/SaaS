@@ -1,5 +1,6 @@
-import { Text, YStack } from '@unicornlove/ui'
 import type { ChecklistHeaderProps } from './types'
+import { Text } from 'tamagui'
+import { YStack } from '@tamagui/stacks'
 
 /**
  * ChecklistHeader - Header section with title and subtitle

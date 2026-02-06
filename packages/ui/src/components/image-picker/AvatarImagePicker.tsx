@@ -1,7 +1,13 @@
 import { Camera, Delete, Edit3, User } from '@tamagui/lucide-icons'
+import { Circle } from '@tamagui/shapes'
+import { Image } from '@tamagui/image'
+import { Label } from '@tamagui/label'
+import { Spinner, Text } from 'tamagui'
+import { View } from '@tamagui/core'
+import { XStack, YStack } from '@tamagui/stacks'
 import { useEffect, useId, useState } from 'react'
 import { Platform } from 'react-native'
-import { Circle, Image, Label, Spinner, Text, View, XStack, YStack } from '@unicornlove/ui'
+
 import { Button } from '../buttons/Button'
 import type { UploadSelection } from '../upload/UploadSurface'
 import { UploadSurface } from '../upload/UploadSurface'
@@ -106,7 +112,7 @@ export function AvatarImagePicker({
         const isBusy = isLoading || isProcessing
 
         return (
-          <YStack alignItems="center" gap="$3">
+          <YStack gap="$3" style={{ alignItems: 'center' }}>
             <View
               {...(getRootProps({
                 style: { position: 'relative' },
@@ -125,7 +131,7 @@ export function AvatarImagePicker({
 
               <Circle
                 size={size}
-                backgroundColor={isDragActive ? '$blue3' : '$color3'}
+                background={isDragActive ? '$blue3' : '$color3'}
                 borderColor={isDragActive ? '$blue8' : '$color6'}
                 borderWidth={2}
                 borderStyle={isDragActive ? 'solid' : 'dashed'}
@@ -137,20 +143,19 @@ export function AvatarImagePicker({
                 }}
                 hoverStyle={{
                   borderColor: disabled ? '$color6' : '$blue8',
-                  backgroundColor: disabled ? '$color3' : '$blue2',
+                  background: disabled ? '$color3' : '$blue2',
                 }}
                 aria-role="image"
                 aria-label={previewUri || value ? 'Current avatar preview' : 'Avatar placeholder'}
               >
                 {previewUri ? (
-                  <Image
-                    source={{ uri: previewUri }}
-                    width={size}
-                    height={size}
-                    borderRadius={size / 2}
-                  />
+                  <Image source={{ uri: previewUri }} width={size} height={size} br={size / 2} />
                 ) : (
-                  <YStack alignItems="center" justifyContent="center" flex={1} gap="$2">
+                  <YStack
+                    flex={1}
+                    gap="$2"
+                    style={{ alignItems: 'center', justifyContent: 'center' }}
+                  >
                     <User size={size * 0.3} color="$color9" />
                     <Text
                       fontSize="$2"
@@ -165,39 +170,43 @@ export function AvatarImagePicker({
 
                 {isBusy && !previewUri && (
                   <YStack
-                    position="absolute"
-                    top={0}
-                    left={0}
-                    right={0}
-                    bottom={0}
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor="rgba(0,0,0,0.35)"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: 'rgba(0,0,0,0.35)',
+                    }}
                   >
                     <Spinner color="white" size="large" />
                   </YStack>
                 )}
 
                 <View
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  right={0}
-                  bottom={0}
-                  backgroundColor="$color9"
-                  borderRadius={size / 2}
-                  alignItems="center"
-                  justifyContent="center"
+                  background="$color9"
+                  br={size / 2}
                   opacity={0}
                   hoverStyle={{ opacity: disabled ? 0 : 1 }}
-                  style={{ pointerEvents: 'none' }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    pointerEvents: 'none',
+                  }}
                 >
                   <Camera size={size * 0.25} color="white" />
                 </View>
               </Circle>
             </View>
 
-            <XStack gap="$2" alignItems="center">
+            <XStack gap="$2" style={{ alignItems: 'center' }}>
               <Button
                 size="$3"
                 variant="outlined"

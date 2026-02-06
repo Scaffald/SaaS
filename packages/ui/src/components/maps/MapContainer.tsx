@@ -1,7 +1,8 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
-import { View } from '@unicornlove/ui'
+import { View, useThemeName } from '@tamagui/core'
+
 // useThemeSetting has domain dependencies - use tamagui's useThemeName instead
-import { useThemeName } from '@unicornlove/ui'
+
 import { logger } from '@scf/core'
 import {
   purpleDark,
@@ -911,10 +912,17 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             try {
               source.setData(geojsonData)
             } catch (error) {
-              logger.warn(`Error updating ${type} pins source`, { error, type, context: 'MapContainer' })
+              logger.warn(`Error updating ${type} pins source`, {
+                error,
+                type,
+                context: 'MapContainer',
+              })
             }
           } else {
-            logger.warn(`Invalid GeoJSON data generated from ${type} pins`, { type, context: 'MapContainer' })
+            logger.warn(`Invalid GeoJSON data generated from ${type} pins`, {
+              type,
+              context: 'MapContainer',
+            })
           }
         }
 
@@ -967,7 +975,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                     }
                   }
                 } catch (error) {
-                  logger.warn(`Failed to query clusters for source ${sourceId}`, { error, sourceId, context: 'MapContainer' })
+                  logger.warn(`Failed to query clusters for source ${sourceId}`, {
+                    error,
+                    sourceId,
+                    context: 'MapContainer',
+                  })
                 }
               }
 
@@ -1142,7 +1154,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             })
           })
           .catch((error) => {
-            logger.warn('Failed to load avatar marker image', { error, imageId, context: 'MapContainer' })
+            logger.warn('Failed to load avatar marker image', {
+              error,
+              imageId,
+              context: 'MapContainer',
+            })
             avatarImageCacheRef.current.delete(imageId)
           })
           .finally(() => {
@@ -1208,12 +1224,18 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           Number.isNaN(lng) ||
           Number.isNaN(lat)
         ) {
-          logger.warn('Invalid centerLocation coordinates', { centerLocation, context: 'MapContainer' })
+          logger.warn('Invalid centerLocation coordinates', {
+            centerLocation,
+            context: 'MapContainer',
+          })
           return
         }
 
         if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
-          logger.warn('centerLocation coordinates out of range', { centerLocation, context: 'MapContainer' })
+          logger.warn('centerLocation coordinates out of range', {
+            centerLocation,
+            context: 'MapContainer',
+          })
           return
         }
 
@@ -1274,7 +1296,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             lat < -90 ||
             lat > 90
           ) {
-            logger.warn('Invalid selected pin coordinates', { coordinate: selectedPin.coordinate, context: 'MapContainer' })
+            logger.warn('Invalid selected pin coordinates', {
+              coordinate: selectedPin.coordinate,
+              context: 'MapContainer',
+            })
             try {
               source.setData({
                 type: 'FeatureCollection',
@@ -1305,7 +1330,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             })
           } catch (e) {
             // Source might be in invalid state during style transition
-            logger.warn('Failed to update selected pin pulse source', { error: e, context: 'MapContainer' })
+            logger.warn('Failed to update selected pin pulse source', {
+              error: e,
+              context: 'MapContainer',
+            })
           }
         } else {
           // No pin selected - clear the source
@@ -1324,7 +1352,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     }, [pins, isMapReady])
 
     return (
-      <View flex={1} position="relative" overflow="hidden" borderRadius="$5" style={style}>
+      <View flex={1} position="relative" overflow="hidden" br="$5" style={style}>
         <div
           ref={mapContainerRef}
           style={{

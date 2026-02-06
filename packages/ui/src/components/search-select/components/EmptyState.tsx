@@ -15,7 +15,7 @@ export const EmptyState = ({
   icon,
 }: EmptyStateProps) => {
   return (
-    <YStack padding="$4" gap="$2" alignItems="center" aria-live="polite">
+    <YStack p="$4" gap="$2" style={{ alignItems: 'center' }} aria-live="polite">
       {icon ?? <Search size={28} color="$color9" aria-hidden={true} />}
       <SizableText fontSize="$4" fontWeight="600" style={{ textAlign: 'center' }}>
         {title}

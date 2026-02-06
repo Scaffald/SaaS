@@ -1,7 +1,10 @@
 import type { FC } from 'react'
+import { Card } from '@tamagui/card'
+import { Text } from 'tamagui'
+import { View } from '@tamagui/core'
+import { XStack, YStack } from '@tamagui/stacks'
 import { ArrowDown, ArrowUp, Minus } from '@tamagui/lucide-icons'
 import { Circle, Svg } from 'react-native-svg'
-import { Card, Text, View, XStack, YStack } from '@unicornlove/ui'
 
 export interface VersionHistoryItem {
   version: number
@@ -108,9 +111,12 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
       cursor={onPress ? 'pointer' : 'default'}
       onPress={onPress}
     >
-      <YStack gap="$2" alignItems="center">
+      <YStack gap="$2" style={{ alignItems: 'center' }}>
         {/* Skill Name */}
-        <XStack gap="$2" alignItems="center" justifyContent="center" flexWrap="wrap">
+        <XStack
+          gap="$2"
+          style={{ alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}
+        >
           <Text fontSize={config.titleSize} fontWeight="600" color="$color12" numberOfLines={2}>
             {skillName}
           </Text>
@@ -127,9 +133,7 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
         <View
           height={config.chartSize}
           width={config.chartSize}
-          alignItems="center"
-          justifyContent="center"
-          position="relative"
+          style={{ alignItems: 'center', justifyContent: 'center', position: 'relative' }}
         >
           <Svg height={config.chartSize} width={config.chartSize}>
             {/* Background circle */}
@@ -192,7 +196,7 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
         </View>
 
         {/* Rating Value */}
-        <YStack gap="$1" alignItems="center">
+        <YStack gap="$1" style={{ alignItems: 'center' }}>
           <Text fontSize={config.valueSize} fontWeight="700" color="$color12">
             {selfRating.toFixed(1)}/5
           </Text>
@@ -205,15 +209,15 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
 
         {/* Legend (if both self and peer are shown) */}
         {peerRating !== undefined && peerRating !== null && (
-          <XStack gap="$3" alignItems="center">
-            <XStack gap="$1" alignItems="center">
-              <View width={12} height={12} backgroundColor="$blue10" borderRadius="$1" />
+          <XStack gap="$3" style={{ alignItems: 'center' }}>
+            <XStack gap="$1" style={{ alignItems: 'center' }}>
+              <View width={12} height={12} background="$blue10" style={{ borderRadius: 4 }} />
               <Text fontSize="$1" color="$color11">
                 Self
               </Text>
             </XStack>
-            <XStack gap="$1" alignItems="center">
-              <View width={12} height={12} backgroundColor="$green10" borderRadius="$1" />
+            <XStack gap="$1" style={{ alignItems: 'center' }}>
+              <View width={12} height={12} background="$green10" style={{ borderRadius: 4 }} />
               <Text fontSize="$1" color="$color11">
                 Peer
               </Text>

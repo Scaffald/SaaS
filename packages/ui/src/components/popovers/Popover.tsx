@@ -22,7 +22,7 @@ const PopoverContent = styled(TamaguiPopover.Content, {
  * all Popover.Content instances have a consistent background color by default.
  *
  * Usage: Import Popover from '@unicornlove/ui' and use it like Tamagui's Popover.
- * All Popover.Content components will automatically have backgroundColor="$color1" applied.
+ * All Popover.Content components will automatically have background="$color1" applied.
  */
 // Type definition: include all Popover static properties from Tamagui, override Content
 type PopoverComponent = typeof TamaguiPopover & {

@@ -1,14 +1,9 @@
 import { Link } from 'expo-router'
+import { Paragraph } from 'tamagui'
+import { ScrollView } from '@tamagui/scroll-view'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
+import { XStack, YStack } from '@tamagui/stacks'
 import { type JSX, useMemo } from 'react'
-import {
-  Button,
-  type ButtonProps,
-  Paragraph,
-  ScrollView,
-  useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
 
 export type OfficeTabsItem = {
   key: string
@@ -77,7 +72,7 @@ export const OfficeTabs = ({
         variant={active ? undefined : 'outlined'}
         size="$3"
         borderColor={active ? '$color9' : '$borderColor'}
-        backgroundColor={active ? '$color9' : 'transparent'}
+        background={active ? '$color9' : 'transparent'}
         hoverStyle={{
           backgroundColor: active ? '$color9' : '$color3',
         }}
@@ -86,18 +81,18 @@ export const OfficeTabs = ({
         }}
         {...buttonProps}
       >
-        <XStack gap="$2" alignItems="center">
+        <XStack gap="$2" style={{ alignItems: 'center' }}>
           <Paragraph fontWeight="600" color={active ? '$color1' : '$color11'}>
             {label}
           </Paragraph>
           {badge ? (
             <YStack
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              backgroundColor={active ? '$color2' : '$color4'}
-              borderRadius="$10"
-              alignItems="center"
-              justifyContent="center"
+              px="$2"
+              py="$1"
+              background={active ? '$color2' : '$color4'}
+              br="$10"
+              style={{ alignItems: 'center' }}
+              style={{ justifyContent: 'center' }}
             >
               <Paragraph size="$1" color={active ? '$color10' : '$color11'}>
                 {badge}
@@ -118,13 +113,7 @@ export const OfficeTabs = ({
   if (isSmallScreen) {
     return (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack
-          paddingHorizontal="$4"
-          paddingVertical="$2"
-          gap="$2"
-          role="tablist"
-          aria-label={ariaLabel}
-        >
+        <XStack px="$4" py="$2" gap="$2" role="tablist" aria-label={ariaLabel}>
           {normalizedItems.map(renderTabButton)}
         </XStack>
       </ScrollView>
@@ -132,8 +121,8 @@ export const OfficeTabs = ({
   }
 
   return (
-    <YStack paddingHorizontal="$4">
-      <XStack gap="$2" role="tablist" aria-label={ariaLabel} flexWrap="wrap">
+    <YStack px="$4">
+      <XStack gap="$2" role="tablist" aria-label={ariaLabel} style={{ flexWrap: 'wrap' }}>
         {normalizedItems.map(renderTabButton)}
       </XStack>
     </YStack>

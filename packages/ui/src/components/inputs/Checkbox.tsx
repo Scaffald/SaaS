@@ -1,6 +1,6 @@
 import { Check } from '@tamagui/lucide-icons'
+import { View } from '@tamagui/core'
 import { Platform } from 'react-native'
-import { View, type ViewProps } from '@unicornlove/ui'
 
 export interface CheckboxProps {
   /** Whether the checkbox is checked */
@@ -22,32 +22,35 @@ export interface CheckboxProps {
 }
 
 // Size styles for the checkbox container
-const sizeStyles: Record<NonNullable<CheckboxProps['size']>, Partial<ViewProps>> = {
+const sizeStyles: Record<
+  NonNullable<CheckboxProps['size']>,
+  { width: string; height: string; br: string }
+> = {
   small: {
     width: '$1',
     height: '$1',
-    borderRadius: '$1',
+    br: '$1',
   },
   medium: {
     width: '$1',
     height: '$1',
-    borderRadius: '$2',
+    br: '$2',
   },
   large: {
     width: '$2',
     height: '$2',
-    borderRadius: '$2',
+    br: '$2',
   },
 }
 
 // Checked state styles
-const checkedStyles: Record<string, Partial<ViewProps>> = {
+const checkedStyles: Record<string, { background: string; borderColor: string }> = {
   checked: {
-    backgroundColor: '$blue7',
+    background: '$blue7',
     borderColor: '$blue7',
   },
   unchecked: {
-    backgroundColor: 'transparent',
+    background: 'transparent',
     borderColor: '$borderColor',
   },
 }
@@ -114,8 +117,6 @@ export function Checkbox({
       cursor={disabled ? 'not-allowed' : 'pointer'}
       animation="quick"
       overflow="hidden"
-      alignItems="center"
-      justifyContent="center"
       borderWidth={1}
       opacity={disabled ? 0.5 : 1}
       onPress={handlePress}
@@ -140,15 +141,15 @@ export function Checkbox({
             }
           : undefined
       }
+      style={{ alignItems: 'center', justifyContent: 'center' }}
       {...accessibilityProps}
     >
       <View
         pointerEvents="none"
         width="100%"
         height="100%"
-        alignItems="center"
-        justifyContent="center"
         opacity={checked ? 1 : 0}
+        style={{ alignItems: 'center', justifyContent: 'center' }}
       >
         <Check size={size === 'small' ? 12 : size === 'medium' ? 12 : 12} color="white" />
       </View>

@@ -1,6 +1,6 @@
 import { memo } from 'react'
-import type { GetThemeValueForKey } from '@unicornlove/ui'
-import { Progress } from '@unicornlove/ui'
+import type { GetThemeValueForKey } from '@tamagui/core'
+import { Progress } from '@tamagui/progress'
 
 export interface ProgressBarProps {
   /** Progress value (0-100) */
@@ -33,11 +33,11 @@ export const ProgressBar = memo(
       <Progress
         value={clampedValue}
         max={100}
-        backgroundColor={backgroundColor}
+        background={backgroundColor}
         borderRadius="$1"
         height={size}
       >
-        <Progress.Indicator backgroundColor={color} borderRadius="$1" animation="quick" />
+        <Progress.Indicator background={color} borderRadius="$1" animation="quick" />
       </Progress>
     )
   }

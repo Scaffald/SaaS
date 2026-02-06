@@ -1,6 +1,8 @@
 import { AlertCircle } from '@tamagui/lucide-icons'
+import { Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 import type { ReactNode } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+
 import { borderRadius } from '../../config/radii'
 import { spacing } from '../../config/spacing'
 import { typography } from '../../config/typography'
@@ -76,7 +78,9 @@ export function ErrorState({
       style={{ minHeight: 300 }}
     >
       {/* Icon */}
-      <YStack alignItems="center">{icon || <AlertCircle size={48} color="$red9" />}</YStack>
+      <YStack style={{ alignItems: 'center' }}>
+        {icon || <AlertCircle size={48} color="$red9" />}
+      </YStack>
 
       {/* Title */}
       <Text
@@ -103,9 +107,9 @@ export function ErrorState({
       {/* Technical error details */}
       {errorMessage && (
         <XStack
-          backgroundColor="$red2"
+          background="$red2"
           padding={spacing.md}
-          borderRadius={borderRadius.md}
+          br={borderRadius.md}
           style={{ maxWidth: 500 }}
           borderWidth={1}
           borderColor="$red5"
@@ -118,7 +122,7 @@ export function ErrorState({
 
       {/* Retry button */}
       {retry && (
-        <YStack marginTop={spacing.md}>
+        <YStack mt={spacing.md}>
           <Button variant="primary" onPress={retry}>
             {retryText}
           </Button>

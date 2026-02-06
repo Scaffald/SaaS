@@ -1,5 +1,9 @@
 import type { ReactNode } from 'react'
-import { AnimatePresence, Text, type ThemeName, View, XStack, YStack } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import type { ThemeName } from '@tamagui/core'
+import { View } from '@tamagui/core'
+import { XStack, YStack } from '@tamagui/stacks'
+
 import { ToggleSwitch } from './ToggleSwitch'
 
 export interface ToggleCardProps {
@@ -46,7 +50,7 @@ export interface ToggleCardProps {
  *   checked={usResident}
  *   onCheckedChange={setUsResident}
  *   expandedContent={
- *     <YStack gap="$2" paddingTop="$3">
+ *     <YStack gap="$2" pt="$3">
  *       <Input placeholder="Social Security Number" />
  *     </YStack>
  *   }
@@ -85,15 +89,15 @@ export function ToggleCard({
         flexDirection="row"
         borderColor="$borderColor"
         borderWidth={1}
-        paddingHorizontal="$4"
-        paddingVertical="$3"
+        px="$4"
+        py="$3"
         $sm={{ marginHorizontal: '$0' }}
-        borderRadius="$3"
+        br="$3"
         borderBottomLeftRadius={checked && expandedContent ? 0 : undefined}
         borderBottomRightRadius={checked && expandedContent ? 0 : undefined}
         flex={1}
         height="auto"
-        alignItems="center"
+        style={{ alignItems: 'center' }}
         gap="$2.5"
         theme={theme}
         animation="medium"
@@ -111,7 +115,7 @@ export function ToggleCard({
         }}
       >
         {/* Icon */}
-        {icon && <View flexShrink={0}>{icon}</View>}
+        {icon && <View style={{ flexShrink: 0 }}>{icon}</View>}
 
         {/* Title and Description */}
         <YStack flex={1} gap="$1">
@@ -126,7 +130,7 @@ export function ToggleCard({
         </YStack>
 
         {/* Custom Toggle */}
-        <View alignSelf="center">
+        <View style={{ alignSelf: 'center' }}>
           <ToggleSwitch
             checked={checked}
             onCheckedChange={onCheckedChange}
@@ -145,7 +149,7 @@ export function ToggleCard({
               key="expanded-content"
               overflow="hidden"
               opacity={checked ? 1 : 0}
-              maxHeight={checked ? 1000 : 0}
+              style={{ maxHeight: checked ? 1000 : 0 }}
               animation="medium"
               borderColor="$borderColor"
               borderWidth={1}
@@ -154,9 +158,9 @@ export function ToggleCard({
               borderBottomRightRadius="$3"
               borderTopRightRadius={0}
               borderTopLeftRadius={0}
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              backgroundColor="$color1"
+              px="$4"
+              py="$3"
+              background="$color1"
             >
               {expandedContent}
             </YStack>

@@ -1,4 +1,4 @@
-import { AnimatePresence, Paragraph } from '@unicornlove/ui'
+import { AnimatePresence, Paragraph } from 'tamagui'
 
 type FieldErrorProps = {
   /**
@@ -14,7 +14,7 @@ export const FieldError = ({ message }: FieldErrorProps) => {
         <Paragraph
           key="error"
           animation="200ms"
-          marginTop="$2"
+          mt="$2"
           enterStyle={{
             y: -4,
             scaleY: 0.2,
@@ -26,8 +26,7 @@ export const FieldError = ({ message }: FieldErrorProps) => {
             scaleY: 0,
           }}
           opacity={1}
-          y={0}
-          scaleY={1}
+          style={{ y: 0, scaleY: 1 }}
         >
           {message}
         </Paragraph>

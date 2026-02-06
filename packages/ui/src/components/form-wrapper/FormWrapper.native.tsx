@@ -1,14 +1,12 @@
 import { useHeaderHeight as useHeaderHeightOG } from '@react-navigation/elements'
+import { ScrollView } from '@tamagui/scroll-view'
+import type { TamaguiElement } from '@tamagui/core'
+import { withStaticProperties } from '@tamagui/core'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
+import type { YStackProps } from '@tamagui/stacks'
+import { YStack } from '@tamagui/stacks'
 import { createContext, forwardRef, useContext, useState } from 'react'
 import { KeyboardAvoidingView, Platform } from 'react-native'
-import {
-  ScrollView,
-  type TamaguiElement,
-  useWindowDimensions,
-  withStaticProperties,
-  YStack,
-  type YStackProps,
-} from '@unicornlove/ui'
 
 // React Navigation's useHeaderHeight hook works when ThemeProvider is available
 // UniversalThemeProvider now wraps all platforms (web + native) with ThemeProvider
@@ -40,10 +38,10 @@ const Wrapper = forwardRef<TamaguiElement, YStackProps>(function Wrapper(props, 
         ref={ref}
         gap="$4"
         flex={1}
-        justifyContent={isSmallScreen ? 'space-between' : 'center'}
+        style={{ justifyContent: isSmallScreen ? 'space-between' : 'center' }}
         {...(isSmallScreen && {
           width: '100%',
-          maxWidth: 600,
+          style: { maxWidth: 600 },
           alignSelf: 'center',
         })}
         {...props}
@@ -55,7 +53,7 @@ const Wrapper = forwardRef<TamaguiElement, YStackProps>(function Wrapper(props, 
 const Body = forwardRef<TamaguiElement, YStackProps>(function Body(props, ref) {
   return (
     <ScrollView>
-      <YStack padding="$4" ref={ref} gap="$2" paddingBottom="$8" {...props} />
+      <YStack p="$4" ref={ref} gap="$2" pb="$8" {...props} />
     </ScrollView>
   )
 })
@@ -78,11 +76,11 @@ const Footer = forwardRef<TamaguiElement, YStackProps>(function Footer(props, re
     >
       <YStack
         ref={ref}
-        paddingBottom="$4"
-        paddingHorizontal="$4"
+        pb="$4"
+        px="$4"
         gap="$4"
         // reverse the direction so that the primary button is on the bottom of the screen on mobile
-        flexDirection="column-reverse"
+        style={{ flexDirection: 'column-reverse' }}
         {...props}
       />
     </KeyboardAvoidingView>

@@ -1,4 +1,9 @@
 import { Check, X } from '@tamagui/lucide-icons'
+import { Image as TamaguiImage } from '@tamagui/image'
+import { Text } from 'tamagui'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
+import { View } from '@tamagui/core'
+import { XStack, YStack } from '@tamagui/stacks'
 import {
   type ComponentRef,
   type MouseEvent,
@@ -11,15 +16,8 @@ import {
 } from 'react'
 import { Platform, Image as RNImage } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import {
-  Button,
-  Image as TamaguiImage,
-  Text,
-  useWindowDimensions,
-  View,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+
+import { Button } from '../buttons/Button'
 import { Dialog } from '../dialog/Dialog'
 import { Sheet } from '../sheets/Sheet'
 import { detectMimeTypeFromSrc, getNativeTransform, getWebTransform } from './utils/helpers'
@@ -527,13 +525,12 @@ export function AvatarCropModal({
         <Sheet.Frame>
           <Sheet.Handle />
           <XStack
-            paddingHorizontal="$4"
-            paddingTop="$3"
-            paddingBottom="$2"
-            justifyContent="space-between"
-            alignItems="center"
+            px="$4"
+            pt="$3"
+            pb="$2"
             borderBottomWidth={1}
             borderBottomColor="$borderColor"
+            style={{ justifyContent: 'space-between', alignItems: 'center' }}
           >
             <Text fontSize="$6" fontWeight="700" flex={1}>
               Crop Avatar
@@ -548,13 +545,13 @@ export function AvatarCropModal({
             />
           </XStack>
 
-          <YStack padding="$4" gap="$4" flex={1}>
+          <YStack p="$4" gap="$4" flex={1}>
             {error ? (
-              <YStack alignItems="center" justifyContent="center" gap="$3" flex={1}>
-                <Text fontSize="$4" color="$red10" textAlign="center" fontWeight="600">
+              <YStack gap="$3" flex={1} style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Text fontSize="$4" color="$red10" fontWeight="600" style={{ textAlign: 'center' }}>
                   Error
                 </Text>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
                   {error}
                 </Text>
                 <Button variant="outlined" onPress={() => onOpenChange(false)}>
@@ -562,7 +559,12 @@ export function AvatarCropModal({
                 </Button>
               </YStack>
             ) : imageLoaded ? (
-              <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" width="100%">
+              <YStack
+                flex={1}
+                gap="$4"
+                width="100%"
+                style={{ alignItems: 'center', justifyContent: 'center' }}
+              >
                 {(() => {
                   const liveRegionProps =
                     Platform.OS === 'web'
@@ -592,14 +594,14 @@ export function AvatarCropModal({
 
                   const cropContent = (
                     <View
-                      position="relative"
                       width={displaySize}
                       height={displaySize}
-                      backgroundColor="$color2"
-                      borderRadius="$4"
+                      background="$color2"
+                      br="$4"
                       overflow="hidden"
                       aria-role="image"
                       aria-label="Avatar crop area. Drag to reposition and pinch to zoom."
+                      style={{ position: 'relative' }}
                     >
                       <TamaguiImage
                         source={{ uri: imageUri }}
@@ -619,56 +621,66 @@ export function AvatarCropModal({
                       />
 
                       <View
-                        position="absolute"
-                        top={0}
-                        left={0}
                         width={displaySize}
                         height={(displaySize - cropDisplaySize) / 2}
-                        backgroundColor="rgba(0, 0, 0, 0.5)"
                         pointerEvents="none"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        }}
                       />
                       <View
-                        position="absolute"
-                        bottom={0}
-                        left={0}
                         width={displaySize}
                         height={(displaySize - cropDisplaySize) / 2}
-                        backgroundColor="rgba(0, 0, 0, 0.5)"
                         pointerEvents="none"
+                        style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        }}
                       />
                       <View
-                        position="absolute"
-                        top={(displaySize - cropDisplaySize) / 2}
-                        left={0}
                         width={(displaySize - cropDisplaySize) / 2}
                         height={cropDisplaySize}
-                        backgroundColor="rgba(0, 0, 0, 0.5)"
                         pointerEvents="none"
+                        style={{
+                          position: 'absolute',
+                          top: (displaySize - cropDisplaySize) / 2,
+                          left: 0,
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        }}
                       />
                       <View
-                        position="absolute"
-                        top={(displaySize - cropDisplaySize) / 2}
-                        right={0}
                         width={(displaySize - cropDisplaySize) / 2}
                         height={cropDisplaySize}
-                        backgroundColor="rgba(0, 0, 0, 0.5)"
                         pointerEvents="none"
+                        style={{
+                          position: 'absolute',
+                          top: (displaySize - cropDisplaySize) / 2,
+                          right: 0,
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        }}
                       />
 
                       <View
-                        position="absolute"
-                        left={(displaySize - cropDisplaySize) / 2}
-                        top={(displaySize - cropDisplaySize) / 2}
                         width={cropDisplaySize}
                         height={cropDisplaySize}
                         borderWidth={2}
                         borderColor="$blue10"
-                        borderRadius="$2"
+                        br="$2"
                         shadowColor="$shadowColor"
                         shadowOffset={{ width: 0, height: 2 }}
                         shadowOpacity={0.3}
                         shadowRadius={8}
                         pointerEvents="none"
+                        style={{
+                          position: 'absolute',
+                          left: (displaySize - cropDisplaySize) / 2,
+                          top: (displaySize - cropDisplaySize) / 2,
+                        }}
                       />
                     </View>
                   )
@@ -684,10 +696,14 @@ export function AvatarCropModal({
                     return (
                       <>
                         {liveRegion}
-                        <XStack gap="$4" width="100%" justifyContent="center" alignItems="center">
+                        <XStack
+                          gap="$4"
+                          width="100%"
+                          style={{ justifyContent: 'center', alignItems: 'center' }}
+                        >
                           {cropper}
-                          <YStack gap="$4" maxWidth={280} alignItems="center">
-                            <Text fontSize="$3" color="$color11" textAlign="center">
+                          <YStack gap="$4" style={{ maxWidth: 280, alignItems: 'center' }}>
+                            <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
                               Pinch to zoom • Drag to position
                             </Text>
                             {controls}
@@ -700,7 +716,7 @@ export function AvatarCropModal({
                   return (
                     <>
                       {liveRegion}
-                      <Text fontSize="$3" color="$color11" textAlign="center">
+                      <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
                         Pinch to zoom • Drag to position
                       </Text>
                       {controls}
@@ -709,7 +725,11 @@ export function AvatarCropModal({
                   )
                 })()}
 
-                <XStack gap="$3" width="100%">
+                <XStack
+                  gap="$3"
+                  width="100%"
+                  style={{ justifyContent: 'center', alignItems: 'center' }}
+                >
                   <Button flex={1} variant="outlined" onPress={() => onOpenChange(false)}>
                     Cancel
                   </Button>
@@ -726,7 +746,7 @@ export function AvatarCropModal({
                 </XStack>
               </YStack>
             ) : (
-              <YStack alignItems="center" justifyContent="center" flex={1}>
+              <YStack flex={1} style={{ alignItems: 'center', justifyContent: 'center' }}>
                 <Text>Loading image...</Text>
               </YStack>
             )}
@@ -743,16 +763,14 @@ export function AvatarCropModal({
         <Dialog.Content
           gap="$0"
           width={displaySize + 128}
-          maxWidth="90vw"
           height={displaySize + 250}
-          maxHeight="90vh"
+          style={{ maxWidth: '90vw', maxHeight: '90vh' }}
         >
           <XStack
-            padding="$4"
-            justifyContent="space-between"
-            alignItems="center"
+            p="$4"
             borderBottomWidth={1}
             borderBottomColor="$borderColor"
+            style={{ justifyContent: 'space-between', alignItems: 'center' }}
           >
             <Dialog.Title fontSize="$6" fontWeight="700" flex={1}>
               Crop Avatar
@@ -762,13 +780,17 @@ export function AvatarCropModal({
             </Dialog.Close>
           </XStack>
 
-          <YStack padding="$4" gap="$4" alignItems="center">
+          <YStack p="$4" gap="$4" style={{ alignItems: 'center' }}>
             {error ? (
-              <YStack alignItems="center" justifyContent="center" gap="$3" minHeight={displaySize}>
-                <Text fontSize="$4" color="$red10" textAlign="center" fontWeight="600">
+              <YStack
+                gap="$3"
+                minHeight={displaySize}
+                style={{ alignItems: 'center', justifyContent: 'center' }}
+              >
+                <Text fontSize="$4" color="$red10" fontWeight="600" style={{ textAlign: 'center' }}>
                   Error
                 </Text>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
                   {error}
                 </Text>
                 <Button variant="outlined" onPress={() => onOpenChange(false)}>
@@ -792,7 +814,7 @@ export function AvatarCropModal({
                 >
                   <Text>{liveAnnouncement}</Text>
                 </View>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
                   Drag to position • Scroll to zoom
                 </Text>
 
@@ -923,7 +945,10 @@ export function AvatarCropModal({
                 </XStack>
               </>
             ) : (
-              <YStack alignItems="center" justifyContent="center" minHeight={displaySize}>
+              <YStack
+                minHeight={displaySize}
+                style={{ alignItems: 'center', justifyContent: 'center' }}
+              >
                 <Text>Loading image...</Text>
               </YStack>
             )}

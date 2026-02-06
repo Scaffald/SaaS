@@ -1,4 +1,5 @@
-import { Spinner, YStack, type YStackProps } from '@unicornlove/ui'
+import { YStack, type YStackProps } from '@tamagui/stacks'
+import { Spinner } from 'tamagui'
 
 export const LoadingOverlay = (props: YStackProps) => {
   return (
@@ -7,8 +8,7 @@ export const LoadingOverlay = (props: YStackProps) => {
       position="absolute"
       fullscreen
       flex={1}
-      justifyContent="center"
-      alignItems="center"
+      style={{ justifyContent: 'center', alignItems: 'center' }}
       {...props}
     >
       <Spinner />

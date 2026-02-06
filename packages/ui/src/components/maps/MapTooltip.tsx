@@ -1,5 +1,8 @@
 import { memo } from 'react'
-import { Text, View, XStack, YStack } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import { View } from '@tamagui/core'
+import { XStack, YStack } from '@tamagui/stacks'
+
 import type { MapTooltipData } from './types'
 
 interface MapTooltipProps {
@@ -14,11 +17,11 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
   return (
     <View
       position="absolute"
-      backgroundColor="$background"
+      background="$background"
       borderColor="$color6"
       borderWidth={1}
-      borderRadius="$4"
-      padding="$3"
+      br="$4"
+      p="$3"
       minWidth={200}
       maxWidth={280}
       zIndex={1000}
@@ -43,9 +46,9 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
         )}
 
         {/* Stats Row */}
-        <XStack gap="$4" flexWrap="wrap">
+        <XStack gap="$4" style={{ flexWrap: 'wrap' }}>
           {data.score && (
-            <XStack gap="$1" alignItems="center">
+            <XStack gap="$1" style={{ alignItems: 'center' }}>
               <Text fontSize="$2" fontWeight="600" color="$color10">
                 Score:
               </Text>
@@ -56,7 +59,7 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
           )}
 
           {data.experienceYears && (
-            <XStack gap="$1" alignItems="center">
+            <XStack gap="$1" style={{ alignItems: 'center' }}>
               <Text fontSize="$2" fontWeight="600" color="$color10">
                 Experience:
               </Text>
@@ -67,7 +70,7 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
           )}
 
           {data.hourlyRate && (
-            <XStack gap="$1" alignItems="center">
+            <XStack gap="$1" style={{ alignItems: 'center' }}>
               <Text fontSize="$2" fontWeight="600" color="$color10">
                 Rate:
               </Text>
@@ -84,15 +87,9 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
             <Text fontSize="$2" fontWeight="600" color="$color10">
               Skills:
             </Text>
-            <XStack gap="$1" flexWrap="wrap">
+            <XStack gap="$1" style={{ flexWrap: 'wrap' }}>
               {data.skills.slice(0, 3).map((skill) => (
-                <View
-                  key={skill}
-                  backgroundColor="$blue4"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius="$2"
-                >
+                <View key={skill} background="$blue4" px="$2" py="$1" br="$2">
                   <Text fontSize="$1" color="$blue11">
                     {skill}
                   </Text>
@@ -113,20 +110,20 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
             <Text fontSize="$2" fontWeight="600" color="$color10">
               Certifications:
             </Text>
-            <XStack gap="$1" flexWrap="wrap">
+            <XStack gap="$1" style={{ flexWrap: 'wrap' }}>
               {data.badges.slice(0, 2).map((badge) => (
                 <View
                   key={badge.label}
-                  backgroundColor={
+                  background={
                     badge.tone === 'success'
                       ? '$green4'
                       : badge.tone === 'warning'
                         ? '$yellow4'
                         : '$red4'
                   }
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius="$2"
+                  px="$2"
+                  py="$1"
+                  br="$2"
                 >
                   <Text
                     fontSize="$1"

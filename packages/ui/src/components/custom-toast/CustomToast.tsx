@@ -1,5 +1,5 @@
 import { Toast, useToastState } from '@tamagui/toast'
-import { XStack, YStack } from '@unicornlove/ui'
+import { XStack, YStack } from '@tamagui/stacks'
 
 export const CustomToast = () => {
   const currentToast = useToastState()

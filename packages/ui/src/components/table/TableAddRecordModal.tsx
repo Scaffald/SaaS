@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
-import { Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+import { Paragraph, Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
+
 import { Button } from '../buttons/Button'
 import { ResponsiveModal } from '../modal'
 
@@ -52,7 +54,7 @@ export function TableAddRecordModal({
           </YStack>
         )}
 
-        <XStack gap="$3" justifyContent="flex-end">
+        <XStack gap="$3" style={{ justifyContent: 'flex-end' }}>
           <Button
             variant="outlined"
             onPress={() => {

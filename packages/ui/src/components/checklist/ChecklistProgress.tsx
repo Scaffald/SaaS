@@ -1,5 +1,7 @@
-import { Progress, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ChecklistProgressProps } from './types'
+import { Progress } from '@tamagui/progress'
+import { Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 
 /**
  * ChecklistProgress - Progress bar showing completion percentage
@@ -10,7 +12,7 @@ import type { ChecklistProgressProps } from './types'
 export const ChecklistProgress = ({ completionPercentage }: ChecklistProgressProps) => {
   return (
     <YStack gap="$2">
-      <XStack alignItems="center" justifyContent="space-between">
+      <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <Text fontSize="$5" fontWeight="600" color="$color12">
           {Math.round(completionPercentage)}% Complete
         </Text>
@@ -18,11 +20,11 @@ export const ChecklistProgress = ({ completionPercentage }: ChecklistProgressPro
       <Progress
         value={completionPercentage}
         max={100}
-        backgroundColor="$color4"
-        borderRadius="$2"
+        background="$color4"
+        style={{ borderRadius: 8 }}
         height={8}
       >
-        <Progress.Indicator backgroundColor="$green9" borderRadius="$2" animation="bouncy" />
+        <Progress.Indicator background="$green9" style={{ borderRadius: 8 }} animation="bouncy" />
       </Progress>
     </YStack>
   )

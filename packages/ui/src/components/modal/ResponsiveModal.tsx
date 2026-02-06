@@ -1,6 +1,10 @@
 import { X } from '@tamagui/lucide-icons'
+import { ScrollView } from '@tamagui/scroll-view'
+import { Text } from 'tamagui'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
+import { XStack, YStack } from '@tamagui/stacks'
 import type { ReactNode } from 'react'
-import { ScrollView, Text, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
+
 import { Button } from '../buttons/Button'
 import { Dialog } from '../dialog/Dialog'
 import { Sheet } from '../sheets/Sheet'
@@ -104,11 +108,11 @@ export function ResponsiveModal({
 
           {showHeader && (
             <XStack
-              paddingHorizontal="$4"
-              paddingTop="$3"
-              paddingBottom="$2"
+              px="$4"
+              pt="$3"
+              pb="$2"
               justifyContent="space-between"
-              alignItems="center"
+              style={{ alignItems: 'center' }}
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
             >
@@ -128,7 +132,7 @@ export function ResponsiveModal({
           )}
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            <YStack padding="$4" gap="$4">
+            <YStack p="$4" gap="$4">
               {children}
             </YStack>
           </ScrollView>
@@ -145,9 +149,9 @@ export function ResponsiveModal({
         <Dialog.Content key="content" width={finalWidth} height={finalHeight} gap="$0">
           {showHeader && (
             <XStack
-              padding="$4"
+              p="$4"
               justifyContent="space-between"
-              alignItems="center"
+              style={{ alignItems: 'center' }}
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
             >
@@ -163,7 +167,7 @@ export function ResponsiveModal({
           )}
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            <YStack padding="$4" gap="$4">
+            <YStack p="$4" gap="$4">
               {children}
             </YStack>
           </ScrollView>

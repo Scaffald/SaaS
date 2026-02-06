@@ -1,5 +1,7 @@
 import { memo } from 'react'
-import { Text, XStack } from '@unicornlove/ui'
+import { Text } from 'tamagui'
+import { XStack } from '@tamagui/stacks'
+
 import { Chip } from '../chips/Chip'
 import type { CardBadgesProps } from './types'
 
@@ -30,33 +32,34 @@ export const CardBadges = memo(
     }
 
     return (
-      <XStack gap="$2" flexWrap="wrap" alignItems="center">
+      <XStack gap="$2" flexWrap="wrap" style={{ alignItems: 'center' }}>
         {displayBadges.map((badge) =>
           badge.icon ? (
             <XStack
               key={badge.key}
-              backgroundColor={badge.bg ?? '$blue10'}
-              borderColor={badge.bg ?? '$blue10'}
+              background={badge.bg ?? '$blue10'}
+              borderColor={(badge.bg ?? '$blue10') as any}
               borderWidth={1}
-              borderRadius="$4"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              alignItems="center"
+              style={{
+                alignItems: 'center',
+                borderRadius: 12,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+              }}
               gap="$1"
             >
-              <XStack alignItems="center">{badge.icon}</XStack>
-              <Text fontSize="$2" color={typeof badge.color === 'string' ? badge.color : '$color1'}>
+              <XStack style={{ alignItems: 'center' }}>{badge.icon}</XStack>
+              <Text fontSize="$2" color={(badge.color as any) ?? '$color1'}>
                 {badge.label}
               </Text>
             </XStack>
           ) : (
             <Chip
               key={badge.key}
-              backgroundColor={badge.bg ?? '$blue10'}
-              color={typeof badge.color === 'string' ? badge.color : '$color1'}
+              background={badge.bg ?? '$blue10'}
+              color={(badge.color as any) ?? '$color1'}
               fontSize="$2"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
+              style={{ paddingHorizontal: 8, paddingVertical: 4 } as any}
             >
               {badge.label}
             </Chip>

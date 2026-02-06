@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
+import { View } from '@tamagui/core'
 import { PieChart as GiftedPieChart } from 'react-native-gifted-charts'
-import { View } from '@unicornlove/ui'
 
 export interface PieChartData {
   value: number
@@ -96,7 +96,7 @@ export const PieChart = ({
   }))
 
   return (
-    <View alignItems="center">
+    <View style={{ alignItems: 'center' }}>
       <GiftedPieChart
         data={processedData}
         radius={radius}

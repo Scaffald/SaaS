@@ -21,11 +21,11 @@ export const ErrorState = ({
 }: ErrorStateProps) => {
   return (
     <YStack
-      padding="$4"
+      p="$4"
       gap="$3"
-      alignItems="center"
-      backgroundColor="$red3"
-      borderRadius="$4"
+      style={{ alignItems: 'center' }}
+      background="$red3"
+      br="$4"
       aria-live="assertive"
     >
       {icon ?? <AlertTriangle size={28} color="$red10" aria-hidden={true} />}

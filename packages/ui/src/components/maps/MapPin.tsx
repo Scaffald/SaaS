@@ -1,6 +1,8 @@
 import { Building, User } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import { Circle, type GetThemeValueForKey, useTheme, View, YStack } from '@unicornlove/ui'
+import { Circle } from '@tamagui/shapes'
+import { YStack } from '@tamagui/stacks'
+import { useTheme, View, type GetThemeValueForKey } from '@tamagui/core'
 import type { MapPin as MapPinType } from './types'
 
 interface MapPinProps {
@@ -37,22 +39,24 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
   }
 
   return (
-    <YStack alignItems="center" onPress={handlePress} pressStyle={{ scale: 0.95 }}>
+    <YStack style={{ alignItems: 'center' }} onPress={handlePress} pressStyle={{ scale: 0.95 }}>
       {organization === 'Organization' ? (
         /* Organization Pin - Diamond Shape */
         <>
           <View
             width={48}
             height={48}
-            backgroundColor={backgroundColor}
+            background={backgroundColor}
             borderWidth={selected ? 3 : 2}
             borderColor={selected ? '$color12' : '$color1'}
             position="relative"
-            alignItems="center"
-            justifyContent="center"
+            style={{ alignItems: 'center', justifyContent: 'center' }}
             transform={[{ rotate: '45deg' }]}
           >
-            <View transform={[{ rotate: '-45deg' }]} alignItems="center" justifyContent="center">
+            <View
+              transform={[{ rotate: '-45deg' }]}
+              style={{ alignItems: 'center', justifyContent: 'center' }}
+            >
               <Building size={22} color="white" />
             </View>
           </View>
@@ -67,13 +71,11 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
             borderLeftColor="transparent"
             borderRightColor="transparent"
             borderTopColor={backgroundColor}
-            marginTop={-8}
+            mt={-8}
           />
 
           {/* Selected Indicator */}
-          {selected && (
-            <Circle size={12} backgroundColor="$blue10" marginTop={4} animation="quick" />
-          )}
+          {selected && <Circle size={12} background="$blue10" mt={4} animation="quick" />}
         </>
       ) : (
         /* Worker Pin - Circle Shape */
@@ -81,13 +83,12 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
           <View
             width={48}
             height={48}
-            borderRadius="$12"
-            backgroundColor={backgroundColor}
+            br="$12"
+            background={backgroundColor}
             borderWidth={selected ? 3 : 2}
             borderColor={selected ? '$color12' : '$color1'}
             position="relative"
-            alignItems="center"
-            justifyContent="center"
+            style={{ alignItems: 'center', justifyContent: 'center' }}
           >
             <User size={22} color="white" />
           </View>
@@ -102,13 +103,11 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
             borderLeftColor="transparent"
             borderRightColor="transparent"
             borderTopColor={'$color12'}
-            marginTop={-1}
+            mt={-1}
           />
 
           {/* Selected Indicator */}
-          {selected && (
-            <Circle size={12} backgroundColor="$blue10" marginTop={4} animation="quick" />
-          )}
+          {selected && <Circle size={12} background="$blue10" mt={4} animation="quick" />}
         </>
       )}
     </YStack>

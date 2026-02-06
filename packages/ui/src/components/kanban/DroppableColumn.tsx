@@ -1,9 +1,12 @@
 import type { UniqueIdentifier } from '@dnd-kit/core'
+import type { GetThemeValueForKey } from '@tamagui/core'
+import { Card } from '@tamagui/card'
+import { Text } from 'tamagui'
+import { YStack } from '@tamagui/stacks'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import type { ReactNode } from 'react'
-import type { GetThemeValueForKey } from '@unicornlove/ui'
-import { Card, Text, YStack } from '@unicornlove/ui'
+
 import { KanbanColumnHeader } from './KanbanColumnHeader'
 
 interface DroppableColumnProps {
@@ -60,9 +63,9 @@ export const DroppableColumn = ({
       <YStack
         data-testid={`kanban-column-${id}`}
         width={320}
-        backgroundColor="$gray2"
-        borderRadius="$4"
-        padding="$4"
+        background="$gray2"
+        br="$4"
+        p="$4"
         gap="$3"
         style={{ minHeight: 200 }}
       >
@@ -78,7 +81,7 @@ export const DroppableColumn = ({
 
         <YStack gap="$3" flex={1}>
           {items.length === 0 ? (
-            <Card padding="$4" backgroundColor="$color3" borderRadius="$2">
+            <Card p="$4" background="$color3" borderRadius="$2">
               <Text fontSize="$2" style={{ textAlign: 'center' }} color="$color10">
                 {emptyMessage}
               </Text>

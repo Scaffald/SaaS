@@ -1,5 +1,7 @@
 import type { FC } from 'react'
-import { Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Text, TextArea } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
+
 import type { RichTextEditorProps } from './types'
 import { extractPlainText, plainTextToTipTap } from './utils/sanitize'
 
@@ -65,7 +67,7 @@ export const RichTextEditor: FC<RichTextEditorProps> = ({
       />
 
       {/* Character Count and Error */}
-      <XStack justifyContent="space-between" alignItems="center">
+      <XStack justifyContent="space-between" style={{ alignItems: 'center' }}>
         {error && (
           <Text color="$red10" fontSize="$2" flex={1}>
             {error}
@@ -75,7 +77,7 @@ export const RichTextEditor: FC<RichTextEditorProps> = ({
           <Text
             color={characterCount > characterLimit ? '$red10' : '$color11'}
             fontSize="$2"
-            marginLeft="auto"
+            ml="auto"
           >
             {characterCount} / {characterLimit}
           </Text>

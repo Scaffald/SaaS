@@ -1,7 +1,9 @@
 import * as LucideIcons from '@tamagui/lucide-icons'
 import { ChevronDown, Search, X } from '@tamagui/lucide-icons'
 import { type ComponentType, useMemo, useState } from 'react'
-import { Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView } from '@tamagui/scroll-view'
+import { XStack, YStack } from '@tamagui/stacks'
+import { Input, Text } from 'tamagui'
 import { Button } from '../buttons/Button'
 
 // Icon names that can be used (subset of Lucide icons)
@@ -93,12 +95,12 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
         onPress={() => !disabled && setIsOpen(!isOpen)}
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$2"
+        br="$2"
         gap="$2"
-        backgroundColor="$background"
-        padding="$3"
-        pressStyle={{ backgroundColor: '$backgroundHover' }}
-        hoverStyle={{ backgroundColor: '$backgroundHover' }}
+        background="$background"
+        p="$3"
+        pressStyle={{ background: '$backgroundHover' }}
+        hoverStyle={{ background: '$backgroundHover' }}
         cursor={disabled ? 'not-allowed' : 'pointer'}
         opacity={disabled ? 0.5 : 1}
       >
@@ -112,14 +114,14 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
         <YStack
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$2"
-          backgroundColor="$background"
-          padding="$2"
+          br="$2"
+          background="$background"
+          p="$2"
           gap="$2"
-          zIndex={1000}
+          style={{ zIndex: 1000 }}
         >
           {/* Search input */}
-          <XStack gap="$2" paddingHorizontal="$2" alignItems="center">
+          <XStack gap="$2" px="$2" style={{ alignItems: 'center' }}>
             <Search size={16} opacity={0.5} />
             <Input
               flex={1}
@@ -134,8 +136,8 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
           </XStack>
 
           {/* Icon grid */}
-          <ScrollView maxHeight={320}>
-            <XStack flexWrap="wrap" gap="$1" padding="$2">
+          <ScrollView style={{ maxHeight: 320 }}>
+            <XStack gap="$1" p="$2" style={{ flexWrap: 'wrap' }}>
               {filteredIcons.map((iconName) => {
                 const IconComponent = (
                   LucideIcons as Record<string, ComponentType<{ size?: number }>>
@@ -150,21 +152,20 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
                       setIsOpen(false)
                       setSearch('')
                     }}
-                    backgroundColor={isSelected ? '$blue4' : '$background'}
+                    background={isSelected ? '$blue4' : '$background'}
                     borderWidth={1}
                     borderColor={isSelected ? '$blue8' : '$borderColor'}
-                    borderRadius="$2"
+                    br="$2"
                     width={44}
                     height={44}
-                    alignItems="center"
-                    justifyContent="center"
                     cursor="pointer"
                     hoverStyle={{
-                      backgroundColor: isSelected ? '$blue5' : '$backgroundHover',
+                      background: isSelected ? '$blue5' : '$backgroundHover',
                     }}
                     pressStyle={{
-                      backgroundColor: isSelected ? '$blue6' : '$backgroundPress',
+                      background: isSelected ? '$blue6' : '$backgroundPress',
                     }}
+                    style={{ alignItems: 'center', justifyContent: 'center' }}
                   >
                     {IconComponent && <IconComponent size={20} />}
                   </YStack>

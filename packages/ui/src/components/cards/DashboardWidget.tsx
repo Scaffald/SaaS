@@ -1,5 +1,8 @@
 import type { ComponentProps, ReactNode } from 'react'
-import { Card, type CardProps, useTheme } from '@unicornlove/ui'
+import type { CardProps } from '@tamagui/card'
+import { Card } from '@tamagui/card'
+import { useTheme } from '@tamagui/core'
+
 import { borderRadius } from '../../config/radii'
 import { cardShadows } from '../../config/shadows'
 import { spacing } from '../../config/spacing'
@@ -79,11 +82,11 @@ export const DashboardWidget = ({
   return (
     <Card
       boxShadow={shadow}
-      padding="$6"
-      $md={{ padding: '$2' }}
+      p="$6"
+      $md={{ p: '$2' }}
       gap={gap}
-      borderRadius={borderRadius['3xl']}
-      backgroundColor="$gray1"
+      style={{ borderRadius: borderRadius['3xl'] }}
+      background="$gray1"
       borderWidth={0}
       borderColor="transparent"
       animation="quick"

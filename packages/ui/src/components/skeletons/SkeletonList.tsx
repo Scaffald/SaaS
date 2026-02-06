@@ -1,5 +1,5 @@
-import { YStack } from '@unicornlove/ui'
 import { SkeletonCard } from './SkeletonCard'
+import { YStack } from '@tamagui/stacks'
 
 export interface SkeletonListProps {
   /** Number of skeleton items to render */

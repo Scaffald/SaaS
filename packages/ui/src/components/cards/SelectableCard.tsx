@@ -1,6 +1,7 @@
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { useTheme, YStack } from '@unicornlove/ui'
+import type { TamaguiElement } from '@tamagui/core'
+import { useTheme } from '@tamagui/core'
+import { YStack } from '@tamagui/stacks'
 import { borderRadius } from '../../config/radii'
 import { cardShadows } from '../../config/shadows'
 import { spacing } from '../../config/spacing'
@@ -100,15 +101,15 @@ export const SelectableCard = memo(
           }}
           borderWidth={isSelected ? 2 : 1}
           borderColor={borderColor}
-          borderRadius={borderRadius.md}
-          padding={padding}
-          backgroundColor={bgColor}
+          p={padding}
+          background={bgColor}
           gap={gap}
           opacity={disabled ? 0.5 : 1}
           cursor={disabled ? 'not-allowed' : 'pointer'}
           boxShadow={shadow}
           animation="quick"
-          animateOnly={['backgroundColor', 'borderColor', 'transform']}
+          animateOnly={['background', 'borderColor', 'transform']}
+          style={{ borderRadius: borderRadius.md }}
           pressStyle={
             !disabled
               ? {
@@ -120,7 +121,7 @@ export const SelectableCard = memo(
           hoverStyle={
             !disabled
               ? {
-                  backgroundColor: isSelected ? '$blue3' : '$backgroundHover',
+                  background: isSelected ? '$blue3' : '$backgroundHover',
                   borderColor: isSelected ? '$blue8' : '$borderColorHover',
                   boxShadow: isDark ? cardShadows.darkHover : cardShadows.lightHover,
                 }

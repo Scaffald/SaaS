@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
-import { View, type ViewProps } from '@unicornlove/ui'
+import type { ViewProps } from '@tamagui/core'
+import { View } from '@tamagui/core'
 
 interface LayoutEvent {
   nativeEvent: {
@@ -167,8 +168,8 @@ export function RangeSlider({
     <View
       {...trackSizeStyles[size]}
       position="relative"
-      backgroundColor={disabled ? '$color3' : '$color4'}
-      borderRadius={6}
+      background={disabled ? '$color3' : '$color4'}
+      br={6}
       opacity={disabled ? 0.5 : 1}
       onLayout={handleTrackLayout}
       onPress={handleTrackPress}
@@ -182,22 +183,22 @@ export function RangeSlider({
       <View
         {...activeTrackSizeStyles[size]}
         position="absolute"
-        backgroundColor="$color10"
-        borderRadius={6}
+        background="$color10"
+        br={6}
         width={activeTrackWidth}
       />
       <View
         {...thumbSizeStyles[size]}
         position="absolute"
-        backgroundColor="white"
-        borderRadius={50}
+        background="white"
+        br={50}
         borderWidth={2}
         borderColor={disabled ? '$color4' : '$color10'}
         cursor={disabled ? 'not-allowed' : 'pointer'}
         animation="100ms"
         boxShadow="0 2px 4px rgba(0,0,0,0.1)"
         opacity={disabled ? 0.5 : 1}
-        left={thumbPosition}
+        style={{ left: thumbPosition }}
         onPress={handleThumbPress}
         onPressIn={handleThumbPress}
         onPressOut={handleThumbRelease}

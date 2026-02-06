@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react'
+import type { XStackProps } from '@tamagui/stacks'
+import { YStack, XStack } from '@tamagui/stacks'
+import { Text } from 'tamagui'
+import { useTheme } from '@tamagui/core'
 import { useState } from 'react'
-import { YStack, XStack, Text } from '@unicornlove/ui'
-import { useTheme } from '@unicornlove/ui'
-import type { XStackProps } from '@unicornlove/ui'
+
 import { Chip } from '../chips'
 
 /**
@@ -156,7 +158,7 @@ export function TabsCustom({
       return {
         ...baseProps,
         borderBottomWidth: 2,
-        borderBottomColor: isActive ? theme.primary9?.val ?? '#0ea5e9' : 'transparent',
+        borderBottomColor: isActive ? (theme.primary9?.val ?? '#0ea5e9') : 'transparent',
         borderRadius: 0,
         hoverStyle: {
           borderBottomColor: isActive ? theme.primary9?.val : theme.borderColorHover?.val,
@@ -168,14 +170,14 @@ export function TabsCustom({
       return {
         ...baseProps,
         borderRadius: '$3',
-        backgroundColor: isActive ? theme.primary9?.val ?? '#0ea5e9' : 'transparent',
+        backgroundColor: isActive ? (theme.primary9?.val ?? '#0ea5e9') : 'transparent',
         shadowColor: isActive ? theme.shadowColor?.val : undefined,
         shadowRadius: isActive ? 2 : 0,
         shadowOffset: isActive ? { width: 0, height: 1 } : undefined,
         hoverStyle: {
           backgroundColor: isActive
             ? theme.primary9?.val
-            : theme.backgroundTertiary?.val ?? '#f3f4f6',
+            : (theme.backgroundTertiary?.val ?? '#f3f4f6'),
         },
       }
     }
@@ -216,9 +218,9 @@ export function TabsCustom({
                   color={
                     isActive
                       ? variant === 'pill'
-                        ? theme.color1?.val ?? '#fff'
-                        : theme.primary11?.val ?? '#0ea5e9'
-                      : theme.color10?.val ?? '#6b7280'
+                        ? (theme.color1?.val ?? '#fff')
+                        : (theme.primary11?.val ?? '#0ea5e9')
+                      : (theme.color10?.val ?? '#6b7280')
                   }
                 />
               )}
@@ -226,28 +228,28 @@ export function TabsCustom({
                 color={
                   isActive
                     ? variant === 'pill'
-                      ? theme.color1?.val ?? '#fff'
-                      : theme.primary11?.val ?? '#0ea5e9'
-                    : theme.color10?.val ?? '#6b7280'
+                      ? (theme.color1?.val ?? '#fff')
+                      : (theme.primary11?.val ?? '#0ea5e9')
+                    : (theme.color10?.val ?? '#6b7280')
                 }
               >
                 {tab.label}
               </Text>
               {tab.badge && (
                 <Chip
-                  backgroundColor={
+                  background={
                     isActive && variant === 'pill'
                       ? 'rgba(255, 255, 255, 0.2)'
-                      : theme.backgroundTertiary?.val ?? '#f3f4f6'
+                      : (theme.backgroundTertiary?.val ?? '#f3f4f6')
                   }
                   color={
                     isActive && variant === 'pill'
-                      ? theme.color1?.val ?? '#fff'
-                      : theme.color11?.val ?? '#374151'
+                      ? (theme.color1?.val ?? '#fff')
+                      : (theme.color11?.val ?? '#374151')
                   }
                   fontSize="$2"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
+                  px="$2"
+                  py="$1"
                 >
                   {tab.badge}
                 </Chip>
@@ -256,7 +258,7 @@ export function TabsCustom({
           )
         })}
       </XStack>
-      <YStack marginTop="$4">{activeTabContent}</YStack>
+      <YStack mt="$4">{activeTabContent}</YStack>
     </YStack>
   )
 }

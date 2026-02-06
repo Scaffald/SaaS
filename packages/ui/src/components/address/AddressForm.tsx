@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronRight } from '@tamagui/lucide-icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Input, Text } from 'tamagui'
+import { XStack, YStack } from '@tamagui/stacks'
 import { Button } from '../buttons/Button'
 import { FieldError } from '../field-error/FieldError'
 import { AddressAutocomplete } from './AddressAutocomplete'
@@ -266,7 +267,7 @@ export function AddressForm({
 
     case 'full':
       return (
-        <YStack gap="$3" position="relative" zIndex={999}>
+        <YStack gap="$3" position="relative" style={{ zIndex: 999 }}>
           <Text fontWeight="600">Address</Text>
           <YStack gap="$2">
             {/* Street Address */}
@@ -321,7 +322,7 @@ export function AddressForm({
 
     default:
       return (
-        <YStack gap="$3" position="relative" zIndex={999}>
+        <YStack gap="$3" position="relative" style={{ zIndex: 999 }}>
           {/* Autocomplete Search */}
           <AddressAutocomplete
             value={value || currentAddress.formattedAddress}
@@ -340,28 +341,29 @@ export function AddressForm({
           />
 
           {/* Expandable Toggle */}
-          <Button
-            variant="outlined"
-            size="$3"
-            onPress={() => setIsExpanded(!isExpanded)}
-            disabled={disabled}
-            alignSelf="flex-start"
-            backgroundColor="transparent"
-            borderWidth={0}
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-          >
-            <XStack alignItems="center" gap="$2">
-              {isExpanded ? (
-                <ChevronDown size={16} color="$color11" />
-              ) : (
-                <ChevronRight size={16} color="$color11" />
-              )}
-              <Text fontSize="$3" color="$color11">
-                {isExpanded ? 'Hide' : 'Edit'} individual fields
-              </Text>
-            </XStack>
-          </Button>
+          <XStack style={{ alignSelf: 'flex-start' }}>
+            <Button
+              variant="outlined"
+              size="$3"
+              onPress={() => setIsExpanded(!isExpanded)}
+              disabled={disabled}
+              background="transparent"
+              borderWidth={0}
+              px="$2"
+              py="$1"
+            >
+              <XStack style={{ alignItems: 'center' }} gap="$2">
+                {isExpanded ? (
+                  <ChevronDown size={16} color="$color11" />
+                ) : (
+                  <ChevronRight size={16} color="$color11" />
+                )}
+                <Text fontSize="$3" color="$color11">
+                  {isExpanded ? 'Hide' : 'Edit'} individual fields
+                </Text>
+              </XStack>
+            </Button>
+          </XStack>
 
           {/* Collapsible Manual Input Fields */}
           {isExpanded && (
@@ -378,7 +380,7 @@ export function AddressForm({
                 onChangeText={(text) => handleFieldChange('streetAddress', text)}
                 disabled={disabled}
                 borderColor={currentAddress.streetAddress ? '$borderColor' : '$color6'}
-                backgroundColor={currentAddress.streetAddress ? '$background' : '$color2'}
+                background={currentAddress.streetAddress ? '$background' : '$color2'}
               />
 
               {/* City and State */}
@@ -390,7 +392,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={1}
                   borderColor={currentAddress.locality ? '$borderColor' : '$color6'}
-                  backgroundColor={currentAddress.locality ? '$background' : '$color2'}
+                  background={currentAddress.locality ? '$background' : '$color2'}
                 />
                 <Input
                   placeholder="State"
@@ -407,7 +409,7 @@ export function AddressForm({
                       ? '$borderColor'
                       : '$color6'
                   }
-                  backgroundColor={
+                  background={
                     currentAddress.stateAbbreviation || currentAddress.administrativeAreaLevel1
                       ? '$background'
                       : '$color2'
@@ -424,7 +426,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={1}
                   borderColor={currentAddress.postalCode ? '$borderColor' : '$color6'}
-                  backgroundColor={currentAddress.postalCode ? '$background' : '$color2'}
+                  background={currentAddress.postalCode ? '$background' : '$color2'}
                 />
                 <Input
                   placeholder="Country"
@@ -433,7 +435,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={2}
                   borderColor={currentAddress.country ? '$borderColor' : '$color6'}
-                  backgroundColor={currentAddress.country ? '$background' : '$color2'}
+                  background={currentAddress.country ? '$background' : '$color2'}
                 />
               </XStack>
 
@@ -441,31 +443,32 @@ export function AddressForm({
               {(currentAddress.streetAddress ||
                 currentAddress.locality ||
                 currentAddress.postalCode) && (
-                <Button
-                  variant="outlined"
-                  size="$3"
-                  alignSelf="flex-start"
-                  onPress={() => {
-                    const emptyAddress = {
-                      streetNumber: '',
-                      route: '',
-                      streetAddress: '',
-                      locality: '',
-                      administrativeAreaLevel1: '',
-                      stateAbbreviation: '',
-                      postalCode: '',
-                      country: '',
-                      countryCode: 'US',
-                      formattedAddress: '',
-                    }
-                    setInternalAddress(emptyAddress)
-                    onAddressChange?.(emptyAddress)
-                    onChange?.('')
-                  }}
-                  disabled={disabled}
-                >
-                  <Text fontSize="$3">Clear Address</Text>
-                </Button>
+                <XStack style={{ alignSelf: 'flex-start' }}>
+                  <Button
+                    variant="outlined"
+                    size="$3"
+                    onPress={() => {
+                      const emptyAddress = {
+                        streetNumber: '',
+                        route: '',
+                        streetAddress: '',
+                        locality: '',
+                        administrativeAreaLevel1: '',
+                        stateAbbreviation: '',
+                        postalCode: '',
+                        country: '',
+                        countryCode: 'US',
+                        formattedAddress: '',
+                      }
+                      setInternalAddress(emptyAddress)
+                      onAddressChange?.(emptyAddress)
+                      onChange?.('')
+                    }}
+                    disabled={disabled}
+                  >
+                    <Text fontSize="$3">Clear Address</Text>
+                  </Button>
+                </XStack>
               )}
             </YStack>
           )}

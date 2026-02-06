@@ -1,5 +1,8 @@
 import { useMemo } from 'react'
-import { Paragraph, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Paragraph, Text } from 'tamagui'
+import { Separator } from '@tamagui/separator'
+import { XStack, YStack } from '@tamagui/stacks'
+
 import { Checkbox } from '../inputs/Checkbox'
 import { ResponsiveModal } from '../modal'
 
@@ -58,7 +61,7 @@ export function TableColumnVisibilityModal({
               column.disabled || (!isVisible ? false : !canDisableMore && !column.disabled)
 
             return (
-              <XStack key={column.id} gap="$3" alignItems="center">
+              <XStack key={column.id} gap="$3" style={{ alignItems: 'center' }}>
                 <Checkbox
                   checked={isVisible}
                   disabled={disableToggle}
