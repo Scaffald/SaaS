@@ -24,46 +24,25 @@ const translateErrorMock = vi.hoisted(() =>
   vi.fn((error: unknown) => (error instanceof Error ? error.message : 'Unknown error'))
 )
 
-vi.mock('@unicornlove/ui', () => ({
-  Button: ({ children, onPress, ...rest }: { children: ReactNode; onPress?: () => void }) => (
-    <button type="button" onClick={onPress} {...rest}>
-      {children}
-    </button>
-  ),
-  Input: ({
-    value,
-    onChangeText,
-    placeholder,
-  }: {
-    value?: string
-    onChangeText?: (text: string) => void
-    placeholder?: string
-  }) => (
-    <input
-      placeholder={placeholder}
-      value={value}
-      onChange={(event) => onChangeText?.(event.target.value)}
-      data-testid="email-input"
-    />
-  ),
-  Paragraph: ({ children, text }: { children?: ReactNode; text?: string }) => (
-    <p>{children ?? text}</p>
-  ),
-  Text: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
-  YStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
-  Form: ({ children, onSubmit }: { children?: ReactNode; onSubmit?: () => void }) => (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault()
-        onSubmit?.()
-      }}
-    >
-      {children}
-    </form>
-  ),
+vi.mock('@scf/core/utils/useTranslation', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const map: Record<string, string> = {
+        'auth.login.emailPlaceholder': 'your@email.acme',
+        'auth.login.description': 'Sign in or create an account',
+        'auth.login.submitButton': 'Sign in or register',
+        'auth.login.sending': 'Sending…',
+        'auth.login.socialDescription': 'Or continue with',
+        'validation.email.required': 'Email is required',
+        'validation.email.invalid': 'Invalid email',
+      }
+      return map[key] ?? key
+    },
+  }),
+}))
+
+vi.mock('../components/LoadingOverlay', () => ({
   LoadingOverlay: () => <div data-testid="loading-overlay" />,
-  H2: ({ children }: { children?: ReactNode }) => <h2>{children}</h2>,
-  isWeb: true,
 }))
 
 vi.mock('expo-router', () => ({
@@ -93,6 +72,7 @@ vi.mock('@scf/core/utils/api', () => ({
         useMutation: () => ({
           mutateAsync: mockMutateAsync,
           isLoading: false,
+          isPending: false,
         }),
       },
     },
@@ -127,9 +107,6 @@ vi.mock('@scf/core/utils/supabase/client', () => ({
   },
 }))
 
-// Lazy import to ensure mocks are registered first
-const { LoginScreen } = await import('../login-screen')
-
 describe('LoginScreen', () => {
   beforeEach(() => {
     process.env.EXPO_PUBLIC_URL = 'https://example.com/auth'
@@ -147,20 +124,28 @@ describe('LoginScreen', () => {
     vi.restoreAllMocks()
   })
 
+  it('renders login form', async () => {
+    const { LoginScreen } = await import('../login-screen')
+    const { getByPlaceholderText } = render(<LoginScreen />)
+    expect(getByPlaceholderText('your@email.acme')).toBeInTheDocument()
+  })
+
   it('normalizes email, sends magic link, and navigates to verify screen', async () => {
+    const mod = await import('../login-screen')
+    const LoginScreen = mod.LoginScreen
     mockMutateAsync.mockResolvedValue({ mode: 'magic_link' })
 
-    render(<LoginScreen />)
+    const { getByPlaceholderText, getByRole } = render(<LoginScreen />)
 
     // Router should clear the email param after mount
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('/auth')
     })
 
-    const input = screen.getByPlaceholderText('your@email.acme')
+    const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: ' Person@Example.com ' } })
 
-    const submitButton = screen.getByRole('button', { name: /sign in or register/i })
+    const submitButton = getByRole('button', { name: /sign in or register/i })
     fireEvent.click(submitButton)
 
     await waitFor(() => {
@@ -180,35 +165,37 @@ describe('LoginScreen', () => {
   })
 
   it('surfaces TRPC email errors as form errors', async () => {
+    const { LoginScreen } = await import('../login-screen')
     const error = new TRPCClientError('Email already in use')
     mockMutateAsync.mockRejectedValue(error)
 
-    render(<LoginScreen />)
+    const { getByPlaceholderText, getByRole, findByText } = render(<LoginScreen />)
 
-    const input = screen.getByPlaceholderText('your@email.acme')
+    const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: 'duplicate@example.com' } })
 
-    fireEvent.click(screen.getByRole('button', { name: /sign in or register/i }))
+    fireEvent.click(getByRole('button', { name: /sign in or register/i }))
 
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalled()
     })
 
     expect(
-      await screen.findByText('Email already in use', undefined, { timeout: 500 })
+      await findByText('Email already in use', undefined, { timeout: 500 })
     ).toBeInTheDocument()
   })
 
   it('handles unexpected errors with a generic message', async () => {
+    const { LoginScreen } = await import('../login-screen')
     mockMutateAsync.mockRejectedValue(new Error('Network down'))
 
-    render(<LoginScreen />)
+    const { getByPlaceholderText, getByRole, findByText } = render(<LoginScreen />)
 
-    const input = screen.getByPlaceholderText('your@email.acme')
+    const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: 'user@example.com' } })
 
-    fireEvent.click(screen.getByRole('button', { name: /sign in or register/i }))
+    fireEvent.click(getByRole('button', { name: /sign in or register/i }))
 
-    expect(await screen.findByText('Network down')).toBeInTheDocument()
+    expect(await findByText('Network down')).toBeInTheDocument()
   })
 })

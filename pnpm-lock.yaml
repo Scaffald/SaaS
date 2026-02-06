@@ -1014,6 +1014,9 @@ importers:
       '@trpc/react-query':
         specifier: 'catalog:'
         version: 11.7.2(@tanstack/react-query@5.90.11(react@19.2.0))(@trpc/client@11.7.2(@trpc/server@11.8.0(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.8.0(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+      '@unicornlove/beyond-ui':
+        specifier: workspace:*
+        version: link:../beyond-ui
       '@unicornlove/ui':
         specifier: file:../ui
         version: file:packages/ui(cf42c046bef98137738a933f5765fa1b)
@@ -1059,6 +1062,9 @@ importers:
       i18n-js:
         specifier: 'catalog:'
         version: 4.5.1
+      lucide-react-native:
+        specifier: ^0.562.0
+        version: 0.562.0(react-native-svg@15.15.1(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
       luscher-test:
         specifier: ^2.2.1
         version: 2.2.1

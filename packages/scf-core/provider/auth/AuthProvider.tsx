@@ -10,7 +10,7 @@ import { captureEventWithQueue, flushQueue } from '@scf/core/utils/analytics/que
 import { clearAllAuthStorage } from '@scf/core/utils/auth/clearAuthStorage'
 import { clearSentryUser, setSentryUser } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { useCookieConsent } from '@unicornlove/ui'
+import { useCookieConsentState } from '@scf/core/utils/cookieConsent'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import NetInfo from '@react-native-community/netinfo'
 import type { Session } from '@supabase/auth-js'
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
   const [session, setSession] = useState<Session | null>(initialSession || null)
   const [error, setError] = useState<SupabaseAuthError | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const { isReady: isConsentReady, hasConsentedTo } = useCookieConsent()
+  const { isReady: isConsentReady, hasConsentedTo } = useCookieConsentState()
   const hasPerformanceConsent = isConsentReady && hasConsentedTo(PERFORMANCE_CATEGORY_ID)
   const lastSignedInUserRef = useRef<string | null>(null)
   const previousUserIdRef = useRef<string | null>(initialSession?.user?.id ?? null)

@@ -11,20 +11,27 @@ export const buildPath = vi.fn((path: string, params?: Record<string, string | n
 });
 
 export const ROUTES = {
-  OFFICE: {
-    CMS: {
-      JOBS: {
-        EDIT: '/office/cms/jobs/:id/edit',
-      },
-    },
+  AUTH: {
+    LOGIN: { path: '/auth' },
+    VERIFY: { path: '/auth/verify' },
+    SUCCESS: { path: '/auth/success' },
   },
+  HOME: { path: '/' },
   DASHBOARD: {
+    path: '/dashboard',
     PROFILE: {
       GENERAL: { path: '/dashboard/profile/general' },
       SKILLS: { path: '/dashboard/profile/skills' },
       EMPLOYMENT: { path: '/dashboard/profile/employment' },
       EDUCATION: { path: '/dashboard/profile/education' },
       CERTIFICATIONS: { path: '/dashboard/profile/certifications' },
+    },
+  },
+  OFFICE: {
+    CMS: {
+      JOBS: {
+        EDIT: '/office/cms/jobs/:id/edit',
+      },
     },
   },
 };

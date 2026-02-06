@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { XStack, YStack } from '@unicornlove/ui'
+import { Hide, Row, Stack } from '@unicornlove/beyond-ui'
 import { WelcomeScreen } from './welcome-screen'
 
 export type AuthLayoutProps = {
@@ -8,14 +8,16 @@ export type AuthLayoutProps = {
 
 export const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
-    <XStack flex={1}>
-      <YStack flex={2} flexBasis={0} justifyContent="center">
-        <YStack paddingHorizontal="$4">{children}</YStack>
-      </YStack>
+    <Row flex={1}>
+      <Stack flex={2} flexBasis={0} justify="center">
+        <Stack paddingHorizontal={16}>{children}</Stack>
+      </Stack>
 
-      <YStack $md={{ display: 'none' }} flex={3} flexBasis={0}>
-        <WelcomeScreen />
-      </YStack>
-    </XStack>
+      <Hide above="md">
+        <Stack flex={3} flexBasis={0}>
+          <WelcomeScreen />
+        </Stack>
+      </Hide>
+    </Row>
   )
 }

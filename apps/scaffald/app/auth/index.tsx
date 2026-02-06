@@ -1,11 +1,11 @@
 import { LoginScreen } from '@scf/core/features/auth/login-screen'
 import { WelcomeScreen } from '@scf/core/features/auth/welcome-screen'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Stack } from 'expo-router'
+import { Row, Stack } from '@unicornlove/beyond-ui'
+import { Stack as RouterStack } from 'expo-router'
 import { useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { XStack, YStack } from '@unicornlove/ui'
 
 export default function Screen() {
   const [hasOnboarded, setHasOnboarded] = useState(false)
@@ -16,7 +16,7 @@ export default function Screen() {
   if (isSmallScreen && !hasOnboarded) {
     return (
       <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
-        <Stack.Screen
+        <RouterStack.Screen
           options={{
             title: t('auth.welcome.title'),
           }}
@@ -28,25 +28,25 @@ export default function Screen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
-      <Stack.Screen
+      <RouterStack.Screen
         options={{
           title: t('auth.login.title'),
         }}
       />
 
-      <XStack flex={1}>
-        <YStack flex={2} flexBasis={0} justifyContent="center">
-          <YStack paddingHorizontal="$4">
+      <Row flex={1}>
+        <Stack flex={2} flexBasis={0} justify="center">
+          <Stack paddingHorizontal={16}>
             <LoginScreen />
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         {!isSmallScreen && (
-          <YStack flex={3} flexBasis={0}>
+          <Stack flex={3} flexBasis={0}>
             <WelcomeScreen />
-          </YStack>
+          </Stack>
         )}
-      </XStack>
+      </Row>
     </SafeAreaView>
   )
 }

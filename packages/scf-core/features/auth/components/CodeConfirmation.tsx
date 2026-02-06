@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import type { SizeTokens } from '@unicornlove/ui'
-import { Form, View } from '@unicornlove/ui'
+import { Box, Form, Row } from '@unicornlove/beyond-ui'
 
 import { CodeConfirmationInput, type FormFields } from './CodeConfirmationInput'
 
 interface CodeConfirmationProps {
-  size?: SizeTokens
   codeSize: number
   secureText?: boolean
   onEnter: (code: number) => void
 }
 
-export function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeConfirmationProps) {
+export function CodeConfirmation({ codeSize, secureText, onEnter }: CodeConfirmationProps) {
   const defaultValues = Array.from({ length: codeSize }, (_, i) => `code${i}`).reduce(
     (acc, key) => {
       acc[key] = ''
@@ -22,7 +20,7 @@ export function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeCo
   )
 
   const { control, setFocus, register, handleSubmit, setValue, formState } = useForm<FormFields>({
-    defaultValues: defaultValues,
+    defaultValues,
   })
 
   const switchInputPlace = (currentInput: number, value: string) => {
@@ -47,10 +45,8 @@ export function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeCo
     }
   }, [formState.errors])
 
-  // shake animation
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null
-
     interval = setInterval(() => {
       if (isValid) {
         setTranslateX(0)
@@ -64,45 +60,40 @@ export function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeCo
         })
       }
     }, 50)
-
     return () => {
       if (interval) clearInterval(interval)
     }
   }, [isValid])
 
   return (
-    <View paddingTop="$3" paddingBottom="$6" flex={1} alignItems="center" justifyContent="center">
-      <Form
-        gap="$2"
-        alignItems="center"
-        justifyContent="center"
-        x={translateX}
-        animation="bouncy"
-        marginTop="$2"
-        flexDirection="row"
-        onSubmit={onSubmit}
-        marginBottom="$0"
-        paddingBottom="$0"
-      >
-        {Array(codeSize)
-          .fill(null)
-          .map((_, id) => {
-            return (
-              <CodeConfirmationInput
-                key={`code-input-${id}-${codeSize}`}
-                id={id}
-                size={size}
-                codeSize={codeSize}
-                secureTextEntry={secureText}
-                control={control}
-                register={register}
-                setValue={setValue}
-                switchInputPlace={switchInputPlace}
-                onSubmit={onSubmit}
-              />
-            )
-          })}
+    <Box paddingTop={12} paddingBottom={24} flex={1} align="center" justify="center">
+      <Form onSubmit={onSubmit} gap={8}>
+        <Row
+          gap={8}
+          align="center"
+          justify="center"
+          style={{
+            transform: [{ translateX }],
+            marginTop: 8,
+            marginBottom: 0,
+            paddingBottom: 0,
+          }}
+        >
+          {Array.from({ length: codeSize }, (_, id) => (
+            <CodeConfirmationInput
+              key={`code-input-${id}-${codeSize}`}
+              id={id}
+              codeSize={codeSize}
+              secureTextEntry={secureText}
+              control={control}
+              register={register}
+              setValue={setValue}
+              switchInputPlace={switchInputPlace}
+              onSubmit={onSubmit}
+            />
+          ))}
+        </Row>
       </Form>
-    </View>
+    </Box>
   )
 }

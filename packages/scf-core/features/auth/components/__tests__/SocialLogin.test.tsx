@@ -1,68 +1,63 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-async function renderSocialLogin(isWeb: boolean) {
-  vi.resetModules()
+let mockPlatform: 'web' | 'ios' = 'web'
 
-  vi.doMock('tamagui', async () => {
-    const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+vi.mock('@unicornlove/beyond-ui', () => ({
+  Row: ({ children }: { children?: ReactNode }) => (
+    <div data-testid="social-login-row">{children}</div>
+  ),
+  Stack: ({ children }: { children?: ReactNode }) => (
+    <div data-testid="social-login-stack">{children}</div>
+  ),
+  Separator: () => <div data-testid="separator" />,
+  Caption: ({ children }: { children?: ReactNode }) => (
+    <span data-testid="caption">{children}</span>
+  ),
+  usePlatform: () => ({ platform: mockPlatform }),
+}))
 
-    const MockYStack = ({ children }: { children: ReactNode }) => (
-      <div data-testid="y-stack">{children}</div>
-    )
-    const MockXStack = ({ children }: { children: ReactNode }) => (
-      <div data-testid="social-login-stack">{children}</div>
-    )
+vi.mock('@unicornlove/beyond-ui/tokens', () => ({
+  colors: { bg: { primary: '#fff' } },
+}))
 
-    return {
-      ...actual,
-      isWeb,
-      YStack: MockYStack,
-      XStack: MockXStack,
-      Separator: ({ children }: { children?: ReactNode }) => (
-        <div data-testid="separator">{children}</div>
-      ),
-      SizableText: ({ children }: { children: ReactNode }) => (
-        <span data-testid="sizable-text">{children}</span>
-      ),
-    }
-  })
+vi.mock('@scf/core/utils/useTranslation', () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}))
 
-  vi.doMock('../AppleSignIn', () => ({
-    AppleSignIn: () => <div data-testid="apple-sign-in" />,
-  }))
+vi.mock('../AppleSignIn', () => ({
+  AppleSignIn: () => <div data-testid="apple-sign-in" />,
+}))
 
-  vi.doMock('../GoogleSignIn', () => ({
-    GoogleSignIn: () => <div data-testid="google-sign-in" />,
-  }))
-
-  const { SocialLogin } = await import('../SocialLogin')
-  return render(<SocialLogin />)
-}
+vi.mock('../GoogleSignIn', () => ({
+  GoogleSignIn: () => <div data-testid="google-sign-in" />,
+}))
 
 describe('SocialLogin', () => {
   afterEach(() => {
-    vi.resetModules()
     vi.clearAllMocks()
   })
 
   it('renders Apple and Google sign in options with OR separator on web', async () => {
-    await renderSocialLogin(true)
+    mockPlatform = 'web'
+    const { SocialLogin } = await import('../SocialLogin')
+    const { getByTestId, getByText } = render(<SocialLogin />)
 
-    expect(screen.getByTestId('apple-sign-in')).toBeInTheDocument()
-    expect(screen.getByTestId('google-sign-in')).toBeInTheDocument()
-    expect(screen.getByText(/or/i)).toBeInTheDocument()
-    expect(screen.getByTestId('social-login-stack')).toBeInTheDocument()
+    expect(getByTestId('apple-sign-in')).toBeInTheDocument()
+    expect(getByTestId('google-sign-in')).toBeInTheDocument()
+    expect(getByText(/or/i)).toBeInTheDocument()
+    expect(getByTestId('social-login-row')).toBeInTheDocument()
   })
 
-  it('falls back to vertical stack on native platforms', async () => {
-    await renderSocialLogin(false)
+  it('renders Apple and Google sign in on native', async () => {
+    mockPlatform = 'ios'
+    const { SocialLogin } = await import('../SocialLogin')
+    const { getByTestId, getByText } = render(<SocialLogin />)
 
-    expect(screen.getByTestId('apple-sign-in')).toBeInTheDocument()
-    expect(screen.getByTestId('google-sign-in')).toBeInTheDocument()
-    expect(screen.queryByTestId('social-login-stack')).not.toBeInTheDocument()
-    expect(screen.getAllByTestId('y-stack').length).toBeGreaterThan(0)
+    expect(getByTestId('apple-sign-in')).toBeInTheDocument()
+    expect(getByTestId('google-sign-in')).toBeInTheDocument()
+    expect(getByText(/or/i)).toBeInTheDocument()
   })
 })

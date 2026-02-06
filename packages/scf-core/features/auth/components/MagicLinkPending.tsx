@@ -4,11 +4,12 @@ import { translateError } from '@scf/core/utils/errors/translateError'
 import { getBaseUrl } from '@scf/core/utils/getBaseUrl'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { CheckCircle2 } from '@tamagui/lucide-icons'
+import { CheckCircle2 } from 'lucide-react-native'
 import { TRPCClientError } from '@trpc/client'
 import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { AnimatePresence, Paragraph, Spinner, View, YStack } from '@unicornlove/ui'
+import { Box, Paragraph, Spinner, Stack } from '@unicornlove/beyond-ui'
+import { colors } from '@unicornlove/beyond-ui/tokens'
 
 import { CodeConfirmation } from './CodeConfirmation'
 import { EmailHeader } from './EmailHeader'
@@ -28,8 +29,8 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const { t } = useTranslation()
 
   const handleEnter = useCallback(
-    async (code: number) => {
-      setCode(code)
+    async (enteredCode: number) => {
+      setCode(enteredCode)
       setIsSubmitting(true)
       setError(null)
 
@@ -40,14 +41,12 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
         const { error } = await supabase.auth.verifyOtp({
           email,
-          token: code.toString(),
+          token: enteredCode.toString(),
           type: 'email',
         })
 
         if (error) {
           console.error('OTP verification error:', error)
-
-          // Provide user-friendly error messages
           let userMessage = error.message
           if (
             error.message.includes('otp_expired') ||
@@ -59,7 +58,6 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
           } else if (error.message.includes('too_many_requests')) {
             userMessage = t('auth.verify.throttled')
           }
-
           throw new Error(userMessage)
         }
 
@@ -69,7 +67,6 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
       } catch (err) {
         console.error('Error during OTP verification:', err)
         setError(translateError(err))
-        // Reset the code and UI state on error
         setCode(undefined)
         setCodeEntered(false)
         setVerified(false)
@@ -80,13 +77,10 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
     [email, t]
   )
 
-  const handleResendComplete = useCallback(() => {
-    // Resend completed
-  }, [])
+  const handleResendComplete = useCallback(() => {}, [])
 
   const handleResendClick = useCallback(async () => {
     if (!email) return
-
     try {
       await requestMagicLink.mutateAsync({
         email: email.trim().toLowerCase(),
@@ -104,87 +98,78 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const displayEmail = email ?? t('auth.verify.fallbackEmail')
 
   return (
-    <View flex={1} alignItems="center" justifyContent="center" padding="$4" width="100%">
-      <View
-        borderWidth="$1"
-        borderColor="$borderColor"
-        alignItems="center"
-        justifyContent="center"
-        borderRadius="$8"
-        overflow="hidden"
-        padding="$4"
-        paddingHorizontal="$3"
-        $md={{ padding: '$5', minWidth: 300 }}
-        width="100%"
-        maxWidth={450}
+    <Box flex={1} align="center" justify="center" padding={16} style={{ width: '100%' }}>
+      <Box
+        style={{
+          borderWidth: 1,
+          borderColor: colors.border.light.default,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 16,
+          overflow: 'hidden',
+          padding: 16,
+          paddingHorizontal: 12,
+          minWidth: 300,
+          width: '100%',
+          maxWidth: 450,
+        }}
       >
-        <View right="$4">
-          {codeEntered ? (
-            <View animation="bouncy" key="success" flexDirection="row" gap="$2">
-              <AnimatePresence>
-                {verified && (
-                  <Paragraph
-                    key="success"
-                    color="$green10"
-                    enterStyle={{ opacity: 0, x: 15 }}
-                    exitStyle={{ opacity: 0, x: 15, scale: 0.5 }}
-                    animation="200ms"
-                  >
-                    {t('auth.verify.successBanner')}
-                  </Paragraph>
-                )}
-              </AnimatePresence>
-              <View enterStyle={{ opacity: 0.5, scale: 1.5 }} animation="bouncy">
-                <CheckCircle2 color="$green10" />
-              </View>
-            </View>
-          ) : null}
-        </View>
+        {codeEntered && (
+          <Box style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+            {verified && (
+              <Paragraph style={{ color: colors.green[600] }}>
+                {t('auth.verify.successBanner')}
+              </Paragraph>
+            )}
+            <CheckCircle2 size={24} color={colors.green[600]} />
+          </Box>
+        )}
 
-        <View
+        <Box
           key="code"
-          animation="200ms"
-          opacity={codeEntered ? 0 : 1}
-          style={{ pointerEvents: codeEntered ? 'none' : 'auto' }}
-          transform={[{ translateX: codeEntered ? -150 : 0 }]}
+          style={{
+            opacity: codeEntered ? 0 : 1,
+            pointerEvents: codeEntered ? 'none' : 'auto',
+            transform: [{ translateX: codeEntered ? -150 : 0 }],
+            width: '100%',
+          }}
         >
-          <YStack
-            key="code"
-            animation="200ms"
-            exitStyle={{ opacity: 0 }}
-            justifyContent="space-between"
-            gap="$4"
-            opacity={code ? 0 : 1}
+          <Stack
+            justify="space-between"
+            gap={16}
+            style={{ opacity: code !== undefined ? 0 : 1, width: '100%' }}
           >
             <EmailHeader email={displayEmail} />
 
-            <View width="100%">
-              <CodeConfirmation size="$5" codeSize={6} secureText={false} onEnter={handleEnter} />
+            <Box style={{ width: '100%' }}>
+              <CodeConfirmation codeSize={6} secureText={false} onEnter={handleEnter} />
 
               <ResendTimer onComplete={handleResendComplete} onResendClick={handleResendClick} />
-            </View>
+            </Box>
 
             {error && (
-              <Paragraph color="$red10" textAlign="center" fontSize="$2">
+              <Paragraph style={{ color: colors.error[600], textAlign: 'center', fontSize: 14 }}>
                 {error}
               </Paragraph>
             )}
-          </YStack>
+          </Stack>
 
-          {code ? (
-            <View
+          {code !== undefined && (
+            <Box
               position="absolute"
-              width="100%"
-              height="100%"
-              alignItems="center"
-              justifyContent="center"
-              backgroundColor="$background"
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              align="center"
+              justify="center"
+              style={{ backgroundColor: colors.bg.primary }}
             >
-              <Spinner color="$color10" />
-            </View>
-          ) : null}
-        </View>
-      </View>
-    </View>
+              <Spinner style={{ color: colors.gray[700] }} />
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </Box>
   )
 }
