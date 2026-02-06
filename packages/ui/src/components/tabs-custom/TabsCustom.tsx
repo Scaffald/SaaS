@@ -140,32 +140,33 @@ export function TabsCustom({
   const activeTabContent = tabs.find((tab) => tab.id === activeTab)?.content
 
   // Compute button styles based on variant and active state
-  const getTabButtonProps = (
+  const getTabButtonProps: (
     isActive: boolean,
     tabVariant: 'line' | 'pill' | 'enclosed',
     isDisabled?: boolean
-  ): XStackProps => {
+  ) => XStackProps = (isActive, tabVariant, isDisabled) => {
     const baseStyle = { alignItems: 'center' as const }
 
+    const lineProps = {
+      px: '$4',
+      py: '$2',
+      cursor: isDisabled ? 'not-allowed' : 'pointer',
+      gap: '$2',
+      opacity: isDisabled ? 0.5 : 1,
+      pressStyle: { opacity: isDisabled ? 0.5 : 0.8 },
+      borderBottomWidth: 2,
+      borderBottomColor: (isActive ? (theme.primary9?.val ?? '#0ea5e9') : 'transparent') as GetThemeValueForKey<'borderBottomColor'>,
+      style: { ...baseStyle, borderRadius: 0 },
+      hoverStyle: {
+        borderBottomColor: (isActive ? (theme.primary9?.val ?? '') : (theme.borderColorHover?.val ?? '')) as GetThemeValueForKey<'borderBottomColor'>,
+      },
+    }
     if (tabVariant === 'line') {
-      return {
-        px: '$4',
-        py: '$2',
-        cursor: isDisabled ? 'not-allowed' : 'pointer',
-        gap: '$2',
-        opacity: isDisabled ? 0.5 : 1,
-        pressStyle: { opacity: isDisabled ? 0.5 : 0.8 },
-        borderBottomWidth: 2,
-        borderBottomColor: (isActive ? (theme.primary9?.val ?? '#0ea5e9') : 'transparent') as GetThemeValueForKey<'borderBottomColor'>,
-        style: { ...baseStyle, borderRadius: 0 },
-        hoverStyle: {
-          borderBottomColor: (isActive ? (theme.primary9?.val ?? '') : (theme.borderColorHover?.val ?? '')) as GetThemeValueForKey<'borderBottomColor'>,
-        },
-      } as unknown as XStackProps
+      return lineProps as unknown as XStackProps
     }
 
     if (tabVariant === 'pill') {
-      return {
+      const out = {
         px: '$4',
         py: '$2',
         cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -183,10 +184,11 @@ export function TabsCustom({
             : (theme.backgroundTertiary?.val ?? '#f3f4f6'),
         },
       } as unknown as XStackProps
+      return out
     }
 
     // enclosed variant
-    return {
+    const out = {
       px: '$4',
       py: '$2',
       cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -203,6 +205,7 @@ export function TabsCustom({
         borderColor: theme.borderColorHover?.val,
       },
     } as unknown as XStackProps
+    return out
   }
 
   return (
