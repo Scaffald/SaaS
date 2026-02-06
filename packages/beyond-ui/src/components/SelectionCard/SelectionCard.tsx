@@ -67,6 +67,7 @@ export function SelectionCard({
   descriptionStyle,
   size = 'md',
   color = 'primary',
+  expandedContent,
 }: SelectionCardProps) {
   // Support both controlled and uncontrolled mode
   const [internalSelected, setInternalSelected] = useState(false)
@@ -210,54 +211,90 @@ export function SelectionCard({
     }
   }
 
-  return (
-    <Pressable
-      onPress={handlePress}
-      disabled={disabled}
-      style={[...cardStyles, style]}
-      {...interactiveProps}
-    >
-      <View style={styles.content}>
-        {/* Leading content */}
-        {renderLeadingContent()}
+  const showExpanded = selected && expandedContent
 
-        {/* Text content */}
-        <View style={styles.textContent}>
-          <Text
-            style={[
-              styles.title,
-              { color: isLight ? colors.text.light.primary : colors.text.dark.primary },
-              titleStyle,
-            ]}
-          >
-            {title}
-          </Text>
-          {showDescription && description && (
+  return (
+    <View style={style ? [styles.wrapper, style] : styles.wrapper}>
+      <Pressable
+        onPress={handlePress}
+        disabled={disabled}
+        style={[
+          ...cardStyles,
+          ...(showExpanded
+            ? [
+                { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } as ViewStyle,
+              ]
+            : []),
+        ]}
+        {...interactiveProps}
+      >
+        <View style={styles.content}>
+          {/* Leading content */}
+          {renderLeadingContent()}
+
+          {/* Text content */}
+          <View style={styles.textContent}>
             <Text
               style={[
-                styles.description,
-                { color: isLight ? colors.text.light.secondary : colors.text.dark.secondary },
-                descriptionStyle,
+                styles.title,
+                { color: isLight ? colors.text.light.primary : colors.text.dark.primary },
+                titleStyle,
               ]}
             >
-              {description}
+              {title}
             </Text>
-          )}
-        </View>
+            {showDescription && description && (
+              <Text
+                style={[
+                  styles.description,
+                  { color: isLight ? colors.text.light.secondary : colors.text.dark.secondary },
+                  descriptionStyle,
+                ]}
+              >
+                {description}
+              </Text>
+            )}
+          </View>
 
-        {/* Selection control */}
-        <View style={styles.controlContainer}>{renderSelectionControl()}</View>
-      </View>
-    </Pressable>
+          {/* Selection control */}
+          <View style={styles.controlContainer}>{renderSelectionControl()}</View>
+        </View>
+      </Pressable>
+
+      {/* Expanded content (ToggleCard-style: shown when selected) */}
+      {showExpanded && (
+        <View
+          style={[
+            styles.expandedContent,
+            {
+              backgroundColor: isLight ? colors.bg.light.default : colors.bg.dark.default,
+              borderColor: isLight ? colors.border.light['200'] : colors.border.dark['200'],
+            },
+          ]}
+        >
+          {expandedContent}
+        </View>
+      )}
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    width: '100%',
+  },
   card: {
     borderRadius: borderRadius.l,
     padding: spacing[16],
     borderWidth: 1,
     minHeight: 78,
+  },
+  expandedContent: {
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderBottomLeftRadius: borderRadius.l,
+    borderBottomRightRadius: borderRadius.l,
+    padding: spacing[16],
   },
   focusRing: {
     shadowColor: colors.icon.light['300'],

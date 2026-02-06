@@ -15,6 +15,9 @@ import type {
   SkeletonAvatarProps,
   SkeletonCardProps,
   SkeletonGroupProps,
+  SkeletonBoxProps,
+  SkeletonFormProps,
+  SkeletonListProps,
   SkeletonShape,
   SkeletonAnimation,
 } from './Skeleton.types'
@@ -301,6 +304,110 @@ export function SkeletonGroup({
   )
 
   return <View style={[groupStyle, style]}>{children}</View>
+}
+
+// ============================================================================
+// SkeletonBox Component (alias for rectangle Skeleton, parity with @unicornlove/ui)
+// ============================================================================
+
+/**
+ * SkeletonBox - Rectangle skeleton placeholder (width, height, optional border radius)
+ */
+export function SkeletonBox({
+  width = '100%',
+  height = 20,
+  borderRadius = radiusTokens.xs,
+  animated = true,
+  style,
+  testID,
+}: SkeletonBoxProps): React.ReactElement {
+  return (
+    <Skeleton
+      width={width}
+      height={height}
+      shape="rectangle"
+      borderRadius={borderRadius}
+      animation={animated ? 'pulse' : 'none'}
+      style={style}
+      testID={testID}
+    />
+  )
+}
+
+// ============================================================================
+// SkeletonForm Component
+// ============================================================================
+
+/**
+ * SkeletonForm - Form-style skeleton (label + input rows)
+ */
+export function SkeletonForm({
+  fields = 5,
+  gap = spacing[12],
+  animation = 'pulse',
+  animationDuration = DEFAULT_ANIMATION_DURATION,
+  style,
+  testID,
+}: SkeletonFormProps): React.ReactElement {
+  return (
+    <View style={[{ gap }, style]} testID={testID} accessibilityState={{ busy: true }} accessibilityLabel="Loading form">
+      {Array.from({ length: fields }).map((_, index) => (
+        <View key={`skeleton-form-field-${index}-${fields}`} style={{ gap: spacing[2] }}>
+          <Skeleton
+            width="30%"
+            height={14}
+            shape="text"
+            animation={animation}
+            animationDuration={animationDuration}
+          />
+          <Skeleton
+            width="100%"
+            height={40}
+            borderRadius={radiusTokens.s}
+            animation={animation}
+            animationDuration={animationDuration}
+          />
+        </View>
+      ))}
+    </View>
+  )
+}
+
+// ============================================================================
+// SkeletonList Component
+// ============================================================================
+
+const CARD_VARIANTS = {
+  job: { hasMedia: true, hasAvatar: true, textLines: 2 },
+  profile: { hasAvatar: true, hasMedia: false, textLines: 3 },
+  organization: { hasMedia: true, hasAvatar: false, textLines: 2 },
+} as const
+
+/**
+ * SkeletonList - List of skeleton cards
+ */
+export function SkeletonList({
+  count = 5,
+  gap = spacing[12],
+  variant = 'job',
+  animation = 'pulse',
+  animationDuration = DEFAULT_ANIMATION_DURATION,
+  style,
+  testID,
+}: SkeletonListProps): React.ReactElement {
+  const cardProps = CARD_VARIANTS[variant]
+  return (
+    <View style={[{ gap }, style]} testID={testID} accessibilityState={{ busy: true }} accessibilityLabel="Loading content list">
+      {Array.from({ length: count }).map((_, index) => (
+        <SkeletonCard
+          key={`skeleton-list-item-${index}-${count}`}
+          {...cardProps}
+          animation={animation}
+          animationDuration={animationDuration}
+        />
+      ))}
+    </View>
+  )
 }
 
 // ============================================================================

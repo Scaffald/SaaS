@@ -119,3 +119,46 @@ export interface SkeletonGroupProps {
   /** Additional styles */
   style?: StyleProp<ViewStyle>
 }
+
+/**
+ * SkeletonBox component props (alias for rectangle Skeleton, parity with @unicornlove/ui)
+ */
+export interface SkeletonBoxProps {
+  width?: DimensionValue
+  height?: DimensionValue
+  borderRadius?: number
+  /** Whether animation is enabled */
+  animated?: boolean
+  style?: StyleProp<ViewStyle>
+  testID?: string
+}
+
+/**
+ * SkeletonForm component props
+ */
+export interface SkeletonFormProps {
+  /** Number of form fields to render */
+  fields?: number
+  /** Gap between fields */
+  gap?: number
+  animation?: SkeletonAnimation
+  animationDuration?: number
+  style?: StyleProp<ViewStyle>
+  testID?: string
+}
+
+/**
+ * SkeletonList component props
+ */
+export interface SkeletonListProps {
+  /** Number of skeleton items to render */
+  count?: number
+  /** Gap between items */
+  gap?: number
+  /** Variant of skeleton cards: job (media+avatar), profile (avatar), organization (media) */
+  variant?: 'job' | 'profile' | 'organization'
+  animation?: SkeletonAnimation
+  animationDuration?: number
+  style?: StyleProp<ViewStyle>
+  testID?: string
+}

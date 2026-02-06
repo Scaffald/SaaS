@@ -36,7 +36,7 @@ export type { IconSize } from './utils/icon'
 export { invariant, warning, deprecated } from './utils/invariant'
 
 // Export hooks
-export { useResponsive, useSidebarState } from './hooks'
+export { useResponsive, useSidebarState, useWindowDimensions } from './hooks'
 export type { ResponsiveValue, UseResponsiveReturn, UseSidebarStateOptions } from './hooks'
 
 // Export animation utilities
@@ -245,16 +245,51 @@ export type {
 } from './components/Toast'
 
 // Skeleton components
-export { Skeleton, SkeletonText, SkeletonAvatar, SkeletonCard, SkeletonGroup } from './components/Skeleton'
+export {
+  Skeleton,
+  SkeletonText,
+  SkeletonAvatar,
+  SkeletonCard,
+  SkeletonGroup,
+  SkeletonBox,
+  SkeletonForm,
+  SkeletonList,
+} from './components/Skeleton'
 export type {
   SkeletonProps,
   SkeletonTextProps,
   SkeletonAvatarProps,
   SkeletonCardProps,
   SkeletonGroupProps,
+  SkeletonBoxProps,
+  SkeletonFormProps,
+  SkeletonListProps,
   SkeletonShape,
   SkeletonAnimation,
 } from './components/Skeleton'
+
+export { EmptyState, ErrorState, LoadingState } from './components/States'
+export type {
+  EmptyStateProps,
+  ErrorStateProps,
+  LoadingStateProps,
+} from './components/States'
+
+export {
+  Checklist,
+  ChecklistHeader,
+  ChecklistProgress,
+  ChecklistList,
+  ChecklistItem,
+} from './components/Checklist'
+export type {
+  ChecklistItemData,
+  ChecklistProps,
+  ChecklistHeaderProps,
+  ChecklistProgressProps,
+  ChecklistListProps,
+  ChecklistItemProps,
+} from './components/Checklist'
 
 // Components
 export { Button } from './components/Button'
@@ -299,6 +334,10 @@ export type {
   InputLeftSideProps,
   InputRightSideProps,
 } from './components/Input'
+
+export { PhoneNumberInput } from './components/PhoneNumberInput'
+export type { PhoneNumberInputProps } from './components/PhoneNumberInput'
+export type { Country } from './config/countries'
 
 export { Dropdown } from './components/Dropdown'
 export type {
@@ -437,9 +476,19 @@ export type {
   HintMessageProps,
 } from './components/ProgressBar'
 
+export { SaveStatusIndicator, SavingModal, formatRelativeTime } from './components/SaveStatusIndicator'
+export type {
+  SaveStatus,
+  SaveStatusIndicatorProps,
+  SavingModalProps,
+} from './components/SaveStatusIndicator'
+
 // Shared components
 export { HelperText } from './components/HelperText'
 export type { HelperTextType } from './components/HelperText'
+
+export { FieldError } from './components/FieldError'
+export type { FieldErrorProps } from './components/FieldError'
 
 export { Icon, InfoIcon, CheckIcon, CancelIcon } from './components/Icon'
 export type {
@@ -460,12 +509,32 @@ export type {
 export { Spinner } from './components/Spinner'
 export type { SpinnerProps, SpinnerSize, SpinnerColor } from './components/Spinner'
 
-export { Slider } from './components/Slider'
+export { LoadingOverlay, FullscreenSpinner } from './components/LoadingOverlay'
+export type {
+  LoadingOverlayProps,
+  FullscreenSpinnerProps,
+} from './components/LoadingOverlay'
+
+export {
+  Onboarding,
+  OnboardingStepContent,
+  OnboardingControls,
+} from './components/Onboarding'
+export type {
+  OnboardingStepInfo,
+  OnboardingProps,
+  OnboardingStepContentProps,
+  OnboardingControlsProps,
+} from './components/Onboarding'
+
+export { Slider, RangeSlider } from './components/Slider'
 export type {
   SliderProps,
   SliderColor,
   SliderIndicatorPosition,
   SliderHandleState,
+  RangeSliderProps,
+  RangeSliderSize,
 } from './components/Slider'
 
 export { FileUpload } from './components/FileUpload'
@@ -633,7 +702,15 @@ export type {
   DatePickerPresetOption,
 } from './components/DatePicker'
 
-export { Table, TableCell, TableColumnHeader, ExpandedTableRow } from './components/Table'
+export {
+  Table,
+  TableCell,
+  TableColumnHeader,
+  ExpandedTableRow,
+  TableActionBar,
+  TableAddRecordModal,
+  TableColumnVisibilityModal,
+} from './components/Table'
 export type {
   TableProps,
   TableColumn,
@@ -652,6 +729,10 @@ export type {
   TableColumnHeaderAlign,
   ExpandedTableRowProps,
   ExpandedTableRowVariant,
+  TableActionBarProps,
+  TableAddRecordModalProps,
+  TableColumnVisibilityModalProps,
+  TableColumnVisibilityOption,
 } from './components/Table'
 
 export {
@@ -717,6 +798,15 @@ export type {
 // SearchSelect component
 export { SearchSelect } from './components/SearchSelect'
 export type { SearchSelectProps, SearchSelectOption } from './components/SearchSelect'
+
+// ResponsiveSelect and AdaptiveSelectSheet
+export { ResponsiveSelect, AdaptiveSelectSheet } from './components/ResponsiveSelect'
+export type {
+  ResponsiveSelectOption,
+  ResponsiveSelectSize,
+  ResponsiveSelectProps,
+  AdaptiveSelectSheetProps,
+} from './components/ResponsiveSelect'
 
 // ScrollArea component
 export { ScrollArea, scrollTo, scrollToEnd } from './components/ScrollArea'

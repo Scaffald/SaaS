@@ -89,4 +89,10 @@ export interface SelectionCardProps {
    * @default 'primary'
    */
   color?: 'gray' | 'primary' | 'red-green'
+
+  /**
+   * Optional content shown below the card when selected (ToggleCard-style expansion).
+   * Rendered in an attached panel with consistent padding and border.
+   */
+  expandedContent?: React.ReactNode
 }

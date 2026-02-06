@@ -28,7 +28,15 @@ import type { ModalProps } from './Modal.types'
 import { getModalStyles } from './Modal.styles'
 import { useThemeContext } from '../../theme'
 import { useFocusTrap } from '../../accessibility/useFocusTrap'
-import { logger } from '@scf/core'
+
+const logger = {
+  debug: (msg: string, data?: Record<string, unknown>) => {
+    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+      if (data) console.debug(msg, data)
+      else console.debug(msg)
+    }
+  },
+}
 
 export const Modal = forwardRef<View, ModalProps>(function Modal({
   visible: controlledVisible,
