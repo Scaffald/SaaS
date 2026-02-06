@@ -27,7 +27,7 @@ echo "🔧 Replacing catalog: references in devDependencies..."
 declare -A VERSIONS=(
   ["@biomejs/biome"]="~2.3.6"
   ["@types/node"]="~20.0.0"
-  ["@types/react"]="~19.1.0"
+  ["@types/react"]="~19.2.0"
   ["typescript"]="~5.9.2"
 )
 

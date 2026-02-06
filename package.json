@@ -192,5 +192,10 @@
     "vitest": "^4.0.15",
     "vitest-mock-extended": "^3.1.0"
   },
-  "packageManager": "pnpm@10.20.0"
+  "packageManager": "pnpm@10.20.0",
+  "pnpm": {
+    "overrides": {
+      "react-dom": "19.2.0"
+    }
+  }
 }

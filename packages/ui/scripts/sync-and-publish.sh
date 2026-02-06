@@ -121,7 +121,7 @@ else
     echo "  ✓ @types/node"
   fi
   if grep -q '"@types/react": "catalog:"' package.json 2>/dev/null; then
-    $SED_CMD 's/"@types\/react": "catalog:"/"@types\/react": "~19.1.0"/' package.json
+    $SED_CMD 's/"@types\/react": "catalog:"/"@types\/react": "~19.2.0"/' package.json
     echo "  ✓ @types/react"
   fi
   if grep -q '"typescript": "catalog:"' package.json 2>/dev/null; then
