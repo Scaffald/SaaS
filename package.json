@@ -16,6 +16,7 @@
     "build:forsured": "pnpm --filter @unicornlove/forsured-app build",
     "check": "pnpm locales:validate && nx run-many -t lint && nx run-many -t typecheck --parallel=1",
     "check:affected": "pnpm locales:validate && nx affected -t lint && nx affected -t typecheck --parallel=1",
+    "check:affected:fast": "nx affected -t lint && nx affected -t typecheck",
     "check-circular-deps": "nx graph --file=output.html",
     "check-deps": "check-dependency-version-consistency .",
     "deploy": "pnpm prod",
