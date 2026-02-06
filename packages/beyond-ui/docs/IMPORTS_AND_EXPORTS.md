@@ -24,21 +24,12 @@ If you only need design tokens (e.g. in a shared config or build step):
 import { colors, spacing, typography } from '@unicornlove/beyond-ui/tokens'
 ```
 
-### Onboarding only
-
-If you only use the onboarding components and types:
-
-```typescript
-import { Onboarding, OnboardingStepContent, OnboardingControls } from '@unicornlove/beyond-ui/onboarding'
-```
-
 ## Available subpaths
 
 | Subpath | Contents |
 |--------|----------|
 | `@unicornlove/beyond-ui` | Full library (components, hooks, tokens, animation, a11y, etc.) |
 | `@unicornlove/beyond-ui/tokens` | Design tokens (colors, spacing, typography, borders, shadows, breakpoints, etc.) |
-| `@unicornlove/beyond-ui/onboarding` | Onboarding, OnboardingStepContent, OnboardingControls and related types |
 
 ## Adding new subpaths
 

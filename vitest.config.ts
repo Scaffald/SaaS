@@ -60,7 +60,10 @@ export default defineConfig({
       },
       {
         find: "@unicornlove/beyond-ui",
-        replacement: resolve(workspaceRoot, "tests/infrastructure/vitest/mocks/beyond-ui.tsx"),
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/beyond-ui.tsx",
+        ),
       },
       {
         find: "@scf/supabase",
