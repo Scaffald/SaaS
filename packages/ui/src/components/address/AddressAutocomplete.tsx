@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
-import { SizableText, YStack } from '@unicornlove/ui'
+import { YStack } from '@tamagui/stacks'
+import { SizableText } from 'tamagui'
 import { SearchSelect, type SearchSelectOption } from '../search-select'
 import { useAddressAutocomplete } from './hooks'
 import type { AddressAutocompleteProps, AddressResult } from './types'

@@ -2,7 +2,8 @@ import { X } from '@tamagui/lucide-icons'
 import type { ComponentProps } from 'react'
 import { forwardRef } from 'react'
 import type { TextInput } from 'react-native'
-import { Input, Spinner, XStack } from '@unicornlove/ui'
+import { XStack } from '@tamagui/stacks'
+import { Input, Spinner } from 'tamagui'
 import { Button } from '../../buttons/Button'
 
 interface SearchInputProps

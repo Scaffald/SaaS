@@ -1,6 +1,7 @@
 import { Search } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { SizableText, YStack } from '@unicornlove/ui'
+import { YStack } from '@tamagui/stacks'
+import { SizableText } from 'tamagui'
 
 interface EmptyStateProps {
   title?: string

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Separator, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
+import { Separator } from '@tamagui/separator'
+import { XStack, YStack } from '@tamagui/stacks'
+import { useWindowDimensions } from '@tamagui/use-window-dimensions'
 import { Button } from '../buttons/Button'
 import { FilterChip } from '../chips/FilterChip'
 import { FieldError } from '../field-error/FieldError'

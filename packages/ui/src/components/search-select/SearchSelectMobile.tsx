@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { XStack, YStack } from '@tamagui/stacks'
+import { Text } from 'tamagui'
 import { Button } from '../buttons/Button'
 import { FilterChip } from '../chips/FilterChip'
 import { FieldError } from '../field-error/FieldError'
