@@ -7,11 +7,11 @@
 
 ## Executive Summary
 
-While the Expo SDK 55 beta upgrade **completed successfully** for dependencies and configuration, **all three build targets (iOS, Android, Web) encountered critical blockers** during testing:
+While the Expo SDK 55 beta upgrade **completed successfully** for dependencies and configuration, **iOS builds encounter a critical blocker** during testing:
 
 - ❌ **iOS Build:** FAILED (CallInvoker API compatibility issue)
-- ❌ **Android Build:** NOT TESTED (SDK not installed on this machine)  
-- ❌ **Web Build:** FAILED (Expo module initialization errors)
+- ❌ **Android Build:** NOT TESTED (SDK not installed on this machine)
+- ✅ **Web Build:** WORKS (Metro bundler successful)
 
 ## 🔴 Critical Issues
 
@@ -35,27 +35,17 @@ React Native 0.83.1 has refactored the JSI `CallInvoker` API, but expo-modules-c
 
 ---
 
-### 2. Web Build Failure (BLOCKER)
+### 2. Web Build Status (✅ WORKS)
 
-**Error:**
-```
-Cannot read properties of undefined (reading 'get')
-```
+**Status:** Web builds are working correctly after retesting
 
-**Affected Modules:**
-- ExpoGo
-- ExpoSplashScreen  
-- ExponentConstants
-- ExpoUpdates
-- ExpoLinking
-- ExpoAsset
+**Details:**
+- Metro bundler successfully compiles 10,420 modules
+- Web app serves on http://localhost:8081
+- Tamagui builds correctly in 2.9 seconds
+- No module initialization errors
 
-**Root Cause:**  
-Expo modules are not properly initializing for web platform in SDK 55 beta. The modules are trying to access properties that don't exist in the web context.
-
-**Impact:** Cannot run web builds
-
-**Workaround:** None - requires Expo fix
+**Note:** Initial documentation was incorrect due to port conflict being misinterpreted as a module error
 
 ---
 
@@ -94,10 +84,10 @@ Default install location not found: /Users/clay/Library/Android/sdk
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Dependencies | ✅ Installed | All SDK 55 versions |
-| iOS Pods | ✅ Installed | 147 pods, 42s |
+| iOS Pods | ✅ Installed | 147 pods, 391s |
 | iOS Build | ❌ Failed | CallInvoker error |
 | Android Build | ⚠️ Untested | SDK not installed |
-| Web Build | ❌ Failed | Module init errors |
+| Web Build | ✅ Works | 10,420 modules, 3.4s |
 | Metro Bundler | ✅ Works | Tamagui builds correctly |
 | TypeScript | ⚠️ Pre-existing errors | Not SDK 55 related |
 
@@ -179,12 +169,12 @@ cd ios && pod install
 
 ## 📝 Conclusion
 
-**Expo SDK 55 beta preview.9 is NOT production-ready.** Multiple critical blockers prevent local development and testing. 
+**Expo SDK 55 beta preview.9 is NOT production-ready for iOS.** The CallInvoker API incompatibility prevents iOS builds from completing. However, web builds work successfully.
 
 **Recommended Action:** Either:
 1. **Revert to SDK 54** and wait for SDK 55 stable release (safest)
-2. **Try EAS Build** to see if cloud builds work (experimental)
-3. **Wait for preview.10+** with fixes (risky)
+2. **Wait for preview.10+** with CallInvoker fix (risky)
+3. **Try EAS Build** to see if cloud builds work (experimental)
 
 The upgrade work completed (dependencies, configuration, Mapbox token) will be valuable when SDK 55 stable is released.
 
