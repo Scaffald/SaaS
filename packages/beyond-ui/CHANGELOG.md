@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Charts** – StackedBarChart and PopulationPyramid (SVG-based, no gifted-charts).
 - **Maps** – MapContainer, MapPin, MapTooltip, MapFallback (provider-agnostic; no map library dependency).
 - **CONTRIBUTING.md** – Contribution guide (setup, code standards, testing, PR process).
+- **Theme migration guide** – Tamagui `$tokens` → beyond-ui tokens ([docs/THEME_MIGRATION_TAMAGUI_TO_BEYOND.md](docs/THEME_MIGRATION_TAMAGUI_TO_BEYOND.md)).
+- **Imports and exports** – Subpath usage for tree-shaking ([docs/IMPORTS_AND_EXPORTS.md](docs/IMPORTS_AND_EXPORTS.md)).
+- **Why Beyond-UI** – Comparison with Tamagui-based UI ([docs/WHY_BEYOND_UI.md](docs/WHY_BEYOND_UI.md)).
+- **Dependencies** – Policy and audit ([docs/DEPENDENCIES.md](docs/DEPENDENCIES.md)).
 
 ## [0.1.0] - Initial release
 

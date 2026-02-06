@@ -276,6 +276,8 @@ gradients.named['warm-flame'].colors  // ['#fb923c', '#fb7185']
 
 - [Why Beyond-UI?](docs/WHY_BEYOND_UI.md) – Comparison with the Tamagui-based UI and when to use beyond-ui.
 - [Imports and exports](docs/IMPORTS_AND_EXPORTS.md) – Main entry vs subpath imports (`/tokens`, `/onboarding`) for tree-shaking.
+- [Theme migration (Tamagui → Beyond)](docs/THEME_MIGRATION_TAMAGUI_TO_BEYOND.md) – Map Tamagui `$tokens` to beyond-ui tokens.
+- [Dependencies](docs/DEPENDENCIES.md) – Dependency policy and audit (required vs optional peers).
 - [ARCHITECTURE.md](ARCHITECTURE.md) – Design principles, tokens, component structure.
 - [MIGRATION.md](MIGRATION.md) – Migrating from @unicornlove/ui to beyond-ui.
 - [CONTRIBUTING.md](CONTRIBUTING.md) – How to contribute.
