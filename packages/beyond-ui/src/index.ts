@@ -291,6 +291,51 @@ export type {
   ChecklistItemProps,
 } from './components/Checklist'
 
+export {
+  CookieConsentProvider,
+  useCookieConsent,
+  COOKIE_CONSENT_DEFAULTS,
+  CookieConsentBanner,
+  CookiePreferencesDialog,
+} from './components/CookieConsent'
+export type {
+  CookieConsentProviderProps,
+  CookieConsentBannerProps,
+  CookieConsentCategory,
+  CookieConsentCategoryId,
+  CookieConsentSelections,
+  CookieConsentState,
+  CookieConsentStorage,
+} from './components/CookieConsent'
+
+export {
+  AvatarImagePicker,
+  AvatarCropModal,
+  useFilePicker,
+} from './components/ImagePicker'
+export type {
+  AvatarImagePickerProps,
+  AvatarCropModalProps,
+  UseFilePickerImageResult,
+  UseFilePickerImageProps,
+  OnPickImage,
+} from './components/ImagePicker'
+
+export { KanbanBoard, KanbanColumn, KanbanCard } from './components/Kanban'
+export type {
+  KanbanBoardProps,
+  KanbanColumnProps,
+  KanbanCardProps,
+  KanbanColumnConfig,
+  KanbanCardData,
+} from './components/Kanban'
+
+export { IconSelector, DEFAULT_ICON_NAMES } from './components/IconSelector'
+export type { IconSelectorProps, DefaultIconName } from './components/IconSelector'
+
+export { NotificationTag } from './components/NotificationTag'
+export type { NotificationTagProps, NotificationTagSize } from './components/NotificationTag'
+
 // Components
 export { Button } from './components/Button'
 export type { ButtonProps, ButtonColor, ButtonVariant, ButtonSize } from './components/Button'

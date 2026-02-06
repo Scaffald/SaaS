@@ -28,6 +28,11 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./onboarding": {
+      "types": "./dist/onboarding.d.ts",
+      "import": "./dist/onboarding.mjs",
+      "require": "./dist/onboarding.js"
+    },
     "./tokens": {
       "types": "./dist/tokens/index.d.ts",
       "import": "./dist/tokens/index.mjs",

@@ -3,6 +3,7 @@ const { defineConfig } = require('tsup')
 module.exports = defineConfig({
   entry: {
     index: 'src/index.ts',
+    onboarding: 'src/onboarding.ts',
     'tokens/index': 'src/tokens/index.ts',
   },
   format: ['esm', 'cjs'],
