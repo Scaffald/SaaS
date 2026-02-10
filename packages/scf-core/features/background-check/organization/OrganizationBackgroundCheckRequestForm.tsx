@@ -1,6 +1,12 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import { api } from '@scf/core/utils/api'
+import {
+  useBackgroundCheckPackages,
+  useRequestBackgroundCheckMutation,
+  useConfirmCheckPaymentMutation,
+} from '@scf/core/utils/background-checks-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { CircleAlert } from 'lucide-react-native'
@@ -43,7 +49,6 @@ const getPackageTier = (pkg: PackageSummary | null) => {
 export function OrganizationBackgroundCheckRequestForm() {
   const router = useRouter()
   const toast = useToast()
-  const utils = api.useUtils()
 
   const params = useLocalSearchParams<{ organizationId?: string | string[] }>()
   const initialOrganizationId =
@@ -72,10 +77,7 @@ export function OrganizationBackgroundCheckRequestForm() {
     }
   }, [organizations, organizationId])
 
-  const { data: packagesData, isLoading: isLoadingPackages } =
-    api.backgroundChecks.listPackages.useQuery(undefined, {
-      staleTime: 5 * 60 * 1000,
-    })
+  const { data: packagesData, isLoading: isLoadingPackages } = useBackgroundCheckPackages()
   const packages = useMemo<PackageSummary[]>(() => packagesData ?? [], [packagesData])
 
   const workersQuery = api.workers.getWorkers.useQuery(
@@ -103,8 +105,9 @@ export function OrganizationBackgroundCheckRequestForm() {
   )
   const jobs = useMemo<JobSummary[]>(() => jobsQuery.data?.jobs ?? [], [jobsQuery.data?.jobs])
 
-  const requestPaymentMutation = api.backgroundChecks.requestCheck.useMutation()
-  const confirmPaymentMutation = api.backgroundChecks.confirmCheckPayment.useMutation()
+  const queryClient = useQueryClient()
+  const requestPaymentMutation = useRequestBackgroundCheckMutation()
+  const confirmPaymentMutation = useConfirmCheckPaymentMutation()
 
   const selectedPackage = useMemo<PackageSummary | null>(() => {
     if (!selectedPackageId) return null
@@ -147,8 +150,8 @@ export function OrganizationBackgroundCheckRequestForm() {
 
       const orgId = organizationId
       if (orgId) {
-        await utils.backgroundChecks.organizationListChecks.invalidate({
-          organization_id: orgId,
+        await queryClient.invalidateQueries({
+          queryKey: ['backgroundChecks', 'organization', orgId],
         })
         router.replace({
           pathname: ROUTES.OFFICE.ATS.CHECKS.path,

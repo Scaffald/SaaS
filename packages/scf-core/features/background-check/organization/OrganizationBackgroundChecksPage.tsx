@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { api } from '@scf/core/utils/api'
+import { useOrganizationBackgroundChecks } from '@scf/core/utils/background-checks-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { ExternalLink, Eye, RefreshCcw } from 'lucide-react-native'
@@ -89,14 +89,9 @@ export function OrganizationBackgroundChecksPage() {
     }
   }, [organizations, selectedOrganizationId])
 
-  const checksQuery = api.backgroundChecks.organizationListChecks.useQuery(
-    { organization_id: selectedOrganizationId ?? '' },
-    {
-      enabled: Boolean(selectedOrganizationId),
-      refetchOnWindowFocus: true,
-      staleTime: 60_000,
-    }
-  )
+  const checksQuery = useOrganizationBackgroundChecks(selectedOrganizationId || undefined, {
+    enabled: Boolean(selectedOrganizationId),
+  })
 
   const rows = useMemo(() => {
     if (!checksQuery.data) return []

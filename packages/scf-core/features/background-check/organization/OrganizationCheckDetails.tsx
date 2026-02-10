@@ -1,14 +1,20 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useBackgroundCheck } from '@scf/core/utils/background-checks-sdk-hooks'
 import { RefreshCcw, X } from 'lucide-react-native'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
 import { Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getStatusMetadata } from '../components/status.utils'
 
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type OrganizationCheckSummary = RouterOutputs['backgroundChecks']['organizationListChecks'][number]
-type OrganizationCheckDetail = RouterOutputs['backgroundChecks']['organizationGet']
+type OrganizationCheckSummary = {
+  id: string;
+  status: string;
+  [key: string]: unknown;
+};
+type OrganizationCheckDetail = {
+  id: string;
+  status: string;
+  component_statuses?: Array<Record<string, unknown>>;
+  [key: string]: unknown;
+};
 
 interface OrganizationCheckDetailsProps {
   checkId: string
@@ -31,12 +37,7 @@ export function OrganizationCheckDetails({
   summary,
   onClose,
 }: OrganizationCheckDetailsProps) {
-  const checkQuery = api.backgroundChecks.organizationGet.useQuery(
-    { background_check_id: checkId },
-    {
-      refetchOnWindowFocus: false,
-    }
-  )
+  const checkQuery = useBackgroundCheck(checkId || undefined)
 
   const detail = checkQuery.data
 
