@@ -1,52 +1,49 @@
-import { api } from '@scf/core/utils/api'
+import { useFollowing, useUnfollowUserMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@unicornlove/beyond-ui'
 import { UserMinus } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
-interface FollowingData {
-  user?: {
-    display_name?: string | null
-    username?: string | null
-    avatar_url?: string | null
-    industry?: {
-      name?: string | null
-    } | null
-  } | null
-  created_at?: string
-  id?: string
-  followee_id?: string
+interface Following {
+  id: string
+  follower_id: string
+  follower_type: 'user'
+  followee_id: string
+  followee_type: 'user' | 'organization' | 'job'
+  created_at: string
+  followee?: {
+    id: string
+    name: string
+    avatar_url?: string
+  }
 }
-
-type FollowingQueryResult = ReturnType<typeof api.follows.getFollowing.useQuery>
-type Following = NonNullable<FollowingQueryResult['data']> extends Array<infer T>
-  ? T
-  : FollowingData
 
 export function FollowingList() {
   const [searchTerm, setSearchTerm] = useState('')
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const toast = useToast()
 
-  const { data: following, isLoading } = api.follows.getFollowing.useQuery()
+  const { data: followingResponse, isLoading } = useFollowing()
+  const following = followingResponse?.data
 
-  const unfollowMutation = api.follows.unfollowUser.useMutation({
+  const unfollowMutation = useUnfollowUserMutation({
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
       toast.show({
-          title: 'Success',
-          message: 'Unfollowed successfully',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Unfollowed successfully',
+        variant: 'success',
+      })
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to unfollow user',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to unfollow user',
+        variant: 'error',
+      })
     },
   })
 
@@ -56,7 +53,7 @@ export function FollowingList() {
 
     const search = searchTerm.toLowerCase()
     return following.filter((follow: Following) => {
-      const name = follow.user?.display_name || follow.user?.username || ''
+      const name = follow.followee?.name || ''
       return name.toLowerCase().includes(search)
     })
   }, [following, searchTerm])
@@ -64,22 +61,22 @@ export function FollowingList() {
   const handleUnfollow = useCallback(
     async (_followId: string, userId: string) => {
       if (confirm('Are you sure you want to unfollow this user?')) {
-        await unfollowMutation.mutateAsync({ targetUserId: userId })
+        await unfollowMutation.mutateAsync(userId)
       }
     },
-    [unfollowMutation.mutateAsync, unfollowMutation]
+    [unfollowMutation]
   )
 
   const columns = useMemo<ColumnDef<Following>[]>(
     () => [
       {
-        accessorKey: 'user',
+        accessorKey: 'followee',
         header: 'User',
         cell: ({ row }) => {
           const follow = row.original
-          const user = follow.user
-          const name = user?.display_name || user?.username || 'Unknown'
-          const avatar = user?.avatar_url
+          const followee = follow.followee
+          const name = followee?.name || 'Unknown'
+          const avatar = followee?.avatar_url
 
           return (
             <Row alignItems="center" gap="$2">
@@ -99,14 +96,6 @@ export function FollowingList() {
               </Text>
             </Row>
           )
-        },
-      },
-      {
-        accessorKey: 'industry',
-        header: 'Industry',
-        cell: ({ row }) => {
-          const user = row.original.user
-          return <Text fontSize="$3">{user?.industry?.name || '-'}</Text>
         },
       },
       {
@@ -131,7 +120,7 @@ export function FollowingList() {
               size="$2"
               variant="outlined"
               icon={UserMinus}
-              onPress={() => handleUnfollow(follow.id || '', follow.followee_id || '')}
+              onPress={() => handleUnfollow(follow.id, follow.followee_id)}
               disabled={unfollowMutation.isPending}
             >
               Unfollow

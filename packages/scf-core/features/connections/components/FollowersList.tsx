@@ -1,30 +1,28 @@
-import { api } from '@scf/core/utils/api'
+import { useFollowers } from '@scf/core/utils/engagement-sdk-hooks'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { Avatar, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
-interface FollowerData {
-  user?: {
-    display_name?: string | null
-    username?: string | null
-    avatar_url?: string | null
-    industry?: {
-      name?: string | null
-    } | null
-  } | null
-  created_at?: string
-  id?: string
-  follower_id?: string
+interface Follower {
+  id: string
+  follower_id: string
+  follower_type: 'user'
+  followee_id: string
+  followee_type: 'user' | 'organization' | 'job'
+  created_at: string
+  follower?: {
+    id: string
+    name: string
+    avatar_url?: string
+  }
 }
-
-type FollowersQueryResult = ReturnType<typeof api.follows.getFollowers.useQuery>
-type Follower = NonNullable<FollowersQueryResult['data']> extends Array<infer T> ? T : FollowerData
 
 export function FollowersList() {
   const [searchTerm, setSearchTerm] = useState('')
 
-  const { data: followers, isLoading } = api.follows.getFollowers.useQuery()
+  const { data: followersResponse, isLoading } = useFollowers()
+  const followers = followersResponse?.data
 
   const filteredFollowers = useMemo(() => {
     if (!followers) return []
@@ -32,7 +30,7 @@ export function FollowersList() {
 
     const search = searchTerm.toLowerCase()
     return followers.filter((follow: Follower) => {
-      const name = follow.user?.display_name || follow.user?.username || ''
+      const name = follow.follower?.name || ''
       return name.toLowerCase().includes(search)
     })
   }, [followers, searchTerm])
@@ -40,13 +38,13 @@ export function FollowersList() {
   const columns = useMemo<ColumnDef<Follower>[]>(
     () => [
       {
-        accessorKey: 'user',
+        accessorKey: 'follower',
         header: 'User',
         cell: ({ row }) => {
           const follow = row.original
-          const user = follow.user
-          const name = user?.display_name || user?.username || 'Unknown'
-          const avatar = user?.avatar_url
+          const follower = follow.follower
+          const name = follower?.name || 'Unknown'
+          const avatar = follower?.avatar_url
 
           return (
             <Row alignItems="center" gap="$2">
@@ -66,14 +64,6 @@ export function FollowersList() {
               </Text>
             </Row>
           )
-        },
-      },
-      {
-        accessorKey: 'industry',
-        header: 'Industry',
-        cell: ({ row }) => {
-          const user = row.original.user
-          return <Text fontSize="$3">{user?.industry?.name || '-'}</Text>
         },
       },
       {
