@@ -4,7 +4,7 @@
  * Requires ScaffaldJobsSdkProviderFromSession (client from context).
  */
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 
 // ============================================================================
@@ -54,57 +54,62 @@ export function useConnectionStatus(userId: string | undefined, options?: { enab
 }
 
 /** Send a connection request to another user */
-export function useSendConnectionMutation() {
+export function useSendConnectionMutation(options?: UseMutationOptions<any, any, { targetUserId: string }>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (params: { targetUserId: string }) => {
       if (!client) throw new Error('Missing client')
       return client.connections.send(params)
     },
+    ...options,
   })
 }
 
 /** Accept a connection request */
-export function useAcceptConnectionMutation() {
+export function useAcceptConnectionMutation(options?: UseMutationOptions<any, any, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
       if (!client) throw new Error('Missing client')
       return client.connections.accept(connectionId)
     },
+    ...options,
   })
 }
 
 /** Decline a connection request */
-export function useDeclineConnectionMutation() {
+export function useDeclineConnectionMutation(options?: UseMutationOptions<any, any, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
       if (!client) throw new Error('Missing client')
       return client.connections.decline(connectionId)
     },
+    ...options,
   })
 }
 
 /** Remove an existing connection */
-export function useRemoveConnectionMutation() {
+export function useRemoveConnectionMutation(options?: UseMutationOptions<any, any, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
       if (!client) throw new Error('Missing client')
       return client.connections.remove(connectionId)
     },
+    ...options,
   })
 }
 
 /** Cancel a sent connection request */
-export function useCancelConnectionMutation() {
+export function useCancelConnectionMutation(options?: UseMutationOptions<any, any, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
       if (!client) throw new Error('Missing client')
       return client.connections.cancel(connectionId)
     },
+    ...options,
   })
 }
 
@@ -161,24 +166,26 @@ export function useFollowStatus(userId: string | undefined, options?: { enabled?
 }
 
 /** Follow a user */
-export function useFollowUserMutation() {
+export function useFollowUserMutation(options?: UseMutationOptions<any, any, { targetUserId: string }>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (params: { targetUserId: string }) => {
       if (!client) throw new Error('Missing client')
       return client.follows.followUser(params)
     },
+    ...options,
   })
 }
 
 /** Unfollow a user */
-export function useUnfollowUserMutation() {
+export function useUnfollowUserMutation(options?: UseMutationOptions<any, any, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (userId: string) => {
       if (!client) throw new Error('Missing client')
       return client.follows.unfollowUser(userId)
     },
+    ...options,
   })
 }
 
@@ -187,13 +194,14 @@ export function useUnfollowUserMutation() {
 // ============================================================================
 
 /** Track an engagement event */
-export function useTrackEngagementMutation() {
+export function useTrackEngagementMutation(options?: UseMutationOptions<any, any, any>) {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async (params: Parameters<typeof client.engagement.track>[0]) => {
+    mutationFn: async (params: any) => {
       if (!client) throw new Error('Missing client')
       return client.engagement.track(params)
     },
+    ...options,
   })
 }
 

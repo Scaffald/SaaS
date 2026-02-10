@@ -8,7 +8,7 @@ import {
   useFollowUserMutation,
   useUnfollowUserMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import { Card } from '@unicornlove/beyond-ui'
 import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
@@ -236,7 +236,7 @@ export function ConnectionFollowButtons({
 
   if (isLoading) {
     return (
-      <DashboardWidget>
+      <Card>
         <Stack gap="$3" alignItems="center" paddingVertical="$3">
           <Row gap="$2" alignItems="center">
             <Loader2 size={16} color="$color10" />
@@ -245,12 +245,12 @@ export function ConnectionFollowButtons({
             </Text>
           </Row>
         </Stack>
-      </DashboardWidget>
+      </Card>
     )
   }
 
   return (
-    <DashboardWidget>
+    <Card>
       <Stack gap="$3" paddingVertical="$3">
         {/* Connection Button */}
         {connectionButtonState.type === 'connected' && (
@@ -351,6 +351,6 @@ export function ConnectionFollowButtons({
           </Button>
         )}
       </Stack>
-    </DashboardWidget>
+    </Card>
   )
 }
