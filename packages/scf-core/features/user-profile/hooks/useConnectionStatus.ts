@@ -1,16 +1,14 @@
-import { api } from '@scf/core/utils/api'
+import { useConnections, usePendingConnections } from '@scf/core/utils/engagement-sdk-hooks'
 import { useMemo } from 'react'
 
 export function useConnectionStatus(targetUserId: string | null) {
-  const { data: connections, isLoading: connectionsLoading } =
-    api.connections.getConnections.useQuery(undefined, {
-      enabled: !!targetUserId,
-    })
+  const { data: connectionsData, isLoading: connectionsLoading } = useConnections({
+    enabled: !!targetUserId,
+  })
 
-  const { data: pendingRequests, isLoading: pendingLoading } =
-    api.connections.getPendingRequests.useQuery(undefined, {
-      enabled: !!targetUserId,
-    })
+  const { data: pendingData, isLoading: pendingLoading } = usePendingConnections({
+    enabled: !!targetUserId,
+  })
 
   const status = useMemo(() => {
     if (!targetUserId || connectionsLoading || pendingLoading) {
@@ -25,8 +23,9 @@ export function useConnectionStatus(targetUserId: string | null) {
     }
 
     // Check if connected
-    const connection = connections?.find(
-      (conn: { user?: { id: string } | null; id: string }) => conn.user?.id === targetUserId
+    const connection = connectionsData?.data.find(
+      (conn: { addressee_id?: string; requester_id?: string; id: string }) =>
+        conn.addressee_id === targetUserId || conn.requester_id === targetUserId
     )
 
     if (connection) {
@@ -41,8 +40,8 @@ export function useConnectionStatus(targetUserId: string | null) {
     }
 
     // Check pending requests
-    const sentRequest = pendingRequests?.sent.find(
-      (req: { user?: { id: string } | null; id: string }) => req.user?.id === targetUserId
+    const sentRequest = pendingData?.sent.find(
+      (req: { addressee_id?: string; id: string }) => req.addressee_id === targetUserId
     )
     if (sentRequest) {
       return {
@@ -55,8 +54,8 @@ export function useConnectionStatus(targetUserId: string | null) {
       }
     }
 
-    const receivedRequest = pendingRequests?.received.find(
-      (req: { user?: { id: string } | null; id: string }) => req.user?.id === targetUserId
+    const receivedRequest = pendingData?.received.find(
+      (req: { requester_id?: string; id: string }) => req.requester_id === targetUserId
     )
     if (receivedRequest) {
       return {
@@ -77,7 +76,7 @@ export function useConnectionStatus(targetUserId: string | null) {
       connectionId: null,
       isLoading: false,
     }
-  }, [targetUserId, connections, pendingRequests, connectionsLoading, pendingLoading])
+  }, [targetUserId, connectionsData, pendingData, connectionsLoading, pendingLoading])
 
   return status
 }
