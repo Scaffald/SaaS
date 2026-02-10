@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { useToast } from '@unicornlove/beyond-ui'
 import {
   createContext,
@@ -134,7 +135,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
   }, [])
 
   // Track skill searches for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   // Search skills function - use cascading approach (searchParentSkills)
   const searchSkills = useCallback(

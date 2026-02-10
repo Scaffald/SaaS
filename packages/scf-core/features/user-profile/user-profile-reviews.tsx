@@ -1,5 +1,5 @@
-import { api } from '@scf/core/utils/api'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useRef } from 'react'
@@ -29,7 +29,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   const hasTrackedViewRef = useRef(false) // Track if we've already recorded a view for this component mount
 
   // Track review view for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   // Fetch real reviews from database
   const { data: reviewsData, isLoading } = api.reviews.getBySubject.useQuery({

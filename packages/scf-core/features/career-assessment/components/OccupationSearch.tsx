@@ -1,5 +1,5 @@
-import { api } from '@scf/core/utils/api'
 import { useDebounce } from '@scf/core/utils/useDebounce'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { useEffect, useRef, useState } from 'react'
 import { Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
@@ -39,7 +39,7 @@ export function OccupationSearch({
   const lastTrackedSearchRef = useRef<string>('') // Track last searched query to avoid duplicate tracking
 
   // Track occupation searches for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   // Search occupations
   const {

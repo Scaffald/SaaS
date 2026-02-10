@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { ChevronLeft, ChevronRight } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Button, Card, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -146,7 +147,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
   }
 
   // Track review submission for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   const handleSubmit = async () => {
     if (!reviewId) {
