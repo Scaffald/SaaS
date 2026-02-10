@@ -1,4 +1,11 @@
-import { api } from '@scf/core/utils/api'
+import {
+  usePortfolioItems,
+  useCreatePortfolioItemMutation,
+  useUpdatePortfolioItemMutation,
+  useDeletePortfolioItemMutation,
+  useUploadPortfolioImageMutation,
+  useReorderPortfolioItemsMutation,
+} from '@scf/core/utils/portfolio-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { Button, extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/beyond-ui'
 import { ImageUpload } from '@scf/core/components/ui'
@@ -6,6 +13,7 @@ import { ArrowDown, ArrowUp, Edit3, Image as ImageIcon, Plus } from 'lucide-reac
 import { useToast } from '@unicornlove/beyond-ui'
 import type { JSONContent } from '@tiptap/core'
 import { useCallback, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { H4, Image, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { ProfileFormPanel, ProfileResultCard, ProfileResultsPanel } from '../components'
 import type { ProfileWidgetProps } from './types'
@@ -155,17 +163,17 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
   const [formData, setFormData] = useState<PortfolioFormState>(() => createDefaultFormState())
 
   // Fetch portfolio items
-  const utils = api.useUtils()
-  const { data: rawPortfolioItems, isLoading } = api.portfolio.list.useQuery(
+  const queryClient = useQueryClient()
+  const { data: rawPortfolioItems, isLoading } = usePortfolioItems(
     userId ? { userId } : undefined,
     { enabled: !!userId }
   )
   const portfolioItems = parsePortfolioItems(rawPortfolioItems)
 
   // Mutations
-  const createMutation = api.portfolio.create.useMutation({
+  const createMutation = useCreatePortfolioItemMutation({
     onSuccess: () => {
-      utils.portfolio.list.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'portfolio', 'list'] })
       setIsAdding(false)
       setFormData(createDefaultFormState())
       toast.show({
@@ -182,9 +190,9 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
     },
   })
 
-  const updateMutation = api.portfolio.update.useMutation({
+  const updateMutation = useUpdatePortfolioItemMutation({
     onSuccess: () => {
-      utils.portfolio.list.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'portfolio', 'list'] })
       setEditingId(null)
       setFormData(createDefaultFormState())
       toast.show({
@@ -201,9 +209,9 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
     },
   })
 
-  const deleteMutation = api.portfolio.delete.useMutation({
+  const deleteMutation = useDeletePortfolioItemMutation({
     onSuccess: () => {
-      utils.portfolio.list.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'portfolio', 'list'] })
       toast.show({
           title: 'Portfolio Item Deleted',
           message: 'Your portfolio item has been removed.',
@@ -218,11 +226,11 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
     },
   })
 
-  const uploadImageMutation = api.portfolio.uploadImage.useMutation()
+  const uploadImageMutation = useUploadPortfolioImageMutation()
 
-  const reorderMutation = api.portfolio.reorder.useMutation({
+  const reorderMutation = useReorderPortfolioItemsMutation({
     onSuccess: () => {
-      utils.portfolio.list.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'portfolio', 'list'] })
       toast.show({
           title: 'Portfolio Reordered',
           message: 'Your portfolio items have been reordered.',

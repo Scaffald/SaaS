@@ -367,6 +367,19 @@ export type {
   OccupationStatus,
 } from './resources/onet.js'
 
+export type {
+  PortfolioItem,
+  ListPortfolioItemsParams,
+  CreatePortfolioItemParams,
+  UpdatePortfolioItemParams,
+  DeletePortfolioItemParams,
+  DeletePortfolioItemResponse,
+  ReorderPortfolioItemsParams,
+  ReorderPortfolioItemsResponse,
+  UploadPortfolioImageParams,
+  UploadPortfolioImageResponse,
+} from './resources/portfolio.js'
+
 export {
   OAuthClient,
   type OAuthConfig,

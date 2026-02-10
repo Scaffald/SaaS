@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { usePortfolioItems } from '@scf/core/utils/portfolio-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, ResponsiveModal } from '@unicornlove/beyond-ui'
 import { Eye } from 'lucide-react-native'
@@ -30,7 +30,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
   // Fetch portfolio items
-  const { data: portfolioItems = [], isLoading } = api.portfolio.list.useQuery(
+  const { data: portfolioItems = [], isLoading } = usePortfolioItems(
     userId ? { userId } : undefined,
     { enabled: !!userId }
   )
