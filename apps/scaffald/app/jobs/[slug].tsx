@@ -2,9 +2,9 @@ import { DashboardLayout } from '@scf/core/components/layouts'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@scf/core/features/discover/discover-job-detail-screen'
 import { useJobBySlug } from '@scf/core/utils/useJobBySlug'
-import type { BreadcrumbItem } from '@unicornlove/ui'
+import type { BreadcrumbItem } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams } from 'expo-router'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Public Job Detail Route (Vanity URL)
@@ -35,12 +35,12 @@ export default function PublicJobDetailPage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
+          <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
             <Spinner size="large" />
             <Text marginTop="$4" color="$color10">
               Loading job...
             </Text>
-          </YStack>
+          </Stack>
         }
         rightContent={null}
       />
@@ -53,14 +53,14 @@ export default function PublicJobDetailPage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack alignItems="center" justifyContent="center" style={{ minHeight: 400 }} gap="$4">
+          <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }} gap="$4">
             <Text fontSize="$6" fontWeight="bold" color="$color11">
               Job Not Found
             </Text>
             <Text color="$color10" style={{ textAlign: 'center' }}>
               The job you're looking for doesn't exist, is no longer available, or has been removed.
             </Text>
-          </YStack>
+          </Stack>
         }
         rightContent={null}
       />

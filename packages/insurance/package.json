@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@tamagui/lucide-icons": "catalog:",
-    "@unicornlove/ui": "workspace:*",
+    "@unicornlove/beyond-ui": "workspace:*",
     "tamagui": "catalog:"
   },
   "devDependencies": {

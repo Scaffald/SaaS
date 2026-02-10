@@ -2,7 +2,7 @@ import { RouteBuilder } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
 import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from '@tamagui/lucide-icons'
 import { useLocalSearchParams } from 'expo-router'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -11,34 +11,34 @@ export default function ProjectDetailPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
+      <Stack flex={1} padding="$4" gap="$4">
         <Text fontSize="$8" fontWeight="600">
           Project Not Found
         </Text>
         <Text>Project ID is required</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (isLoading) {
     return (
-      <YStack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
+      <Stack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
         <Text fontSize="$8" fontWeight="600">
           Loading Project...
         </Text>
         <Spinner />
-      </YStack>
+      </Stack>
     )
   }
 
   if (!data?.project) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
+      <Stack flex={1} padding="$4" gap="$4">
         <Text fontSize="$8" fontWeight="600">
           Project Not Found
         </Text>
         <Text>Project not found</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -99,8 +99,8 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <YStack gap="$2">
+    <Stack flex={1} padding="$4" gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="600">
           {project.name}
         </Text>
@@ -109,12 +109,12 @@ export default function ProjectDetailPage() {
             {project.description}
           </Text>
         )}
-      </YStack>
-      <YStack gap="$4">
+      </Stack>
+      <Stack gap="$4">
         {/* Project Info */}
         <Card padding="$4">
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$4">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$8" fontWeight="600">
                 {project.name}
               </Text>
@@ -123,46 +123,44 @@ export default function ProjectDetailPage() {
                   // Navigate to edit page
                   window.location.href = RouteBuilder.projectEdit(project.id)
                 }}
-              >
-                Edit
-              </Button>
-            </XStack>
+              >Edit</Button>
+            </Row>
 
             {project.description && <Text>{project.description}</Text>}
 
-            <XStack gap="$4" flexWrap="wrap">
-              <YStack gap="$1">
+            <Row gap="$4" flexWrap="wrap">
+              <Stack gap="$1">
                 <Text fontSize="$2" color="$gray10">
                   Status
                 </Text>
                 <Text fontWeight="600">
                   {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
                 </Text>
-              </YStack>
+              </Stack>
 
               {project.start_date && (
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Text fontSize="$2" color="$gray10">
                     Start Date
                   </Text>
                   <Text fontWeight="600">{project.start_date}</Text>
-                </YStack>
+                </Stack>
               )}
 
               {project.end_date && (
-                <YStack gap="$1">
+                <Stack gap="$1">
                   <Text fontSize="$2" color="$gray10">
                     End Date
                   </Text>
                   <Text fontWeight="600">{project.end_date}</Text>
-                </YStack>
+                </Stack>
               )}
 
-              <YStack gap="$1">
+              <Stack gap="$1">
                 <Text fontSize="$2" color="$gray10">
                   Location Visibility
                 </Text>
-                <XStack gap="$2" alignItems="center">
+                <Row gap="$2" alignItems="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                   <Text fontWeight="600">{getVisibilityLabel(project.location_visibility)}</Text>
                   {project.location_visibility_override && (
@@ -170,30 +168,30 @@ export default function ProjectDetailPage() {
                       (Override)
                     </Text>
                   )}
-                </XStack>
-              </YStack>
-            </XStack>
-          </YStack>
+                </Row>
+              </Stack>
+            </Row>
+          </Stack>
         </Card>
 
         {/* Location Section */}
         <Card padding="$4">
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$4">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$6" fontWeight="600">
                 Location
               </Text>
               <Button size="$2" icon={Plus}>
                 Add Site
               </Button>
-            </XStack>
+            </Row>
 
             {sites.length === 0 && addresses.length === 0 ? (
               <Text color="$gray10">No location data added yet</Text>
             ) : (
-              <YStack gap="$4">
+              <Stack gap="$4">
                 {sites.length > 0 && (
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Text fontWeight="600">Site Boundaries</Text>
                     {sites.map((ps: (typeof sites)[0]) => (
                       <Card key={ps.id} padding="$2" backgroundColor="$gray2">
@@ -207,11 +205,11 @@ export default function ProjectDetailPage() {
                         )}
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
 
                 {addresses.length > 0 && (
-                  <YStack gap="$2">
+                  <Stack gap="$2">
                     <Text fontWeight="600">Property Addresses</Text>
                     {addresses.map((pa: (typeof addresses)[0]) => (
                       <Card key={pa.id} padding="$2" backgroundColor="$gray2">
@@ -228,46 +226,46 @@ export default function ProjectDetailPage() {
                         )}
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
 
                 {/* TODO: Add Mapbox map display here */}
                 <Text fontSize="$2" color="$gray10" fontStyle="italic">
                   Map display coming soon - will show site boundaries and address pins
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Card>
 
         {/* Workers Section */}
         <Card padding="$4">
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
+          <Stack gap="$4">
+            <Row justifyContent="space-between" alignItems="center">
               <Text fontSize="$6" fontWeight="600">
                 Workers
               </Text>
               <Button size="$2" icon={Plus}>
                 Add Worker
               </Button>
-            </XStack>
+            </Row>
 
             {workers.length === 0 ? (
               <Text color="$gray10">No workers assigned yet</Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap="$2">
                 {workers.map((worker: (typeof workers)[0]) => {
                   const StatusIcon = getWorkerStatusIcon(worker.status)
                   const statusColor = getWorkerStatusColor(worker.status)
 
                   return (
                     <Card key={worker.id} padding="$3" backgroundColor="$gray2">
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <YStack gap="$1" flex={1}>
-                          <XStack gap="$2" alignItems="center">
+                      <Row justifyContent="space-between" alignItems="center">
+                        <Stack gap="$1" flex={1}>
+                          <Row gap="$2" alignItems="center">
                             <StatusIcon size={16} color={statusColor} />
                             <Text fontWeight="600">Worker {worker.user_id?.slice(0, 8)}</Text>
-                          </XStack>
+                          </Row>
                           {worker.role_on_project && (
                             <Text fontSize="$2" color="$gray10">
                               Role: {worker.role_on_project}
@@ -288,9 +286,9 @@ export default function ProjectDetailPage() {
                               Assigned by manager
                             </Text>
                           )}
-                        </YStack>
+                        </Stack>
                         {worker.status === 'pending' && (
-                          <XStack gap="$2">
+                          <Row gap="$2">
                             <Button
                               size="$2"
                               backgroundColor="$green9"
@@ -299,9 +297,7 @@ export default function ProjectDetailPage() {
                                 // TODO: Implement approve
                                 console.log('Approve worker', worker.id)
                               }}
-                            >
-                              Approve
-                            </Button>
+                            >Approve</Button>
                             <Button
                               size="$2"
                               backgroundColor="$red9"
@@ -310,16 +306,14 @@ export default function ProjectDetailPage() {
                                 // TODO: Implement reject
                                 console.log('Reject worker', worker.id)
                               }}
-                            >
-                              Reject
-                            </Button>
-                          </XStack>
+                            >Reject</Button>
+                          </Row>
                         )}
-                      </XStack>
+                      </Row>
                     </Card>
                   )
                 })}
-              </YStack>
+              </Stack>
             )}
 
             {/* Claim Work Button for current user */}
@@ -329,12 +323,10 @@ export default function ProjectDetailPage() {
                 // TODO: Implement claim work
                 console.log('Claim work on project', project.id)
               }}
-            >
-              Claim I Worked Here
-            </Button>
-          </YStack>
+            >Claim I Worked Here</Button>
+          </Stack>
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

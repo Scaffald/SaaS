@@ -3,7 +3,7 @@ import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useOfficeRouteProtection } from '@scf/core/utils/auth/useOfficeRouteProtection'
 import { useRoleProtectedRoute } from '@scf/core/utils/auth/useRoleProtectedRoute'
 import { Drawer } from 'expo-router/drawer'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 export default function OfficeLayout() {
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])
@@ -12,10 +12,10 @@ export default function OfficeLayout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center">
+      <Stack flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
         <Text marginTop="$4">Loading...</Text>
-      </YStack>
+      </Stack>
     )
   }
 

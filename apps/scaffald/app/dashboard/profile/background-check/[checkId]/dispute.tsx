@@ -3,10 +3,11 @@ import { api } from '@scf/core/utils/api'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Stack as ExpoStack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
+import { ScrollView } from 'react-native'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Row, Spinner, Stack, Text } from '@unicornlove/beyond-ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckSummary = RouterOutputs['backgroundChecks']['listChecks'][number]
@@ -37,69 +38,77 @@ export default function BackgroundCheckDisputeScreen() {
 
   return (
     <>
-      <Stack.Screen
+      <ExpoStack.Screen
         options={{
           headerShown: false,
           title: 'Dispute background check',
         }}
       />
       <SafeAreaView style={{ flex: 1, paddingTop: insets.top }}>
-        <ScrollView flex={1}>
-          <YStack flex={1} gap="$4" padding="$4">
+        <ScrollView style={{ flex: 1 }}>
+          <Stack flex={1} gap={16} padding={16}>
             {checksQuery.isLoading && (
-              <YStack gap="$3" alignItems="center" paddingVertical="$6">
-                <Spinner size="large" color="$color11" />
-                <Text fontSize="$3" color="$color11">
+              <Stack gap={12} align="center" paddingVertical={24}>
+                <Spinner size="large" color="secondary" />
+                <Text size="sm" color="secondary">
                   Loading background checks…
                 </Text>
-              </YStack>
+              </Stack>
             )}
 
             {checksQuery.isError && (
-              <YStack
-                gap="$3"
-                padding="$4"
-                backgroundColor="$color2"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$borderColor"
+              <Stack
+                gap={12}
+                padding={16}
+                backgroundColor="#f3f4f6"
+                borderRadius={8}
+                style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
               >
-                <Text fontSize="$3" color="$color11">
-                  We couldn’t load your background checks. Please try again.
+                <Text size="sm" color="secondary">
+                  We couldn't load your background checks. Please try again.
                 </Text>
-                <Button size="$3" variant="outlined" onPress={() => checksQuery.refetch()}>
-                  <XStack gap="$2" alignItems="center">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  color="blue"
+                  onPress={() => checksQuery.refetch()}
+                >
+                  <Row gap={8} align="center">
                     <RefreshCcw size={16} />
-                    <Text fontSize="$2">Retry</Text>
-                  </XStack>
+                    <Text size="sm">Retry</Text>
+                  </Row>
                 </Button>
-              </YStack>
+              </Stack>
             )}
 
             {!checksQuery.isLoading && !checksQuery.isError && !selectedCheck && (
-              <YStack
-                gap="$3"
-                padding="$4"
-                backgroundColor="$color2"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$borderColor"
+              <Stack
+                gap={12}
+                padding={16}
+                backgroundColor="#f3f4f6"
+                borderRadius={8}
+                style={{ borderWidth: 1, borderColor: '#e5e7eb' }}
               >
-                <Text fontSize="$3" color="$color11">
-                  We couldn’t find that background check or your access has expired.
+                <Text size="sm" color="secondary">
+                  We couldn't find that background check or your access has expired.
                 </Text>
-                <XStack gap="$2">
-                  <Button size="$3" onPress={handleClose}>
+                <Row gap={8}>
+                  <Button size="sm" variant="filled" color="blue" onPress={handleClose}>
                     Go back
                   </Button>
-                  <Button size="$3" variant="outlined" onPress={() => checksQuery.refetch()}>
-                    <XStack gap="$2" alignItems="center">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    color="blue"
+                    onPress={() => checksQuery.refetch()}
+                  >
+                    <Row gap={8} align="center">
                       <RefreshCcw size={16} />
-                      <Text fontSize="$2">Refresh</Text>
-                    </XStack>
+                      <Text size="sm">Refresh</Text>
+                    </Row>
                   </Button>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
 
             {selectedCheck && (
@@ -110,8 +119,9 @@ export default function BackgroundCheckDisputeScreen() {
                 onClose={handleClose}
                 renderHeaderAction={({ isSubmitting, isUploading }) => (
                   <Button
-                    size="$2"
-                    variant="outlined"
+                    size="sm"
+                    variant="outline"
+                    color="blue"
                     disabled={isSubmitting || isUploading}
                     onPress={handleClose}
                   >
@@ -120,7 +130,7 @@ export default function BackgroundCheckDisputeScreen() {
                 )}
               />
             )}
-          </YStack>
+          </Stack>
         </ScrollView>
       </SafeAreaView>
     </>

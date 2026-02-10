@@ -7,7 +7,7 @@ import { getResults, getScore } from '@scf/core/features/personality-assessment/
 import { api } from '@scf/core/utils/api'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Tabs, Text, YStack } from '@unicornlove/ui'
+import { Button, Tabs, Text, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Shared IPIP Results Page Route
@@ -54,17 +54,17 @@ export default function SharedIPIPResultsRoute() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center">
+      <Stack gap="$4" padding="$8" alignItems="center">
         <Text fontSize="$5" color="$color11">
           Loading shared results...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error || !sharedResults) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center">
+      <Stack gap="$4" padding="$8" alignItems="center">
         <Text fontSize="$5" color="$red10" fontWeight="600">
           {error?.message || 'Results Not Found'}
         </Text>
@@ -72,21 +72,21 @@ export default function SharedIPIPResultsRoute() {
           This share link may be invalid, expired, or revoked.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.path)}>Return to Dashboard</Button>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$6" width="100%" padding="$4" style={{ alignSelf: 'center', maxWidth: 1000 }}>
+    <Stack gap="$6" width="100%" padding="$4" style={{ alignSelf: 'center', maxWidth: 1000 }}>
       {/* Header */}
-      <YStack gap="$2">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
           Shared Personality Results
         </Text>
         <Text fontSize="$4" color="$color11">
           Viewing shared Big Five personality assessment results.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Tab Navigation */}
       <Tabs
@@ -96,7 +96,7 @@ export default function SharedIPIPResultsRoute() {
         flexDirection="column"
       >
         <Tabs.List
-          separator={<YStack width="$1" />}
+          separator={<Stack width="$1" />}
           disablePassBorderRadius="bottom"
           aria-label="Manage your personality results view"
         >
@@ -113,7 +113,7 @@ export default function SharedIPIPResultsRoute() {
         </Tabs.List>
 
         <Tabs.Content value="narrative" padding="$4">
-          <YStack
+          <Stack
             backgroundColor="$color1"
             borderRadius="$4"
             borderWidth={1}
@@ -129,17 +129,17 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <YStack alignItems="center" padding="$4">
+              <Stack alignItems="center" padding="$4">
                 <Text fontSize="$4" color="$color11">
                   Processing results...
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Tabs.Content>
 
         <Tabs.Content value="chart" padding="$4">
-          <YStack
+          <Stack
             backgroundColor="$color1"
             borderRadius="$4"
             borderWidth={1}
@@ -163,15 +163,15 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <YStack alignItems="center" padding="$4">
+              <Stack alignItems="center" padding="$4">
                 <Text fontSize="$4" color="$color11">
                   Processing results...
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Tabs.Content>
       </Tabs>
-    </YStack>
+    </Stack>
   )
 }

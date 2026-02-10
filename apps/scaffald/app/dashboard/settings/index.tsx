@@ -2,12 +2,23 @@ import { SiteOverlapNotification } from '@scf/core/features/notifications/compon
 import { AccountDeletionPanel } from '@scf/core/features/profile/components/AccountDeletionPanel'
 import { api } from '@scf/core/utils/api'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
-import { Button, NotificationTag, ToggleSwitch } from '@unicornlove/ui'
+import {
+  Button,
+  NotificationTag,
+  Toggle,
+  Input,
+  Label,
+  Separator,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { Input, Label, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView } from 'react-native'
 
 type NotificationItem = {
   id: string
@@ -258,17 +269,17 @@ export default function NotificationsCenterScreen() {
 
   return (
     <ScrollView paddingHorizontal="$6" paddingVertical="$6">
-      <YStack gap="$6">
-        <YStack gap="$2">
+      <Stack gap="$6">
+        <Stack gap="$2">
           <Text fontSize="$9" fontWeight="700">
             Notifications
           </Text>
           <Text fontSize="$3" color="$color10">
             Stay up to date with applications, opportunities, and platform updates.
           </Text>
-        </YStack>
+        </Stack>
 
-        <YStack
+        <Stack
           gap="$4"
           borderWidth={1}
           borderColor="$borderColor"
@@ -276,15 +287,15 @@ export default function NotificationsCenterScreen() {
           padding="$4"
           backgroundColor="$color1"
         >
-          <XStack justifyContent="space-between" alignItems="center">
-            <YStack gap="$1">
+          <Row justifyContent="space-between" alignItems="center">
+            <Stack gap="$1">
               <Text fontSize="$6" fontWeight="600">
                 Preferences
               </Text>
               <Text fontSize="$3" color="$color10">
                 Control how and when we reach you.
               </Text>
-            </YStack>
+            </Stack>
             <Button
               variant="primary"
               size="$2"
@@ -293,12 +304,12 @@ export default function NotificationsCenterScreen() {
             >
               {savePreferencesMutation.isPending ? 'Saving…' : 'Save changes'}
             </Button>
-          </XStack>
+          </Row>
 
           <Separator backgroundColor="$color3" />
 
-          <YStack gap="$3">
-            <XStack alignItems="center" justifyContent="space-between">
+          <Stack gap="$3">
+            <Row alignItems="center" justifyContent="space-between">
               <Label
                 color="$color12"
                 fontWeight="600"
@@ -311,16 +322,16 @@ export default function NotificationsCenterScreen() {
               >
                 Enable notifications
               </Label>
-              <ToggleSwitch
+              <Toggle
                 checked={preferences.globalEnabled}
-                onCheckedChange={(value) =>
+                onChange={(value) =>
                   setPreferences((prev) => ({ ...prev, globalEnabled: value }))
                 }
                 aria-label="Enable notifications"
               />
-            </XStack>
+            </Row>
 
-            <YStack gap="$2" paddingLeft="$2">
+            <Stack gap="$2" paddingLeft="$2">
               {(
                 [
                   { key: 'in_app', label: 'In-app' },
@@ -329,7 +340,7 @@ export default function NotificationsCenterScreen() {
                   { key: 'sms', label: 'SMS' },
                 ] as const
               ).map(({ key, label }) => (
-                <XStack key={key} alignItems="center" justifyContent="space-between">
+                <Row key={key} alignItems="center" justifyContent="space-between">
                   <Label
                     color="$color11"
                     onPress={() =>
@@ -344,9 +355,9 @@ export default function NotificationsCenterScreen() {
                   >
                     {label}
                   </Label>
-                  <ToggleSwitch
+                  <Toggle
                     checked={preferences.channelEnabled[key]}
-                    onCheckedChange={(value) =>
+                    onChange={(value) =>
                       setPreferences((prev) => ({
                         ...prev,
                         channelEnabled: { ...prev.channelEnabled, [key]: value },
@@ -354,20 +365,20 @@ export default function NotificationsCenterScreen() {
                     }
                     aria-label={`Enable ${label} notifications`}
                   />
-                </XStack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
 
             <Separator backgroundColor="$color3" />
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600" color="$color12">
                 Quiet hours
               </Text>
               <Text fontSize="$2" color="$color10">
                 We’ll queue non-critical alerts during these hours.
               </Text>
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Input
                   placeholder="22:00"
                   value={preferences.quietHours?.start ?? ''}
@@ -397,16 +408,16 @@ export default function NotificationsCenterScreen() {
                 >
                   Clear
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
             <Separator backgroundColor="$color3" />
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600" color="$color12">
                 Digest frequency
               </Text>
-              <XStack gap="$2" flexWrap="wrap">
+              <Row gap="$2" flexWrap="wrap">
                 {(
                   [
                     { label: 'Immediate', value: 'immediate' },
@@ -434,8 +445,8 @@ export default function NotificationsCenterScreen() {
                     </Button>
                   )
                 })}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
             {savePreferencesMutation.isSuccess && (
               <Text fontSize="$2" color="$green10">
@@ -447,33 +458,33 @@ export default function NotificationsCenterScreen() {
                 Failed to save preferences.
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           <Separator backgroundColor="$color3" />
 
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600" color="$color12">
               Registered devices
             </Text>
             {devicesQuery.isLoading ? (
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Spinner size="small" color="$color10" />
                 <Text fontSize="$2" color="$color10">
                   Checking devices…
                 </Text>
-              </XStack>
+              </Row>
             ) : deviceRows.length === 0 ? (
               <Text fontSize="$2" color="$color10">
                 No devices registered yet.
               </Text>
             ) : (
-              <YStack
+              <Stack
                 borderWidth={1}
                 borderColor="$borderColor"
                 borderRadius="$3"
                 overflow="hidden"
               >
-                <XStack backgroundColor="$color2" padding="$2">
+                <Row backgroundColor="$color2" padding="$2">
                   <Text flex={2} fontSize="$2" fontWeight="600">
                     Token
                   </Text>
@@ -483,9 +494,9 @@ export default function NotificationsCenterScreen() {
                   <Text flex={1} fontSize="$2" fontWeight="600">
                     Last seen
                   </Text>
-                </XStack>
+                </Row>
                 {deviceRows.map((device, index) => (
-                  <XStack
+                  <Row
                     key={device.id}
                     padding="$2"
                     backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
@@ -502,14 +513,14 @@ export default function NotificationsCenterScreen() {
                         device.last_seen_at ?? device.updated_at ?? device.created_at ?? null
                       )}
                     </Text>
-                  </XStack>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
-        <XStack gap="$3" flexWrap="wrap">
+        <Row gap="$3" flexWrap="wrap">
           {FILTERS.map((item) => {
             const isActive = filter === item.value
 
@@ -532,15 +543,15 @@ export default function NotificationsCenterScreen() {
               </Button>
             )
           })}
-        </XStack>
+        </Row>
 
         {notificationsQuery.isLoading ? (
-          <YStack gap="$3" alignItems="center" marginTop="$4">
+          <Stack gap="$3" alignItems="center" marginTop="$4">
             <Spinner size="large" color="$color10" />
             <Text color="$color11">Loading notifications…</Text>
-          </YStack>
+          </Stack>
         ) : isEmpty ? (
-          <YStack gap="$3" alignItems="center" marginTop="$5">
+          <Stack gap="$3" alignItems="center" marginTop="$5">
             <Info size={48} color="$color8" />
             <Text fontSize="$5" fontWeight="600" color="$color12">
               You're all caught up!
@@ -548,9 +559,9 @@ export default function NotificationsCenterScreen() {
             <Text fontSize="$3" color="$color10" textAlign="center">
               New alerts will show up here when there's something you need to review.
             </Text>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap="$2">
             {notifications.map((notification, _index) => {
               const IconComponent = getSeverityIcon(notification.severity) as ComponentType<{
                 size?: number
@@ -559,17 +570,17 @@ export default function NotificationsCenterScreen() {
               const severityTheme = getSeverityTheme(notification.severity)
 
               return (
-                <YStack
+                <Stack
                   key={notification.id}
                   borderWidth={1}
                   borderColor="$borderColor"
                   borderRadius="$4"
                   backgroundColor="$color1"
                 >
-                  <XStack padding="$4" gap="$3" alignItems="flex-start">
+                  <Row padding="$4" gap="$3" alignItems="flex-start">
                     <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
-                    <YStack flex={1} gap="$2">
-                      <XStack justifyContent="space-between" alignItems="center">
+                    <Stack flex={1} gap="$2">
+                      <Row justifyContent="space-between" alignItems="center">
                         <Text fontSize="$4" fontWeight="700" color="$color12">
                           {notification.title}
                         </Text>
@@ -580,11 +591,11 @@ export default function NotificationsCenterScreen() {
                         >
                           {notification.severity.toUpperCase()}
                         </NotificationTag>
-                      </XStack>
+                      </Row>
                       <Text fontSize="$3" color="$color11">
                         {notification.preview}
                       </Text>
-                      <XStack gap="$3" alignItems="center">
+                      <Row gap="$3" alignItems="center">
                         <Text fontSize="$2" color="$color10">
                           {formatRelativeTime(notification.createdAt)}
                         </Text>
@@ -593,9 +604,9 @@ export default function NotificationsCenterScreen() {
                             {notification.channels.join(', ')}
                           </NotificationTag>
                         )}
-                      </XStack>
-                    </YStack>
-                  </XStack>
+                      </Row>
+                    </Stack>
+                  </Row>
 
                   <Separator backgroundColor="$color3" />
 
@@ -603,7 +614,7 @@ export default function NotificationsCenterScreen() {
                   {notification.metadata?.notification_type === 'site_overlap' &&
                   notification.metadata?.site_id &&
                   notification.metadata?.overlapping_site_id ? (
-                    <XStack padding="$3">
+                    <Row padding="$3">
                       <SiteOverlapNotification
                         notificationId={notification.id}
                         siteId={notification.metadata.site_id}
@@ -614,9 +625,9 @@ export default function NotificationsCenterScreen() {
                           archiveMutation.mutate({ ids: [id] })
                         }}
                       />
-                    </XStack>
+                    </Row>
                   ) : (
-                    <XStack padding="$3" gap="$3" justifyContent="flex-end" flexWrap="wrap">
+                    <Row padding="$3" gap="$3" justifyContent="flex-end" flexWrap="wrap">
                       {!notification.read ? (
                         <Button
                           size="$2"
@@ -655,17 +666,17 @@ export default function NotificationsCenterScreen() {
 
                       {notification.ctaUrl && (
                         <Button size="$2" theme="info" onPress={() => handleNavigate(notification)}>
-                          <XStack gap="$2" alignItems="center">
+                          <Row gap="$2" alignItems="center">
                             <Text fontSize="$2" fontWeight="600" color="$color12">
                               {notification.ctaLabel ?? 'Open'}
                             </Text>
                             <ExternalLink size={16} color="#ffffff" />
-                          </XStack>
+                          </Row>
                         </Button>
                       )}
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
+                </Stack>
               )
             })}
 
@@ -679,11 +690,11 @@ export default function NotificationsCenterScreen() {
                 {notificationsQuery.isFetchingNextPage ? 'Loading…' : 'Load more'}
               </Button>
             )}
-          </YStack>
+          </Stack>
         )}
 
         <AccountDeletionPanel />
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

@@ -15,7 +15,7 @@ import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -147,7 +147,7 @@ export default function DashboardTeamDetailPage() {
   }
 
   const overviewActions = (
-    <XStack gap="$2" flexWrap="wrap">
+    <Row gap="$2" flexWrap="wrap">
       <Button
         size="$2"
         variant="outlined"
@@ -166,14 +166,14 @@ export default function DashboardTeamDetailPage() {
       >
         Invite member
       </Button>
-    </XStack>
+    </Row>
   )
 
   const mainContent = isLoading ? (
-    <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
+    <Stack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
       <Spinner size="large" />
       <Text color="$color11">Loading team details…</Text>
-    </YStack>
+    </Stack>
   ) : hasError ? (
     <ErrorCard
       title="Unable to load team"
@@ -182,7 +182,7 @@ export default function DashboardTeamDetailPage() {
       onAction={handleRefresh}
     />
   ) : team ? (
-    <YStack gap="$4">
+    <Stack gap="$4">
       <TeamOverviewCard team={team} stats={overviewStats} actions={overviewActions} />
 
       <Card
@@ -260,7 +260,7 @@ export default function DashboardTeamDetailPage() {
           }
         />
       </Card>
-    </YStack>
+    </Stack>
   ) : (
     <ErrorCard
       title="Team not found"
@@ -314,12 +314,12 @@ function ErrorCard({
       gap="$3"
       backgroundColor="$color2"
     >
-      <XStack gap="$2" alignItems="center">
+      <Row gap="$2" alignItems="center">
         <AlertTriangle size={20} color="$yellow10" />
         <Text fontSize="$6" fontWeight="700">
           {title}
         </Text>
-      </XStack>
+      </Row>
       <Text color="$color11">{message}</Text>
       <Button size="$3" onPress={onAction}>
         {actionLabel}

@@ -8,7 +8,7 @@ import {
 import { api } from '@scf/core/utils/api'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Button, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Paragraph, Row, Spinner, Stack, Text } from '@unicornlove/beyond-ui'
 
 function ResumeImportContent() {
   const router = useRouter()
@@ -30,61 +30,62 @@ function ResumeImportContent() {
   const hasUploaded = data?.hasUploaded ?? false
 
   return (
-    <YStack gap="$6" padding="$4">
+    <Stack gap={24} padding={16}>
       <ResumeUploadModal
         open={modalOpen}
         onOpenChange={setModalOpen}
         onUploadComplete={handleResumeUploadComplete}
       />
 
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="700">
+      <Stack gap={8}>
+        <Text size="xl" weight="bold">
           Import Your Resume
         </Text>
-        <Paragraph size="$4" color="$color11">
+        <Paragraph size="md" color="secondary">
           Upload a PDF or Word document (max 1MB) to automatically populate your experience,
-          education, skills, and preferences. You’ll confirm everything before it’s saved to your
+          education, skills, and preferences. You'll confirm everything before it's saved to your
           profile.
         </Paragraph>
-      </YStack>
+      </Stack>
 
       {isLoading ? (
-        <YStack gap="$2" alignItems="center" paddingVertical="$6">
+        <Stack gap={8} align="center" paddingVertical={24}>
           <Spinner size="large" />
-          <Text color="$color11">Checking for existing uploads...</Text>
-        </YStack>
+          <Text color="secondary">Checking for existing uploads...</Text>
+        </Stack>
       ) : hasUploaded ? (
-        <YStack gap="$3" backgroundColor="$green3" padding="$4" borderRadius="$4">
-          <Text fontWeight="700" color="$green11">
-            You’ve already uploaded a resume.
+        <Stack gap={12} backgroundColor="#d1fae5" padding={16} borderRadius={8}>
+          <Text weight="bold" color="#065f46">
+            You've already uploaded a resume.
           </Text>
-          <Text color="$green11">
+          <Text color="#065f46">
             Head over to the review wizard to finish importing the details or upload a new resume to
             replace it.
           </Text>
-          <XStack gap="$2">
+          <Row gap={8}>
             <Button
-              size="$4"
-              theme="blue"
+              size="md"
+              variant="filled"
+              color="blue"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path)}
             >
               Continue Review
             </Button>
             <ResumeUploadButton
               onPress={() => setModalOpen(true)}
-              size="$4"
+              size="md"
               label="Upload New Resume"
             />
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       ) : (
-        <YStack gap="$3">
-          <ResumeUploadButton onPress={() => setModalOpen(true)} size="$4" />
-          <Text color="$color11">Or use the dashboard widget to import from your home screen:</Text>
+        <Stack gap={12}>
+          <ResumeUploadButton onPress={() => setModalOpen(true)} size="md" />
+          <Text color="secondary">Or use the dashboard widget to import from your home screen:</Text>
           <ResumeImportWidget />
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }
 

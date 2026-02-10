@@ -6,7 +6,8 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { ArrowLeft } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView } from 'react-native'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -47,10 +48,10 @@ export default function OfficeTeamSettingsPage() {
 
   if ((isLoading || isFetching) && !teamData?.team) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text color="$color11">Loading team settings…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -76,17 +77,15 @@ export default function OfficeTeamSettingsPage() {
 
   return (
     <ScrollView>
-      <YStack flex={1} gap="$6" padding="$4">
-        <XStack>
+      <Stack flex={1} gap="$6" padding="$4">
+        <Row>
           <Button
             size="$2"
             variant="outlined"
             icon={ArrowLeft}
             onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
-          >
-            Back to teams
-          </Button>
-        </XStack>
+          >Back to teams</Button>
+        </Row>
 
         {team.isArchived ? (
           <Card
@@ -110,7 +109,7 @@ export default function OfficeTeamSettingsPage() {
           fallbackRoleId={fallbackRoleId}
           canEdit={canEdit}
         />
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }
@@ -127,7 +126,7 @@ function CenteredMessage({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+    <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
       <Card
         padding="$4"
         borderWidth={1}
@@ -141,6 +140,6 @@ function CenteredMessage({
         <Text color="$color11">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

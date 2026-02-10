@@ -1,14 +1,24 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ControlledAddressForm } from '@scf/core/forms'
 import { api } from '@scf/core/utils/api'
-import { Button, CustomCheckbox, ResponsiveSelect, spacing } from '@unicornlove/ui'
+import {
+  Button,
+  Checkbox,
+  ResponsiveSelect,
+  spacing,
+  Input,
+  Separator,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from '@unicornlove/beyond-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable, ScrollView } from 'react-native'
-import { Input, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
@@ -131,7 +141,7 @@ export default function OnboardingPage() {
 
   return (
     <ScrollView>
-      <YStack
+      <Stack
         flex={1}
         justifyContent="center"
         alignItems="center"
@@ -139,7 +149,7 @@ export default function OnboardingPage() {
         paddingVertical="$8"
         minHeight="100vh"
       >
-        <YStack
+        <Stack
           maxWidth={600}
           width="100%"
           gap={spacing.md}
@@ -149,26 +159,26 @@ export default function OnboardingPage() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <YStack gap={spacing.xs}>
+          <Stack gap={spacing.xs}>
             <Text fontSize="$8" fontWeight="bold" color="$color12">
               Complete Your Profile
             </Text>
             <Text fontSize="$4" color="$color11">
               Please complete these required fields to continue using Scaffald
             </Text>
-          </YStack>
+          </Stack>
 
           {isCheckingStatus ? (
-            <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
+            <Stack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
               <Spinner size="large" color="$blue7" />
               <Text color="$color11">Loading...</Text>
-            </YStack>
+            </Stack>
           ) : (
             <>
               {/* 1. Name Fields */}
-              <YStack gap="$3">
-                <XStack gap="$3">
-                  <YStack gap="$2" flex={1}>
+              <Stack gap="$3">
+                <Row gap="$3">
+                  <Stack gap="$2" flex={1}>
                     <Text fontWeight="600">First Name *</Text>
                     <Controller
                       name="first_name"
@@ -187,9 +197,9 @@ export default function OnboardingPage() {
                         {errors.first_name.message}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$2" flex={1}>
+                  <Stack gap="$2" flex={1}>
                     <Text fontWeight="600">Last Name *</Text>
                     <Controller
                       name="last_name"
@@ -208,14 +218,14 @@ export default function OnboardingPage() {
                         {errors.last_name.message}
                       </Text>
                     )}
-                  </YStack>
-                </XStack>
-              </YStack>
+                  </Stack>
+                </Row>
+              </Stack>
 
               <Separator />
 
               {/* 2. Address */}
-              <YStack gap="$3">
+              <Stack gap="$3">
                 <Text fontWeight="600">Address *</Text>
                 <Text fontSize="$2" color="$color11" marginBottom="$2">
                   Search and select your home address
@@ -236,23 +246,23 @@ export default function OnboardingPage() {
                       errors.address.zip?.message}
                   </Text>
                 )}
-              </YStack>
+              </Stack>
 
               <Separator />
 
               {/* 3. User Types */}
-              <YStack gap="$3">
+              <Stack gap="$3">
                 <Text fontWeight="600">I am a (select all that apply) *</Text>
                 <Controller
                   name="user_types"
                   control={control}
                   render={({ field }) => (
-                    <YStack gap="$2">
+                    <Stack gap="$2">
                       {USER_TYPE_OPTIONS.map((option) => (
-                        <XStack key={option.value} gap="$3" alignItems="center">
-                          <CustomCheckbox
+                        <Row key={option.value} gap="$3" alignItems="center">
+                          <Checkbox
                             checked={field.value?.includes(option.value as UserType)}
-                            onCheckedChange={(checked: boolean) => {
+                            onChange={(checked: boolean) => {
                               const currentTypes = field.value || []
                               const newValue = checked
                                 ? [...currentTypes, option.value]
@@ -260,9 +270,7 @@ export default function OnboardingPage() {
                               // Use setValue with shouldValidate: false to prevent form-wide validation
                               setValue('user_types', newValue, { shouldValidate: false })
                             }}
-                            size="medium"
-                            testID={`checkbox-user-type-${option.value}`}
-                            ariaLabelledBy={`checkbox-user-type-${option.value}-label`}
+                            size="md"
                           />
                           <Pressable
                             onPress={() => {
@@ -285,9 +293,9 @@ export default function OnboardingPage() {
                               {option.label}
                             </Text>
                           </Pressable>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
+                    </Stack>
                   )}
                 />
                 {errors.user_types && (
@@ -295,23 +303,23 @@ export default function OnboardingPage() {
                     {errors.user_types.message}
                   </Text>
                 )}
-              </YStack>
+              </Stack>
 
               <Separator />
 
               {/* 4. Primary Industry */}
-              <YStack gap="$3">
+              <Stack gap="$3">
                 <Text fontWeight="600">Primary Industry *</Text>
                 <Controller
                   name="industry_id"
                   control={control}
                   render={({ field }) => (
-                    <YStack gap="$2">
+                    <Stack gap="$2">
                       {isLoadingIndustries ? (
-                        <XStack gap="$2" alignItems="center">
+                        <Row gap="$2" alignItems="center">
                           <Spinner size="small" />
                           <Text color="$color11">Loading industries...</Text>
-                        </XStack>
+                        </Row>
                       ) : industriesData?.industries && industriesData.industries.length > 0 ? (
                         <ResponsiveSelect
                           value={field.value || ''}
@@ -329,7 +337,7 @@ export default function OnboardingPage() {
                           No industries available
                         </Text>
                       )}
-                    </YStack>
+                    </Stack>
                   )}
                 />
                 {errors.industry_id && (
@@ -337,12 +345,12 @@ export default function OnboardingPage() {
                     {errors.industry_id.message}
                   </Text>
                 )}
-              </YStack>
+              </Stack>
 
               <Separator />
 
               {/* 5. Legal Agreements */}
-              <YStack gap="$3">
+              <Stack gap="$3">
                 <Text fontWeight="600">Legal Agreements *</Text>
 
                 {/* Privacy Policy */}
@@ -350,17 +358,15 @@ export default function OnboardingPage() {
                   name="accepts_privacy_policy"
                   control={control}
                   render={({ field }) => (
-                    <YStack gap="$2">
-                      <XStack gap="$3" alignItems="center">
-                        <CustomCheckbox
+                    <Stack gap="$2">
+                      <Row gap="$3" alignItems="center">
+                        <Checkbox
                           checked={field.value}
-                          onCheckedChange={(checked) => {
+                          onChange={(checked) => {
                             // Use setValue with shouldValidate: false to prevent form-wide validation
                             setValue('accepts_privacy_policy', checked, { shouldValidate: false })
                           }}
-                          size="medium"
-                          testID="checkbox-legal-privacy-policy"
-                          ariaLabelledBy="checkbox-legal-privacy-policy-label"
+                          size="md"
                         />
                         <Pressable
                           onPress={() => {
@@ -389,13 +395,13 @@ export default function OnboardingPage() {
                             </Text>
                           </Text>
                         </Pressable>
-                      </XStack>
+                      </Row>
                       {errors.accepts_privacy_policy && (
                         <Text color="$red10" fontSize="$2">
                           {errors.accepts_privacy_policy.message}
                         </Text>
                       )}
-                    </YStack>
+                    </Stack>
                   )}
                 />
 
@@ -404,17 +410,15 @@ export default function OnboardingPage() {
                   name="accepts_terms_of_service"
                   control={control}
                   render={({ field }) => (
-                    <YStack gap="$2">
-                      <XStack gap="$3" alignItems="center">
-                        <CustomCheckbox
+                    <Stack gap="$2">
+                      <Row gap="$3" alignItems="center">
+                        <Checkbox
                           checked={field.value}
-                          onCheckedChange={(checked) => {
+                          onChange={(checked) => {
                             // Use setValue with shouldValidate: false to prevent form-wide validation
                             setValue('accepts_terms_of_service', checked, { shouldValidate: false })
                           }}
-                          size="medium"
-                          testID="checkbox-legal-terms-of-service"
-                          ariaLabelledBy="checkbox-legal-terms-of-service-label"
+                          size="md"
                         />
                         <Pressable
                           onPress={() => {
@@ -443,39 +447,33 @@ export default function OnboardingPage() {
                             </Text>
                           </Text>
                         </Pressable>
-                      </XStack>
+                      </Row>
                       {errors.accepts_terms_of_service && (
                         <Text color="$red10" fontSize="$2">
                           {errors.accepts_terms_of_service.message}
                         </Text>
                       )}
-                    </YStack>
+                    </Stack>
                   )}
                 />
-              </YStack>
+              </Stack>
 
               {/* Submit Button */}
               <Button
-                variant="primary"
+                variant="filled"
+                color="primary"
                 onPress={handleSubmit(onSubmit)}
                 disabled={isSubmitting}
-                opacity={isSubmitting ? 0.5 : 1}
-                size="$5"
-                marginTop={spacing.xs}
+                loading={isSubmitting}
+                size="lg"
+                style={{ marginTop: spacing.xs }}
               >
-                {isSubmitting ? (
-                  <XStack gap={spacing.xs} alignItems="center">
-                    <Spinner size="small" color="white" />
-                    <Button.Text>Completing...</Button.Text>
-                  </XStack>
-                ) : (
-                  <Button.Text>Complete Profile</Button.Text>
-                )}
+                {isSubmitting ? 'Completing...' : 'Complete Profile'}
               </Button>
             </>
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </ScrollView>
   )
 }

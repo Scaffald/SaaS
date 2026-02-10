@@ -11,7 +11,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { ScrollView } from 'react-native'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
 type MemberRecord = NonNullable<MembersListOutput['members']>[number]
@@ -81,10 +81,10 @@ export default function TeamAnalyticsPage() {
 
   if (teamQuery.isLoading && !team) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text color="$color11">Loading team analytics…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -105,38 +105,34 @@ export default function TeamAnalyticsPage() {
 
   return (
     <ScrollView>
-      <YStack gap="$5" padding="$4" paddingBottom="$8">
-        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-          <XStack gap="$2" alignItems="center">
+      <Stack gap="$5" padding="$4" paddingBottom="$8">
+        <Row justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
+          <Row gap="$2" alignItems="center">
             <Button
               size="$2"
               variant="outlined"
               icon={ArrowLeft}
               onPress={() => router.push(RouteBuilder.officeTeamsDetail(team.id))}
-            >
-              Back to team
-            </Button>
-            <XStack gap="$2" alignItems="center">
+            >Back to team</Button>
+            <Row gap="$2" alignItems="center">
               <BarChart3 size={20} />
-              <YStack>
+              <Stack>
                 <Text fontSize="$6" fontWeight="700">
                   {team.name ?? 'Team analytics'}
                 </Text>
                 <Text fontSize="$3" color="$color10">
                   Insights for collaboration, hiring throughput, and workload.
                 </Text>
-              </YStack>
-            </XStack>
-          </XStack>
+              </Stack>
+            </Row>
+          </Row>
 
           <Button
             size="$2"
             variant="outlined"
             onPress={() => router.push(RouteBuilder.officeTeamsSettings(team.id))}
-          >
-            Team settings
-          </Button>
-        </XStack>
+          >Team settings</Button>
+        </Row>
 
         <TeamAnalyticsSummary teamId={team.id} />
 
@@ -147,7 +143,7 @@ export default function TeamAnalyticsPage() {
           mentionOptions={mentionOptions}
           memberDirectory={memberDirectory}
         />
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }
@@ -164,7 +160,7 @@ function FallbackCard({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} alignItems="center" justifyContent="center" paddingHorizontal="$4">
+    <Stack flex={1} alignItems="center" justifyContent="center" paddingHorizontal="$4">
       <Card
         borderWidth={1}
         borderColor="$borderColor"
@@ -178,6 +174,6 @@ function FallbackCard({
         <Text color="$color11">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

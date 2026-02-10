@@ -13,7 +13,7 @@ import { api } from '@scf/core/utils/api'
 import type { DashboardBreadcrumbSegment } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo } from 'react'
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Dynamic User Profile Route
@@ -99,18 +99,18 @@ export default function UserProfilePage() {
       }}
       pageTitleDeps={[isProfileLoading, profileData, displayName, isOwnProfile]}
       leftContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           <GeneralInfoWidget userId={id} showEdit={false} />
           <ExperienceWidget userId={id} showEdit={false} />
           <EducationWidget userId={id} showEdit={false} />
-        </YStack>
+        </Stack>
       }
       rightContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           <SkillsWidget userId={id} showEdit={false} />
           <CertificationsWidget userId={id} showEdit={false} />
           <ReviewsWidget userId={id} showEdit />
-        </YStack>
+        </Stack>
       }
     />
   )

@@ -11,10 +11,10 @@ import {
 } from '@scf/core/features/profile/widgets'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { api } from '@scf/core/utils/api'
-import type { BreadcrumbItem } from '@unicornlove/ui'
+import type { BreadcrumbItem } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 /**
  * Public User Profile Route (Vanity URL)
@@ -100,12 +100,12 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
+          <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
             <Spinner size="large" />
             <Text marginTop="$4" color="$color10">
               Loading profile...
             </Text>
-          </YStack>
+          </Stack>
         }
         rightContent={null}
       />
@@ -118,14 +118,14 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack alignItems="center" justifyContent="center" style={{ minHeight: 400 }} gap="$4">
+          <Stack alignItems="center" justifyContent="center" style={{ minHeight: 400 }} gap="$4">
             <Text fontSize="$6" fontWeight="bold" color="$color11">
               Profile Not Found
             </Text>
             <Text color="$color10" style={{ textAlign: 'center' }}>
               The profile you're looking for doesn't exist or has been removed.
             </Text>
-          </YStack>
+          </Stack>
         }
         rightContent={null}
       />
@@ -147,23 +147,23 @@ export default function PublicUserProfilePage() {
     <DashboardLayout
       breadcrumbItems={breadcrumbItems}
       leftContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           <GeneralInfoWidget userId={profileData.id} showEdit={false} />
           {visibility.work_experience && (
             <ExperienceWidget userId={profileData.id} showEdit={false} />
           )}
           <WorkLogPortfolioWidget userId={profileData.id} />
           {visibility.education && <EducationWidget userId={profileData.id} showEdit={false} />}
-        </YStack>
+        </Stack>
       }
       rightContent={
-        <YStack gap="$4">
+        <Stack gap="$4">
           {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
           {visibility.certifications && (
             <CertificationsWidget userId={profileData.id} showEdit={false} />
           )}
           {visibility.reviews && <ReviewsWidget userId={profileData.id} showEdit={false} />}
-        </YStack>
+        </Stack>
       }
     />
   )

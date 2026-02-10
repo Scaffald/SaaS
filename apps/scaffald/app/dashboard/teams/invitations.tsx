@@ -6,7 +6,7 @@ import { RefreshCw } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type InvitationRespondOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['respond']
 
@@ -41,8 +41,8 @@ export default function DashboardTeamInvitationsScreen() {
   }
 
   const content = (
-    <YStack flex={1} padding="$4" gap="$5">
-      <YStack gap="$2">
+    <Stack flex={1} padding="$4" gap="$5">
+      <Stack gap="$2">
         <Text fontSize="$7" fontWeight="700">
           Team invitations
         </Text>
@@ -50,9 +50,9 @@ export default function DashboardTeamInvitationsScreen() {
           Review pending invitations from team administrators. Accept to join collaborative hiring
           spaces or decline to keep your dashboard focused.
         </Text>
-      </YStack>
+      </Stack>
 
-      <XStack gap="$2" justifyContent="flex-end">
+      <Row gap="$2" justifyContent="flex-end">
         <Button
           variant="outlined"
           size="$2"
@@ -62,13 +62,13 @@ export default function DashboardTeamInvitationsScreen() {
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
       {invitationsQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$10">
+        <Stack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$10">
           <Spinner size="large" />
           <Text color="$color11">Loading invitations…</Text>
-        </YStack>
+        </Stack>
       ) : (
         <TeamInvitationList
           invitations={invitations}
@@ -76,7 +76,7 @@ export default function DashboardTeamInvitationsScreen() {
           isProcessing={respondMutation.isPending}
         />
       )}
-    </YStack>
+    </Stack>
   )
 
   return <DashboardPage showBreadcrumb={false} pageTitle="Team invitations" leftContent={content} />

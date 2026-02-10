@@ -1,6 +1,6 @@
 import { JobForm } from '@scf/core/features/office/components/JobForm'
 import { api } from '@scf/core/utils/api'
-import { Spinner, YStack } from '@unicornlove/ui'
+import { Spinner, Stack } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function EditJobPage() {
@@ -8,9 +8,9 @@ export default function EditJobPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <YStack>Invalid job ID</YStack>
-      </YStack>
+      <Stack flex={1} alignItems="center" justifyContent="center">
+        <Stack>Invalid job ID</Stack>
+      </Stack>
     )
   }
 
@@ -18,17 +18,17 @@ export default function EditJobPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
+      <Stack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
-      </YStack>
+      </Stack>
     )
   }
 
   if (!data?.job) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <YStack>Job not found</YStack>
-      </YStack>
+      <Stack flex={1} alignItems="center" justifyContent="center">
+        <Stack>Job not found</Stack>
+      </Stack>
     )
   }
 

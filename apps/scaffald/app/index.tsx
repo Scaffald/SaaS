@@ -6,7 +6,7 @@ import { useUser } from '@scf/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@unicornlove/beyond-ui'
 
 export default function RootIndex() {
   const { user, isPending } = useUser()
@@ -156,37 +156,37 @@ export default function RootIndex() {
   // Show loading state while verifying magic link
   if (isVerifying) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center">
+      <Stack flex={1} justifyContent="center" alignItems="center">
         <Text>Verifying your email...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // Show error if verification failed
   if (verificationError) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
+      <Stack flex={1} justifyContent="center" alignItems="center" padding="$4">
         <Text color="$red10" textAlign="center" marginBottom="$4">
           Verification failed: {verificationError}
         </Text>
         <Text textAlign="center">Please try requesting a new magic link.</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // Show loading state while checking auth, prerequisites, or waiting for navigation
   if (isPending || !isRouterReady || !hasNavigated || (user && isCheckingPrereqs)) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center">
+      <Stack flex={1} justifyContent="center" alignItems="center">
         <Text>Loading...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // This should rarely be reached, but provides a fallback
   return (
-    <YStack flex={1} justifyContent="center" alignItems="center">
+    <Stack flex={1} justifyContent="center" alignItems="center">
       <Text>Initializing...</Text>
-    </YStack>
+    </Stack>
   )
 }

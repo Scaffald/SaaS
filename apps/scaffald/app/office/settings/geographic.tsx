@@ -1,7 +1,7 @@
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { Button, Card, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export default function GeographicSettingsPage() {
   const toast = useToastController()
@@ -74,29 +74,29 @@ export default function GeographicSettingsPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
+      <Stack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
         <Text fontSize="$8" fontWeight="600">
           Geographic Settings
         </Text>
         <Spinner />
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <YStack gap="$2">
+    <Stack flex={1} padding="$4" gap="$4">
+      <Stack gap="$2">
         <Text fontSize="$8" fontWeight="600">
           Geographic Settings
         </Text>
         <Text fontSize="$4" color="$gray11">
           Configure geographic validation settings for site boundaries
         </Text>
-      </YStack>
-      <YStack gap="$4" style={{ maxWidth: 600 }}>
+      </Stack>
+      <Stack gap="$4" style={{ maxWidth: 600 }}>
         <Card padding="$4">
-          <YStack gap="$4">
-            <YStack gap="$2">
+          <Stack gap="$4">
+            <Stack gap="$2">
               <Text fontSize="$6" fontWeight="600">
                 Site Overlap Threshold
               </Text>
@@ -105,11 +105,11 @@ export default function GeographicSettingsPage() {
                 notifications. This helps identify potential data quality issues or survey
                 discrepancies.
               </Text>
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
+            <Stack gap="$2">
               <Text fontWeight="600">Threshold Percentage</Text>
-              <XStack gap="$2" alignItems="center">
+              <Row gap="$2" alignItems="center">
                 <Input
                   value={threshold}
                   onChangeText={setThreshold}
@@ -119,14 +119,14 @@ export default function GeographicSettingsPage() {
                   maxLength={5}
                 />
                 <Text>%</Text>
-              </XStack>
+              </Row>
               <Text fontSize="$2" color="$gray10">
                 Range: 0.1% - 10% (Default: 2.0%)
               </Text>
-            </YStack>
+            </Stack>
 
             <Card padding="$3" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
-              <YStack gap="$2">
+              <Stack gap="$2">
                 <Text fontWeight="600" fontSize="$3">
                   Current Setting
                 </Text>
@@ -136,10 +136,10 @@ export default function GeographicSettingsPage() {
                 <Text fontSize="$2" color="$gray11">
                   Site overlaps exceeding {threshold}% will trigger admin notifications.
                 </Text>
-              </YStack>
+              </Stack>
             </Card>
 
-            <XStack justifyContent="flex-end" gap="$2">
+            <Row justifyContent="flex-end" gap="$2">
               <Button
                 variant="outlined"
                 onPress={() => {
@@ -147,9 +147,7 @@ export default function GeographicSettingsPage() {
                   setThreshold('2.0')
                 }}
                 disabled={isSaving}
-              >
-                Reset to Default
-              </Button>
+              >Reset to Default</Button>
               <Button
                 theme="blue"
                 onPress={handleSave}
@@ -158,15 +156,13 @@ export default function GeographicSettingsPage() {
                   Number.parseFloat(threshold) < 0.1 ||
                   Number.parseFloat(threshold) > 10
                 }
-              >
-                {isSaving ? <Spinner /> : 'Save Threshold'}
-              </Button>
-            </XStack>
-          </YStack>
+              >{isSaving ? <Spinner /> : 'Save Threshold'}</Button>
+            </Row>
+          </Stack>
         </Card>
 
         <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-          <YStack gap="$2">
+          <Stack gap="$2">
             <Text fontWeight="600" fontSize="$3">
               About Site Overlaps
             </Text>
@@ -181,9 +177,9 @@ export default function GeographicSettingsPage() {
               {'\n'}• Adjust site boundaries
               {'\n'}• Dismiss if the overlap is expected/acceptable
             </Text>
-          </YStack>
+          </Stack>
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

@@ -2,10 +2,9 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { InquiryViewCandidate } from '@scf/core/features/inquiries/components/InquiryViewCandidate'
 import { api } from '@scf/core/utils/api'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack, Spinner } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams } from 'expo-router'
 import type { ReactElement } from 'react'
-import { Spinner } from '@unicornlove/ui'
 
 export default function DashboardApplicationInquiryRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
@@ -26,28 +25,28 @@ export default function DashboardApplicationInquiryRoute() {
 
   if (!enabled) {
     content = (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Text color="$color11">Missing application ID</Text>
-      </YStack>
+      </Stack>
     )
   } else if (isLoading) {
     content = (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Spinner size="large" />
         <Text>Loading inquiry...</Text>
-      </YStack>
+      </Stack>
     )
   } else if (error || !data || !data.inquiry) {
     content = (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Text color="$red10">Unable to load inquiry</Text>
-      </YStack>
+      </Stack>
     )
   } else {
     content = (
-      <YStack gap="$4" padding="$4" flex={1}>
+      <Stack gap="$4" padding="$4" flex={1}>
         <InquiryViewCandidate applicationId={applicationParam} inquiryId={data.inquiry.id} />
-      </YStack>
+      </Stack>
     )
   }
 

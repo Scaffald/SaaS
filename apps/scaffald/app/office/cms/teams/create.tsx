@@ -5,7 +5,7 @@ import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Label, Select, Spinner, Text, YStack } from '@unicornlove/ui'
+import { Button, Label, Select, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 type OfficeOrganizationsOutput = inferRouterOutputs<AppRouter>['office']['getOrganizations']
 type OrganizationOption = OfficeOrganizationsOutput['organizations'][number]
@@ -27,29 +27,27 @@ export default function CreateTeamPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
+      <Stack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
-      </YStack>
+      </Stack>
     )
   }
 
   if (!organizations.length) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$2">
         <Text fontSize="$5" fontWeight="600">
           No organizations available
         </Text>
         <Text color="$color11">Create an organization before adding teams.</Text>
-        <Button onPress={() => router.back()} variant="outlined">
-          Go Back
-        </Button>
-      </YStack>
+        <Button onPress={() => router.back()} variant="outlined">Go Back</Button>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <YStack gap="$2" style={{ maxWidth: 520 }}>
+    <Stack flex={1} padding="$4" gap="$4">
+      <Stack gap="$2" style={{ maxWidth: 520 }}>
         <Label htmlFor="team-create-organization">Select organization</Label>
         <Select
           id="team-create-organization"
@@ -87,7 +85,7 @@ export default function CreateTeamPage() {
             <Select.ScrollDownButton />
           </Select.Content>
         </Select>
-      </YStack>
+      </Stack>
 
       {selectedOrganizationId ? (
         <TeamForm
@@ -96,7 +94,7 @@ export default function CreateTeamPage() {
           onCancel={() => router.back()}
         />
       ) : (
-        <YStack
+        <Stack
           padding="$6"
           backgroundColor="$color3"
           borderRadius="$6"
@@ -109,8 +107,8 @@ export default function CreateTeamPage() {
           <Text color="$color11" style={{ textAlign: 'center' }}>
             Teams belong to a single organization. Select one above to configure the team.
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

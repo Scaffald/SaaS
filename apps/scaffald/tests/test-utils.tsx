@@ -9,8 +9,7 @@
 import { render, RenderOptions } from '@testing-library/react-native';
 import { ReactElement, ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { TamaguiProvider } from '@tamagui/core';
-import { config } from '@unicornlove/ui';
+import { ThemeProvider } from '@unicornlove/beyond-ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 /**
@@ -43,7 +42,7 @@ function AllTheProviders({ children }: AllTheProvidersProps) {
 
   return (
     <SafeAreaProvider>
-      <TamaguiProvider config={config} defaultTheme="light">
+      <ThemeProvider initialTheme="light">
         <QueryClientProvider client={queryClient}>
           {/* Add other providers here as they are created:
            * - AuthProvider
@@ -52,7 +51,7 @@ function AllTheProviders({ children }: AllTheProvidersProps) {
            */}
           {children}
         </QueryClientProvider>
-      </TamaguiProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
@@ -65,11 +64,11 @@ function ProvidersWithoutSafeArea({ children }: AllTheProvidersProps) {
   const queryClient = createTestQueryClient();
 
   return (
-    <TamaguiProvider config={config} defaultTheme="light">
+    <ThemeProvider initialTheme="light">
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>
-    </TamaguiProvider>
+    </ThemeProvider>
   );
 }
 

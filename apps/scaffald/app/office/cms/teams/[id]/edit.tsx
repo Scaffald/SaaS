@@ -13,7 +13,7 @@ import {
 } from '@scf/schemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 export default function EditTeamPage() {
   const router = useRouter()
@@ -37,45 +37,41 @@ export default function EditTeamPage() {
 
   if (!teamId) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$6">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$6">
         <Text fontSize="$6" fontWeight="700">
           Missing team identifier
         </Text>
         <Text color="$color11" style={{ textAlign: 'center' }}>
           We couldn&apos;t determine which team you want to edit.
         </Text>
-        <Button onPress={() => router.back()} variant="outlined">
-          Go Back
-        </Button>
-      </YStack>
+        <Button onPress={() => router.back()} variant="outlined">Go Back</Button>
+      </Stack>
     )
   }
 
   if (isLoading || isFetching) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
+      <Stack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
         <Text marginTop="$4">Loading team details…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error || !data?.team) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" padding="$6">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" padding="$6">
         <Text fontSize="$6" fontWeight="700">
           Unable to load team
         </Text>
         <Text color="$color11" style={{ textAlign: 'center' }}>
           {error?.message ?? 'We ran into a problem retrieving this team. Please try again.'}
         </Text>
-        <XStack gap="$2">
-          <Button onPress={() => router.back()} variant="outlined">
-            Go Back
-          </Button>
+        <Row gap="$2">
+          <Button onPress={() => router.back()} variant="outlined">Go Back</Button>
           <Button onPress={() => refetch()}>Try Again</Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     )
   }
 
@@ -101,7 +97,7 @@ export default function EditTeamPage() {
     : undefined
 
   return (
-    <YStack flex={1} gap="$6" padding="$4">
+    <Stack flex={1} gap="$6" padding="$4">
       <TeamForm
         mode="edit"
         organizationId={team.organizationId}
@@ -137,9 +133,7 @@ export default function EditTeamPage() {
             color="$color1"
             size="$3"
             onPress={() => setIsInviteModalOpen(true)}
-          >
-            Invite member
-          </Button>
+          >Invite member</Button>
         }
       />
 
@@ -151,6 +145,6 @@ export default function EditTeamPage() {
         defaultRoleId={team.defaultRoleId ?? team.defaultRole?.id ?? null}
         onInvited={() => setInviteRefreshKey((value) => value + 1)}
       />
-    </YStack>
+    </Stack>
   )
 }

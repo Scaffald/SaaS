@@ -6,7 +6,7 @@ import { AlertTriangle, CheckCircle, LogIn, XCircle } from '@tamagui/lucide-icon
 import type { inferRouterOutputs } from '@trpc/server'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 type InvitationAction = 'accept' | 'decline'
 type RespondInvitationOutput = inferRouterOutputs<AppRouter>['teams']['respondToInvitation']
@@ -89,16 +89,16 @@ export default function AcceptTeamInvitationScreen() {
 
     if (authLoading) {
       return (
-        <YStack gap="$3" alignItems="center" paddingVertical="$6">
+        <Stack gap="$3" alignItems="center" paddingVertical="$6">
           <Spinner size="large" />
           <Text color="$color11">Preparing secure invitation…</Text>
-        </YStack>
+        </Stack>
       )
     }
 
     if (!session?.user) {
       return (
-        <YStack gap="$4">
+        <Stack gap="$4">
           <Text fontSize="$6" fontWeight="700">
             Sign in to continue
           </Text>
@@ -113,45 +113,45 @@ export default function AcceptTeamInvitationScreen() {
               Sign in or create an account
             </Button>
           </Link>
-        </YStack>
+        </Stack>
       )
     }
 
     if (status === 'success') {
       return (
-        <YStack gap="$4" alignItems="center" paddingVertical="$4">
+        <Stack gap="$4" alignItems="center" paddingVertical="$4">
           <CheckCircle size={48} color="$green9" />
-          <YStack gap="$2" alignItems="center">
+          <Stack gap="$2" alignItems="center">
             <Text fontSize="$7" fontWeight="700">
               You&apos;re in!
             </Text>
             <Text color="$color11">
               You now have access to the team workspace. We&apos;ve added it to your dashboard.
             </Text>
-          </YStack>
+          </Stack>
           <Button size="$4" onPress={handleViewTeam}>
             Go to team
           </Button>
-        </YStack>
+        </Stack>
       )
     }
 
     if (status === 'declined') {
       return (
-        <YStack gap="$4" alignItems="center" paddingVertical="$4">
+        <Stack gap="$4" alignItems="center" paddingVertical="$4">
           <XCircle size={48} color="$red9" />
-          <YStack gap="$2" alignItems="center">
+          <Stack gap="$2" alignItems="center">
             <Text fontSize="$7" fontWeight="700">
               Invitation declined
             </Text>
             <Text color="$color11">
               You can always accept later from your dashboard if you change your mind.
             </Text>
-          </YStack>
+          </Stack>
           <Button size="$4" onPress={() => router.replace(ROUTES.DASHBOARD.path)}>
             Return to dashboard
           </Button>
-        </YStack>
+        </Stack>
       )
     }
 
@@ -160,8 +160,8 @@ export default function AcceptTeamInvitationScreen() {
     }
 
     return (
-      <YStack gap="$5">
-        <YStack gap="$2">
+      <Stack gap="$5">
+        <Stack gap="$2">
           <Text fontSize="$7" fontWeight="700">
             Join this team
           </Text>
@@ -169,8 +169,8 @@ export default function AcceptTeamInvitationScreen() {
             Accepting will give you access to the team workspace, shared jobs, and collaborative
             tools.
           </Text>
-        </YStack>
-        <YStack gap="$3">
+        </Stack>
+        <Stack gap="$3">
           <Button
             size="$4"
             icon={CheckCircle}
@@ -188,19 +188,19 @@ export default function AcceptTeamInvitationScreen() {
           >
             Decline
           </Button>
-        </YStack>
+        </Stack>
         {isProcessing ? (
-          <YStack gap="$2" alignItems="center">
+          <Stack gap="$2" alignItems="center">
             <Spinner size="large" />
             <Text color="$color11">Processing your response…</Text>
-          </YStack>
+          </Stack>
         ) : null}
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack
+    <Stack
       flex={1}
       padding="$4"
       backgroundColor="$color2"
@@ -217,20 +217,20 @@ export default function AcceptTeamInvitationScreen() {
       >
         {renderContent()}
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
 function ErrorState({ title, message }: { title: string; message: string }) {
   return (
-    <YStack gap="$3" alignItems="center" paddingVertical="$4">
+    <Stack gap="$3" alignItems="center" paddingVertical="$4">
       <AlertTriangle size={48} color="$yellow9" />
-      <YStack gap="$2" alignItems="center">
+      <Stack gap="$2" alignItems="center">
         <Text fontSize="$7" fontWeight="700">
           {title}
         </Text>
         <Text color="$color11">{message}</Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

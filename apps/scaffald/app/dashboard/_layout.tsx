@@ -5,7 +5,7 @@ import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect } from 'react'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@unicornlove/beyond-ui'
 
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()
@@ -30,10 +30,10 @@ export default function Layout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading || isCheckingPrereqs) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center">
+      <Stack flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
         <Text marginTop="$4">Loading...</Text>
-      </YStack>
+      </Stack>
     )
   }
 

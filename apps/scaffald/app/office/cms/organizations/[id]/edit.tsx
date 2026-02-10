@@ -1,6 +1,6 @@
 import { OrganizationForm } from '@scf/core/features/office/components/OrganizationForm'
 import { api } from '@scf/core/utils/api'
-import { Spinner, YStack } from '@unicornlove/ui'
+import { Spinner, Stack } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function EditOrganizationPage() {
@@ -8,9 +8,9 @@ export default function EditOrganizationPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <YStack>Invalid organization ID</YStack>
-      </YStack>
+      <Stack flex={1} alignItems="center" justifyContent="center">
+        <Stack>Invalid organization ID</Stack>
+      </Stack>
     )
   }
 
@@ -18,17 +18,17 @@ export default function EditOrganizationPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
+      <Stack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
-      </YStack>
+      </Stack>
     )
   }
 
   if (!data?.organization) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <YStack>Organization not found</YStack>
-      </YStack>
+      <Stack flex={1} alignItems="center" justifyContent="center">
+        <Stack>Organization not found</Stack>
+      </Stack>
     )
   }
 

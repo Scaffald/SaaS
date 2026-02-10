@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "implicitDependencies": ["scf-core", "ui"],
+  "implicitDependencies": ["scf-core", "beyond-ui"],
   "name": "scaffald-app",
   "projectType": "application",
   "sourceRoot": "apps/scaffald",

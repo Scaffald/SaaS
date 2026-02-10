@@ -1,9 +1,9 @@
 import { InquiryHistoryTimeline } from '@scf/core/features/inquiries/components/InquiryHistoryTimeline'
 import { InquiryViewOrganization } from '@scf/core/features/inquiries/components/InquiryViewOrganization'
 import { api } from '@scf/core/utils/api'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack, Spinner } from '@unicornlove/beyond-ui'
 import { useLocalSearchParams } from 'expo-router'
-import { ScrollView, Spinner } from '@unicornlove/ui'
+import { ScrollView } from 'react-native'
 
 export default function OfficeApplicationInquiryRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
@@ -17,26 +17,26 @@ export default function OfficeApplicationInquiryRoute() {
 
   if (!enabled) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Text color="$color11">Missing application ID</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Spinner size="large" />
         <Text>Loading inquiry...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error || !data || !data.inquiry) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
+      <Stack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Text color="$red10">Unable to load inquiry</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -45,7 +45,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   return (
     <ScrollView>
-      <YStack gap="$4" padding="$4" flex={1}>
+      <Stack gap="$4" padding="$4" flex={1}>
         <InquiryViewOrganization
           applicationId={applicationParam}
           inquiryId={data.inquiry.id}
@@ -53,7 +53,7 @@ export default function OfficeApplicationInquiryRoute() {
           jobTitle={jobTitle}
         />
         <InquiryHistoryTimeline inquiryId={data.inquiry.id} />
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

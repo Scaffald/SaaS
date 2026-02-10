@@ -21,7 +21,8 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useMemo, useState } from 'react'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView } from 'react-native'
+import { Button, Card, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -113,10 +114,10 @@ export default function OfficeTeamDetailPage() {
 
   if ((isTeamLoading || isTeamFetching) && !team) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text color="$color11">Loading team details…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -160,21 +161,15 @@ export default function OfficeTeamDetailPage() {
           variant="outlined"
           icon={Pencil}
           onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
-        >
-          Edit team
-        </Button>,
+        >Edit team</Button>,
         <Button
           key="analytics"
           size="$2"
           variant="outlined"
           icon={BarChart3}
           onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
-        >
-          View analytics
-        </Button>,
-        <Button key="invite" size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
-          Invite member
-        </Button>,
+        >View analytics</Button>,
+        <Button key="invite" size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>,
         <Button
           key="assign"
           size="$2"
@@ -185,9 +180,7 @@ export default function OfficeTeamDetailPage() {
               pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
             })
           }
-        >
-          Assign job
-        </Button>,
+        >Assign job</Button>,
       ]
     : null
 
@@ -196,25 +189,23 @@ export default function OfficeTeamDetailPage() {
   return (
     <>
       <ScrollView>
-        <YStack flex={1} gap="$6" padding="$4">
-          <XStack>
+        <Stack flex={1} gap="$6" padding="$4">
+          <Row>
             <Button
               size="$2"
               variant="outlined"
               icon={ArrowLeft}
               onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
-            >
-              Back to teams
-            </Button>
-          </XStack>
+            >Back to teams</Button>
+          </Row>
 
           <TeamOverviewCard
             team={team}
             actions={
               quickActions ? (
-                <XStack gap="$2" flexWrap="wrap" justifyContent="flex-end">
+                <Row gap="$2" flexWrap="wrap" justifyContent="flex-end">
                   {quickActions}
-                </XStack>
+                </Row>
               ) : undefined
             }
             stats={{
@@ -229,11 +220,9 @@ export default function OfficeTeamDetailPage() {
             variant="outlined"
             icon={BarChart3}
             onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
-          >
-            View analytics
-          </Button>
+          >View analytics</Button>
 
-          <YStack gap="$4">
+          <Stack gap="$4">
             <TeamMembersList teamId={team.id} organizationId={team.organizationId} />
 
             <TeamJobsList
@@ -257,13 +246,11 @@ export default function OfficeTeamDetailPage() {
               refreshKey={inviteRefreshKey}
               headerAction={
                 canManageTeam ? (
-                  <Button size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
-                    Invite member
-                  </Button>
+                  <Button size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>Invite member</Button>
                 ) : null
               }
             />
-          </YStack>
+          </Stack>
 
           {(isMembersLoading || membersError) && (
             <InfoBanner
@@ -281,7 +268,7 @@ export default function OfficeTeamDetailPage() {
           )}
 
           {isInvitationsLoading && (
-            <YStack
+            <Stack
               gap="$2"
               borderWidth={1}
               borderColor="$borderColor"
@@ -290,9 +277,9 @@ export default function OfficeTeamDetailPage() {
             >
               <Spinner size="small" />
               <Text color="$color11">Updating invitation statistics…</Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       <TeamInviteModal
@@ -323,7 +310,7 @@ function CenteredMessageCard({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+    <Stack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
       <Card
         padding="$4"
         borderWidth={1}
@@ -337,7 +324,7 @@ function CenteredMessageCard({
         <Text color="$color11">{description}</Text>
         <Button onPress={onAction}>{actionLabel}</Button>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -360,16 +347,14 @@ function InfoBanner({
       padding="$4"
       gap="$3"
     >
-      <XStack gap="$2" alignItems="center">
+      <Row gap="$2" alignItems="center">
         <Icon size={18} />
         <Text fontSize="$5" fontWeight="700">
           {title}
         </Text>
-      </XStack>
+      </Row>
       <Text color="$color11">{message}</Text>
-      <Button size="$3" onPress={onAction}>
-        Refresh
-      </Button>
+      <Button size="$3" onPress={onAction}>Refresh</Button>
     </Card>
   )
 }
