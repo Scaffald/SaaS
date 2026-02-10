@@ -6,6 +6,7 @@ import {
   useExternalJobs,
   useJobDetails,
 } from '@scf/core/utils/jobs-sdk-hooks'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -88,7 +89,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   }, [job, flowType])
 
   // Track job view for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   useEffect(() => {
     if (job) {
@@ -103,7 +104,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
       // Track in engagement analytics
       try {
         trackEventMutation.mutate({
-          eventType: 'job.viewed',
+          eventType: 'job_view',
           targetType: 'job',
           targetId: job.id,
           metadata: {
@@ -118,7 +119,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         console.warn('Failed to track job view:', error)
       }
     }
-  }, [job, isExternal, trackEventMutation.mutate, trackEventMutation])
+  }, [job, isExternal, trackEventMutation.mutate])
 
   if (isLoading) {
     return (
