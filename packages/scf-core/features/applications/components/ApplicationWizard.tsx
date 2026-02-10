@@ -1,6 +1,6 @@
 import type { ApplicationStepType, AttachmentMetadata } from '@scf/schemas'
 import { ApplicationStep } from '@scf/schemas'
-import { api } from '@scf/core/utils/api'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { SaveStatusIndicator } from '@unicornlove/beyond-ui'
 import { AlertCircle } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
@@ -98,13 +98,13 @@ export function ApplicationWizard({
   const customQuestions: CustomQuestion[] = [] // Replace with actual data fetch
 
   // Track application started for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   useEffect(() => {
     // Track when application wizard is opened (application started)
     try {
       trackEventMutation.mutate({
-        eventType: 'application.started',
+        eventType: 'application_start',
         targetType: 'job',
         targetId: jobId,
         metadata: {
@@ -116,7 +116,7 @@ export function ApplicationWizard({
       // Silent error handling - don't impact user flow
       console.warn('Failed to track application started:', error)
     }
-  }, [jobId, jobTitle, organizationName, trackEventMutation.mutate, trackEventMutation])
+  }, [jobId, jobTitle, organizationName, trackEventMutation.mutate])
 
   // Define application steps - only include custom questions if there are any
   const steps: Array<{ id: ApplicationStepType; label: string }> = [
@@ -136,7 +136,7 @@ export function ApplicationWizard({
         // Track application submitted for engagement analytics
         try {
           trackEventMutation.mutate({
-            eventType: 'application.submitted',
+            eventType: 'application_complete',
             targetType: 'job',
             targetId: jobId,
             metadata: {
