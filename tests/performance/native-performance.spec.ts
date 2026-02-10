@@ -55,7 +55,7 @@ test.describe('Native App Performance Testing', () => {
     await page.goto('/', { waitUntil: 'networkidle' })
     const loadTime = Date.now() - startTime
 
-    // App should start within 2 seconds (REQ-198 target: < 2s)
+    // App should start within 2 seconds
     expect(loadTime, 'App startup should be < 2s').toBeLessThan(2000)
 
     // Verify that JavaScript bundle loads efficiently
@@ -122,8 +122,7 @@ test.describe('Native App Performance Testing', () => {
     await responsePromise
     const apiTime = Date.now() - apiStart
 
-    // API calls should respond within 500ms (REQ-198 target)
-    if (apiTime < 5000) {
+    // API calls should respond within 500ms     if (apiTime < 5000) {
       // Only assert if we got a response
       expect(apiTime, 'API calls should be < 500ms').toBeLessThan(500)
     }

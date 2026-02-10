@@ -1,6 +1,6 @@
 /**
  * CCPA-Specific Permissions System
- * REQ-6, TASK-8: Role-Based Access Control for CCPA Admin
+ * Role-based access control for CCPA admin
  *
  * Implements a 4-role permission model for CCPA compliance management:
  * - global_admin: Full access to all CCPA features

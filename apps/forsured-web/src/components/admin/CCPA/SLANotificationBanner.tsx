@@ -1,6 +1,6 @@
 /**
  * SLA Notification Banner Component
- * REQ-6, TASK-12: SLA Notification System for CCPA Deadlines
+ * SLA notification system for CCPA deadlines
  *
  * Displays a prominent banner on the CCPA dashboard when there are
  * overdue or approaching deadline requests.

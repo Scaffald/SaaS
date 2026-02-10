@@ -19,7 +19,7 @@ Complete guide to testing in the Scaffald application.
 
 ## Testing Philosophy
 
-### REQ-9: No Mocking of Owned Code
+### No Mocking of Owned Code
 
 **CRITICAL PRINCIPLE**: We ONLY mock external services, NEVER our own code.
 

@@ -1,6 +1,6 @@
 /**
  * CCPA Requests List Page Object
- * REQ-6, TASK-11: E2E Tests for CCPA Admin Pages
+ * CCPA requests page object
  *
  * Page object for the CCPA Requests List at /admin/ccpa/requests
  */

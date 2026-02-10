@@ -4,7 +4,7 @@
  * Priority 1: Test authentication flow across all viewport sizes
  * to ensure login/signup screens work correctly on mobile, tablet, and desktop.
  *
- * REQ-11: Responsive Layout Improvements
+ * Responsive layout improvements
  */
 
 import { expect, type Page, test } from '@playwright/test'
@@ -15,7 +15,7 @@ import {
   getViewportCategory,
 } from '../../infrastructure/playwright/helpers/helpers/responsive'
 
-// Define all Priority 1 viewports from REQ-11 spec
+// Define all Priority 1 viewports from spec
 const viewports = [
   { name: 'iPhone SE', width: 375, height: 667 },
   { name: 'iPhone 12', width: 390, height: 844 },

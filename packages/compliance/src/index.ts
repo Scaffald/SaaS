@@ -17,7 +17,7 @@ export type {
   ComplianceStatus,
 } from './ParticipantsTable'
 
-// ParticipantsFilter (REQ-281 TASK-3)
+// ParticipantsFilter
 export { ParticipantsFilter } from './ParticipantsFilter'
 export type { ParticipantsFilterProps, FilterOption } from './ParticipantsFilter'
 
@@ -29,7 +29,7 @@ export type {
   ChecklistItemStatus,
 } from './ComplianceChecklist'
 
-// ClientCard (REQ-288)
+// ClientCard
 export { ClientCard } from './ClientCard'
 export type {
   ClientCardProps,
@@ -38,7 +38,7 @@ export type {
   ClientStatus,
 } from './ClientCard'
 
-// GCProfileHeader (REQ-288)
+// GCProfileHeader
 export { GCProfileHeader } from './GCProfileHeader'
 export type {
   GCProfileHeaderProps,

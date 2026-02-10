@@ -39,8 +39,7 @@ test.describe('Touch Interaction and Gesture Testing', () => {
           await button.tap()
           const tapTime = Date.now() - startTime
 
-          // Touch feedback should appear within 100ms (REQ-198 target)
-          expect(tapTime, 'Touch feedback should appear within 100ms').toBeLessThan(100)
+          // Touch feedback should appear within 100ms           expect(tapTime, 'Touch feedback should appear within 100ms').toBeLessThan(100)
 
           // Button should be tappable
           expect(true, 'Button should be tappable').toBeTruthy()
@@ -58,8 +57,7 @@ test.describe('Touch Interaction and Gesture Testing', () => {
           const box = await button.boundingBox()
 
           if (box) {
-            // Touch targets should be at least 44x44px (REQ-198 target)
-            expect(
+            // Touch targets should be at least 44x44px             expect(
               box.width,
               `Touch target ${i} should be at least 44px wide`
             ).toBeGreaterThanOrEqual(40) // Allow 4px tolerance

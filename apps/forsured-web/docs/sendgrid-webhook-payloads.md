@@ -1,7 +1,6 @@
 # SendGrid Webhook Payload Documentation
 
 > **Generated:** 2024-12-24
-> **REQ-130:** Email Communication Auditability
 
 ## Overview
 

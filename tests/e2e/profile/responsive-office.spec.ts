@@ -4,7 +4,7 @@
  * Priority 2: Test office/admin flows on tablet and desktop viewports
  * to ensure office admin forms work correctly on tablet and desktop.
  *
- * REQ-11: Responsive Layout Improvements
+ * Responsive layout improvements
  */
 
 import { expect, type Page, test } from '@playwright/test'

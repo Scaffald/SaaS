@@ -1,5 +1,5 @@
 /**
- * REQ-128: Compliance Rule Evaluation Engine
+ * Compliance Rule Evaluation Engine
  * Scoring algorithm implementation
  */
 
@@ -32,7 +32,7 @@ export function calculateComplianceScore(gaps: ComplianceGap[]): number {
 /**
  * Determine compliance status based on score
  *
- * Boundaries (from REQ-128):
+ * Boundaries:
  * - 90-100: Compliant (green)
  * - 70-89: Warning (yellow)
  * - 0-69: Critical (red)

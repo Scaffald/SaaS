@@ -1,6 +1,6 @@
 /**
  * CCPA Dashboard Page Object
- * REQ-6, TASK-11: E2E Tests for CCPA Admin Pages
+ * CCPA admin dashboard page object
  *
  * Page object for the main CCPA Compliance Dashboard at /admin/ccpa
  */

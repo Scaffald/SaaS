@@ -1,4 +1,4 @@
-# Document Upload & Storage (REQ-124)
+# Document Upload & Storage
 
 Complete document upload and management system for insurance certificate compliance.
 
@@ -212,7 +212,7 @@ function ProjectDocumentsPage() {
 - React 18+
 - TypeScript
 - Tailwind CSS (for styling)
-- MockDatabase (REQ-106)
+- MockDatabase (for tests)
 - FileReader API (Base64 encoding)
 - Crypto API (SHA-256 hashing)
 

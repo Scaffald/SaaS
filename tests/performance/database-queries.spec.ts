@@ -2,7 +2,7 @@
  * Database Query Performance Testing
  *
  * Tests for database query performance and optimization.
- * Validates that database queries perform within REQ-198 targets:
+ * Validates that database queries perform within targets:
  * - Query execution time < 500ms
  * - React Query cache reduces database load
  * - Database connection pool limits prevent exhaustion
@@ -44,7 +44,7 @@ test.describe('Database Query Performance Testing', () => {
         // Calculate response time
         const responseTime = timing.responseEnd - timing.requestStart
 
-        // API should respond within 500ms (REQ-198 target)
+        // API should respond within 500ms
         expect(responseTime, `API endpoint should respond within 500ms: ${endpoint}`).toBeLessThan(
           500
         )
