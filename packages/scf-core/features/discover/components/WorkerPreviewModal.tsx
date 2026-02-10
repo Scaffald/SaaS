@@ -3,8 +3,15 @@ import { formatDateRange } from '@scf/core/features/profile/utils/date-formattin
 import { useConnectionStatus } from '@scf/core/features/user-profile/hooks/useConnectionStatus'
 import { useFollowStatus } from '@scf/core/features/user-profile/hooks/useFollowStatus'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { api } from '@scf/core/utils/api'
+import {
+  useSendConnectionMutation,
+  useAcceptConnectionMutation,
+  useDeclineConnectionMutation,
+  useFollowUserMutation,
+  useUnfollowUserMutation,
+} from '@scf/core/utils/engagement-sdk-hooks'
 import { useAdaptiveLoading } from '@scf/core/utils/useAdaptiveLoading'
+import { useQueryClient } from '@tanstack/react-query'
 import { ResponsiveModal } from '@unicornlove/beyond-ui'
 import {
   Award,
@@ -91,7 +98,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
   const toast = useToast()
   const { session } = useAuth()
   const currentUserId = session?.user?.id
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Check if viewing own profile
   const isOwnProfile = currentUserId === userId
@@ -101,14 +108,14 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
   const followStatus = useFollowStatus(isOwnProfile || !open ? null : userId)
 
   // Connection mutations
-  const sendRequestMutation = api.connections.sendRequest.useMutation({
+  const sendRequestMutation = useSendConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
       toast.show({
           title: 'Connection request sent',
           message: 'Your connection request has been sent.',
@@ -123,14 +130,14 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     },
   })
 
-  const acceptRequestMutation = api.connections.acceptRequest.useMutation({
+  const acceptRequestMutation = useAcceptConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
       toast.show({
           title: 'Connection accepted',
           message: 'You are now connected.',
@@ -145,12 +152,12 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     },
   })
 
-  const declineRequestMutation = api.connections.declineRequest.useMutation({
+  const declineRequestMutation = useDeclineConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
     },
     onError: (error: { message?: string }) => {
       toast.show({
@@ -162,12 +169,12 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
   })
 
   // Follow mutations
-  const followMutation = api.follows.followUser.useMutation({
+  const followMutation = useFollowUserMutation({
     onMutate: async () => {
-      await utils.follows.getFollowing.cancel()
+      await queryClient.cancelQueries({ queryKey: ['follows', 'following'] })
     },
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
       toast.show({
           title: 'Following',
           message: 'You are now following this user.',
@@ -182,12 +189,12 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     },
   })
 
-  const unfollowMutation = api.follows.unfollowUser.useMutation({
+  const unfollowMutation = useUnfollowUserMutation({
     onMutate: async () => {
-      await utils.follows.getFollowing.cancel()
+      await queryClient.cancelQueries({ queryKey: ['follows', 'following'] })
     },
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
       toast.show({
           title: 'Unfollowed',
           message: 'You are no longer following this user.',
@@ -211,13 +218,13 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
   const handleAccept = () => {
     if (connectionStatus.connectionId) {
-      acceptRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+      acceptRequestMutation.mutate(connectionStatus.connectionId)
     }
   }
 
   const handleDecline = () => {
     if (connectionStatus.connectionId) {
-      declineRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+      declineRequestMutation.mutate(connectionStatus.connectionId)
     }
   }
 
@@ -230,7 +237,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
   const handleUnfollow = () => {
     if (userId) {
-      unfollowMutation.mutate({ targetUserId: userId })
+      unfollowMutation.mutate(userId)
     }
   }
 
