@@ -12,6 +12,8 @@ import {
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@scf/core/utils/api'
+import { useEmployment, useUpdateEmploymentMutation } from '@scf/core/utils/profile-employment-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationDialog,
@@ -148,23 +150,24 @@ export function ProfileEmploymentLeft() {
   const originalDataRef = useRef<EmploymentProfileFormData | null>(null)
   const toast = useToast()
   const utils = api.useContext()
+  const queryClient = useQueryClient()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
 
-  // Use tRPC to fetch and update employment data
+  // Use SDK hooks to fetch and update employment data
   const {
     data: employmentData,
     isLoading: isLoadingEmployment,
     isFetching: isFetchingEmployment,
-  } = api.profile.employment.getEmployment.useQuery()
-  const updateEmploymentMutation = api.profile.employment.updateEmployment.useMutation({
+  } = useEmployment()
+  const updateEmploymentMutation = useUpdateEmploymentMutation({
     async onMutate(input: UpdateEmploymentInput): Promise<UpdateEmploymentContext> {
       resetProfileSyncError()
       startProfileSync()
-      await utils.profile.employment.getEmployment.cancel()
-      const previousEmployment = utils.profile.employment.getEmployment.getData()
-      utils.profile.employment.getEmployment.setData(
-        undefined,
+      await queryClient.cancelQueries({ queryKey: ['profiles', 'employment'] })
+      const previousEmployment = queryClient.getQueryData<EmploymentProfileFormData>(['profiles', 'employment'])
+      queryClient.setQueryData(
+        ['profiles', 'employment'],
         (current: EmploymentProfileFormData | undefined): EmploymentProfileFormData =>
           ({
             ...(current ?? profileEmploymentDefaults),
@@ -176,7 +179,7 @@ export function ProfileEmploymentLeft() {
     onError: (error: unknown, _input: UpdateEmploymentInput, context?: UpdateEmploymentContext) => {
       console.error('Error saving employment:', error)
       if (context?.previousEmployment) {
-        utils.profile.employment.getEmployment.setData(undefined, context.previousEmployment)
+        queryClient.setQueryData(['profiles', 'employment'], context.previousEmployment)
       }
       failProfileSync()
       toast.show({
@@ -192,7 +195,7 @@ export function ProfileEmploymentLeft() {
           title: 'Employment Updated',
           message: 'Your employment preferences have been saved successfully!',
         })
-      await utils.profile.employment.getEmployment.invalidate()
+      await queryClient.invalidateQueries({ queryKey: ['profiles', 'employment'] })
     },
     onSettled: async (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {

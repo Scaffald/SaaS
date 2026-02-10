@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useExperience, useExperienceSummary } from '@scf/core/utils/profile-experience-sdk-hooks'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
 import { Briefcase, Calendar, MapPin, Pencil } from 'lucide-react-native'
 import { Button, H4, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -78,8 +78,8 @@ export function ProfileExperienceRight() {
   const { startEditing } = useExperienceEdit()
 
   // Query saved experience data
-  const experienceQuery = api.profile.experience.getExperience.useQuery()
-  const experienceSummaryQuery = api.profile.experience.getExperienceSummary.useQuery()
+  const experienceQuery = useExperience()
+  const experienceSummaryQuery = useExperienceSummary()
   const experienceEntries = experienceQuery.data || []
 
   // Show loading state

@@ -2,6 +2,8 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { OpenToTravelCard } from '@scf/core/features/profile/components/employment-fields'
 import { api } from '@scf/core/utils/api'
 import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
+import { useExperience } from '@scf/core/utils/profile-experience-sdk-hooks'
+import { useEmployment } from '@scf/core/utils/profile-employment-sdk-hooks'
 import { Button, ToggleCard, spacing } from '@unicornlove/beyond-ui'
 import {
   AlertCircle,
@@ -116,7 +118,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   const generalProfileQuery = useGeneralInfo({
     refetchOnWindowFocus: false,
   })
-  const experienceQuery = api.profile.experience.getExperience.useQuery(undefined, {
+  const experienceQuery = useExperience({
     refetchOnWindowFocus: false,
   })
   const educationQuery = api.profile.education.getEducation.useQuery(undefined, {
@@ -131,7 +133,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       refetchOnWindowFocus: false,
     }
   )
-  const employmentQuery = api.profile.employment.getEmployment.useQuery(undefined, {
+  const employmentQuery = useEmployment({
     refetchOnWindowFocus: false,
   })
 

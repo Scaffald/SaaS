@@ -4,6 +4,7 @@ import {
   USResidentToggle,
 } from '@scf/core/features/profile/components/employment-fields'
 import { api } from '@scf/core/utils/api'
+import { useEmployment, useUpdateEmploymentMutation } from '@scf/core/utils/profile-employment-sdk-hooks'
 import {
   Button,
   CustomCheckbox,
@@ -55,13 +56,13 @@ export function EmploymentSection({
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
 
-  // Determine which tRPC endpoints to use based on mode
-  const useQuery =
+  // Determine which endpoints to use based on mode
+  const useQueryHook =
     mode === 'admin' && userId
       ? () => api.office.getUserEmployment.useQuery({ userId })
-      : () => api.profile.employment.getEmployment.useQuery()
+      : useEmployment
 
-  const useMutation =
+  const useMutationHook =
     mode === 'admin' && userId
       ? () =>
           api.office.updateUserEmployment.useMutation({
@@ -83,7 +84,7 @@ export function EmploymentSection({
             },
           })
       : () =>
-          api.profile.employment.updateEmployment.useMutation({
+          useUpdateEmploymentMutation({
             onSuccess: () => {
               toast.show({
           title: 'Employment Updated',
@@ -102,9 +103,9 @@ export function EmploymentSection({
             },
           })
 
-  const { data: employmentData, isLoading: isLoadingEmployment, refetch } = useQuery()
+  const { data: employmentData, isLoading: isLoadingEmployment, refetch } = useQueryHook()
 
-  const updateEmploymentMutation = useMutation()
+  const updateEmploymentMutation = useMutationHook()
 
   const {
     control,

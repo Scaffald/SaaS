@@ -1,5 +1,7 @@
 import { ControlledAddressForm } from '@scf/core/forms'
 import { api } from '@scf/core/utils/api'
+import { useExperience, useExperienceSummary, useSaveExperienceMutation } from '@scf/core/utils/profile-experience-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   ConfirmationDialog,
@@ -82,30 +84,31 @@ export function ProfileExperienceLeft() {
   const toast = useToast()
 
   // Queries
-  const experienceQuery = api.profile.experience.getExperience.useQuery()
-  const experienceSummaryQuery = api.profile.experience.getExperienceSummary.useQuery()
+  const experienceQuery = useExperience()
+  const experienceSummaryQuery = useExperienceSummary()
   const utils = api.useContext()
+  const queryClient = useQueryClient()
 
   // Mutations
-  const saveExperienceMutation = api.profile.experience.saveExperience.useMutation({
+  const saveExperienceMutation = useSaveExperienceMutation({
     async onMutate(input: SaveExperienceInput): Promise<SaveExperienceContext> {
       resetProfileSyncError()
       startProfileSync()
       await Promise.all([
-        utils.profile.experience.getExperience.cancel(),
-        utils.profile.experience.getExperienceSummary.cancel(),
+        queryClient.cancelQueries({ queryKey: ['profiles', 'experience'] }),
+        queryClient.cancelQueries({ queryKey: ['profiles', 'experience', 'summary'] }),
       ])
 
-      const previousExperience = utils.profile.experience.getExperience.getData()
-      const previousSummary = utils.profile.experience.getExperienceSummary.getData()
+      const previousExperience = queryClient.getQueryData<ExperienceApiResponse>(['profiles', 'experience'])
+      const previousSummary = queryClient.getQueryData<ExperienceSummaryApiResponse>(['profiles', 'experience', 'summary'])
 
       // Type assertions needed because form data types don't exactly match API response types
       // Form data is compatible but has slightly different optionality
-      utils.profile.experience.getExperience.setData(
-        undefined,
+      queryClient.setQueryData(
+        ['profiles', 'experience'],
         input.experience_entries as ExperienceApiResponse
       )
-      utils.profile.experience.getExperienceSummary.setData(undefined, {
+      queryClient.setQueryData(['profiles', 'experience', 'summary'], {
         career_level: (input.career_level ?? null) as string | null,
       })
 
@@ -117,10 +120,10 @@ export function ProfileExperienceLeft() {
     onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
       console.error('Error saving experience:', error)
       if (context?.previousExperience) {
-        utils.profile.experience.getExperience.setData(undefined, context.previousExperience)
+        queryClient.setQueryData(['profiles', 'experience'], context.previousExperience)
       }
       if (context?.previousSummary) {
-        utils.profile.experience.getExperienceSummary.setData(undefined, context.previousSummary)
+        queryClient.setQueryData(['profiles', 'experience', 'summary'], context.previousSummary)
       }
       failProfileSync()
       toast.show({
@@ -142,8 +145,7 @@ export function ProfileExperienceLeft() {
       }
       void invalidateProfileQueries(utils)
     },
-    // Type assertion needed due to tRPC mutation callback type inference limitations
-  } as never)
+  })
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'success'>('idle')
   const [saveBanner, setSaveBanner] = useState<{
     type: 'success' | 'error'
