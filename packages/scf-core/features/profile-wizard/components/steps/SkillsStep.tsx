@@ -2,7 +2,7 @@ import {
   InlineSkillSearch,
   type ParentSkill,
 } from '@scf/core/features/profile/components/InlineSkillSearch'
-import { api } from '@scf/core/utils/api'
+import { useSearchParentSkillsMutation, usePrimaryIndustry } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Button, Card, Paragraph, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
@@ -34,9 +34,8 @@ export function SkillsStep({
     new Map()
   )
 
-  const searchParentSkillsMutation = api.profile.skills.searchParentSkills.useMutation()
-  const { data: primaryIndustryData } =
-    api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
+  const searchParentSkillsMutation = useSearchParentSkillsMutation()
+  const { data: primaryIndustryData } = usePrimaryIndustry()
 
   useEffect(() => {
     if (initialData?.skills) {

@@ -1,5 +1,5 @@
 import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
-import { api } from '@scf/core/utils/api'
+import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { ChevronsUpDown, Filter, Search, X } from 'lucide-react-native'
 import { useState } from 'react'
@@ -42,7 +42,7 @@ export function DiscoverJobsRight({
   const JOB_TYPES = filterData?.jobTypes ?? []
 
   // Check if user has soft skills assessment
-  const { data: softSkillsData } = api.profile.skills.getSoftSkills.useQuery(undefined, {
+  const { data: softSkillsData } = useSoftSkills(undefined, {
     staleTime: 5 * 60 * 1000,
   })
   const hasSoftSkillsAssessment = (softSkillsData?.skills.length ?? 0) > 0

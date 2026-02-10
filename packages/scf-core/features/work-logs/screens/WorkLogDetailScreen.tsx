@@ -13,7 +13,7 @@ import {
   useUpdateWorkLogProfileVisibilityMutation,
   useUpdateWorkLogPhotoVisibilityMutation,
 } from '@scf/core/utils/work-logs-sdk-hooks'
-import { api } from '@scf/core/utils/api'
+import { useUserSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { buildSkillLookup } from '../utils/data-normalizers'
 import { ToggleSwitch } from '@unicornlove/beyond-ui'
@@ -95,7 +95,7 @@ export function WorkLogDetailScreen() {
     staleTime: 120_000,
   })
 
-  const skillsQuery = api.profile.skills.getUserSkills.useQuery(undefined, {
+  const skillsQuery = useUserSkills(undefined, {
     staleTime: 120_000,
   })
 

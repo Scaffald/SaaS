@@ -1,5 +1,6 @@
 import { useTeams } from '@scaffald/sdk/react'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
+import { useSearchParentSkillsMutation, usePrimaryIndustry } from '@scf/core/utils/profile-skills-sdk-hooks'
 import type { AddressResult } from '@unicornlove/beyond-ui'
 import {
   AddressForm,
@@ -482,9 +483,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   type Organization = { id: string; name: string; slug: string; owner_user_id: string | null }
 
   // Skills and certifications handlers
-  const searchParentSkillsMutation = api.profile.skills.searchParentSkills.useMutation()
-  const { data: primaryIndustryData } =
-    api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
+  const searchParentSkillsMutation = useSearchParentSkillsMutation()
+  const { data: primaryIndustryData } = usePrimaryIndustry()
   const searchCertificationsQuery = api.office.searchCertifications.useQuery(
     { query: '', limit: 50 },
     { enabled: false }

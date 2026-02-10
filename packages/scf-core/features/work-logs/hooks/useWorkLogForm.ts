@@ -3,7 +3,7 @@ import {
   useCreateWorkLogMutation,
   useUpdateWorkLogMutation,
 } from '@scf/core/utils/work-logs-sdk-hooks';
-import { api } from '@scf/core/utils/api';
+import { useUserSkills } from '@scf/core/utils/profile-skills-sdk-hooks';
 import { useWorkLogLocation } from '@scf/core/utils/location/useWorkLogLocation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -120,7 +120,7 @@ export interface UseWorkLogFormReturn {
   projectOptionsQuery: ReturnType<typeof useWorkLogProjectOptions>;
   organizationFilter: string | null;
   setOrganizationFilter: (organizationId: string | null) => void;
-  skillsQuery: ReturnType<typeof api.profile.skills.getUserSkills.useQuery>;
+  skillsQuery: ReturnType<typeof useUserSkills>;
   pendingOfflineDraft: OfflineWorkLog | null;
 }
 
@@ -214,7 +214,7 @@ export const useWorkLogForm = ({
     },
   );
 
-  const skillsQuery = api.profile.skills.getUserSkills.useQuery(undefined, {
+  const skillsQuery = useUserSkills(undefined, {
     staleTime: 60 * 1000,
   });
 

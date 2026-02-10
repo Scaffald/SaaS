@@ -1,4 +1,5 @@
-import { api } from '@scf/core/utils/api'
+import { useUserSkillsMultiTaxonomy, useRemoveSkillMultiTaxonomyMutation } from '@scf/core/utils/profile-skills-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { ConfirmationDialog, DashboardWidget } from '@unicornlove/beyond-ui'
 import { Award } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
@@ -35,17 +36,16 @@ export function ProfileSkillsRight() {
   const previousSkillsRef = useRef<string[]>([])
 
   // Fetch user's skills
-  const { data: userSkillsData, isLoading: isLoadingSkills } =
-    api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
+  const { data: userSkillsData, isPending: isLoadingSkills } = useUserSkillsMultiTaxonomy()
 
-  // React Query utils for cache invalidation
-  const utils = api.useUtils()
+  // React Query client for cache invalidation
+  const queryClient = useQueryClient()
 
   // Remove skill mutation
-  const removeSkillMutation = api.profile.skillsMultiTaxonomy.removeSkill.useMutation({
+  const removeSkillMutation = useRemoveSkillMultiTaxonomyMutation({
     onSuccess: async () => {
       // Invalidate cache to trigger automatic refetch
-      await Promise.all([utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate()])
+      await queryClient.invalidateQueries({ queryKey: ['scaffald', 'skills', 'multi-taxonomy'] })
       // Clear removing state after cache invalidation
       setRemovingSkillId(null)
       toast.show({
