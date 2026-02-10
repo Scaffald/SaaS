@@ -9,7 +9,7 @@ const setupModule = async () => {
 
   const react = await import('react')
 
-  vi.doMock('tamagui', () => ({
+  vi.doMock('@unicornlove/beyond-ui', () => ({
     useIsomorphicLayoutEffect: react.useLayoutEffect,
   }))
 

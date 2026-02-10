@@ -1,127 +1,24 @@
 /**
- * Minimal mock for @unicornlove/beyond-ui in tests.
+ * Minimal Beyond UI mock for unit tests.
  */
 import type { ReactNode } from 'react'
+import React, { createElement } from 'react'
 
-export function Box({ children }: { children?: ReactNode }) {
-  return <div>{children}</div>
-}
-export function Stack({ children }: { children?: ReactNode }) {
-  return <div>{children}</div>
-}
-export function Row({ children }: { children?: ReactNode }) {
-  return <div>{children}</div>
-}
-export function Button({
-  children,
-  onPress,
-  ...rest
-}: {
-  children?: ReactNode
-  onPress?: () => void
-}) {
-  return (
-    <button type="button" onClick={onPress} {...rest}>
-      {children}
-    </button>
-  )
-}
-export function Input({
-  value,
-  onChangeText,
-  placeholder,
-}: {
-  value?: string
-  onChangeText?: (text: string) => void
-  placeholder?: string
-}) {
-  return (
-    <input
-      placeholder={placeholder}
-      value={value}
-      onChange={(e) => onChangeText && onChangeText(e.target.value)}
-      data-testid="email-input"
-    />
-  )
-}
-export function Form({ children, onSubmit }: { children?: ReactNode; onSubmit?: () => void }) {
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        onSubmit && onSubmit()
-      }}
-    >
-      {children}
-    </form>
-  )
-}
-export function Paragraph({ children }: { children?: ReactNode }) {
-  return <p>{children}</p>
-}
-export function Text({ children }: { children?: ReactNode }) {
-  return <span>{children}</span>
-}
-export function Spinner() {
-  return <span data-testid="spinner" />
-}
-export function LoadingOverlay() {
-  return <div data-testid="loading-overlay" />
-}
-export function Separator() {
-  return <hr />
-}
-export function Caption({ children }: { children?: ReactNode }) {
-  return <span>{children}</span>
-}
-export function Hide({ children }: { children?: ReactNode }) {
-  return <>{children}</>
-}
-export function Show({ children }: { children?: ReactNode }) {
-  return <>{children}</>
-}
-export function usePlatform() {
-  return { platform: 'web' as const }
-}
-export function useToast() {
-  return { show: () => '' }
-}
-export function useThemeContext() {
-  return { theme: 'light' as const, setTheme: () => {}, toggleTheme: () => {} }
-}
-export const ToastProvider = ({ children }: { children?: ReactNode }) => <>{children}</>
-export const ToastContainer = () => null
+const createEl =
+  (tag: string) =>
+  ({ children, ...rest }: { children?: ReactNode; [key: string]: unknown }) =>
+    createElement(tag, rest, children)
 
-// Onboarding (for WelcomeScreen tests)
-export function Onboarding({
-  steps,
-  onOnboarded,
-}: {
-  steps: Array<{ Content: () => ReactNode }>
-  onOnboarded?: () => void
-}) {
-  const first = steps[0]
-  return (
-    <div data-testid="onboarding">
-      {first ? <first.Content /> : null}
-      <button type="button" onClick={onOnboarded} data-testid="onboarding-finish">
-        Finish
-      </button>
-    </div>
-  )
+export function createBeyondUIMock() {
+  return {
+    Stack: createEl('div'),
+    Row: createEl('div'),
+    Text: createEl('span'),
+    Box: createEl('div'),
+    ThemeProvider: ({ children }: { children?: ReactNode }) => createElement(React.Fragment, null, children),
+    useThemeContext: () => ({ theme: 'light' as const }),
+    VisuallyHidden: createEl('span'),
+    Spinner: () => createElement('div', { 'data-testid': 'spinner' }),
+    useToast: () => ({ show: () => {}, dismiss: () => {}, success: () => {}, error: () => {} }),
+  }
 }
-export function OnboardingStepContent({
-  title,
-  description,
-}: {
-  title?: string
-  description?: string
-}) {
-  return (
-    <div data-testid="onboarding-step-content">
-      {title ? <h2>{title}</h2> : null}
-      {description ? <p>{description}</p> : null}
-    </div>
-  )
-}
-export const OnboardingControls = () => null

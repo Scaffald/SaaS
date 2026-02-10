@@ -6,14 +6,14 @@ import { describe, expect, it, vi } from 'vitest'
 
 const mockScrollToCard = vi.fn()
 
-// Legacy UI mock (tamagui) before imports
-vi.mock('tamagui', () => {
+// Beyond UI mock: override only Stack for visibility style assertions; use real beyond-ui for the rest
+vi.mock('@unicornlove/beyond-ui', async () => {
+  const actual = (await vi.importActual('@unicornlove/beyond-ui')) as Record<string, unknown>
   const mapStyleProps = (props: Record<string, unknown>) => {
     const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(props)) {
       if (key === 'style') continue
-      // Skip responsive props
       if (key.startsWith('$')) continue
       switch (key) {
         case 'position':
@@ -55,9 +55,7 @@ vi.mock('tamagui', () => {
     )
   }
 
-  return {
-    Stack: MockYStack,
-  }
+  return { ...actual, Stack: MockYStack }
 })
 
 vi.mock('../ResultList', () => ({

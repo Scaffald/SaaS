@@ -105,7 +105,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({
     children,
     ...rest

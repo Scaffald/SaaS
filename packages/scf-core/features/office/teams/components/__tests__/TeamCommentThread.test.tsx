@@ -30,7 +30,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   useToast: () => ({ show: mockShow }),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (

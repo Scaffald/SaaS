@@ -90,7 +90,7 @@ vi.mock('expo-crypto', () => ({
   randomUUID: () => 'test-uuid-123',
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({
     children,
     ...rest

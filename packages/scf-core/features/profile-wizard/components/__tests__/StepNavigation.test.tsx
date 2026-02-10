@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { StepNavigation } from '../StepNavigation'
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({
     children,
     ...rest

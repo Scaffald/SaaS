@@ -587,8 +587,8 @@ export const Form = forwardRef<HTMLFormElement, ComponentProps<'form'>>((props, 
 ));
 Form.displayName = 'Form';
 
-// Legacy compatibility: no-op theme config (some tests still reference this name)
-export const createTamagui = <T extends object>(config: T): T => config;
+// Legacy compatibility: no-op theme config (some tests still reference this)
+export const createTheme = <T extends object>(config: T): T => config;
 export const styled = <T extends object>(Component: React.ComponentType<T>) => Component;
 
 // Group component

@@ -3,8 +3,8 @@ import { DiscoverCard } from '@unicornlove/beyond-ui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
+import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/beyond-ui'
 import { Button, Paragraph, SizableText, Text, Row } from '@unicornlove/beyond-ui'
 
 import type { TalentProfile } from '../types'
@@ -16,7 +16,7 @@ type ResultCardProps = {
 }
 
 export const ResultCard = memo(
-  forwardRef<TamaguiElement, ResultCardProps>(({ profile, isSelected, onSelect }, forwardedRef) => {
+  forwardRef<ComponentRef<typeof DiscoverCard>, ResultCardProps>(({ profile, isSelected, onSelect }, forwardedRef) => {
     const router = useRouter()
     const toast = useToast()
 

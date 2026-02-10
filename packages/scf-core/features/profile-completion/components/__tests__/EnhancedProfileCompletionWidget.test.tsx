@@ -34,7 +34,7 @@ vi.mock('expo-linear-gradient', () => ({
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const createStack = (dataTestId: string) =>
     function Stack({
       children,

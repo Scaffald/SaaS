@@ -41,7 +41,7 @@ const mockResults = [
 
 const userFactory = () => userEvent.setup()
 
-const mockTamagui = vi.hoisted(() => {
+const mockBeyondUI = vi.hoisted(() => {
   const React = require('react') as typeof import('react')
 
   const createComponent =
@@ -98,7 +98,7 @@ const mockTamagui = vi.hoisted(() => {
   }
 })
 
-vi.mock('tamagui', () => mockTamagui)
+// Use real @unicornlove/beyond-ui (no mock) so CertificationSearch renders correctly
 
 vi.mock('lucide-react-native', () => ({
   Search: () => <span data-testid="icon-search" />,

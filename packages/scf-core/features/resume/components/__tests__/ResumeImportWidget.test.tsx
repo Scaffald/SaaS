@@ -35,7 +35,7 @@ vi.mock('lucide-react-native', () => ({
   Users: () => <span data-testid="users" />,
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   interface StackProps {
     children?: ReactNode
     [key: string]: unknown
@@ -47,13 +47,13 @@ vi.mock('tamagui', () => {
   }
 
   const Stack = ({ children, ...rest }: StackProps) => (
-    <div data-testid="tamagui-stack" {...rest}>
+    <div data-testid="beyond-ui-stack" {...rest}>
       {children}
     </div>
   )
 
   const Text = ({ children, ...rest }: TextProps) => (
-    <span data-testid="tamagui-text" {...rest}>
+    <span data-testid="beyond-ui-text" {...rest}>
       {children}
     </span>
   )

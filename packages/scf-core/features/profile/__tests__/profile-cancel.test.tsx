@@ -109,7 +109,7 @@ vi.mock('@unicornlove/beyond-ui', () => {
   }
 })
 
-vi.mock('tamagui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   Stack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Row: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,

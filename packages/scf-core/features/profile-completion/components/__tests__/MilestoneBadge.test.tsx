@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { CompletionMilestone } from '../../hooks/useCompletionStatus'
 import { MilestoneBadge } from '../MilestoneBadge'
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({
     children,
     opacity,

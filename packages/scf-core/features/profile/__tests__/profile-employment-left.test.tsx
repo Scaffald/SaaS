@@ -230,7 +230,7 @@ vi.mock('@unicornlove/beyond-ui', () => {
   }
 })
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   type DivProps = ComponentPropsWithoutRef<'div'>
 
   type TextInputProps = ComponentPropsWithoutRef<'input'> & {

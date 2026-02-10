@@ -9,14 +9,13 @@ This directory contains centralized test utilities for common testing patterns.
 Utilities for setting up theme (Beyond-UI) in tests:
 
 ```tsx
-import { BeyondUIThemeWrapper, TamaguiTestWrapper } from '@/tests/infrastructure/vitest/helpers/theme-setup';
+import { BeyondUIThemeWrapper } from '@/tests/infrastructure/vitest/helpers/theme-setup';
 
 <BeyondUIThemeWrapper>
   <YourComponent />
 </BeyondUIThemeWrapper>
 ```
 
-`tamagui-setup.tsx` re-exports from theme-setup for backward compatibility. Prefer BeyondUIThemeWrapper for new tests.
 
 ### `form-setup.tsx`
 
@@ -62,15 +61,15 @@ const { getByText } = renderWithProviders(<YourComponent />, {
 });
 ```
 
-## Legacy UI mocks
+## Beyond UI mocks
 
-### `mocks/tamagui-complete.tsx`
+### `mocks/beyond-ui-complete.tsx`
 
-Legacy mock for tests that still depend on it. **New tests should use Beyond UI and theme-setup.** Use this only when needed for backward compatibility:
+Full Beyond UI mock for tests that cannot use theme-setup. Prefer theme-setup and real Beyond UI when possible:
 
 ```tsx
-import { setupTamaguiMocks } from '@/tests/infrastructure/vitest/mocks/tamagui-complete';
-setupTamaguiMocks();
+import { setupBeyondUIMocks } from '@/tests/infrastructure/vitest/mocks/beyond-ui-complete';
+setupBeyondUIMocks();
 ```
 
 ## Best Practices
@@ -87,7 +86,7 @@ setupTamaguiMocks();
 
 If you have existing tests with inline mocks, you can migrate them:
 
-For new tests, use Beyond UI and the app's theme/UI provider (theme-setup). The tamagui-complete mock remains for backward compatibility.
+For new tests, use Beyond UI and the app's theme/UI provider (theme-setup). Use `beyond-ui-complete` only when a full mock is required.
 
 ### Before:
 ```tsx

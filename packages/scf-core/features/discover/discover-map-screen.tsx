@@ -16,6 +16,7 @@ import {
   SlidersHorizontal,
   X,
 } from 'lucide-react-native'
+import type { ComponentRef } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import {
@@ -26,7 +27,6 @@ import {
   useWindowDimensions,
   Row,
   Stack,
-  type TamaguiElement,
 } from '@unicornlove/beyond-ui'
 import { JobPreviewModal } from './components/JobPreviewModal'
 import { MapFilterBar } from './components/MapFilterBar'
@@ -57,7 +57,7 @@ export const DiscoverMapScreen = () => {
   const isSmallScreen = width <= 800 || isNativeMobile // ensure native mobile always treated as small
   const resultListRef = useRef<ResultListRef>(null)
   const mapRef = useRef<MapContainerRef>(null)
-  const layoutRef = useRef<TamaguiElement | null>(null)
+  const layoutRef = useRef<ComponentRef<typeof Stack> | null>(null)
 
   // Location functionality
   const { location } = useUserLocation()

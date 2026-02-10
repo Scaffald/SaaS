@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ProgressIndicator } from '../ProgressIndicator'
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({
     children,
     ...rest

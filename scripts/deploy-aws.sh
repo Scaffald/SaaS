@@ -109,7 +109,6 @@ build_web_app() {
     bump_version_if_needed
 
     export EXPO_USE_FAST_REFRESH=false
-    export TAMAGUI_DISABLE_WARN_DYNAMIC_LOAD=1
     export NODE_ENV=production
     export APP_ENV="$target_env"
 
@@ -252,8 +251,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     export NODE_ENV=production
     export APP_ENV="$ENV"
     export EXPO_USE_FAST_REFRESH=false
-    export TAMAGUI_DISABLE_WARN_DYNAMIC_LOAD=1
-    
+
     # Load environment file if it exists
     if [ -f "$ENV_FILE" ]; then
         set -a

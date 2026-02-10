@@ -54,8 +54,8 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   ),
 }))
 
-vi.mock('tamagui', async () => {
-  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+vi.mock('@unicornlove/beyond-ui', async () => {
+  const actual = await vi.importActual<typeof import('@unicornlove/beyond-ui')>('@unicornlove/beyond-ui')
 
   const SelectRoot = ({
     value,

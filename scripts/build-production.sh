@@ -10,7 +10,6 @@ echo "=========================="
 export NODE_ENV=production
 export APP_ENV=production
 export EXPO_USE_FAST_REFRESH=false
-export TAMAGUI_DISABLE_WARN_DYNAMIC_LOAD=1
 
 # Check for .env.production
 if [ ! -f ".env.production" ]; then

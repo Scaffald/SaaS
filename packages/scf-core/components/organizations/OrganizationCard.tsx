@@ -1,6 +1,6 @@
 import { Building, MapPin, Users } from 'lucide-react-native'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/beyond-ui'
+import type { ComponentRef } from 'react'
 import { Text, Row } from '@unicornlove/beyond-ui'
 import {
   CardActions,
@@ -55,7 +55,7 @@ export interface OrganizationCardProps {
  * ```
  */
 export const OrganizationCard = memo(
-  forwardRef<TamaguiElement, OrganizationCardProps>(
+  forwardRef<ComponentRef<typeof SelectableCard>, OrganizationCardProps>(
     (
       { id, name, industry, address, employeeCount, isSelected = false, onSelect, onViewDetails },
       forwardedRef

@@ -6,8 +6,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const selectHandler = vi.fn()
 const closeHandler = vi.fn()
 
-// Legacy UI mock (tamagui) before imports
-vi.mock('tamagui', () => {
+// Beyond UI mock before imports
+vi.mock('@unicornlove/beyond-ui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}

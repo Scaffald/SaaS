@@ -267,7 +267,7 @@ vi.mock('../components/steps/EducationStep', () => ({
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({
     children,
     onPress,

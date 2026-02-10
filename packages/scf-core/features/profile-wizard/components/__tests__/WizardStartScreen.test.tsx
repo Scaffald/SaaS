@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { WizardStartScreen } from '../WizardStartScreen'
 
-vi.mock('tamagui', () => {
+// Beyond UI mock: Card.Header used by component; beyond-ui exports CardHeader separately
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({
     children,
     testID,
@@ -18,6 +19,7 @@ vi.mock('tamagui', () => {
     </div>
   )
 
+  const React = require('react') as typeof import('react')
   const Button = ({
     children,
     onPress,
@@ -31,9 +33,9 @@ vi.mock('tamagui', () => {
     iconAfter?: ReactNode
   } & Record<string, unknown>) => (
     <button type="button" onClick={onPress} {...rest}>
-      {icon}
+      {icon != null && typeof icon === 'function' ? React.createElement(icon, {}) : icon}
       {children}
-      {iconAfter}
+      {iconAfter != null && typeof iconAfter === 'function' ? React.createElement(iconAfter, {}) : iconAfter}
     </button>
   )
 
@@ -83,7 +85,7 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <h3 {...rest}>{children}</h3>
 
   return {
-    Stack: Stack,
+    Stack,
     Row: Stack,
     Button,
     Text,

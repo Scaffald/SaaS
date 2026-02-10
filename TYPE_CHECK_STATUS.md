@@ -63,7 +63,7 @@ components/certifications/CertificationSearch.tsx: Missing 'ScrollView' export
 components/certifications/CertificationProofCard.tsx: Missing required props
 ```
 
-**Root Cause:** These components were written for the old UI library (Tamagui) and need to be updated for beyond-ui's type system. The beyond-ui components have different prop requirements.
+**Root Cause:** These components were written for a previous UI library and need to be updated for beyond-ui's type system. The beyond-ui components have different prop requirements.
 
 **Recommendation:**
 1. Update certification components to match beyond-ui prop types

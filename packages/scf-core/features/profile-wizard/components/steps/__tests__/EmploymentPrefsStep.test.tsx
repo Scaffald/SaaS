@@ -93,7 +93,7 @@ vi.mock('@scf/core/forms', () => ({
   },
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({
     children,
     ...rest

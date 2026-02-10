@@ -1,6 +1,6 @@
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
+import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/beyond-ui'
 import { Paragraph, Text, Row } from '@unicornlove/beyond-ui'
 import {
   CardActions,
@@ -126,7 +126,7 @@ function formatRelativeTime(dateString?: string): string {
  * ```
  */
 export const JobCard = memo(
-  forwardRef<TamaguiElement, JobCardProps>(
+  forwardRef<ComponentRef<typeof SelectableCard>, JobCardProps>(
     (
       {
         id,

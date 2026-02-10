@@ -94,7 +94,7 @@ vi.mock('@unicornlove/beyond-ui', () => ({
   Spinner: () => <div>Loading...</div>,
 }))
 
-vi.mock('tamagui', () => ({
+vi.mock('@unicornlove/beyond-ui', () => ({
   Stack: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Row: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Text: (props: { children: ReactNode }) => <span>{props.children}</span>,

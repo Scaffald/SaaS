@@ -1,7 +1,6 @@
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from 'lucide-react-native'
-import type { ReactNode } from 'react'
+import type { ComponentRef, ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/beyond-ui'
 import { Paragraph, Text, Row, useWindowDimensions } from '@unicornlove/beyond-ui'
 import {
   CardBadges,
@@ -62,7 +61,7 @@ export interface ProfileCardProps {
  * ```
  */
 export const ProfileCard = memo(
-  forwardRef<TamaguiElement, ProfileCardProps>(
+  forwardRef<ComponentRef<typeof SelectableCard>, ProfileCardProps>(
     (
       {
         id,

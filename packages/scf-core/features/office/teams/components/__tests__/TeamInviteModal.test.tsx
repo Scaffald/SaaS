@@ -79,7 +79,7 @@ vi.mock('@scf/core/components/user', () => ({
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@unicornlove/beyond-ui', () => {
   const Stack = ({ children, testID }: { children?: ReactNode; testID?: string }) => (
     <div data-testid={testID}>{children}</div>
   )

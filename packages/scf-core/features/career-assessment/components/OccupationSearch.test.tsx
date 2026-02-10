@@ -35,7 +35,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-// Legacy UI mock (tamagui)
+// Beyond UI mock
 vi.mock('@unicornlove/beyond-ui', async () => {
   const React = await import('react')
   return {
