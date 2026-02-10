@@ -235,9 +235,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    // Alias @unicornlove/ui to source for proper test transformation
+    // Alias @unicornlove/beyond-ui to source for proper test transformation
     alias: {
-      '@unicornlove/ui': path.resolve(__dirname, '../../packages/ui/src'),
+      '@unicornlove/beyond-ui': path.resolve(__dirname, '../../packages/beyond-ui/src'),
     },
     // Dependencies that need to be transformed for tests
     deps: {

@@ -1,6 +1,6 @@
 /**
  * Vitest configuration for forsured-web
- * Standalone config - uses mocks for @unicornlove/ui to avoid react-native deps
+ * Standalone config - uses mocks for @unicornlove/beyond-ui to avoid react-native deps
  */
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -54,8 +54,6 @@ export default defineConfig({
     alias: {
       // Local app alias
       '@': resolve(packageRoot, 'src'),
-      // Use mock for @unicornlove/ui to avoid react-native dependency chain
-      '@unicornlove/ui': resolve(packageRoot, 'src/test/__mocks__/@unicornlove/ui.tsx'),
       // Use mock for @unicornlove/beyond-ui to avoid react-native dependency chain
       '@unicornlove/beyond-ui': resolve(packageRoot, 'src/test/__mocks__/@unicornlove/beyond-ui.tsx'),
       // Shim expo-router (forsured-web uses react-router-dom)
