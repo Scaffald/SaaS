@@ -48,7 +48,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       setDepositAmount('')
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
           title: 'Failed to deposit credits',
           variant: 'error',

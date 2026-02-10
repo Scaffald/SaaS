@@ -111,7 +111,7 @@ export function QuickApplyModal({
       }, 2000)
     },
     onError: (error: { message?: string }) => {
-      const message = error.message || 'Failed to submit application. Please try again.'
+      const _message = error.message || 'Failed to submit application. Please try again.'
       toast.show({
           title: 'Error',
           variant: 'error',

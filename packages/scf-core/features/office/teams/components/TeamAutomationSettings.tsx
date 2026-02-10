@@ -110,7 +110,7 @@ export function TeamAutomationSettings({
       await utils.teams.byId.invalidate({ teamId })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Please try again shortly.'
+      const _message = error instanceof Error ? error.message : 'Please try again shortly.'
       toast.show({
           title: 'Unable to update automation settings',
           variant: 'error',

@@ -78,7 +78,7 @@ export function OfficeTeamsList() {
       void refetch()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Please try again shortly.'
+      const _message = error instanceof Error ? error.message : 'Please try again shortly.'
       toast.show({
           title: 'Unable to archive team',
           variant: 'error',

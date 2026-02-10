@@ -74,7 +74,7 @@ export function EmploymentSection({
             },
             onError: (error: unknown) => {
               console.error('Error saving employment:', error)
-              const message =
+              const _message =
                 error instanceof Error ? error.message : 'Failed to save employment preferences.'
               toast.show({
           title: 'Error',
@@ -93,7 +93,7 @@ export function EmploymentSection({
             },
             onError: (error: unknown) => {
               console.error('Error saving employment:', error)
-              const message =
+              const _message =
                 error instanceof Error ? error.message : 'Failed to save employment preferences.'
               toast.show({
           title: 'Error',

@@ -192,7 +192,7 @@ export const SoftSkillsRatingForm: FC = () => {
         setAutoSaveStatus('saved')
         setLastSavedAt(new Date())
       } catch (error) {
-        const message =
+        const _message =
           error instanceof Error ? error.message : 'Failed to save assessment. Please try again.'
         toast.show({
           title: 'Error',

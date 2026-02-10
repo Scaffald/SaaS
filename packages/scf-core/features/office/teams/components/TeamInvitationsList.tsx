@@ -70,7 +70,7 @@ export function TeamInvitationsList({
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
           title: 'Unable to resend invitation',
           variant: 'error',
@@ -87,7 +87,7 @@ export function TeamInvitationsList({
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
           title: 'Unable to cancel invitation',
           variant: 'error',

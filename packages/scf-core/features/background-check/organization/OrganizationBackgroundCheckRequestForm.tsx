@@ -157,7 +157,7 @@ export function OrganizationBackgroundCheckRequestForm() {
       }
       setPaymentSession(null)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to confirm payment.'
+      const _message = error instanceof Error ? error.message : 'Unable to confirm payment.'
       toast.show({
           title: 'Payment confirmation failed',
           variant: 'error',

@@ -83,7 +83,7 @@ export function IdVerificationRequestPanel({
 
   const requestVerification = api.idVerification.requestVerification.useMutation({
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Unable to create payment'
+      const _message = error instanceof Error ? error.message : 'Unable to create payment'
       toast.show({
           title: 'Unable to create payment',
           variant: 'error',
@@ -102,7 +102,7 @@ export function IdVerificationRequestPanel({
       resetForm()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Payment confirmation failed'
+      const _message = error instanceof Error ? error.message : 'Payment confirmation failed'
       toast.show({
           title: 'Payment confirmation failed',
           variant: 'error',

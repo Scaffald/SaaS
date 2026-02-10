@@ -317,7 +317,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               disabled={isUploading || isCapturing || !canUploadMore}
               accept="image/jpeg,image/png,image/webp"
               maxSizeBytes={2 * 1024 * 1024}
-              onError={(message) => toast.show({
+              onError={(_message) => toast.show({
           title: 'Upload Failed',
           variant: 'error',
         })}

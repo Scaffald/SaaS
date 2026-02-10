@@ -77,7 +77,7 @@ export function GeneralProfileSection({
             },
             onError: (error: unknown) => {
               console.error('Error saving profile:', error)
-              const message =
+              const _message =
                 error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
               toast.show({
           title: 'Error',
@@ -96,7 +96,7 @@ export function GeneralProfileSection({
             },
             onError: (error: unknown) => {
               console.error('Error saving profile:', error)
-              const message =
+              const _message =
                 error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
               toast.show({
           title: 'Error',
@@ -120,7 +120,7 @@ export function GeneralProfileSection({
     },
     onError: (error: unknown) => {
       console.error('Error uploading avatar:', error)
-      const message =
+      const _message =
         error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.'
       toast.show({
           title: 'Upload Error',

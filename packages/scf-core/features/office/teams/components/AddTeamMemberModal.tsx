@@ -38,7 +38,7 @@ export function AddTeamMemberModal({
       onAdded?.()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
           title: 'Unable to add member',
           variant: 'error',

@@ -129,7 +129,7 @@ export function IdVerificationContent() {
       setPaymentSession(null)
       void currentVerificationQuery.refetch()
     } catch (error) {
-      const message =
+      const _message =
         error instanceof Error ? error.message : 'Unable to confirm payment with Stripe.'
       toast.show({
           title: 'Payment confirmation failed',

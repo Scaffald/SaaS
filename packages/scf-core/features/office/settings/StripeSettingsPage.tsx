@@ -41,7 +41,7 @@ export function StripeSettingsPage() {
         })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to update publishable key'
+      const _message = error instanceof Error ? error.message : 'Failed to update publishable key'
       toast.show({
           title: 'Error',
           variant: 'error',
@@ -59,7 +59,7 @@ export function StripeSettingsPage() {
         })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to store API secret'
+      const _message = error instanceof Error ? error.message : 'Failed to store API secret'
       toast.show({
           title: 'Error',
           variant: 'error',
@@ -77,7 +77,7 @@ export function StripeSettingsPage() {
         })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to store webhook secret'
+      const _message = error instanceof Error ? error.message : 'Failed to store webhook secret'
       toast.show({
           title: 'Error',
           variant: 'error',
@@ -90,7 +90,7 @@ export function StripeSettingsPage() {
       await utils.stripeSettings.getSettings.invalidate()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to update mode'
+      const _message = error instanceof Error ? error.message : 'Failed to update mode'
       toast.show({
           title: 'Error',
           variant: 'error',
@@ -108,7 +108,7 @@ export function StripeSettingsPage() {
         })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Stripe connection test failed'
+      const _message = error instanceof Error ? error.message : 'Stripe connection test failed'
       toast.show({
           title: 'Error',
           variant: 'error',

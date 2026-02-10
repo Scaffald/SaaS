@@ -81,7 +81,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       void membersQuery.refetch()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
           title: 'Unable to transfer ownership',
           variant: 'error',
@@ -100,7 +100,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       router.replace(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
           title: 'Unable to leave team',
           variant: 'error',

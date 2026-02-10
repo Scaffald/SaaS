@@ -422,7 +422,7 @@ export function AdminCatalogManager() {
         message: `${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`,
       })
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to update package status.'
+      const _message = error instanceof Error ? error.message : 'Unable to update package status.'
       toast.show({
           title: 'Failed to update package',
           variant: 'error',
@@ -444,7 +444,7 @@ export function AdminCatalogManager() {
         message: `${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`,
       })
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to update check type status.'
+      const _message = error instanceof Error ? error.message : 'Unable to update check type status.'
       toast.show({
           title: 'Failed to update check type',
           variant: 'error',

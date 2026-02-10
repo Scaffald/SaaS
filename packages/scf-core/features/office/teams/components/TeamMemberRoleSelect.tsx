@@ -50,7 +50,7 @@ export function TeamMemberRoleSelect({
       }
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
           title: 'Unable to update role',
           variant: 'error',

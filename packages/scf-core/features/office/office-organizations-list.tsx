@@ -124,7 +124,7 @@ export function OfficeOrganizationsList() {
       await Promise.all([refetch(), refetchRequests()])
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Please try again shortly.'
+      const _message = error instanceof Error ? error.message : 'Please try again shortly.'
       toast.show({
           title: 'Unable to review request',
           variant: 'error',

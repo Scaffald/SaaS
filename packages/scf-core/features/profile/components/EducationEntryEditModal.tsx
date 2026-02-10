@@ -88,7 +88,7 @@ export function EducationEntryEditModal({
       onOpenChange(false)
     },
     onError: (error: unknown) => {
-      const message =
+      const _message =
         error instanceof Error
           ? error.message
           : 'Failed to update education entry. Please try again.'

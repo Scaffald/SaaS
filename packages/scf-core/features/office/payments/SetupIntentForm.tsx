@@ -35,7 +35,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
       })
       setClientSecret(result.clientSecret)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to initialize payment form'
+      const _message = error instanceof Error ? error.message : 'Failed to initialize payment form'
       toast.show({
           title: 'Error',
           variant: 'error',

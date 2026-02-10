@@ -33,7 +33,7 @@ export function RemoveMemberModal({
       onRemoved?.()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const _message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
           title: 'Unable to remove member',
           variant: 'error',
