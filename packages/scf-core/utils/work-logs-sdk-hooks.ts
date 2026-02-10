@@ -14,7 +14,6 @@ import type {
   GetOverviewParams,
   GetProjectOptionsParams,
   GetProjectRollupParams,
-  GetSuggestedSkillsParams,
   ListWorkLogsParams,
   MoveToProjectParams,
   ProjectOption,

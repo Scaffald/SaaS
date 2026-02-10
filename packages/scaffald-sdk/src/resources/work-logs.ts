@@ -347,7 +347,7 @@ export class WorkLogs extends Resource {
    * Get public work logs for a user's profile feed
    */
   async getPublicProfileFeed(params: PublicProfileFeedParams): Promise<WorkLogListItem[]> {
-    return this.get<WorkLogListItem[]>('/work-logs/public-feed')
+    return this.get<WorkLogListItem[]>('/work-logs/public-feed', params)
   }
 
   /**
@@ -417,7 +417,7 @@ export class WorkLogs extends Resource {
    * Get suggested skills based on query
    */
   async getSuggestedSkills(params: GetSuggestedSkillsParams): Promise<string[]> {
-    return this.get<string[]>('/work-logs/skills/suggestions')
+    return this.get<string[]>('/work-logs/skills/suggestions', params)
   }
 
   /**
