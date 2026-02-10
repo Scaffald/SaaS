@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
-import { api } from '@scf/core/utils/api'
+import { useGeneralInfoWidget, useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { redirect } from '@scf/core/utils/redirect'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { Button, Sheet, spacing } from '@unicornlove/beyond-ui'
@@ -138,7 +138,7 @@ export function NewsWidget({
   const { data: user } = useCurrentUser()
   const userId = user?.id
 
-  const { data: generalInfo } = api.profile.widgets.getGeneralInfo.useQuery(
+  const { data: generalInfo } = useGeneralInfoWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )
@@ -229,7 +229,7 @@ export function NewsWidget({
   })
   const [preferencesOpen, setPreferencesOpen] = useState(false)
 
-  const { data: userSkills } = api.profile.widgets.getSkills.useQuery(
+  const { data: userSkills } = useSkillsWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )

@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ProfileWizard } from '@scf/core/features/profile-wizard/components/ProfileWizard'
-import { api } from '@scf/core/utils/api'
+import { useDismissNudgeMutation } from '@scf/core/utils/profile-completion-sdk-hooks'
 import { Sheet } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -26,7 +26,7 @@ export function ProfileCompletionExperience() {
     hasMultiple,
     isLoading: isBenefitLoading,
   } = useCompletionNudges()
-  const dismissNudgeMutation = api.profile.completion.dismissNudge.useMutation()
+  const dismissNudgeMutation = useDismissNudgeMutation()
   const [isWizardOpen, setIsWizardOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'first-login' | 'progress-reminder'>(

@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useCertificationsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import {
   Button,
   DashboardWidget,
@@ -14,17 +14,9 @@ import { Linking } from 'react-native'
 import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
+import type { CertificationWidgetEntry } from '@scaffald/sdk'
 
-interface UserCertification {
-  id: string
-  name: string
-  issuing_organization: string | null
-  issue_date: string | null
-  expiration_date: string | null
-  credential_id: string | null
-  credential_url: string | null
-  does_not_expire: boolean | null
-}
+type UserCertification = CertificationWidgetEntry
 
 /**
  * CertificationsWidget
@@ -40,13 +32,12 @@ export function CertificationsWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error, refetch, isFetching } =
-    api.profile.widgets.getCertifications.useQuery(
-      { userId },
-      {
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-      }
-    )
+  const { data, isLoading, error, refetch, isFetching } = useCertificationsWidget(
+    { userId },
+    {
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    }
+  )
 
   if (isLoading) {
     return (

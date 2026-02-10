@@ -1,6 +1,10 @@
-import { useSlugHistory, useUpdateSlugMutation } from '@scf/core/utils/profile-general-sdk-hooks'
+import {
+  useSlugHistory,
+  useUpdateSlugMutation,
+  useCheckSlugAvailability,
+} from '@scf/core/utils/profile-general-sdk-hooks'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { api } from '@scf/core/utils/api'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { isReservedSlug, isSlugValid } from '@scf/core/utils/slugify'
 import { Button, DashboardWidget } from '@unicornlove/beyond-ui'
@@ -25,13 +29,8 @@ export function VanityUrlSection() {
   const toast = useToast()
   const [slugInput, setSlugInput] = useState('')
   const [isEditing, setIsEditing] = useState(false)
-  const [isChecking, setIsChecking] = useState(false)
+  const [debouncedSlug, setDebouncedSlug] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
-  const [availabilityStatus, setAvailabilityStatus] = useState<{
-    available?: boolean
-    checking?: boolean
-    suggestions?: string[]
-  }>({})
 
   const queryClient = useQueryClient()
 
@@ -40,7 +39,7 @@ export function VanityUrlSection() {
     data: profileData,
     isLoading: isLoadingProfile,
     refetch: refetchProfile,
-  } = api.profile.widgets.getGeneralInfo.useQuery()
+  } = useGeneralInfoWidget()
 
   // Get slug history
   const { data: slugHistory, refetch: refetchHistory } = useSlugHistory()
@@ -54,7 +53,7 @@ export function VanityUrlSection() {
       })
       setIsEditing(false)
       setSlugInput('')
-      setAvailabilityStatus({})
+      setDebouncedSlug('')
       // Refetch profile data to get new slug
       refetchProfile()
       refetchHistory()
@@ -78,58 +77,79 @@ export function VanityUrlSection() {
     }
   }, [profileData?.slug, isEditing])
 
-  // Debounced slug availability check
+  // Debounce slug input
   useEffect(() => {
     if (!isEditing || !slugInput) {
-      setAvailabilityStatus({})
+      setDebouncedSlug('')
       return
     }
 
     const normalized = slugInput.toLowerCase().trim()
 
-    // Validate format first
-    if (!isSlugValid(normalized)) {
-      if (normalized.length > 0) {
-        setAvailabilityStatus({
-          available: false,
-          checking: false,
-        })
-      }
+    // Skip debounce if invalid format or current slug
+    if (!isSlugValid(normalized) || normalized === profileData?.slug?.toLowerCase()) {
+      setDebouncedSlug('')
       return
     }
 
-    // Check if it's the current slug
-    if (normalized === profileData?.slug?.toLowerCase()) {
-      setAvailabilityStatus({
-        available: true,
-        checking: false,
-      })
-      return
-    }
-
-    // Check availability
-    setIsChecking(true)
-    const timeoutId = setTimeout(async () => {
-      try {
-        // Use fetchQuery to call the query imperatively
-        const result = await utils.profile.vanity.checkSlug.fetch({ slug: normalized })
-        setAvailabilityStatus({
-          available: result.available,
-          checking: false,
-          suggestions: result.suggestions || [],
-        })
-      } catch (_error) {
-        setAvailabilityStatus({
-          available: false,
-          checking: false,
-        })
-      } finally {
-        setIsChecking(false)
-      }
+    const timeoutId = setTimeout(() => {
+      setDebouncedSlug(normalized)
     }, 500) // 500ms debounce
 
     return () => clearTimeout(timeoutId)
   }, [slugInput, isEditing, profileData?.slug])
+
+  // Check slug availability
+  const {
+    data: availabilityData,
+    isLoading: isCheckingAvailability,
+    error: availabilityError,
+  } = useCheckSlugAvailability(debouncedSlug, {
+    enabled: !!debouncedSlug && isEditing,
+  })
+
+  // Compute availability status
+  const availabilityStatus = (() => {
+    if (!isEditing || !slugInput) {
+      return {}
+    }
+
+    const normalized = slugInput.toLowerCase().trim()
+
+    // Format validation
+    if (!isSlugValid(normalized)) {
+      if (normalized.length > 0) {
+        return { available: false, checking: false }
+      }
+      return {}
+    }
+
+    // Current slug
+    if (normalized === profileData?.slug?.toLowerCase()) {
+      return { available: true, checking: false }
+    }
+
+    // Checking availability
+    if (isCheckingAvailability) {
+      return { checking: true }
+    }
+
+    // Availability result
+    if (availabilityData) {
+      return {
+        available: availabilityData.available,
+        checking: false,
+        suggestions: availabilityData.suggestions || [],
+      }
+    }
+
+    // Error state
+    if (availabilityError) {
+      return { available: false, checking: false }
+    }
+
+    return {}
+  })()
 
   const handleCopyUrl = async () => {
     if (!profileData?.slug) return
@@ -198,7 +218,7 @@ export function VanityUrlSection() {
   const handleCancel = () => {
     setSlugInput(profileData?.slug || '')
     setIsEditing(false)
-    setAvailabilityStatus({})
+    setDebouncedSlug('')
   }
 
   const currentSlug = profileData?.slug
@@ -297,7 +317,7 @@ export function VanityUrlSection() {
                         : '$borderColor'
                   }
                 />
-                {isChecking && <Spinner size="small" />}
+                {isCheckingAvailability && <Spinner size="small" />}
               </Row>
 
               {/* Availability Status */}

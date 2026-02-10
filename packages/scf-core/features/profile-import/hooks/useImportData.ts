@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useImportData as useSDKImportData } from '@scf/core/utils/profile-import-sdk-hooks'
 import { useMemo } from 'react'
 
 export interface ImportSection<TItem> {
@@ -64,12 +64,7 @@ export interface ImportData {
 }
 
 export function useImportData() {
-  const { data, isLoading, refetch, isError } = api.profile.import.getImportData.useQuery(
-    undefined,
-    {
-      staleTime: 0,
-    }
-  )
+  const { data, isPending: isLoading, refetch, isError } = useSDKImportData()
 
   const importData: ImportData | null = useMemo(() => {
     const payload = data?.payload

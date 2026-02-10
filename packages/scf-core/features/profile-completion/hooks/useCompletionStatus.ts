@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api';
+import { useCompletionStatus as useSDKCompletionStatus } from '@scf/core/utils/profile-completion-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser';
 import type { ProfileWizardStepId } from '@scf/supabase/client-types';
 import { useMemo } from 'react';
@@ -18,29 +18,6 @@ interface RawCompletionMilestone {
   threshold: number;
   achieved: boolean;
   reachedAt?: string | null;
-}
-
-interface RawNudgeStatus {
-  shouldPrompt: boolean;
-  lastDismissedAt: string | null;
-  dismissed?: Record<string, { dismissedAt: string; reason?: string }>;
-}
-
-interface RawCompletionSummary {
-  completedWeight: number;
-  remainingWeight: number;
-  nextMilestone: number | null;
-}
-
-interface RawCompletionStatus {
-  sectionProgress: RawCompletionSection[];
-  milestoneBadges: RawCompletionMilestone[];
-  milestoneHistory?: Record<string, string>;
-  completionPercentage: number;
-  incompleteSections: string[];
-  summary?: RawCompletionSummary;
-  updatedAt: string;
-  nudgeStatus: RawNudgeStatus;
 }
 
 export interface CompletionSection {
@@ -87,15 +64,10 @@ export interface CompletionStatus {
 export function useCompletionStatus() {
   const {
     data: rawStatus,
-    isLoading,
+    isPending: isLoading,
     isError,
     refetch,
-  }: {
-    data: RawCompletionStatus | undefined;
-    isLoading: boolean;
-    isError: boolean;
-    refetch: () => Promise<unknown>;
-  } = api.profile.completion.getStatus.useQuery();
+  } = useSDKCompletionStatus();
   const { user } = useUser();
 
   const userType: "worker" | "employer" =

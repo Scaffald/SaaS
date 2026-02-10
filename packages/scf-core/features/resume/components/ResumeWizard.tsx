@@ -1,11 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OpenToTravelCard } from '@scf/core/features/profile/components/employment-fields'
-import { api } from '@scf/core/utils/api'
 import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useExperience } from '@scf/core/utils/profile-experience-sdk-hooks'
 import { useEmployment } from '@scf/core/utils/profile-employment-sdk-hooks'
 import { useEducation } from '@scf/core/utils/profile-education-sdk-hooks'
 import { useUserCertificationTree } from '@scf/core/utils/profile-certifications-sdk-hooks'
+import { useUserSkillsMultiTaxonomy } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { Button, ToggleCard, spacing } from '@unicornlove/beyond-ui'
 import {
   AlertCircle,
@@ -126,7 +126,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   const educationQuery = useEducation({
     refetchOnWindowFocus: false,
   })
-  const skillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery(undefined, {
+  const skillsQuery = useUserSkillsMultiTaxonomy({
     refetchOnWindowFocus: false,
   })
   const certificationsQuery = useUserCertificationTree({

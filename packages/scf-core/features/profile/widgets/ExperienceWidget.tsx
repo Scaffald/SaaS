@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useExperienceWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import {
   Button,
   DashboardWidget,
@@ -13,19 +13,9 @@ import { useRouter } from 'expo-router'
 import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
+import type { ExperienceWidgetEntry } from '@scaffald/sdk'
 
-interface UserExperience {
-  id: string
-  job_title: string
-  company_name: string
-  start_date: string | null
-  end_date: string | null
-  is_current: boolean | null
-  location: string | null
-  employment_type: string | null
-  is_remote: boolean | null
-  description: string | null
-}
+type UserExperience = ExperienceWidgetEntry
 
 /**
  * ExperienceWidget
@@ -41,13 +31,12 @@ export function ExperienceWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error, refetch, isFetching } =
-    api.profile.widgets.getExperience.useQuery(
-      { userId },
-      {
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-      }
-    )
+  const { data, isLoading, error, refetch, isFetching } = useExperienceWidget(
+    { userId },
+    {
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    }
+  )
 
   if (isLoading) {
     return (

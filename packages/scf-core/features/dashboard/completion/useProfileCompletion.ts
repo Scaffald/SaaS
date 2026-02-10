@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api';
+import { useCompletionStatus } from '@scf/core/utils/profile-completion-sdk-hooks'
 import type { ProfileWizardStepId } from '@scf/supabase/client-types';
 import { useMemo } from 'react';
 import { resolveSectionMetadata } from '../../profile-completion/constants/sectionMetadata';
@@ -26,12 +26,7 @@ export interface ProfileCompletionData {
 }
 
 export const useProfileCompletion = () => {
-  const { data: status, isLoading } = api.profile.completion.getStatus.useQuery(
-    undefined,
-    {
-      staleTime: 5 * 60 * 1000, // 5 minutes cache
-    },
-  );
+  const { data: status, isLoading } = useCompletionStatus();
 
   const completionData = useMemo((): ProfileCompletionData | null => {
     if (!status) return null;

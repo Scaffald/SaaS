@@ -1,4 +1,5 @@
-import { api } from '@scf/core/utils/api'
+import { useSaveImportDataMutation, useClearImportDataMutation } from '@scf/core/utils/profile-import-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   CheckCircle2,
   Clock,
@@ -40,9 +41,9 @@ export function ImportReviewScreen() {
     total: 0,
   })
 
-  const utils = api.useUtils()
-  const saveImportMutation = api.profile.import.saveImportData.useMutation()
-  const clearImportMutation = api.profile.import.clearImportData.useMutation()
+  const queryClient = useQueryClient()
+  const saveImportMutation = useSaveImportDataMutation()
+  const clearImportMutation = useClearImportDataMutation()
 
   const sections = useMemo(() => {
     if (!importData) return []
@@ -262,7 +263,7 @@ export function ImportReviewScreen() {
           typeof saveImportMutation.mutateAsync
         >[0]['payload'],
       })
-      await utils.profile.import.getImportData.invalidate()
+      await queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'import', 'data'] })
       setSelectedItems({})
       void refetch()
 
@@ -474,8 +475,8 @@ export function ImportReviewScreen() {
             variant="outlined"
             disabled={clearImportMutation.isPending}
             onPress={async () => {
-              await clearImportMutation.mutateAsync({})
-              await utils.profile.import.getImportData.invalidate()
+              await clearImportMutation.mutateAsync()
+              await queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'import', 'data'] })
               void refetch()
             }}
           >

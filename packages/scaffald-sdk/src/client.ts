@@ -20,6 +20,9 @@ import { Experience } from './resources/experience.js'
 import { Employment } from './resources/employment.js'
 import { Education } from './resources/education.js'
 import { Certifications } from './resources/certifications.js'
+import { ProfileWidgets } from './resources/profile-widgets.js'
+import { ProfileCompletion } from './resources/profile-completion.js'
+import { ProfileImport } from './resources/profile-import.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -44,6 +47,9 @@ export class Scaffald {
   public readonly employment: Employment
   public readonly education: Education
   public readonly certifications: Certifications
+  public readonly profileWidgets: ProfileWidgets
+  public readonly profileCompletion: ProfileCompletion
+  public readonly profileImport: ProfileImport
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -76,6 +82,9 @@ export class Scaffald {
     this.employment = new Employment(this.http)
     this.education = new Education(this.http)
     this.certifications = new Certifications(this.http)
+    this.profileWidgets = new ProfileWidgets(this.http)
+    this.profileCompletion = new ProfileCompletion(this.http)
+    this.profileImport = new ProfileImport(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

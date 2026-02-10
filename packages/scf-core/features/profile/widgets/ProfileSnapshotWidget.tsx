@@ -1,6 +1,12 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
-import { api } from '@scf/core/utils/api'
+import {
+  useGeneralInfoWidget,
+  useExperienceWidget,
+  useSkillsWidget,
+  useCertificationsWidget,
+  useEducationWidget,
+} from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
@@ -16,34 +22,30 @@ export function ProfileSnapshotWidget() {
   const { data: user } = useCurrentUser()
 
   // Fetch all data needed for snapshot
-  const { data: generalInfo, isLoading: loadingGeneral } =
-    api.profile.widgets.getGeneralInfo.useQuery(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    )
-
-  const { data: experience, isLoading: loadingExperience } =
-    api.profile.widgets.getExperience.useQuery(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    )
-
-  const { data: skills, isLoading: loadingSkills } = api.profile.widgets.getSkills.useQuery(
+  const { data: generalInfo, isLoading: loadingGeneral } = useGeneralInfoWidget(
     { userId: user?.id },
     { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
   )
 
-  const { data: certifications, isLoading: loadingCerts } =
-    api.profile.widgets.getCertifications.useQuery(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    )
+  const { data: experience, isLoading: loadingExperience } = useExperienceWidget(
+    { userId: user?.id },
+    { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
+  )
 
-  const { data: education, isLoading: loadingEducation } =
-    api.profile.widgets.getEducation.useQuery(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    )
+  const { data: skills, isLoading: loadingSkills } = useSkillsWidget(
+    { userId: user?.id },
+    { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
+  )
+
+  const { data: certifications, isLoading: loadingCerts } = useCertificationsWidget(
+    { userId: user?.id },
+    { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
+  )
+
+  const { data: education, isLoading: loadingEducation } = useEducationWidget(
+    { userId: user?.id },
+    { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
+  )
 
   const isLoading =
     loadingGeneral || loadingExperience || loadingSkills || loadingCerts || loadingEducation

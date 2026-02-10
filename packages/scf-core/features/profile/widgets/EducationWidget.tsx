@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useEducationWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import {
   Button,
   DashboardWidget,
@@ -13,18 +13,9 @@ import { useRouter } from 'expo-router'
 import { Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
+import type { EducationWidgetEntry } from '@scaffald/sdk'
 
-interface UserEducation {
-  id: string
-  degree_type: string | null
-  field_of_study: string | null
-  institution_name: string | null
-  start_date: string | null
-  end_date: string | null
-  is_current: boolean | null
-  description: string | null
-  location: string | null
-}
+type UserEducation = EducationWidgetEntry
 
 /**
  * EducationWidget
@@ -40,7 +31,7 @@ export function EducationWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error, refetch, isFetching } = api.profile.widgets.getEducation.useQuery(
+  const { data, isLoading, error, refetch, isFetching } = useEducationWidget(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes

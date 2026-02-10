@@ -2,6 +2,7 @@ import { ConnectionFollowButtonsInline } from '@scf/core/features/connections/co
 import { IdVerificationBadge } from '@scf/core/features/id-verification'
 import { ReviewWizard } from '@scf/core/features/reviews/components/ReviewWizard'
 import { api } from '@scf/core/utils/api'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@unicornlove/beyond-ui'
@@ -35,13 +36,12 @@ export function GeneralInfoWidget({
 }: GeneralInfoWidgetProps) {
   const [showReviewModal, setShowReviewModal] = useState(false)
   const { user: currentUser } = useUser()
-  const { data, isLoading, error, refetch, isFetching } =
-    api.profile.widgets.getGeneralInfo.useQuery(
-      { userId },
-      {
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-      }
-    )
+  const { data, isLoading, error, refetch, isFetching } = useGeneralInfoWidget(
+    { userId },
+    {
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    }
+  )
 
   if (isLoading) {
     return (

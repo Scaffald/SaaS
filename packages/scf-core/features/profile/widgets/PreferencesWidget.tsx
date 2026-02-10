@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { usePreferencesWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/beyond-ui'
 import { useRouter } from 'expo-router'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -13,7 +13,7 @@ import { Text, Row, Stack } from '@unicornlove/beyond-ui'
  */
 export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) {
   const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getPreferences.useQuery(undefined, {
+  const { data, isLoading, error } = usePreferencesWidget({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 

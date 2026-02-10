@@ -142,6 +142,44 @@ export type {
   DeleteCertificationResponse,
 } from './resources/certifications.js'
 
+export type {
+  GeneralInfoWidgetParams,
+  GeneralInfoWidgetResponse,
+  ExperienceWidgetParams,
+  ExperienceWidgetEntry,
+  EducationWidgetParams,
+  EducationWidgetEntry,
+  SkillsWidgetParams,
+  SkillWidgetEntry,
+  CertificationsWidgetParams,
+  CertificationWidgetEntry,
+  PreferencesWidgetResponse,
+} from './resources/profile-widgets.js'
+
+export type {
+  ProfileWizardStepId,
+  CompletionMilestoneThreshold,
+  SectionStatus,
+  CompletionStatusPayload,
+  DismissNudgeParams,
+  DismissNudgeResponse,
+  PersonalizedBenefit,
+  PersonalizedBenefitsResponse,
+} from './resources/profile-completion.js'
+
+export type {
+  GeneralImportEntry,
+  ExperienceImportEntry,
+  EducationImportEntry,
+  SkillImportEntry,
+  CertificationImportEntry,
+  ImportPayload,
+  ImportMetadata,
+  SaveImportDataParams,
+  SaveImportDataResponse,
+  ClearImportDataResponse,
+} from './resources/profile-import.js'
+
 export type { Industry, IndustryListResponse } from './resources/industries.js'
 
 export type {

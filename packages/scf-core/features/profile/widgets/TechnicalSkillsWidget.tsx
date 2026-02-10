@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import {
   Button,
   DashboardWidget,
@@ -13,19 +13,9 @@ import { useRouter } from 'expo-router'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
+import type { SkillWidgetEntry } from '@scaffald/sdk'
 
-// EnrichedUserSkill type from skill-enrichment.ts
-interface EnrichedUserSkill {
-  id: string
-  taxonomy: 'csi' | 'onet'
-  name: string
-  label: string
-  displayCode: string | null
-  proficiency: number
-  yearsExperience: number | null
-  verified: boolean
-  metadata: Record<string, unknown> | null
-}
+type EnrichedUserSkill = SkillWidgetEntry
 
 /**
  * TechnicalSkillsWidget
@@ -43,7 +33,7 @@ export function TechnicalSkillsWidget({
   const router = useRouter()
 
   // Fetch technical skills
-  const { data, isLoading, error, refetch, isFetching } = api.profile.widgets.getSkills.useQuery(
+  const { data, isLoading, error, refetch, isFetching } = useSkillsWidget(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes

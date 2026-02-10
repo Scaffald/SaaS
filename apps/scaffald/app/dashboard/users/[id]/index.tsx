@@ -10,6 +10,7 @@ import {
 } from '@scf/core/features/profile/widgets'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { api } from '@scf/core/utils/api'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import type { DashboardBreadcrumbSegment } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo } from 'react'
@@ -26,14 +27,13 @@ export default function UserProfilePage() {
   const currentUserId = session?.user?.id
 
   // Fetch user profile data for title
-  const { data: profileData, isLoading: isProfileLoading } =
-    api.profile.widgets.getGeneralInfo.useQuery(
-      { userId: id || '' },
-      {
-        enabled: !!id,
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-      }
-    )
+  const { data: profileData, isLoading: isProfileLoading } = useGeneralInfoWidget(
+    { userId: id || '' },
+    {
+      enabled: !!id,
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    }
+  )
 
   // Calculate display name using the same logic as GeneralInfoWidget
   const displayName = profileData

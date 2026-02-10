@@ -1,4 +1,11 @@
 import { api } from '@scf/core/utils/api'
+import {
+  useGeneralInfoWidget,
+  useExperienceWidget,
+  useSkillsWidget,
+  useCertificationsWidget,
+  useEducationWidget,
+} from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUser } from '@scf/core/utils/useUser'
 import { DashboardWidget, ResponsiveModal } from '@unicornlove/beyond-ui'
@@ -25,28 +32,24 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
   const { data: profile } = api.userProfile.getUserProfile.useQuery({ userId })
 
   // Fetch widget data for snapshot
-  const { data: generalInfo, isLoading: loadingGeneral } =
-    api.profile.widgets.getGeneralInfo.useQuery(
-      { userId },
-      { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-    )
-
-  const { data: experience } = api.profile.widgets.getExperience.useQuery(
+  const { data: generalInfo, isLoading: loadingGeneral } = useGeneralInfoWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )
 
-  const { data: skills } = api.profile.widgets.getSkills.useQuery(
+  const { data: experience } = useExperienceWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )
 
-  const { data: certifications } = api.profile.widgets.getCertifications.useQuery(
+  const { data: skills } = useSkillsWidget({ userId }, { enabled: !!userId, staleTime: 5 * 60 * 1000 })
+
+  const { data: certifications } = useCertificationsWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )
 
-  const { data: education } = api.profile.widgets.getEducation.useQuery(
+  const { data: education } = useEducationWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )

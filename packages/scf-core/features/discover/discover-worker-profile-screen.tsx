@@ -8,7 +8,7 @@ import {
   ReviewsWidget,
 } from '@scf/core/features/profile/widgets'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
-import { api } from '@scf/core/utils/api'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { type BreadcrumbItem, DashboardWidget } from '@unicornlove/beyond-ui'
 import { LinearGradient } from 'expo-linear-gradient'
 import type { ReactNode } from 'react'
@@ -201,7 +201,7 @@ export function DiscoverWorkerProfileScreen({
   const { session } = useSessionContext()
   const currentUserId = session?.user?.id
 
-  const generalInfoQuery = api.profile.widgets.getGeneralInfo.useQuery(
+  const generalInfoQuery = useGeneralInfoWidget(
     { userId: safeUserId || '' },
     {
       enabled: Boolean(safeUserId),
