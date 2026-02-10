@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useUserApplications } from '@scf/core/utils/jobs-sdk-hooks'
 import type { AppRouter } from '@scf/supabase/client-types'
 import { Button, SkeletonCard, Text, Stack } from '@unicornlove/beyond-ui'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -11,16 +11,16 @@ type ApplicationRecord = NonNullable<
 
 export function InquiryOverviewWidget() {
   const router = useRouter()
-  const { data, isLoading } = api.applications.getUserApplications.useQuery(
-    { status: 'inquired', limit: 5, offset: 0 },
-    { refetchOnMount: true }
+  const { data: response, isLoading } = useUserApplications(
+    { status: 'inquired', limit: 5, offset: 0 }
   )
 
   if (isLoading) {
     return <SkeletonCard variant="profile" />
   }
 
-  if (!data || data.length === 0) {
+  const data = response?.data ?? []
+  if (data.length === 0) {
     return null
   }
 

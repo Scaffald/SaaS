@@ -148,3 +148,85 @@ export function useUpdateJobApplicationMutation() {
     },
   })
 }
+
+export function useUserApplications(
+  params?: { status?: string; limit?: number; offset?: number },
+  options?: { enabled?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['applications', 'user', params],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing client')
+      return client.applications.list(params)
+    },
+    enabled: !!client && (options?.enabled !== false),
+    staleTime: 2 * 60 * 1000,
+  })
+}
+
+export function useApplicationById(id: string | undefined, options?: { enabled?: boolean }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['application', id],
+    queryFn: async () => {
+      if (!client || !id) throw new Error('Missing client or id')
+      return client.applications.retrieve(id)
+    },
+    enabled: !!client && !!id && (options?.enabled !== false),
+    staleTime: 2 * 60 * 1000,
+  })
+}
+
+export function useWithdrawApplicationMutation() {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
+      if (!client) throw new Error('Missing client')
+      return client.applications.withdraw(id, { reason })
+    },
+  })
+}
+
+export function useGetUploadUrlMutation() {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async (params: Parameters<typeof client.applications.getUploadUrl>[0]) => {
+      if (!client) throw new Error('Missing client')
+      return client.applications.getUploadUrl(params)
+    },
+  })
+}
+
+export function useConfirmUploadMutation() {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async (params: Parameters<typeof client.applications.confirmUpload>[0]) => {
+      if (!client) throw new Error('Missing client')
+      return client.applications.confirmUpload(params)
+    },
+  })
+}
+
+export function useApplicationMessages(applicationId: string | undefined, options?: { enabled?: boolean }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['application', applicationId, 'messages'],
+    queryFn: async () => {
+      if (!client || !applicationId) throw new Error('Missing client or applicationId')
+      return client.applications.getMessages(applicationId)
+    },
+    enabled: !!client && !!applicationId && (options?.enabled !== false),
+    staleTime: 30 * 1000, // 30 seconds for messages
+  })
+}
+
+export function useSendApplicationMessageMutation() {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async (params: Parameters<typeof client.applications.sendMessage>[0]) => {
+      if (!client) throw new Error('Missing client')
+      return client.applications.sendMessage(params)
+    },
+  })
+}

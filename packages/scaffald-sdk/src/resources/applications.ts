@@ -79,6 +79,59 @@ export interface WithdrawApplicationParams {
   reason?: string
 }
 
+export interface ListApplicationsParams {
+  status?: Application['status']
+  limit?: number
+  offset?: number
+}
+
+export interface ListApplicationsResponse {
+  data: Application[]
+  total: number
+  limit: number
+  offset: number
+}
+
+export interface GetUploadUrlParams {
+  application_id: string
+  attachment_type: 'resume' | 'cover_letter' | 'portfolio' | 'assessment' | 'video_interview'
+  filename: string
+  content_type: string
+}
+
+export interface GetUploadUrlResponse {
+  uploadUrl: string
+  path: string
+}
+
+export interface ConfirmUploadParams {
+  application_id: string
+  attachment_type: 'resume' | 'cover_letter' | 'portfolio' | 'assessment' | 'video_interview'
+  path: string
+  filename: string
+  size: number
+  mime_type: string
+}
+
+export interface ApplicationMessage {
+  id: string
+  application_id: string
+  sender_id: string
+  body: string
+  created_at: string
+  sender_name?: string
+  sender_role?: 'applicant' | 'recruiter' | 'system'
+}
+
+export interface GetMessagesResponse {
+  data: ApplicationMessage[]
+}
+
+export interface SendMessageParams {
+  applicationId: string
+  body: string
+}
+
 export class Applications extends Resource {
   /**
    * Create a new job application
@@ -121,5 +174,57 @@ export class Applications extends Resource {
     } catch {
       return null
     }
+  }
+
+  /**
+   * List the current user's applications
+   * @param params - Filter and pagination parameters
+   * @returns List of applications with pagination metadata
+   */
+  async list(params?: ListApplicationsParams): Promise<ListApplicationsResponse> {
+    const queryParams = new URLSearchParams()
+    if (params?.status) queryParams.append('status', params.status)
+    if (params?.limit) queryParams.append('limit', params.limit.toString())
+    if (params?.offset) queryParams.append('offset', params.offset.toString())
+
+    const query = queryParams.toString() ? `?${queryParams.toString()}` : ''
+    return this.get<ListApplicationsResponse>(`/v1/applications${query}`)
+  }
+
+  /**
+   * Get a presigned URL for uploading an application attachment
+   * @param params - Upload parameters including application ID, attachment type, filename, and content type
+   * @returns Presigned upload URL and storage path
+   */
+  async getUploadUrl(params: GetUploadUrlParams): Promise<GetUploadUrlResponse> {
+    return this.post<GetUploadUrlResponse>('/v1/applications/upload-url', params)
+  }
+
+  /**
+   * Confirm that a file was successfully uploaded
+   * @param params - Upload confirmation including application ID, attachment type, path, and file metadata
+   * @returns Updated application with the new attachment
+   */
+  async confirmUpload(params: ConfirmUploadParams): Promise<Application> {
+    return this.post<Application>('/v1/applications/confirm-upload', params)
+  }
+
+  /**
+   * Get messages for an application
+   * @param applicationId - The application ID
+   * @returns List of messages for the application
+   */
+  async getMessages(applicationId: string): Promise<GetMessagesResponse> {
+    return this.get<GetMessagesResponse>(`/v1/applications/${applicationId}/messages`)
+  }
+
+  /**
+   * Send a message on an application
+   * @param params - Message parameters including application ID and message body
+   * @returns The created message
+   */
+  async sendMessage(params: SendMessageParams): Promise<ApplicationMessage> {
+    const { applicationId, body } = params
+    return this.post<ApplicationMessage>(`/v1/applications/${applicationId}/messages`, { body })
   }
 }

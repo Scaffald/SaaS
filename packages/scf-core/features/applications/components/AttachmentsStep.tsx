@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useGetUploadUrlMutation, useConfirmUploadMutation } from '@scf/core/utils/jobs-sdk-hooks'
 import type { AttachmentMetadata } from '@scf/schemas'
 import { ArrowLeft, CheckCircle2, Upload, X } from 'lucide-react-native'
 import { type DragEvent, useCallback, useRef, useState } from 'react'
@@ -96,8 +96,8 @@ export function AttachmentsStep({
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
   const dragOverRefs = useRef<Record<string, boolean>>({})
 
-  const getUploadUrlMutation = api.applications.getUploadUrl.useMutation()
-  const confirmUploadMutation = api.applications.confirmUpload.useMutation()
+  const getUploadUrlMutation = useGetUploadUrlMutation()
+  const confirmUploadMutation = useConfirmUploadMutation()
 
   /**
    * Get attachment by type
@@ -144,13 +144,12 @@ export function AttachmentsStep({
         let attachmentMetadata: AttachmentMetadata
 
         if (applicationId) {
-          // Get upload URL from tRPC
+          // Get upload URL from SDK
           const { uploadUrl, path } = await getUploadUrlMutation.mutateAsync({
             application_id: applicationId,
             attachment_type: type,
             filename: file.name,
-            mime_type: file.type,
-            size: file.size,
+            content_type: file.type,
           })
 
           // Upload file to Supabase storage

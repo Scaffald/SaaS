@@ -1,8 +1,9 @@
 import { Send } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@unicornlove/beyond-ui'
-import { api } from '@scf/core/utils/api'
+import { useApplicationMessages, useSendApplicationMessageMutation } from '@scf/core/utils/jobs-sdk-hooks'
 import { useToast } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface MessagesTabProps {
   applicationId: string
@@ -20,26 +21,24 @@ interface Message {
 export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   const [newMessage, setNewMessage] = useState('')
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Fetch messages
-  const { data: messagesData, isLoading, error } = api.applications.getMessages.useQuery({
-    applicationId,
-  })
+  const { data: messagesData, isLoading, error } = useApplicationMessages(applicationId)
 
   // Send message mutation
-  const sendMessageMutation = api.applications.sendMessage.useMutation({
+  const sendMessageMutation = useSendApplicationMessageMutation({
     onSuccess: () => {
       setNewMessage('')
       // Invalidate and refetch messages
-      utils.applications.getMessages.invalidate({ applicationId })
+      queryClient.invalidateQueries({ queryKey: ['application', applicationId, 'messages'] })
     },
     onError: (error) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to send message',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to send message',
+        variant: 'error',
+      })
     },
   })
 
@@ -53,20 +52,19 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
   }
 
   // Transform API response to UI format
-  const transformedMessages: Message[] = messagesData
-    ? messagesData.messages.map((msg) => {
-        // Determine if sender is recruiter or candidate
-        const isCandidate = messagesData.application_user_id === msg.author_user_id
-        return {
-          id: msg.id,
-          sender: isCandidate ? ('candidate' as const) : ('recruiter' as const),
-          senderName: msg.author_name,
-          content: msg.body,
-          sentAt: msg.created_at,
-          isRead: false, // MVP: default to false, can implement read tracking later
-        }
-      })
-    : []
+  const messages = messagesData?.data ?? []
+  const transformedMessages: Message[] = messages.map((msg) => {
+    // Use sender_role from SDK to determine sender type
+    const sender = msg.sender_role === 'applicant' ? 'candidate' : 'recruiter'
+    return {
+      id: msg.id,
+      sender: sender as 'candidate' | 'recruiter',
+      senderName: msg.sender_name ?? 'Unknown',
+      content: msg.body,
+      sentAt: msg.created_at,
+      isRead: false, // MVP: default to false, can implement read tracking later
+    }
+  })
 
   if (isLoading) {
     return (

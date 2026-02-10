@@ -2,8 +2,8 @@ import {
   useExternalJobs,
   useJobsWithSoftSkillsMatch,
   usePublishedJobs,
+  useUserApplications,
 } from '@scf/core/utils/jobs-sdk-hooks'
-import { api } from '@scf/core/utils/api'
 import { extractPlainText, SkeletonList } from '@unicornlove/beyond-ui'
 import type { JSONContent } from '@tiptap/core'
 import { ScrollView, Text, Stack } from '@unicornlove/beyond-ui'
@@ -64,7 +64,7 @@ export function DiscoverJobsLeft({
   )
 
   // Fetch user's applications to show applied status
-  const { data: userApplications } = api.applications.getUserApplications.useQuery(
+  const { data: userApplications } = useUserApplications(
     { limit: 100, offset: 0 },
     { enabled: true }
   )
