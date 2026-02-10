@@ -1,6 +1,12 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
-import { DashboardWidget } from '@unicornlove/beyond-ui'
+import {
+  useFollowers,
+  usePendingConnections,
+  useAcceptConnectionMutation,
+  useDeclineConnectionMutation,
+} from '@scf/core/utils/engagement-sdk-hooks'
+import { Card } from '@unicornlove/beyond-ui'
 import {
   ArrowDown,
   ArrowUp,
@@ -13,6 +19,7 @@ import {
 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 /**
  * Profile Activity Widget
@@ -20,6 +27,7 @@ import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@unicornlo
  */
 export function ProfileActivityWidget() {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   // Fetch data
   const { data: profileViews, isLoading: viewsLoading } = api.profileViews.getProfileViews.useQuery(
@@ -29,39 +37,38 @@ export function ProfileActivityWidget() {
   const { data: viewAnalytics, isLoading: analyticsLoading } =
     api.profileViews.getViewAnalytics.useQuery()
 
-  const { data: followers, isLoading: followersLoading } = api.follows.getFollowers.useQuery()
+  const { data: followersData, isLoading: followersLoading } = useFollowers()
+  const followers = followersData?.data
 
-  const { data: pendingRequests, isLoading: requestsLoading } =
-    api.connections.getPendingRequests.useQuery()
+  const { data: pendingData, isLoading: requestsLoading } = usePendingConnections()
+  const pendingRequests = pendingData
 
   // Connection mutations for quick actions
-  const utils = api.useUtils()
-
-  const acceptRequestMutation = api.connections.acceptRequest.useMutation({
+  const acceptRequestMutation = useAcceptConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
-      utils.connections.getConnections.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
     },
   })
 
-  const declineRequestMutation = api.connections.declineRequest.useMutation({
+  const declineRequestMutation = useDeclineConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
     },
   })
 
   const handleAcceptRequest = (connectionId: string) => {
-    acceptRequestMutation.mutate({ connectionId })
+    acceptRequestMutation.mutate(connectionId)
   }
 
   const handleDeclineRequest = (connectionId: string) => {
-    declineRequestMutation.mutate({ connectionId })
+    declineRequestMutation.mutate(connectionId)
   }
 
   const handleViewAllProfileViews = () => {
@@ -75,7 +82,7 @@ export function ProfileActivityWidget() {
   const isLoading = viewsLoading || analyticsLoading || followersLoading || requestsLoading
 
   return (
-    <DashboardWidget>
+    <Card>
       <Text fontSize="$5" fontWeight="600" color="$color12">
         Profile Activity
       </Text>
@@ -379,6 +386,6 @@ export function ProfileActivityWidget() {
           </Stack>
         </Stack>
       )}
-    </DashboardWidget>
+    </Card>
   )
 }
