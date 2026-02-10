@@ -1,5 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useSoftSkills,
+  useSkillsLegacy,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
 import {
   SoftSkillsCategoryTabs,
   type SoftSkillCategory,
@@ -57,19 +60,16 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
   const [historyView, setHistoryView] = useState<'timeline' | 'progression'>('timeline')
 
   // Fetch technical skills
-  const { data, isLoading, error, refetch, isFetching } = api.profile.widgets.getSkills.useQuery(
-    { userId },
-    {
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  const { data, isPending: isLoading, error, refetch, isFetching } = useSkillsLegacy({
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  })
 
   // Fetch soft skills
   const {
     data: softSkillsData,
-    isLoading: isLoadingSoftSkills,
+    isPending: isLoadingSoftSkills,
     error: softSkillsError,
-  } = api.profile.skills.getSoftSkills.useQuery(userId ? { userId } : undefined, {
+  } = useSoftSkills(userId ? { userId } : undefined, {
     enabled: !!userId && activeTab === 'soft-skills',
     staleTime: 5 * 60 * 1000,
   })

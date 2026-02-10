@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useSoftSkills,
+  useUpdateSoftSkillsMutation,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ROUTES } from '@scf/core/constants/routes'
 import {
   Heading,
@@ -54,7 +57,7 @@ export const SoftSkillsRatingForm: FC = () => {
   const lastAutoSaveRef = useRef<SoftSkillsFormData | null>(null)
 
   // Fetch soft skills data
-  const { data, isLoading, error, refetch } = api.profile.skills.getSoftSkills.useQuery(undefined, {
+  const { data, isPending: isLoading, error, refetch } = useSoftSkills(undefined, {
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
@@ -119,7 +122,7 @@ export const SoftSkillsRatingForm: FC = () => {
   }, [data, formSkills.length, defaultValues, reset])
 
   // Update mutation
-  const updateMutation = api.profile.skills.updateSoftSkills.useMutation({
+  const updateMutation = useUpdateSoftSkillsMutation({
     onSuccess: () => {
       setAutoSaveStatus('saved')
       setLastSavedAt(new Date())

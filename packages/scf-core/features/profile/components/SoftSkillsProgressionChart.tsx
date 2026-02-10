@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useSoftSkillsHistory,
+  useSoftSkills,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
 import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react-native'
 import { useMemo, type FC } from 'react'
 import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -28,15 +31,15 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   // Fetch version history
   const {
     data: historyData,
-    isLoading,
+    isPending: isLoading,
     error,
-  } = api.profile.skills.getSoftSkillsHistory.useQuery(undefined, {
+  } = useSoftSkillsHistory({
     enabled: true,
     staleTime: 5 * 60 * 1000,
   })
 
   // Fetch current version for comparison
-  const { data: currentData } = api.profile.skills.getSoftSkills.useQuery(
+  const { data: currentData } = useSoftSkills(
     userId ? { userId } : undefined,
     {
       enabled: !!userId || !userId,

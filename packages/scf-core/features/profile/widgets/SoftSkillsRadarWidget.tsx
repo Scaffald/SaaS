@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { SoftSkillsRadarGrid } from '@scf/core/components/ui'
 import {
   SoftSkillsCategoryTabs,
@@ -40,7 +40,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
 
   // Fetch soft skills data
-  const { data, isLoading, error } = api.profile.skills.getSoftSkills.useQuery(
+  const { data, isPending: isLoading, error } = useSoftSkills(
     userId ? { userId } : undefined,
     {
       enabled: !!userId,

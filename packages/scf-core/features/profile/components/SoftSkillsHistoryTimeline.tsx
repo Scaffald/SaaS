@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useSoftSkillsHistory,
+  useSoftSkills,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
 import { SkillsChart } from '@unicornlove/beyond-ui'
 import { Calendar, TrendingUp } from 'lucide-react-native'
 import { Button } from '@unicornlove/beyond-ui'
@@ -22,15 +25,15 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   // Fetch version history
   const {
     data: historyData,
-    isLoading,
+    isPending: isLoading,
     error,
-  } = api.profile.skills.getSoftSkillsHistory.useQuery(undefined, {
+  } = useSoftSkillsHistory({
     enabled: true,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
   // Fetch current version for comparison
-  const { data: currentData } = api.profile.skills.getSoftSkills.useQuery(
+  const { data: currentData } = useSoftSkills(
     userId ? { userId } : undefined,
     {
       enabled: !!userId || !userId, // Always fetch current user's data

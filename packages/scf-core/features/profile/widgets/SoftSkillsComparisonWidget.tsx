@@ -1,5 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useSoftSkills,
+  useSoftSkillsComparison,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
 import {
   SoftSkillsCategoryTabs,
   type SoftSkillCategory,
@@ -37,7 +40,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
   // Fetch soft skills data
   // When userId is undefined, query for current user (API handles this)
-  const { data, isLoading, error } = api.profile.skills.getSoftSkills.useQuery(
+  const { data, isPending: isLoading, error } = useSoftSkills(
     userId ? { userId } : undefined,
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -45,7 +48,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   )
 
   // Fetch peer comparison data
-  const { data: comparisonData } = api.profile.skills.getSoftSkillsComparison.useQuery(undefined, {
+  const { data: comparisonData } = useSoftSkillsComparison({
     staleTime: 5 * 60 * 1000,
   })
 
