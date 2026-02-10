@@ -105,7 +105,7 @@ export function OfficeTeamsList() {
         updatedAt: team.updatedAt ?? undefined,
       }
     })
-  }, [data?.teams])
+  }, [data?.data])
 
   const filteredTeams = useMemo(() => {
     if (!search.trim()) {

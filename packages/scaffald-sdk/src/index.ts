@@ -87,7 +87,6 @@ export type {
   TeamJobAssignmentResponse,
   DeleteResponse,
   RolesListResponse,
-  TeamRole,
 } from './types/teams.js'
 
 export type {
