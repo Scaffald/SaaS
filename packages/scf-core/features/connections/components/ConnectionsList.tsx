@@ -1,69 +1,58 @@
-import { api } from '@scf/core/utils/api'
+import { useConnections, useRemoveConnectionMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@unicornlove/beyond-ui'
 import { Download, Trash2 } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
-
-type ConnectionsData = NonNullable<
-  ReturnType<typeof api.connections.getConnections.useQuery>['data']
->
+import { useQueryClient } from '@tanstack/react-query'
 
 interface ConnectionData {
   id: string
+  requester_id: string
+  addressee_id: string
   status: string
   created_at: string
-  decided_at?: string | null
-  user?: {
-    id?: string
-    display_name?: string | null
-    username?: string | null
-    avatar_url?: string | null
-    email?: string | null
-    industry?: {
-      name?: string | null
-    } | null
-    headline?: string | null
-  } | null
-  requester_user_id?: string
-  addressee_user?: {
-    id?: string
-    display_name?: string | null
-    username?: string | null
-    avatar_url?: string | null
-    email?: string | null
-    industry?: {
-      name?: string | null
-    } | null
-    headline?: string | null
-  } | null
+  updated_at: string
+  requester?: {
+    id: string
+    first_name: string
+    last_name: string
+    avatar_url?: string
+  }
+  addressee?: {
+    id: string
+    first_name: string
+    last_name: string
+    avatar_url?: string
+  }
 }
 
-type Connection = ConnectionsData extends Array<infer T> ? T : ConnectionData
+type Connection = ConnectionData
 
 export function ConnectionsList() {
   const [searchTerm, setSearchTerm] = useState('')
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const toast = useToast()
 
-  const { data: connections, isLoading } = api.connections.getConnections.useQuery()
+  const { data: connectionsResponse, isLoading } = useConnections()
+  const connections = connectionsResponse?.data
 
-  const removeConnectionMutation = api.connections.removeConnection.useMutation({
+  const removeConnectionMutation = useRemoveConnectionMutation({
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
       toast.show({
-          title: 'Success',
-          message: 'Connection removed',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Connection removed',
+        variant: 'success',
+      })
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to remove connection',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to remove connection',
+        variant: 'error',
+      })
     },
   })
 
@@ -73,8 +62,9 @@ export function ConnectionsList() {
 
     const search = searchTerm.toLowerCase()
     return connections.filter((conn: Connection) => {
-      const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
-      const name = user?.display_name || user?.username || ''
+      const requesterName = `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+      const addresseeName = `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+      const name = requesterName || addresseeName
       return name.toLowerCase().includes(search)
     })
   }, [connections, searchTerm])
@@ -82,31 +72,30 @@ export function ConnectionsList() {
   const handleRemove = useCallback(
     async (connectionId: string) => {
       if (confirm('Are you sure you want to remove this connection?')) {
-        await removeConnectionMutation.mutateAsync({ connectionId })
+        await removeConnectionMutation.mutateAsync(connectionId)
       }
     },
-    [removeConnectionMutation.mutateAsync, removeConnectionMutation]
+    [removeConnectionMutation]
   )
 
   const handleExportCSV = () => {
     if (!connections || connections.length === 0) {
       toast.show({
-          title: 'Error',
-          message: 'No connections to export',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: 'No connections to export',
+        variant: 'error',
+      })
       return
     }
 
-    const headers = ['Name', 'Email', 'Industry', 'Connected Since']
+    const headers = ['Name', 'Connected Since']
     const rows = connections.map((conn: Connection) => {
-      const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
-      const name = user?.display_name || user?.username || ''
-      const email = user?.email || ''
-      const industry = user?.industry?.name || ''
+      const requesterName = `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+      const addresseeName = `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+      const name = requesterName || addresseeName || 'Unknown'
       const date = conn.created_at ? new Date(conn.created_at).toLocaleDateString() : ''
 
-      return [name, email, industry, date]
+      return [name, date]
     })
 
     const csvContent = [headers, ...rows]
@@ -143,9 +132,10 @@ export function ConnectionsList() {
         header: 'User',
         cell: ({ row }) => {
           const conn = row.original
-          const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
-          const name = user?.display_name || user?.username || 'Unknown'
-          const avatar = user?.avatar_url
+          const requesterName = `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+          const addresseeName = `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+          const name = requesterName || addresseeName || 'Unknown'
+          const avatar = conn.requester?.avatar_url || conn.addressee?.avatar_url
 
           return (
             <Row alignItems="center" gap="$2">
@@ -165,15 +155,6 @@ export function ConnectionsList() {
               </Text>
             </Row>
           )
-        },
-      },
-      {
-        accessorKey: 'industry',
-        header: 'Industry',
-        cell: ({ row }) => {
-          const conn = row.original
-          const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
-          return <Text fontSize="$3">{user?.industry?.name || '-'}</Text>
         },
       },
       {

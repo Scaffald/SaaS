@@ -1,156 +1,139 @@
-import { api } from '@scf/core/utils/api'
+import {
+  usePendingConnections,
+  useAcceptConnectionMutation,
+  useDeclineConnectionMutation,
+  useCancelConnectionMutation,
+} from '@scf/core/utils/engagement-sdk-hooks'
 import { DataTable } from '@scf/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@unicornlove/beyond-ui'
 import { CheckCircle2, X } from 'lucide-react-native'
 import { useCallback, useMemo } from 'react'
 import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@unicornlove/beyond-ui'
+import { useQueryClient } from '@tanstack/react-query'
 
-type PendingRequestsData = NonNullable<
-  ReturnType<typeof api.connections.getPendingRequests.useQuery>['data']
-> & {
-  sent: Array<{
+interface PendingRequestBase {
+  id: string
+  requester_id: string
+  addressee_id: string
+  status: 'pending'
+  created_at: string
+  requester: {
     id: string
-    status: string
-    created_at: string
-    user: {
-      id: string
-      display_name: string | null
-      username: string | null
-      avatar_url: string | null
-      headline: string | null
-      industry?: { name: string } | null
-    } | null
-  }>
-  received: Array<{
-    id: string
-    status: string
-    created_at: string
-    user: {
-      id: string
-      display_name: string | null
-      username: string | null
-      avatar_url: string | null
-      headline: string | null
-      industry?: { name: string } | null
-    } | null
-  }>
+    first_name: string
+    last_name: string
+    avatar_url?: string
+  }
 }
 
-type PendingRequest = PendingRequestsData['sent'][number] & { type: 'sent' }
-
-type ReceivedRequest = PendingRequestsData['received'][number] & { type: 'received' }
-
+type PendingRequest = PendingRequestBase & { type: 'sent' }
+type ReceivedRequest = PendingRequestBase & { type: 'received' }
 type RequestRow = PendingRequest | ReceivedRequest
 
 export function PendingRequestsList() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
   const toast = useToast()
 
-  const { data: pendingRequests, isLoading } = api.connections.getPendingRequests.useQuery()
+  const { data: pendingResponse, isLoading } = usePendingConnections()
+  const pendingRequests = pendingResponse || { sent: [], received: [] }
 
-  const acceptMutation = api.connections.acceptRequest.useMutation({
+  const acceptMutation = useAcceptConnectionMutation({
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
-      utils.connections.getConnections.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
       toast.show({
-          title: 'Success',
-          message: 'Connection request accepted',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Connection request accepted',
+        variant: 'success',
+      })
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to accept request',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to accept request',
+        variant: 'error',
+      })
     },
   })
 
-  const declineMutation = api.connections.declineRequest.useMutation({
+  const declineMutation = useDeclineConnectionMutation({
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
       toast.show({
-          title: 'Success',
-          message: 'Connection request declined',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Connection request declined',
+        variant: 'success',
+      })
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to decline request',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to decline request',
+        variant: 'error',
+      })
     },
   })
 
-  const cancelMutation = api.connections.declineRequest.useMutation({
+  const cancelMutation = useCancelConnectionMutation({
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
       toast.show({
-          title: 'Success',
-          message: 'Connection request cancelled',
-          variant: 'success',
-        })
+        title: 'Success',
+        message: 'Connection request cancelled',
+        variant: 'success',
+      })
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to cancel request',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to cancel request',
+        variant: 'error',
+      })
     },
   })
 
   const combinedRequests: RequestRow[] = useMemo(() => {
-    if (!pendingRequests) return []
-    const sent: PendingRequest[] = (pendingRequests.sent || []).map(
-      (req: PendingRequestsData['sent'][number]) => ({ ...req, type: 'sent' })
-    )
-    const received: ReceivedRequest[] = (pendingRequests.received || []).map(
-      (req: PendingRequestsData['received'][number]) => ({
-        ...req,
-        type: 'received',
-      })
-    )
+    const sent: PendingRequest[] = (pendingRequests.sent || []).map((req) => ({ ...req, type: 'sent' as const }))
+    const received: ReceivedRequest[] = (pendingRequests.received || []).map((req) => ({
+      ...req,
+      type: 'received' as const,
+    }))
     return [...received, ...sent]
   }, [pendingRequests])
 
   const handleAccept = useCallback(
     async (connectionId: string) => {
-      await acceptMutation.mutateAsync({ connectionId })
+      await acceptMutation.mutateAsync(connectionId)
     },
-    [acceptMutation.mutateAsync, acceptMutation]
+    [acceptMutation]
   )
 
   const handleDecline = useCallback(
     async (connectionId: string) => {
-      await declineMutation.mutateAsync({ connectionId })
+      await declineMutation.mutateAsync(connectionId)
     },
-    [declineMutation.mutateAsync, declineMutation]
+    [declineMutation]
   )
 
   const handleCancel = useCallback(
     async (connectionId: string) => {
       if (confirm('Are you sure you want to cancel this connection request?')) {
-        await cancelMutation.mutateAsync({ connectionId })
+        await cancelMutation.mutateAsync(connectionId)
       }
     },
-    [cancelMutation.mutateAsync, cancelMutation]
+    [cancelMutation]
   )
 
   const columns = useMemo<ColumnDef<RequestRow>[]>(
     () => [
       {
-        accessorKey: 'user',
+        accessorKey: 'requester',
         header: 'User',
         cell: ({ row }) => {
           const request = row.original
-          const user = request.user
-          const name = user?.display_name || user?.username || 'Unknown'
-          const avatar = user?.avatar_url
+          const user = request.requester
+          const name = `${user.first_name} ${user.last_name}`.trim() || 'Unknown'
+          const avatar = user.avatar_url
 
           return (
             <Row alignItems="center" gap="$2">
@@ -175,14 +158,6 @@ export function PendingRequestsList() {
               </Stack>
             </Row>
           )
-        },
-      },
-      {
-        accessorKey: 'industry',
-        header: 'Industry',
-        cell: ({ row }) => {
-          const user = row.original.user
-          return <Text fontSize="$3">{user?.industry?.name || '-'}</Text>
         },
       },
       {
