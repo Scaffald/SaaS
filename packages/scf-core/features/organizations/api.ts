@@ -1,4 +1,14 @@
 import { api } from '@scf/core/utils/api'
+import {
+  useInviteOrganizationMemberMutation,
+  useOrganizationMembers as useOrgMembersSdk,
+  useRemoveOrganizationMemberMutation,
+  useOrganizationDocuments as useOrgDocumentsSdk,
+  useCreateDocumentUploadSessionMutation,
+  useCreateDocumentDownloadUrlMutation,
+  useOrganizationSettings as useOrgSettingsSdk,
+  useUpdateOrganizationSettingsMutation,
+} from '@scf/core/utils/organizations-sdk-hooks'
 
 export const useOrganizationInvites = (
   organizationId: string,
@@ -10,7 +20,7 @@ export const useOrganizationInvites = (
   )
 }
 
-export const useInviteOrganizationMember = () => api.organizations.inviteMember.useMutation()
+export const useInviteOrganizationMember = () => useInviteOrganizationMemberMutation()
 
 export const useResendOrganizationInvite = () => api.organizations.resendInvitation.useMutation()
 
@@ -21,10 +31,7 @@ export const useAcceptOrganizationInvite = () => api.organizations.acceptInvitat
 export const useDeclineOrganizationInvite = () => api.organizations.declineInvitation.useMutation()
 
 export const useOrganizationMembers = (organizationId: string, search?: string) =>
-  api.organizations.listMembers.useQuery(
-    { organizationId, search },
-    { enabled: Boolean(organizationId) }
-  )
+  useOrgMembersSdk(organizationId || undefined, { search }, { enabled: Boolean(organizationId) })
 
 export const useOrganizationMemberActivity = (organizationId: string, lookbackDays = 30) =>
   api.organizations.getMemberActivity.useQuery(
@@ -32,7 +39,7 @@ export const useOrganizationMemberActivity = (organizationId: string, lookbackDa
     { enabled: Boolean(organizationId) }
   )
 
-export const useRemoveOrganizationMember = () => api.organizations.removeMember.useMutation()
+export const useRemoveOrganizationMember = () => useRemoveOrganizationMemberMutation()
 
 export const useTransferOrganizationOwnership = () =>
   api.organizations.transferOwnership.useMutation()
@@ -41,17 +48,9 @@ export const useOrganizationDocuments = (
   organizationId: string,
   params?: { folderId?: string | null; search?: string }
 ) =>
-  api.organizations.listDocuments.useQuery(
-    {
-      organizationId,
-      folderId: params?.folderId,
-      search: params?.search,
-    },
-    { enabled: Boolean(organizationId) }
-  )
+  useOrgDocumentsSdk(organizationId || undefined, params, { enabled: Boolean(organizationId) })
 
-export const useDocumentUploadSession = () =>
-  api.organizations.createDocumentUploadSession.useMutation()
+export const useDocumentUploadSession = () => useCreateDocumentUploadSessionMutation()
 
 export const useCommitDocumentVersion = () => api.organizations.commitDocumentVersion.useMutation()
 
@@ -61,8 +60,7 @@ export const useDocumentVersions = (organizationId: string, documentId: string) 
     { enabled: Boolean(organizationId && documentId) }
   )
 
-export const useDocumentDownloadUrl = () =>
-  api.organizations.createDocumentDownloadUrl.useMutation()
+export const useDocumentDownloadUrl = () => useCreateDocumentDownloadUrlMutation()
 
 export const useDocumentShares = (organizationId: string, documentId: string) =>
   api.organizations.listDocumentShares.useQuery(
@@ -100,9 +98,9 @@ export const useUpsertOrganizationLocation = () => api.organizations.upsertLocat
 export const useArchiveOrganizationLocation = () => api.organizations.archiveLocation.useMutation()
 
 export const useOrganizationSettings = (organizationId: string) =>
-  api.organizations.getSettings.useQuery({ organizationId }, { enabled: Boolean(organizationId) })
+  useOrgSettingsSdk(organizationId || undefined, { enabled: Boolean(organizationId) })
 
-export const useUpdateOrganizationSettings = () => api.organizations.updateSettings.useMutation()
+export const useUpdateOrganizationSettings = () => useUpdateOrganizationSettingsMutation()
 
 export const useOrganizationAuditLog = (
   organizationId: string,

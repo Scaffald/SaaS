@@ -1,5 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useOrganization,
+  useOrganizationOpenJobsCount,
+} from '@scf/core/utils/organizations-sdk-hooks'
 import { extractPlainText, ResponsiveModal } from '@unicornlove/beyond-ui'
 import { Briefcase, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
@@ -24,16 +27,14 @@ export function OrganizationPreviewModal({
   const router = useRouter()
 
   // Fetch organization data
-  const { data: organization, isLoading } = api.organizations.getOrganization.useQuery(
-    { id: organizationId || '' },
-    { enabled: !!organizationId && open }
-  )
+  const { data: organization, isLoading } = useOrganization(organizationId || undefined, {
+    enabled: !!organizationId && open,
+  })
 
   // Fetch open jobs count for this organization
-  const jobsCountQuery = api.organizations.getOpenJobsCount.useQuery(
-    { organizationId: organizationId || '' },
-    { enabled: !!organizationId && open }
-  )
+  const jobsCountQuery = useOrganizationOpenJobsCount(organizationId || undefined, {
+    enabled: !!organizationId && open,
+  })
   const jobsCount: number = (() => {
     const data = jobsCountQuery.data
     if (typeof data === 'number') return data

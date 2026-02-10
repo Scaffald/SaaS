@@ -1,4 +1,5 @@
 import { api } from '@scf/core/utils/api'
+import { useOrganizationOpenJobsCount } from '@scf/core/utils/organizations-sdk-hooks'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
 import {
   BellPlus,
@@ -68,8 +69,8 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     { enabled: Boolean(employerId) }
   )
 
-  const { data: openJobs, isLoading: jobsLoading } = api.organizations.getOpenJobsCount.useQuery(
-    { organizationId: employerId },
+  const { data: openJobs, isLoading: jobsLoading } = useOrganizationOpenJobsCount(
+    employerId || undefined,
     { enabled: Boolean(employerId) }
   )
 

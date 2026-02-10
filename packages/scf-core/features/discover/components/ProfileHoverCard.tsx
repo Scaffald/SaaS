@@ -1,5 +1,9 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
+import {
+  useOrganization,
+  useOrganizationOpenJobsCount,
+} from '@scf/core/utils/organizations-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { Briefcase, Building2, ExternalLink, MapPin, User } from 'lucide-react-native'
 import { Button, Spinner, Text, View, Row, Stack } from '@unicornlove/beyond-ui'
@@ -40,17 +44,14 @@ export function ProfileHoverCard({
   )
 
   // Fetch organization data
-  const { data: organization, isLoading: isLoadingOrg } =
-    api.organizations.getOrganization.useQuery(
-      { id: pinId || '' },
-      { enabled: !!pinId && pinType === 'organization' && visible }
-    )
+  const { data: organization, isLoading: isLoadingOrg } = useOrganization(pinId || undefined, {
+    enabled: !!pinId && pinType === 'organization' && visible,
+  })
 
   // Fetch open jobs count for organizations
-  const jobsCountQuery = api.organizations.getOpenJobsCount.useQuery(
-    { organizationId: pinId || '' },
-    { enabled: !!pinId && pinType === 'organization' && visible }
-  )
+  const jobsCountQuery = useOrganizationOpenJobsCount(pinId || undefined, {
+    enabled: !!pinId && pinType === 'organization' && visible,
+  })
   const jobsCount: number = (() => {
     const data = jobsCountQuery.data
     if (typeof data === 'number') return data
