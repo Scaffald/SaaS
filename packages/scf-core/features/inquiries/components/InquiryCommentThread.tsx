@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useAddInquiryCommentMutation,
+  useMarkCommentReadMutation,
+} from '@scf/core/utils/inquiries-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquirySectionName } from '@scf/schemas'
 import { Button, Input, Text, Row, Stack } from '@unicornlove/beyond-ui'
@@ -28,7 +31,7 @@ export function InquiryCommentThread({
   const { user: currentUser } = useUser()
   const [newComment, setNewComment] = useState('')
 
-  const addCommentMutation = api.inquiries.addComment.useMutation({
+  const addCommentMutation = useAddInquiryCommentMutation({
     onSuccess: () => {
       setNewComment('')
       toast.show({
@@ -36,7 +39,7 @@ export function InquiryCommentThread({
           message: 'Your comment has been added to this section.',
         })
     },
-    onError: (error: { message?: string }) => {
+    onError: (error) => {
       toast.show({
           title: 'Failed to add comment',
           message: error.message ?? 'Please try again.',
@@ -45,8 +48,8 @@ export function InquiryCommentThread({
     },
   })
 
-  const markReadMutation = api.inquiries.markCommentRead.useMutation({
-    onError: (error: { message?: string }) => {
+  const markReadMutation = useMarkCommentReadMutation({
+    onError: (error) => {
       console.error('Failed to mark comment as read:', error)
     },
   })
@@ -66,7 +69,7 @@ export function InquiryCommentThread({
 
   const handleMarkRead = async (commentId: string) => {
     try {
-      await markReadMutation.mutateAsync({ commentId })
+      await markReadMutation.mutateAsync(commentId)
     } catch (error) {
       console.error('Failed to mark comment as read:', error)
     }

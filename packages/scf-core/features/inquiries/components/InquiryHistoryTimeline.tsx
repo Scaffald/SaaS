@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useInquiryHistory } from '@scf/core/utils/inquiries-sdk-hooks'
 import { Text, Row, Stack } from '@unicornlove/beyond-ui'
 import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from 'lucide-react-native'
 import { useMemo } from 'react'
@@ -133,9 +133,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
     data: history,
     isLoading,
     error,
-  } = api.inquiries.getHistory.useQuery({
-    inquiryId,
-  })
+  } = useInquiryHistory(inquiryId)
 
   const sortedHistory = useMemo(() => {
     if (!history) return []
