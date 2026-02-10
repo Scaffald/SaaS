@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
+import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Stack } from 'expo-router/stack'
 import { useEffect } from 'react'
@@ -11,12 +11,9 @@ export default function OnboardingLayout() {
   const router = useRouter()
 
   // Check prerequisites status - only run when we have a valid user
-  const { data: statusData, isLoading: isCheckingPrereqs } = api.prerequisites.check.useQuery(
-    undefined,
-    {
-      enabled: !!user, // Only run if user exists
-    }
-  )
+  const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisites({
+    enabled: !!user, // Only run if user exists
+  })
 
   // Redirect to dashboard if prerequisites are already complete
   useEffect(() => {

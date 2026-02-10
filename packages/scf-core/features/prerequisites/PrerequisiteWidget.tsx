@@ -1,8 +1,12 @@
 import { ControlledAddressForm } from '@scf/core/forms'
-import { api } from '@scf/core/utils/api'
+import {
+  usePrerequisites,
+  useCompletePrerequisites,
+  useIndustries,
+} from '@scaffald/sdk/react'
 import {
   Button,
-  CustomCheckbox,
+  Checkbox,
   DashboardWidget,
   ResponsiveSelect,
   spacing,
@@ -41,29 +45,28 @@ export function PrerequisiteWidget() {
     data: statusData,
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
-  } = api.prerequisites.check.useQuery()
+  } = usePrerequisites()
 
   // Fetch industries for dropdown
-  const { data: industriesData, isLoading: isLoadingIndustries } =
-    api.profile.skillsMultiTaxonomy.getIndustries.useQuery()
+  const { data: industriesData, isLoading: isLoadingIndustries } = useIndustries()
 
   // Complete prerequisites mutation
-  const completeMutation = api.prerequisites.complete.useMutation({
+  const completeMutation = useCompletePrerequisites({
     onSuccess: () => {
       toast.show({
-          title: 'Profile Complete',
-          message: 'Your profile has been set up successfully!',
-          variant: 'success',
-        })
+        title: 'Profile Complete',
+        message: 'Your profile has been set up successfully!',
+        variant: 'success',
+      })
       refetchStatus()
     },
     onError: (error: { message?: string }) => {
       console.error('Error completing prerequisites:', error)
       toast.show({
-          title: 'Error',
-          message: error.message || 'Failed to save profile. Please try again.',
-          variant: 'error',
-        })
+        title: 'Error',
+        message: error.message || 'Failed to save profile. Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -237,9 +240,9 @@ export function PrerequisiteWidget() {
                   <Stack gap="$2">
                     {USER_TYPE_OPTIONS.map((option) => (
                       <Row key={option.value} gap="$3" alignItems="center">
-                        <CustomCheckbox
+                        <Checkbox
                           checked={field.value?.includes(option.value as UserType)}
-                          onCheckedChange={(checked: boolean) => {
+                          onChange={(checked: boolean) => {
                             const currentTypes = field.value || []
                             if (checked) {
                               field.onChange([...currentTypes, option.value])
@@ -247,7 +250,7 @@ export function PrerequisiteWidget() {
                               field.onChange(currentTypes.filter((t) => t !== option.value))
                             }
                           }}
-                          size="medium"
+                          size="md"
                           testID={`checkbox-user-type-${option.value}`}
                           ariaLabelledBy={`checkbox-user-type-${option.value}-label`}
                         />
@@ -299,12 +302,12 @@ export function PrerequisiteWidget() {
                         <Spinner size="small" />
                         <Text color="$color11">Loading industries...</Text>
                       </Row>
-                    ) : industriesData?.industries && industriesData.industries.length > 0 ? (
+                    ) : industriesData?.data && industriesData.data.length > 0 ? (
                       <ResponsiveSelect
                         value={field.value || ''}
                         onValueChange={field.onChange}
                         placeholder="Select your industry"
-                        options={industriesData.industries.map(
+                        options={industriesData.data.map(
                           (industry: { id: string; name: string }) => ({
                             value: industry.id,
                             label: industry.name,
@@ -339,10 +342,10 @@ export function PrerequisiteWidget() {
                 render={({ field }) => (
                   <Stack gap="$2">
                     <Row gap="$3" alignItems="center">
-                      <CustomCheckbox
+                      <Checkbox
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        size="medium"
+                        onChange={field.onChange}
+                        size="md"
                         testID="checkbox-legal-privacy-policy"
                         ariaLabelledBy="checkbox-legal-privacy-policy-label"
                       />
@@ -387,10 +390,10 @@ export function PrerequisiteWidget() {
                 render={({ field }) => (
                   <Stack gap="$2">
                     <Row gap="$3" alignItems="center">
-                      <CustomCheckbox
+                      <Checkbox
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        size="medium"
+                        onChange={field.onChange}
+                        size="md"
                         testID="checkbox-legal-terms-of-service"
                         ariaLabelledBy="checkbox-legal-terms-of-service-label"
                       />
@@ -431,21 +434,15 @@ export function PrerequisiteWidget() {
 
             {/* Submit Button */}
             <Button
-              variant="primary"
+              variant="filled"
+              color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={isSubmitting}
-              opacity={isSubmitting ? 0.5 : 1}
-              size="$5"
-              marginTop={spacing.xs}
+              loading={isSubmitting}
+              size="lg"
+              style={{ marginTop: spacing.xs }}
             >
-              {isSubmitting ? (
-                <Row gap={spacing.xs} alignItems="center">
-                  <Spinner size="small" color="white" />
-                  <Button.Text>Completing...</Button.Text>
-                </Row>
-              ) : (
-                <Button.Text>Complete Profile</Button.Text>
-              )}
+              {isSubmitting ? 'Completing...' : 'Complete Profile'}
             </Button>
           </>
         )}

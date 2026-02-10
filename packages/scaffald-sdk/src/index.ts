@@ -90,6 +90,15 @@ export type {
 } from './types/teams.js'
 
 export type {
+  PrerequisiteAddress,
+  UserType,
+  PrerequisitesData,
+  PrerequisitesCheckResponse,
+  CompletePrerequisitesParams,
+  CompletePrerequisitesResponse,
+} from './types/prerequisites.js'
+
+export type {
   ApiKey,
   ApiKeyCreated,
   ApiKeyScope,

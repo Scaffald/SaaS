@@ -53,6 +53,9 @@ import type {
   TeamJobAssignmentResponse,
   DeleteResponse,
   RolesListResponse,
+  PrerequisitesCheckResponse,
+  CompletePrerequisitesParams,
+  CompletePrerequisitesResponse,
   ApiKey,
   ApiKeyCreated,
   CreateApiKeyParams,
@@ -1496,6 +1499,85 @@ export function useDeleteTeamJobAssignment(
       client.teams.deleteJobAssignment(teamId, assignmentId),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['teams', variables.teamId, 'jobs'] })
+    },
+    ...options,
+  })
+}
+
+// ===== Prerequisites Hooks =====
+
+/**
+ * Hook to check prerequisites completion status
+ *
+ * @example
+ * ```typescript
+ * const { data: prerequisites, isLoading } = usePrerequisites()
+ *
+ * if (!prerequisites?.isComplete) {
+ *   // Redirect to onboarding page
+ *   // Example: router.push(ROUTES.ONBOARDING.path)
+ * }
+ * ```
+ */
+export function usePrerequisites(
+  options?: Omit<UseQueryOptions<PrerequisitesCheckResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['prerequisites'],
+    queryFn: () => client.prerequisites.check(),
+    staleTime: 5 * 60 * 1000, // 5 minutes - prerequisites don't change often
+    ...options,
+  })
+}
+
+/**
+ * Hook to complete prerequisites
+ *
+ * @example
+ * ```typescript
+ * const completeMutation = useCompletePrerequisites({
+ *   onSuccess: () => {
+ *     // Redirect to dashboard after completion
+ *     // Example: router.push(ROUTES.DASHBOARD.path)
+ *   }
+ * })
+ *
+ * // Submit prerequisites
+ * await completeMutation.mutateAsync({
+ *   first_name: 'John',
+ *   last_name: 'Doe',
+ *   address: {
+ *     street: '123 Main St',
+ *     city: 'San Francisco',
+ *     state: 'CA',
+ *     zip: '94102',
+ *     country: 'US'
+ *   },
+ *   user_types: ['worker'],
+ *   industry_id: 'ind_123',
+ *   accepts_privacy_policy: true,
+ *   accepts_terms_of_service: true
+ * })
+ * ```
+ */
+export function useCompletePrerequisites(
+  options?: Omit<
+    UseMutationOptions<CompletePrerequisitesResponse, Error, CompletePrerequisitesParams>,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: CompletePrerequisitesParams) => client.prerequisites.complete(params),
+    onSuccess: () => {
+      // Invalidate prerequisites to refetch the new status
+      queryClient.invalidateQueries({ queryKey: ['prerequisites'] })
+      // Also invalidate user profile data as it was updated
+      queryClient.invalidateQueries({ queryKey: ['profiles'] })
     },
     ...options,
   })

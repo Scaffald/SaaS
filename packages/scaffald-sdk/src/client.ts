@@ -6,6 +6,7 @@ import { Profiles } from './resources/profiles.js'
 import { Industries } from './resources/industries.js'
 import { Organizations } from './resources/organizations.js'
 import { Teams } from './resources/teams.js'
+import { Prerequisites } from './resources/prerequisites.js'
 import { ApiKeys } from './resources/api-keys.js'
 import { WebhooksManagement } from './resources/webhooks-management.js'
 
@@ -18,6 +19,7 @@ export class Scaffald {
   public readonly industries: Industries
   public readonly organizations: Organizations
   public readonly teams: Teams
+  public readonly prerequisites: Prerequisites
   public readonly apiKeys: ApiKeys
   public readonly webhooks: WebhooksManagement
 
@@ -38,6 +40,7 @@ export class Scaffald {
     this.industries = new Industries(this.http)
     this.organizations = new Organizations(this.http)
     this.teams = new Teams(this.http)
+    this.prerequisites = new Prerequisites(this.http)
     this.apiKeys = new ApiKeys(this.http)
     this.webhooks = new WebhooksManagement(this.http)
   }

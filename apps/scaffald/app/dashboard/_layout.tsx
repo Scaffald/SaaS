@@ -1,7 +1,8 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
+import { ROUTES } from '@scf/core/constants/routes'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
-import { api } from '@scf/core/utils/api'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
+import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect } from 'react'
@@ -13,17 +14,14 @@ export default function Layout() {
 
   // Check prerequisites status - only run when we have a valid user
   // This prevents race conditions after DB resets when session is invalid
-  const { data: statusData, isLoading: isCheckingPrereqs } = api.prerequisites.check.useQuery(
-    undefined,
-    {
-      enabled: !!user, // Only run if user exists
-    }
-  )
+  const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisites({
+    enabled: !!user, // Only run if user exists
+  })
 
   // Redirect to /onboarding if prerequisites incomplete
   useEffect(() => {
     if (!isCheckingPrereqs && statusData && !statusData.isComplete) {
-      router.replace('/onboarding')
+      router.replace(ROUTES.ONBOARDING.path)
     }
   }, [statusData, isCheckingPrereqs, router])
 

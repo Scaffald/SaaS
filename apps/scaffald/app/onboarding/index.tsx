@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ControlledAddressForm } from '@scf/core/forms'
-import { api } from '@scf/core/utils/api'
+import { usePrerequisites, useCompletePrerequisites, useIndustries } from '@scaffald/sdk/react'
 import {
   Button,
   Checkbox,
@@ -49,14 +49,13 @@ export default function OnboardingPage() {
     data: statusData,
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
-  } = api.prerequisites.check.useQuery()
+  } = usePrerequisites()
 
   // Fetch industries for dropdown
-  const { data: industriesData, isLoading: isLoadingIndustries } =
-    api.profile.skillsMultiTaxonomy.getIndustries.useQuery()
+  const { data: industriesData, isLoading: isLoadingIndustries } = useIndustries()
 
   // Complete prerequisites mutation
-  const completeMutation = api.prerequisites.complete.useMutation({
+  const completeMutation = useCompletePrerequisites({
     onSuccess: () => {
       toast.show({
         title: 'Profile Complete',
@@ -324,12 +323,12 @@ export default function OnboardingPage() {
                           <Spinner size="small" />
                           <Text color="$color11">Loading industries...</Text>
                         </Row>
-                      ) : industriesData?.industries && industriesData.industries.length > 0 ? (
+                      ) : industriesData?.data && industriesData.data.length > 0 ? (
                         <ResponsiveSelect
                           value={field.value || ''}
                           onValueChange={field.onChange}
                           placeholder="Select your industry"
-                          options={industriesData.industries.map(
+                          options={industriesData.data.map(
                             (industry: { id: string; name: string }) => ({
                               value: industry.id,
                               label: industry.name,

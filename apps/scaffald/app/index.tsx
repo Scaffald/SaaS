@@ -1,7 +1,7 @@
 import { AUTH_ROUTES, ROUTES } from '@scf/core/constants/routes'
 import { continueOAuthFlowIfPending } from '@scf/core/features/oauth/utils/passthrough'
-import { api } from '@scf/core/utils/api'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { usePrerequisites } from '@scaffald/sdk/react'
 import { useUser } from '@scf/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -25,13 +25,10 @@ export default function RootIndex() {
   const [isRouterReady, setIsRouterReady] = useState(false)
 
   // Check prerequisites status for authenticated users
-  const { data: prereqStatus, isLoading: isCheckingPrereqs } = api.prerequisites.check.useQuery(
-    undefined,
-    {
-      enabled: !!user && !isVerifying, // Only check when user is authenticated and not verifying
-      staleTime: 60000, // Cache for 1 minute
-    }
-  )
+  const { data: prereqStatus, isLoading: isCheckingPrereqs } = usePrerequisites({
+    enabled: !!user && !isVerifying, // Only check when user is authenticated and not verifying
+    staleTime: 60000, // Cache for 1 minute
+  })
 
   // Check if router is ready
   useEffect(() => {
@@ -106,7 +103,7 @@ export default function RootIndex() {
     const performNavigation = async () => {
       try {
         if (user) {
-          // Check for pending OAuth authorization (Task 12: OAuth passthrough)
+          // Check for pending OAuth authorization (OAuth passthrough)
           const continuedOAuth = await continueOAuthFlowIfPending()
           if (continuedOAuth) {
             // OAuth flow will handle redirect
@@ -116,7 +113,7 @@ export default function RootIndex() {
           // Check prerequisites and route accordingly
           if (!prereqStatus?.isComplete) {
             console.log('Prerequisites incomplete, navigating to onboarding')
-            router.replace('/onboarding')
+            router.replace(ROUTES.ONBOARDING.path)
           } else {
             console.log('Prerequisites complete, navigating to dashboard')
             router.replace(ROUTES.DASHBOARD.path)
