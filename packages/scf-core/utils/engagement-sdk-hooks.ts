@@ -6,6 +6,9 @@
 
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
+import type { Connection, SendConnectionRequestParams } from '@scaffald/sdk/resources/connections'
+import type { Follow, FollowUserParams } from '@scaffald/sdk/resources/follows'
+import type { EngagementEvent, TrackEventParams } from '@scaffald/sdk/resources/engagement'
 
 // ============================================================================
 // CONNECTIONS HOOKS
@@ -54,10 +57,12 @@ export function useConnectionStatus(userId: string | undefined, options?: { enab
 }
 
 /** Send a connection request to another user */
-export function useSendConnectionMutation(options?: UseMutationOptions<any, any, { targetUserId: string }>) {
+export function useSendConnectionMutation(
+  options?: UseMutationOptions<Connection, Error, SendConnectionRequestParams>
+) {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async (params: { targetUserId: string }) => {
+    mutationFn: async (params: SendConnectionRequestParams) => {
       if (!client) throw new Error('Missing client')
       return client.connections.send(params)
     },
@@ -66,7 +71,7 @@ export function useSendConnectionMutation(options?: UseMutationOptions<any, any,
 }
 
 /** Accept a connection request */
-export function useAcceptConnectionMutation(options?: UseMutationOptions<any, any, string>) {
+export function useAcceptConnectionMutation(options?: UseMutationOptions<Connection, Error, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
@@ -78,7 +83,7 @@ export function useAcceptConnectionMutation(options?: UseMutationOptions<any, an
 }
 
 /** Decline a connection request */
-export function useDeclineConnectionMutation(options?: UseMutationOptions<any, any, string>) {
+export function useDeclineConnectionMutation(options?: UseMutationOptions<void, Error, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
@@ -90,7 +95,7 @@ export function useDeclineConnectionMutation(options?: UseMutationOptions<any, a
 }
 
 /** Remove an existing connection */
-export function useRemoveConnectionMutation(options?: UseMutationOptions<any, any, string>) {
+export function useRemoveConnectionMutation(options?: UseMutationOptions<void, Error, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
@@ -102,7 +107,7 @@ export function useRemoveConnectionMutation(options?: UseMutationOptions<any, an
 }
 
 /** Cancel a sent connection request */
-export function useCancelConnectionMutation(options?: UseMutationOptions<any, any, string>) {
+export function useCancelConnectionMutation(options?: UseMutationOptions<void, Error, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (connectionId: string) => {
@@ -166,10 +171,10 @@ export function useFollowStatus(userId: string | undefined, options?: { enabled?
 }
 
 /** Follow a user */
-export function useFollowUserMutation(options?: UseMutationOptions<any, any, { targetUserId: string }>) {
+export function useFollowUserMutation(options?: UseMutationOptions<Follow, Error, FollowUserParams>) {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async (params: { targetUserId: string }) => {
+    mutationFn: async (params: FollowUserParams) => {
       if (!client) throw new Error('Missing client')
       return client.follows.followUser(params)
     },
@@ -178,7 +183,7 @@ export function useFollowUserMutation(options?: UseMutationOptions<any, any, { t
 }
 
 /** Unfollow a user */
-export function useUnfollowUserMutation(options?: UseMutationOptions<any, any, string>) {
+export function useUnfollowUserMutation(options?: UseMutationOptions<void, Error, string>) {
   const client = useScaffaldJobsClient()
   return useMutation({
     mutationFn: async (userId: string) => {
@@ -194,10 +199,10 @@ export function useUnfollowUserMutation(options?: UseMutationOptions<any, any, s
 // ============================================================================
 
 /** Track an engagement event */
-export function useTrackEngagementMutation(options?: UseMutationOptions<any, any, any>) {
+export function useTrackEngagementMutation(options?: UseMutationOptions<EngagementEvent, Error, TrackEventParams>) {
   const client = useScaffaldJobsClient()
   return useMutation({
-    mutationFn: async (params: any) => {
+    mutationFn: async (params: TrackEventParams) => {
       if (!client) throw new Error('Missing client')
       return client.engagement.track(params)
     },
