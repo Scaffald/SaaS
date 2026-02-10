@@ -1,4 +1,8 @@
-import { api } from '@scf/core/utils/api';
+import {
+  useIndustries,
+  usePrimaryIndustry,
+  useUserSkillsMultiTaxonomy,
+} from '@scf/core/utils/profile-skills-sdk-hooks';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ProfileIndustry } from '../types/profile-skills-types';
 
@@ -10,12 +14,9 @@ export function useProfileSkillsQueries() {
   const [selectedIndustryId, setSelectedIndustryId] = useState<string>("");
   const hasInitializedRef = useRef(false);
 
-  const { data: industriesData, isLoading: isLoadingIndustries } = api.profile
-    .skillsMultiTaxonomy.getIndustries.useQuery();
-  const { data: primaryIndustryData } = api.profile.skillsMultiTaxonomy
-    .getPrimaryIndustry.useQuery();
-  const userSkillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills
-    .useQuery();
+  const { data: industriesData, isLoading: isLoadingIndustries } = useIndustries();
+  const { data: primaryIndustryData } = usePrimaryIndustry();
+  const userSkillsQuery = useUserSkillsMultiTaxonomy();
 
   // Set selected industry from primary industry data - use stable ID reference
   // Use ref to prevent infinite loops from re-running when state updates
