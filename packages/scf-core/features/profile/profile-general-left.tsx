@@ -1,7 +1,13 @@
 import { ControlledAddressForm } from '@scf/core/forms'
 import { api } from '@scf/core/utils/api'
+import {
+  useGeneralInfo,
+  useUpdateGeneralInfoMutation,
+  useUploadAvatarMutation,
+} from '@scf/core/utils/profile-general-sdk-hooks'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { isValidPhoneNumber } from '@scf/schemas/common/phone'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   AvatarImagePicker,
   Button,
@@ -44,20 +50,22 @@ export function ProfileGeneralLeft() {
   const originalDataRef = useRef<GeneralProfileFormData | null>(null)
   const toast = useSafeToast()
   const utils = api.useContext()
+  const queryClient = useQueryClient()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
 
-  // Use tRPC to fetch and update profile data
-  const { data: profileData, isLoading: isLoadingProfile } =
-    api.profile.general.getGeneral.useQuery()
-  const updateProfileMutation = api.profile.general.updateGeneral.useMutation({
+  // Fetch and update profile data using SDK
+  const { data: profileData, isLoading: isLoadingProfile } = useGeneralInfo()
+  const updateProfileMutation = useUpdateGeneralInfoMutation({
     async onMutate(input: UpdateGeneralInput): Promise<UpdateGeneralContext> {
       resetProfileSyncError()
       startProfileSync()
-      await utils.profile.general.getGeneral.cancel()
-      const previousGeneral = utils.profile.general.getGeneral.getData()
-      utils.profile.general.getGeneral.setData(
-        undefined,
+      await queryClient.cancelQueries({ queryKey: ['scaffald', 'profiles', 'general'] })
+      const previousGeneral = queryClient.getQueryData(['scaffald', 'profiles', 'general']) as
+        | GeneralProfileFormData
+        | undefined
+      queryClient.setQueryData(
+        ['scaffald', 'profiles', 'general'],
         (current: GeneralProfileFormData | undefined): GeneralProfileFormData =>
           ({
             ...(current ?? {}),
@@ -69,7 +77,7 @@ export function ProfileGeneralLeft() {
     onError: (error: unknown, _input: UpdateGeneralInput, context?: UpdateGeneralContext) => {
       console.error('Error saving profile:', error)
       if (context?.previousGeneral) {
-        utils.profile.general.getGeneral.setData(undefined, context.previousGeneral)
+        queryClient.setQueryData(['scaffald', 'profiles', 'general'], context.previousGeneral)
       }
       failProfileSync()
       toast.show('Error', {
@@ -90,7 +98,7 @@ export function ProfileGeneralLeft() {
     },
   })
 
-  const uploadAvatarMutation = api.profile.avatar.uploadAvatar.useMutation({
+  const uploadAvatarMutation = useUploadAvatarMutation({
     onMutate: () => {
       resetProfileSyncError()
       startProfileSync()

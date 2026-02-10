@@ -1,4 +1,9 @@
 import { api } from '@scf/core/utils/api'
+import {
+  useGeneralInfo,
+  useUpdateGeneralInfoMutation,
+  useUploadAvatarMutation,
+} from '@scf/core/utils/profile-general-sdk-hooks'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import {
   AddressForm,
@@ -58,11 +63,12 @@ export function GeneralProfileSection({
     return undefined
   }
 
-  // Determine which tRPC endpoints to use based on mode
+  // Determine which endpoints to use based on mode
+  // Admin mode uses tRPC (api.office.*), user mode uses SDK
   const useQuery =
     mode === 'admin' && userId
       ? () => api.office.getUserGeneral.useQuery({ userId })
-      : () => api.profile.general.getGeneral.useQuery()
+      : () => useGeneralInfo()
 
   const useMutation =
     mode === 'admin' && userId
@@ -86,7 +92,7 @@ export function GeneralProfileSection({
             },
           })
       : () =>
-          api.profile.general.updateGeneral.useMutation({
+          useUpdateGeneralInfoMutation({
             onSuccess: () => {
               toast.show({
           title: 'Profile Updated',
@@ -109,7 +115,7 @@ export function GeneralProfileSection({
 
   const updateProfileMutation = useMutation()
 
-  const uploadAvatarMutation = api.profile.avatar.uploadAvatar.useMutation({
+  const uploadAvatarMutation = useUploadAvatarMutation({
     onSuccess: (data: { avatarPath: string }) => {
       toast.show({
           title: 'Avatar Uploaded',

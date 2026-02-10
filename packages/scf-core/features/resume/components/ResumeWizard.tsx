@@ -1,6 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OpenToTravelCard } from '@scf/core/features/profile/components/employment-fields'
 import { api } from '@scf/core/utils/api'
+import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { Button, ToggleCard, spacing } from '@unicornlove/beyond-ui'
 import {
   AlertCircle,
@@ -112,7 +113,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     skipSection,
   } = wizardController ?? useResumeWizard(resumeId)
 
-  const generalProfileQuery = api.profile.general.getGeneral.useQuery(undefined, {
+  const generalProfileQuery = useGeneralInfo({
     refetchOnWindowFocus: false,
   })
   const experienceQuery = api.profile.experience.getExperience.useQuery(undefined, {
