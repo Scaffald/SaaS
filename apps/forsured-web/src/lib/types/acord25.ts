@@ -1,6 +1,6 @@
 /**
  * TypeScript types for ACORD 25 Certificate of Insurance parsing
- * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
+ * Mock OCR & Document Parsing Engine for ACORD 25 Forms
  */
 
 /**
@@ -73,7 +73,7 @@ export interface ProcessingError {
 
 /**
  * Complete extraction result from ACORD 25 document
- * This matches the output schema defined in REQ-125
+ * This matches the output schema defined in
  */
 export interface ACORD25Extraction {
   document_id: string;
@@ -144,7 +144,7 @@ export interface MockACORD25Template {
 }
 
 /**
- * Policy data structure matching database schema (REQ-106)
+ * Policy data structure matching database schema
  */
 export interface PolicyData {
   id?: string;
@@ -164,7 +164,7 @@ export interface PolicyData {
 }
 
 /**
- * AI extraction record for storing parser results (REQ-106)
+ * AI extraction record for storing parser results
  */
 export interface AIExtractionRecord {
   id?: string;

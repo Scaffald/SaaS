@@ -1,5 +1,5 @@
 /**
- * REQ-128: Compliance Rule Evaluation Engine
+ * Compliance Rule Evaluation Engine
  * Type definitions for evaluation system
  */
 
@@ -24,7 +24,7 @@ export enum GapType {
   EXPIRED_POLICY = 'expired_policy',
   INCORRECT_HOLDER = 'incorrect_holder',
   EXPIRING_SOON = 'expiring_soon',
-  // REQ-2: Dependency validation gap types
+  // Dependency validation gap types
   MISSING_UNDERLYING_COVERAGE = 'missing_underlying_coverage',
   INSUFFICIENT_UNDERLYING_LIMIT = 'insufficient_underlying_limit',
   MISSING_DEPENDENCY = 'missing_dependency'
@@ -125,7 +125,7 @@ export interface EvaluationRequest {
 }
 
 /**
- * REQ-2: Dependency context for evaluation
+ * Dependency context for evaluation
  * Provides information about requirement dependencies and umbrella schedules
  */
 export interface DependencyEvaluationContext {
@@ -204,15 +204,15 @@ export interface ScoreDeductions {
   EXPIRED_POLICY: number;
   INCORRECT_HOLDER: number;
   EXPIRING_SOON: number;
-  // REQ-2: Dependency validation deductions
+  // Dependency validation deductions
   MISSING_UNDERLYING_COVERAGE: number;
   INSUFFICIENT_UNDERLYING_LIMIT: number;
   MISSING_DEPENDENCY: number;
 }
 
 /**
- * Default score deductions based on REQ-128 and REQ-2
- * REQ-2 additions:
+ * Default score deductions based on and
+  * additions:
  * - MISSING_UNDERLYING_COVERAGE: 25 points (CRITICAL - umbrella without underlying)
  * - INSUFFICIENT_UNDERLYING_LIMIT: 15 points (HIGH - underlying limit too low)
  * - MISSING_DEPENDENCY: 20 points (CRITICAL - required dependency missing)
@@ -224,7 +224,7 @@ export const DEFAULT_SCORE_DEDUCTIONS: ScoreDeductions = {
   EXPIRED_POLICY: 50,
   INCORRECT_HOLDER: 10,
   EXPIRING_SOON: 5,
-  // REQ-2: Dependency validation deductions
+  // Dependency validation deductions
   MISSING_UNDERLYING_COVERAGE: 25,
   INSUFFICIENT_UNDERLYING_LIMIT: 15,
   MISSING_DEPENDENCY: 20
@@ -239,7 +239,7 @@ export interface ScoreBoundaries {
 }
 
 /**
- * Default score boundaries based on REQ-128
+ * Default score boundaries based on
  */
 export const DEFAULT_SCORE_BOUNDARIES: ScoreBoundaries = {
   COMPLIANT_MIN: 90,

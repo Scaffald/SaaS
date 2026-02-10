@@ -1,5 +1,5 @@
 // src/services/userProfileService.ts
-// REQ-126: OAuth 2.0 + RBAC Authentication System
+// OAuth 2.0 + RBAC Authentication System
 //
 // Service for managing ForSured user profiles in Supabase
 

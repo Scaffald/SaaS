@@ -1,6 +1,6 @@
 /**
  * tRPC Custom Hooks
- * REQ-286: tRPC Client Setup
+ * tRPC Client Setup
  *
  * Provides convenient hooks for common tRPC patterns.
  */

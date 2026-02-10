@@ -1,6 +1,6 @@
 /**
  * Unit Tests for FlagList Component
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  */
 
 import { describe, it, expect } from 'vitest';

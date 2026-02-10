@@ -1,5 +1,5 @@
 /**
- * REQ-127: Task Auto-Generation from Compliance Gaps
+ * Task Auto-Generation from Compliance Gaps
  * Mock validation tests to ensure mocks match real system behavior
  *
  * As required by CLAUDE.md: "mocks used in tests must always be validated!

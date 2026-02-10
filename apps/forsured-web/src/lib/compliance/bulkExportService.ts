@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-11: Bulk Export System for Compliance Requirements
+ * Bulk Export System for Compliance Requirements
  * Provides filtering and export functionality for requirements data
  */
 

@@ -1,5 +1,5 @@
 /**
- * Umbrella Policy Validation Tests (REQ-270)
+ * Umbrella Policy Validation Tests
  */
 
 import { describe, it, expect } from 'vitest';

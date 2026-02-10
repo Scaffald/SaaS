@@ -1,5 +1,5 @@
 /**
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  * CommentThread component with rich text, mentions, and real-time updates
  */
 

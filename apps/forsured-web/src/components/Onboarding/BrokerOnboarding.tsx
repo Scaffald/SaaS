@@ -1,6 +1,6 @@
 /**
  * BrokerOnboarding - Brokerage onboarding form
- * REQ-285: Broker Onboarding Form Improvements
+ * Broker Onboarding Form Improvements
  * TASK-1: Update Brokerage Details Form Section
  * TASK-2: Implement Administrator Setup Flow
  * TASK-3: Build Team Member Invitation Flow

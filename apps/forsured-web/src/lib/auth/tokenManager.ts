@@ -1,6 +1,6 @@
 /**
  * Token Manager
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  *
  * Manages JWT access and refresh tokens
  * Handles token storage, validation, and automatic refresh

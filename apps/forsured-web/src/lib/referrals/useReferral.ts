@@ -1,14 +1,14 @@
 /**
  * Referral Tracking React Hooks
  *
- * REQ-128: Flexible Invitation System
+ * Referral hooks for invitation system
  *
  * React hooks for capturing and accessing referral data in components.
  */
 
-import { useEffect, useState } from 'react'
-import { captureReferral, getStoredReferral } from './referralTracking'
-import type { ReferralData } from '../invitations/types'
+import { useEffect, useState } from "react";
+import { captureReferral, getStoredReferral } from "./referralTracking";
+import type { ReferralData } from "../invitations/types";
 
 /**
  * Hook to capture and access referral data
@@ -30,18 +30,18 @@ import type { ReferralData } from '../invitations/types'
  * ```
  */
 export function useReferral(): ReferralData | null {
-  const [referral, setReferral] = useState<ReferralData | null>(null)
+  const [referral, setReferral] = useState<ReferralData | null>(null);
 
   useEffect(() => {
     // Capture referral from URL if present
-    captureReferral()
+    captureReferral();
 
     // Get stored referral
-    const stored = getStoredReferral()
-    setReferral(stored)
-  }, [])
+    const stored = getStoredReferral();
+    setReferral(stored);
+  }, []);
 
-  return referral
+  return referral;
 }
 
 /**
@@ -61,8 +61,8 @@ export function useReferral(): ReferralData | null {
  */
 export function useReferralCapture(): void {
   useEffect(() => {
-    captureReferral()
-  }, [])
+    captureReferral();
+  }, []);
 }
 
 /**
@@ -85,12 +85,12 @@ export function useReferralCapture(): void {
  * ```
  */
 export function useHasReferral(): boolean {
-  const [hasReferral, setHasReferral] = useState(false)
+  const [hasReferral, setHasReferral] = useState(false);
 
   useEffect(() => {
-    const stored = getStoredReferral()
-    setHasReferral(!!stored)
-  }, [])
+    const stored = getStoredReferral();
+    setHasReferral(!!stored);
+  }, []);
 
-  return hasReferral
+  return hasReferral;
 }

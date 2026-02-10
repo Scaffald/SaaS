@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-6: Dependency Validation for Evaluation Engine
+ * Dependency Validation for Evaluation Engine
  * Integrates dependency validation from TASK-4 into the compliance evaluation workflow
  */
 

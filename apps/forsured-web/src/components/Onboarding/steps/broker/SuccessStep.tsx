@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/broker/SuccessStep.tsx
-// REQ-126: Broker Onboarding - Success/Completion Step
+// Broker Onboarding - Success/Completion Step
 import { CheckCircle } from 'lucide-react';
 import { Stack, Text, H2, Button } from '@unicornlove/beyond-ui';
 

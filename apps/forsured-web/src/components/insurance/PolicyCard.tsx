@@ -1,5 +1,5 @@
 /**
- * REQ-262: Insurance Policy Parent-Child Model - UI Components
+ * Insurance Policy Parent-Child Model - UI Components
  * PolicyCard component displays a single insurance policy with expand/collapse for children
  */
 
@@ -161,7 +161,7 @@ export default function PolicyCard({
               )}
             </Row>
 
-            {/* REQ-270: Umbrella Coverage Display */}
+            {/* Umbrella Coverage Display */}
             {policy.policy_type === 'Umbrella' &&
               policy.underlying_coverages &&
               policy.underlying_coverages.length > 0 && (

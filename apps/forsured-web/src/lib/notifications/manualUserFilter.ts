@@ -1,25 +1,27 @@
 /**
  * Manual User Notification Filter
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-5: Update notification system to exclude manually-created users
+ * Filter to exclude manually-created users from notifications
  *
  * Provides utilities for filtering out manually-created users from
  * notification recipients. Manual users don't have real accounts and
  * cannot receive notifications until they register.
  */
 
-import { forsured } from '../supabase'
+import { forsured } from "../supabase";
 
 /**
  * Cache for manual user status to avoid repeated DB queries
  * Key: user profile ID, Value: is_manually_created flag
  */
-const manualUserCache = new Map<string, { isManual: boolean; cachedAt: number }>()
+const manualUserCache = new Map<
+  string,
+  { isManual: boolean; cachedAt: number }
+>();
 
 /**
  * Cache TTL in milliseconds (5 minutes)
  */
-const CACHE_TTL_MS = 5 * 60 * 1000
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 /**
  * Check if a user can receive notifications
@@ -28,38 +30,42 @@ const CACHE_TTL_MS = 5 * 60 * 1000
  * @param userProfileId - The forsured.user_profiles.id to check
  * @returns True if user can receive notifications, false if manual user
  */
-export async function canReceiveNotifications(userProfileId: string): Promise<boolean> {
+export async function canReceiveNotifications(
+  userProfileId: string,
+): Promise<boolean> {
   // Check cache first
-  const cached = manualUserCache.get(userProfileId)
+  const cached = manualUserCache.get(userProfileId);
   if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
-    return !cached.isManual
+    return !cached.isManual;
   }
 
   try {
-    const { data, error } = await forsured('user_profiles')
-      .select('is_manually_created')
-      .eq('id', userProfileId)
-      .single()
+    const { data, error } = await forsured("user_profiles")
+      .select("is_manually_created")
+      .eq("id", userProfileId)
+      .single();
 
     if (error || !data) {
       // If we can't find the user, assume they can't receive notifications
-      console.warn(`[ManualUserFilter] Could not find user profile ${userProfileId}`)
-      return false
+      console.warn(
+        `[ManualUserFilter] Could not find user profile ${userProfileId}`,
+      );
+      return false;
     }
 
-    const isManual = data.is_manually_created === true
+    const isManual = data.is_manually_created === true;
 
     // Cache the result
     manualUserCache.set(userProfileId, {
       isManual,
       cachedAt: Date.now(),
-    })
+    });
 
-    return !isManual
+    return !isManual;
   } catch (error) {
-    console.error('[ManualUserFilter] Error checking user:', error)
+    console.error("[ManualUserFilter] Error checking user:", error);
     // On error, assume user can receive notifications to avoid blocking
-    return true
+    return true;
   }
 }
 
@@ -69,75 +75,79 @@ export async function canReceiveNotifications(userProfileId: string): Promise<bo
  * @param recipientIds - Array of user profile IDs to filter
  * @returns Filtered array with only non-manual users
  */
-export async function filterManualUsers(recipientIds: string[]): Promise<string[]> {
+export async function filterManualUsers(
+  recipientIds: string[],
+): Promise<string[]> {
   if (recipientIds.length === 0) {
-    return []
+    return [];
   }
 
   // Check which IDs are cached
-  const needsQuery: string[] = []
-  const results: string[] = []
+  const needsQuery: string[] = [];
+  const results: string[] = [];
 
   for (const id of recipientIds) {
-    const cached = manualUserCache.get(id)
+    const cached = manualUserCache.get(id);
     if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
       if (!cached.isManual) {
-        results.push(id)
+        results.push(id);
       }
     } else {
-      needsQuery.push(id)
+      needsQuery.push(id);
     }
   }
 
   if (needsQuery.length === 0) {
-    return results
+    return results;
   }
 
   try {
     // Query all uncached IDs at once
-    const { data, error } = await forsured('user_profiles')
-      .select('id, is_manually_created')
-      .in('id', needsQuery)
+    const { data, error } = await forsured("user_profiles")
+      .select("id, is_manually_created")
+      .in("id", needsQuery);
 
     if (error) {
-      console.error('[ManualUserFilter] Error querying users:', error)
+      console.error("[ManualUserFilter] Error querying users:", error);
       // On error, include all queried users to avoid blocking
-      return [...results, ...needsQuery]
+      return [...results, ...needsQuery];
     }
 
-    const now = Date.now()
+    const now = Date.now();
 
     for (const user of data || []) {
-      const isManual = user.is_manually_created === true
+      const isManual = user.is_manually_created === true;
 
       // Cache the result
       manualUserCache.set(user.id, {
         isManual,
         cachedAt: now,
-      })
+      });
 
       if (!isManual) {
-        results.push(user.id)
+        results.push(user.id);
       } else {
-        console.log(`[ManualUserFilter] Excluding manual user ${user.id} from notifications`)
+        console.log(
+          `[ManualUserFilter] Excluding manual user ${user.id} from notifications`,
+        );
       }
     }
 
     // Handle any IDs that weren't found in the query
-    const foundIds = new Set((data || []).map(u => u.id))
+    const foundIds = new Set((data || []).map((u) => u.id));
     for (const id of needsQuery) {
       if (!foundIds.has(id)) {
-        console.warn(`[ManualUserFilter] User ${id} not found in database`)
+        console.warn(`[ManualUserFilter] User ${id} not found in database`);
         // Cache as manual to prevent repeated queries for non-existent users
-        manualUserCache.set(id, { isManual: true, cachedAt: now })
+        manualUserCache.set(id, { isManual: true, cachedAt: now });
       }
     }
 
-    return results
+    return results;
   } catch (error) {
-    console.error('[ManualUserFilter] Error filtering users:', error)
+    console.error("[ManualUserFilter] Error filtering users:", error);
     // On error, include all queried users to avoid blocking
-    return [...results, ...needsQuery]
+    return [...results, ...needsQuery];
   }
 }
 
@@ -152,20 +162,20 @@ export async function filterManualUsers(recipientIds: string[]): Promise<string[
 export function logSkippedManualUserNotification(
   userProfileId: string,
   notificationType: string,
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
 ): void {
-  console.warn('[ManualUserFilter] Skipped notification for manual user:', {
+  console.warn("[ManualUserFilter] Skipped notification for manual user:", {
     userProfileId,
     notificationType,
     ...context,
-  })
+  });
 }
 
 /**
  * Clear the cache (useful for testing)
  */
 export function clearCache(): void {
-  manualUserCache.clear()
+  manualUserCache.clear();
 }
 
 /**
@@ -175,5 +185,5 @@ export function getCacheStats(): { size: number; hitRate: number } {
   return {
     size: manualUserCache.size,
     hitRate: 0, // Would need to track hits/misses for real implementation
-  }
+  };
 }

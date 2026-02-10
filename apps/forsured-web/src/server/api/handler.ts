@@ -1,15 +1,14 @@
 /**
  * tRPC HTTP Handler
- * REQ-286: Create tRPC Router Structure for Forsured
- * TASK-4: Create Root Router and API Handler Integration
+ * Root router and API handler integration.
  *
  * Provides HTTP handler for tRPC requests.
  * Works with Vite dev server, Express, or serverless environments.
  */
 
-import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
-import { appRouter } from './root';
-import { createContext } from './context';
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { appRouter } from "./root";
+import { createContext } from "./context";
 
 /**
  * tRPC fetch handler
@@ -22,16 +21,18 @@ import { createContext } from './context';
  */
 export async function handleTRPCRequest(request: Request): Promise<Response> {
   return fetchRequestHandler({
-    endpoint: '/api/trpc',
+    endpoint: "/api/trpc",
     req: request,
     router: appRouter,
     createContext: createContext,
-    onError:
-      process.env.NODE_ENV === 'development'
-        ? ({ path, error }) => {
-            console.error(`❌ tRPC failed on ${path ?? '<no-path>'}:`, error.message);
-          }
-        : undefined,
+    onError: process.env.NODE_ENV === "development"
+      ? ({ path, error }) => {
+        console.error(
+          `❌ tRPC failed on ${path ?? "<no-path>"}:`,
+          error.message,
+        );
+      }
+      : undefined,
   });
 }
 
@@ -63,7 +64,7 @@ export async function trpcMiddleware(req: any, res: any) {
   });
 
   let body: BodyInit | null = null;
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
+  if (req.method !== "GET" && req.method !== "HEAD") {
     // Read body from Express request
     body = JSON.stringify(req.body);
   }

@@ -1,6 +1,6 @@
 /**
  * CCPA Admin Router
- * REQ-6: CCPA Admin UI Implementation
+ * CCPA Admin UI Implementation
  *
  * Provides admin endpoints for CCPA compliance management:
  * - Dashboard metrics (total, pending, processing, completed, overdue)

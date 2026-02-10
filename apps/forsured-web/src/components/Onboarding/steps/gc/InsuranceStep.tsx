@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/gc/InsuranceStep.tsx
-// REQ-126: GC Onboarding - Insurance Requirements Step
+// GC Onboarding - Insurance Requirements Step
 import { useState } from 'react';
 import { Stack, Row, Text, H2, Input, Checkbox, Button } from '@unicornlove/beyond-ui';
 

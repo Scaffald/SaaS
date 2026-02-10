@@ -1,42 +1,42 @@
 /**
  * DocumentReviewStep - Document review with uploader information
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-10: Build merge workflow UI - conflict resolution and data verification
+ * Merge document review step
+ * Merge workflow document review step
  *
  * Lists documents associated with the manual user with uploader info,
  * preview/download links, and acknowledgment checkbox.
  */
-import { useState, useCallback } from 'react';
-import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui';
-import { FileText, Calendar, User, Download, ExternalLink, Check, Loader2 } from 'lucide-react';
-import Button from '../Common/Button';
+import { useState, useCallback } from 'react'
+import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui'
+import { FileText, Calendar, User, Download, ExternalLink, Check, Loader2 } from 'lucide-react'
+import Button from '../Common/Button'
 
 interface Document {
-  id: string;
-  name: string;
-  uploadedBy: string;
-  uploadedAt: string;
-  fileType: string;
-  previewUrl?: string;
+  id: string
+  name: string
+  uploadedBy: string
+  uploadedAt: string
+  fileType: string
+  previewUrl?: string
 }
 
 interface DocumentReviewStepProps {
-  documents: Document[];
-  onComplete: () => void;
-  onBack: () => void;
-  isLoading?: boolean;
+  documents: Document[]
+  onComplete: () => void
+  onBack: () => void
+  isLoading?: boolean
 }
 
 /**
  * Format date for display
  */
 function formatDate(dateString: string): string {
-  const date = new Date(dateString);
+  const date = new Date(dateString)
   return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
+  })
 }
 
 /**
@@ -53,15 +53,15 @@ function getFileTypeColor(fileType: string): string {
     jpg: 'var(--color-purple-10)',
     jpeg: 'var(--color-purple-10)',
     png: 'var(--color-purple-10)',
-  };
-  return typeColors[fileType.toLowerCase()] || 'var(--color-text-muted)';
+  }
+  return typeColors[fileType.toLowerCase()] || 'var(--color-text-muted)'
 }
 
 /**
  * Format file type for display
  */
 function formatFileType(fileType: string): string {
-  return fileType.toUpperCase();
+  return fileType.toUpperCase()
 }
 
 export function DocumentReviewStep({
@@ -70,19 +70,19 @@ export function DocumentReviewStep({
   onBack,
   isLoading = false,
 }: DocumentReviewStepProps) {
-  const [acknowledged, setAcknowledged] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(false)
 
   // Handle acknowledgment toggle
   const handleAcknowledge = useCallback(() => {
-    setAcknowledged(prev => !prev);
-  }, []);
+    setAcknowledged((prev) => !prev)
+  }, [])
 
   // Handle continue
   const handleContinue = useCallback(() => {
     if (documents.length === 0 || acknowledged) {
-      onComplete();
+      onComplete()
     }
-  }, [documents.length, acknowledged, onComplete]);
+  }, [documents.length, acknowledged, onComplete])
 
   // If no documents, show simple message and continue
   if (documents.length === 0) {
@@ -107,12 +107,7 @@ export function DocumentReviewStep({
             There are no documents associated with the manual account to transfer.
           </Text>
         </Stack>
-        <Button
-          variant="primary"
-          onPress={onComplete}
-          size="lg"
-          disabled={isLoading}
-        >
+        <Button variant="primary" onPress={onComplete} size="lg" disabled={isLoading}>
           {isLoading ? (
             <Row alignItems="center" gap={8}>
               <Loader2 size={16} className="animate-spin" />
@@ -123,7 +118,7 @@ export function DocumentReviewStep({
           )}
         </Button>
       </Stack>
-    );
+    )
   }
 
   return (
@@ -132,8 +127,8 @@ export function DocumentReviewStep({
       <Stack gap={8}>
         <H2 style={{ fontSize: 28, fontWeight: 700 }}>Review Documents</H2>
         <Text size="md" muted>
-          The following documents were uploaded for your manual profile.
-          They will be transferred to your new account.
+          The following documents were uploaded for your manual profile. They will be transferred to
+          your new account.
         </Text>
       </Stack>
 
@@ -312,8 +307,8 @@ export function DocumentReviewStep({
               I acknowledge receipt of these documents
             </Text>
             <Text size="sm" muted>
-              By checking this box, you confirm that you have reviewed the documents
-              and agree to have them transferred to your account.
+              By checking this box, you confirm that you have reviewed the documents and agree to
+              have them transferred to your account.
             </Text>
           </Stack>
         </Row>
@@ -321,12 +316,7 @@ export function DocumentReviewStep({
 
       {/* Navigation buttons */}
       <Row gap={12} style={{ marginTop: 16 }}>
-        <Button
-          variant="ghost"
-          onPress={onBack}
-          disabled={isLoading}
-          style={{ flex: 1 }}
-        >
+        <Button variant="ghost" onPress={onBack} disabled={isLoading} style={{ flex: 1 }}>
           Back
         </Button>
         <Button
@@ -346,7 +336,7 @@ export function DocumentReviewStep({
         </Button>
       </Row>
     </Stack>
-  );
+  )
 }
 
-export default DocumentReviewStep;
+export default DocumentReviewStep

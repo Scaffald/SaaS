@@ -1,5 +1,5 @@
 /**
- * REQ-128: Compliance Rule Evaluation Engine
+ * Compliance Rule Evaluation Engine
  * Integration tests for the main evaluation engine
  */
 
@@ -492,7 +492,7 @@ describe('ComplianceEvaluationEngine', () => {
         projectEndDate
       );
 
-      // REQ-2: Now 4 rules including dependency validation
+      // Now 4 rules including dependency validation
       expect(result.rules_applied).toHaveLength(4);
       expect(result.rules_applied.some(r => r.rule_id === 'dependency-validation')).toBe(true);
       expect(result.rules_applied.some(r => r.rule_id === 'coverage-validation')).toBe(true);

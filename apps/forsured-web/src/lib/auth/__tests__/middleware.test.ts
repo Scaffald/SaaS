@@ -1,7 +1,7 @@
 /**
  * Authentication Middleware Tests
- * REQ-214: Migration Testing & Validation
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * Migration Testing & Validation
+ * OAuth 2.0 + RBAC Authentication System
  *
  * Tests middleware functions for:
  * - Authentication checking

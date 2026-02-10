@@ -1,6 +1,6 @@
 /**
  * Generic Invite Modal
- * REQ-128: Flexible Invitation System
+ * Generic invite modal - email and manual user selection
  *
  * A universal invite modal that works with the generic invitation system.
  * Supports any invitation rule, personal messages, constraint checking,
@@ -49,7 +49,7 @@ export function GenericInviteModal({
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
-  // REQ-12: Manual user selection state
+  // Manual user selection state
   type InviteMode = 'new' | 'manual'
   const [inviteMode, setInviteMode] = useState<InviteMode>('new')
   const [selectedManualUserId, setSelectedManualUserId] = useState<string | null>(null)
@@ -61,7 +61,7 @@ export function GenericInviteModal({
     enabled: isOpen,
   })
 
-  // REQ-12: Fetch manual users for selection
+  // Fetch manual users for selection
   const { data: manualUsersData } = trpc.manualUsers.list.useQuery(
     { limit: 100 },
     { enabled: isOpen && inviteMode === 'manual' }
@@ -158,7 +158,7 @@ export function GenericInviteModal({
     setSelectedRuleId(preSelectedRuleId || '')
     setError(null)
     setSuccessMessage(null)
-    // REQ-12: Reset manual user state
+    // Reset manual user state
     setInviteMode('new')
     setSelectedManualUserId(null)
     setShowEmailPrompt(false)
@@ -166,7 +166,7 @@ export function GenericInviteModal({
     onClose()
   }
 
-  // REQ-12: Handle manual user selection
+  // Handle manual user selection
   const handleManualUserSelect = (userId: string) => {
     const user = manualUsers.find((u) => u.id === userId)
     if (user) {
@@ -184,7 +184,7 @@ export function GenericInviteModal({
     }
   }
 
-  // REQ-12: Handle email prompt submission
+  // Handle email prompt submission
   const handleEmailPromptSubmit = async () => {
     if (!promptedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(promptedEmail)) {
       setError('Please enter a valid email address')
@@ -250,14 +250,32 @@ export function GenericInviteModal({
             <Row style={{ alignItems: 'flex-start', gap: 'var(--space-2)' }}>
               <AlertTriangle size={16} color="var(--color-yellow11)" style={{ marginTop: 2 }} />
               <Stack style={{ flex: 1 }}>
-                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-yellow11)' }}>
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: 500,
+                    color: 'var(--color-yellow11)',
+                  }}
+                >
                   Relationship Constraint
                 </Text>
-                <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow11)', marginTop: 'var(--space-1)' }}>
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-2)',
+                    color: 'var(--color-yellow11)',
+                    marginTop: 'var(--space-1)',
+                  }}
+                >
                   {constraintCheck.reason}
                 </Text>
                 {selectedRule?.allow_referral_only && (
-                  <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-yellow10)', marginTop: 'var(--space-2)' }}>
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-2)',
+                      color: 'var(--color-yellow10)',
+                      marginTop: 'var(--space-2)',
+                    }}
+                  >
                     The invitation will still be sent, but no relationship will be created.
                   </Text>
                 )}
@@ -269,7 +287,13 @@ export function GenericInviteModal({
         {/* Rule Selection (if multiple rules available) */}
         {availableRules.length > 1 && !preSelectedRuleId && (
           <Stack style={{ gap: 'var(--space-2)' }}>
-            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-3)',
+                fontWeight: 500,
+                color: 'var(--color-color12)',
+              }}
+            >
               Invitation Type
             </Text>
             <Stack style={{ gap: 'var(--space-2)' }}>
@@ -280,7 +304,8 @@ export function GenericInviteModal({
                     padding: 'var(--space-3)',
                     border: `1px solid ${selectedRuleId === rule.id ? 'var(--color-blue8)' : 'var(--color-border)'}`,
                     borderRadius: 'var(--radius-4)',
-                    backgroundColor: selectedRuleId === rule.id ? 'var(--color-blue2)' : 'transparent',
+                    backgroundColor:
+                      selectedRuleId === rule.id ? 'var(--color-blue2)' : 'transparent',
                     cursor: 'pointer',
                     alignItems: 'center',
                     gap: 'var(--space-3)',
@@ -294,11 +319,23 @@ export function GenericInviteModal({
                     style={{ cursor: 'pointer' }}
                   />
                   <Stack style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-3)',
+                        fontWeight: 500,
+                        color: 'var(--color-color12)',
+                      }}
+                    >
                       {rule.name}
                     </Text>
                     {rule.description && (
-                      <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)', marginTop: 'var(--space-1)' }}>
+                      <Text
+                        style={{
+                          fontSize: 'var(--font-size-2)',
+                          color: 'var(--color-color11)',
+                          marginTop: 'var(--space-1)',
+                        }}
+                      >
                         {rule.description}
                       </Text>
                     )}
@@ -319,11 +356,23 @@ export function GenericInviteModal({
               border: '1px solid var(--color-blue6)',
             }}
           >
-            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-blue11)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-3)',
+                fontWeight: 500,
+                color: 'var(--color-blue11)',
+              }}
+            >
               {selectedRule.name}
             </Text>
             {selectedRule.description && (
-              <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-blue10)', marginTop: 'var(--space-1)' }}>
+              <Text
+                style={{
+                  fontSize: 'var(--font-size-2)',
+                  color: 'var(--color-blue10)',
+                  marginTop: 'var(--space-1)',
+                }}
+              >
                 {selectedRule.description}
               </Text>
             )}
@@ -336,15 +385,27 @@ export function GenericInviteModal({
             <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
               Project
             </Text>
-            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-3)',
+                fontWeight: 500,
+                color: 'var(--color-color12)',
+              }}
+            >
               {projectName}
             </Text>
           </Stack>
         )}
 
-        {/* REQ-12: Invite Mode Toggle */}
+        {/* Invite Mode Toggle */}
         <Stack style={{ gap: 'var(--space-2)' }}>
-          <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+          <Text
+            style={{
+              fontSize: 'var(--font-size-3)',
+              fontWeight: 500,
+              color: 'var(--color-color12)',
+            }}
+          >
             Invite From
           </Text>
           <Row style={{ gap: 'var(--space-2)' }}>
@@ -370,8 +431,16 @@ export function GenericInviteModal({
                 gap: 'var(--space-2)',
               }}
             >
-              <UserPlus size={16} color={inviteMode === 'new' ? 'var(--color-blue11)' : 'var(--color-color11)'} />
-              <Text style={{ fontSize: 'var(--font-size-2)', color: inviteMode === 'new' ? 'var(--color-blue11)' : 'var(--color-color11)' }}>
+              <UserPlus
+                size={16}
+                color={inviteMode === 'new' ? 'var(--color-blue11)' : 'var(--color-color11)'}
+              />
+              <Text
+                style={{
+                  fontSize: 'var(--font-size-2)',
+                  color: inviteMode === 'new' ? 'var(--color-blue11)' : 'var(--color-color11)',
+                }}
+              >
                 New User
               </Text>
             </button>
@@ -391,26 +460,42 @@ export function GenericInviteModal({
                 gap: 'var(--space-2)',
               }}
             >
-              <Users size={16} color={inviteMode === 'manual' ? 'var(--color-blue11)' : 'var(--color-color11)'} />
-              <Text style={{ fontSize: 'var(--font-size-2)', color: inviteMode === 'manual' ? 'var(--color-blue11)' : 'var(--color-color11)' }}>
+              <Users
+                size={16}
+                color={inviteMode === 'manual' ? 'var(--color-blue11)' : 'var(--color-color11)'}
+              />
+              <Text
+                style={{
+                  fontSize: 'var(--font-size-2)',
+                  color: inviteMode === 'manual' ? 'var(--color-blue11)' : 'var(--color-color11)',
+                }}
+              >
                 Manually Added
               </Text>
             </button>
           </Row>
         </Stack>
 
-        {/* REQ-12: Manual User Selection */}
+        {/* Manual User Selection */}
         {inviteMode === 'manual' && (
           <Stack style={{ gap: 'var(--space-2)' }}>
-            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-3)',
+                fontWeight: 500,
+                color: 'var(--color-color12)',
+              }}
+            >
               Select Manual User
             </Text>
             {manualUsers.length === 0 ? (
-              <Card style={{
-                padding: 'var(--space-4)',
-                backgroundColor: 'var(--color-gray2)',
-                textAlign: 'center',
-              }}>
+              <Card
+                style={{
+                  padding: 'var(--space-4)',
+                  backgroundColor: 'var(--color-gray2)',
+                  textAlign: 'center',
+                }}
+              >
                 <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
                   No manually added users found. Create one first.
                 </Text>
@@ -425,7 +510,8 @@ export function GenericInviteModal({
                       padding: 'var(--space-3)',
                       border: `1px solid ${selectedManualUserId === user.id ? 'var(--color-blue8)' : 'var(--color-border)'}`,
                       borderRadius: 'var(--radius-3)',
-                      backgroundColor: selectedManualUserId === user.id ? 'var(--color-blue2)' : 'transparent',
+                      backgroundColor:
+                        selectedManualUserId === user.id ? 'var(--color-blue2)' : 'transparent',
                       cursor: 'pointer',
                       alignItems: 'center',
                       gap: 'var(--space-3)',
@@ -439,17 +525,27 @@ export function GenericInviteModal({
                     />
                     <Stack style={{ flex: 1 }}>
                       <Row alignItems="center" style={{ gap: 'var(--space-2)' }}>
-                        <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+                        <Text
+                          style={{
+                            fontSize: 'var(--font-size-3)',
+                            fontWeight: 500,
+                            color: 'var(--color-color12)',
+                          }}
+                        >
                           {user.name}
                         </Text>
                         <ManualUserBadge size="sm" showTooltip={false} />
                       </Row>
                       {user.email ? (
-                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}>
+                        <Text
+                          style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-color11)' }}
+                        >
                           {user.email}
                         </Text>
                       ) : (
-                        <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange11)' }}>
+                        <Text
+                          style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange11)' }}
+                        >
                           No email - will prompt to add
                         </Text>
                       )}
@@ -461,22 +557,31 @@ export function GenericInviteModal({
           </Stack>
         )}
 
-        {/* REQ-12: Email Prompt for manual users without email */}
+        {/* Email Prompt for manual users without email */}
         {showEmailPrompt && selectedManualUser && (
-          <Card style={{
-            padding: 'var(--space-4)',
-            backgroundColor: 'var(--color-orange2)',
-            border: '1px solid var(--color-orange6)',
-          }}>
+          <Card
+            style={{
+              padding: 'var(--space-4)',
+              backgroundColor: 'var(--color-orange2)',
+              border: '1px solid var(--color-orange6)',
+            }}
+          >
             <Stack style={{ gap: 'var(--space-3)' }}>
               <Row alignItems="flex-start" style={{ gap: 'var(--space-2)' }}>
                 <AlertTriangle size={16} color="var(--color-orange11)" style={{ marginTop: 2 }} />
                 <Stack style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-orange11)' }}>
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-3)',
+                      fontWeight: 500,
+                      color: 'var(--color-orange11)',
+                    }}
+                  >
                     Email Required
                   </Text>
                   <Text style={{ fontSize: 'var(--font-size-2)', color: 'var(--color-orange11)' }}>
-                    {selectedManualUser.name} doesn't have an email address. Please enter one to send the invitation.
+                    {selectedManualUser.name} doesn't have an email address. Please enter one to
+                    send the invitation.
                   </Text>
                 </Stack>
               </Row>
@@ -486,11 +591,7 @@ export function GenericInviteModal({
                 placeholder="Enter email address"
                 type="email"
               />
-              <Button
-                onPress={handleEmailPromptSubmit}
-                variant="secondary"
-                size="sm"
-              >
+              <Button onPress={handleEmailPromptSubmit} variant="secondary" size="sm">
                 Use This Email
               </Button>
             </Stack>
@@ -500,7 +601,13 @@ export function GenericInviteModal({
         {/* Email Input - only show for new user mode or when email is set */}
         {(inviteMode === 'new' || (inviteMode === 'manual' && email && !showEmailPrompt)) && (
           <Stack style={{ gap: 'var(--space-2)' }}>
-            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-3)',
+                fontWeight: 500,
+                color: 'var(--color-color12)',
+              }}
+            >
               Email Address *
             </Text>
             <Input
@@ -516,7 +623,13 @@ export function GenericInviteModal({
         {/* Name Input (Optional) - only show for new user mode or when manual user selected */}
         {(inviteMode === 'new' || (inviteMode === 'manual' && selectedManualUserId)) && (
           <Stack style={{ gap: 'var(--space-2)' }}>
-            <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-3)',
+                fontWeight: 500,
+                color: 'var(--color-color12)',
+              }}
+            >
               Name {inviteMode === 'new' ? '(Optional)' : ''}
             </Text>
             <Input
@@ -530,7 +643,13 @@ export function GenericInviteModal({
 
         {/* Personal Message */}
         <Stack style={{ gap: 'var(--space-2)' }}>
-          <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-color12)' }}>
+          <Text
+            style={{
+              fontSize: 'var(--font-size-3)',
+              fontWeight: 500,
+              color: 'var(--color-color12)',
+            }}
+          >
             Personal Message (Optional)
           </Text>
           <textarea

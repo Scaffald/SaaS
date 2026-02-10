@@ -1,13 +1,13 @@
 /**
  * GCDashboard - GC dashboard page using Beyond UI
  */
-import React from 'react';
-import { Stack, Row, Text, Card, Button, Chip } from '@unicornlove/beyond-ui';
-import { EmptyState } from '../../ui/EmptyState';
-import { Archive, Building2, Users, CheckCircle, Plus } from 'lucide-react';
-import { useLexicon } from '../../contexts/LexiconContext';
-import PageTransition from '../../components/Common/PageTransition';
-import AnimatedList from '../../components/Common/AnimatedList';
+import React from 'react'
+import { Stack, Row, Text, Card, Button, Chip } from '@unicornlove/beyond-ui'
+import { EmptyState } from '../../ui/EmptyState'
+import { Archive, Building2, Users, CheckCircle, Plus } from 'lucide-react'
+import { useLexicon } from '../../contexts/LexiconContext'
+import PageTransition from '../../components/Common/PageTransition'
+import AnimatedList from '../../components/Common/AnimatedList'
 
 // Mock projects for testing
 const mockProjects = [
@@ -27,22 +27,28 @@ const mockProjects = [
     contractorCount: 3,
     complianceScore: 92,
   },
-];
+]
 
 function GCDashboard() {
-  // REQ-4: Use lexicon for dynamic labels
-  const { t, getContractorLabel } = useLexicon();
+  // Use lexicon for dynamic labels
+  const { t, getContractorLabel } = useLexicon()
 
   const handleCreateProject = () => {
-    console.log('Navigate to create project page');
-  };
+    console.log('Navigate to create project page')
+  }
 
-  const hasProjects = mockProjects.length > 0;
+  const hasProjects = mockProjects.length > 0
 
   return (
     <PageTransition>
       <Stack style={{ gap: 'var(--space-6)' }}>
-        <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 700, marginBottom: 'var(--space-6)' }}>
+        <Text
+          style={{
+            fontSize: 'var(--font-size-8)',
+            fontWeight: 700,
+            marginBottom: 'var(--space-6)',
+          }}
+        >
           {t('nav.dashboard')}
         </Text>
         {!hasProjects ? (
@@ -87,7 +93,13 @@ function GCDashboard() {
                     minWidth: 300,
                   }}
                 >
-                  <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
+                  <Row
+                    style={{
+                      alignItems: 'flex-start',
+                      justifyContent: 'space-between',
+                      marginBottom: 'var(--space-4)',
+                    }}
+                  >
                     <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
                       <Stack
                         style={{
@@ -111,8 +123,20 @@ function GCDashboard() {
                       {project.status}
                     </Chip>
                   </Row>
-                  <Row style={{ alignItems: 'center', justifyContent: 'space-between', fontSize: 'var(--font-size-2)' }}>
-                    <Row style={{ alignItems: 'center', gap: 'var(--space-1)', color: 'var(--color-10)' }}>
+                  <Row
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      fontSize: 'var(--font-size-2)',
+                    }}
+                  >
+                    <Row
+                      style={{
+                        alignItems: 'center',
+                        gap: 'var(--space-1)',
+                        color: 'var(--color-10)',
+                      }}
+                    >
                       <Users size={16} />
                       <Text>{project.contractorCount} contractors</Text>
                     </Row>
@@ -130,7 +154,7 @@ function GCDashboard() {
         )}
       </Stack>
     </PageTransition>
-  );
+  )
 }
 
-export default GCDashboard;
+export default GCDashboard

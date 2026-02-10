@@ -1,6 +1,6 @@
 /**
  * CCPA Export Performance Tests
- * REQ-3: CCPA Compliance Implementation - TASK-19
+ * CCPA Compliance Implementation - TASK-19
  *
  * Performance benchmarks for CCPA data export generation
  * verifying that exports meet performance targets across various data sizes.

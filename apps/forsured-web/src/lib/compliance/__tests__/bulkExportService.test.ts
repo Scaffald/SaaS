@@ -1,6 +1,6 @@
 /**
  * Bulk Export Service Tests
- * REQ-2, TASK-11: Bulk Export System with Filtering
+ * Bulk Export System with Filtering
  */
 
 import { describe, it, expect } from 'vitest';

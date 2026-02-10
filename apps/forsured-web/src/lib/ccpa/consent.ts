@@ -1,12 +1,12 @@
 /**
  * Consent Management Service - CCPA Consent Tracking
- * REQ-131: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Implements:
  * - "Do Not Sell My Data" opt-out mechanism
  * - Consent tracking with audit trail
  * - Consent version management
- * - Integration with REQ-130 audit logging
+ * - Integration with audit logging
  */
 
 import type {

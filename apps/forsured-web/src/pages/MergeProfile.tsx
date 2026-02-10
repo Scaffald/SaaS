@@ -1,253 +1,261 @@
 /**
  * MergeProfile - Multi-step merge workflow page
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-10: Build merge workflow UI - conflict resolution and data verification
+ * Merge workflow UI - conflict resolution and data verification
  *
  * Guides newly registered users through profile conflict resolution,
  * project verification, and document review when their account matches
  * a manually-created record.
  */
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui';
-import { Loader2 } from 'lucide-react';
-import { trpc } from '../lib/trpc';
-import { toast } from 'sonner';
-import { useAuth } from '../contexts/AuthContext';
-import Button from '../components/Common/Button';
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui'
+import { Loader2 } from 'lucide-react'
+import { trpc } from '../lib/trpc'
+import { toast } from 'sonner'
+import { useAuth } from '../contexts/AuthContext'
+import Button from '../components/Common/Button'
 import {
   MergeProgress,
   ConflictResolutionStep,
   ProjectVerificationStep,
   DocumentReviewStep,
   MergeCompletionStep,
-} from '../components/MergeWorkflow';
+} from '../components/MergeWorkflow'
 
 /**
  * Session storage key for merge workflow context
  */
-const MERGE_CONTEXT_KEY = 'forsured_merge_context';
+const MERGE_CONTEXT_KEY = 'forsured_merge_context'
 
 /**
  * Merge context stored in sessionStorage for the merge workflow
  */
 interface MergeContext {
-  realUserId: string;
-  realUserEmail: string;
+  realUserId: string
+  realUserEmail: string
   matches: Array<{
-    manualUserId: string;
-    name: string;
-    email: string;
-    organizationId: string;
-    organizationName: string;
-    matchReason: string;
-  }>;
-  detectedAt: string;
+    manualUserId: string
+    name: string
+    email: string
+    organizationId: string
+    organizationName: string
+    matchReason: string
+  }>
+  detectedAt: string
 }
 
 /**
  * Conflict data returned from the API
  */
 interface ConflictData {
-  manualUserId: string;
-  manualUserName: string;
+  manualUserId: string
+  manualUserName: string
   conflicts: Array<{
-    field: string;
-    manualValue: string;
-    scaffaldValue: string;
-  }>;
+    field: string
+    manualValue: string
+    scaffaldValue: string
+  }>
   projects: Array<{
-    id: string;
-    name: string;
-    role: string;
-    addedBy: string;
-    addedAt: string;
-  }>;
+    id: string
+    name: string
+    role: string
+    addedBy: string
+    addedAt: string
+  }>
   documents: Array<{
-    id: string;
-    name: string;
-    uploadedBy: string;
-    uploadedAt: string;
-    fileType: string;
-    previewUrl?: string;
-  }>;
+    id: string
+    name: string
+    uploadedBy: string
+    uploadedAt: string
+    fileType: string
+    previewUrl?: string
+  }>
 }
 
 /**
  * Resolution data for conflicts
  */
 interface ConflictResolution {
-  field: string;
-  selectedValue: 'manual' | 'scaffald';
+  field: string
+  selectedValue: 'manual' | 'scaffald'
 }
 
-type MergeStep = 'conflicts' | 'projects' | 'documents' | 'completion';
+type MergeStep = 'conflicts' | 'projects' | 'documents' | 'completion'
 
-const STEP_ORDER: MergeStep[] = ['conflicts', 'projects', 'documents', 'completion'];
+const STEP_ORDER: MergeStep[] = ['conflicts', 'projects', 'documents', 'completion']
 
 export default function MergeProfile() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [currentStep, setCurrentStep] = useState<MergeStep>('conflicts');
-  const [mergeContext, setMergeContext] = useState<MergeContext | null>(null);
-  const [conflictData, setConflictData] = useState<ConflictData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const [currentStep, setCurrentStep] = useState<MergeStep>('conflicts')
+  const [mergeContext, setMergeContext] = useState<MergeContext | null>(null)
+  const [conflictData, setConflictData] = useState<ConflictData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   // Step state
-  const [selectedManualUserId, setSelectedManualUserId] = useState<string | null>(null);
-  const [conflictResolutions, setConflictResolutions] = useState<ConflictResolution[]>([]);
-  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-  const [documentsAcknowledged, setDocumentsAcknowledged] = useState(false);
-  const [mergeComplete, setMergeComplete] = useState(false);
+  const [selectedManualUserId, setSelectedManualUserId] = useState<string | null>(null)
+  const [conflictResolutions, setConflictResolutions] = useState<ConflictResolution[]>([])
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([])
+  const [documentsAcknowledged, setDocumentsAcknowledged] = useState(false)
+  const [mergeComplete, setMergeComplete] = useState(false)
   const [mergeStats, setMergeStats] = useState<{
-    tasksTransferred: number;
-    projectsConfirmed: number;
-    documentsTransferred: number;
-  } | null>(null);
+    tasksTransferred: number
+    projectsConfirmed: number
+    documentsTransferred: number
+  } | null>(null)
 
   // tRPC mutations
-  const getConflictsMutation = trpc.userMerge.getConflicts.useMutation();
-  const resolveConflictsMutation = trpc.userMerge.resolveConflicts.useMutation();
-  const executeMergeMutation = trpc.userMerge.executeMerge.useMutation();
+  const getConflictsMutation = trpc.userMerge.getConflicts.useMutation()
+  const resolveConflictsMutation = trpc.userMerge.resolveConflicts.useMutation()
+  const executeMergeMutation = trpc.userMerge.executeMerge.useMutation()
 
   // Load merge context from sessionStorage
   useEffect(() => {
-    const storedContext = sessionStorage.getItem(MERGE_CONTEXT_KEY);
+    const storedContext = sessionStorage.getItem(MERGE_CONTEXT_KEY)
     if (!storedContext) {
-      setError('No merge context found. Please try logging in again.');
-      setLoading(false);
-      return;
+      setError('No merge context found. Please try logging in again.')
+      setLoading(false)
+      return
     }
 
     try {
-      const context = JSON.parse(storedContext) as MergeContext;
-      setMergeContext(context);
+      const context = JSON.parse(storedContext) as MergeContext
+      setMergeContext(context)
 
       // If only one match, auto-select it
       if (context.matches.length === 1) {
-        setSelectedManualUserId(context.matches[0].manualUserId);
+        setSelectedManualUserId(context.matches[0].manualUserId)
       }
     } catch (err) {
-      setError('Invalid merge context. Please try logging in again.');
+      setError('Invalid merge context. Please try logging in again.')
     }
-    setLoading(false);
-  }, []);
+    setLoading(false)
+  }, [])
 
   // Load conflict data when manual user is selected
   useEffect(() => {
     async function loadConflicts() {
-      if (!selectedManualUserId) return;
+      if (!selectedManualUserId) return
 
-      setLoading(true);
+      setLoading(true)
       try {
         const result = await getConflictsMutation.mutateAsync({
           manualUserId: selectedManualUserId,
-        });
+        })
 
         setConflictData({
           manualUserId: selectedManualUserId,
-          manualUserName: mergeContext?.matches.find(m => m.manualUserId === selectedManualUserId)?.name || 'Unknown User',
+          manualUserName:
+            mergeContext?.matches.find((m) => m.manualUserId === selectedManualUserId)?.name ||
+            'Unknown User',
           conflicts: result.conflicts,
           projects: result.projects,
           documents: result.documents,
-        });
+        })
 
         // Initialize all projects as selected
-        setSelectedProjects(result.projects.map(p => p.id));
+        setSelectedProjects(result.projects.map((p) => p.id))
       } catch (err) {
-        console.error('[MergeProfile] Error loading conflicts:', err);
-        setError('Failed to load merge data. Please try again.');
+        console.error('[MergeProfile] Error loading conflicts:', err)
+        setError('Failed to load merge data. Please try again.')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    loadConflicts();
-  }, [selectedManualUserId]);
+    loadConflicts()
+  }, [selectedManualUserId])
 
   // Handle step navigation
   const handleNextStep = useCallback(async () => {
-    const currentIndex = STEP_ORDER.indexOf(currentStep);
+    const currentIndex = STEP_ORDER.indexOf(currentStep)
     if (currentIndex < STEP_ORDER.length - 1) {
-      setCurrentStep(STEP_ORDER[currentIndex + 1]);
+      setCurrentStep(STEP_ORDER[currentIndex + 1])
     }
-  }, [currentStep]);
+  }, [currentStep])
 
   const handlePreviousStep = useCallback(() => {
-    const currentIndex = STEP_ORDER.indexOf(currentStep);
+    const currentIndex = STEP_ORDER.indexOf(currentStep)
     if (currentIndex > 0) {
-      setCurrentStep(STEP_ORDER[currentIndex - 1]);
+      setCurrentStep(STEP_ORDER[currentIndex - 1])
     }
-  }, [currentStep]);
+  }, [currentStep])
 
   // Handle conflict resolution submission
-  const handleConflictsComplete = useCallback(async (resolutions: ConflictResolution[]) => {
-    setConflictResolutions(resolutions);
+  const handleConflictsComplete = useCallback(
+    async (resolutions: ConflictResolution[]) => {
+      setConflictResolutions(resolutions)
 
-    // Submit resolutions to API
-    try {
-      await resolveConflictsMutation.mutateAsync({
-        manualUserId: selectedManualUserId!,
-        resolutions: resolutions.map(r => ({
-          field: r.field,
-          selectedValue: r.selectedValue === 'manual'
-            ? conflictData?.conflicts.find(c => c.field === r.field)?.manualValue || ''
-            : conflictData?.conflicts.find(c => c.field === r.field)?.scaffaldValue || '',
-        })),
-      });
-      handleNextStep();
-    } catch (err) {
-      console.error('[MergeProfile] Error saving conflict resolutions:', err);
-      toast.error('Failed to save your selections. Please try again.');
-    }
-  }, [selectedManualUserId, conflictData, resolveConflictsMutation, handleNextStep]);
+      // Submit resolutions to API
+      try {
+        await resolveConflictsMutation.mutateAsync({
+          manualUserId: selectedManualUserId!,
+          resolutions: resolutions.map((r) => ({
+            field: r.field,
+            selectedValue:
+              r.selectedValue === 'manual'
+                ? conflictData?.conflicts.find((c) => c.field === r.field)?.manualValue || ''
+                : conflictData?.conflicts.find((c) => c.field === r.field)?.scaffaldValue || '',
+          })),
+        })
+        handleNextStep()
+      } catch (err) {
+        console.error('[MergeProfile] Error saving conflict resolutions:', err)
+        toast.error('Failed to save your selections. Please try again.')
+      }
+    },
+    [selectedManualUserId, conflictData, resolveConflictsMutation, handleNextStep]
+  )
 
   // Handle project verification
-  const handleProjectsComplete = useCallback((projectIds: string[]) => {
-    setSelectedProjects(projectIds);
-    handleNextStep();
-  }, [handleNextStep]);
+  const handleProjectsComplete = useCallback(
+    (projectIds: string[]) => {
+      setSelectedProjects(projectIds)
+      handleNextStep()
+    },
+    [handleNextStep]
+  )
 
   // Handle document acknowledgment
   const handleDocumentsComplete = useCallback(async () => {
-    setDocumentsAcknowledged(true);
+    setDocumentsAcknowledged(true)
 
     // Execute the merge
     try {
       const result = await executeMergeMutation.mutateAsync({
         manualUserId: selectedManualUserId!,
         confirmedProjectIds: selectedProjects,
-      });
+      })
 
       setMergeStats({
         tasksTransferred: result.tasksTransferred,
         projectsConfirmed: result.projectsConfirmed,
         documentsTransferred: result.documentsTransferred,
-      });
-      setMergeComplete(true);
+      })
+      setMergeComplete(true)
 
       // Clear the merge context from sessionStorage
-      sessionStorage.removeItem(MERGE_CONTEXT_KEY);
+      sessionStorage.removeItem(MERGE_CONTEXT_KEY)
 
-      handleNextStep();
+      handleNextStep()
     } catch (err) {
-      console.error('[MergeProfile] Error executing merge:', err);
-      toast.error('Failed to complete the merge. Please try again.');
+      console.error('[MergeProfile] Error executing merge:', err)
+      toast.error('Failed to complete the merge. Please try again.')
     }
-  }, [selectedManualUserId, selectedProjects, executeMergeMutation, handleNextStep]);
+  }, [selectedManualUserId, selectedProjects, executeMergeMutation, handleNextStep])
 
   // Handle completion - navigate to dashboard
   const handleGoToDashboard = useCallback(() => {
-    navigate('/');
-  }, [navigate]);
+    navigate('/')
+  }, [navigate])
 
   // Handle skip workflow - for users who want to skip
   const handleSkipWorkflow = useCallback(() => {
-    sessionStorage.removeItem(MERGE_CONTEXT_KEY);
-    toast.info('You can complete the merge later from your settings.');
-    navigate('/');
-  }, [navigate]);
+    sessionStorage.removeItem(MERGE_CONTEXT_KEY)
+    toast.info('You can complete the merge later from your settings.')
+    navigate('/')
+  }, [navigate])
 
   // Render loading state
   if (loading) {
@@ -258,9 +266,11 @@ export default function MergeProfile() {
         style={{ minHeight: '100vh', padding: 24 }}
       >
         <Loader2 size={48} className="animate-spin" style={{ color: 'var(--color-blue-10)' }} />
-        <Text size="lg" style={{ marginTop: 16 }}>Loading merge data...</Text>
+        <Text size="lg" style={{ marginTop: 16 }}>
+          Loading merge data...
+        </Text>
       </Stack>
-    );
+    )
   }
 
   // Render error state
@@ -281,7 +291,11 @@ export default function MergeProfile() {
             borderRadius: 12,
           }}
         >
-          <Text size="lg" weight="medium" style={{ color: 'var(--color-red-11)', marginBottom: 16 }}>
+          <Text
+            size="lg"
+            weight="medium"
+            style={{ color: 'var(--color-red-11)', marginBottom: 16 }}
+          >
             {error}
           </Text>
           <Button variant="primary" onPress={() => navigate('/login')}>
@@ -289,7 +303,7 @@ export default function MergeProfile() {
           </Button>
         </Card>
       </Stack>
-    );
+    )
   }
 
   // Render multiple matches selection
@@ -304,9 +318,7 @@ export default function MergeProfile() {
           padding: 24,
         }}
       >
-        <H1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 8 }}>
-          Multiple Accounts Found
-        </H1>
+        <H1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 8 }}>Multiple Accounts Found</H1>
         <Text size="lg" muted style={{ marginBottom: 32 }}>
           We found multiple existing accounts that may be yours. Please select the one to merge:
         </Text>
@@ -325,8 +337,12 @@ export default function MergeProfile() {
               }}
             >
               <Stack gap={8}>
-                <Text size="lg" weight="semibold">{match.name}</Text>
-                <Text size="sm" muted>{match.email}</Text>
+                <Text size="lg" weight="semibold">
+                  {match.name}
+                </Text>
+                <Text size="sm" muted>
+                  {match.email}
+                </Text>
                 <Row gap={8} style={{ marginTop: 8 }}>
                   <span
                     style={{
@@ -372,12 +388,12 @@ export default function MergeProfile() {
           Skip for now
         </Button>
       </Stack>
-    );
+    )
   }
 
   // Determine which step content to render
-  const currentStepIndex = STEP_ORDER.indexOf(currentStep);
-  const totalSteps = STEP_ORDER.length;
+  const currentStepIndex = STEP_ORDER.indexOf(currentStep)
+  const totalSteps = STEP_ORDER.length
 
   return (
     <Stack
@@ -430,12 +446,9 @@ export default function MergeProfile() {
         )}
 
         {currentStep === 'completion' && (
-          <MergeCompletionStep
-            stats={mergeStats}
-            onGoToDashboard={handleGoToDashboard}
-          />
+          <MergeCompletionStep stats={mergeStats} onGoToDashboard={handleGoToDashboard} />
         )}
       </Stack>
     </Stack>
-  );
+  )
 }

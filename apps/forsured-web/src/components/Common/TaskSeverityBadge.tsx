@@ -1,6 +1,6 @@
 /**
  * Task Severity Badge Component - Using Beyond UI
- * REQ-266: Task Correlation with Compliance Score
+ * Task severity and compliance correlation
 
  */
 import React, { useState } from 'react'

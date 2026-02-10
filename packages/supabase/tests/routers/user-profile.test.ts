@@ -1,12 +1,12 @@
 /**
  * UserProfile router test coverage.
- * Created for REQ-74 test coverage.
+ * User profile router test coverage.
  */
 
-import { assertEquals, assertExists } from '../shared/assert';
+import { assertEquals, assertExists } from "../shared/assert";
 
-import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+import { callTRPCEndpoint, loadCachedTokens } from "../shared/setup";
+import { requireAuthSetup } from "../shared/test-context";
 
 Deno.test({
   name: "UserProfile router - getPreview requires authentication",
@@ -71,7 +71,8 @@ Deno.test({
     assertExists(result, "Preview should return data");
     // Avatar should be present (either avatarPath or avatarUrl)
     assertEquals(
-      typeof result.avatarPath === "string" || typeof result.avatarUrl === "string" || result.avatarPath === null,
+      typeof result.avatarPath === "string" ||
+        typeof result.avatarUrl === "string" || result.avatarPath === null,
       true,
       "Preview should include avatar path or URL",
     );
@@ -99,14 +100,23 @@ Deno.test({
     const result = response[0]?.result?.data;
     assertExists(result, "Preview should return data");
     assertExists(result.topSkills, "Preview should include topSkills");
-    assertEquals(Array.isArray(result.topSkills), true, "topSkills should be an array");
+    assertEquals(
+      Array.isArray(result.topSkills),
+      true,
+      "topSkills should be an array",
+    );
     // Should return up to 5 skills (as per router implementation)
-    assertEquals(result.topSkills.length <= 5, true, "topSkills should have max 5 items");
+    assertEquals(
+      result.topSkills.length <= 5,
+      true,
+      "topSkills should have max 5 items",
+    );
   },
 });
 
 Deno.test({
-  name: "UserProfile router - getPreview includes display name, headline, location",
+  name:
+    "UserProfile router - getPreview includes display name, headline, location",
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
@@ -160,6 +170,10 @@ Deno.test({
 
     const error = response[0]?.error;
     assertExists(error, "Expected error for non-existent user");
-    assertEquals(error?.data?.code === "NOT_FOUND" || error?.data?.code === "INTERNAL_SERVER_ERROR", true);
+    assertEquals(
+      error?.data?.code === "NOT_FOUND" ||
+        error?.data?.code === "INTERNAL_SERVER_ERROR",
+      true,
+    );
   },
 });

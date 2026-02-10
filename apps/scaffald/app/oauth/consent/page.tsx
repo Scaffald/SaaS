@@ -1,6 +1,6 @@
 /**
  * OAuth Consent Page
- * REQ-10 Task 9: Consent screen page
+ * OAuth consent screen page
  */
 
 import { ConsentScreen } from '@scf/core/features/oauth/components/ConsentScreen'
@@ -71,4 +71,3 @@ export default function OAuthConsentPage() {
     />
   )
 }
-

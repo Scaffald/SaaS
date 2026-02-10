@@ -1,6 +1,6 @@
 /**
  * Invitation Components
- * REQ-128: Flexible Invitation System
+ * Flexible Invitation System
  */
 
 export { GenericInviteModal } from './GenericInviteModal'

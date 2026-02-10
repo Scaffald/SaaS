@@ -1,5 +1,5 @@
 /**
- * DocumentPreview Component (REQ-167)
+ * DocumentPreview Component
  * Side-by-side document viewer for OCR review
  */
 

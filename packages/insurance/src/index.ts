@@ -20,6 +20,6 @@ export type { EndorsementListProps, Endorsement } from './EndorsementList'
 export { PolicyStatusBadge } from './PolicyStatusBadge'
 export type { PolicyStatusBadgeProps, PolicyStatus } from './PolicyStatusBadge'
 
-// GLSubLimitsTable (REQ-280)
+// GLSubLimitsTable
 export { GLSubLimitsTable } from './GLSubLimitsTable'
 export type { GLSubLimitsTableProps, GLSubLimitItem } from './GLSubLimitsTable'

@@ -2,24 +2,27 @@
  * Vitest setup file for Scaffald
  * Configures testing environment and matchers
  *
- * REQ-9: Testing Policy
+ * Testing policy: no mocking of owned code
  * Tests run against real Supabase (local instance at localhost:54321).
  * No database mocking - if we own it, we test it directly.
  */
 
-import '@testing-library/jest-dom';
-import { afterEach, afterAll, beforeAll, vi } from 'vitest';
-import { cleanup } from '@testing-library/react-native';
+import "@testing-library/jest-dom";
+import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import { cleanup } from "@testing-library/react-native";
 
 /**
  * Set up environment variables for tests
  * Uses local Supabase instance (pnpm supa start)
  */
-process.env.EXPO_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
-process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
-process.env.EXPO_PUBLIC_SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
-process.env.TEST_SUPABASE_URL = 'http://localhost:54321';
-process.env.TEST_SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+process.env.EXPO_PUBLIC_SUPABASE_URL = "http://localhost:54321";
+process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+process.env.EXPO_PUBLIC_SUPABASE_SERVICE_ROLE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+process.env.TEST_SUPABASE_URL = "http://localhost:54321";
+process.env.TEST_SUPABASE_SERVICE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
 
 /**
  * Mock AsyncStorage for React Native
@@ -40,17 +43,17 @@ const AsyncStorageMock = {
   }),
   getAllKeys: vi.fn(async () => [...asyncStorageData.keys()]),
   multiGet: vi.fn(async (keys: string[]) =>
-    keys.map(key => [key, asyncStorageData.get(key) ?? null])
+    keys.map((key) => [key, asyncStorageData.get(key) ?? null])
   ),
   multiSet: vi.fn(async (keyValuePairs: [string, string][]) => {
     keyValuePairs.forEach(([key, value]) => asyncStorageData.set(key, value));
   }),
   multiRemove: vi.fn(async (keys: string[]) => {
-    keys.forEach(key => asyncStorageData.delete(key));
+    keys.forEach((key) => asyncStorageData.delete(key));
   }),
 };
 
-vi.mock('@react-native-async-storage/async-storage', () => ({
+vi.mock("@react-native-async-storage/async-storage", () => ({
   default: AsyncStorageMock,
 }));
 
@@ -69,7 +72,7 @@ const createMatchMediaMock = (query: string) => ({
   dispatchEvent: vi.fn(() => false),
 });
 
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   configurable: true,
   value: vi.fn().mockImplementation(createMatchMediaMock),
@@ -100,17 +103,23 @@ global.cancelAnimationFrame = (id: number) => {
 
 /**
  * Run Mock Validation Framework before all tests
- * REQ-9: Ensures all mocks match their real implementations
+ * Ensures all mocks match their real implementations
  */
 beforeAll(async () => {
-  const { MockValidationFramework } = await import('./mockValidation');
+  const { MockValidationFramework } = await import("./mockValidation");
 
   const framework = MockValidationFramework.getInstance();
 
   // Register all mock validators
-  const { SentryValidator } = await import('./mockValidation/validators/SentryValidator');
-  const { MapboxValidator } = await import('./mockValidation/validators/MapboxValidator');
-  const { GoogleSignInValidator } = await import('./mockValidation/validators/GoogleSignInValidator');
+  const { SentryValidator } = await import(
+    "./mockValidation/validators/SentryValidator"
+  );
+  const { MapboxValidator } = await import(
+    "./mockValidation/validators/MapboxValidator"
+  );
+  const { GoogleSignInValidator } = await import(
+    "./mockValidation/validators/GoogleSignInValidator"
+  );
 
   framework.registerValidator(new SentryValidator());
   framework.registerValidator(new MapboxValidator());
@@ -125,18 +134,18 @@ beforeAll(async () => {
 
   // Fail the test suite if mock validation fails
   if (!results.allPassed) {
-    throw new Error('Mock validation failed. Fix mocks before running tests.');
+    throw new Error("Mock validation failed. Fix mocks before running tests.");
   }
 
   // Verify Supabase is running
-  const { verifyDatabaseConnection } = await import('./testDb');
+  const { verifyDatabaseConnection } = await import("./testDb");
   const isConnected = await verifyDatabaseConnection();
 
   if (!isConnected) {
     console.warn(
-      '\n⚠️  WARNING: Could not connect to Supabase.\n' +
-      'Make sure Supabase is running locally:\n' +
-      '  pnpm supa:start\n'
+      "\n⚠️  WARNING: Could not connect to Supabase.\n" +
+        "Make sure Supabase is running locally:\n" +
+        "  pnpm supa:start\n",
     );
   }
 });

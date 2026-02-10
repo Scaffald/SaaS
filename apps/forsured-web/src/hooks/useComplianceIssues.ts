@@ -1,6 +1,6 @@
 /**
  * Compliance Issues Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `compliance_issues` table in forsured schema:
  * - id (uuid, primary key)

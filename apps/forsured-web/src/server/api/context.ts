@@ -1,7 +1,6 @@
 /**
  * tRPC Context Creation
- * REQ-292: Configure tRPC for production deployment
- * TASK-1: Set up tRPC core infrastructure
+ * tRPC context and production configuration
  *
  * Creates context for each tRPC request containing:
  * - Database connection
@@ -9,9 +8,9 @@
  * - Organization ID (if authenticated)
  */
 
-import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-import { supabase } from '../../lib/supabase';
-import type { User } from '@supabase/supabase-js';
+import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+import { supabase } from "../../lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 /**
  * Context type for tRPC procedures
@@ -30,13 +29,13 @@ export interface Context {
  * Extracts authentication state from request headers
  */
 export async function createContext(
-  opts: FetchCreateContextFnOptions
+  opts: FetchCreateContextFnOptions,
 ): Promise<Context> {
   const { req } = opts;
 
   // Extract authorization header
-  const authHeader = req.headers.get('authorization');
-  const token = authHeader?.replace('Bearer ', '');
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.replace("Bearer ", "");
 
   let session: User | null = null;
   let userId: string | null = null;
@@ -47,14 +46,14 @@ export async function createContext(
     try {
       // Handle E2E test tokens (mock-supabase-token-*)
       // These tokens are set by tests/utils/auth.ts for E2E testing
-      if (token.startsWith('mock-supabase-token-')) {
-        const mockUserId = token.replace('mock-supabase-token-', '');
+      if (token.startsWith("mock-supabase-token-")) {
+        const mockUserId = token.replace("mock-supabase-token-", "");
         // Create a mock user object for test context
         session = {
           id: mockUserId,
           email: `test-${mockUserId}@test.forsured.com`,
-          aud: 'authenticated',
-          role: 'authenticated',
+          aud: "authenticated",
+          role: "authenticated",
           app_metadata: {},
           user_metadata: {},
           created_at: new Date().toISOString(),
@@ -76,7 +75,7 @@ export async function createContext(
       }
     } catch (error) {
       // Invalid token or auth error - continue with null session
-      console.warn('Auth error in context creation:', error);
+      console.warn("Auth error in context creation:", error);
     }
   }
 

@@ -13,79 +13,79 @@
 // ============================================================================
 
 export {
-  PolicyCard,
   CoverageTable,
   EndorsementList,
+  GLSubLimitsTable,
+  PolicyCard,
   PolicyStatusBadge,
-  GLSubLimitsTable, // REQ-280
-} from '@unicornlove/insurance'
+} from "@unicornlove/insurance";
 
 export type {
-  PolicyCardProps,
-  CoverageTableProps,
   Coverage,
-  EndorsementListProps,
+  CoverageTableProps,
   Endorsement,
-  PolicyStatusBadgeProps,
+  EndorsementListProps,
+  GLSubLimitItem,
+  GLSubLimitsTableProps,
+  PolicyCardProps,
   PolicyStatus,
-  GLSubLimitsTableProps, // REQ-280
-  GLSubLimitItem, // REQ-280
-} from '@unicornlove/insurance'
+  PolicyStatusBadgeProps,
+} from "@unicornlove/insurance";
 
 // ============================================================================
 // Compliance Domain Components
 // ============================================================================
 
 export {
-  ComplianceScore,
-  ParticipantsTable,
-  ParticipantsFilter, // REQ-281 TASK-3
+  ClientCard,
   ComplianceChecklist,
-  ClientCard, // REQ-288
-  GCProfileHeader, // REQ-288
-} from '@unicornlove/compliance'
+  ComplianceScore,
+  GCProfileHeader,
+  ParticipantsFilter,
+  ParticipantsTable,
+} from "@unicornlove/compliance";
 
 export type {
-  ComplianceScoreProps,
-  ParticipantsTableProps,
-  Participant,
-  ParticipantType,
-  ComplianceStatus,
-  ParticipantsFilterProps, // REQ-281 TASK-3
-  FilterOption, // REQ-281 TASK-3
-  ComplianceChecklistProps,
   ChecklistItem,
   ChecklistItemStatus,
-  ClientCardProps, // REQ-288
-  ClientType, // REQ-288
-  RiskLevel, // REQ-288
-  ClientStatus, // REQ-288
-  GCProfileHeaderProps, // REQ-288
-  ComplianceLevel, // REQ-288
-} from '@unicornlove/compliance'
+  ClientCardProps,
+  ClientStatus,
+  ClientType,
+  ComplianceChecklistProps,
+  ComplianceLevel,
+  ComplianceScoreProps,
+  ComplianceStatus,
+  FilterOption,
+  GCProfileHeaderProps,
+  Participant,
+  ParticipantsFilterProps,
+  ParticipantsTableProps,
+  ParticipantType,
+  RiskLevel,
+} from "@unicornlove/compliance";
 
 // ============================================================================
 // Task Management Components
 // ============================================================================
 
 export {
-  TaskCard,
-  TasksInbox,
   CommentThread,
-  TaskStatusDropdown, // REQ-288
-  TaskHistoryTimeline, // REQ-288
-} from '@unicornlove/tasks'
+  TaskCard,
+  TaskHistoryTimeline,
+  TasksInbox,
+  TaskStatusDropdown,
+} from "@unicornlove/tasks";
 
 export type {
+  Comment,
+  CommentThreadProps,
+  HistoryEvent,
+  HistoryEventType,
+  Task,
   TaskCardProps,
-  TaskStatus,
+  TaskHistoryTimelineProps,
   TaskPriority,
   TasksInboxProps,
-  Task,
-  CommentThreadProps,
-  Comment,
-  TaskStatusDropdownProps, // REQ-288
-  TaskHistoryTimelineProps, // REQ-288
-  HistoryEvent, // REQ-288
-  HistoryEventType, // REQ-288
-} from '@unicornlove/tasks'
+  TaskStatus,
+  TaskStatusDropdownProps,
+} from "@unicornlove/tasks";

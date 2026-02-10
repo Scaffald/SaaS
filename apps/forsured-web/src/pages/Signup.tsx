@@ -1,17 +1,16 @@
 /**
  * Signup Page - User type selection and profile creation using Beyond UI
- * REQ-126: User Signup & Type Selection
- * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
+ * User signup and type selection (multi-industry lexicon)
  */
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Stack, Text, Spinner, H1 } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui';
-import { useAuth } from '../contexts/AuthContext';
-import { createProfile } from '../services/userProfileService';
-import { markInvitationUsed, type Invitation } from '../lib/invitations';
-import { scaffaldClient } from '../lib/scaffald/client';
-import { trpc } from '../lib/trpc';
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Stack, Text, Spinner, H1 } from '@unicornlove/beyond-ui'
+import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui'
+import { useAuth } from '../contexts/AuthContext'
+import { createProfile } from '../services/userProfileService'
+import { markInvitationUsed, type Invitation } from '../lib/invitations'
+import { scaffaldClient } from '../lib/scaffald/client'
+import { trpc } from '../lib/trpc'
 import {
   IndustrySelection,
   UserTypeSelection,
@@ -20,97 +19,97 @@ import {
   type UserSetType,
   type UserType,
   type ScaffaldCompany,
-} from '../components/auth';
+} from '../components/auth'
 
-type SignupStep = 'industry' | 'role';
+type SignupStep = 'industry' | 'role'
 
 function SignupPage() {
-  const { user, login, profile } = useAuth();
-  const navigate = useNavigate();
+  const { user, login, profile } = useAuth()
+  const navigate = useNavigate()
 
-  // REQ-4: Step-based signup flow
-  const [currentStep, setCurrentStep] = useState<SignupStep>('industry');
-  const [selectedUserSetType, setSelectedUserSetType] = useState<UserSetType | null>(null);
-  const [selectedType, setSelectedType] = useState<UserType | null>(null);
-  const [connectCompany, setConnectCompany] = useState(true);
-  const [scaffaldCompany, setScaffaldCompany] = useState<ScaffaldCompany | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingCompany, setIsLoadingCompany] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Step-based signup flow
+  const [currentStep, setCurrentStep] = useState<SignupStep>('industry')
+  const [selectedUserSetType, setSelectedUserSetType] = useState<UserSetType | null>(null)
+  const [selectedType, setSelectedType] = useState<UserType | null>(null)
+  const [connectCompany, setConnectCompany] = useState(true)
+  const [scaffaldCompany, setScaffaldCompany] = useState<ScaffaldCompany | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingCompany, setIsLoadingCompany] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // REQ-4: Fetch available user set types
+  // Fetch available user set types
   const {
     data: userSetTypes,
     isLoading: isLoadingUserSetTypes,
     error: userSetTypesError,
-  } = trpc.userSetTypes.listActive.useQuery();
+  } = trpc.userSetTypes.listActive.useQuery()
 
   // If user already has a completed profile, redirect to their dashboard
   useEffect(() => {
     if (profile && profile.onboarding_completed) {
-      const dashboardPath = `/${profile.user_type}/dashboard`;
-      console.log('[Signup] User has completed profile, redirecting to:', dashboardPath);
-      navigate(dashboardPath, { replace: true });
+      const dashboardPath = `/${profile.user_type}/dashboard`
+      console.log('[Signup] User has completed profile, redirecting to:', dashboardPath)
+      navigate(dashboardPath, { replace: true })
     }
-  }, [profile, navigate]);
+  }, [profile, navigate])
 
   // Load Scaffald company if user has one
   useEffect(() => {
     async function loadScaffaldCompany() {
       if (!user) {
-        setIsLoadingCompany(false);
-        return;
+        setIsLoadingCompany(false)
+        return
       }
 
-      setIsLoadingCompany(true);
+      setIsLoadingCompany(true)
       try {
-        const companies = await scaffaldClient.companies.list();
+        const companies = await scaffaldClient.companies.list()
         if (companies && companies.length > 0) {
-          const company = await scaffaldClient.companies.get(companies[0].id);
-          setScaffaldCompany(company);
-          console.log('[Signup] Loaded Scaffald company:', company.name);
+          const company = await scaffaldClient.companies.get(companies[0].id)
+          setScaffaldCompany(company)
+          console.log('[Signup] Loaded Scaffald company:', company.name)
         }
       } catch (err) {
-        console.error('[Signup] Error loading Scaffald company:', err);
+        console.error('[Signup] Error loading Scaffald company:', err)
       } finally {
-        setIsLoadingCompany(false);
+        setIsLoadingCompany(false)
       }
     }
 
-    loadScaffaldCompany();
-  }, [user]);
+    loadScaffaldCompany()
+  }, [user])
 
-  // REQ-4: Handle industry (user set type) selection
+  // Handle industry (user set type) selection
   function handleIndustrySelect(userSetType: UserSetType) {
-    setSelectedUserSetType(userSetType);
-    setCurrentStep('role');
-    setError(null);
+    setSelectedUserSetType(userSetType)
+    setCurrentStep('role')
+    setError(null)
   }
 
-  // REQ-4: Go back to industry selection
+  // Go back to industry selection
   function handleBackToIndustry() {
-    setCurrentStep('industry');
-    setSelectedUserSetType(null);
-    setSelectedType(null);
-    setError(null);
+    setCurrentStep('industry')
+    setSelectedUserSetType(null)
+    setSelectedType(null)
+    setError(null)
   }
 
   // Handle GC (manager) or Contractor (subcontractor) selection
   async function handleTypeSelect(type: UserType) {
     if (!user) {
-      setError('No authenticated user. Please log in again.');
-      return;
+      setError('No authenticated user. Please log in again.')
+      return
     }
 
     if (!selectedUserSetType) {
-      setError('Please select an industry first.');
-      setCurrentStep('industry');
-      return;
+      setError('Please select an industry first.')
+      setCurrentStep('industry')
+      return
     }
 
-    setSelectedType(type);
-    setIsLoading(true);
-    setError(null);
+    setSelectedType(type)
+    setIsLoading(true)
+    setError(null)
 
     try {
       const newProfile = await createProfile({
@@ -120,36 +119,36 @@ function SignupPage() {
         onboarding_completed: false,
         company_connected: connectCompany && scaffaldCompany !== null,
         onboarding_step: 0,
-      });
+      })
 
       console.log(
         '[Signup] Profile created:',
         newProfile.id,
         'with user set type:',
         selectedUserSetType.slug
-      );
-      login({ profile: newProfile });
+      )
+      login({ profile: newProfile })
       // Map 'subcontractor' type to 'contractor' route
-      const routeType = type === 'subcontractor' ? 'contractor' : type;
-      navigate(`/${routeType}/onboarding`);
+      const routeType = type === 'subcontractor' ? 'contractor' : type
+      navigate(`/${routeType}/onboarding`)
     } catch (err) {
-      console.error('[Signup] Error creating profile:', err);
-      setError('Failed to create account. Please try again.');
-      setSelectedType(null);
+      console.error('[Signup] Error creating profile:', err)
+      setError('Failed to create account. Please try again.')
+      setSelectedType(null)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
   // Handle broker invitation validation success
   async function handleBrokerInvitationSuccess(invitation: Invitation) {
     if (!user) {
-      setError('No authenticated user. Please log in again.');
-      return;
+      setError('No authenticated user. Please log in again.')
+      return
     }
 
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
       const newProfile = await createProfile({
@@ -158,17 +157,17 @@ function SignupPage() {
         onboarding_completed: false,
         company_connected: false,
         onboarding_step: 0,
-      });
+      })
 
-      console.log('[Signup] Broker profile created:', newProfile.id);
-      await markInvitationUsed(invitation.id, newProfile.id);
-      login({ profile: newProfile });
-      navigate('/broker/onboarding');
+      console.log('[Signup] Broker profile created:', newProfile.id)
+      await markInvitationUsed(invitation.id, newProfile.id)
+      login({ profile: newProfile })
+      navigate('/broker/onboarding')
     } catch (err) {
-      console.error('[Signup] Error processing broker invitation:', err);
-      setError('Failed to process invitation. Please try again.');
+      console.error('[Signup] Error processing broker invitation:', err)
+      setError('Failed to process invitation. Please try again.')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
@@ -188,7 +187,7 @@ function SignupPage() {
           <Text style={{ color: colors.text.light.secondary }}>Loading...</Text>
         </Stack>
       </Stack>
-    );
+    )
   }
 
   return (
@@ -254,13 +253,11 @@ function SignupPage() {
               gap: spacing[8],
             }}
           >
-            <Text style={{ fontSize: fontSize.xs, color: colors.error[700] }}>
-              {error}
-            </Text>
+            <Text style={{ fontSize: fontSize.xs, color: colors.error[700] }}>{error}</Text>
           </Stack>
         )}
 
-        {/* REQ-4: Step 1 - Industry Selection */}
+        {/* Step 1 - Industry Selection */}
         {currentStep === 'industry' && (
           <IndustrySelection
             userSetTypes={userSetTypes}
@@ -272,7 +269,7 @@ function SignupPage() {
           />
         )}
 
-        {/* REQ-4: Step 2 - Role Selection with Lexicon Labels */}
+        {/* Step 2 - Role Selection with Lexicon Labels */}
         {currentStep === 'role' && selectedUserSetType && (
           <UserTypeSelection
             userSetType={selectedUserSetType}
@@ -293,7 +290,7 @@ function SignupPage() {
         />
       </Stack>
     </Stack>
-  );
+  )
 }
 
-export default SignupPage;
+export default SignupPage

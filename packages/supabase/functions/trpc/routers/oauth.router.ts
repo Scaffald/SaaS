@@ -1,6 +1,6 @@
 /**
  * OAuth Router
- * REQ-10: Scaffald OAuth Provider Integration
+ * Scaffald OAuth Provider Integration
  *
  * Implements OAuth 2.0 authorization server endpoints:
  * - Authorization endpoint with PKCE (Task 5)

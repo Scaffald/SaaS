@@ -1,6 +1,6 @@
 /**
  * CA Attorney General Annual Reporting Tests
- * REQ-3: CCPA Compliance Implementation - TASK-15
+ * CCPA Compliance Implementation - TASK-15
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';

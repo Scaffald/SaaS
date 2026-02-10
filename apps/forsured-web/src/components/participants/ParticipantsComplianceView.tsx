@@ -1,6 +1,6 @@
 /**
  * ParticipantsComplianceView - Using Beyond UI
- * REQ-281: Participants Tab Compliance View - TASK-4
+ * Participants tab compliance view
  */
 import React, { useState, useCallback } from 'react'
 import { Stack, Row, Text, Card, Button, Grid } from '@unicornlove/beyond-ui'

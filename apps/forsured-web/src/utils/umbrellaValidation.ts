@@ -1,5 +1,5 @@
 /**
- * Umbrella Policy Validation Utilities (REQ-270)
+ * Umbrella Policy Validation Utilities
  * Validates that umbrella policies have sufficient limits to cover underlying policies
  */
 

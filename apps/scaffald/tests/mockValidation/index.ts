@@ -1,21 +1,21 @@
 /**
- * REQ-7: Mock Validation Framework
+ * Mock validation framework
  * Public exports for the mock validation system
  */
 
 export {
-  MockValidationFramework,
-  createValidationError,
-  createSuccessResult,
   createFailedResult,
-} from './MockValidationFramework';
+  createSuccessResult,
+  createValidationError,
+  MockValidationFramework,
+} from "./MockValidationFramework";
 
 export type {
-  MockValidator,
-  ValidationResult,
-  ValidationError,
   AggregatedValidationResults,
+  MockValidator,
+  ValidationError,
   ValidationOptions,
-} from './types';
+  ValidationResult,
+} from "./types";
 
-export { TERMINAL_COLORS } from './types';
+export { TERMINAL_COLORS } from "./types";

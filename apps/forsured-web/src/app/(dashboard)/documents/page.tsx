@@ -1,6 +1,6 @@
 /**
  * Documents Page
- * REQ-284: Document Organization by Client/Project/GC
+ * Document Organization by Client/Project/GC
  * TASK-4: Integrate Document Organization Page with All Components
  *
  * Main document organization page with:

@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-8: Compliance Dependencies Zod Schemas
+ * Compliance Dependencies Zod Schemas
  * Input validation schemas for dependency management tRPC router
  */
 

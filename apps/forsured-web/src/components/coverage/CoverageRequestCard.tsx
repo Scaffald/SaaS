@@ -1,5 +1,5 @@
 /**
- * REQ-273: Coverage Request Workflow - UI Components
+ * Coverage Request Workflow - UI Components
  * CoverageRequestCard component displays a single coverage request with actions
  */
 

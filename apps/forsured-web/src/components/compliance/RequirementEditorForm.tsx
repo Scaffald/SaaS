@@ -1,6 +1,6 @@
 /**
  * Requirement Editor Form
- * REQ-2, TASK-14: Form for creating and editing compliance requirements
+ * Form for creating and editing compliance requirements
  *
  * Features:
  * - Basic requirement information (code, name, type, status)

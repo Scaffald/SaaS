@@ -1,6 +1,6 @@
 /**
  * PKCE (Proof Key for Code Exchange) Utilities
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  *
  * Implements PKCE flow to prevent authorization code interception attacks
  * Reference: RFC 7636 - https://tools.ietf.org/html/rfc7636

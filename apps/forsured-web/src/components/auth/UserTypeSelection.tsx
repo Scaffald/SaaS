@@ -1,6 +1,6 @@
 /**
  * User Type Selection Component
- * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
+ * Multi-Industry User Set Type System with Configurable Lexicon
  *
  * Displays role options (Manager/Contractor) with dynamic lexicon labels
  */

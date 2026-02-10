@@ -1,5 +1,5 @@
 /**
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  * FlagList component displays multiple compliance flags grouped by level
  */
 

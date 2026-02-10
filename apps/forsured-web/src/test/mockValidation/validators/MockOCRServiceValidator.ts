@@ -1,5 +1,5 @@
 /**
- * REQ-306 TASK-3: MockOCRService Validator
+  * TASK-3: MockOCRService Validator
  *
  * Validates that MockOCRService accurately implements the OCR service interface.
  * Performance target: < 3 seconds (TR-2)

@@ -1,6 +1,6 @@
 /**
  * AddTeamMemberModal tests
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-3: Implement Add Team Member Form with Email Invitation
  */
 

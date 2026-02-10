@@ -1,5 +1,5 @@
 // src/components/auth/ProtectedRoute.tsx
-// REQ-126: OAuth 2.0 + RBAC Authentication System
+// OAuth 2.0 + RBAC Authentication System
 //
 // Protected route wrapper that enforces authentication and role-based access
 import { Navigate } from 'react-router-dom'

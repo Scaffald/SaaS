@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Dashboard
+ * CCPA Admin Dashboard
  * TASK-1: Create CCPA Admin Dashboard Page with Metrics and Filters
  *
  * Administrative interface for managing CCPA compliance:

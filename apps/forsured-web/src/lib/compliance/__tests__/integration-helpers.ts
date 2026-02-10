@@ -1,6 +1,6 @@
 /**
  * Integration Test Helpers
- * REQ-2, TASK-20: Integration Tests for Complete Compliance Workflow
+ * Integration Tests for Complete Compliance Workflow
  *
  * Provides test factories, mock context, and utilities for integration testing.
  */

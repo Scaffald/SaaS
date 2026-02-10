@@ -21,7 +21,7 @@ export interface WebVitalsMetrics {
 }
 
 /**
- * Performance targets from REQ-198
+ * Performance targets from
  */
 export const PERFORMANCE_TARGETS = {
   FCP: 1000, // First Contentful Paint < 1s

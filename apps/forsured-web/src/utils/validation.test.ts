@@ -1,5 +1,5 @@
 /**
- * Tests for validation utilities (REQ-167)
+ * Tests for validation utilities
  * TDD: Write tests first
  */
 

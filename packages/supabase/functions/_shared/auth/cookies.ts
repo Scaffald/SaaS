@@ -1,6 +1,6 @@
 /**
  * Cookie utilities for httpOnly session management
- * REQ-11: Authentication Flow Refinement - TASK-3
+ * Authentication flow - cookies
  */
 
 export const SESSION_COOKIE_NAME = 'forsured_session'

@@ -1,5 +1,5 @@
 /**
- * DocumentMetadataEditor Component (REQ-167)
+ * DocumentMetadataEditor Component
  * Main component for reviewing and correcting OCR extraction results
  */
 

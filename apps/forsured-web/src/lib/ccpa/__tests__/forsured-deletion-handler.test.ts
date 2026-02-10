@@ -1,6 +1,6 @@
 /**
  * Forsured Deletion Handler Tests
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

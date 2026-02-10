@@ -1,5 +1,5 @@
 // src/hooks/useEnums.ts
-// REQ-126: Dynamic enum values from database
+// Dynamic enum values from database
 //
 // Fetches enum values from the forsured.enum_values table with caching.
 

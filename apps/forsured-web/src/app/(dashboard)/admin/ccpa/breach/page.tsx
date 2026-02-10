@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Breach Notifications List Page
+ * CCPA Admin Breach Notifications List Page
  * TASK-6: Create Breach Notification Management Pages
  *
  * Lists all breach incidents with:

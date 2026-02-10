@@ -1,7 +1,7 @@
 /**
  * Incident Tracker Tests
- * REQ-164: Incident Response Plan & Procedures
- * Following TDD principles from REQ-112
+ * Incident Response Plan & Procedures
+ * Following TDD principles from
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';

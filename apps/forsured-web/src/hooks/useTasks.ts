@@ -1,6 +1,6 @@
 /**
  * Tasks Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Manages task data from forsured.tasks table with cross-schema
  * references to scaffald.users for assignment tracking.

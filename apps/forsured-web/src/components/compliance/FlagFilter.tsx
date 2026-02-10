@@ -1,6 +1,6 @@
 /**
  * FlagFilter - Flag filter component using Beyond UI
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  */
 import React, { useState, useCallback, useMemo } from 'react';
 import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';

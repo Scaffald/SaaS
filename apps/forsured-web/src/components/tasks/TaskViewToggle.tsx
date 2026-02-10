@@ -1,6 +1,6 @@
 /**
  * TaskViewToggle - Task view toggle using Beyond UI
- * REQ-268: Inbox vs Assigned by Me View
+ * Inbox vs Assigned by Me View
  */
 import React from 'react';
 import { Row, Stack, Text, Button, Chip } from '@unicornlove/beyond-ui';

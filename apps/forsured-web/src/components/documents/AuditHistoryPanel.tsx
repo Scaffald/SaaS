@@ -1,5 +1,5 @@
 /**
- * AuditHistoryPanel Component (REQ-167)
+ * AuditHistoryPanel Component
  * Displays audit trail of field changes
  */
 

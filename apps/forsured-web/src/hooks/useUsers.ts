@@ -1,6 +1,6 @@
 /**
  * Users Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Manages user data from core.users table.
  *

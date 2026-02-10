@@ -1,6 +1,6 @@
 /**
  * Coverage Schemas
- * REQ-287: Create Zod Schemas for Forsured Entities
+ * Create Zod Schemas for Forsured Entities
  * TASK-3: Create coverage schemas
  *
  * Zod schemas for coverage entities with create, update, and base schemas

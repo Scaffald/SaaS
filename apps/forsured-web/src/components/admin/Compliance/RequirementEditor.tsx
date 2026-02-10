@@ -1,6 +1,6 @@
 /**
  * RequirementEditor Component
- * REQ-2, TASK-14: Requirement Editor Form with Coverage Configuration
+ * Requirement Editor Form with Coverage Configuration
  *
  * Modal form for creating and editing compliance requirements with:
  * - All requirement fields

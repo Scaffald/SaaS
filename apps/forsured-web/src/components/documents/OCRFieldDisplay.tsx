@@ -1,5 +1,5 @@
 /**
- * OCRFieldDisplay Component (REQ-167)
+ * OCRFieldDisplay Component
  * Displays OCR extracted field with confidence indicator and edit capability
  */
 

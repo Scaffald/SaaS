@@ -1,6 +1,6 @@
 /**
  * Compliance Workflow Integration Tests
- * REQ-2, TASK-20: Write Integration Tests for Complete Compliance Workflow
+ * Write Integration Tests for Complete Compliance Workflow
  *
  * Tests the complete compliance requirements workflow including:
  * - Requirement lifecycle (create, update, archive, restore)

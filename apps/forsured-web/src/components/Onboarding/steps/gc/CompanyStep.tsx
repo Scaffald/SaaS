@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/gc/CompanyStep.tsx
-// REQ-126: GC Onboarding - Company Information Step
+// GC Onboarding - Company Information Step
 import { useState } from 'react';
 import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
 

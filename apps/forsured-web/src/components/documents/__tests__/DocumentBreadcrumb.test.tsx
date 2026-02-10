@@ -1,6 +1,6 @@
 /**
  * DocumentBreadcrumb tests
- * REQ-284: Document Organization by Client/Project/GC
+ * Document Organization by Client/Project/GC
  * TASK-3: Implement Breadcrumb Navigation for Document Hierarchy
  */
 

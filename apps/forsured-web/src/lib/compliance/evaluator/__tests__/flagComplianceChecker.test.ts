@@ -1,6 +1,6 @@
 /**
  * Unit Tests for FlagComplianceChecker
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';

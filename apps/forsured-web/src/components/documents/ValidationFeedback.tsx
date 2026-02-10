@@ -1,5 +1,5 @@
 /**
- * ValidationFeedback Component (REQ-167)
+ * ValidationFeedback Component
  * Displays real-time validation feedback for OCR fields
  */
 

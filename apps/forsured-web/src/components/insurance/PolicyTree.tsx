@@ -1,5 +1,5 @@
 /**
- * REQ-262: Insurance Policy Parent-Child Model - UI Components
+ * Insurance Policy Parent-Child Model - UI Components
  * PolicyTree component displays insurance policies with expandable hierarchical structure
  */
 

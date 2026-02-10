@@ -1,5 +1,5 @@
 /**
- * REQ-129: MetricCard Component Tests
+ * MetricCard component tests
  */
 
 import { describe, it, expect, vi } from 'vitest';

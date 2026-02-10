@@ -1,7 +1,7 @@
 /**
  * SendGrid Webhook Handler
  *
- * REQ-130: Email communication auditability
+ * Email communication auditability
  *
  * Receives email delivery events from SendGrid and:
  * 1. Validates the webhook signature

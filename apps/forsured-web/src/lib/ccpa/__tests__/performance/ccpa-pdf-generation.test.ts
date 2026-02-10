@@ -1,6 +1,6 @@
 /**
  * CCPA PDF Generation Performance Tests
- * REQ-3: CCPA Compliance Implementation - TASK-19
+ * CCPA Compliance Implementation - TASK-19
  *
  * Performance benchmarks for PDF generation verifying that
  * PDF exports meet performance targets and stay within memory bounds.

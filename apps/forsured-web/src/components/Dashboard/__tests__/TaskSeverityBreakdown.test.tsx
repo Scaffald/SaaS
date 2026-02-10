@@ -1,5 +1,5 @@
 /**
- * REQ-266: Task Correlation with Compliance Score
+ * Task severity and compliance correlation
  * Tests for TaskSeverityBreakdown component
  * 
  * Note: Component uses theme primitives which render with theme-specific classes

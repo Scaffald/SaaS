@@ -1,21 +1,21 @@
 /**
  * ManualUserBadge - Badge indicating a manually-added user
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-8: Build manual user profile page with "Manually Added" indicators
+ * Manual user badge
+ * "Manually Added" badge for manual users
  *
  * Shows a badge with tooltip explaining the user's manual status
  * and notification limitations.
  */
 
-'use client';
+'use client'
 
-import React, { useState, useRef, useEffect } from 'react';
-import { UserX } from 'lucide-react';
-import { Row, Text } from '@unicornlove/beyond-ui';
+import React, { useState, useRef, useEffect } from 'react'
+import { UserX } from 'lucide-react'
+import { Row, Text } from '@unicornlove/beyond-ui'
 
 interface ManualUserBadgeProps {
-  size?: 'sm' | 'md' | 'lg';
-  showTooltip?: boolean;
+  size?: 'sm' | 'md' | 'lg'
+  showTooltip?: boolean
 }
 
 /**
@@ -40,36 +40,33 @@ const SIZES = {
     iconSize: 14,
     gap: 8,
   },
-};
+}
 
 /**
  * Tooltip explaining manual user status
  */
 const TOOLTIP_TEXT =
-  'This user was manually added and has not registered yet. They will not receive notifications until they complete registration.';
+  'This user was manually added and has not registered yet. They will not receive notifications until they complete registration.'
 
-export function ManualUserBadge({
-  size = 'md',
-  showTooltip = true,
-}: ManualUserBadgeProps) {
-  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
-  const badgeRef = useRef<HTMLDivElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
+export function ManualUserBadge({ size = 'md', showTooltip = true }: ManualUserBadgeProps) {
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false)
+  const badgeRef = useRef<HTMLDivElement>(null)
+  const tooltipRef = useRef<HTMLDivElement>(null)
 
-  const sizeConfig = SIZES[size];
+  const sizeConfig = SIZES[size]
 
   // Position tooltip on mount/update
   useEffect(() => {
-    if (!isTooltipVisible || !badgeRef.current || !tooltipRef.current) return;
+    if (!isTooltipVisible || !badgeRef.current || !tooltipRef.current) return
 
-    const badge = badgeRef.current.getBoundingClientRect();
-    const tooltip = tooltipRef.current;
+    const badge = badgeRef.current.getBoundingClientRect()
+    const tooltip = tooltipRef.current
 
     // Position tooltip below badge
-    tooltip.style.left = `${badge.left + badge.width / 2}px`;
-    tooltip.style.top = `${badge.bottom + 8}px`;
-    tooltip.style.transform = 'translateX(-50%)';
-  }, [isTooltipVisible]);
+    tooltip.style.left = `${badge.left + badge.width / 2}px`
+    tooltip.style.top = `${badge.bottom + 8}px`
+    tooltip.style.transform = 'translateX(-50%)'
+  }, [isTooltipVisible])
 
   return (
     <div
@@ -147,7 +144,7 @@ export function ManualUserBadge({
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default ManualUserBadge;
+export default ManualUserBadge

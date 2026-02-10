@@ -1,6 +1,6 @@
 /**
  * Error Monitoring Integration
- * REQ-292: Configure tRPC for production deployment
+ * Configure tRPC for production deployment
  * TASK-5: Integrate error monitoring with metadata logging
  *
  * Captures critical errors in production with sanitized metadata.

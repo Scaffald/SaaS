@@ -1,6 +1,6 @@
 /**
  * Data validation functions for ACORD 25 extraction
- * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
+ * Mock OCR & Document Parsing Engine for ACORD 25 Forms
  */
 
 import type { ProcessingError } from '../types/acord25';

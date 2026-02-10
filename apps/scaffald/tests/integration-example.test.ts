@@ -4,17 +4,17 @@
  * Demonstrates how to use test infrastructure:
  * - Test factories for creating data
  * - Test database utilities for cleanup
- * - Real Supabase connection (REQ-9: no mocking)
+ * - Real Supabase connection (no mocking)
  */
 
-import { describe, test, expect, afterEach } from 'vitest';
-import { createTestDataTracker, cleanupTestData } from './testDb';
-import { createTestUser } from './factories/userFactory';
-import { createTestOrganization } from './factories/organizationFactory';
-import { createTestTeam } from './factories/teamFactory';
-import { createTestProject } from './factories/projectFactory';
+import { afterEach, describe, expect, test } from "vitest";
+import { cleanupTestData, createTestDataTracker } from "./testDb";
+import { createTestUser } from "./factories/userFactory";
+import { createTestOrganization } from "./factories/organizationFactory";
+import { createTestTeam } from "./factories/teamFactory";
+import { createTestProject } from "./factories/projectFactory";
 
-describe('Integration Test Example', () => {
+describe("Integration Test Example", () => {
   const tracker = createTestDataTracker();
 
   afterEach(async () => {
@@ -22,16 +22,16 @@ describe('Integration Test Example', () => {
     await cleanupTestData(tracker);
   });
 
-  test('creates user, organization, team, and project', async () => {
+  test("creates user, organization, team, and project", async () => {
     // Create a test user
     const user = await createTestUser({ tracker });
     expect(user.id).toBeDefined();
-    expect(user.email).toContain('@example.com');
+    expect(user.email).toContain("@example.com");
 
     // Create an organization owned by the user
     const org = await createTestOrganization({
       ownerId: user.id,
-      name: 'Test Company',
+      name: "Test Company",
       tracker,
     });
     expect(org.id).toBeDefined();
@@ -40,7 +40,7 @@ describe('Integration Test Example', () => {
     // Create a team in the organization
     const team = await createTestTeam({
       organizationId: org.id,
-      name: 'Engineering Team',
+      name: "Engineering Team",
       tracker,
     });
     expect(team.id).toBeDefined();
@@ -49,7 +49,7 @@ describe('Integration Test Example', () => {
     // Create a project in the organization
     const project = await createTestProject({
       organizationId: org.id,
-      name: 'New Product Launch',
+      name: "New Product Launch",
       tracker,
     });
     expect(project.id).toBeDefined();
@@ -58,7 +58,7 @@ describe('Integration Test Example', () => {
     // All test data will be automatically cleaned up after this test
   });
 
-  test('demonstrates factory batch creation', async () => {
+  test("demonstrates factory batch creation", async () => {
     // Create a user and organization
     const user = await createTestUser({ tracker });
     const org = await createTestOrganization({
@@ -67,7 +67,7 @@ describe('Integration Test Example', () => {
     });
 
     // Create multiple teams at once
-    const { createTestTeams } = await import('./factories/teamFactory');
+    const { createTestTeams } = await import("./factories/teamFactory");
     const teams = await createTestTeams(3, {
       organizationId: org.id,
       tracker,

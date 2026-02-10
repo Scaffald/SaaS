@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * EnhancedBrokerDashboard - Broker dashboard using Beyond UI
- * REQ-12: Manual user creation support
+ * Manual user creation support
  */
 import { useState, useMemo } from 'react'
 import { RefreshCw, Filter, Users } from 'lucide-react'
@@ -23,7 +23,7 @@ import { DashboardSkeleton } from '../Common/SkeletonLoader'
 import type { Task, BrokerClient } from '../../types'
 
 export default function EnhancedBrokerDashboard() {
-  // REQ-4: Use lexicon for dynamic labels
+  // Use lexicon for dynamic labels
   const { t } = useLexicon()
   const { clients, loading: clientsLoading, fetchClients, addClient } = useClients()
   const { policies, loading: policiesLoading } = usePolicies()
@@ -60,9 +60,9 @@ export default function EnhancedBrokerDashboard() {
   }
 
   const handleSaveClient = async (clientData: Partial<BrokerClient>) => {
-    await addClient(clientData as Omit<BrokerClient, 'id' | 'created_at' | 'updated_at'>);
-    setIsClientModalOpen(false);
-  };
+    await addClient(clientData as Omit<BrokerClient, 'id' | 'created_at' | 'updated_at'>)
+    setIsClientModalOpen(false)
+  }
 
   const filteredTasks =
     projectFilter === 'all' ? tasks : tasks.filter((t) => t.project_id === projectFilter)

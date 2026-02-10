@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-5: Dependency Resolver
+ * Dependency Resolver
  * Algorithms for circular dependency detection and dependency tree building
  */
 

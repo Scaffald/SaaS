@@ -1,6 +1,6 @@
 /**
  * Environment Variable Validation
- * REQ-292: Configure tRPC for production deployment
+ * Configure tRPC for production deployment
  *
  * Validates all required environment variables at runtime using Zod.
  * Fails fast if any required variables are missing or invalid.

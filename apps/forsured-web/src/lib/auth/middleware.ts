@@ -1,6 +1,6 @@
 /**
  * Authentication Middleware
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  *
  * Middleware for protecting API routes and validating requests
  */

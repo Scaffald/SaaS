@@ -1,26 +1,26 @@
 /**
  * MetricCard - Metric card component using Beyond UI MetricWidget
- * REQ-129: Manager Dashboard - Reusable Metric Card Component
+ * Reusable metric card component
  * Now uses MetricWidget from @unicornlove/beyond-ui internally
  */
-import React from 'react';
-import { Card, Row, Stack } from '@unicornlove/beyond-ui';
-import { MetricWidget } from '@unicornlove/beyond-ui';
-import type { MetricWidgetType, MetricChangeType } from '@unicornlove/beyond-ui';
+import React from 'react'
+import { Card, Row, Stack } from '@unicornlove/beyond-ui'
+import { MetricWidget } from '@unicornlove/beyond-ui'
+import type { MetricWidgetType, MetricChangeType } from '@unicornlove/beyond-ui'
 
 export interface MetricCardProps {
-  title: string;
-  value: string | number;
-  subtitle?: string;
+  title: string
+  value: string | number
+  subtitle?: string
   trend?: {
-    value: number;
-    direction: 'up' | 'down' | 'neutral';
-  };
-  icon?: React.ReactNode;
-  status?: 'success' | 'warning' | 'danger' | 'info';
-  loading?: boolean;
-  onClick?: () => void;
-  className?: string;
+    value: number
+    direction: 'up' | 'down' | 'neutral'
+  }
+  icon?: React.ReactNode
+  status?: 'success' | 'warning' | 'danger' | 'info'
+  loading?: boolean
+  onClick?: () => void
+  className?: string
 }
 
 const getStatusStyles = (status: MetricCardProps['status']) => {
@@ -29,36 +29,36 @@ const getStatusStyles = (status: MetricCardProps['status']) => {
       return {
         borderColor: 'var(--color-green-6)',
         backgroundColor: 'var(--color-green-2)',
-      };
+      }
     case 'warning':
       return {
         borderColor: 'var(--color-yellow-6)',
         backgroundColor: 'var(--color-yellow-2)',
-      };
+      }
     case 'danger':
       return {
         borderColor: 'var(--color-red-6)',
         backgroundColor: 'var(--color-red-2)',
-      };
+      }
     case 'info':
     default:
       return {
         borderColor: 'var(--color-border)',
         backgroundColor: 'var(--color-background)',
-      };
+      }
   }
-};
+}
 
 const mapTrendToChangeType = (direction: 'up' | 'down' | 'neutral'): MetricChangeType => {
   switch (direction) {
     case 'up':
-      return 'positive';
+      return 'positive'
     case 'down':
-      return 'negative';
+      return 'negative'
     default:
-      return 'neutral';
+      return 'neutral'
   }
-};
+}
 
 export const MetricCard: React.FC<MetricCardProps> = ({
   title,
@@ -71,14 +71,16 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   onClick,
   className = '',
 }) => {
-  const statusStyles = getStatusStyles(status);
+  const statusStyles = getStatusStyles(status)
 
   // Determine widget type based on whether we have trend data
-  const widgetType: MetricWidgetType = trend ? 'Chart 01' : 'Blank 01';
+  const widgetType: MetricWidgetType = trend ? 'Chart 01' : 'Blank 01'
 
   // Map trend to MetricWidget props
-  const change = trend ? `${trend.direction === 'up' ? '+' : trend.direction === 'down' ? '-' : ''}${Math.abs(trend.value)}%` : undefined;
-  const changeType = trend ? mapTrendToChangeType(trend.direction) : undefined;
+  const change = trend
+    ? `${trend.direction === 'up' ? '+' : trend.direction === 'down' ? '-' : ''}${Math.abs(trend.value)}%`
+    : undefined
+  const changeType = trend ? mapTrendToChangeType(trend.direction) : undefined
 
   // If loading, show skeleton
   if (loading) {
@@ -101,7 +103,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
           }}
         />
       </Card>
-    );
+    )
   }
 
   return (
@@ -113,8 +115,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         onClick
           ? (e: React.KeyboardEvent) => {
               if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onClick();
+                e.preventDefault()
+                onClick()
               }
             }
           : undefined
@@ -139,12 +141,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             subtitle={subtitle}
           />
         </Stack>
-        {icon && (
-          <Stack style={{ marginLeft: 16, color: 'var(--color-text-muted)' }}>
-            {icon}
-          </Stack>
-        )}
+        {icon && <Stack style={{ marginLeft: 16, color: 'var(--color-text-muted)' }}>{icon}</Stack>}
       </Row>
     </Card>
-  );
-};
+  )
+}

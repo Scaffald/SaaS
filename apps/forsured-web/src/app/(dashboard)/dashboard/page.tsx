@@ -1,5 +1,5 @@
 /**
- * REQ-129: Manager Dashboard Page
+ * Manager dashboard page
  * Real-time compliance metrics and monitoring
  */
 
@@ -36,7 +36,7 @@ import { TaskBreakdownChart } from '../../../components/dashboard/TaskBreakdownC
 import { ActivityTrendChart } from '../../../components/dashboard/ActivityTrendChart'
 
 export default function DashboardPage() {
-  // REQ-4: Use lexicon for dynamic labels
+  // Use lexicon for dynamic labels
   const { t, getContractorLabel } = useLexicon()
   const [overview, setOverview] = useState<DashboardOverview | null>(null)
   const [subcontractorScores, setSubcontractorScores] = useState<SubcontractorScore[]>([])

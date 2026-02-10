@@ -1,7 +1,7 @@
 /**
  * tRPC Server Configuration
- * REQ-286: Create tRPC Router Structure for Forsured
- * REQ-292: Configure tRPC for production deployment
+ * Create tRPC Router Structure for Forsured
+ * Configure tRPC for production deployment
  * TASK-1: Create Base tRPC Router Configuration
  * TASK-4: Configure environment-based error handling
  *

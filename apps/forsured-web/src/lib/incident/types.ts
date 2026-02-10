@@ -1,6 +1,6 @@
 /**
  * Incident Response Types
- * REQ-164: Incident Response Plan & Procedures
+ * Incident Response Plan & Procedures
  */
 
 /**

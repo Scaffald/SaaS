@@ -1,6 +1,6 @@
 /**
  * ComplianceRequirements Admin Page
- * REQ-2: Compliance Requirements Management
+ * Compliance requirements management
  *
  * Main admin page for managing compliance requirements with tabs for:
  * - List view with CRUD operations
@@ -105,10 +105,22 @@ export function ComplianceRequirements() {
   if (!organizationId) {
     return (
       <Stack style={{ padding: spacing[32] }}>
-        <Row alignItems="center" gap={spacing[12]} style={{ padding: spacing[16], backgroundColor: colors.warning[200], borderWidth: 1, borderColor: colors.warning[400], borderRadius: spacing[16] }}>
+        <Row
+          alignItems="center"
+          gap={spacing[12]}
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.warning[200],
+            borderWidth: 1,
+            borderColor: colors.warning[400],
+            borderRadius: spacing[16],
+          }}
+        >
           <AlertCircle size={20} color={colors.warning[600]} />
           <Stack>
-            <Text weight="semibold" color={colors.warning[600]}>Organization Required</Text>
+            <Text weight="semibold" color={colors.warning[600]}>
+              Organization Required
+            </Text>
             <Text size="sm" color={colors.warning[600]}>
               Please select an organization to manage compliance requirements.
             </Text>
@@ -121,11 +133,31 @@ export function ComplianceRequirements() {
   return (
     <Stack style={{ minHeight: '100vh', backgroundColor: colors.bg.light.subtle }}>
       {/* Header */}
-      <Row style={{ backgroundColor: colors.bg.light.default, borderBottomWidth: 1, borderBottomColor: colors.border.light.default }}>
-        <Stack style={{ maxWidth: 1280, width: '100%', marginHorizontal: 'auto', paddingHorizontal: spacing[24], paddingVertical: spacing[16] }}>
+      <Row
+        style={{
+          backgroundColor: colors.bg.light.default,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border.light.default,
+        }}
+      >
+        <Stack
+          style={{
+            maxWidth: 1280,
+            width: '100%',
+            marginHorizontal: 'auto',
+            paddingHorizontal: spacing[24],
+            paddingVertical: spacing[16],
+          }}
+        >
           <Row alignItems="center" justifyContent="space-between">
             <Stack>
-              <Heading level={1} weight="bold" style={{ fontSize: 32, color: colors.text.light.primary }}>Compliance Requirements</Heading>
+              <Heading
+                level={1}
+                weight="bold"
+                style={{ fontSize: 32, color: colors.text.light.primary }}
+              >
+                Compliance Requirements
+              </Heading>
               <Text size="sm" color={colors.text.light.secondary} style={{ marginTop: spacing[4] }}>
                 Manage insurance coverage requirements and dependencies
               </Text>
@@ -153,7 +185,11 @@ export function ComplianceRequirements() {
           </Row>
 
           {/* Tabs */}
-          <Row alignItems="center" gap={spacing[4]} style={{ marginTop: spacing[16], marginBottom: -1 }}>
+          <Row
+            alignItems="center"
+            gap={spacing[4]}
+            style={{ marginTop: spacing[16], marginBottom: -1 }}
+          >
             {TABS.map((tab) => (
               <Button
                 key={tab.id}
@@ -176,7 +212,15 @@ export function ComplianceRequirements() {
       </Row>
 
       {/* Content */}
-      <Stack style={{ maxWidth: 1280, width: '100%', marginHorizontal: 'auto', paddingHorizontal: spacing[24], paddingVertical: spacing[24] }}>
+      <Stack
+        style={{
+          maxWidth: 1280,
+          width: '100%',
+          marginHorizontal: 'auto',
+          paddingHorizontal: spacing[24],
+          paddingVertical: spacing[24],
+        }}
+      >
         {activeTab === 'list' && (
           <RequirementsList
             organizationId={organizationId}
@@ -205,7 +249,13 @@ export function ComplianceRequirements() {
 
         {activeTab === 'bulk' && (
           <Card style={{ borderWidth: 1, padding: spacing[24] }}>
-            <Heading level={2} weight="semibold" style={{ fontSize: 20, marginBottom: spacing[16] }}>Bulk Operations</Heading>
+            <Heading
+              level={2}
+              weight="semibold"
+              style={{ fontSize: 20, marginBottom: spacing[16] }}
+            >
+              Bulk Operations
+            </Heading>
             <Row style={{ flexWrap: 'wrap', gap: spacing[24] }}>
               <Card
                 style={{
@@ -221,7 +271,9 @@ export function ComplianceRequirements() {
               >
                 <Stack alignItems="flex-start" gap={spacing[12]}>
                   <Upload size={32} color={colors.primary[500]} />
-                  <Heading level={3} weight="semibold">Import Requirements</Heading>
+                  <Heading level={3} weight="semibold">
+                    Import Requirements
+                  </Heading>
                   <Text size="sm" color={colors.text.light.secondary}>
                     Upload CSV or JSON file to bulk import compliance requirements
                   </Text>
@@ -241,7 +293,9 @@ export function ComplianceRequirements() {
               >
                 <Stack alignItems="flex-start" gap={spacing[12]}>
                   <Download size={32} color={colors.success[500]} />
-                  <Heading level={3} weight="semibold">Export Requirements</Heading>
+                  <Heading level={3} weight="semibold">
+                    Export Requirements
+                  </Heading>
                   <Text size="sm" color={colors.text.light.secondary}>
                     Download requirements as CSV, JSON, or Excel file
                   </Text>

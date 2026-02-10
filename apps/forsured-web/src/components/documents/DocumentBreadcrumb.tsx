@@ -1,6 +1,6 @@
 /**
  * DocumentBreadcrumb - Breadcrumb navigation using Beyond UI
- * REQ-284: Document Organization by Client/Project/GC
+ * Document Organization by Client/Project/GC
  */
 import React from 'react';
 import { Row, Text } from '@unicornlove/beyond-ui';

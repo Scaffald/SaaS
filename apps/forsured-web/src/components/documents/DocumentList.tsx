@@ -1,6 +1,6 @@
 /**
  * DocumentList - Document list with filtering and search
- * REQ-284: Document Organization by Client/Project/GC
+ * Document Organization by Client/Project/GC
  * TASK-2: Build Document List with Filtering and Search
  *
  * Displays documents in a list/table format with:

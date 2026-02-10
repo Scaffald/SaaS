@@ -1,6 +1,6 @@
 /**
  * MemberDetailModal - Modal for viewing and managing team member details
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-2: Build Member Detail Modal with Access Management
  *
  * Displays when clicking a team member card, allowing:

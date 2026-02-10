@@ -1,6 +1,6 @@
 /**
  * ParticipantsFilter Component Tests
- * REQ-281: Participants Tab Compliance View - TASK-3
+ * Participants filter tests
  */
 
 import { describe, it, expect, vi } from 'vitest';

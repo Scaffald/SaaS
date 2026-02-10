@@ -1,6 +1,6 @@
 /**
  * Participants Compliance Page
- * REQ-281: Participants Tab Compliance View - TASK-4
+ * Participants Tab Compliance View - TASK-4
  *
  * Dedicated page for viewing project participants with compliance status filtering.
  */

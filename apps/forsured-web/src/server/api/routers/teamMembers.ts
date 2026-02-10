@@ -1,6 +1,6 @@
 /**
  * Team Members Router
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-1: Create Team Members List Page
  *
  * Handles team member data access with organization-scoped authorization.
@@ -292,7 +292,7 @@ export const teamMembersRouter = createTRPCRouter({
   /**
    * Invite a new team member
    * Creates a user record and sends an invitation email
-   * REQ-283 TASK-3: Implement Add Team Member Form with Email Invitation
+    * TASK-3: Implement Add Team Member Form with Email Invitation
    */
   invite: protectedProcedure
     .input(

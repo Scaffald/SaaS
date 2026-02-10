@@ -2,24 +2,24 @@
  * Authentication E2E Tests
  *
  * Tests the complete authentication flow in the browser
- * Uses real Supabase (REQ-9: no mocking)
+ * Uses real Supabase (no mocking)
  */
 
-import { test, expect } from '@playwright/test';
+import { expect, test } from "@playwright/test";
 
-test.describe('Authentication Flow', () => {
+test.describe("Authentication Flow", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the app
-    await page.goto('/');
+    await page.goto("/");
   });
 
-  test('displays login screen on initial load', async ({ page }) => {
+  test("displays login screen on initial load", async ({ page }) => {
     // Wait for the page to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState("networkidle");
 
     // Check for login-related elements
     // Adjust selectors based on your actual app structure
-    const heading = page.locator('h1, h2').first();
+    const heading = page.locator("h1, h2").first();
     await expect(heading).toBeVisible();
 
     // Example: Check for login button or form
@@ -27,7 +27,7 @@ test.describe('Authentication Flow', () => {
     // await expect(loginButton).toBeVisible();
   });
 
-  test.skip('can sign in with email and password', async ({ page }) => {
+  test.skip("can sign in with email and password", async ({ page }) => {
     // This is a template - uncomment and customize based on your auth flow
 
     // Fill in email
@@ -47,7 +47,7 @@ test.describe('Authentication Flow', () => {
     // await expect(userMenu).toBeVisible();
   });
 
-  test.skip('shows error for invalid credentials', async ({ page }) => {
+  test.skip("shows error for invalid credentials", async ({ page }) => {
     // This is a template - uncomment and customize
 
     // Fill in invalid credentials
@@ -62,7 +62,7 @@ test.describe('Authentication Flow', () => {
     // await expect(errorMessage).toBeVisible();
   });
 
-  test.skip('can sign out', async ({ page }) => {
+  test.skip("can sign out", async ({ page }) => {
     // This is a template - uncomment and customize
 
     // First sign in (you might want to use a helper function)

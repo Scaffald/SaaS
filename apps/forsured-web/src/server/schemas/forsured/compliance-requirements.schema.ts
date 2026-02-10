@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-7: Compliance Requirements Zod Schemas
+ * Compliance Requirements Zod Schemas
  * Input validation schemas for compliance requirements tRPC router
  */
 

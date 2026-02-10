@@ -1,6 +1,6 @@
 /**
  * Post-Mortem Manager
- * REQ-164: Incident Response Plan & Procedures
+ * Incident Response Plan & Procedures
  */
 
 import { PostMortem, ActionItem, Incident } from './types';

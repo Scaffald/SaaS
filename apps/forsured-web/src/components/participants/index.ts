@@ -1,6 +1,6 @@
 /**
  * Participants Components
- * REQ-281: Participants Tab Compliance View
+ * Participants Tab Compliance View
  */
 
 export { ParticipantsComplianceView } from './ParticipantsComplianceView';

@@ -1,5 +1,5 @@
 /**
- * REQ-273: Coverage Request Service Layer
+ * Coverage Request Service Layer
  * API functions for managing coverage request workflow between subs and brokers
  */
 

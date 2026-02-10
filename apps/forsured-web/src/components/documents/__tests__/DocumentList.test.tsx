@@ -1,6 +1,6 @@
 /**
  * DocumentList tests
- * REQ-284: Document Organization by Client/Project/GC
+ * Document Organization by Client/Project/GC
  * TASK-2: Build Document List with Filtering and Search
  */
 

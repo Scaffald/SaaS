@@ -1,6 +1,6 @@
 /**
  * Rate Limiting Middleware for tRPC
- * REQ-292: Configure tRPC for production deployment
+ * Configure tRPC for production deployment
  * TASK-3: Implement rate limiting middleware with configurable storage
  *
  * Implements Fixed Window rate limiting with in-memory storage.

@@ -1,5 +1,5 @@
 /**
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  * Flag-based compliance checker that evaluates flags at policy, provision, and endorsement levels
  */
 

@@ -1,5 +1,5 @@
 /**
- * REQ-165: Compliance Requirements Management System
+ * Compliance Requirements Management System
  * Template selector for quick requirement creation
  */
 

@@ -1,29 +1,33 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react'
+import { Clock, Calendar, User, FileText, Building2, Plus } from 'lucide-react'
 import {
-  Clock,
-  Calendar,
-  User,
-  FileText,
-  Building2,
-  Plus,
-} from 'lucide-react';
-import { Stack, Row, Text, H2, Card, Button, useAnnouncer, ButtonGroup, SearchSelect, Chip } from '@unicornlove/beyond-ui'
-import type { SearchSelectOption } from '@unicornlove/beyond-ui';
-import { Task } from '../../types';
-import { formatDate, getDaysUntil, isOverdue } from '../../utils/dateHelpers';
-import TaskStatusBadge from '../Common/TaskStatusBadge';
-import { TaskViewToggle } from '../tasks/TaskViewToggle';
-import { useTaskViewFilter } from '../../hooks/useTaskViewFilter';
+  Stack,
+  Row,
+  Text,
+  H2,
+  Card,
+  Button,
+  useAnnouncer,
+  ButtonGroup,
+  SearchSelect,
+  Chip,
+} from '@unicornlove/beyond-ui'
+import type { SearchSelectOption } from '@unicornlove/beyond-ui'
+import { Task } from '../../types'
+import { formatDate, getDaysUntil, isOverdue } from '../../utils/dateHelpers'
+import TaskStatusBadge from '../Common/TaskStatusBadge'
+import { TaskViewToggle } from '../tasks/TaskViewToggle'
+import { useTaskViewFilter } from '../../hooks/useTaskViewFilter'
 
 interface TasksInboxProps {
-  tasks: Task[];
+  tasks: Task[]
   /** All tasks for counting (before role filtering) - needed for "Assigned by Me" count */
-  allTasks?: Task[];
+  allTasks?: Task[]
   /** Current user ID for filtering */
-  currentUserId?: string;
-  onTaskClick?: (task: Task) => void;
-  onCreateTask?: () => void;
-  onUpdateTaskStatus?: (taskId: string, status: string) => void;
+  currentUserId?: string
+  onTaskClick?: (task: Task) => void
+  onCreateTask?: () => void
+  onUpdateTaskStatus?: (taskId: string, status: string) => void
 }
 
 // Map status values to human-readable labels for announcements
@@ -39,7 +43,7 @@ const STATUS_LABELS: Record<string, string> = {
   completed: 'Completed',
   escalated: 'Escalated',
   cancelled: 'Cancelled',
-};
+}
 
 export default function TasksInbox({
   tasks,
@@ -49,31 +53,31 @@ export default function TasksInbox({
   onCreateTask,
   onUpdateTaskStatus,
 }: TasksInboxProps) {
-  const [activeTab, setActiveTab] = useState<'urgent' | 'upcoming'>('urgent');
-  const { currentView, setView } = useTaskViewFilter();
+  const [activeTab, setActiveTab] = useState<'urgent' | 'upcoming'>('urgent')
+  const { currentView, setView } = useTaskViewFilter()
 
   // Screen reader announcements for dynamic content
-  const { announce } = useAnnouncer();
+  const { announce } = useAnnouncer()
 
   // Wrap status update to announce changes to screen readers
   const handleStatusChange = useCallback(
     (taskId: string, newStatus: string, taskTitle: string) => {
-      onUpdateTaskStatus?.(taskId, newStatus);
+      onUpdateTaskStatus?.(taskId, newStatus)
       // Announce the status change to screen readers
-      const statusLabel = STATUS_LABELS[newStatus] || newStatus;
-      announce(`Task "${taskTitle}" status changed to ${statusLabel}`);
+      const statusLabel = STATUS_LABELS[newStatus] || newStatus
+      announce(`Task "${taskTitle}" status changed to ${statusLabel}`)
     },
     [onUpdateTaskStatus, announce]
-  );
+  )
 
-  // REQ-268: Calculate counts for view toggle
+  //  Calculate counts for view toggle
   // Use allTasks if provided (for accurate counts across both views)
   // Otherwise fall back to tasks array
-  const tasksForCounting = allTasks || tasks;
+  const tasksForCounting = allTasks || tasks
 
   const { inboxCount, assignedByMeCount } = useMemo(() => {
     if (!currentUserId) {
-      return { inboxCount: tasks.length, assignedByMeCount: 0 };
+      return { inboxCount: tasks.length, assignedByMeCount: 0 }
     }
 
     const inbox = tasksForCounting.filter(
@@ -81,45 +85,43 @@ export default function TasksInbox({
         t.assigned_to_user_id === currentUserId &&
         t.status !== 'completed' &&
         t.status !== 'cancelled'
-    );
+    )
     const assignedByMe = tasksForCounting.filter(
       (t) =>
         t.created_by_user_id === currentUserId &&
         t.assigned_to_user_id !== currentUserId && // Exclude self-assigned
         t.status !== 'completed' &&
         t.status !== 'cancelled'
-    );
+    )
 
     return {
       inboxCount: inbox.length,
       assignedByMeCount: assignedByMe.length,
-    };
-  }, [tasksForCounting, currentUserId, tasks.length]);
+    }
+  }, [tasksForCounting, currentUserId, tasks.length])
 
-  // REQ-268: Get header text based on current view
+  //  Get header text based on current view
   const getHeaderText = () => {
     if (currentView === 'assigned-by-me') {
       return {
         title: 'Tasks Assigned by You',
         subtitle: 'Track tasks you delegated to others',
-      };
+      }
     }
     return {
       title: 'Your Tasks Inbox',
       subtitle: 'View, resolve, or delegate issues',
-    };
-  };
+    }
+  }
 
-  const headerText = getHeaderText();
+  const headerText = getHeaderText()
 
   const urgentTasks = tasks.filter(
     (t) =>
       t.status !== 'completed' &&
       t.status !== 'cancelled' &&
-      (t.priority === 'urgent' ||
-        t.priority === 'high' ||
-        (t.due_date && isOverdue(t.due_date)))
-  );
+      (t.priority === 'urgent' || t.priority === 'high' || (t.due_date && isOverdue(t.due_date)))
+  )
 
   const upcomingTasks = tasks.filter(
     (t) =>
@@ -128,15 +130,15 @@ export default function TasksInbox({
       t.priority !== 'urgent' &&
       t.priority !== 'high' &&
       (!t.due_date || !isOverdue(t.due_date))
-  );
+  )
 
-  const displayedTasks = activeTab === 'urgent' ? urgentTasks : upcomingTasks;
+  const displayedTasks = activeTab === 'urgent' ? urgentTasks : upcomingTasks
 
   // Tab items for ButtonGroup
   const tabItems = [
     { id: 'urgent', label: `Urgent (${urgentTasks.length})` },
     { id: 'upcoming', label: `Upcoming (${upcomingTasks.length})` },
-  ];
+  ]
 
   // Status options for SearchSelect
   const statusOptions: SearchSelectOption[] = [
@@ -150,29 +152,59 @@ export default function TasksInbox({
     { value: 'awaiting_response', label: 'Awaiting Response' },
     { value: 'completed', label: 'Completed' },
     { value: 'escalated', label: 'Escalated' },
-  ];
+  ]
 
   const getPriorityChipProps = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return { type: 'default' as const, style: { backgroundColor: 'var(--color-red-2)', color: 'var(--color-red-11)', borderColor: 'var(--color-red-6)' } };
+        return {
+          type: 'default' as const,
+          style: {
+            backgroundColor: 'var(--color-red-2)',
+            color: 'var(--color-red-11)',
+            borderColor: 'var(--color-red-6)',
+          },
+        }
       case 'high':
-        return { type: 'default' as const, style: { backgroundColor: 'var(--color-yellow-2)', color: 'var(--color-yellow-11)', borderColor: 'var(--color-yellow-6)' } };
+        return {
+          type: 'default' as const,
+          style: {
+            backgroundColor: 'var(--color-yellow-2)',
+            color: 'var(--color-yellow-11)',
+            borderColor: 'var(--color-yellow-6)',
+          },
+        }
       case 'normal':
-        return { type: 'default' as const, style: { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-11)', borderColor: 'var(--color-blue-6)' } };
+        return {
+          type: 'default' as const,
+          style: {
+            backgroundColor: 'var(--color-blue-2)',
+            color: 'var(--color-blue-11)',
+            borderColor: 'var(--color-blue-6)',
+          },
+        }
       default:
-        return { type: 'default' as const, style: { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-11)', borderColor: 'var(--color-gray-6)' } };
+        return {
+          type: 'default' as const,
+          style: {
+            backgroundColor: 'var(--color-gray-2)',
+            color: 'var(--color-gray-11)',
+            borderColor: 'var(--color-gray-6)',
+          },
+        }
     }
-  };
+  }
 
   const getDueDateBadge = (dueDate?: string) => {
-    if (!dueDate) return null;
+    if (!dueDate) return null
 
-    const daysLeft = getDaysUntil(dueDate);
+    const daysLeft = getDaysUntil(dueDate)
     if (isOverdue(dueDate)) {
       return (
-        <Text size="xs" weight="medium" style={{ color: 'var(--color-red-10)' }}>Overdue</Text>
-      );
+        <Text size="xs" weight="medium" style={{ color: 'var(--color-red-10)' }}>
+          Overdue
+        </Text>
+      )
     } else if (daysLeft === 0) {
       return (
         <Row
@@ -187,9 +219,11 @@ export default function TasksInbox({
             border: '1px solid var(--color-red-6)',
           }}
         >
-          <Text size="xs" weight="medium" style={{ color: 'var(--color-red-11)' }}>Due Today</Text>
+          <Text size="xs" weight="medium" style={{ color: 'var(--color-red-11)' }}>
+            Due Today
+          </Text>
         </Row>
-      );
+      )
     } else if (daysLeft <= 3) {
       return (
         <Row
@@ -204,19 +238,28 @@ export default function TasksInbox({
             border: '1px solid var(--color-yellow-6)',
           }}
         >
-          <Text size="xs" weight="medium" style={{ color: 'var(--color-yellow-11)' }}>Due in {daysLeft}d</Text>
+          <Text size="xs" weight="medium" style={{ color: 'var(--color-yellow-11)' }}>
+            Due in {daysLeft}d
+          </Text>
         </Row>
-      );
+      )
     }
     return (
-      <Text size="xs" style={{ color: 'var(--color-text-muted)' }}>{formatDate(dueDate)}</Text>
-    );
-  };
-
+      <Text size="xs" style={{ color: 'var(--color-text-muted)' }}>
+        {formatDate(dueDate)}
+      </Text>
+    )
+  }
 
   return (
     <Card padding="xl">
-      <Stack style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 24, marginBottom: 0 }}>
+      <Stack
+        style={{
+          borderBottom: '1px solid var(--color-border)',
+          paddingBottom: 24,
+          marginBottom: 0,
+        }}
+      >
         <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 16 }}>
           <Stack>
             <H2>{headerText.title}</H2>
@@ -224,12 +267,17 @@ export default function TasksInbox({
               {headerText.subtitle}
             </Text>
           </Stack>
-          <Button color="primary" iconStart={Plus} onPress={onCreateTask} style={{ marginLeft: 'auto' }}>
+          <Button
+            color="primary"
+            iconStart={Plus}
+            onPress={onCreateTask}
+            style={{ marginLeft: 'auto' }}
+          >
             New Task
           </Button>
         </Row>
 
-        {/* REQ-268: View Toggle - My Inbox vs Assigned by Me */}
+        {/*  View Toggle - My Inbox vs Assigned by Me */}
         <Stack style={{ marginBottom: 16 }}>
           <TaskViewToggle
             currentView={currentView}
@@ -265,9 +313,7 @@ export default function TasksInbox({
                 <Row alignItems="flex-start" justifyContent="space-between">
                   <Stack style={{ flex: 1 }}>
                     <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
-                      <Chip {...getPriorityChipProps(task.priority)}>
-                        {task.priority}
-                      </Chip>
+                      <Chip {...getPriorityChipProps(task.priority)}>{task.priority}</Chip>
                       {task.due_date && getDueDateBadge(task.due_date)}
                     </Row>
 
@@ -292,26 +338,34 @@ export default function TasksInbox({
                       {task.assigned_to && (
                         <Row alignItems="center" gap={4}>
                           <User size={12} />
-                          <Text size="xs" muted>{task.assigned_to.name}</Text>
+                          <Text size="xs" muted>
+                            {task.assigned_to.name}
+                          </Text>
                         </Row>
                       )}
                       {task.client && (
                         <Row alignItems="center" gap={4}>
                           <FileText size={12} />
-                          <Text size="xs" muted>{task.client.company_name}</Text>
+                          <Text size="xs" muted>
+                            {task.client.company_name}
+                          </Text>
                         </Row>
                       )}
-                      {/* REQ-282 TASK-4: Display sub company context */}
+                      {/* Display sub company context */}
                       {task.sub_company_name && (
                         <Row alignItems="center" gap={4}>
                           <Building2 size={12} style={{ color: 'var(--color-blue-10)' }} />
-                          <Text size="xs" style={{ color: 'var(--color-blue-10)' }}>{task.sub_company_name}</Text>
+                          <Text size="xs" style={{ color: 'var(--color-blue-10)' }}>
+                            {task.sub_company_name}
+                          </Text>
                         </Row>
                       )}
                       {task.due_date && (
                         <Row alignItems="center" gap={4}>
                           <Calendar size={12} />
-                          <Text size="xs" muted>Due: {formatDate(task.due_date)}</Text>
+                          <Text size="xs" muted>
+                            Due: {formatDate(task.due_date)}
+                          </Text>
                         </Row>
                       )}
                     </Row>
@@ -334,7 +388,7 @@ export default function TasksInbox({
                   </Stack>
 
                   <Stack alignItems="flex-end" gap={8} style={{ marginLeft: 16 }}>
-                    {/* REQ-282: Use TaskStatusBadge with tooltip and rejection reason */}
+                    {/*  Use TaskStatusBadge with tooltip and rejection reason */}
                     <TaskStatusBadge
                       status={task.status}
                       rejectionReason={task.rejection_reason}
@@ -346,7 +400,7 @@ export default function TasksInbox({
                         options={statusOptions}
                         value={task.status}
                         onChange={(value) => {
-                          handleStatusChange(task.id, value as string, task.title);
+                          handleStatusChange(task.id, value as string, task.title)
                         }}
                         size="sm"
                         searchable={false}
@@ -357,7 +411,7 @@ export default function TasksInbox({
                   </Stack>
                 </Row>
               </Card>
-            );
+            )
           })}
         </Stack>
 
@@ -369,5 +423,5 @@ export default function TasksInbox({
         )}
       </Stack>
     </Card>
-  );
+  )
 }

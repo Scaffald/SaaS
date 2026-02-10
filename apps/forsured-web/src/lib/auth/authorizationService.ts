@@ -1,6 +1,6 @@
 /**
  * Authorization Service
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  *
  * Implements Role-Based Access Control (RBAC)
  * Enforces permissions at both role and resource levels

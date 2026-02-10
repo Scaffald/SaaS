@@ -1,5 +1,5 @@
 /**
- * REQ-262: Insurance Policy Parent-Child Model
+ * Insurance Policy Parent-Child Model
  * Unit tests for insurance policy service layer
  */
 

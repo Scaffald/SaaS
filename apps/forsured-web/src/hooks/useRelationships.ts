@@ -1,6 +1,6 @@
 /**
  * Relationships Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `relationships` table in forsured schema
  */

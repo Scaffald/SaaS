@@ -1,6 +1,6 @@
 /**
  * Task Status Badge Component - Using Beyond UI
- * REQ-282: Project Tasks Display
+ * Project tasks display
 
  */
 import { useState } from 'react'
@@ -9,7 +9,7 @@ import { Row, Stack, Text } from '@unicornlove/beyond-ui'
 import { CheckCircle, Clock, Eye, XCircle, HelpCircle, Send } from 'lucide-react'
 import type { ProjectTaskStatus } from '../../types'
 
-// Status definitions as per REQ-282
+// Status definitions for project task display
 const STATUS_DEFINITIONS: Record<ProjectTaskStatus, string> = {
   submitted: 'Sub submitted response/document',
   in_review: 'Broker/GC reviewing submission',

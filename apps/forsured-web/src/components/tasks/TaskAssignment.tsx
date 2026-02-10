@@ -1,6 +1,6 @@
 /**
- * REQ-166: Task Management Workflow & UI
- * REQ-12: Manual user indicators in task assignment
+ * Task management workflow and UI.
+ * Manual user indicators in task assignment.
  * TaskAssignment component for user picker with search and filtering
  */
 
@@ -12,7 +12,7 @@ import { ManualUserBadge } from '../ManualUsers'
 
 /**
  * Extended user type with manual user flag
- * REQ-12: Manual users need special indicators
+ * Manual users need special indicators
  */
 interface AssignableUser extends User {
   is_manually_created?: boolean
@@ -24,7 +24,7 @@ interface TaskAssignmentProps {
   onAssign: (userId: string) => void
   allowedRoles?: UserRole[]
   loading?: boolean
-  /** REQ-12: Require acknowledgment when assigning to manual users */
+  /** Require acknowledgment when assigning to manual users */
   requireManualUserAcknowledgment?: boolean
 }
 
@@ -40,7 +40,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
   const [searchQuery, setSearchQuery] = useState('')
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // REQ-12: Track pending manual user selection for acknowledgment
+  // Track pending manual user selection for acknowledgment
   const [pendingManualUserId, setPendingManualUserId] = useState<string | null>(null)
   const [manualUserAcknowledged, setManualUserAcknowledged] = useState(false)
 
@@ -85,7 +85,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
     return filtered
   }, [users, allowedRoles, searchQuery])
 
-  // REQ-12: Get pending manual user for warning display
+  // Get pending manual user for warning display
   const pendingManualUser = pendingManualUserId
     ? filteredUsers.find((u) => u.id === pendingManualUserId)
     : null
@@ -93,7 +93,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
   const handleUserSelect = (userId: string) => {
     const selectedUser = filteredUsers.find((u) => u.id === userId)
 
-    // REQ-12: If selecting a manual user and acknowledgment is required
+    // If selecting a manual user and acknowledgment is required
     if (
       selectedUser?.is_manually_created &&
       requireManualUserAcknowledgment &&
@@ -111,7 +111,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
     setManualUserAcknowledged(false)
   }
 
-  // REQ-12: Confirm manual user assignment after acknowledgment
+  // Confirm manual user assignment after acknowledgment
   const handleConfirmManualUserAssignment = () => {
     if (pendingManualUserId) {
       onAssign(pendingManualUserId)
@@ -122,7 +122,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
     }
   }
 
-  // REQ-12: Cancel manual user selection
+  // Cancel manual user selection
   const handleCancelManualUserSelection = () => {
     setPendingManualUserId(null)
     setManualUserAcknowledged(false)
@@ -169,9 +169,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
           {loading ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
-                Loading...
-              </Text>
+              <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>Loading...</Text>
             </>
           ) : assignedUser ? (
             <>
@@ -193,10 +191,12 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                 </div>
                 <Stack style={{ alignItems: 'flex-start' }}>
                   <Row style={{ alignItems: 'center', gap: '6px' }}>
-                    <Text style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)' }}>
+                    <Text
+                      style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-color12)' }}
+                    >
                       {assignedUser.name}
                     </Text>
-                    {/* REQ-12: Show badge for manual users */}
+                    {/* Show badge for manual users */}
                     {(assignedUser as AssignableUser).is_manually_created && (
                       <ManualUserBadge size="sm" showTooltip={false} />
                     )}
@@ -214,9 +214,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
           ) : (
             <>
               <UserIcon size={20} color="var(--color-color10)" />
-              <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>
-                Unassigned
-              </Text>
+              <Text style={{ fontSize: '14px', color: 'var(--color-color10)' }}>Unassigned</Text>
               <ChevronDown size={16} color="var(--color-color10)" />
               <span style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}>
                 Assign task
@@ -261,7 +259,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
           </Stack>
 
           <Stack style={{ maxHeight: '256px', overflow: 'auto' }} role="listbox">
-            {/* REQ-12: Warning banner when manual user selected */}
+            {/* Warning banner when manual user selected */}
             {pendingManualUser && (
               <Stack
                 style={{
@@ -290,7 +288,11 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                       />
                       <label
                         htmlFor="acknowledge-manual-user"
-                        style={{ fontSize: '12px', color: 'var(--color-orange-11)', cursor: 'pointer' }}
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--color-orange-11)',
+                          cursor: 'pointer',
+                        }}
                       >
                         I understand this user won't be notified
                       </label>
@@ -351,10 +353,7 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                     paddingRight: '16px',
                     paddingTop: '12px',
                     paddingBottom: '12px',
-                    background:
-                      user.id === pendingManualUserId
-                        ? 'var(--color-orange-2)'
-                        : 'none',
+                    background: user.id === pendingManualUserId ? 'var(--color-orange-2)' : 'none',
                     border: 'none',
                     cursor: 'pointer',
                   }}
@@ -392,8 +391,10 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                         >
                           {user.name}
                         </Text>
-                        {/* REQ-12: Badge for manual users in dropdown */}
-                        {user.is_manually_created && <ManualUserBadge size="sm" showTooltip={false} />}
+                        {/* Badge for manual users in dropdown */}
+                        {user.is_manually_created && (
+                          <ManualUserBadge size="sm" showTooltip={false} />
+                        )}
                       </Row>
                       <Text
                         style={{
@@ -406,7 +407,13 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
                       >
                         {user.email}
                       </Text>
-                      <Text style={{ fontSize: '12px', color: 'var(--color-color10)', textTransform: 'capitalize' }}>
+                      <Text
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--color-color10)',
+                          textTransform: 'capitalize',
+                        }}
+                      >
                         {user.role}
                       </Text>
                     </Stack>

@@ -1,6 +1,6 @@
 /**
  * FileUpload - File upload component using Beyond UI
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  */
 import type React from 'react'
 import { useState, useRef } from 'react'

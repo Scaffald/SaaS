@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-4: Dependency Validation Service Tests
+ * Dependency Validation Service Tests
  * Tests for dependency validation including umbrella insurance validation
  */
 

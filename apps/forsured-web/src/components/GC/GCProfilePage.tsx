@@ -1,6 +1,6 @@
 /**
  * GC Profile Page
- * REQ-275: GC Profile Page with Subcontractor List
+ * GC profile page with subcontractor list
  *
  * Shows General Contractor profile with all assigned subcontractors
  * and their compliance scores.

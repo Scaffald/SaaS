@@ -1,6 +1,6 @@
 /**
  * Unauthorized Page - Using Beyond UI
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  */
 import type React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'

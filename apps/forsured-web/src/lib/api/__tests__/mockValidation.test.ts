@@ -1,5 +1,5 @@
 /**
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  * Mock validation tests - ensuring mocks match the real system structure
  * Per CLAUDE.md requirement: "mocks used in tests must always be validated"
  */

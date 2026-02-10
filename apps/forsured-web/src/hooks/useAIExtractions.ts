@@ -1,6 +1,6 @@
 /**
  * AI Extractions Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `ai_extractions` table in forsured schema:
  * - id (uuid, primary key)

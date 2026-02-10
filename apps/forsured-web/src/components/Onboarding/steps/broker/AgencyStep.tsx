@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/broker/AgencyStep.tsx
-// REQ-126: Broker Onboarding - Agency Setup Step
+// Broker Onboarding - Agency Setup Step
 import { useState } from 'react';
 import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
 

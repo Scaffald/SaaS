@@ -1,7 +1,6 @@
 /**
  * ClientsTable Component Tests
- * REQ-274: Clickable Client Navigation
- * REQ-277: Key Clients GC-Only View
+ * Clickable client navigation and GC-only view
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -178,7 +177,7 @@ describe('ClientsTable', () => {
     });
   });
 
-  describe('gcOnly mode (REQ-277)', () => {
+  describe('gcOnly mode', () => {
     const mockProjects = [
       { id: 'proj-1', client_id: 'client-2' },
     ];

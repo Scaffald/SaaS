@@ -1,6 +1,6 @@
 /**
  * Forsured Data Collector - CCPA Integration with Scaffald
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Collects Forsured-specific data for CCPA requests initiated via Scaffald.
  * This service responds to Scaffald webhooks to contribute Forsured data

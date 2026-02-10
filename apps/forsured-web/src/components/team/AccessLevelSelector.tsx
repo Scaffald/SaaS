@@ -1,6 +1,6 @@
 /**
  * AccessLevelSelector - Access level selector using Beyond UI
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  */
 import React from 'react';
 import { Stack, Text } from '@unicornlove/beyond-ui';

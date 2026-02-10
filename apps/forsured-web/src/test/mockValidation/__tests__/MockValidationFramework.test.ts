@@ -1,5 +1,5 @@
 /**
- * REQ-306: Unit tests for MockValidationFramework
+ * Unit tests for MockValidationFramework
  *
  * Tests the core validation framework functionality including:
  * - Singleton pattern

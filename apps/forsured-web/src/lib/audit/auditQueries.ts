@@ -1,7 +1,7 @@
 /**
  * Audit Queries - Fine-Grained Audit Log Queries for Compliance Reporting
  *
- * REQ-130: Comprehensive Audit Logging with 7-Year Retention
+ * Comprehensive Audit Logging with 7-Year Retention
  *
  * This module provides specialized query functions for:
  * - Compliance reporting (GDPR, CCPA, SOC 2)

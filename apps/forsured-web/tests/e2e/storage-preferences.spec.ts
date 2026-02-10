@@ -6,7 +6,7 @@ import { test, expect } from './fixtures/base';
  * Tests for the document storage preferences feature that allows users
  * to choose their preferred storage backend (Supabase, Dropbox, Google Drive).
  *
- * REQ-1: Document Upload & Storage - User storage preferences
+ * Document Upload & Storage - User storage preferences
  */
 test.describe('Storage Preferences', () => {
   test.describe('Storage Preference Selection', () => {

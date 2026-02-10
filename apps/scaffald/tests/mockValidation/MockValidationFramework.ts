@@ -1,18 +1,18 @@
 /**
- * REQ-7: Mock Validation Framework
+ * Mock validation framework
  *
  * Core framework for validating all testing mocks against their real implementations
  * before any tests execute. Implements singleton pattern for global access.
  */
 
 import type {
-  MockValidator,
-  ValidationResult,
   AggregatedValidationResults,
-  ValidationOptions,
+  MockValidator,
   ValidationError,
-} from './types';
-import { TERMINAL_COLORS } from './types';
+  ValidationOptions,
+  ValidationResult,
+} from "./types";
+import { TERMINAL_COLORS } from "./types";
 
 const DEFAULT_OPTIONS: Required<ValidationOptions> = {
   failFast: true,
@@ -57,7 +57,7 @@ export class MockValidationFramework {
    */
   registerValidator(validator: MockValidator): void {
     // Prevent duplicate registration
-    if (this.validators.some(v => v.name === validator.name)) {
+    if (this.validators.some((v) => v.name === validator.name)) {
       throw new Error(`Validator "${validator.name}" is already registered`);
     }
     this.validators.push(validator);
@@ -88,7 +88,9 @@ export class MockValidationFramework {
    * Execute all registered validators
    * Returns aggregated results and throws if any validation fails
    */
-  async validateAll(overrideOptions?: Partial<ValidationOptions>): Promise<AggregatedValidationResults> {
+  async validateAll(
+    overrideOptions?: Partial<ValidationOptions>,
+  ): Promise<AggregatedValidationResults> {
     const opts = { ...this.options, ...overrideOptions };
     const startTime = Date.now();
 
@@ -102,8 +104,14 @@ export class MockValidationFramework {
       };
     }
 
-    this.log(opts.verbose, `\n${TERMINAL_COLORS.cyan}${TERMINAL_COLORS.bold}Starting Mock Validation${TERMINAL_COLORS.reset}`);
-    this.log(opts.verbose, `${TERMINAL_COLORS.dim}Running ${this.validators.length} validator(s)...${TERMINAL_COLORS.reset}\n`);
+    this.log(
+      opts.verbose,
+      `\n${TERMINAL_COLORS.cyan}${TERMINAL_COLORS.bold}Starting Mock Validation${TERMINAL_COLORS.reset}`,
+    );
+    this.log(
+      opts.verbose,
+      `${TERMINAL_COLORS.dim}Running ${this.validators.length} validator(s)...${TERMINAL_COLORS.reset}\n`,
+    );
 
     const results: ValidationResult[] = [];
     let failed = false;
@@ -115,7 +123,7 @@ export class MockValidationFramework {
         const result = await this.runWithTimeout(
           validator.validate(),
           opts.timeoutMs,
-          validator.name
+          validator.name,
         );
         return result;
       } catch (error) {
@@ -125,10 +133,12 @@ export class MockValidationFramework {
           success: false,
           mockName: validator.name,
           errors: [{
-            field: 'execution',
-            expected: 'successful validation',
-            actual: error instanceof Error ? error.message : 'unknown error',
-            message: `Validator threw an exception: ${error instanceof Error ? error.message : 'unknown error'}`,
+            field: "execution",
+            expected: "successful validation",
+            actual: error instanceof Error ? error.message : "unknown error",
+            message: `Validator threw an exception: ${
+              error instanceof Error ? error.message : "unknown error"
+            }`,
           }],
           durationMs: duration,
         } as ValidationResult;
@@ -163,8 +173,8 @@ export class MockValidationFramework {
     }
 
     const totalDuration = Date.now() - startTime;
-    const passedCount = results.filter(r => r.success).length;
-    const failedCount = results.filter(r => !r.success).length;
+    const passedCount = results.filter((r) => r.success).length;
+    const failedCount = results.filter((r) => !r.success).length;
 
     const aggregated: AggregatedValidationResults = {
       allPassed: !failed,
@@ -185,13 +195,17 @@ export class MockValidationFramework {
   private async runWithTimeout<T>(
     promise: Promise<T>,
     timeoutMs: number,
-    validatorName: string
+    validatorName: string,
   ): Promise<T> {
     return Promise.race([
       promise,
       new Promise<T>((_, reject) => {
         setTimeout(() => {
-          reject(new Error(`Validator "${validatorName}" timed out after ${timeoutMs}ms`));
+          reject(
+            new Error(
+              `Validator "${validatorName}" timed out after ${timeoutMs}ms`,
+            ),
+          );
         }, timeoutMs);
       }),
     ]);
@@ -204,9 +218,13 @@ export class MockValidationFramework {
     const { green, red, yellow, reset, bold, dim } = TERMINAL_COLORS;
 
     if (result.success) {
-      console.log(`${green}✓${reset} ${result.mockName} ${dim}(${result.durationMs}ms)${reset}`);
+      console.log(
+        `${green}✓${reset} ${result.mockName} ${dim}(${result.durationMs}ms)${reset}`,
+      );
     } else {
-      console.log(`${red}✗${reset} ${bold}${result.mockName}${reset} ${dim}(${result.durationMs}ms)${reset}`);
+      console.log(
+        `${red}✗${reset} ${bold}${result.mockName}${reset} ${dim}(${result.durationMs}ms)${reset}`,
+      );
 
       // Print detailed errors
       for (const error of result.errors) {
@@ -231,12 +249,12 @@ export class MockValidationFramework {
 
     if (error.howToFix && verbose) {
       console.log(`\n${cyan}  How to fix:${reset}`);
-      const lines = error.howToFix.split('\n');
+      const lines = error.howToFix.split("\n");
       for (const line of lines) {
         console.log(`    ${line}`);
       }
     }
-    console.log('');
+    console.log("");
   }
 
   /**
@@ -245,9 +263,9 @@ export class MockValidationFramework {
   private reportSummary(results: AggregatedValidationResults): void {
     const { green, red, yellow, reset, bold, dim, cyan } = TERMINAL_COLORS;
 
-    console.log(`\n${cyan}${'─'.repeat(50)}${reset}`);
+    console.log(`\n${cyan}${"─".repeat(50)}${reset}`);
     console.log(`${bold}Mock Validation Summary${reset}`);
-    console.log(`${cyan}${'─'.repeat(50)}${reset}\n`);
+    console.log(`${cyan}${"─".repeat(50)}${reset}\n`);
 
     console.log(`  Total Time: ${dim}${results.totalDurationMs}ms${reset}`);
     console.log(`  Validators: ${results.passedCount + results.failedCount}`);
@@ -257,14 +275,21 @@ export class MockValidationFramework {
       console.log(`  ${red}Failed: ${results.failedCount}${reset}`);
     }
 
-    console.log('');
+    console.log("");
 
     if (results.allPassed) {
       console.log(`${green}${bold}All mock validations passed!${reset}\n`);
     } else {
-      const totalErrors = results.results.reduce((sum, r) => sum + r.errors.length, 0);
-      console.log(`${red}${bold}Mock validation failed with ${totalErrors} error(s)${reset}`);
-      console.log(`${yellow}Tests will not run until mocks are fixed.${reset}\n`);
+      const totalErrors = results.results.reduce(
+        (sum, r) => sum + r.errors.length,
+        0,
+      );
+      console.log(
+        `${red}${bold}Mock validation failed with ${totalErrors} error(s)${reset}`,
+      );
+      console.log(
+        `${yellow}Tests will not run until mocks are fixed.${reset}\n`,
+      );
     }
   }
 
@@ -286,7 +311,7 @@ export function createValidationError(
   expected: string,
   actual: string,
   message: string,
-  howToFix?: string
+  howToFix?: string,
 ): ValidationError {
   return { field, expected, actual, message, howToFix };
 }
@@ -294,7 +319,10 @@ export function createValidationError(
 /**
  * Helper to create a successful validation result
  */
-export function createSuccessResult(mockName: string, durationMs: number): ValidationResult {
+export function createSuccessResult(
+  mockName: string,
+  durationMs: number,
+): ValidationResult {
   return {
     success: true,
     mockName,
@@ -309,7 +337,7 @@ export function createSuccessResult(mockName: string, durationMs: number): Valid
 export function createFailedResult(
   mockName: string,
   errors: ValidationError[],
-  durationMs: number
+  durationMs: number,
 ): ValidationResult {
   return {
     success: false,

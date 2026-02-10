@@ -1,5 +1,5 @@
 /**
- * REQ-128: Compliance Rule Evaluation Engine
+ * Compliance Rule Evaluation Engine
  * Main exports for evaluation system
  */
 
@@ -25,7 +25,7 @@ export type {
   EvaluationMetadata,
   ScoreDeductions,
   ScoreBoundaries,
-  // REQ-2: Dependency evaluation types
+  // Dependency evaluation types
   DependencyEvaluationContext,
   DependencyInfo,
   UmbrellaScheduleInfo,
@@ -72,7 +72,7 @@ export {
   normalizeEndorsementName
 } from './endorsementValidation';
 
-// REQ-269: Flag compliance checking
+// Flag compliance checking
 export {
   FlagComplianceChecker,
   createFlagComplianceChecker,
@@ -87,7 +87,7 @@ export type {
   FlagFilterOptions
 } from './flagComplianceChecker';
 
-// REQ-2: Dependency validation
+// Dependency validation
 export {
   validateRequirementDependencies,
   createEmptyDependencyContext,

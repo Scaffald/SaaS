@@ -1,6 +1,6 @@
 /**
  * VersionHistory Component
- * REQ-2, TASK-16: Version History Viewer with Side-by-Side Diff
+ * Version History Viewer with Side-by-Side Diff
  *
  * Displays version history for a requirement with:
  * - Timeline view of all versions

@@ -1,5 +1,5 @@
 /**
- * REQ-7: Mock Validation Framework Types
+ * Mock validation framework types
  *
  * Core interfaces for the mock validation system that ensures
  * all testing mocks accurately represent their real implementations.
@@ -81,14 +81,14 @@ export interface ValidationOptions {
  * Terminal color codes for formatted output
  */
 export const TERMINAL_COLORS = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-  white: '\x1b[37m',
-  bold: '\x1b[1m',
-  dim: '\x1b[2m',
+  reset: "\x1b[0m",
+  red: "\x1b[31m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  magenta: "\x1b[35m",
+  cyan: "\x1b[36m",
+  white: "\x1b[37m",
+  bold: "\x1b[1m",
+  dim: "\x1b[2m",
 } as const;

@@ -1,6 +1,6 @@
 /**
  * Unit Tests for TaskViewToggle Component
- * REQ-268: Inbox vs Assigned by Me View
+ * Inbox vs Assigned by Me view
  */
 
 import { describe, it, expect, vi } from 'vitest';

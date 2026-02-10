@@ -1,6 +1,6 @@
 /**
  * Unit Tests for useTaskViewFilter Hook
- * REQ-268: Inbox vs Assigned by Me View
+ * Inbox vs Assigned by Me View
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';

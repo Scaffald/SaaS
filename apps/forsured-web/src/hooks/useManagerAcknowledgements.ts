@@ -1,6 +1,6 @@
 /**
  * Manager Acknowledgements Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `manager_acknowledgements` table in forsured schema:
  * - id (uuid, primary key)

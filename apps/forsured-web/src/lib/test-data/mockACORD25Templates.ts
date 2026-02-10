@@ -1,6 +1,6 @@
 /**
  * Mock ACORD 25 Templates for Testing
- * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
+ * Mock OCR & Document Parsing Engine for ACORD 25 Forms
  *
  * Realistic ACORD 25 certificate text samples for different carriers
  */

@@ -1,6 +1,6 @@
 /**
  * ACORD 25 Certificate of Insurance Parser
- * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
+ * Mock OCR & Document Parsing Engine for ACORD 25 Forms
  *
  * Parses extracted OCR text into structured policy data with confidence scoring
  */

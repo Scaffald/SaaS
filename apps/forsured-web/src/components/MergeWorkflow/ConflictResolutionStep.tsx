@@ -1,33 +1,33 @@
 /**
  * ConflictResolutionStep - Side-by-side profile comparison for merge conflicts
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-10: Build merge workflow UI - conflict resolution and data verification
+ * Merge conflict resolution step
+ * Merge workflow conflict resolution step
  *
  * Shows side-by-side comparison of Scaffald profile vs manual user data
  * with radio buttons for selecting which value to keep.
  */
-import { useState, useCallback, useMemo } from 'react';
-import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui';
-import { User, Building, Check, Loader2 } from 'lucide-react';
-import Button from '../Common/Button';
+import { useState, useCallback, useMemo } from 'react'
+import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui'
+import { User, Building, Check, Loader2 } from 'lucide-react'
+import Button from '../Common/Button'
 
 interface Conflict {
-  field: string;
-  manualValue: string;
-  scaffaldValue: string;
+  field: string
+  manualValue: string
+  scaffaldValue: string
 }
 
 interface ConflictResolution {
-  field: string;
-  selectedValue: 'manual' | 'scaffald';
+  field: string
+  selectedValue: 'manual' | 'scaffald'
 }
 
 interface ConflictResolutionStepProps {
-  conflicts: Conflict[];
-  manualUserName: string;
-  onComplete: (resolutions: ConflictResolution[]) => void;
-  onBack: () => void;
-  isLoading?: boolean;
+  conflicts: Conflict[]
+  manualUserName: string
+  onComplete: (resolutions: ConflictResolution[]) => void
+  onBack: () => void
+  isLoading?: boolean
 }
 
 /**
@@ -45,9 +45,15 @@ function formatFieldName(field: string): string {
     state: 'State',
     zip: 'ZIP Code',
     license_number: 'License Number',
-  };
+  }
 
-  return fieldMap[field] || field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return (
+    fieldMap[field] ||
+    field
+      .split('_')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ')
+  )
 }
 
 export function ConflictResolutionStep({
@@ -58,46 +64,48 @@ export function ConflictResolutionStep({
   isLoading = false,
 }: ConflictResolutionStepProps) {
   // Initialize with empty selections
-  const [selections, setSelections] = useState<Record<string, 'manual' | 'scaffald'>>({});
+  const [selections, setSelections] = useState<Record<string, 'manual' | 'scaffald'>>({})
 
   // Calculate resolved count
-  const resolvedCount = Object.keys(selections).length;
-  const totalConflicts = conflicts.length;
-  const allResolved = resolvedCount === totalConflicts;
+  const resolvedCount = Object.keys(selections).length
+  const totalConflicts = conflicts.length
+  const allResolved = resolvedCount === totalConflicts
 
   // Handle selection change
   const handleSelect = useCallback((field: string, value: 'manual' | 'scaffald') => {
-    setSelections(prev => ({
+    setSelections((prev) => ({
       ...prev,
       [field]: value,
-    }));
-  }, []);
+    }))
+  }, [])
 
   // Handle Accept All shortcuts
   const handleAcceptAllScaffald = useCallback(() => {
-    const newSelections: Record<string, 'manual' | 'scaffald'> = {};
-    conflicts.forEach(c => {
-      newSelections[c.field] = 'scaffald';
-    });
-    setSelections(newSelections);
-  }, [conflicts]);
+    const newSelections: Record<string, 'manual' | 'scaffald'> = {}
+    conflicts.forEach((c) => {
+      newSelections[c.field] = 'scaffald'
+    })
+    setSelections(newSelections)
+  }, [conflicts])
 
   const handleAcceptAllManual = useCallback(() => {
-    const newSelections: Record<string, 'manual' | 'scaffald'> = {};
-    conflicts.forEach(c => {
-      newSelections[c.field] = 'manual';
-    });
-    setSelections(newSelections);
-  }, [conflicts]);
+    const newSelections: Record<string, 'manual' | 'scaffald'> = {}
+    conflicts.forEach((c) => {
+      newSelections[c.field] = 'manual'
+    })
+    setSelections(newSelections)
+  }, [conflicts])
 
   // Handle continue
   const handleContinue = useCallback(() => {
-    const resolutions: ConflictResolution[] = Object.entries(selections).map(([field, selectedValue]) => ({
-      field,
-      selectedValue,
-    }));
-    onComplete(resolutions);
-  }, [selections, onComplete]);
+    const resolutions: ConflictResolution[] = Object.entries(selections).map(
+      ([field, selectedValue]) => ({
+        field,
+        selectedValue,
+      })
+    )
+    onComplete(resolutions)
+  }, [selections, onComplete])
 
   // If no conflicts, skip this step
   if (conflicts.length === 0) {
@@ -126,7 +134,7 @@ export function ConflictResolutionStep({
           Continue
         </Button>
       </Stack>
-    );
+    )
   }
 
   return (
@@ -135,8 +143,8 @@ export function ConflictResolutionStep({
       <Stack gap={8}>
         <H2 style={{ fontSize: 28, fontWeight: 700 }}>Resolve Profile Conflicts</H2>
         <Text size="md" muted>
-          We found some differences between your Scaffald profile and the information provided by {manualUserName}.
-          Please choose which values to keep for each field.
+          We found some differences between your Scaffald profile and the information provided by{' '}
+          {manualUserName}. Please choose which values to keep for each field.
         </Text>
       </Stack>
 
@@ -161,12 +169,7 @@ export function ConflictResolutionStep({
             >
               Accept All Mine
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={handleAcceptAllManual}
-              disabled={isLoading}
-            >
+            <Button variant="ghost" size="sm" onPress={handleAcceptAllManual} disabled={isLoading}>
               Accept All Theirs
             </Button>
           </Row>
@@ -176,9 +179,9 @@ export function ConflictResolutionStep({
       {/* Conflict cards */}
       <Stack gap={16}>
         {conflicts.map((conflict) => {
-          const selected = selections[conflict.field];
-          const isScaffaldSelected = selected === 'scaffald';
-          const isManualSelected = selected === 'manual';
+          const selected = selections[conflict.field]
+          const isScaffaldSelected = selected === 'scaffald'
+          const isManualSelected = selected === 'manual'
 
           return (
             <Card
@@ -198,7 +201,11 @@ export function ConflictResolutionStep({
                   borderBottom: '1px solid var(--color-border)',
                 }}
               >
-                <Text size="sm" weight="semibold" style={{ textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+                <Text
+                  size="sm"
+                  weight="semibold"
+                  style={{ textTransform: 'uppercase', letterSpacing: '0.02em' }}
+                >
                   {formatFieldName(conflict.field)}
                 </Text>
               </div>
@@ -229,7 +236,10 @@ export function ConflictResolutionStep({
                         Your Profile
                       </Text>
                       {isScaffaldSelected && (
-                        <Check size={14} style={{ color: 'var(--color-blue-10)', marginLeft: 'auto' }} />
+                        <Check
+                          size={14}
+                          style={{ color: 'var(--color-blue-10)', marginLeft: 'auto' }}
+                        />
                       )}
                     </Row>
                     <Text size="md" weight={isScaffaldSelected ? 'semibold' : 'normal'}>
@@ -261,7 +271,10 @@ export function ConflictResolutionStep({
                         From {manualUserName}
                       </Text>
                       {isManualSelected && (
-                        <Check size={14} style={{ color: 'var(--color-orange-10)', marginLeft: 'auto' }} />
+                        <Check
+                          size={14}
+                          style={{ color: 'var(--color-orange-10)', marginLeft: 'auto' }}
+                        />
                       )}
                     </Row>
                     <Text size="md" weight={isManualSelected ? 'semibold' : 'normal'}>
@@ -276,27 +289,30 @@ export function ConflictResolutionStep({
                 <div
                   style={{
                     padding: '8px 16px',
-                    backgroundColor: isScaffaldSelected ? 'var(--color-blue-2)' : 'var(--color-orange-2)',
+                    backgroundColor: isScaffaldSelected
+                      ? 'var(--color-blue-2)'
+                      : 'var(--color-orange-2)',
                   }}
                 >
-                  <Text size="xs" style={{ color: isScaffaldSelected ? 'var(--color-blue-11)' : 'var(--color-orange-11)' }}>
-                    Selected: {isScaffaldSelected ? 'Your profile value' : `Value from ${manualUserName}`}
+                  <Text
+                    size="xs"
+                    style={{
+                      color: isScaffaldSelected ? 'var(--color-blue-11)' : 'var(--color-orange-11)',
+                    }}
+                  >
+                    Selected:{' '}
+                    {isScaffaldSelected ? 'Your profile value' : `Value from ${manualUserName}`}
                   </Text>
                 </div>
               )}
             </Card>
-          );
+          )
         })}
       </Stack>
 
       {/* Navigation buttons */}
       <Row gap={12} style={{ marginTop: 16 }}>
-        <Button
-          variant="ghost"
-          onPress={onBack}
-          disabled={isLoading}
-          style={{ flex: 1 }}
-        >
+        <Button variant="ghost" onPress={onBack} disabled={isLoading} style={{ flex: 1 }}>
           Skip for Now
         </Button>
         <Button
@@ -316,7 +332,7 @@ export function ConflictResolutionStep({
         </Button>
       </Row>
     </Stack>
-  );
+  )
 }
 
-export default ConflictResolutionStep;
+export default ConflictResolutionStep

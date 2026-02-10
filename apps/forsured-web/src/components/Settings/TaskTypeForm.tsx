@@ -1,6 +1,5 @@
 /**
- * REQ-261: Task Type Definitions & Settings Page
- * TASK-3: Build Task Type Settings Page UI
+ * Task type form for settings
  *
  * Form component for creating and editing task types.
  */

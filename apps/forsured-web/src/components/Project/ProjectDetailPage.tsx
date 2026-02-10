@@ -43,7 +43,7 @@ export default function ProjectDetailPage() {
   const { user: currentUser, profile } = useAuth()
   const { isSubcontractor, isManager } = usePermissions()
   const { project, tasks: allTasks, compliance, loading, error } = useProjectDetail(projectId || '')
-  
+
   // Filter tasks for subcontractors - they should only see tasks assigned to them
   const tasks = useMemo(() => {
     if (isSubcontractor() && currentUser?.id) {
@@ -105,7 +105,7 @@ export default function ProjectDetailPage() {
     refresh: refreshActivities,
   } = useProjectActivityLog({ projectId })
 
-  // REQ-279: Calculate issue counts for warning indicator and tabs
+  //  Calculate issue counts for warning indicator and tabs
   const allOpenIssues = useMemo(
     () => complianceIssues.filter((issue) => issue.status !== 'resolved'),
     [complianceIssues]
@@ -126,7 +126,7 @@ export default function ProjectDetailPage() {
   const othersIssuesCount = othersIssues.length
 
   // Get initial tab from URL query parameter
-  // REQ-279: Added 'all-issues' tab for complete compliance view
+  //  Added 'all-issues' tab for complete compliance view
   const validTabs = [
     'overview',
     'requirements',
@@ -790,7 +790,7 @@ export default function ProjectDetailPage() {
       ),
     },
     {
-      // REQ-279: Compliance tab now shows only user-assigned issues
+      //  Compliance tab now shows only user-assigned issues
       id: 'compliance',
       label: 'My Compliance',
       icon: Shield,
@@ -1011,7 +1011,7 @@ export default function ProjectDetailPage() {
       ),
     },
     {
-      // REQ-279: All Issues tab shows complete unfiltered compliance view
+      //  All Issues tab shows complete unfiltered compliance view
       id: 'all-issues',
       label: 'All Issues',
       icon: List,
@@ -1427,7 +1427,7 @@ export default function ProjectDetailPage() {
               >
                 <Text style={{ fontSize: 12, fontWeight: 500 }}>{project.compliance_status}</Text>
               </Row>
-              {/* REQ-279: Warning badge with tooltip showing issue breakdown */}
+              {/*  Warning badge with tooltip showing issue breakdown */}
               {totalIssuesCount > 0 && (
                 <Tooltip
                   content={`${totalIssuesCount} total ${totalIssuesCount === 1 ? 'issue' : 'issues'} (${userIssuesCount} yours, ${othersIssuesCount} assigned to others)`}

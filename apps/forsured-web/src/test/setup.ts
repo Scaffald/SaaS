@@ -2,18 +2,18 @@
  * Vitest setup file
  * Configures testing environment and matchers
  *
- * REQ-9: Testing Policy
+ * Testing policy
  * Tests run against real Supabase (local instance at localhost:54321).
  * No database mocking - if we own it, we test it directly.
  */
 
-import '@testing-library/jest-dom';
-import { afterEach, afterAll, vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { existsSync } from 'node:fs';
-import { config } from 'dotenv';
+import "@testing-library/jest-dom";
+import { afterAll, afterEach, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { existsSync } from "node:fs";
+import { config } from "dotenv";
 
 /**
  * Load environment variables from .env.test file
@@ -23,8 +23,8 @@ import { config } from 'dotenv';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 // Go up from src/test/setup.ts -> src/test -> src -> apps/forsured-web -> apps -> root
-const packageRoot = resolve(__dirname, '../../../..');
-const envTestPath = resolve(packageRoot, '.env.test');
+const packageRoot = resolve(__dirname, "../../../..");
+const envTestPath = resolve(packageRoot, ".env.test");
 if (existsSync(envTestPath)) {
   config({ path: envTestPath });
   console.log(`✅ Loaded environment variables from ${envTestPath}`);
@@ -37,19 +37,30 @@ if (existsSync(envTestPath)) {
  * Uses local Supabase instance (pnpm supa start)
  * Values from .env.test will override these defaults
  */
-process.env.VITE_ENCRYPTION_KEY_ID = process.env.VITE_ENCRYPTION_KEY_ID || 'test-key-id';
-process.env.NEXT_PUBLIC_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
-process.env.CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
+process.env.VITE_ENCRYPTION_KEY_ID = process.env.VITE_ENCRYPTION_KEY_ID ||
+  "test-key-id";
+process.env.NEXT_PUBLIC_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "http://localhost:54321";
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+process.env.CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000";
 // Vite env vars for Supabase (used by import.meta.env)
-process.env.VITE_SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'http://localhost:54321';
-process.env.VITE_SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
-process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+process.env.VITE_SUPABASE_URL = process.env.VITE_SUPABASE_URL ||
+  "http://localhost:54321";
+process.env.VITE_SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+process.env.VITE_SUPABASE_SERVICE_ROLE_KEY =
+  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
 
 // Email configuration for tests (can be overridden in .env.test)
-process.env.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || 'test-sendgrid-api-key';
-process.env.SENDGRID_FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_FROM_ADDRESS || 'test@forsured.test';
-process.env.SENDGRID_FROM_NAME = process.env.SENDGRID_FROM_NAME || process.env.EMAIL_FROM_NAME || 'ForSured Test';
+process.env.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY ||
+  "test-sendgrid-api-key";
+process.env.SENDGRID_FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL ||
+  process.env.EMAIL_FROM_ADDRESS || "test@forsured.test";
+process.env.SENDGRID_FROM_NAME = process.env.SENDGRID_FROM_NAME ||
+  process.env.EMAIL_FROM_NAME || "ForSured Test";
 
 /**
  * Mock localStorage and sessionStorage for jsdom
@@ -76,13 +87,13 @@ const createStorageMock = (dataMap: Map<string, string>): Storage => ({
   },
 });
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
   value: createStorageMock(storageDataLocal),
   writable: true,
   configurable: true,
 });
 
-Object.defineProperty(window, 'sessionStorage', {
+Object.defineProperty(window, "sessionStorage", {
   value: createStorageMock(storageDataSession),
   writable: true,
   configurable: true,
@@ -104,7 +115,7 @@ const createMatchMediaMock = (query: string) => ({
   dispatchEvent: vi.fn(() => false),
 });
 
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   configurable: true,
   value: vi.fn().mockImplementation(createMatchMediaMock),
@@ -125,7 +136,7 @@ window.ResizeObserver = ResizeObserverMock;
  * Mock File.prototype.arrayBuffer for jsdom
  * Required for DocumentService which uses file.arrayBuffer() for hash generation
  */
-if (typeof File.prototype.arrayBuffer !== 'function') {
+if (typeof File.prototype.arrayBuffer !== "function") {
   File.prototype.arrayBuffer = function () {
     return new Promise((resolve) => {
       const reader = new FileReader();

@@ -1,6 +1,6 @@
 /**
  * Communication Templates Index
- * REQ-164: Incident Response Plan & Procedures
+ * Incident Response Plan & Procedures
  */
 
 export * from './breachNotification';

@@ -1,6 +1,6 @@
 /**
  * Status History Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `status_history` table in forsured schema
  */

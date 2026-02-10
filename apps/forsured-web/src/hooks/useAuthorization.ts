@@ -1,5 +1,5 @@
 // src/hooks/useAuthorization.ts
-// REQ-126: OAuth 2.0 + RBAC Authentication System
+// OAuth 2.0 + RBAC Authentication System
 //
 // Hook for checking user permissions in components
 

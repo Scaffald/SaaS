@@ -1,5 +1,5 @@
 /**
- * REQ-124: Document Upload & Storage
+ * Document Upload & Storage
  * Export document services
  */
 

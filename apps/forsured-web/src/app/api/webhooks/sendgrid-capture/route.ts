@@ -1,7 +1,7 @@
 /**
  * Temporary SendGrid Webhook Capture Endpoint
  *
- * REQ-130: Email Communication Auditability - Phase 2 Testing
+ * Email Communication Auditability - Phase 2 Testing
  *
  * This endpoint captures raw SendGrid webhook payloads for analysis
  * before building the production handler. It logs all incoming webhooks

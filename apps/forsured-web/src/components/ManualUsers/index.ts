@@ -1,13 +1,12 @@
 /**
- * ManualUsers Component Exports
- * REQ-12: Add Manual Broker and Contractor Registration
+ * ManualUsers component exports
  */
 
-export { ManualUserForm } from './ManualUserForm';
-export type { ManualUserRole, ManualUserFormData } from './ManualUserForm';
+export { ManualUserForm } from "./ManualUserForm";
+export type { ManualUserFormData, ManualUserRole } from "./ManualUserForm";
 
-export { ManualUserCreateModal } from './ManualUserCreateModal';
+export { ManualUserCreateModal } from "./ManualUserCreateModal";
 
-export { ManualUserBadge } from './ManualUserBadge';
+export { ManualUserBadge } from "./ManualUserBadge";
 
-export { ManualUserProfile } from './ManualUserProfile';
+export { ManualUserProfile } from "./ManualUserProfile";

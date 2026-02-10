@@ -1,6 +1,6 @@
 /**
  * TaskStatusBadge - Task status badge using Beyond UI
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  */
 import React from 'react';
 import { Row, Text, Chip } from '@unicornlove/beyond-ui';

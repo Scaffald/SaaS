@@ -1,5 +1,5 @@
 // tests/e2e/ccpa-data-requests.spec.ts
-// REQ-3: CCPA Compliance Implementation
+// CCPA data requests E2E
 // E2E Tests for CCPA Data Request workflows
 //
 // Tests the full lifecycle of CCPA data requests including:
@@ -8,8 +8,8 @@
 // - Opt-out management (Right to Opt-Out)
 // - Request status tracking
 
-import { test, expect } from './fixtures/base';
-import { Page } from '@playwright/test';
+import { expect, test } from "./fixtures/base";
+import { Page } from "@playwright/test";
 
 /**
  * Mock CCPA API responses for testing
@@ -28,18 +28,34 @@ async function setupCCPAMocks(page: Page, options: {
   } = options;
 
   // Mock data summary endpoint
-  await page.route('**/trpc/ccpa.getDataSummary*', (route) => {
+  await page.route("**/trpc/ccpa.getDataSummary*", (route) => {
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       body: JSON.stringify({
         result: {
           data: {
             categories: [
-              { category: 'identifiers', record_count: 5, data_types: ['name', 'email', 'phone'] },
-              { category: 'financial', record_count: 3, data_types: ['insurance_policies'] },
-              { category: 'professional', record_count: 2, data_types: ['documents', 'certifications'] },
-              { category: 'usage', record_count: 10, data_types: ['tasks', 'login_history'] },
+              {
+                category: "identifiers",
+                record_count: 5,
+                data_types: ["name", "email", "phone"],
+              },
+              {
+                category: "financial",
+                record_count: 3,
+                data_types: ["insurance_policies"],
+              },
+              {
+                category: "professional",
+                record_count: 2,
+                data_types: ["documents", "certifications"],
+              },
+              {
+                category: "usage",
+                record_count: 10,
+                data_types: ["tasks", "login_history"],
+              },
             ],
           },
         },
@@ -48,29 +64,29 @@ async function setupCCPAMocks(page: Page, options: {
   });
 
   // Mock request history endpoint
-  await page.route('**/trpc/ccpa.getMyRequests*', (route) => {
+  await page.route("**/trpc/ccpa.getMyRequests*", (route) => {
     const requests = hasRequests
       ? [
-          {
-            id: 'req-1',
-            type: 'export',
-            status: 'completed',
-            created_at: '2024-01-15T10:00:00Z',
-            completed_at: '2024-01-16T10:00:00Z',
-            download_url: '/downloads/export-req-1.zip',
-          },
-          {
-            id: 'req-2',
-            type: 'deletion',
-            status: 'processing',
-            created_at: '2024-01-20T10:00:00Z',
-          },
-        ]
+        {
+          id: "req-1",
+          type: "export",
+          status: "completed",
+          created_at: "2024-01-15T10:00:00Z",
+          completed_at: "2024-01-16T10:00:00Z",
+          download_url: "/downloads/export-req-1.zip",
+        },
+        {
+          id: "req-2",
+          type: "deletion",
+          status: "processing",
+          created_at: "2024-01-20T10:00:00Z",
+        },
+      ]
       : [];
 
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       body: JSON.stringify({
         result: {
           data: { requests },
@@ -80,25 +96,25 @@ async function setupCCPAMocks(page: Page, options: {
   });
 
   // Mock connected apps endpoint
-  await page.route('**/trpc/ccpa.getConnectedApps*', (route) => {
+  await page.route("**/trpc/ccpa.getConnectedApps*", (route) => {
     const apps = hasConnectedApps
       ? [
-          {
-            id: 'app-1',
-            app_id: 'acme-insurance',
-            app_name: 'ACME Insurance Portal',
-            connected_at: '2024-01-01T10:00:00Z',
-            last_accessed_at: '2024-01-20T10:00:00Z',
-            permissions: ['read:profile', 'read:documents'],
-            data_categories: ['identifiers', 'financial'],
-            can_revoke: true,
-          },
-        ]
+        {
+          id: "app-1",
+          app_id: "acme-insurance",
+          app_name: "ACME Insurance Portal",
+          connected_at: "2024-01-01T10:00:00Z",
+          last_accessed_at: "2024-01-20T10:00:00Z",
+          permissions: ["read:profile", "read:documents"],
+          data_categories: ["identifiers", "financial"],
+          can_revoke: true,
+        },
+      ]
       : [];
 
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       body: JSON.stringify({
         result: {
           data: apps,
@@ -108,19 +124,19 @@ async function setupCCPAMocks(page: Page, options: {
   });
 
   // Mock opt-out status endpoint
-  await page.route('**/trpc/ccpa.getMyOptOuts*', (route) => {
+  await page.route("**/trpc/ccpa.getMyOptOuts*", (route) => {
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       body: JSON.stringify({
         result: {
           data: {
             hasGPCOptOut,
             optOuts: hasOptOuts
               ? [
-                  { category: 'sale', opted_out_at: '2024-01-10T10:00:00Z' },
-                  { category: 'sharing', opted_out_at: '2024-01-10T10:00:00Z' },
-                ]
+                { category: "sale", opted_out_at: "2024-01-10T10:00:00Z" },
+                { category: "sharing", opted_out_at: "2024-01-10T10:00:00Z" },
+              ]
               : [],
           },
         },
@@ -129,19 +145,21 @@ async function setupCCPAMocks(page: Page, options: {
   });
 
   // Mock submit data request endpoint
-  await page.route('**/trpc/ccpa.submitRequest*', (route) => {
+  await page.route("**/trpc/ccpa.submitRequest*", (route) => {
     const body = route.request().postDataJSON();
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       body: JSON.stringify({
         result: {
           data: {
-            id: 'new-req-' + Date.now(),
-            type: body?.input?.type || 'export',
-            status: 'pending',
+            id: "new-req-" + Date.now(),
+            type: body?.input?.type || "export",
+            status: "pending",
             created_at: new Date().toISOString(),
-            estimated_completion: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+            estimated_completion: new Date(
+              Date.now() + 45 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
           },
         },
       }),
@@ -149,10 +167,10 @@ async function setupCCPAMocks(page: Page, options: {
   });
 
   // Mock opt-out endpoint
-  await page.route('**/trpc/ccpa.setOptOut*', (route) => {
+  await page.route("**/trpc/ccpa.setOptOut*", (route) => {
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       body: JSON.stringify({
         result: {
           data: {
@@ -165,10 +183,10 @@ async function setupCCPAMocks(page: Page, options: {
   });
 
   // Mock revoke app access endpoint
-  await page.route('**/trpc/ccpa.revokeAppAccess*', (route) => {
+  await page.route("**/trpc/ccpa.revokeAppAccess*", (route) => {
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       body: JSON.stringify({
         result: {
           data: {
@@ -182,26 +200,26 @@ async function setupCCPAMocks(page: Page, options: {
 }
 
 // TODO: Data export tests need mock data fix - skipping temporarily
-test.describe.skip('CCPA Data Export Request Flow', () => {
+test.describe.skip("CCPA Data Export Request Flow", () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page);
   });
 
-  test('should display data categories summary', async ({ page }) => {
-    await page.goto('/settings/privacy');
+  test("should display data categories summary", async ({ page }) => {
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show data categories
-    const identifiers = page.getByText('Personal Identifiers');
+    const identifiers = page.getByText("Personal Identifiers");
     await expect(identifiers).toBeVisible();
 
-    const financial = page.getByText('Financial Information');
+    const financial = page.getByText("Financial Information");
     await expect(financial).toBeVisible();
   });
 
-  test('should show record counts for each category', async ({ page }) => {
-    await page.goto('/settings/privacy');
+  test("should show record counts for each category", async ({ page }) => {
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show record counts
@@ -209,12 +227,12 @@ test.describe.skip('CCPA Data Export Request Flow', () => {
     await expect(recordCount.first()).toBeVisible();
   });
 
-  test('should be able to initiate data export request', async ({ page }) => {
-    await page.goto('/settings/privacy');
+  test("should be able to initiate data export request", async ({ page }) => {
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Click Request My Data button
-    const requestBtn = page.getByRole('button', { name: /request my data/i });
+    const requestBtn = page.getByRole("button", { name: /request my data/i });
     await requestBtn.click();
 
     // Should show request form or confirmation
@@ -224,30 +242,30 @@ test.describe.skip('CCPA Data Export Request Flow', () => {
 });
 
 // TODO: Deletion tests need mock data fix - skipping temporarily
-test.describe.skip('CCPA Data Deletion Request Flow', () => {
+test.describe.skip("CCPA Data Deletion Request Flow", () => {
   test.beforeEach(async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page);
   });
 
-  test('should be able to initiate deletion request', async ({ page }) => {
-    await page.goto('/settings/privacy');
+  test("should be able to initiate deletion request", async ({ page }) => {
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Click Delete My Data button
-    const deleteBtn = page.getByRole('button', { name: /delete my data/i });
+    const deleteBtn = page.getByRole("button", { name: /delete my data/i });
     await deleteBtn.click();
 
     // Should show deletion form or confirmation
     await page.waitForTimeout(500);
   });
 
-  test('Right to Delete description should be visible', async ({ page }) => {
-    await page.goto('/settings/privacy');
+  test("Right to Delete description should be visible", async ({ page }) => {
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Check for Right to Delete information
-    const rightToDelete = page.getByText('Right to Delete');
+    const rightToDelete = page.getByText("Right to Delete");
     await expect(rightToDelete).toBeVisible();
 
     // Should mention retention exceptions
@@ -257,12 +275,12 @@ test.describe.skip('CCPA Data Deletion Request Flow', () => {
 });
 
 // TODO: Request history tests need mock data fix - skipping temporarily
-test.describe.skip('CCPA Request History', () => {
-  test('should show empty state when no requests exist', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+test.describe.skip("CCPA Request History", () => {
+  test("should show empty state when no requests exist", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasRequests: false });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show empty state
@@ -270,23 +288,23 @@ test.describe.skip('CCPA Request History', () => {
     await expect(emptyState).toBeVisible();
   });
 
-  test('should show request history when requests exist', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show request history when requests exist", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasRequests: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show request entries
-    const exportRequest = page.getByText('Data Export');
+    const exportRequest = page.getByText("Data Export");
     await expect(exportRequest).toBeVisible();
   });
 
-  test('should show request status badges', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show request status badges", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasRequests: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show status badges
@@ -300,15 +318,15 @@ test.describe.skip('CCPA Request History', () => {
     expect(hasCompleted || hasProcessing).toBe(true);
   });
 
-  test('should show download button for completed exports', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show download button for completed exports", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasRequests: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should have download button for completed request
-    const downloadBtn = page.getByRole('button', { name: /download/i });
+    const downloadBtn = page.getByRole("button", { name: /download/i });
     const hasDownload = await downloadBtn.isVisible().catch(() => false);
 
     // Download button should be present for completed exports
@@ -317,23 +335,23 @@ test.describe.skip('CCPA Request History', () => {
 });
 
 // TODO: Opt-out tests need mock data fix - skipping temporarily
-test.describe.skip('CCPA Opt-Out Management', () => {
-  test('should show Manage Opt-Outs button', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+test.describe.skip("CCPA Opt-Out Management", () => {
+  test("should show Manage Opt-Outs button", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page);
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
-    const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
+    const optOutBtn = page.getByRole("button", { name: /manage opt-outs/i });
     await expect(optOutBtn).toBeVisible();
   });
 
-  test('should show GPC detection message when GPC is active', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show GPC detection message when GPC is active", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasGPCOptOut: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show GPC message
@@ -341,100 +359,100 @@ test.describe.skip('CCPA Opt-Out Management', () => {
     await expect(gpcMessage).toBeVisible();
   });
 
-  test('should show opt-out options in privacy rights section', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show opt-out options in privacy rights section", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page);
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Check for Right to Opt-Out section
-    const optOutRight = page.getByText('Right to Opt-Out');
+    const optOutRight = page.getByText("Right to Opt-Out");
     await expect(optOutRight).toBeVisible();
   });
 });
 
 // TODO: Connected apps tests need mock data fix - skipping temporarily
-test.describe.skip('Connected Apps Management', () => {
-  test('should show empty state when no apps connected', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+test.describe.skip("Connected Apps Management", () => {
+  test("should show empty state when no apps connected", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasConnectedApps: false });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     const emptyState = page.getByText(/no connected applications/i);
     await expect(emptyState).toBeVisible();
   });
 
-  test('should show connected apps when present', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show connected apps when present", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show app name
-    const appName = page.getByText('ACME Insurance Portal');
+    const appName = page.getByText("ACME Insurance Portal");
     await expect(appName).toBeVisible();
   });
 
-  test('should show permissions for connected apps', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show permissions for connected apps", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show permissions section
-    const permissions = page.getByText('Permissions');
+    const permissions = page.getByText("Permissions");
     await expect(permissions.first()).toBeVisible();
   });
 
-  test('should show Revoke Access button for connected apps', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show Revoke Access button for connected apps", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show revoke button
-    const revokeBtn = page.getByRole('button', { name: /revoke access/i });
+    const revokeBtn = page.getByRole("button", { name: /revoke access/i });
     await expect(revokeBtn).toBeVisible();
   });
 
-  test('should show View Details button for connected apps', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show View Details button for connected apps", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show view details button
-    const detailsBtn = page.getByRole('button', { name: /view details/i });
+    const detailsBtn = page.getByRole("button", { name: /view details/i });
     await expect(detailsBtn).toBeVisible();
   });
 
-  test('should show data categories accessed by app', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should show data categories accessed by app", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show data categories section
-    const categoriesLabel = page.getByText('Data Categories Accessed');
+    const categoriesLabel = page.getByText("Data Categories Accessed");
     await expect(categoriesLabel).toBeVisible();
   });
 });
 
 // TODO: Compliance tests need mock data fix - skipping temporarily
-test.describe.skip('CCPA Compliance - 45 Day Processing', () => {
-  test('should display 45-day processing requirement', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+test.describe.skip("CCPA Compliance - 45 Day Processing", () => {
+  test("should display 45-day processing requirement", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page);
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should mention 45-day requirement
@@ -442,11 +460,11 @@ test.describe.skip('CCPA Compliance - 45 Day Processing', () => {
     await expect(processingTime).toBeVisible();
   });
 
-  test('should display 30-day download availability', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+  test("should display 30-day download availability", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page);
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should mention 30-day download availability
@@ -456,59 +474,61 @@ test.describe.skip('CCPA Compliance - 45 Day Processing', () => {
 });
 
 // TODO: Cross user type tests need mock data fix - skipping temporarily
-test.describe.skip('CCPA Data Request - Cross User Type', () => {
-  test('Contractor should have same CCPA rights as GC', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.contractor@test.forsured.com');
+test.describe.skip("CCPA Data Request - Cross User Type", () => {
+  test("Contractor should have same CCPA rights as GC", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.contractor@test.forsured.com");
     await setupCCPAMocks(page);
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should see all the same rights
-    const rightToKnow = page.getByText('Right to Know');
+    const rightToKnow = page.getByText("Right to Know");
     await expect(rightToKnow).toBeVisible();
 
-    const rightToDelete = page.getByText('Right to Delete');
+    const rightToDelete = page.getByText("Right to Delete");
     await expect(rightToDelete).toBeVisible();
 
-    const rightToOptOut = page.getByText('Right to Opt-Out');
+    const rightToOptOut = page.getByText("Right to Opt-Out");
     await expect(rightToOptOut).toBeVisible();
   });
 
-  test('Broker should have same CCPA rights as GC', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.broker@test.forsured.com');
+  test("Broker should have same CCPA rights as GC", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.broker@test.forsured.com");
     await setupCCPAMocks(page);
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should see all the same rights
-    const rightToKnow = page.getByText('Right to Know');
+    const rightToKnow = page.getByText("Right to Know");
     await expect(rightToKnow).toBeVisible();
 
-    const rightToDelete = page.getByText('Right to Delete');
+    const rightToDelete = page.getByText("Right to Delete");
     await expect(rightToDelete).toBeVisible();
 
-    const rightToOptOut = page.getByText('Right to Opt-Out');
+    const rightToOptOut = page.getByText("Right to Opt-Out");
     await expect(rightToOptOut).toBeVisible();
   });
 });
 
 // TODO: Non-discrimination tests need mock data fix - skipping temporarily
-test.describe.skip('CCPA - Non-Discrimination Right', () => {
-  test('should display non-discrimination information', async ({ page, setupAuthAs }) => {
-    await setupAuthAs(page, 'active.gc@test.forsured.com');
+test.describe.skip("CCPA - Non-Discrimination Right", () => {
+  test("should display non-discrimination information", async ({ page, setupAuthAs }) => {
+    await setupAuthAs(page, "active.gc@test.forsured.com");
     await setupCCPAMocks(page);
 
-    await page.goto('/settings/privacy');
+    await page.goto("/settings/privacy");
     await page.waitForTimeout(1000);
 
     // Should show non-discrimination right
-    const nonDiscrimination = page.getByText('Right to Non-Discrimination');
+    const nonDiscrimination = page.getByText("Right to Non-Discrimination");
     await expect(nonDiscrimination).toBeVisible();
 
     // Should explain the right
-    const explanation = page.getByText(/not to receive discriminatory treatment/i);
+    const explanation = page.getByText(
+      /not to receive discriminatory treatment/i,
+    );
     await expect(explanation).toBeVisible();
   });
 });

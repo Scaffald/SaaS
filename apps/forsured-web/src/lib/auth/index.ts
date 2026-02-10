@@ -1,6 +1,6 @@
 /**
  * Authentication & Authorization Library
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  *
  * Barrel export for all auth functionality
  */

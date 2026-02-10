@@ -1,13 +1,12 @@
 /**
  * Merge Notifications Service
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-11: Implement merge completion notifications
+ * Merge completion notifications
  *
  * Sends notifications to both the established user (who created the manual entry)
  * and the newly registered user when a merge completes successfully.
  */
 
-import { forsured } from './supabase';
+import { forsured } from "./supabase";
 
 /**
  * Merge statistics for notification content
@@ -44,7 +43,7 @@ async function createInAppNotification(params: {
   metadata?: Record<string, unknown>;
 }): Promise<void> {
   try {
-    const { error } = await forsured('notifications').insert({
+    const { error } = await forsured("notifications").insert({
       user_id: params.userId,
       organization_id: params.organizationId,
       type: params.type,
@@ -59,13 +58,19 @@ async function createInAppNotification(params: {
     });
 
     if (error) {
-      console.error('[MergeNotifications] Failed to create notification:', error);
+      console.error(
+        "[MergeNotifications] Failed to create notification:",
+        error,
+      );
       // Don't throw - notifications should not block the merge
     } else {
-      console.log('[MergeNotifications] Created notification for user:', params.userId);
+      console.log(
+        "[MergeNotifications] Created notification for user:",
+        params.userId,
+      );
     }
   } catch (error) {
-    console.error('[MergeNotifications] Error creating notification:', error);
+    console.error("[MergeNotifications] Error creating notification:", error);
     // Don't throw - notifications should not block the merge
   }
 }
@@ -77,24 +82,34 @@ function formatMergeStatsSummary(stats: MergeStats): string {
   const parts: string[] = [];
 
   if (stats.tasksTransferred > 0) {
-    parts.push(`${stats.tasksTransferred} task${stats.tasksTransferred === 1 ? '' : 's'}`);
+    parts.push(
+      `${stats.tasksTransferred} task${
+        stats.tasksTransferred === 1 ? "" : "s"
+      }`,
+    );
   }
   if (stats.projectsLinked > 0) {
-    parts.push(`${stats.projectsLinked} project${stats.projectsLinked === 1 ? '' : 's'}`);
+    parts.push(
+      `${stats.projectsLinked} project${stats.projectsLinked === 1 ? "" : "s"}`,
+    );
   }
   if (stats.documentsTransferred > 0) {
-    parts.push(`${stats.documentsTransferred} document${stats.documentsTransferred === 1 ? '' : 's'}`);
+    parts.push(
+      `${stats.documentsTransferred} document${
+        stats.documentsTransferred === 1 ? "" : "s"
+      }`,
+    );
   }
 
   if (parts.length === 0) {
-    return 'profile information';
+    return "profile information";
   }
 
   if (parts.length === 1) {
     return parts[0];
   }
 
-  return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
+  return parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1];
 }
 
 /**
@@ -107,17 +122,18 @@ export async function notifyEstablishedUserOfMerge(
   establishedUser: UserInfo,
   newUser: UserInfo,
   manualUserId: string,
-  stats: MergeStats
+  stats: MergeStats,
 ): Promise<void> {
   const statsSummary = formatMergeStatsSummary(stats);
 
   await createInAppNotification({
     userId: establishedUser.id,
     organizationId: establishedUser.organizationId,
-    type: 'user_merge_completed',
+    type: "user_merge_completed",
     title: `${newUser.name} has registered`,
-    message: `${newUser.name} has registered and accepted your invitation. Their account has been linked with ${statsSummary}. You can now collaborate with them directly.`,
-    entityType: 'user',
+    message:
+      `${newUser.name} has registered and accepted your invitation. Their account has been linked with ${statsSummary}. You can now collaborate with them directly.`,
+    entityType: "user",
     entityId: newUser.id,
     triggeredBy: newUser.id,
     metadata: {
@@ -128,7 +144,10 @@ export async function notifyEstablishedUserOfMerge(
     },
   });
 
-  console.log('[MergeNotifications] Notified established user:', establishedUser.id);
+  console.log(
+    "[MergeNotifications] Notified established user:",
+    establishedUser.id,
+  );
 }
 
 /**
@@ -142,17 +161,18 @@ export async function notifyNewUserOfMerge(
   newUser: UserInfo,
   establishedUser: UserInfo,
   manualUserId: string,
-  stats: MergeStats
+  stats: MergeStats,
 ): Promise<void> {
   const statsSummary = formatMergeStatsSummary(stats);
 
   await createInAppNotification({
     userId: newUser.id,
     organizationId: newUser.organizationId,
-    type: 'account_merge_completed',
-    title: 'Account linked successfully',
-    message: `Your account has been linked with existing records from ${establishedUser.name}. You now have access to ${statsSummary}. You will receive notifications for all future activity.`,
-    entityType: 'user',
+    type: "account_merge_completed",
+    title: "Account linked successfully",
+    message:
+      `Your account has been linked with existing records from ${establishedUser.name}. You now have access to ${statsSummary}. You will receive notifications for all future activity.`,
+    entityType: "user",
     entityId: newUser.id,
     triggeredBy: establishedUser.id,
     metadata: {
@@ -163,7 +183,7 @@ export async function notifyNewUserOfMerge(
     },
   });
 
-  console.log('[MergeNotifications] Notified new user:', newUser.id);
+  console.log("[MergeNotifications] Notified new user:", newUser.id);
 }
 
 /**
@@ -181,7 +201,7 @@ export async function sendMergeCompletionNotifications(params: {
 }): Promise<void> {
   const { establishedUser, newUser, manualUserId, stats } = params;
 
-  console.log('[MergeNotifications] Sending merge completion notifications:', {
+  console.log("[MergeNotifications] Sending merge completion notifications:", {
     establishedUserId: establishedUser.id,
     newUserId: newUser.id,
     manualUserId,
@@ -194,5 +214,5 @@ export async function sendMergeCompletionNotifications(params: {
     notifyNewUserOfMerge(newUser, establishedUser, manualUserId, stats),
   ]);
 
-  console.log('[MergeNotifications] Notification sending complete');
+  console.log("[MergeNotifications] Notification sending complete");
 }

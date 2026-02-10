@@ -1,6 +1,6 @@
 /**
  * InviteClientsModal - Modal for brokers to invite clients
- * REQ-12: Supports email invite, manual creation, and manual user selection
+ * Invite clients - email invite, manual creation, and manual user selection
  *
  * Modes:
  * - 'email': Traditional email invite (default)
@@ -8,25 +8,29 @@
  * - 'manual-select': Select from existing manual users to send invite
  */
 
-import { useState, useCallback, useMemo } from 'react';
-import { X, Mail, Copy, Loader2, Building2, HardHat, UserPlus, Users } from 'lucide-react';
-import { Stack, Row, Text, Card, Input, Button } from '@unicornlove/beyond-ui';
-import { toast } from 'sonner';
-import { createRelationshipInvitation } from '../../lib/relationshipInvitations';
-import { ManualUserForm, type ManualUserFormData, type ManualUserRole } from '../ManualUsers/ManualUserForm';
-import { ManualUserBadge } from '../ManualUsers';
-import { trpc } from '../../lib/trpc';
+import { useState, useCallback, useMemo } from 'react'
+import { X, Mail, Copy, Loader2, Building2, HardHat, UserPlus, Users } from 'lucide-react'
+import { Stack, Row, Text, Card, Input, Button } from '@unicornlove/beyond-ui'
+import { toast } from 'sonner'
+import { createRelationshipInvitation } from '../../lib/relationshipInvitations'
+import {
+  ManualUserForm,
+  type ManualUserFormData,
+  type ManualUserRole,
+} from '../ManualUsers/ManualUserForm'
+import { ManualUserBadge } from '../ManualUsers'
+import { trpc } from '../../lib/trpc'
 
 interface InviteClientsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  brokerCode: string;
-  userId: string;
-  organizationId: string;
-  onInvitationSent: () => void;
+  isOpen: boolean
+  onClose: () => void
+  brokerCode: string
+  userId: string
+  organizationId: string
+  onInvitationSent: () => void
 }
 
-type InviteMode = 'email' | 'manual-create' | 'manual-select';
+type InviteMode = 'email' | 'manual-create' | 'manual-select'
 
 // Orange button styles for visibility
 const orangeButtonStyle: React.CSSProperties = {
@@ -34,7 +38,7 @@ const orangeButtonStyle: React.CSSProperties = {
   color: 'white',
   border: 'none',
   fontWeight: 600,
-};
+}
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -43,7 +47,7 @@ const inputStyle: React.CSSProperties = {
   borderRadius: 8,
   backgroundColor: 'var(--color-background)',
   fontSize: 14,
-};
+}
 
 const clientTypeButtonStyle = (isSelected: boolean): React.CSSProperties => ({
   padding: '8px 16px',
@@ -57,7 +61,7 @@ const clientTypeButtonStyle = (isSelected: boolean): React.CSSProperties => ({
   display: 'flex',
   alignItems: 'center',
   gap: 8,
-});
+})
 
 const modeButtonStyle = (isSelected: boolean): React.CSSProperties => ({
   flex: 1,
@@ -73,7 +77,7 @@ const modeButtonStyle = (isSelected: boolean): React.CSSProperties => ({
   alignItems: 'center',
   justifyContent: 'center',
   gap: 8,
-});
+})
 
 export default function InviteClientsModal({
   isOpen,
@@ -84,10 +88,10 @@ export default function InviteClientsModal({
   onInvitationSent,
 }: InviteClientsModalProps) {
   // Mode state
-  const [inviteMode, setInviteMode] = useState<InviteMode>('email');
+  const [inviteMode, setInviteMode] = useState<InviteMode>('email')
 
   // Client type for both email and manual create modes
-  const [inviteClientType, setInviteClientType] = useState<'manager' | 'subcontractor'>('manager');
+  const [inviteClientType, setInviteClientType] = useState<'manager' | 'subcontractor'>('manager')
 
   // Email invite form state
   const [inviteFormData, setInviteFormData] = useState({
@@ -95,67 +99,67 @@ export default function InviteClientsModal({
     name: '',
     company: '',
     phone: '',
-  });
-  const [sendingInvite, setSendingInvite] = useState(false);
+  })
+  const [sendingInvite, setSendingInvite] = useState(false)
 
   // Manual user creation state
-  const [creatingManualUser, setCreatingManualUser] = useState(false);
+  const [creatingManualUser, setCreatingManualUser] = useState(false)
 
   // Manual user selection state
-  const [selectedManualUserId, setSelectedManualUserId] = useState<string | null>(null);
+  const [selectedManualUserId, setSelectedManualUserId] = useState<string | null>(null)
 
   // Fetch manual users for selection mode
   const { data: manualUsersData, refetch: refetchManualUsers } = trpc.manualUsers.list.useQuery(
     { limit: 100 },
     { enabled: isOpen && inviteMode === 'manual-select' }
-  );
-  const manualUsers = manualUsersData?.users || [];
+  )
+  const manualUsers = manualUsersData?.users || []
 
   // Filter manual users to only show client types (manager/contractor)
   const clientManualUsers = useMemo(() => {
     return manualUsers.filter(
       (u) => u.user_type === 'gc' || u.user_type === 'contractor' || u.user_type === 'manager'
-    );
-  }, [manualUsers]);
+    )
+  }, [manualUsers])
 
   // Create manual user mutation
   const createManualUserMutation = trpc.manualUsers.create.useMutation({
     onSuccess: (data) => {
       toast.success('Client added successfully!', {
         description: `${data.name} has been added to your clients.`,
-      });
-      refetchManualUsers();
+      })
+      refetchManualUsers()
       // Reset to select mode to show the newly created user
-      setInviteMode('manual-select');
-      onInvitationSent();
+      setInviteMode('manual-select')
+      onInvitationSent()
     },
     onError: (err) => {
-      console.error('[InviteClientsModal] Error creating manual user:', err);
-      toast.error('Failed to add client. Please try again.');
+      console.error('[InviteClientsModal] Error creating manual user:', err)
+      toast.error('Failed to add client. Please try again.')
     },
     onSettled: () => {
-      setCreatingManualUser(false);
+      setCreatingManualUser(false)
     },
-  });
+  })
 
   // Get selected manual user details
   const selectedManualUser = selectedManualUserId
     ? clientManualUsers.find((u) => u.id === selectedManualUserId)
-    : null;
+    : null
 
   // Handle manual user form submission - must be defined before early return
   const handleManualUserSubmit = useCallback(
     async (data: ManualUserFormData) => {
       if (!userId || !organizationId) {
-        toast.error('Unable to add client. Please ensure you are logged in.');
-        return;
+        toast.error('Unable to add client. Please ensure you are logged in.')
+        return
       }
 
-      setCreatingManualUser(true);
+      setCreatingManualUser(true)
 
       // Map the form role to the backend userType
       // For brokers adding clients: 'manager' stays 'manager', 'contractor' stays 'contractor'
-      const userType = data.role as 'manager' | 'contractor';
+      const userType = data.role as 'manager' | 'contractor'
 
       createManualUserMutation.mutate({
         name: data.name,
@@ -165,28 +169,28 @@ export default function InviteClientsModal({
         userType,
         organizationId,
         sendInvitation: data.sendInvitation,
-      });
+      })
     },
     [userId, organizationId, createManualUserMutation]
-  );
+  )
 
   // Early return AFTER all hooks are defined
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   const handleSendInvitation = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!userId || !organizationId) {
-      toast.error('Unable to send invitation. Please ensure you are logged in.');
-      return;
+      toast.error('Unable to send invitation. Please ensure you are logged in.')
+      return
     }
 
     if (!inviteFormData.email || !inviteFormData.name) {
-      toast.error('Client email and name are required');
-      return;
+      toast.error('Client email and name are required')
+      return
     }
 
-    setSendingInvite(true);
+    setSendingInvite(true)
 
     try {
       const invitation = await createRelationshipInvitation({
@@ -199,46 +203,49 @@ export default function InviteClientsModal({
         inviteePhone: inviteFormData.phone.trim(),
         inviteeType: inviteClientType,
         connectionMethod: 'both',
-      });
+      })
 
       toast.success('Client invitation sent!', {
         description: `${inviteFormData.name} can connect using code ${invitation.relationship_code}`,
-      });
+      })
 
       setInviteFormData({
         email: '',
         name: '',
         company: '',
         phone: '',
-      });
+      })
 
-      onInvitationSent();
+      onInvitationSent()
     } catch (error) {
-      console.error('[InviteClientsModal] Error sending invitation:', error);
-      toast.error('Failed to send invitation. Please try again.');
+      console.error('[InviteClientsModal] Error sending invitation:', error)
+      toast.error('Failed to send invitation. Please try again.')
     } finally {
-      setSendingInvite(false);
+      setSendingInvite(false)
     }
-  };
+  }
 
   // Handle sending invite to selected manual user
   const handleSendToManualUser = async () => {
     if (!selectedManualUser) {
-      toast.error('Please select a client first');
-      return;
+      toast.error('Please select a client first')
+      return
     }
 
     if (!selectedManualUser.email) {
-      toast.error('Selected client has no email address. Please add an email to send an invitation.');
-      return;
+      toast.error(
+        'Selected client has no email address. Please add an email to send an invitation.'
+      )
+      return
     }
 
-    setSendingInvite(true);
+    setSendingInvite(true)
 
     try {
-      const clientType = selectedManualUser.user_type === 'gc' || selectedManualUser.user_type === 'manager'
-        ? 'manager'
-        : 'subcontractor';
+      const clientType =
+        selectedManualUser.user_type === 'gc' || selectedManualUser.user_type === 'manager'
+          ? 'manager'
+          : 'subcontractor'
 
       const invitation = await createRelationshipInvitation({
         inviterOrgId: organizationId,
@@ -250,37 +257,37 @@ export default function InviteClientsModal({
         inviteePhone: selectedManualUser.phone || '',
         inviteeType: clientType,
         connectionMethod: 'both',
-      });
+      })
 
       toast.success('Invitation sent!', {
         description: `${selectedManualUser.name} can connect using code ${invitation.relationship_code}`,
-      });
+      })
 
-      setSelectedManualUserId(null);
-      onInvitationSent();
+      setSelectedManualUserId(null)
+      onInvitationSent()
     } catch (error) {
-      console.error('[InviteClientsModal] Error sending invitation to manual user:', error);
-      toast.error('Failed to send invitation. Please try again.');
+      console.error('[InviteClientsModal] Error sending invitation to manual user:', error)
+      toast.error('Failed to send invitation. Please try again.')
     } finally {
-      setSendingInvite(false);
+      setSendingInvite(false)
     }
-  };
+  }
 
   const copyBrokerCode = () => {
-    if (!brokerCode) return;
-    navigator.clipboard.writeText(brokerCode);
-    toast.success('Broker code copied to clipboard');
-  };
+    if (!brokerCode) return
+    navigator.clipboard.writeText(brokerCode)
+    toast.success('Broker code copied to clipboard')
+  }
 
   const handleModeChange = (mode: InviteMode) => {
-    setInviteMode(mode);
-    setSelectedManualUserId(null);
-  };
+    setInviteMode(mode)
+    setSelectedManualUserId(null)
+  }
 
   // Map client type to ManualUserRole for the form
   const getManualUserRole = (): ManualUserRole => {
-    return inviteClientType === 'manager' ? 'manager' : 'contractor';
-  };
+    return inviteClientType === 'manager' ? 'manager' : 'contractor'
+  }
 
   return (
     <div
@@ -368,7 +375,11 @@ export default function InviteClientsModal({
                   <Text
                     size="lg"
                     weight="bold"
-                    style={{ color: 'var(--color-orange-11)', fontFamily: 'monospace', textAlign: 'center' }}
+                    style={{
+                      color: 'var(--color-orange-11)',
+                      fontFamily: 'monospace',
+                      textAlign: 'center',
+                    }}
                   >
                     {brokerCode || 'Loading...'}
                   </Text>
@@ -457,7 +468,9 @@ export default function InviteClientsModal({
                       <Input
                         placeholder="client@example.com"
                         value={inviteFormData.email}
-                        onChange={(e) => setInviteFormData({ ...inviteFormData, email: e.target.value })}
+                        onChange={(e) =>
+                          setInviteFormData({ ...inviteFormData, email: e.target.value })
+                        }
                         disabled={sendingInvite}
                         style={inputStyle}
                       />
@@ -470,7 +483,9 @@ export default function InviteClientsModal({
                       <Input
                         placeholder="John Doe"
                         value={inviteFormData.name}
-                        onChange={(e) => setInviteFormData({ ...inviteFormData, name: e.target.value })}
+                        onChange={(e) =>
+                          setInviteFormData({ ...inviteFormData, name: e.target.value })
+                        }
                         disabled={sendingInvite}
                         style={inputStyle}
                       />
@@ -484,7 +499,9 @@ export default function InviteClientsModal({
                         <Input
                           placeholder="Acme Construction"
                           value={inviteFormData.company}
-                          onChange={(e) => setInviteFormData({ ...inviteFormData, company: e.target.value })}
+                          onChange={(e) =>
+                            setInviteFormData({ ...inviteFormData, company: e.target.value })
+                          }
                           disabled={sendingInvite}
                           style={inputStyle}
                         />
@@ -497,7 +514,9 @@ export default function InviteClientsModal({
                         <Input
                           placeholder="(555) 123-4567"
                           value={inviteFormData.phone}
-                          onChange={(e) => setInviteFormData({ ...inviteFormData, phone: e.target.value })}
+                          onChange={(e) =>
+                            setInviteFormData({ ...inviteFormData, phone: e.target.value })
+                          }
                           disabled={sendingInvite}
                           style={inputStyle}
                         />
@@ -511,8 +530,12 @@ export default function InviteClientsModal({
                         ...orangeButtonStyle,
                         padding: '10px 16px',
                         borderRadius: 8,
-                        cursor: sendingInvite || !inviteFormData.email || !inviteFormData.name ? 'not-allowed' : 'pointer',
-                        opacity: sendingInvite || !inviteFormData.email || !inviteFormData.name ? 0.5 : 1,
+                        cursor:
+                          sendingInvite || !inviteFormData.email || !inviteFormData.name
+                            ? 'not-allowed'
+                            : 'pointer',
+                        opacity:
+                          sendingInvite || !inviteFormData.email || !inviteFormData.name ? 0.5 : 1,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -521,7 +544,11 @@ export default function InviteClientsModal({
                         width: '100%',
                       }}
                     >
-                      {sendingInvite ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
+                      {sendingInvite ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <Mail size={16} />
+                      )}
                       {sendingInvite ? 'Sending...' : 'Send Invitation'}
                     </button>
                   </Stack>
@@ -574,8 +601,8 @@ export default function InviteClientsModal({
                   }}
                 >
                   <Text size="xs" style={{ color: 'var(--color-blue-11)' }}>
-                    Manually added clients are private to you. If they register later with the same email,
-                    their accounts will be merged automatically.
+                    Manually added clients are private to you. If they register later with the same
+                    email, their accounts will be merged automatically.
                   </Text>
                 </Card>
               </Stack>
@@ -621,7 +648,10 @@ export default function InviteClientsModal({
                             padding: 12,
                             border: `1px solid ${selectedManualUserId === user.id ? 'var(--color-orange-8)' : 'var(--color-border)'}`,
                             borderRadius: 8,
-                            backgroundColor: selectedManualUserId === user.id ? 'var(--color-orange-2)' : 'transparent',
+                            backgroundColor:
+                              selectedManualUserId === user.id
+                                ? 'var(--color-orange-2)'
+                                : 'transparent',
                             cursor: 'pointer',
                             alignItems: 'center',
                             gap: 12,
@@ -639,30 +669,38 @@ export default function InviteClientsModal({
                               <ManualUserBadge size="sm" showTooltip={false} />
                             </Row>
                             {user.email ? (
-                              <Text size="xs" muted>{user.email}</Text>
+                              <Text size="xs" muted>
+                                {user.email}
+                              </Text>
                             ) : (
                               <Text size="xs" style={{ color: 'var(--color-orange-11)' }}>
                                 No email - cannot send invitation
                               </Text>
                             )}
                             {user.company && (
-                              <Text size="xs" muted>{user.company}</Text>
+                              <Text size="xs" muted>
+                                {user.company}
+                              </Text>
                             )}
                           </Stack>
                           <Text
                             size="xs"
                             style={{
                               padding: '2px 8px',
-                              backgroundColor: user.user_type === 'gc' || user.user_type === 'manager'
-                                ? 'var(--color-blue-2)'
-                                : 'var(--color-green-2)',
-                              color: user.user_type === 'gc' || user.user_type === 'manager'
-                                ? 'var(--color-blue-11)'
-                                : 'var(--color-green-11)',
+                              backgroundColor:
+                                user.user_type === 'gc' || user.user_type === 'manager'
+                                  ? 'var(--color-blue-2)'
+                                  : 'var(--color-green-2)',
+                              color:
+                                user.user_type === 'gc' || user.user_type === 'manager'
+                                  ? 'var(--color-blue-11)'
+                                  : 'var(--color-green-11)',
                               borderRadius: 4,
                             }}
                           >
-                            {user.user_type === 'gc' || user.user_type === 'manager' ? 'Manager' : 'Contractor'}
+                            {user.user_type === 'gc' || user.user_type === 'manager'
+                              ? 'Manager'
+                              : 'Contractor'}
                           </Text>
                         </Row>
                       ))}
@@ -675,7 +713,10 @@ export default function InviteClientsModal({
                       style={{
                         ...orangeButtonStyle,
                         width: '100%',
-                        opacity: !selectedManualUser || !selectedManualUser.email || sendingInvite ? 0.5 : 1,
+                        opacity:
+                          !selectedManualUser || !selectedManualUser.email || sendingInvite
+                            ? 0.5
+                            : 1,
                       }}
                     >
                       {sendingInvite ? 'Sending...' : 'Send Invitation to Selected Client'}
@@ -699,5 +740,5 @@ export default function InviteClientsModal({
         </div>
       </div>
     </div>
-  );
+  )
 }

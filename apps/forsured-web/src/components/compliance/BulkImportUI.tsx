@@ -1,6 +1,6 @@
 /**
  * BulkImportUI Component
- * REQ-2, TASK-17: Bulk import interface with preview and validation
+ * Bulk import interface with preview and validation
  *
  * Features:
  * - File upload (CSV/JSON) or direct data paste

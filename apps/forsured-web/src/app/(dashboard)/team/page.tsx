@@ -1,6 +1,6 @@
 /**
  * Team Members Page
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-1: Create Team Members List Page
  * TASK-2: Build Member Detail Modal with Access Management
  *

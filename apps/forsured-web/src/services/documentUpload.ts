@@ -1,5 +1,5 @@
 // src/services/documentUpload.ts
-// REQ-126: Document upload service for onboarding COI uploads
+// Document upload service for onboarding COI uploads
 //
 // Handles file uploads to Supabase storage during the onboarding process.
 

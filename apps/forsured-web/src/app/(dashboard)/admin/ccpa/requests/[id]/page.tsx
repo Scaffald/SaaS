@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Request Detail Page
+ * CCPA Admin Request Detail Page
  * TASK-3: Build CCPA Request Detail Page with Timeline and Actions
  *
  * Comprehensive request detail view with:

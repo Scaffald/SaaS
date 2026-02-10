@@ -1,7 +1,7 @@
 /**
  * External Service Mocks
  *
- * REQ-9 Testing Principle: ONLY mock external services.
+ * Testing principle: only mock external services.
  * Never mock internal systems (database, tRPC, Supabase).
  *
  * This file contains mocks for third-party APIs and services that
@@ -12,7 +12,7 @@
  * tests run to ensure they stay in sync with real implementations.
  */
 
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 /**
  * Sentry Mock
@@ -21,22 +21,24 @@ import { vi } from 'vitest';
 export const mockSentry = {
   init: vi.fn(),
   captureException: vi.fn((error: Error) => {
-    console.log('[Mock Sentry] Captured exception:', error.message);
-    return 'mock-event-id';
+    console.log("[Mock Sentry] Captured exception:", error.message);
+    return "mock-event-id";
   }),
   captureMessage: vi.fn((message: string) => {
-    console.log('[Mock Sentry] Captured message:', message);
-    return 'mock-event-id';
+    console.log("[Mock Sentry] Captured message:", message);
+    return "mock-event-id";
   }),
   setUser: vi.fn((user: { id: string; email?: string }) => {
-    console.log('[Mock Sentry] Set user:', user);
+    console.log("[Mock Sentry] Set user:", user);
   }),
   setContext: vi.fn((name: string, context: Record<string, unknown>) => {
-    console.log('[Mock Sentry] Set context:', name, context);
+    console.log("[Mock Sentry] Set context:", name, context);
   }),
-  addBreadcrumb: vi.fn((breadcrumb: { message: string; level?: string; category?: string }) => {
-    console.log('[Mock Sentry] Added breadcrumb:', breadcrumb);
-  }),
+  addBreadcrumb: vi.fn(
+    (breadcrumb: { message: string; level?: string; category?: string }) => {
+      console.log("[Mock Sentry] Added breadcrumb:", breadcrumb);
+    },
+  ),
 };
 
 /**
@@ -46,15 +48,15 @@ export const mockSentry = {
 export const mockMapbox = {
   geocode: {
     forward: vi.fn(async (query: string) => {
-      console.log('[Mock Mapbox] Geocoding:', query);
+      console.log("[Mock Mapbox] Geocoding:", query);
       return {
-        type: 'FeatureCollection',
+        type: "FeatureCollection",
         features: [
           {
-            type: 'Feature',
+            type: "Feature",
             place_name: query,
             geometry: {
-              type: 'Point',
+              type: "Point",
               coordinates: [-122.4194, 37.7749], // San Francisco
             },
             properties: {},
@@ -63,15 +65,15 @@ export const mockMapbox = {
       };
     }),
     reverse: vi.fn(async (longitude: number, latitude: number) => {
-      console.log('[Mock Mapbox] Reverse geocoding:', { longitude, latitude });
+      console.log("[Mock Mapbox] Reverse geocoding:", { longitude, latitude });
       return {
-        type: 'FeatureCollection',
+        type: "FeatureCollection",
         features: [
           {
-            type: 'Feature',
-            place_name: 'San Francisco, CA, USA',
+            type: "Feature",
+            place_name: "San Francisco, CA, USA",
             geometry: {
-              type: 'Point',
+              type: "Point",
               coordinates: [longitude, latitude],
             },
             properties: {},
@@ -88,29 +90,29 @@ export const mockMapbox = {
  */
 export const mockGoogleSignIn = {
   configure: vi.fn((config: { webClientId: string }) => {
-    console.log('[Mock Google Sign-In] Configured with:', config);
+    console.log("[Mock Google Sign-In] Configured with:", config);
   }),
   hasPlayServices: vi.fn(async () => {
-    console.log('[Mock Google Sign-In] Checking Play Services');
+    console.log("[Mock Google Sign-In] Checking Play Services");
     return true;
   }),
   signIn: vi.fn(async () => {
-    console.log('[Mock Google Sign-In] Signing in');
+    console.log("[Mock Google Sign-In] Signing in");
     return {
-      idToken: 'mock-id-token',
+      idToken: "mock-id-token",
       user: {
-        id: 'mock-user-id',
-        email: 'test@example.com',
-        name: 'Test User',
-        photo: 'https://example.com/photo.jpg',
+        id: "mock-user-id",
+        email: "test@example.com",
+        name: "Test User",
+        photo: "https://example.com/photo.jpg",
       },
     };
   }),
   signOut: vi.fn(async () => {
-    console.log('[Mock Google Sign-In] Signing out');
+    console.log("[Mock Google Sign-In] Signing out");
   }),
   isSignedIn: vi.fn(async () => {
-    console.log('[Mock Google Sign-In] Checking sign-in status');
+    console.log("[Mock Google Sign-In] Checking sign-in status");
     return false;
   }),
 };
@@ -145,7 +147,7 @@ export function assertSentryCaptured(errorMessage: string): void {
   if (!found) {
     throw new Error(
       `Expected Sentry to capture error containing "${errorMessage}", ` +
-      `but found: ${calls.map(([e]) => e.message).join(', ')}`
+        `but found: ${calls.map(([e]) => e.message).join(", ")}`,
     );
   }
 }
@@ -155,7 +157,7 @@ export function assertSentryCaptured(errorMessage: string): void {
  */
 export function assertGoogleSignInCalled(): void {
   if (mockGoogleSignIn.signIn.mock.calls.length === 0) {
-    throw new Error('Expected Google Sign-In to be called, but it was not');
+    throw new Error("Expected Google Sign-In to be called, but it was not");
   }
 }
 
@@ -168,7 +170,7 @@ export function assertMapboxGeocodeCalled(query: string): void {
   if (!found) {
     throw new Error(
       `Expected Mapbox geocode to be called with "${query}", ` +
-      `but found: ${calls.map(([q]) => q).join(', ')}`
+        `but found: ${calls.map(([q]) => q).join(", ")}`,
     );
   }
 }

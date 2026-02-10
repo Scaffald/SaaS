@@ -1,6 +1,6 @@
 /**
  * Sent Invitations Card
- * REQ-128: Flexible Invitation System - Task 8
+ * Flexible Invitation System - Task 8
  *
  * Dashboard component that displays invitations sent by the current user.
  * Shows invitee info, status, and when the invitation was sent.

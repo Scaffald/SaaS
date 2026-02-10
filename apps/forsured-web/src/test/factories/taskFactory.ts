@@ -2,11 +2,11 @@
  * Task Factory
  *
  * Creates real task records in the database for testing.
- * REQ-9: Testing Policy - No mocking of owned code
+ * No mocking of owned code
  */
 
-import { testSupabase, CreatedTestData } from '../testDb';
-import { testId, FactoryOptions } from './index';
+import { CreatedTestData, testSupabase } from "../testDb";
+import { FactoryOptions, testId } from "./index";
 
 export interface TestTask {
   id: string;
@@ -24,8 +24,8 @@ export interface TestTask {
 interface CreateTaskOptions extends FactoryOptions {
   title?: string;
   description?: string;
-  status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
-  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  status?: "pending" | "in_progress" | "completed" | "cancelled";
+  priority?: "low" | "medium" | "high" | "urgent";
   projectId: string;
   organizationId: string;
   assignedToUserId?: string;
@@ -36,13 +36,13 @@ interface CreateTaskOptions extends FactoryOptions {
  * Create a test task with defaults
  */
 export async function createTestTask(
-  options: CreateTaskOptions
+  options: CreateTaskOptions,
 ): Promise<TestTask> {
   const taskData = {
     title: options.title || `Test Task ${testId()}`,
     description: options.description,
-    status: options.status || 'pending',
-    priority: options.priority || 'medium',
+    status: options.status || "pending",
+    priority: options.priority || "medium",
     project_id: options.projectId,
     organization_id: options.organizationId,
     assigned_to_user_id: options.assignedToUserId,
@@ -50,8 +50,8 @@ export async function createTestTask(
   };
 
   const { data: result, error } = await testSupabase
-    .schema('forsured' as never)
-    .from('tasks')
+    .schema("forsured" as never)
+    .from("tasks")
     .insert(taskData)
     .select()
     .single();
@@ -75,7 +75,7 @@ export async function createTestTasks(
   projectId: string,
   organizationId: string,
   count: number,
-  options: Partial<CreateTaskOptions> & FactoryOptions = {}
+  options: Partial<CreateTaskOptions> & FactoryOptions = {},
 ): Promise<TestTask[]> {
   const tasks: TestTask[] = [];
 
@@ -102,16 +102,16 @@ export async function createTestTasks(
 export async function createTestTasksByStatus(
   projectId: string,
   organizationId: string,
-  options: FactoryOptions = {}
+  options: FactoryOptions = {},
 ): Promise<TestTask[]> {
   const statuses: Array<{
-    status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
-    priority: 'low' | 'medium' | 'high' | 'urgent';
+    status: "pending" | "in_progress" | "completed" | "cancelled";
+    priority: "low" | "medium" | "high" | "urgent";
   }> = [
-    { status: 'pending', priority: 'high' },
-    { status: 'pending', priority: 'medium' },
-    { status: 'in_progress', priority: 'high' },
-    { status: 'completed', priority: 'medium' },
+    { status: "pending", priority: "high" },
+    { status: "pending", priority: "medium" },
+    { status: "in_progress", priority: "high" },
+    { status: "completed", priority: "medium" },
   ];
 
   const tasks: TestTask[] = [];
@@ -137,7 +137,7 @@ export async function createTestTasksByStatus(
 export async function createOverdueTestTask(
   projectId: string,
   organizationId: string,
-  options: Partial<CreateTaskOptions> & FactoryOptions = {}
+  options: Partial<CreateTaskOptions> & FactoryOptions = {},
 ): Promise<TestTask> {
   // Set due date to yesterday
   const yesterday = new Date();
@@ -146,9 +146,9 @@ export async function createOverdueTestTask(
   return createTestTask({
     projectId,
     organizationId,
-    title: options.title || 'Overdue Task',
-    status: 'pending',
-    priority: options.priority || 'high',
+    title: options.title || "Overdue Task",
+    status: "pending",
+    priority: options.priority || "high",
     dueDate: yesterday,
     ...options,
   });

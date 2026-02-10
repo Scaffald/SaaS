@@ -1,6 +1,6 @@
 /**
  * Team components exports
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  */
 
 export { TeamMemberCard, type TeamMember } from './TeamMemberCard';

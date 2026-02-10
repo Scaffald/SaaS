@@ -1,7 +1,6 @@
 /**
  * TeamMembersList - Container for team member cards
- * REQ-283: Team Member Management UI
- * TASK-1: Create Team Members List Page
+ * Team member management UI - Team Members List page
  *
  * Displays a grid/list of team members with:
  * - Role filtering

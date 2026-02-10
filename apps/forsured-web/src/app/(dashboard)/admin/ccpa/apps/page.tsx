@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin OAuth Apps List Page
+ * CCPA Admin OAuth Apps List Page
  * TASK-5: Build OAuth App CCPA Configuration Management Pages
  *
  * Lists all OAuth apps with their CCPA integration status:

@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin OAuth App Configuration Page
+ * CCPA Admin OAuth App Configuration Page
  * TASK-5: Build OAuth App CCPA Configuration Management Pages
  *
  * Configuration form with 5 sections:

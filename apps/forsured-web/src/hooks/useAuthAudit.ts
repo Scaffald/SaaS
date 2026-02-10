@@ -1,7 +1,7 @@
 /**
  * useAuthAudit - Authentication Event Audit Hook
  *
- * REQ-130: Email Communication Auditability - Auth Audit Component
+ * Email Communication Auditability - Auth Audit Component
  *
  * Captures authentication events for complete audit trail:
  * - Magic link request (when user enters email)

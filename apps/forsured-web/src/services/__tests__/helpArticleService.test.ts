@@ -3,7 +3,7 @@
  *
  * REQ: Phase 9 - Production Readiness (Help Articles DB Migration)
  *
- * REQ-306: Mock Validation
+ * Mock Validation
  * These mocks are validated against the real Supabase API in helpArticleService.mockValidation.test.ts
  * The mocks MUST match the real API behavior or tests will give false confidence.
  */

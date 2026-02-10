@@ -1,6 +1,6 @@
 /**
  * Data Deletion Service - CCPA Right to Delete Implementation
- * REQ-131: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Implements CCPA "Right to Delete" with:
  * - 90-day soft delete grace period

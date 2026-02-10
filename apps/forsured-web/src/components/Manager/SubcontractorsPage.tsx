@@ -97,8 +97,7 @@ export default function SubcontractorsPage() {
   const [pendingInvitations, setPendingInvitations] = useState<RelationshipInvitation[]>([])
   const [showInviteSection, setShowInviteSection] = useState(false)
 
-  // Manual contractor creation state (REQ-12)
-  const [showManualContractorModal, setShowManualContractorModal] = useState(false)
+  // Manual contractor creation state  const [showManualContractorModal, setShowManualContractorModal] = useState(false)
   const [inviteFormData, setInviteFormData] = useState({
     email: '',
     name: '',
@@ -571,7 +570,11 @@ export default function SubcontractorsPage() {
                 requirements.
               </Text>
               <Row style={{ gap: 12 }}>
-                <Button variant="outlined" iconStart={UserPlus} onPress={() => setShowManualContractorModal(true)}>
+                <Button
+                  variant="outlined"
+                  iconStart={UserPlus}
+                  onPress={() => setShowManualContractorModal(true)}
+                >
                   Add Manually
                 </Button>
                 <Button color="primary" iconStart={Plus} onPress={() => setShowAddModal(true)}>
@@ -583,7 +586,7 @@ export default function SubcontractorsPage() {
         </Stack>
         {addSubcontractorModal}
 
-        {/* Manual Contractor Creation Modal (REQ-12) */}
+        {/* Manual Contractor Creation Modal */}
         {organizationId && (
           <ManualUserCreateModal
             isOpen={showManualContractorModal}
@@ -602,7 +605,11 @@ export default function SubcontractorsPage() {
   return (
     <Stack style={{ gap: 24 }}>
       <Row style={{ alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
-        <Button variant="outlined" iconStart={UserPlus} onPress={() => setShowManualContractorModal(true)}>
+        <Button
+          variant="outlined"
+          iconStart={UserPlus}
+          onPress={() => setShowManualContractorModal(true)}
+        >
           Add Contractor Manually
         </Button>
         <Button color="primary" iconStart={Plus} onPress={() => setShowAddModal(true)}>
@@ -1247,7 +1254,7 @@ export default function SubcontractorsPage() {
 
       {addSubcontractorModal}
 
-      {/* Manual Contractor Creation Modal (REQ-12) */}
+      {/* Manual Contractor Creation Modal */}
       {organizationId && (
         <ManualUserCreateModal
           isOpen={showManualContractorModal}

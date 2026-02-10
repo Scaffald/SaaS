@@ -1,13 +1,13 @@
 /**
  * Industry Selection Component
- * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
+ * Multi-Industry User Set Type System with Configurable Lexicon
  *
  * Displays available industries for user selection during signup
  */
 import { Stack, Row, Text } from '@unicornlove/beyond-ui'
 import { Factory, Home, Briefcase, Loader2 } from 'lucide-react'
 
-/** REQ-4: User set type data from API */
+/** User set type data from API */
 export interface UserSetType {
   id: string
   name: string

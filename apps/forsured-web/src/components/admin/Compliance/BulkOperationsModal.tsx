@@ -1,6 +1,6 @@
 /**
  * BulkOperationsModal Component
- * REQ-2: Bulk Import/Export UI
+ * Bulk Import/Export UI
  *
  * Modal for bulk operations with:
  * - Import: File upload, format selection, preview, execute

@@ -1,6 +1,6 @@
 /**
  * Supabase Test Fixtures
- * REQ-9: Testing Policy - Use real Supabase instance for tests
+ * Use real Supabase instance for tests (no mocking)
  *
  * These fixtures provide helpers for:
  * - Creating test data in Supabase
@@ -24,12 +24,14 @@
  * ```
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 // Local Supabase instance configuration
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'http://localhost:54321';
-const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "http://localhost:54321";
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
 
 /**
  * Test Supabase client with anon key (respects RLS)
@@ -40,7 +42,10 @@ export const testSupabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  * Test Supabase client with service role key (bypasses RLS)
  * Use this for test setup/teardown operations
  */
-export const testSupabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+export const testSupabaseAdmin = createClient(
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
+);
 
 /**
  * Track created test data for cleanup
@@ -55,15 +60,21 @@ const createdTestData: TestDataRecord[] = [];
 /**
  * Helper to query forsured schema
  */
-export function forsured(table: string, client: SupabaseClient = testSupabaseAdmin) {
-  return client.schema('forsured').from(table);
+export function forsured(
+  table: string,
+  client: SupabaseClient = testSupabaseAdmin,
+) {
+  return client.schema("forsured").from(table);
 }
 
 /**
  * Helper to query core schema
  */
-export function core(table: string, client: SupabaseClient = testSupabaseAdmin) {
-  return client.schema('core').from(table);
+export function core(
+  table: string,
+  client: SupabaseClient = testSupabaseAdmin,
+) {
+  return client.schema("core").from(table);
 }
 
 // ============================================================================
@@ -76,10 +87,10 @@ export function core(table: string, client: SupabaseClient = testSupabaseAdmin) 
  * Updated to match actual test users in the database
  */
 export const TEST_USER_IDS = {
-  admin: '10000000-0000-0000-0000-000000000004', // Test Admin User
-  manager: '10000000-0000-0000-0000-000000000001', // Test GC User
-  contractor: '10000000-0000-0000-0000-000000000002', // Test Contractor User
-  broker: '10000000-0000-0000-0000-000000000003', // Test Broker User
+  admin: "10000000-0000-0000-0000-000000000004", // Test Admin User
+  manager: "10000000-0000-0000-0000-000000000001", // Test GC User
+  contractor: "10000000-0000-0000-0000-000000000002", // Test Contractor User
+  broker: "10000000-0000-0000-0000-000000000003", // Test Broker User
 } as const;
 
 /**
@@ -87,16 +98,16 @@ export const TEST_USER_IDS = {
  * Updated to match actual test organizations in the database
  */
 export const TEST_ORG_IDS = {
-  primary: '20000000-0000-0000-0000-000000000001', // MRC Construction Co.
-  contractor: '20000000-0000-0000-0000-000000000002', // Test Contractor LLC
-  broker: '20000000-0000-0000-0000-000000000003', // Test Insurance Broker
+  primary: "20000000-0000-0000-0000-000000000001", // MRC Construction Co.
+  contractor: "20000000-0000-0000-0000-000000000002", // Test Contractor LLC
+  broker: "20000000-0000-0000-0000-000000000003", // Test Insurance Broker
 } as const;
 
 /**
  * Test project IDs from seed data
  */
 export const TEST_PROJECT_IDS = {
-  project1: '00000000-0000-0000-0000-000000000100',
+  project1: "00000000-0000-0000-0000-000000000100",
 } as const;
 
 // ============================================================================
@@ -106,8 +117,8 @@ export const TEST_PROJECT_IDS = {
 export interface CreateTaskInput {
   title: string;
   description?: string;
-  status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
-  priority?: 'urgent' | 'high' | 'medium' | 'low';
+  status?: "pending" | "in_progress" | "completed" | "cancelled";
+  priority?: "urgent" | "high" | "medium" | "low";
   project_id?: string;
   organization_id?: string;
   assigned_to_user_id?: string;
@@ -120,16 +131,17 @@ export interface CreateTaskInput {
 export async function createTestTask(input: CreateTaskInput) {
   const taskData = {
     title: input.title,
-    description: input.description ?? 'Test task description',
-    status: input.status ?? 'pending',
-    priority: input.priority ?? 'medium',
+    description: input.description ?? "Test task description",
+    status: input.status ?? "pending",
+    priority: input.priority ?? "medium",
     project_id: input.project_id ?? TEST_PROJECT_IDS.project1,
     organization_id: input.organization_id ?? TEST_ORG_IDS.primary,
     assigned_to_user_id: input.assigned_to_user_id ?? TEST_USER_IDS.manager,
-    due_date: input.due_date ?? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    due_date: input.due_date ??
+      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
   };
 
-  const { data, error } = await forsured('tasks')
+  const { data, error } = await forsured("tasks")
     .insert(taskData)
     .select()
     .single();
@@ -139,7 +151,7 @@ export async function createTestTask(input: CreateTaskInput) {
   }
 
   // Track for cleanup
-  createdTestData.push({ table: 'forsured.tasks', id: data.id });
+  createdTestData.push({ table: "forsured.tasks", id: data.id });
 
   return data;
 }
@@ -147,7 +159,10 @@ export async function createTestTask(input: CreateTaskInput) {
 /**
  * Create multiple test tasks
  */
-export async function createTestTasks(count: number, overrides?: Partial<CreateTaskInput>) {
+export async function createTestTasks(
+  count: number,
+  overrides?: Partial<CreateTaskInput>,
+) {
   const tasks = [];
   for (let i = 0; i < count; i++) {
     const task = await createTestTask({
@@ -166,7 +181,7 @@ export async function createTestTasks(count: number, overrides?: Partial<CreateT
 export interface CreateProjectInput {
   name: string;
   description?: string;
-  status?: 'active' | 'completed' | 'on_hold' | 'cancelled';
+  status?: "active" | "completed" | "on_hold" | "cancelled";
   organization_id?: string;
   manager_id?: string;
 }
@@ -177,13 +192,13 @@ export interface CreateProjectInput {
 export async function createTestProject(input: CreateProjectInput) {
   const projectData = {
     name: input.name,
-    description: input.description ?? 'Test project description',
-    status: input.status ?? 'active',
+    description: input.description ?? "Test project description",
+    status: input.status ?? "active",
     organization_id: input.organization_id ?? TEST_ORG_IDS.primary,
     manager_id: input.manager_id ?? TEST_USER_IDS.manager,
   };
 
-  const { data, error } = await forsured('projects')
+  const { data, error } = await forsured("projects")
     .insert(projectData)
     .select()
     .single();
@@ -193,7 +208,7 @@ export async function createTestProject(input: CreateProjectInput) {
   }
 
   // Track for cleanup
-  createdTestData.push({ table: 'forsured.projects', id: data.id });
+  createdTestData.push({ table: "forsured.projects", id: data.id });
 
   return data;
 }
@@ -215,12 +230,13 @@ export interface CreateSubcontractorInput {
 export async function createTestSubcontractor(input: CreateSubcontractorInput) {
   const subData = {
     name: input.name,
-    email: input.email ?? `${input.name.toLowerCase().replace(/\s+/g, '')}@test.com`,
-    phone: input.phone ?? '555-0100',
+    email: input.email ??
+      `${input.name.toLowerCase().replace(/\s+/g, "")}@test.com`,
+    phone: input.phone ?? "555-0100",
     organization_id: input.organization_id ?? TEST_ORG_IDS.primary,
   };
 
-  const { data, error } = await forsured('subcontractors')
+  const { data, error } = await forsured("subcontractors")
     .insert(subData)
     .select()
     .single();
@@ -230,7 +246,7 @@ export async function createTestSubcontractor(input: CreateSubcontractorInput) {
   }
 
   // Track for cleanup
-  createdTestData.push({ table: 'forsured.subcontractors', id: data.id });
+  createdTestData.push({ table: "forsured.subcontractors", id: data.id });
 
   return data;
 }
@@ -256,16 +272,19 @@ export interface CreatePolicyInput {
 export async function createTestPolicy(input: CreatePolicyInput) {
   const policyData = {
     policy_number: input.policy_number,
-    carrier: input.carrier ?? 'Test Insurance Co',
-    coverage_type: input.coverage_type ?? 'general_liability',
+    carrier: input.carrier ?? "Test Insurance Co",
+    coverage_type: input.coverage_type ?? "general_liability",
     coverage_amount: input.coverage_amount ?? 1000000,
-    start_date: input.start_date ?? new Date().toISOString().split('T')[0],
-    end_date: input.end_date ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    start_date: input.start_date ?? new Date().toISOString().split("T")[0],
+    end_date: input.end_date ??
+      new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split(
+        "T",
+      )[0],
     subcontractor_id: input.subcontractor_id,
     project_id: input.project_id ?? TEST_PROJECT_IDS.project1,
   };
 
-  const { data, error } = await forsured('insurance_policies')
+  const { data, error } = await forsured("insurance_policies")
     .insert(policyData)
     .select()
     .single();
@@ -275,7 +294,7 @@ export async function createTestPolicy(input: CreatePolicyInput) {
   }
 
   // Track for cleanup
-  createdTestData.push({ table: 'forsured.insurance_policies', id: data.id });
+  createdTestData.push({ table: "forsured.insurance_policies", id: data.id });
 
   return data;
 }
@@ -293,13 +312,13 @@ export async function cleanupTestData() {
   const dataToDelete = [...createdTestData].reverse();
 
   for (const record of dataToDelete) {
-    const [schema, table] = record.table.split('.');
+    const [schema, table] = record.table.split(".");
     try {
       await testSupabaseAdmin
         .schema(schema)
         .from(table)
         .delete()
-        .eq('id', record.id);
+        .eq("id", record.id);
     } catch (error) {
       // Log but don't fail - cleanup errors shouldn't break tests
       console.warn(`Failed to cleanup ${record.table}:${record.id}`, error);
@@ -314,7 +333,12 @@ export async function cleanupTestData() {
  * Clean up specific table by test prefix
  * Useful for cleaning up data by a naming convention
  */
-export async function cleanupByPrefix(schema: string, table: string, column: string, prefix: string) {
+export async function cleanupByPrefix(
+  schema: string,
+  table: string,
+  column: string,
+  prefix: string,
+) {
   try {
     await testSupabaseAdmin
       .schema(schema)
@@ -322,7 +346,10 @@ export async function cleanupByPrefix(schema: string, table: string, column: str
       .delete()
       .like(column, `${prefix}%`);
   } catch (error) {
-    console.warn(`Failed to cleanup ${schema}.${table} with prefix ${prefix}`, error);
+    console.warn(
+      `Failed to cleanup ${schema}.${table} with prefix ${prefix}`,
+      error,
+    );
   }
 }
 
@@ -334,9 +361,9 @@ export async function cleanupByPrefix(schema: string, table: string, column: str
  * Get a task by ID
  */
 export async function getTestTask(id: string) {
-  const { data, error } = await forsured('tasks')
-    .select('*')
-    .eq('id', id)
+  const { data, error } = await forsured("tasks")
+    .select("*")
+    .eq("id", id)
     .single();
 
   if (error) {
@@ -350,9 +377,9 @@ export async function getTestTask(id: string) {
  * Get all tasks for a project
  */
 export async function getTestProjectTasks(projectId: string) {
-  const { data, error } = await forsured('tasks')
-    .select('*')
-    .eq('project_id', projectId);
+  const { data, error } = await forsured("tasks")
+    .select("*")
+    .eq("project_id", projectId);
 
   if (error) {
     throw new Error(`Failed to get project tasks: ${error.message}`);
@@ -369,9 +396,9 @@ export async function waitForSupabase(maxRetries = 5, retryDelay = 1000) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       const { error } = await testSupabaseAdmin
-        .schema('forsured')
-        .from('tasks')
-        .select('id', { count: 'exact', head: true });
+        .schema("forsured")
+        .from("tasks")
+        .select("id", { count: "exact", head: true });
 
       if (!error) {
         return true;
@@ -383,5 +410,7 @@ export async function waitForSupabase(maxRetries = 5, retryDelay = 1000) {
     await new Promise((resolve) => setTimeout(resolve, retryDelay));
   }
 
-  throw new Error('Supabase not available after retries. Is local Supabase running? (pnpm supa start)');
+  throw new Error(
+    "Supabase not available after retries. Is local Supabase running? (pnpm supa start)",
+  );
 }

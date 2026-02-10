@@ -1,6 +1,6 @@
 /**
  * Dependency Visualizer
- * REQ-2, TASK-15: Interactive dependency graph visualization
+ * Interactive dependency graph visualization
  *
  * Features:
  * - SVG-based tree/graph visualization

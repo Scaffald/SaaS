@@ -1,6 +1,5 @@
 /**
- * REQ-263: Org-Level vs Project-Level Coverage Distinction
- * TASK-3: Build Org Coverage Requirements Settings UI
+ * Org coverage requirements form tests
  *
  * Tests for CoverageRequirementForm component
  */

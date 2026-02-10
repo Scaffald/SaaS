@@ -1,6 +1,6 @@
 /**
  * Broker Delegations Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `broker_delegations` table in forsured schema
  */

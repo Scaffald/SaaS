@@ -1,7 +1,7 @@
 /**
  * Login Page Component - Using Beyond UI
- * REQ-126: OAuth 2.0 + RBAC Authentication System
- * REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
+ * OAuth 2.0 + RBAC Authentication System
+ * Authentication Flow Refinement - httpOnly cookie token storage
  */
 import type React from 'react'
 import { useState } from 'react'

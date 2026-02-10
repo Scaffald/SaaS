@@ -1,6 +1,6 @@
 /**
  * FlagBadge - Flag badge component using Beyond UI
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  */
 import React from 'react';
 import { Row, Stack, Text } from '@unicornlove/beyond-ui';

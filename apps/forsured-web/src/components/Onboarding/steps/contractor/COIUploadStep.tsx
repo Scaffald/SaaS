@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/contractor/COIUploadStep.tsx
-// REQ-126: Contractor Onboarding - COI Upload Step (Optional)
+// Contractor Onboarding - COI Upload Step (Optional)
 import { useState } from 'react';
 import { Upload, FileText } from 'lucide-react';
 import { Stack, Row, Text, H2, Button } from '@unicornlove/beyond-ui';

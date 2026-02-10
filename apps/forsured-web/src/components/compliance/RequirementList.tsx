@@ -1,5 +1,5 @@
 /**
- * REQ-165: Compliance Requirements Management System
+ * Compliance requirements management
  * List view for compliance requirements with filtering and actions
  */
 

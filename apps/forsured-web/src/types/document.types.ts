@@ -1,5 +1,5 @@
 /**
- * Document Types for REQ-167
+ * Document Types for
  * Document Metadata Editor & Validation UI
  */
 

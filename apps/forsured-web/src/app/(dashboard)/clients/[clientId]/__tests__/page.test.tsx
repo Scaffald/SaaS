@@ -1,9 +1,6 @@
 /**
  * Client Profile Page Tests
- * REQ-274: Clickable Client Navigation
- * TASK-1: Create Client Profile Route and Page Component
- * TASK-2: Implement Client Profile Data Fetching
- * TASK-3: Render GC Relationships with Compliance Status and Activity Feed
+ * Client profile page and GC relationships
  *
  * Tests for the client profile page that displays:
  * - Client header with client name

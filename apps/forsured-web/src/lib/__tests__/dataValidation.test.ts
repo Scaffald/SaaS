@@ -1,6 +1,6 @@
 /**
  * Data Validation Tests
- * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
+ * Mock OCR & Document Parsing Engine for ACORD 25 Forms
  */
 
 import { describe, it, expect } from 'vitest';

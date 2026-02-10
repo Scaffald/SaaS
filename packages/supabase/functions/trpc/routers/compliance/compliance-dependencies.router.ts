@@ -1,6 +1,6 @@
 /**
  * Compliance Dependencies Router
- * REQ-2, TASK-19: Integrate Authorization Checks into tRPC Routers
+ * Compliance dependencies router with authorization checks
  *
  * tRPC router for managing dependencies between compliance requirements.
  * Includes dependency relationships, umbrella underlying schedules, and rules.

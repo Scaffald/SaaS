@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/contractor/InsuranceStep.tsx
-// REQ-126: Contractor Onboarding - Insurance Information Step
+// Contractor onboarding - insurance information step
 import { useState } from 'react'
 import { Stack, Row, Text, H2, Input, Button, Grid } from '@unicornlove/beyond-ui'
 

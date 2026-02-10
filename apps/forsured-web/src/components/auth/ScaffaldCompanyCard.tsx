@@ -1,6 +1,6 @@
 /**
  * Scaffald Company Card Component
- * REQ-126: User Signup with Scaffald Integration
+ * User Signup with Scaffald Integration
  *
  * Displays the user's Scaffald company and allows connection toggle
  */

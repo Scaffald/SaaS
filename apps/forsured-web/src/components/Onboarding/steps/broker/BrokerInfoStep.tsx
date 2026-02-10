@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/broker/BrokerInfoStep.tsx
-// REQ-126: Broker Onboarding - Broker Information Step
+// Broker Onboarding - Broker Information Step
 import { useState } from 'react';
 import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
 

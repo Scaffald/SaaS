@@ -1,6 +1,6 @@
 /**
  * Pending Invitations Card
- * REQ-128: Flexible Invitation System - Task 8
+ * Flexible Invitation System - Task 8
  *
  * Dashboard component that displays pending invitations for the current user.
  * Shows inviter info, personal messages, and accept/decline actions.

@@ -1,6 +1,6 @@
 /**
  * TaskSeverityBreakdown - Task severity breakdown widget using Beyond UI
- * REQ-266: Task Correlation with Compliance Score
+ * Task severity and compliance correlation
 
  */
 import React from 'react'

@@ -1,6 +1,6 @@
 /**
  * OnboardingWizard - Onboarding wizard using Beyond UI
- * REQ-126: Onboarding Wizard Base Component
+ * Onboarding Wizard Base Component
  */
 import React from 'react';
 import { Stack } from '@unicornlove/beyond-ui';

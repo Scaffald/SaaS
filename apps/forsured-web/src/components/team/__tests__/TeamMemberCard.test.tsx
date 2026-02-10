@@ -1,6 +1,6 @@
 /**
  * TeamMemberCard Tests
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

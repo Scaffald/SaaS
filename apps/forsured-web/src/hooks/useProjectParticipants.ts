@@ -1,6 +1,6 @@
 /**
  * Project Participants Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `project_participants` table in forsured schema:
  * - id (uuid, primary key)

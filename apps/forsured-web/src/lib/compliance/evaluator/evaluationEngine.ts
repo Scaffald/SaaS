@@ -1,5 +1,5 @@
 /**
- * REQ-128: Compliance Rule Evaluation Engine
+ * Compliance Rule Evaluation Engine
  * Main evaluation orchestrator that ties all validation logic together
  */
 
@@ -55,7 +55,7 @@ export class ComplianceEvaluationEngine {
       // Build requirements map for efficient lookup
       const requirementsMap = this.buildRequirementsMap(projectRequirements);
 
-      // REQ-2: Validate dependencies FIRST (before coverage/date/endorsement validation)
+      // Validate dependencies FIRST (before coverage/date/endorsement validation)
       // This ensures umbrella policies have required underlying coverages
       const dependencyGaps = validateRequirementDependencies(
         projectRequirements,

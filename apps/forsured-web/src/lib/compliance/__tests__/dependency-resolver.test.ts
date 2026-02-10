@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-5: Dependency Resolver Tests
+ * Dependency Resolver Tests
  * Tests for circular dependency detection and tree resolution
  */
 

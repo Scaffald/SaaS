@@ -9,6 +9,9 @@ import { Teams } from './resources/teams.js'
 import { Prerequisites } from './resources/prerequisites.js'
 import { ApiKeys } from './resources/api-keys.js'
 import { WebhooksManagement } from './resources/webhooks-management.js'
+import { Connections } from './resources/connections.js'
+import { Follows } from './resources/follows.js'
+import { Engagement } from './resources/engagement.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -22,6 +25,9 @@ export class Scaffald {
   public readonly prerequisites: Prerequisites
   public readonly apiKeys: ApiKeys
   public readonly webhooks: WebhooksManagement
+  public readonly connections: Connections
+  public readonly follows: Follows
+  public readonly engagement: Engagement
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -43,6 +49,9 @@ export class Scaffald {
     this.prerequisites = new Prerequisites(this.http)
     this.apiKeys = new ApiKeys(this.http)
     this.webhooks = new WebhooksManagement(this.http)
+    this.connections = new Connections(this.http)
+    this.follows = new Follows(this.http)
+    this.engagement = new Engagement(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

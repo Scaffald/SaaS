@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-12: Bulk Operations Zod Schemas
+ * Bulk Operations Zod Schemas
  * Input validation schemas for bulk import/export tRPC endpoints
  */
 

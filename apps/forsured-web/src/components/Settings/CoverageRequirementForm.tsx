@@ -1,7 +1,4 @@
 /**
- * REQ-263: Org-Level vs Project-Level Coverage Distinction
- * TASK-3: Build Org Coverage Requirements Settings UI
- *
  * Form component for creating and editing coverage limit requirements.
  */
 

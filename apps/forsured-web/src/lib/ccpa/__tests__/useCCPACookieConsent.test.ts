@@ -1,6 +1,6 @@
 /**
  * Tests for CCPA Cookie Consent Integration Hook
- * REQ-3: CCPA Compliance Implementation - TASK-21
+ * CCPA Compliance Implementation - TASK-21
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';

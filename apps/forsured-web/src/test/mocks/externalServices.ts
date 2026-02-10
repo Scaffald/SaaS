@@ -1,7 +1,7 @@
 /**
  * External Services Mock Boundary
  *
- * REQ-9: Testing Policy - Only mock external third-party services
+ * Only mock external third-party services
  *
  * This file defines the ONLY mocks allowed for external services.
  * We only mock external third-party services, never our own code.
@@ -19,7 +19,7 @@
  * - Utility functions (our code)
  */
 
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 // =============================================================================
 // SendGrid Mock
@@ -42,17 +42,27 @@ const sentEmails: MockEmailCall[] = [];
  * This is the ONLY mock we use for email services
  */
 export const mockSendGrid = {
-  send: vi.fn(async (msg: { to: string; from?: string; subject: string; html: string; text?: string }) => {
-    sentEmails.push({
-      to: msg.to,
-      from: msg.from,
-      subject: msg.subject,
-      html: msg.html,
-      text: msg.text,
-      timestamp: new Date(),
-    });
-    return [{ statusCode: 202, body: 'Accepted' }];
-  }),
+  send: vi.fn(
+    async (
+      msg: {
+        to: string;
+        from?: string;
+        subject: string;
+        html: string;
+        text?: string;
+      },
+    ) => {
+      sentEmails.push({
+        to: msg.to,
+        from: msg.from,
+        subject: msg.subject,
+        html: msg.html,
+        text: msg.text,
+        timestamp: new Date(),
+      });
+      return [{ statusCode: 202, body: "Accepted" }];
+    },
+  ),
   setApiKey: vi.fn(),
 };
 
@@ -95,14 +105,21 @@ export function clearSentEmails(): void {
 /**
  * Assert email was sent
  */
-export function assertEmailSent(to: string, subjectContains?: string): MockEmailCall {
+export function assertEmailSent(
+  to: string,
+  subjectContains?: string,
+): MockEmailCall {
   const email = findEmailTo(to);
   if (!email) {
-    throw new Error(`No email sent to ${to}. Sent emails: ${sentEmails.map((e) => e.to).join(', ') || 'none'}`);
+    throw new Error(
+      `No email sent to ${to}. Sent emails: ${
+        sentEmails.map((e) => e.to).join(", ") || "none"
+      }`,
+    );
   }
   if (subjectContains && !email.subject.includes(subjectContains)) {
     throw new Error(
-      `Email to ${to} has subject "${email.subject}", expected to contain "${subjectContains}"`
+      `Email to ${to} has subject "${email.subject}", expected to contain "${subjectContains}"`,
     );
   }
   return email;
@@ -113,7 +130,11 @@ export function assertEmailSent(to: string, subjectContains?: string): MockEmail
  */
 export function assertNoEmailsSent(): void {
   if (sentEmails.length > 0) {
-    throw new Error(`Expected no emails, but ${sentEmails.length} were sent to: ${sentEmails.map((e) => e.to).join(', ')}`);
+    throw new Error(
+      `Expected no emails, but ${sentEmails.length} were sent to: ${
+        sentEmails.map((e) => e.to).join(", ")
+      }`,
+    );
   }
 }
 
@@ -155,8 +176,8 @@ export const mockStripe = {
     })),
     retrieve: vi.fn(async (id: string) => ({
       id,
-      email: 'test@example.com',
-      name: 'Test Customer',
+      email: "test@example.com",
+      name: "Test Customer",
     })),
   },
   paymentIntents: {
@@ -164,7 +185,7 @@ export const mockStripe = {
       id: `pi_test_${Date.now()}`,
       amount: data.amount,
       currency: data.currency,
-      status: 'succeeded',
+      status: "succeeded",
     })),
   },
 };
@@ -191,17 +212,17 @@ interface MockOCRResult {
  */
 export const mockOCRService = {
   extractText: vi.fn(async (fileBuffer: Buffer): Promise<MockOCRResult> => ({
-    text: 'Mock extracted text from document',
+    text: "Mock extracted text from document",
     confidence: 0.95,
     fields: {
-      policyNumber: 'POL-123456',
-      expirationDate: '2025-12-31',
-      coverageAmount: '$1,000,000',
+      policyNumber: "POL-123456",
+      expirationDate: "2025-12-31",
+      coverageAmount: "$1,000,000",
     },
   })),
   validateDocument: vi.fn(async (fileBuffer: Buffer) => ({
     valid: true,
-    documentType: 'insurance_certificate',
+    documentType: "insurance_certificate",
   })),
 };
 

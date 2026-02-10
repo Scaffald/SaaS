@@ -1,6 +1,6 @@
 /**
  * TeamMemberCard - Individual team member card component
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-1: Create Team Members List Page
  *
  * Displays team member information in a card format with:

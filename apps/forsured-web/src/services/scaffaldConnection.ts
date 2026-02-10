@@ -1,5 +1,5 @@
 // src/services/scaffaldConnection.ts
-// REQ-126: Scaffald company connection service for onboarding
+// Scaffald company connection service for onboarding
 //
 // Connects a user's Scaffald company to their ForSured profile during onboarding.
 

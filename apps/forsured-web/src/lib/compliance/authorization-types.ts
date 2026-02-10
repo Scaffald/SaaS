@@ -1,6 +1,6 @@
 /**
  * Compliance Authorization Types
- * REQ-2, TASK-18: Extensible Authorization System with Permission Matrix
+ * Extensible Authorization System with Permission Matrix
  *
  * Type definitions for the database-driven authorization system.
  * These types mirror the database enums in migration 236.

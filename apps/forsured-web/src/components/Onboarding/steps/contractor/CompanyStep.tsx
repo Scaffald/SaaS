@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/contractor/CompanyStep.tsx
-// REQ-126: Contractor Onboarding - Company Information Step
+// Contractor Onboarding - Company Information Step
 import { useState } from 'react';
 import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
 

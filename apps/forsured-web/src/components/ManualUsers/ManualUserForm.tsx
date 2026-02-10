@@ -1,7 +1,7 @@
 /**
  * ManualUserForm - Form for creating manual users
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-7: Build manual user creation UI components
+ * Manual user form
+ * Manual user creation form
  *
  * Form with:
  * - Name input (required)
@@ -11,43 +11,43 @@
  * - Send invitation checkbox (only when email provided)
  */
 
-'use client';
+'use client'
 
-import React, { useState, useCallback } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Input, Button } from '@unicornlove/beyond-ui';
+import React, { useState, useCallback } from 'react'
+import { Loader2 } from 'lucide-react'
+import { Stack, Row, Text, Input, Button } from '@unicornlove/beyond-ui'
 
-export type ManualUserRole = 'contractor' | 'broker' | 'manager';
+export type ManualUserRole = 'contractor' | 'broker' | 'manager'
 
 export interface ManualUserFormData {
-  name: string;
-  email?: string;
-  phone?: string;
-  company?: string;
-  role: ManualUserRole;
-  sendInvitation: boolean;
+  name: string
+  email?: string
+  phone?: string
+  company?: string
+  role: ManualUserRole
+  sendInvitation: boolean
 }
 
 interface ManualUserFormProps {
-  role: ManualUserRole;
-  onSubmit: (data: ManualUserFormData) => Promise<void>;
-  onCancel: () => void;
-  loading?: boolean;
-  existingEmails?: string[];
+  role: ManualUserRole
+  onSubmit: (data: ManualUserFormData) => Promise<void>
+  onCancel: () => void
+  loading?: boolean
+  existingEmails?: string[]
 }
 
 // Email validation regex
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // Phone validation regex (basic US format)
-const PHONE_REGEX = /^[\d\s\-()]+$/;
+const PHONE_REGEX = /^[\d\s\-()]+$/
 
 interface FormErrors {
-  name?: string;
-  email?: string;
-  phone?: string;
-  company?: string;
-  general?: string;
+  name?: string
+  email?: string
+  phone?: string
+  company?: string
+  general?: string
 }
 
 export function ManualUserForm({
@@ -57,116 +57,116 @@ export function ManualUserForm({
   loading = false,
   existingEmails = [],
 }: ManualUserFormProps) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [company, setCompany] = useState('');
-  const [sendInvitation, setSendInvitation] = useState(true);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [company, setCompany] = useState('')
+  const [sendInvitation, setSendInvitation] = useState(true)
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   // Validate name (required)
   const validateName = useCallback((value: string): string | undefined => {
     if (!value.trim()) {
-      return 'Name is required';
+      return 'Name is required'
     }
     if (value.trim().length < 2) {
-      return 'Name must be at least 2 characters';
+      return 'Name must be at least 2 characters'
     }
-    return undefined;
-  }, []);
+    return undefined
+  }, [])
 
   // Validate email (optional, but if provided must be valid)
   const validateEmail = useCallback(
     (value: string): string | undefined => {
       if (!value.trim()) {
-        return undefined; // Email is optional
+        return undefined // Email is optional
       }
       if (!EMAIL_REGEX.test(value)) {
-        return 'Please enter a valid email address';
+        return 'Please enter a valid email address'
       }
       if (existingEmails.includes(value.toLowerCase())) {
-        return 'A user with this email already exists';
+        return 'A user with this email already exists'
       }
-      return undefined;
+      return undefined
     },
     [existingEmails]
-  );
+  )
 
   // Validate phone (optional, but if provided must be valid)
   const validatePhone = useCallback((value: string): string | undefined => {
     if (!value.trim()) {
-      return undefined; // Phone is optional
+      return undefined // Phone is optional
     }
     if (!PHONE_REGEX.test(value)) {
-      return 'Please enter a valid phone number';
+      return 'Please enter a valid phone number'
     }
     if (value.replace(/\D/g, '').length < 10) {
-      return 'Phone number must have at least 10 digits';
+      return 'Phone number must have at least 10 digits'
     }
-    return undefined;
-  }, []);
+    return undefined
+  }, [])
 
   // Handle field changes with validation
   const handleNameChange = (value: string) => {
-    setName(value);
+    setName(value)
     if (touched.name) {
-      setErrors((prev) => ({ ...prev, name: validateName(value) }));
+      setErrors((prev) => ({ ...prev, name: validateName(value) }))
     }
-  };
+  }
 
   const handleEmailChange = (value: string) => {
-    setEmail(value);
+    setEmail(value)
     if (touched.email) {
-      setErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+      setErrors((prev) => ({ ...prev, email: validateEmail(value) }))
     }
     // Disable send invitation if email is cleared
     if (!value.trim()) {
-      setSendInvitation(false);
+      setSendInvitation(false)
     }
-  };
+  }
 
   const handlePhoneChange = (value: string) => {
-    setPhone(value);
+    setPhone(value)
     if (touched.phone) {
-      setErrors((prev) => ({ ...prev, phone: validatePhone(value) }));
+      setErrors((prev) => ({ ...prev, phone: validatePhone(value) }))
     }
-  };
+  }
 
   const handleCompanyChange = (value: string) => {
-    setCompany(value);
-  };
+    setCompany(value)
+  }
 
   // Handle blur events for validation
   const handleBlur = (field: string) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }))
     switch (field) {
       case 'name':
-        setErrors((prev) => ({ ...prev, name: validateName(name) }));
-        break;
+        setErrors((prev) => ({ ...prev, name: validateName(name) }))
+        break
       case 'email':
-        setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
-        break;
+        setErrors((prev) => ({ ...prev, email: validateEmail(email) }))
+        break
       case 'phone':
-        setErrors((prev) => ({ ...prev, phone: validatePhone(phone) }));
-        break;
+        setErrors((prev) => ({ ...prev, phone: validatePhone(phone) }))
+        break
     }
-  };
+  }
 
   // Handle form submit
   const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+    e?.preventDefault()
 
     // Validate all fields
-    const nameError = validateName(name);
-    const emailError = validateEmail(email);
-    const phoneError = validatePhone(phone);
+    const nameError = validateName(name)
+    const emailError = validateEmail(email)
+    const phoneError = validatePhone(phone)
 
-    setErrors({ name: nameError, email: emailError, phone: phoneError });
-    setTouched({ name: true, email: true, phone: true });
+    setErrors({ name: nameError, email: emailError, phone: phoneError })
+    setTouched({ name: true, email: true, phone: true })
 
     if (nameError || emailError || phoneError) {
-      return;
+      return
     }
 
     try {
@@ -177,17 +177,17 @@ export function ManualUserForm({
         company: company.trim() || undefined,
         role,
         sendInvitation: sendInvitation && !!email.trim(),
-      });
+      })
     } catch (err) {
       setErrors((prev) => ({
         ...prev,
         general: err instanceof Error ? err.message : 'Failed to create user',
-      }));
+      }))
     }
-  };
+  }
 
-  const roleLabel = role === 'contractor' ? 'Contractor' : role === 'manager' ? 'Manager' : 'Broker';
-  const hasEmail = !!email.trim();
+  const roleLabel = role === 'contractor' ? 'Contractor' : role === 'manager' ? 'Manager' : 'Broker'
+  const hasEmail = !!email.trim()
 
   return (
     <form onSubmit={handleSubmit}>
@@ -202,9 +202,7 @@ export function ManualUserForm({
               borderRadius: 8,
             }}
           >
-            <Text style={{ fontSize: 14, color: 'var(--color-red-11)' }}>
-              {errors.general}
-            </Text>
+            <Text style={{ fontSize: 14, color: 'var(--color-red-11)' }}>{errors.general}</Text>
           </div>
         )}
 
@@ -369,9 +367,7 @@ export function ManualUserForm({
             {loading ? (
               <Row style={{ alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 <Loader2 size={16} className="animate-spin" />
-                <Text style={{ fontSize: 14, color: 'white' }}>
-                  Creating {roleLabel}...
-                </Text>
+                <Text style={{ fontSize: 14, color: 'white' }}>Creating {roleLabel}...</Text>
               </Row>
             ) : (
               `Add ${roleLabel}`
@@ -396,7 +392,7 @@ export function ManualUserForm({
         </Text>
       </Stack>
     </form>
-  );
+  )
 }
 
-export default ManualUserForm;
+export default ManualUserForm

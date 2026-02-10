@@ -1,6 +1,6 @@
 /**
  * EnhancedManagerDashboard - Manager dashboard using Beyond UI
- * REQ-12: Manual user creation support
+ * Manual user creation support
  */
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -124,7 +124,7 @@ export default function EnhancedManagerDashboard() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [showAddContractorModal, setShowAddContractorModal] = useState(false)
 
-  // REQ-4: Use lexicon for dynamic labels
+  // Use lexicon for dynamic labels
   const { getContractorLabel } = useLexicon()
 
   // Data state
@@ -332,9 +332,7 @@ export default function EnhancedManagerDashboard() {
           >
             <Row alignItems="center" gap={6}>
               <UserPlus size={16} />
-              <Text style={{ color: 'white', fontSize: 14 }}>
-                Add {getContractorLabel(false)}
-              </Text>
+              <Text style={{ color: 'white', fontSize: 14 }}>Add {getContractorLabel(false)}</Text>
             </Row>
           </Button>
         )}
@@ -630,7 +628,7 @@ export default function EnhancedManagerDashboard() {
         }}
       />
 
-      {/* REQ-12: Manual contractor creation modal */}
+      {/* Manual contractor creation modal */}
       {organizationId && (
         <ManualUserCreateModal
           isOpen={showAddContractorModal}

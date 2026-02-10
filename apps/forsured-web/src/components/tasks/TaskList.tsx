@@ -1,5 +1,5 @@
 /**
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  * TaskList component with sorting, pagination, and filtering
  */
 

@@ -2,7 +2,7 @@
  * Playwright E2E Tests: News Feed Functionality
  * Tests the NewsWidget component in the dashboard
  *
- * REQ-2 Task 11: Test news feed rendering and functionality
+  * Task 11: Test news feed rendering and functionality
  */
 
 import { expect, type Page, test } from '@playwright/test'

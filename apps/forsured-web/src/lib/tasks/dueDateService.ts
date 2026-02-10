@@ -1,5 +1,5 @@
 /**
- * REQ-267: Due Date Inference & Management
+ * Due Date Inference & Management
  * TASK-2: Implement Due Date Auto-Calculation Logic
  *
  * Service for automatic due date calculation based on task context.

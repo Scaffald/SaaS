@@ -1,5 +1,5 @@
 /**
- * REQ-124: Document Upload & Storage - FileUploadZone Component
+ * Document Upload & Storage - FileUploadZone Component
  * Drag-and-drop file upload zone with validation and progress tracking
  */
 

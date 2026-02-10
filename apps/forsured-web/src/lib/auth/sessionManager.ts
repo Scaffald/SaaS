@@ -1,6 +1,6 @@
 /**
  * Session Manager
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  *
  * Manages user sessions, activity tracking, and session timeout
  */

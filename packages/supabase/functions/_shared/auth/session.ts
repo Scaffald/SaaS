@@ -1,6 +1,6 @@
 /**
  * Session management utilities for httpOnly cookie token storage
- * REQ-11: Authentication Flow Refinement - TASK-3
+ * Authentication flow - session helpers
  *
  * Uses Supabase database functions with Vault encryption for secure token storage.
  */

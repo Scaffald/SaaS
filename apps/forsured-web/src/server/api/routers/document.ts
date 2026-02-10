@@ -1,6 +1,6 @@
 /**
  * Document Router
- * REQ-286: Additional tRPC Routers - Document Management
+ * Additional tRPC Routers - Document Management
  *
  * Implements document management procedures with type-safe tRPC procedures
  * using Supabase backend.

@@ -1,5 +1,5 @@
 /**
- * REQ-165: Compliance Requirements Management System
+ * Compliance Requirements Management System
  * Form-based editor for creating and updating compliance requirements
  */
 

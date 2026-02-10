@@ -1,6 +1,6 @@
 /**
  * Developer App Registration Page
- * REQ-10 Task 10: Self-service app registration page
+ * Self-service app registration page
  */
 
 import { AppRegistrationForm } from '@scf/core/features/oauth/components/AppRegistrationForm'
@@ -13,4 +13,3 @@ export default function DeveloperRegisterPage() {
     </SafeAreaView>
   )
 }
-

@@ -1,6 +1,6 @@
 /**
  * Compliance Requirements Page
- * REQ-2, TASK-13: Requirements List View with Filtering and Search
+ * Requirements List View with Filtering and Search
  *
  * Admin page for managing compliance requirements with:
  * - Search and filtering

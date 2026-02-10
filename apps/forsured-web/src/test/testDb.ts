@@ -2,26 +2,33 @@
  * Test Database Utilities
  *
  * Provides real Supabase connection for integration tests.
- * REQ-9: Testing Policy - No mocking of owned code
+ * Testing policy: no mocking of owned code
  *
  * Use a dedicated test database or isolated schema for tests.
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 // Use local Supabase instance for testing
-const TEST_SUPABASE_URL = process.env.TEST_SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'http://127.0.0.1:54321';
-const TEST_SUPABASE_KEY = process.env.TEST_SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const TEST_SUPABASE_URL = process.env.TEST_SUPABASE_URL ||
+  process.env.VITE_SUPABASE_URL || "http://127.0.0.1:54321";
+const TEST_SUPABASE_KEY = process.env.TEST_SUPABASE_SERVICE_KEY ||
+  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 /**
  * Create a test Supabase client with service role key for full access
  */
-export const testSupabase: SupabaseClient = createClient(TEST_SUPABASE_URL, TEST_SUPABASE_KEY, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
+export const testSupabase: SupabaseClient = createClient(
+  TEST_SUPABASE_URL,
+  TEST_SUPABASE_KEY,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
   },
-});
+);
 
 /**
  * Test data tracking for cleanup
@@ -58,7 +65,9 @@ export function createTestDataTracker(): CreatedTestData {
  * Call this in afterEach or afterAll
  * Deletes in proper dependency order (children first)
  */
-export async function cleanupTestData(createdIds: CreatedTestData): Promise<void> {
+export async function cleanupTestData(
+  createdIds: CreatedTestData,
+): Promise<void> {
   const {
     projects = [],
     subcontractors = [],
@@ -74,66 +83,66 @@ export async function cleanupTestData(createdIds: CreatedTestData): Promise<void
 
   if (complianceIssues.length) {
     await testSupabase
-      .schema('forsured' as never)
-      .from('compliance_issues')
+      .schema("forsured" as never)
+      .from("compliance_issues")
       .delete()
-      .in('id', complianceIssues);
+      .in("id", complianceIssues);
   }
 
   if (complianceScores.length) {
     await testSupabase
-      .schema('forsured' as never)
-      .from('compliance_scores')
+      .schema("forsured" as never)
+      .from("compliance_scores")
       .delete()
-      .in('id', complianceScores);
+      .in("id", complianceScores);
   }
 
   if (tasks.length) {
     await testSupabase
-      .schema('forsured' as never)
-      .from('tasks')
+      .schema("forsured" as never)
+      .from("tasks")
       .delete()
-      .in('id', tasks);
+      .in("id", tasks);
   }
 
   if (documents.length) {
     await testSupabase
-      .schema('forsured' as never)
-      .from('documents')
+      .schema("forsured" as never)
+      .from("documents")
       .delete()
-      .in('id', documents);
+      .in("id", documents);
   }
 
   if (policies.length) {
     await testSupabase
-      .schema('forsured' as never)
-      .from('policies')
+      .schema("forsured" as never)
+      .from("policies")
       .delete()
-      .in('id', policies);
+      .in("id", policies);
   }
 
   if (invitations.length) {
     await testSupabase
-      .schema('forsured' as never)
-      .from('project_subcontractors')
+      .schema("forsured" as never)
+      .from("project_subcontractors")
       .delete()
-      .in('id', invitations);
+      .in("id", invitations);
   }
 
   if (subcontractors.length) {
     await testSupabase
-      .schema('forsured' as never)
-      .from('subcontractors')
+      .schema("forsured" as never)
+      .from("subcontractors")
       .delete()
-      .in('id', subcontractors);
+      .in("id", subcontractors);
   }
 
   if (projects.length) {
     await testSupabase
-      .schema('forsured' as never)
-      .from('projects')
+      .schema("forsured" as never)
+      .from("projects")
       .delete()
-      .in('id', projects);
+      .in("id", projects);
   }
 }
 
@@ -159,19 +168,19 @@ export async function verifyDatabaseConnection(): Promise<boolean> {
   try {
     // Try to query a known table
     const { error } = await testSupabase
-      .schema('core' as never)
-      .from('organizations')
-      .select('id')
+      .schema("core" as never)
+      .from("organizations")
+      .select("id")
       .limit(1);
 
     if (error) {
-      console.error('Database connection test failed:', error.message);
+      console.error("Database connection test failed:", error.message);
       return false;
     }
 
     return true;
   } catch (err) {
-    console.error('Database connection error:', err);
+    console.error("Database connection error:", err);
     return false;
   }
 }
@@ -182,13 +191,13 @@ export async function verifyDatabaseConnection(): Promise<boolean> {
  */
 export async function getTestOrganizationId(): Promise<string | null> {
   const { data: orgs } = await testSupabase
-    .schema('core' as never)
-    .from('organizations')
-    .select('id')
+    .schema("core" as never)
+    .from("organizations")
+    .select("id")
     .limit(1);
 
   if (!orgs || orgs.length === 0) {
-    console.warn('No test organization available');
+    console.warn("No test organization available");
     return null;
   }
 
@@ -199,14 +208,16 @@ export async function getTestOrganizationId(): Promise<string | null> {
  * Get a test project ID for creating test data
  * Returns the first available project in the specified organization
  */
-export async function getTestProjectId(organizationId?: string): Promise<string | null> {
+export async function getTestProjectId(
+  organizationId?: string,
+): Promise<string | null> {
   let query = testSupabase
-    .schema('forsured' as never)
-    .from('projects')
-    .select('id');
+    .schema("forsured" as never)
+    .from("projects")
+    .select("id");
 
   if (organizationId) {
-    query = query.eq('organization_id', organizationId);
+    query = query.eq("organization_id", organizationId);
   }
 
   const { data: projects } = await query.limit(1);
@@ -222,14 +233,16 @@ export async function getTestProjectId(organizationId?: string): Promise<string 
  * Get a test subcontractor ID for creating test data
  * Returns the first available subcontractor in the specified organization
  */
-export async function getTestSubcontractorId(organizationId?: string): Promise<string | null> {
+export async function getTestSubcontractorId(
+  organizationId?: string,
+): Promise<string | null> {
   let query = testSupabase
-    .schema('forsured' as never)
-    .from('subcontractors')
-    .select('id');
+    .schema("forsured" as never)
+    .from("subcontractors")
+    .select("id");
 
   if (organizationId) {
-    query = query.eq('organization_id', organizationId);
+    query = query.eq("organization_id", organizationId);
   }
 
   const { data: subs } = await query.limit(1);

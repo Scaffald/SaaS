@@ -2,11 +2,11 @@
  * Compliance Factory
  *
  * Creates real compliance records in the database for testing.
- * REQ-9: Testing Policy - No mocking of owned code
+ * No mocking of owned code
  */
 
-import { testSupabase, CreatedTestData } from '../testDb';
-import { testId, FactoryOptions } from './index';
+import { CreatedTestData, testSupabase } from "../testDb";
+import { FactoryOptions, testId } from "./index";
 
 export interface TestComplianceScore {
   id: string;
@@ -38,7 +38,7 @@ interface CreateComplianceScoreOptions extends FactoryOptions {
   subcontractorId: string;
   organizationId: string;
   score?: number;
-  status?: 'compliant' | 'warning' | 'critical' | 'pending';
+  status?: "compliant" | "warning" | "critical" | "pending";
   gaps?: any;
 }
 
@@ -47,31 +47,31 @@ interface CreateComplianceIssueOptions extends FactoryOptions {
   subcontractorId: string;
   organizationId: string;
   type?: string;
-  severity?: 'info' | 'warning' | 'error' | 'critical';
+  severity?: "info" | "warning" | "error" | "critical";
   title?: string;
   description?: string;
-  status?: 'open' | 'in_progress' | 'resolved' | 'dismissed';
+  status?: "open" | "in_progress" | "resolved" | "dismissed";
 }
 
 /**
  * Create a test compliance score
  */
 export async function createTestComplianceScore(
-  options: CreateComplianceScoreOptions
+  options: CreateComplianceScoreOptions,
 ): Promise<TestComplianceScore> {
   const scoreData = {
     project_id: options.projectId,
     subcontractor_id: options.subcontractorId,
     organization_id: options.organizationId,
     score: options.score ?? 75,
-    status: options.status || 'warning',
+    status: options.status || "warning",
     gaps: options.gaps || [],
     last_evaluated: new Date().toISOString(),
   };
 
   const { data: result, error } = await testSupabase
-    .schema('forsured' as never)
-    .from('compliance_scores')
+    .schema("forsured" as never)
+    .from("compliance_scores")
     .insert(scoreData)
     .select()
     .single();
@@ -92,22 +92,22 @@ export async function createTestComplianceScore(
  * Create a test compliance issue
  */
 export async function createTestComplianceIssue(
-  options: CreateComplianceIssueOptions
+  options: CreateComplianceIssueOptions,
 ): Promise<TestComplianceIssue> {
   const issueData = {
     project_id: options.projectId,
     subcontractor_id: options.subcontractorId,
     organization_id: options.organizationId,
-    type: options.type || 'coverage_gap',
-    severity: options.severity || 'warning',
+    type: options.type || "coverage_gap",
+    severity: options.severity || "warning",
     title: options.title || `Test Issue ${testId()}`,
     description: options.description,
-    status: options.status || 'open',
+    status: options.status || "open",
   };
 
   const { data: result, error } = await testSupabase
-    .schema('forsured' as never)
-    .from('compliance_issues')
+    .schema("forsured" as never)
+    .from("compliance_issues")
     .insert(issueData)
     .select()
     .single();
@@ -131,16 +131,16 @@ export async function createTestComplianceIssuesBySeverity(
   projectId: string,
   subcontractorId: string,
   organizationId: string,
-  options: FactoryOptions = {}
+  options: FactoryOptions = {},
 ): Promise<TestComplianceIssue[]> {
   const severities: Array<{
-    severity: 'info' | 'warning' | 'error' | 'critical';
+    severity: "info" | "warning" | "error" | "critical";
     title: string;
   }> = [
-    { severity: 'info', title: 'Minor documentation missing' },
-    { severity: 'warning', title: 'Policy expiring soon' },
-    { severity: 'error', title: 'Coverage below minimum' },
-    { severity: 'critical', title: 'Policy expired' },
+    { severity: "info", title: "Minor documentation missing" },
+    { severity: "warning", title: "Policy expiring soon" },
+    { severity: "error", title: "Coverage below minimum" },
+    { severity: "critical", title: "Policy expired" },
   ];
 
   const issues: TestComplianceIssue[] = [];
@@ -172,18 +172,18 @@ export async function createTestComplianceScenario(
     score?: number;
     issueCount?: number;
     criticalIssues?: boolean;
-  } & FactoryOptions
+  } & FactoryOptions,
 ): Promise<{
   score: TestComplianceScore;
   issues: TestComplianceIssue[];
 }> {
   // Determine status based on score
-  let status: 'compliant' | 'warning' | 'critical' | 'pending' = 'warning';
+  let status: "compliant" | "warning" | "critical" | "pending" = "warning";
   const score = options.score ?? 75;
-  if (score >= 90) status = 'compliant';
-  else if (score >= 70) status = 'warning';
-  else if (score >= 50) status = 'warning';
-  else status = 'critical';
+  if (score >= 90) status = "compliant";
+  else if (score >= 70) status = "warning";
+  else if (score >= 50) status = "warning";
+  else status = "critical";
 
   const complianceScore = await createTestComplianceScore({
     projectId: options.projectId,
@@ -199,7 +199,7 @@ export async function createTestComplianceScenario(
   const issueCount = options.issueCount ?? 2;
 
   for (let i = 0; i < issueCount; i++) {
-    const severity = options.criticalIssues && i === 0 ? 'critical' : 'warning';
+    const severity = options.criticalIssues && i === 0 ? "critical" : "warning";
     const issue = await createTestComplianceIssue({
       projectId: options.projectId,
       subcontractorId: options.subcontractorId,

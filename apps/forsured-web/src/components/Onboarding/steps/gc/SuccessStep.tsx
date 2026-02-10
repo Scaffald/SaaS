@@ -1,5 +1,5 @@
 // src/components/onboarding/steps/gc/SuccessStep.tsx
-// REQ-126: GC Onboarding - Success/Completion Step
+// GC Onboarding - Success/Completion Step
 import { CheckCircle } from 'lucide-react';
 import { Stack, Text, H2, Button } from '@unicornlove/beyond-ui';
 

@@ -1,6 +1,6 @@
 /**
  * Projects Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Manages project data from forsured.projects table.
  */

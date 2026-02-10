@@ -1,5 +1,5 @@
 // src/services/auditLogService.ts
-// REQ-126: Admin audit logging service
+// Admin audit logging service
 //
 // Logs admin actions to the forsured.admin_audit_log table for compliance and security.
 

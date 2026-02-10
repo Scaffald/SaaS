@@ -1,6 +1,6 @@
 /**
  * Requirement Type Badge
- * REQ-2, TASK-13: Visual type indicator for coverage requirements
+ * Visual type indicator for coverage requirements
  */
 
 import { Row, Text } from '@unicornlove/beyond-ui';

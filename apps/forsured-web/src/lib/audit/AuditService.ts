@@ -1,7 +1,7 @@
 /**
  * AuditService - Comprehensive Audit Logging Service
  *
- * Implements REQ-130: Comprehensive Audit Logging with 7-Year Retention
+ * Implements Comprehensive Audit Logging with 7-Year Retention
  *
  * Features:
  * - Event logging for 8 categories (authentication, authorization, data_access, data_modification, admin, security, compliance, system)

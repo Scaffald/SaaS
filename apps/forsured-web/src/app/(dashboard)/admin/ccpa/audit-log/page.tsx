@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Audit Log Page
+ * CCPA Admin Audit Log Page
  * TASK-7: Implement CCPA Audit Log Page with Filtering and Export
  *
  * Shows audit trail for CCPA-related events:

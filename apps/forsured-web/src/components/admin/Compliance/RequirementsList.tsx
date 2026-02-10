@@ -1,6 +1,6 @@
 /**
  * RequirementsList Component
- * REQ-2, TASK-13: Requirements List View with Filtering and Search
+ * Requirements List View with Filtering and Search
  *
  * Displays a data table of compliance requirements with:
  * - Column sorting

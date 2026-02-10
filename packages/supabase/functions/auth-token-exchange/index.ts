@@ -1,6 +1,6 @@
 /**
  * Auth Token Exchange Edge Function
- * REQ-11: Authentication Flow Refinement - TASK-3
+ * Authentication flow - token exchange
  *
  * Exchanges OAuth authorization code for tokens, stores them encrypted
  * in Vault, and returns a session cookie.

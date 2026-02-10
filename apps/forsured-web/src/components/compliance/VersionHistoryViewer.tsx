@@ -1,6 +1,6 @@
 /**
  * Version History Viewer
- * REQ-2, TASK-16: Version history with side-by-side diff view
+ * Version history with side-by-side diff view
  *
  * Features:
  * - List of version history entries with metadata

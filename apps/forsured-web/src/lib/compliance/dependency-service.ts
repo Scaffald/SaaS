@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-4: Dependency Validation Service
+ * Dependency Validation Service
  * Validates compliance requirement dependencies, including specialized umbrella insurance validation
  */
 

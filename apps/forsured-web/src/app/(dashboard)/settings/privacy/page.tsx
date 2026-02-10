@@ -1,5 +1,5 @@
 /**
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  * Privacy Settings Page
  *
  * Provides users with CCPA privacy rights management including:

@@ -1,6 +1,6 @@
 /**
  * CCPA Cookie Consent Integration Hook
- * REQ-3: CCPA Compliance Implementation - TASK-21
+ * CCPA Compliance Implementation - TASK-21
  *
  * Provides integration between cookie consent UI and CCPA opt-out system:
  * - GPC (Global Privacy Control) signal detection

@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Request List Page
+ * CCPA Admin Request List Page
  * TASK-2: Implement CCPA Request List Page with Filtering and Search
  *
  * Work queue for all CCPA data subject requests with:

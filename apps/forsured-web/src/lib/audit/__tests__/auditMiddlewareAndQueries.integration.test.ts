@@ -1,7 +1,7 @@
 /**
  * Audit Middleware and Queries Integration Tests
  *
- * REQ-130: Comprehensive Audit Logging with 7-Year Retention
+ * Comprehensive Audit Logging with 7-Year Retention
  *
  * Tests the full integration of audit middleware and queries against
  * a real Supabase database. Verifies end-to-end functionality:

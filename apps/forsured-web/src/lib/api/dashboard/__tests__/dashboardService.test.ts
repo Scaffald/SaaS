@@ -1,5 +1,5 @@
 /**
- * REQ-129: Manager Dashboard Service Tests
+ * Manager Dashboard Service Tests
  * TDD tests for dashboard API service layer
  */
 
@@ -340,7 +340,7 @@ describe('DashboardService', () => {
   });
 
   // ==========================================================================
-  // REQ-266: Task Severity and Risk Distribution Tests
+  // Task Severity and Risk Distribution Tests
   // ==========================================================================
 
   describe('getTaskSeveritySummary', () => {
@@ -355,7 +355,7 @@ describe('DashboardService', () => {
       expect(summary.urgent_count).toBeGreaterThanOrEqual(0);
       expect(summary.last_updated).toBeDefined();
 
-      // Should have REQ-266 severity fields
+      // Should have severity fields
       expect(summary.severity_counts).toBeDefined();
       expect(summary.severity_counts.critical).toBeGreaterThanOrEqual(0);
       expect(summary.severity_counts.high).toBeGreaterThanOrEqual(0);

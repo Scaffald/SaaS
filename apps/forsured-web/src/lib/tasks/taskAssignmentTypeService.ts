@@ -1,5 +1,5 @@
 /**
- * REQ-260: Task Assignment Workflow Fix
+ * Task Assignment Workflow Fix
  * TASK-1: Update Task Assignment Logic to Distinguish Self-Assignment vs Delegation
  *
  * Service to handle task assignment type classification and related operations.

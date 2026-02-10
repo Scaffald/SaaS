@@ -1,6 +1,6 @@
 /**
  * Admin OAuth Apps List Page
- * REQ-10 Task 11: Admin OAuth app approval dashboard
+ * Admin OAuth app approval dashboard
  */
 
 import { OAuthAppList } from '@scf/core/features/oauth/components/OAuthAppList'
@@ -13,4 +13,3 @@ export default function OfficeOAuthAppsPage() {
     </SafeAreaView>
   )
 }
-

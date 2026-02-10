@@ -146,6 +146,33 @@ export type {
 
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
+export type {
+  Connection,
+  ConnectionRequest,
+  SendConnectionRequestParams,
+  ConnectionsListResponse,
+  PendingRequestsResponse,
+  ConnectionStatusResponse,
+} from './resources/connections.js'
+
+export type {
+  Follow,
+  FollowUserParams,
+  FollowsListResponse,
+  FollowStatusResponse,
+} from './resources/follows.js'
+
+export type {
+  EngagementEventType,
+  EngagementTargetType,
+  TrackEventParams,
+  EngagementEvent,
+  GetRecentActivityParams,
+  GetEngagementMetricsParams,
+  EngagementMetrics,
+  RecentActivityResponse,
+} from './resources/engagement.js'
+
 export {
   OAuthClient,
   type OAuthConfig,

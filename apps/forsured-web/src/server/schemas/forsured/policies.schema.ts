@@ -1,7 +1,7 @@
 /**
  * Policy and Policy Provision Schemas
- * REQ-287: Create Zod Schemas for Forsured Entities
- * REQ-280: Insurance Coverage Detail Requirements
+ * Create Zod Schemas for Forsured Entities
+ * Insurance Coverage Detail Requirements
  *
  * Zod schemas for insurance policies and policy provision entities
  * with create, update, and validation schemas for tRPC input/output validation.
@@ -93,7 +93,7 @@ export const updateInsurancePolicySchema = createInsurancePolicySchema.partial()
 /**
  * Base policy provision schema
  * Full schema with all fields including auto-generated ones
- * REQ-280: Extended with organization_id, description, and updated_at
+ * Extended with organization_id, description, and updated_at
  */
 export const policyProvisionSchema = z.object({
   id: uuidSchema,
@@ -102,7 +102,7 @@ export const policyProvisionSchema = z.object({
   provision_type: provisionTypeEnum,
   limit_amount: z.number().nullable().optional(), // For monetary provisions
   deductible: z.number().nullable().optional(),
-  provision_value: z.string().nullable().optional(), // For boolean/string provisions (REQ-280)
+  provision_value: z.string().nullable().optional(), // For boolean/string provisions
   description: z.string().nullable().optional(), // For 'other' type or notes
   created_at: timestampSchema,
   updated_at: timestampSchema,
@@ -125,7 +125,7 @@ export const createPolicyProvisionSchema = policyProvisionSchema.omit({
 export const updatePolicyProvisionSchema = createPolicyProvisionSchema.partial();
 
 // =============================================================================
-// Validation Result Schemas (REQ-280)
+// Validation Result Schemas
 // =============================================================================
 
 /**
@@ -135,7 +135,7 @@ export const validationSeverityEnum = z.enum(['success', 'warning', 'error']);
 
 /**
  * Provision validation result schema
- * REQ-280: Used to indicate whether a provision meets GL requirements
+ * Used to indicate whether a provision meets GL requirements
  */
 export const provisionValidationResultSchema = z.object({
   provision_type: provisionTypeEnum,
@@ -148,7 +148,7 @@ export const provisionValidationResultSchema = z.object({
 
 /**
  * Policy provisions response schema
- * REQ-280: Response structure for GET /api/policies/{policyId}/provisions
+ * Response structure for GET /api/policies/{policyId}/provisions
  */
 export const policyProvisionsResponseSchema = z.object({
   provisions: z.array(policyProvisionSchema),
@@ -158,7 +158,7 @@ export const policyProvisionsResponseSchema = z.object({
 });
 
 // =============================================================================
-// GL Sub-Limits Display Types (REQ-280)
+// GL Sub-Limits Display Types
 // =============================================================================
 
 /**

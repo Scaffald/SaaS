@@ -1,6 +1,6 @@
 /**
  * Task Schemas
- * REQ-287: Create Zod Schemas for Forsured Entities
+ * Create Zod Schemas for Forsured Entities
  * TASK-4: Create task schemas
  *
  * Zod schemas for task entities with create, update, and base schemas

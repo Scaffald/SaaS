@@ -1,6 +1,6 @@
 /**
  * Bulk Operations Router
- * REQ-2, TASK-12: tRPC Endpoints for Bulk Import/Export
+ * tRPC Endpoints for Bulk Import/Export
  * TASK-19: Integrated with Compliance Authorization System
  *
  * Implements bulk operations with:

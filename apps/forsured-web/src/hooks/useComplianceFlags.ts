@@ -1,6 +1,6 @@
 /**
  * Compliance Flags Hook
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  *
  * Manages compliance flags for policies, provisions, and endorsements
  * using a polymorphic entity reference pattern.
