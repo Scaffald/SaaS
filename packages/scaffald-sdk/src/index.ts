@@ -334,6 +334,25 @@ export type {
   RecentActivityResponse,
 } from './resources/engagement.js'
 
+export type {
+  Employer,
+  GetEmployersParams,
+  GetEmployersResponse,
+  GetEmployerByIdParams,
+  EmploymentStatus,
+  GetEmploymentStatusParams,
+  ClaimEmploymentParams,
+  ClaimEmploymentResponse,
+  RemoveEmploymentParams,
+  RemoveEmploymentResponse,
+  FollowStatus,
+  GetFollowStatusParams,
+  FollowOrganizationParams,
+  FollowOrganizationResponse,
+  UnfollowOrganizationParams,
+  UnfollowOrganizationResponse,
+} from './resources/employers.js'
+
 export {
   OAuthClient,
   type OAuthConfig,

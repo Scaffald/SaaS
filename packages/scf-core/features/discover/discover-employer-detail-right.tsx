@@ -1,4 +1,18 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useEmployer,
+  useEmploymentStatus,
+  useFollowStatus,
+  useFollowOrganizationMutation,
+  useUnfollowOrganizationMutation,
+  useClaimEmploymentMutation,
+  useRemoveEmploymentMutation,
+} from '@scf/core/utils/employers-sdk-hooks'
+import type {
+  FollowOrganizationResponse,
+  UnfollowOrganizationResponse,
+  ClaimEmploymentResponse,
+  RemoveEmploymentResponse,
+} from '@scaffald/sdk'
 import { useOrganizationOpenJobsCount } from '@scf/core/utils/organizations-sdk-hooks'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
 import {
@@ -11,6 +25,7 @@ import {
 } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Button, Separator, Text, Row, Stack } from '@unicornlove/beyond-ui'
 
 type OrganizationIdentifier = { organizationId: string }
@@ -19,11 +34,6 @@ type FollowStatusSnapshot = {
   isFollowing: boolean
   followId: string | null
   createdAt: string | null
-}
-
-type FollowMutationResult = {
-  alreadyFollowing: boolean
-  follow: { id: string; created_at: string | null }
 }
 
 type FollowMutationContext = { previous?: FollowStatusSnapshot }
@@ -35,17 +45,6 @@ type EmploymentStatusSnapshot = {
   isCurrent: boolean
   claimedAt: string | null
   createdAt: string | null
-}
-
-type ClaimMutationResult = {
-  alreadyLinked: boolean
-  experience: {
-    id: string
-    source: string | null
-    is_current: boolean | null
-    claimed_at: string | null
-    created_at: string | null
-  } | null
 }
 
 type EmploymentMutationContext = { previous?: EmploymentStatusSnapshot }
@@ -62,9 +61,9 @@ type DiscoverEmployerDetailRightProps = {
  */
 export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDetailRightProps) {
   const toast = useToast()
-  const utils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const { data: employer, isLoading } = api.employers.getEmployerById.useQuery(
+  const { data: employer, isLoading } = useEmployer(
     { id: employerId },
     { enabled: Boolean(employerId) }
   )
@@ -74,28 +73,25 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     { enabled: Boolean(employerId) }
   )
 
-  const { data: followStatus, isLoading: followStatusLoading } =
-    api.employers.getOrganizationFollowStatus.useQuery(
-      { organizationId: employerId },
-      { enabled: Boolean(employerId) }
-    )
+  const { data: followStatus, isLoading: followStatusLoading } = useFollowStatus(
+    { organizationId: employerId },
+    { enabled: Boolean(employerId) }
+  )
 
-  const { data: employmentStatus, isLoading: employmentStatusLoading } =
-    api.employers.getOrganizationEmploymentStatus.useQuery(
-      { organizationId: employerId },
-      { enabled: Boolean(employerId) }
-    )
+  const { data: employmentStatus, isLoading: employmentStatusLoading } = useEmploymentStatus(
+    { organizationId: employerId },
+    { enabled: Boolean(employerId) }
+  )
 
-  const followMutation = api.employers.followOrganization.useMutation({
+  const followMutation = useFollowOrganizationMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
-      await utils.employers.getOrganizationFollowStatus.cancel(variables)
-      const previous: FollowStatusSnapshot | undefined =
-        utils.employers.getOrganizationFollowStatus.getData(variables)
+      const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+      await queryClient.cancelQueries({ queryKey })
+      const previous: FollowStatusSnapshot | undefined = queryClient.getQueryData(queryKey)
 
-      utils.employers.getOrganizationFollowStatus.setData(variables, {
+      queryClient.setQueryData(queryKey, {
         isFollowing: true,
-        followId: previous?.followId ?? null,
-        createdAt: previous?.createdAt ?? new Date().toISOString(),
+        followedAt: previous?.createdAt ?? new Date().toISOString(),
       })
 
       return { previous } as FollowMutationContext
@@ -106,7 +102,8 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       context?: FollowMutationContext
     ) => {
       if (context?.previous) {
-        utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
+        const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+        queryClient.setQueryData(queryKey, context.previous)
       }
       toast.show({
           title: 'Unable to follow',
@@ -114,31 +111,30 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
           variant: 'error',
         })
     },
-    onSuccess: (data: FollowMutationResult, variables: OrganizationIdentifier) => {
-      utils.employers.getOrganizationFollowStatus.setData(variables, {
+    onSuccess: (data: FollowOrganizationResponse, variables: OrganizationIdentifier) => {
+      const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+      queryClient.setQueryData(queryKey, {
         isFollowing: true,
-        followId: data.follow.id,
-        createdAt: data.follow.created_at ?? new Date().toISOString(),
+        followedAt: data.followedAt ?? new Date().toISOString(),
       })
 
-      toast.show(data.alreadyFollowing ? 'Already following' : 'Following organization', {
-        message: data.alreadyFollowing
-          ? 'You were already following this organization.'
-          : 'We will keep you updated as new activity rolls in.',
+      toast.show({
+        title: 'Following organization',
+        message: 'We will keep you updated as new activity rolls in.',
+        variant: 'success',
       })
     },
   })
 
-  const unfollowMutation = api.employers.unfollowOrganization.useMutation({
+  const unfollowMutation = useUnfollowOrganizationMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
-      await utils.employers.getOrganizationFollowStatus.cancel(variables)
-      const previous: FollowStatusSnapshot | undefined =
-        utils.employers.getOrganizationFollowStatus.getData(variables)
+      const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+      await queryClient.cancelQueries({ queryKey })
+      const previous: FollowStatusSnapshot | undefined = queryClient.getQueryData(queryKey)
 
-      utils.employers.getOrganizationFollowStatus.setData(variables, {
+      queryClient.setQueryData(queryKey, {
         isFollowing: false,
-        followId: null,
-        createdAt: null,
+        followedAt: null,
       })
 
       return { previous } as FollowMutationContext
@@ -149,7 +145,8 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       context?: FollowMutationContext
     ) => {
       if (context?.previous) {
-        utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
+        const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+        queryClient.setQueryData(queryKey, context.previous)
       }
       toast.show({
           title: 'Unable to unfollow',
@@ -157,11 +154,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
           variant: 'error',
         })
     },
-    onSuccess: (_data: { success: boolean }, variables: OrganizationIdentifier) => {
-      utils.employers.getOrganizationFollowStatus.setData(variables, {
+    onSuccess: (_data: UnfollowOrganizationResponse, variables: OrganizationIdentifier) => {
+      const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+      queryClient.setQueryData(queryKey, {
         isFollowing: false,
-        followId: null,
-        createdAt: null,
+        followedAt: null,
       })
 
       toast.show({
@@ -183,13 +180,13 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         ? 'Following'
         : 'Follow Organization'
 
-  const claimEmploymentMutation = api.employers.claimOrganizationEmployment.useMutation({
+  const claimEmploymentMutation = useClaimEmploymentMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
-      await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
-      const previous: EmploymentStatusSnapshot | undefined =
-        utils.employers.getOrganizationEmploymentStatus.getData(variables)
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      await queryClient.cancelQueries({ queryKey })
+      const previous: EmploymentStatusSnapshot | undefined = queryClient.getQueryData(queryKey)
 
-      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+      queryClient.setQueryData(queryKey, {
         isLinked: true,
         experienceId: previous?.experienceId ?? null,
         source: previous?.source ?? 'claim',
@@ -206,7 +203,8 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       context?: EmploymentMutationContext
     ) => {
       if (context?.previous) {
-        utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
+        const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+        queryClient.setQueryData(queryKey, context.previous)
       }
       toast.show({
           title: 'Unable to link employment',
@@ -214,9 +212,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
           variant: 'error',
         })
     },
-    onSuccess: (data: ClaimMutationResult, variables: OrganizationIdentifier) => {
+    onSuccess: (data: ClaimEmploymentResponse, variables: OrganizationIdentifier) => {
       const experience = data.experience ?? null
-      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      queryClient.setQueryData(queryKey, {
         isLinked: true,
         experienceId: experience?.id ?? null,
         source: experience?.source ?? 'claim',
@@ -225,28 +224,31 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: experience?.created_at ?? new Date().toISOString(),
       })
 
-      toast.show(data.alreadyLinked ? 'Already linked' : 'Employment linked', {
+      toast.show({
+        title: data.alreadyLinked ? 'Already linked' : 'Employment linked',
         message: data.alreadyLinked
           ? 'Your profile is already connected to this organization.'
           : 'We created a connection to this organization on your profile.',
+        variant: 'success',
       })
     },
     onSettled: async (
-      _data: ClaimMutationResult | undefined,
+      _data: ClaimEmploymentResponse | undefined,
       _error: MutationError | null,
       variables: OrganizationIdentifier
     ) => {
-      await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      await queryClient.invalidateQueries({ queryKey })
     },
   })
 
-  const removeEmploymentMutation = api.employers.removeOrganizationEmployment.useMutation({
+  const removeEmploymentMutation = useRemoveEmploymentMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
-      await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
-      const previous: EmploymentStatusSnapshot | undefined =
-        utils.employers.getOrganizationEmploymentStatus.getData(variables)
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      await queryClient.cancelQueries({ queryKey })
+      const previous: EmploymentStatusSnapshot | undefined = queryClient.getQueryData(queryKey)
 
-      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+      queryClient.setQueryData(queryKey, {
         isLinked: false,
         experienceId: null,
         source: null,
@@ -263,7 +265,8 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       context?: EmploymentMutationContext
     ) => {
       if (context?.previous) {
-        utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
+        const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+        queryClient.setQueryData(queryKey, context.previous)
       }
       toast.show({
           title: 'Unable to remove link',
@@ -271,18 +274,16 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
           variant: 'error',
         })
     },
-    onSuccess: (data: { removed: boolean }, variables: OrganizationIdentifier) => {
-      if (!data.removed) {
-        // Nothing to remove, restore to neutral state
-        utils.employers.getOrganizationEmploymentStatus.setData(variables, {
-          isLinked: false,
-          experienceId: null,
-          source: null,
-          isCurrent: false,
-          claimedAt: null,
-          createdAt: null,
-        })
-      }
+    onSuccess: (_data: RemoveEmploymentResponse, variables: OrganizationIdentifier) => {
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      queryClient.setQueryData(queryKey, {
+        isLinked: false,
+        experienceId: null,
+        source: null,
+        isCurrent: false,
+        claimedAt: null,
+        createdAt: null,
+      })
 
       toast.show({
           title: 'Employment link removed',
@@ -290,11 +291,12 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         })
     },
     onSettled: async (
-      _data: { removed: boolean } | undefined,
+      _data: RemoveEmploymentResponse | undefined,
       _error: MutationError | null,
       variables: OrganizationIdentifier
     ) => {
-      await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      await queryClient.invalidateQueries({ queryKey })
     },
   })
 

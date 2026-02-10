@@ -1,5 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { api } from '@scf/core/utils/api'
+import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { DashboardWidget } from '@unicornlove/beyond-ui'
 import {
@@ -40,7 +41,7 @@ export function AddOrganizationWidget() {
     data: searchResults,
     isFetching,
     isLoading,
-  } = api.employers.getEmployers.useQuery(
+  } = useEmployers(
     { search: trimmedQuery, limit: 12 },
     {
       enabled: trimmedQuery.length >= MIN_QUERY_LENGTH,

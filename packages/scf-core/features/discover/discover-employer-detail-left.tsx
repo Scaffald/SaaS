@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useEmployer } from '@scf/core/utils/employers-sdk-hooks'
 import { DashboardWidget, extractPlainText } from '@unicornlove/beyond-ui'
 import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
@@ -21,7 +21,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     data: employer,
     isLoading,
     isFetching,
-  } = api.employers.getEmployerById.useQuery({ id: employerId }, { enabled: Boolean(employerId) })
+  } = useEmployer({ id: employerId }, { enabled: Boolean(employerId) })
 
   if (!employerId) {
     return (

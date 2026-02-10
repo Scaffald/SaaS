@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useMemo, useState } from 'react'
 import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
@@ -39,7 +39,7 @@ export function DiscoverEmployersScreen() {
 
   // Fetch all employers (no filters) to build industry name-to-ID mapping
   // React Query will cache this, so it won't cause duplicate requests
-  const { data: allData, isLoading: isLoadingAll } = api.employers.getEmployers.useQuery()
+  const { data: allData, isLoading: isLoadingAll } = useEmployers()
   const allEmployers: Employer[] = (allData?.employers ?? []).map((emp: unknown) =>
     transformEmployerRecord(emp) as Employer
   )
@@ -78,10 +78,10 @@ export function DiscoverEmployersScreen() {
 
   // Fetch filtered employers from backend
   const hasFilters = searchQuery.trim().length > 0 || selectedIndustryIds.length > 0
-  const { data, isLoading: isLoadingFiltered } = api.employers.getEmployers.useQuery(
+  const { data, isLoading: isLoadingFiltered } = useEmployers(
     {
       search: searchQuery.trim() || undefined,
-      industryIds: selectedIndustryIds.length > 0 ? selectedIndustryIds : undefined,
+      industry: selectedIndustryIds.length > 0 ? selectedIndustryIds[0] : undefined,
     },
     {
       // Only use filtered query when filters are applied, otherwise use cached all-data
