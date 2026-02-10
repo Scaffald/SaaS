@@ -1,5 +1,5 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { api } from '@scf/core/utils/api'
+import { useBackgroundCheck } from '@scf/core/utils/background-checks-sdk-hooks'
 import { AlertTriangle, X as CloseIcon, DownloadCloud } from 'lucide-react-native'
 import { memo } from 'react'
 import { Alert } from 'react-native'
@@ -28,14 +28,9 @@ export const ResultsViewer = memo(function ResultsViewer({
   onClose,
   onRequestDispute,
 }: ResultsViewerProps) {
-  const getCheckQuery = api.backgroundChecks.getCheck.useQuery(
-    { background_check_id: checkId ?? '' },
-    {
-      enabled: Boolean(checkId),
-      refetchOnMount: false,
-      refetchOnWindowFocus: true,
-    }
-  )
+  const getCheckQuery = useBackgroundCheck(checkId || undefined, {
+    enabled: Boolean(checkId),
+  })
 
   const { disputes, isLoadingDisputes, hasActiveDispute, refetchDisputes } = useDispute({
     checkId: checkId ?? null,

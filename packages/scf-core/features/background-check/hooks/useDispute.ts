@@ -1,10 +1,13 @@
-import { api } from '@scf/core/utils/api';
+import {
+  useBackgroundCheckDisputes,
+  useCreateDocumentUploadUrlMutation,
+  useSubmitBackgroundCheckDisputeMutation,
+} from '@scf/core/utils/background-checks-sdk-hooks';
 import { supabase } from '@scf/core/utils/supabase/client';
-import type { AppRouter } from '@scf/supabase/client-types';
 import type { UploadSelection } from '@unicornlove/beyond-ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@unicornlove/beyond-ui';
-import type { inferRouterOutputs } from '@trpc/server';
+import { useQueryClient } from '@tanstack/react-query';
 import { Buffer } from 'buffer';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -21,9 +24,18 @@ const SUPPORTED_MIME_TYPES = [
 
 type SupportedMimeType = (typeof SUPPORTED_MIME_TYPES)[number];
 
-type RouterOutputs = inferRouterOutputs<AppRouter>;
-export type BackgroundCheckDispute =
-  RouterOutputs["backgroundChecks"]["listDisputesForCheck"][number];
+export type BackgroundCheckDispute = {
+  id: string;
+  background_check_id: string;
+  user_id: string;
+  reason: string;
+  details?: string;
+  status: 'pending' | 'under_review' | 'resolved' | 'rejected';
+  resolution?: string;
+  resolved_at?: string;
+  created_at: string;
+  updated_at: string;
+};
 
 export interface DisputeReasonOption {
   value: string;
@@ -160,7 +172,7 @@ export function useDispute(
   { checkId, enabled = true }: UseDisputeOptions,
 ): UseDisputeResult {
   const toast = useToast();
-  const utils = api.useUtils();
+  const queryClient = useQueryClient();
   const [attachments, setAttachments] = useState<DisputeAttachment[]>([]);
   const [attachmentError, setAttachmentError] = useState<string | null>(null);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
@@ -168,18 +180,12 @@ export function useDispute(
   const [isUploading, setIsUploading] = useState(false);
   const previousCheckIdRef = useRef<string | null>(null);
 
-  const disputeQuery = api.backgroundChecks.listDisputesForCheck.useQuery(
-    { background_check_id: checkId ?? "" },
-    {
-      enabled: Boolean(checkId) && enabled,
-      staleTime: 30_000,
-    },
-  );
+  const disputeQuery = useBackgroundCheckDisputes(checkId || undefined, {
+    enabled: Boolean(checkId) && enabled,
+  });
 
-  const createUploadUrlMutation = api.backgroundChecks.createUploadUrl
-    .useMutation();
-  const submitDisputeMutation = api.backgroundChecks.submitDispute
-    .useMutation();
+  const createUploadUrlMutation = useCreateDocumentUploadUrlMutation();
+  const submitDisputeMutation = useSubmitBackgroundCheckDisputeMutation();
 
   const form = useForm<DisputeFormValues>({
     resolver: zodResolver(disputeFormSchema),
@@ -416,11 +422,9 @@ export function useDispute(
 
         await submitDisputeMutation.mutateAsync({
           background_check_id: checkId,
-          dispute_reason: resolvedReason,
-          dispute_details: values.details.trim(),
-          supporting_documents: supportingDocuments.length
-            ? supportingDocuments
-            : undefined,
+          reason: resolvedReason,
+          details: values.details.trim(),
+          supporting_documents: supportingDocuments.map((doc) => doc.file_path),
         });
 
         toast.show({
@@ -430,13 +434,9 @@ export function useDispute(
         });
 
         await Promise.all([
-          utils.backgroundChecks.listChecks.invalidate(),
-          utils.backgroundChecks.getCheck.invalidate({
-            background_check_id: checkId,
-          }),
-          utils.backgroundChecks.listDisputesForCheck.invalidate({
-            background_check_id: checkId,
-          }),
+          queryClient.invalidateQueries({ queryKey: ['backgroundChecks', 'list'] }),
+          queryClient.invalidateQueries({ queryKey: ['backgroundChecks', 'detail', checkId] }),
+          queryClient.invalidateQueries({ queryKey: ['backgroundChecks', 'disputes', checkId] }),
         ]);
 
         setAttachments([]);
@@ -466,9 +466,7 @@ export function useDispute(
     submitDisputeMutation,
     toast,
     uploadAttachment,
-    utils.backgroundChecks.getCheck,
-    utils.backgroundChecks.listChecks,
-    utils.backgroundChecks.listDisputesForCheck,
+    queryClient,
   ]);
 
   const reset = useCallback(() => {
