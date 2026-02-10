@@ -59,7 +59,7 @@ export function ProfileSkillsRight() {
       setRemovingSkillId(null)
 
       // Determine error message based on error type
-      // Match REQ-28 requirements for specific error messages
+      // Match requirements for specific error messages
       let errorMessage = 'Something went wrong. Please try again.'
 
       // Check if error is TRPCClientError

@@ -1,6 +1,6 @@
 /**
  * Privacy Dashboard - Main CCPA Privacy Management Page
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * User-facing dashboard for:
  * - Viewing data categories collected

@@ -1,9 +1,9 @@
 /**
- * GCProfileHeader - Header component for General Contractor profile pages
- * REQ-288: Beyond UI Component Library
+ * GCProfileHeader - Header component for General Contractor profile pages.
+ * Beyond UI component.
  */
 
-import { Stack, Row, Text, Box } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text } from '@unicornlove/beyond-ui'
 import { colors, spacing, borderRadius } from '@unicornlove/beyond-ui/tokens'
 import type { StackProps } from '@unicornlove/beyond-ui'
 import {
@@ -56,7 +56,7 @@ export interface GCProfileHeaderProps extends Omit<StackProps, 'children'> {
 const complianceConfig: Record<ComplianceLevel, { label: string; color: string; bgColor: string }> = {
   compliant: { label: 'Compliant', color: colors.green[700], bgColor: colors.green[100] },
   warning: { label: 'Warning', color: colors.yellow[700], bgColor: colors.yellow[100] },
-  critical: { label: 'Critical', color: colors.red[700], bgColor: colors.red[100] },
+  critical: { label: 'Critical', color: colors.error[700], bgColor: colors.error[100] },
   unknown: { label: 'Unknown', color: colors.gray[700], bgColor: colors.gray[100] },
 }
 
@@ -89,13 +89,13 @@ export function GCProfileHeader({
       {...props}
     >
       {onBack && (
-        <Row padding={spacing[3]} alignItems="center" justifyContent="space-between">
+        <Row padding={spacing[4]} align="center" justify="space-between">
           <Pressable
             onPress={onBack}
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
-              gap: spacing[1],
+              gap: spacing[2],
               padding: spacing[2],
               borderRadius: borderRadius.m,
               backgroundColor: pressed ? colors.gray[100] : 'transparent',
@@ -113,13 +113,13 @@ export function GCProfileHeader({
         padding={spacing[4]}
         paddingTop={spacing[2]}
         gap={spacing[4]}
-        flexWrap="wrap"
+        wrap
       >
         <View
           style={{
             width: 80,
             height: 80,
-            borderRadius: borderRadius.lg,
+            borderRadius: borderRadius.l,
             backgroundColor: colors.blue[100],
             alignItems: 'center',
             justifyContent: 'center',
@@ -134,15 +134,15 @@ export function GCProfileHeader({
         </View>
 
         <Stack flex={1} minWidth={250} gap={spacing[2]}>
-          <Row alignItems="center" gap={spacing[3]} flexWrap="wrap">
+          <Row align="center" gap={spacing[4]} wrap>
             <Text size="xl" weight="bold" style={{ color: colors.gray[900] }}>
               {name}
             </Text>
             <Row
-              paddingHorizontal={spacing[3]}
+              paddingHorizontal={spacing[4]}
               paddingVertical={spacing[2]}
               borderRadius={borderRadius.m}
-              alignItems="center"
+              align="center"
               gap={spacing[2]}
               style={{ backgroundColor: compliance.bgColor }}
             >
@@ -153,9 +153,9 @@ export function GCProfileHeader({
             </Row>
           </Row>
 
-          <Row gap={spacing[4]} flexWrap="wrap">
+          <Row gap={spacing[4]} wrap>
             {address && (
-              <Row alignItems="center" gap={spacing[2]}>
+              <Row align="center" gap={spacing[2]}>
                 <MapPin size={14} color={colors.gray[500]} />
                 <Text size="sm" style={{ color: colors.gray[600] }}>
                   {address}
@@ -163,7 +163,7 @@ export function GCProfileHeader({
               </Row>
             )}
             {phone && (
-              <Row alignItems="center" gap={spacing[2]}>
+              <Row align="center" gap={spacing[2]}>
                 <Phone size={14} color={colors.gray[500]} />
                 <Text size="sm" style={{ color: colors.gray[600] }}>
                   {phone}
@@ -171,7 +171,7 @@ export function GCProfileHeader({
               </Row>
             )}
             {email && (
-              <Row alignItems="center" gap={spacing[2]}>
+              <Row align="center" gap={spacing[2]}>
                 <Mail size={14} color={colors.gray[500]} />
                 <Text size="sm" style={{ color: colors.blue[600] }}>
                   {email}
@@ -179,7 +179,7 @@ export function GCProfileHeader({
               </Row>
             )}
             {website && (
-              <Row alignItems="center" gap={spacing[2]}>
+              <Row align="center" gap={spacing[2]}>
                 <Globe size={14} color={colors.gray[500]} />
                 <Text size="sm" style={{ color: colors.blue[600] }}>
                   {website}
@@ -189,8 +189,8 @@ export function GCProfileHeader({
           </Row>
 
           {memberSince && (
-            <Row gap={spacing[4]} flexWrap="wrap">
-              <Row alignItems="center" gap={spacing[2]}>
+            <Row gap={spacing[4]} wrap>
+              <Row align="center" gap={spacing[2]}>
                 <Calendar size={14} color={colors.gray[500]} />
                 <Text size="sm" style={{ color: colors.gray[600] }}>
                   Member since {memberSince}
@@ -201,18 +201,18 @@ export function GCProfileHeader({
         </Stack>
       </Row>
 
-      <Row padding={spacing[4]} paddingTop={0} gap={spacing[4]} flexWrap="wrap">
+      <Row padding={spacing[4]} paddingTop={0} gap={spacing[4]} wrap>
         {activeSubcontractors !== undefined && (
           <Stack
-            padding={spacing[3]}
+            padding={spacing[4]}
             style={{
               backgroundColor: colors.gray[50],
               borderRadius: borderRadius.m,
               minWidth: 120,
             }}
-            gap={spacing[1]}
+            gap={spacing[2]}
           >
-            <Row alignItems="center" gap={spacing[2]}>
+            <Row align="center" gap={spacing[2]}>
               <Users size={16} color={colors.blue[600]} />
               <Text size="lg" weight="bold" style={{ color: colors.gray[900] }}>
                 {activeSubcontractors}
@@ -225,15 +225,15 @@ export function GCProfileHeader({
         )}
         {activeProjects !== undefined && (
           <Stack
-            padding={spacing[3]}
+            padding={spacing[4]}
             style={{
               backgroundColor: colors.gray[50],
               borderRadius: borderRadius.m,
               minWidth: 120,
             }}
-            gap={spacing[1]}
+            gap={spacing[2]}
           >
-            <Row alignItems="center" gap={spacing[2]}>
+            <Row align="center" gap={spacing[2]}>
               <Building size={16} color={colors.violet[600]} />
               <Text size="lg" weight="bold" style={{ color: colors.gray[900] }}>
                 {activeProjects}
@@ -246,15 +246,15 @@ export function GCProfileHeader({
         )}
         {activePolicies !== undefined && (
           <Stack
-            padding={spacing[3]}
+            padding={spacing[4]}
             style={{
               backgroundColor: colors.gray[50],
               borderRadius: borderRadius.m,
               minWidth: 120,
             }}
-            gap={spacing[1]}
+            gap={spacing[2]}
           >
-            <Row alignItems="center" gap={spacing[2]}>
+            <Row align="center" gap={spacing[2]}>
               <FileText size={16} color={colors.green[600]} />
               <Text size="lg" weight="bold" style={{ color: colors.gray[900] }}>
                 {activePolicies}

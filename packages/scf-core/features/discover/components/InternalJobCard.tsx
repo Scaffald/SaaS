@@ -83,7 +83,7 @@ export interface InternalJob {
     }
   >
 
-  // Soft Skills Requirements (Migration REQ-255)
+  // Soft Skills Requirements
   required_soft_skills?: Array<{
     skill_id: string
     importance: number

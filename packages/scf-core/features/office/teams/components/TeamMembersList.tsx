@@ -301,7 +301,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     <Stack width="100%" $md={{ width: undefined }}>
                       <TeamMemberRoleSelect
                         teamId={teamId}
-                        teamMemberId={member.id}
+                        userId={member.userId ?? ''}
                         currentRoleId={member.roleId ?? undefined}
                         roles={roles as TeamRoleOption[]}
                         disabled={isLoadingRoles}

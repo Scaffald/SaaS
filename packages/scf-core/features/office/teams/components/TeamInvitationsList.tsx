@@ -1,9 +1,8 @@
-import { api } from '@scf/core/utils/api'
+import { useTeamInvitations, useResendTeamInvitation, useCancelTeamInvitation } from '@scaffald/sdk/react'
+import type { TeamInvitation } from '@scaffald/sdk'
 import { TEAM_INVITATION_STATUSES } from '@scf/schemas'
-import type { AppRouter } from '@scf/supabase/client-types'
 import { Clock, RefreshCw, XCircle } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
-import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
@@ -17,8 +16,7 @@ import {
   Stack,
 } from '@unicornlove/beyond-ui'
 
-type InvitationsListOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list']
-type InvitationRecord = NonNullable<InvitationsListOutput['invitations']>[number]
+type InvitationRecord = TeamInvitation
 type InvitationStatus = (typeof TEAM_INVITATION_STATUSES)[number]
 
 const STATUS_LABELS: Record<InvitationStatus, string> = {
@@ -51,47 +49,45 @@ export function TeamInvitationsList({
   const toast = useToast()
   const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending')
 
-  const invitationsQuery = api.teams.invitations.list.useQuery(
-    {
-      teamId,
-      status: statusFilter === 'all' ? undefined : statusFilter,
-    },
-    {
-      enabled: Boolean(teamId),
-    }
-  )
+  const invitationsQuery = useTeamInvitations(teamId, {
+    enabled: Boolean(teamId),
+  })
 
-  const resendMutation = api.teams.invitations.resend.useMutation({
+  const resendMutation = useResendTeamInvitation({
     onSuccess: () => {
       toast.show({
-          title: 'Invitation resent',
-          message: 'The invitation email has been resent.',
-        })
+        title: 'Invitation resent',
+        message: 'The invitation email has been resent.',
+        variant: 'success',
+      })
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'An error occurred'
+      const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Unable to resend invitation',
-          variant: 'error',
-        })
+        title: 'Unable to resend invitation',
+        message,
+        variant: 'error',
+      })
     },
   })
 
-  const cancelMutation = api.teams.invitations.cancel.useMutation({
+  const cancelMutation = useCancelTeamInvitation({
     onSuccess: () => {
       toast.show({
-          title: 'Invitation cancelled',
-          message: 'The invitation can no longer be accepted.',
-        })
+        title: 'Invitation cancelled',
+        message: 'The invitation can no longer be accepted.',
+        variant: 'success',
+      })
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'An error occurred'
+      const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Unable to cancel invitation',
-          variant: 'error',
-        })
+        title: 'Unable to cancel invitation',
+        message,
+        variant: 'error',
+      })
     },
   })
 
@@ -103,8 +99,12 @@ export function TeamInvitationsList({
   }, [refreshKey, invitationsQuery.isFetched, invitationsQuery.refetch, invitationsQuery])
 
   const invitations = useMemo<InvitationRecord[]>(() => {
-    return (invitationsQuery.data?.invitations ?? []) as InvitationRecord[]
-  }, [invitationsQuery.data?.invitations])
+    const allInvitations = invitationsQuery.data?.invitations ?? []
+    if (statusFilter === 'all') {
+      return allInvitations
+    }
+    return allInvitations.filter((inv) => inv.status === statusFilter)
+  }, [invitationsQuery.data?.invitations, statusFilter])
 
   const isLoading =
     invitationsQuery.isLoading ||
@@ -113,11 +113,11 @@ export function TeamInvitationsList({
     cancelMutation.isPending
 
   const handleResend = async (invitationId: string) => {
-    await resendMutation.mutateAsync({ invitationId, teamId })
+    await resendMutation.mutateAsync({ teamId, invitationId })
   }
 
   const handleCancel = async (invitationId: string) => {
-    await cancelMutation.mutateAsync({ invitationId, teamId })
+    await cancelMutation.mutateAsync({ teamId, invitationId })
   }
 
   return (

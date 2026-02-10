@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useUpdateTeamMember } from '@scaffald/sdk/react'
 import { ResponsiveSelect } from '@unicornlove/beyond-ui'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useEffect, useMemo, useState } from 'react'
@@ -7,7 +7,7 @@ import type { TeamRoleOption } from '../hooks/useTeamFormOptions'
 
 interface TeamMemberRoleSelectProps {
   teamId: string
-  teamMemberId: string
+  userId: string
   currentRoleId?: string | null
   roles: TeamRoleOption[]
   disabled?: boolean
@@ -17,7 +17,7 @@ interface TeamMemberRoleSelectProps {
 
 export function TeamMemberRoleSelect({
   teamId,
-  teamMemberId,
+  userId,
   currentRoleId,
   roles,
   disabled = false,
@@ -39,22 +39,24 @@ export function TeamMemberRoleSelect({
     return map
   }, [roles])
 
-  const updateRoleMutation = api.teams.members.update.useMutation({
-    onSuccess: (_data: unknown, variables: { roleId?: string } | undefined) => {
+  const updateRoleMutation = useUpdateTeamMember({
+    onSuccess: (_data, variables) => {
       toast.show({
-          title: 'Role updated',
-          message: 'Team member role changed successfully.',
-        })
-      if (variables?.roleId) {
-        onRoleChanged?.(variables.roleId)
+        title: 'Role updated',
+        message: 'Team member role changed successfully.',
+        variant: 'success',
+      })
+      if (variables?.params?.roleId) {
+        onRoleChanged?.(variables.params.roleId)
       }
     },
     onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'An error occurred'
+      const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show({
-          title: 'Unable to update role',
-          variant: 'error',
-        })
+        title: 'Unable to update role',
+        message,
+        variant: 'error',
+      })
       setSelectedRoleId(currentRoleId ?? '')
     },
   })
@@ -62,9 +64,9 @@ export function TeamMemberRoleSelect({
   const handleRoleChange = async (roleId: string) => {
     setSelectedRoleId(roleId)
     await updateRoleMutation.mutateAsync({
-      teamMemberId,
       teamId,
-      roleId,
+      userId,
+      params: { roleId },
     })
   }
 

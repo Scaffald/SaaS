@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('tamagui', () => ({
+vi.mock('lucide-react-native', () => ({
+  Save: () => <span data-testid="save-icon" />,
+}))
+
+vi.mock('@unicornlove/beyond-ui', () => ({
   Form: ({ children, onSubmit }: { children: ReactNode; onSubmit?: () => void }) => (
     <form
       onSubmit={(event) => {
@@ -52,13 +56,6 @@ vi.mock('tamagui', () => ({
   Stack: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
   H4: ({ children }: { children: ReactNode }) => <h4>{children}</h4>,
-}))
-
-vi.mock('lucide-react-native', () => ({
-  Save: () => <span data-testid="save-icon" />,
-}))
-
-vi.mock('@unicornlove/beyond-ui', () => ({
   IconSelector: ({
     value,
     onChange,

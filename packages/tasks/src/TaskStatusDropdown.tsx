@@ -1,7 +1,6 @@
 /**
- * TaskStatusDropdown - Dropdown component for changing task status
- * REQ-288: Beyond UI Component Library
- * REQ-259: Auto-save on change with optimistic UI updates
+ * TaskStatusDropdown - Dropdown component for changing task status.
+ * Auto-save on change with optimistic UI updates.
  */
 
 import { Stack, Row, Text } from '@unicornlove/beyond-ui'
@@ -35,14 +34,13 @@ export interface TaskStatusDropdownProps extends Omit<StackProps, 'children' | '
   /** Task ID - enables auto-save mode when provided */
   taskId?: string
   /**
-   * Auto-save handler - called when status changes in auto-save mode
-   * Should return a promise that resolves on success or rejects on failure
-   * REQ-259: Auto-save on change with optimistic UI
+   * Auto-save handler - called when status changes in auto-save mode.
+   * Should return a promise that resolves on success or rejects on failure.
    */
   onSave?: (taskId: string, newStatus: TaskStatus, oldStatus: TaskStatus) => Promise<void>
-  /** Callback fired on successful save (REQ-259) */
+  /** Callback fired on successful save */
   onSaveSuccess?: (taskId: string, status: TaskStatus) => void
-  /** Callback fired on save error with the error (REQ-259) */
+  /** Callback fired on save error with the error */
   onSaveError?: (error: Error, taskId: string, attemptedStatus: TaskStatus) => void
 }
 

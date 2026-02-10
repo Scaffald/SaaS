@@ -1,6 +1,6 @@
 /**
  * Request History Table Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Displays a table of the user's CCPA request history
  * with status, dates, and download links

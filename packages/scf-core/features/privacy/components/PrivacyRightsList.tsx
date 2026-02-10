@@ -1,6 +1,6 @@
 /**
  * Privacy Rights List Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Displays the user's CCPA privacy rights with descriptions
  * and links to exercise each right

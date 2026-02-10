@@ -152,7 +152,7 @@ type JobFormData = {
   affirmative_action_plan?: boolean
   source_tracking_enabled?: boolean
 
-  // Soft Skills Requirements (REQ-255)
+  // Soft Skills Requirements
   required_soft_skills?: Array<{ skill_id: string; importance: number }> | null
 }
 

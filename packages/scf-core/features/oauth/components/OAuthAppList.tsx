@@ -1,6 +1,6 @@
 /**
  * OAuth App List Component
- * REQ-10 Task 11: Admin OAuth app list
+ * Admin OAuth app list
  */
 
 import { Button, Card, SizableText, Row, Stack } from '@unicornlove/beyond-ui'

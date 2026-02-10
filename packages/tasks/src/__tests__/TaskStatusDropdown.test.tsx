@@ -1,7 +1,6 @@
 /**
  * TaskStatusDropdown Component Tests
- * REQ-288: Beyond-UI Component Library
- * REQ-259: Auto-save on change with optimistic UI updates
+ * Auto-save on change with optimistic UI updates.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
@@ -330,10 +329,10 @@ describe('TaskStatusDropdown Component', () => {
   })
 
   /**
-   * REQ-259: Auto-Save Tests
-   * Tests for automatic status saving with optimistic UI updates
+   * Auto-Save Tests
+   * Tests for automatic status saving with optimistic UI updates.
    */
-  describe('Auto-Save Functionality (REQ-259)', () => {
+  describe('Auto-Save Functionality', () => {
     describe('Optimistic UI Updates', () => {
       it('should call onValueChange immediately on status select (optimistic update)', async () => {
         const handleValueChange = vi.fn()

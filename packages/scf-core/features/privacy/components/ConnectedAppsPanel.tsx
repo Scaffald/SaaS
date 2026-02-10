@@ -1,6 +1,6 @@
 /**
  * Connected Apps Panel Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Displays third-party applications that have access to user data
  * with options to view permissions and revoke access

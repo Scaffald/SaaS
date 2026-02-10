@@ -1,6 +1,6 @@
 /**
  * StoragePreferencesWidget
- * REQ-1: Document Storage Preferences UI
+ * Document Storage Preferences UI.
  *
  * Allows users to select their preferred document storage backend:
  * - Local (Supabase) - Default, built-in storage
@@ -38,14 +38,14 @@ const STORAGE_OPTIONS: StorageOption[] = [
     label: 'Dropbox',
     description: 'Sync documents with your Dropbox account. Requires OAuth connection.',
     icon: Cloud,
-    available: false, // Will be enabled in TASK-10
+    available: false, // Will be enabled later
   },
   {
     value: 'google_drive',
     label: 'Google Drive',
     description: 'Sync documents with Google Drive. Requires OAuth connection.',
     icon: HardDrive,
-    available: false, // Will be enabled in TASK-11
+    available: false, // Will be enabled later
   },
 ]
 

@@ -1,6 +1,6 @@
 /**
  * OAuth App Detail Component
- * REQ-10 Task 11: Admin OAuth app detail and approval
+ * Admin OAuth app detail and approval
  */
 
 import {

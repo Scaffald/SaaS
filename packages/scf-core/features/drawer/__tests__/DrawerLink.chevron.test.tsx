@@ -3,17 +3,22 @@ import { describe, expect, it, vi } from 'vitest'
 import { DrawerLink } from '../DrawerLink'
 import type { DrawerItemConfig } from '../types'
 
-vi.mock('tamagui', () => ({
-  Row: ({ children, ...props }: { children: React.ReactNode }) => (
-    <div {...props}>{children}</div>
-  ),
-  Stack: ({ children, ...props }: { children: React.ReactNode }) => (
-    <div {...props}>{children}</div>
-  ),
-  Paragraph: ({ children, ...props }: { children: React.ReactNode }) => (
-    <p {...props}>{children}</p>
-  ),
-}))
+vi.mock('@unicornlove/beyond-ui', () => {
+  const React = require('react')
+  const createEl = (tag: string) => ({ children, ...rest }: Record<string, unknown>) => React.createElement(tag, rest, children)
+  return {
+    Stack: createEl('div'),
+    Row: createEl('div'),
+    Text: createEl('span'),
+    Box: createEl('div'),
+    Paragraph: createEl('p'),
+    ThemeProvider: ({ children }: { children?: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    useThemeContext: () => ({ theme: 'light' }),
+    VisuallyHidden: createEl('span'),
+    Spinner: () => React.createElement('div', { 'data-testid': 'spinner' }),
+    useToast: () => ({ show: () => {}, dismiss: () => {}, success: () => {}, error: () => {} }),
+  }
+})
 
 vi.mock('expo-router', () => ({
   Link: ({ children, href }: { children: React.ReactNode; href: string }) => (

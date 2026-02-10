@@ -1,6 +1,5 @@
 /**
  * TasksInbox Component Tests
- * REQ-288: Beyond-UI Component Library
  */
 
 import { describe, it, expect, vi } from 'vitest'

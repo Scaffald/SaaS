@@ -1,6 +1,6 @@
 /**
  * OAuth App Registration Form
- * REQ-10 Task 10: Self-service app registration form
+ * Self-service app registration form
  */
 
 import { Button, Card, Input, Paragraph, SizableText, Row, Stack } from '@unicornlove/beyond-ui'

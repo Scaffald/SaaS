@@ -1,6 +1,6 @@
 /**
- * TaskHistoryTimeline - Timeline showing task history/activity
- * REQ-288: Beyond UI Component Library
+ * TaskHistoryTimeline - Timeline showing task history/activity.
+ * Beyond UI component.
  */
 
 import { useState } from 'react'

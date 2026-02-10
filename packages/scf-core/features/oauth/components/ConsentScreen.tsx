@@ -1,6 +1,6 @@
 /**
  * OAuth Consent Screen Component
- * REQ-10 Task 9: Build OAuth consent screen UI component
+ * OAuth consent screen UI component
  */
 
 import { api } from '@scf/core/utils/api'

@@ -100,7 +100,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           !isExternal && 'organization' in job ? (job.organization?.id ?? null) : null,
       })
 
-      // Track in engagement analytics (REQ-254)
+      // Track in engagement analytics
       try {
         trackEventMutation.mutate({
           eventType: 'job.viewed',

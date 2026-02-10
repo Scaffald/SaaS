@@ -1,6 +1,5 @@
 /**
- * ParticipantsFilter - Filter buttons for compliance status
- * REQ-281: Participants Tab Compliance View - TASK-3
+ * ParticipantsFilter - Filter buttons for compliance status (participants tab).
  */
 
 import { StyleSheet, Pressable } from 'react-native'

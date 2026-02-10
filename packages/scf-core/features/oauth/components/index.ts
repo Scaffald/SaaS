@@ -1,6 +1,6 @@
 /**
  * OAuth Components
- * REQ-10: Scaffald OAuth Provider Integration
+ * Scaffald OAuth Provider Integration
  */
 
 export { ConsentScreen } from './ConsentScreen'

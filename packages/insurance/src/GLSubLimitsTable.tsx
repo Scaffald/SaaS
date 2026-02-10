@@ -1,7 +1,5 @@
 /**
- * GLSubLimitsTable - Display GL sub-limits with validation status
- * REQ-280: Insurance Coverage Detail Requirements
- * TASK-3: Create GL Sub-Limits Display Component with Validation Indicators
+ * GLSubLimitsTable - Display GL sub-limits with validation status.
  */
 
 import { Stack, Row, Text, Spinner } from '@unicornlove/beyond-ui'

@@ -1,6 +1,6 @@
 /**
  * Data Request Form Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Form for users to submit CCPA data requests:
  * - Data export (Right to Know)

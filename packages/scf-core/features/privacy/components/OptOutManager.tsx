@@ -1,6 +1,6 @@
 /**
  * Opt-Out Manager Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Component for managing CCPA opt-out preferences:
  * - Sale of personal information

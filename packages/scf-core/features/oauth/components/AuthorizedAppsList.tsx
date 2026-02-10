@@ -1,6 +1,6 @@
 /**
  * Authorized Apps List Component
- * REQ-10 Task 11: User can view and revoke authorized OAuth apps
+ * User can view and revoke authorized OAuth apps
  */
 
 import { Button, Card, Paragraph, SizableText, Row, Stack, AlertDialog, Separator } from '@unicornlove/beyond-ui'

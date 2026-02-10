@@ -1,6 +1,6 @@
 /**
  * Data Category Summary Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Displays the 6 CCPA data categories with indicators
  * showing what types of personal information are collected

@@ -3,8 +3,8 @@
  * Beyond UI Component Library
  */
 
-import { Stack, Row, Text, Box } from '@unicornlove/beyond-ui'
-import { colors, spacing, borderRadius } from '@unicornlove/beyond-ui/tokens'
+import { Stack, Row, Text } from '@unicornlove/beyond-ui'
+import { colors, spacing } from '@unicornlove/beyond-ui/tokens'
 import type { StackProps } from '@unicornlove/beyond-ui'
 import {
   User,
@@ -68,8 +68,8 @@ const statusConfig: Record<
   },
   'non-compliant': {
     label: 'Non-Compliant',
-    bgColor: colors.red[100],
-    textColor: colors.red[700],
+    bgColor: colors.error[100],
+    textColor: colors.error[700],
     icon: XCircle,
   },
 }
@@ -87,7 +87,7 @@ function getScoreColor(level: 'good' | 'warning' | 'danger'): string {
     case 'warning':
       return colors.yellow[700]
     case 'danger':
-      return colors.red[700]
+      return colors.error[700]
   }
 }
 
@@ -103,7 +103,7 @@ export function ParticipantsTable({
     <Stack
       style={{
         backgroundColor: colors.bg.light.default,
-        borderRadius: borderRadius.lg,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: colors.border.light.default,
         overflow: 'hidden',
@@ -111,14 +111,14 @@ export function ParticipantsTable({
       {...props}
     >
       <Row
-        padding={spacing[3]}
+        padding={spacing[4]}
         style={{
           backgroundColor: colors.gray[50],
           borderBottomWidth: 1,
           borderBottomColor: colors.border.light.default,
         }}
-        alignItems="center"
-        justifyContent="space-between"
+        align="center"
+        justify="space-between"
       >
         <Text size="sm" weight="semibold" style={{ color: colors.gray[900] }}>
           {title}
@@ -129,7 +129,7 @@ export function ParticipantsTable({
             color: colors.gray[500],
             backgroundColor: colors.gray[100],
             paddingHorizontal: spacing[2],
-            paddingVertical: spacing[1],
+            paddingVertical: spacing[2],
             borderRadius: 9999,
           }}
         >
@@ -138,7 +138,7 @@ export function ParticipantsTable({
       </Row>
 
       <Row
-        padding={spacing[3]}
+        padding={spacing[4]}
         style={{
           backgroundColor: colors.gray[100],
           borderBottomWidth: 1,
@@ -179,7 +179,7 @@ export function ParticipantsTable({
       </Row>
 
       {participants.length === 0 ? (
-        <Stack padding={spacing[6]} alignItems="center" gap={spacing[2]}>
+        <Stack padding={spacing[6]} align="center" gap={spacing[2]}>
           <User size={32} color={colors.gray[400]} />
           <Text size="sm" style={{ color: colors.gray[500] }}>
             No participants
@@ -195,7 +195,7 @@ export function ParticipantsTable({
               onPress={() => onParticipantPress?.(participant)}
               style={{
                 flexDirection: 'row',
-                padding: spacing[3],
+                padding: spacing[4],
                 borderBottomWidth: isLast ? 0 : 1,
                 borderBottomColor: colors.border.light.default,
                 gap: spacing[2],
@@ -203,7 +203,7 @@ export function ParticipantsTable({
               }}
             >
               <View style={{ flex: 3 }}>
-                <Row gap={spacing[3]} alignItems="center">
+                <Row gap={spacing[4]} align="center">
                   <View
                     style={{
                       width: 36,
@@ -231,9 +231,9 @@ export function ParticipantsTable({
                       </Text>
                     )}
                     {showContactInfo && (participant.email || participant.phone) && (
-                      <Row gap={spacing[2]} flexWrap="wrap">
+                      <Row gap={spacing[2]} wrap="wrap">
                         {participant.email && (
-                          <Row alignItems="center" gap={spacing[1]}>
+                          <Row align="center" gap={spacing[2]}>
                             <Mail size={10} color={colors.gray[500]} />
                             <Text size="xs" style={{ color: colors.gray[500] }}>
                               {participant.email}
@@ -241,7 +241,7 @@ export function ParticipantsTable({
                           </Row>
                         )}
                         {participant.phone && (
-                          <Row alignItems="center" gap={spacing[1]}>
+                          <Row align="center" gap={spacing[2]}>
                             <Phone size={10} color={colors.gray[500]} />
                             <Text size="xs" style={{ color: colors.gray[500] }}>
                               {participant.phone}
@@ -273,13 +273,13 @@ export function ParticipantsTable({
               )}
 
               <View style={{ flex: 2 }}>
-                <Row gap={spacing[2]} alignItems="center">
+                <Row gap={spacing[2]} align="center">
                   <Row
                     paddingHorizontal={spacing[2]}
-                    paddingVertical={spacing[1]}
+                    paddingVertical={spacing[2]}
                     borderRadius={9999}
-                    alignItems="center"
-                    gap={spacing[1]}
+                    align="center"
+                    gap={spacing[2]}
                     style={{ backgroundColor: statusConfig[participant.status].bgColor }}
                   >
                     <StatusIcon
@@ -299,7 +299,7 @@ export function ParticipantsTable({
                       style={{
                         backgroundColor: colors.yellow[100],
                         paddingHorizontal: spacing[2],
-                        paddingVertical: spacing[1],
+                        paddingVertical: spacing[2],
                         borderRadius: 9999,
                       }}
                     >

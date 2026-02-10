@@ -1,6 +1,5 @@
 /**
  * CCPA Admin Dashboard
- * REQ-3: CCPA Compliance Implementation
  *
  * Admin dashboard for compliance team to:
  * - View and manage CCPA requests across all users

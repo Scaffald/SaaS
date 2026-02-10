@@ -5,21 +5,19 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
-// Legacy UI mock (tamagui) before importing component
-vi.mock('tamagui', async () => {
-  const React = await import('react')
+vi.mock('@unicornlove/beyond-ui', () => {
+  const React = require('react')
+  const createEl = (tag: string) => ({ children, ...rest }: Record<string, unknown>) => React.createElement(tag, rest, children)
   return {
-    styled: (_component: unknown, config: Record<string, unknown>) => {
-      const StyledComponent = React.forwardRef<HTMLElement, Record<string, unknown>>(
-        ({ children, ...props }, ref) => {
-          return React.createElement('div', { ref, 'data-name': config.name, ...props }, children)
-        }
-      )
-      StyledComponent.displayName = (config.name as string) || 'StyledComponent'
-      return StyledComponent
-    },
-    XStack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', { 'data-testid': 'xstack', ...props }, children as React.ReactNode),
-    Text: ({ children, ...props }: Record<string, unknown>) => React.createElement('span', props, children as React.ReactNode),
+    Stack: createEl('div'),
+    Row: createEl('div'),
+    Text: createEl('span'),
+    Box: createEl('div'),
+    ThemeProvider: ({ children }: { children?: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    useThemeContext: () => ({ theme: 'light' }),
+    VisuallyHidden: createEl('span'),
+    Spinner: () => React.createElement('div', { 'data-testid': 'spinner' }),
+    useToast: () => ({ show: () => {}, dismiss: () => {}, success: () => {}, error: () => {} }),
   }
 })
 
