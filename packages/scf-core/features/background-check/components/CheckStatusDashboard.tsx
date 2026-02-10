@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useBackgroundChecks } from '@scf/core/utils/background-checks-sdk-hooks'
 import { RefreshCcw, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -27,10 +27,7 @@ export function CheckStatusDashboard() {
   const [disputeCheck, setDisputeCheck] = useState<BackgroundCheckSummary | null>(null)
   const isWeb = Platform.OS === 'web'
 
-  const checksQuery = api.backgroundChecks.listChecks.useQuery(undefined, {
-    refetchOnWindowFocus: true,
-    staleTime: 1000 * 60,
-  })
+  const checksQuery = useBackgroundChecks()
 
   const selectedCheck = useMemo(
     () =>

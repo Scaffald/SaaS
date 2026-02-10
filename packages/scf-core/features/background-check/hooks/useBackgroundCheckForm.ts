@@ -1,12 +1,18 @@
-import { api } from '@scf/core/utils/api';
-import type { AppRouter } from '@scf/supabase/client-types';
-import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
+import {
+  useBackgroundCheckPackages,
+  useRequestBackgroundCheckMutation,
+  useConfirmCheckPaymentMutation,
+  useCreateDocumentUploadUrlMutation,
+  useAddDocumentMetadataMutation,
+} from '@scf/core/utils/background-checks-sdk-hooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-type RouterInputs = inferRouterInputs<AppRouter>;
-type RouterOutputs = inferRouterOutputs<AppRouter>;
-type BackgroundCheckPackage =
-  RouterOutputs["backgroundChecks"]["listPackages"][number];
+type BackgroundCheckPackage = {
+  id: string;
+  slug: string;
+  display_name: string;
+  retail_cost_cents: number;
+};
 
 export type BackgroundCheckWizardStep =
   | "packages"
@@ -23,8 +29,7 @@ const WIZARD_STEPS: BackgroundCheckWizardStep[] = [
   "confirmation",
 ];
 
-export type BackgroundCheckPaidBy =
-  RouterInputs["backgroundChecks"]["initiate"]["paid_by"];
+export type BackgroundCheckPaidBy = 'worker' | 'employer';
 
 export interface ConsentDetails {
   acceptsDisclosure: boolean;
@@ -65,9 +70,14 @@ const DEFAULT_CONSENT: ConsentDetails = {
   signature: "",
 };
 
-function serializeConsent(
-  consent: ConsentDetails,
-): RouterInputs["backgroundChecks"]["requestCheck"]["consent"] | undefined {
+function serializeConsent(consent: ConsentDetails): {
+  consent_signature: string;
+  consent_given_at: string;
+  consent_ip_address?: string;
+  consent_user_agent?: string;
+  disclosure_provided_at: string;
+  summary_of_rights_provided_at: string;
+} | undefined {
   if (!consent.acceptsDisclosure) {
     return undefined;
   }
@@ -113,17 +123,12 @@ export function useBackgroundCheckForm() {
     null,
   );
 
-  const packagesQuery = api.backgroundChecks.listPackages.useQuery(undefined, {
-    staleTime: 1000 * 60 * 5,
-  });
+  const packagesQuery = useBackgroundCheckPackages();
 
-  const requestCheckMutation = api.backgroundChecks.requestCheck.useMutation();
-  const confirmPaymentMutation = api.backgroundChecks.confirmCheckPayment
-    .useMutation();
-  const createUploadUrlMutation = api.backgroundChecks.createUploadUrl
-    .useMutation();
-  const addDocumentMetadataMutation = api.backgroundChecks.addDocumentMetadata
-    .useMutation();
+  const requestCheckMutation = useRequestBackgroundCheckMutation();
+  const confirmPaymentMutation = useConfirmCheckPaymentMutation();
+  const createUploadUrlMutation = useCreateDocumentUploadUrlMutation();
+  const addDocumentMetadataMutation = useAddDocumentMetadataMutation();
 
   const currentStep = WIZARD_STEPS[currentStepIndex];
 
@@ -228,7 +233,13 @@ export function useBackgroundCheckForm() {
   }, []);
 
   const requestDocumentUpload = useCallback(
-    async (input: RouterInputs["backgroundChecks"]["createUploadUrl"]) => {
+    async (input: {
+      background_check_id: string;
+      document_type: string;
+      file_name: string;
+      mime_type: string;
+      file_size: number;
+    }) => {
       const result = await createUploadUrlMutation.mutateAsync(input);
       return result;
     },
@@ -236,7 +247,14 @@ export function useBackgroundCheckForm() {
   );
 
   const recordDocumentMetadata = useCallback(
-    async (input: RouterInputs["backgroundChecks"]["addDocumentMetadata"]) => {
+    async (input: {
+      background_check_id: string;
+      storage_path: string;
+      document_type: string;
+      file_name: string;
+      mime_type: string;
+      file_size: number;
+    }) => {
       const result = await addDocumentMetadataMutation.mutateAsync(input);
       if (result) {
         upsertDocument({
