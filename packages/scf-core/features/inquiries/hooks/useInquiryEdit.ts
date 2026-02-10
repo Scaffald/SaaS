@@ -1,5 +1,5 @@
-import { api } from '@scf/core/utils/api'
 import { type InquiryCreateInput, type InquiryUpdateInput, inquiryCreateSchema } from '@scf/schemas'
+import { useUpdateInquiryMutation } from '@scf/core/utils/inquiries-sdk-hooks'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useQueryClient } from '@tanstack/react-query'
@@ -14,7 +14,7 @@ export interface UseInquiryEditOptions {
 
 export interface UseInquiryEditReturn {
   form: ReturnType<typeof useForm<InquiryCreateInput>>
-  updateMutation: ReturnType<typeof api.inquiries.update.useMutation>
+  updateMutation: ReturnType<typeof useUpdateInquiryMutation>
   isSubmitting: boolean
   handleSubmit: (data: InquiryCreateInput) => Promise<void>
 }
@@ -70,17 +70,17 @@ export function useInquiryEdit({
     }
   }, [initialData, form])
 
-  const updateMutation = api.inquiries.update.useMutation({
+  const updateMutation = useUpdateInquiryMutation({
     onSuccess: () => {
       toast.show({
           title: 'Inquiry updated',
           message: 'The inquiry has been updated. The candidate will be notified if terms changed.',
         })
       // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: [['inquiries', 'getByApplication']] })
+      queryClient.invalidateQueries({ queryKey: ['inquiries'] })
       onSuccess?.()
     },
-    onError: (error: { message?: string }) => {
+    onError: (error) => {
       toast.show({
           title: 'Failed to update inquiry',
           message: error.message ?? 'Please try again.',

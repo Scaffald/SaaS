@@ -13,6 +13,7 @@ import { Connections } from './resources/connections.js'
 import { Follows } from './resources/follows.js'
 import { Engagement } from './resources/engagement.js'
 import { BackgroundChecks } from './resources/background-checks.js'
+import { Inquiries } from './resources/inquiries.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -30,6 +31,7 @@ export class Scaffald {
   public readonly follows: Follows
   public readonly engagement: Engagement
   public readonly backgroundChecks: BackgroundChecks
+  public readonly inquiries: Inquiries
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -55,6 +57,7 @@ export class Scaffald {
     this.follows = new Follows(this.http)
     this.engagement = new Engagement(this.http)
     this.backgroundChecks = new BackgroundChecks(this.http)
+    this.inquiries = new Inquiries(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {
