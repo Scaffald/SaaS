@@ -1,7 +1,14 @@
 import { useConnectionStatus } from '@scf/core/features/user-profile/hooks/useConnectionStatus'
 import { useFollowStatus } from '@scf/core/features/user-profile/hooks/useFollowStatus'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { api } from '@scf/core/utils/api'
+import {
+  useSendConnectionMutation,
+  useAcceptConnectionMutation,
+  useDeclineConnectionMutation,
+  useRemoveConnectionMutation,
+  useFollowUserMutation,
+  useUnfollowUserMutation,
+} from '@scf/core/utils/engagement-sdk-hooks'
 import {
   Award,
   Briefcase,
@@ -21,6 +28,7 @@ import {
 } from 'lucide-react-native'
 import { useToast } from '@unicornlove/beyond-ui'
 import { useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Avatar,
   Button,
@@ -74,124 +82,124 @@ export function UserProfileHeaderEnhanced({
   const { width } = useWindowDimensions()
   const isMobile = width < 768
   const toast = useToast()
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Connection and follow status hooks (only for other users' profiles)
   const connectionStatus = useConnectionStatus(isOwnProfile ? null : profile.id)
   const followStatus = useFollowStatus(isOwnProfile ? null : profile.id)
 
   // Connection mutations
-  const sendRequestMutation = api.connections.sendRequest.useMutation({
+  const sendRequestMutation = useSendConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
       toast.show({
-          title: 'Connection request sent',
-          message: 'Your connection request has been sent.',
-        })
+        title: 'Connection request sent',
+        message: 'Your connection request has been sent.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to send request',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to send request',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
-  const acceptRequestMutation = api.connections.acceptRequest.useMutation({
+  const acceptRequestMutation = useAcceptConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
       toast.show({
-          title: 'Connection accepted',
-          message: 'You are now connected.',
-        })
+        title: 'Connection accepted',
+        message: 'You are now connected.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to accept request',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to accept request',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
-  const declineRequestMutation = api.connections.declineRequest.useMutation({
+  const declineRequestMutation = useDeclineConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to decline request',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to decline request',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
-  const removeConnectionMutation = api.connections.removeConnection.useMutation({
+  const removeConnectionMutation = useRemoveConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
       toast.show({
-          title: 'Connection removed',
-          message: 'Connection has been removed.',
-        })
+        title: 'Connection removed',
+        message: 'Connection has been removed.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to remove connection',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to remove connection',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
   // Follow mutations
-  const followMutation = api.follows.followUser.useMutation({
+  const followMutation = useFollowUserMutation({
     onMutate: async () => {
-      await utils.follows.getFollowing.cancel()
+      await queryClient.cancelQueries({ queryKey: ['follows', 'following'] })
     },
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
       toast.show({
-          title: 'Following',
-          message: 'You are now following this user.',
-        })
+        title: 'Following',
+        message: 'You are now following this user.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
-          title: 'Unable to follow',
-          message: error.message ?? 'Please try again in a moment.',
-          variant: 'error',
-        })
+        title: 'Unable to follow',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
     },
   })
 
-  const unfollowMutation = api.follows.unfollowUser.useMutation({
+  const unfollowMutation = useUnfollowUserMutation({
     onMutate: async () => {
-      await utils.follows.getFollowing.cancel()
+      await queryClient.cancelQueries({ queryKey: ['follows', 'following'] })
     },
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
       toast.show({
-          title: 'Unfollowed',
-          message: 'You are no longer following this user.',
-        })
+        title: 'Unfollowed',
+        message: 'You are no longer following this user.',
+      })
     },
     onError: (error: { message?: string }) => {
       toast.show({
@@ -209,19 +217,19 @@ export function UserProfileHeaderEnhanced({
 
   const handleAccept = () => {
     if (connectionStatus.connectionId) {
-      acceptRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+      acceptRequestMutation.mutate(connectionStatus.connectionId)
     }
   }
 
   const handleDecline = () => {
     if (connectionStatus.connectionId) {
-      declineRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+      declineRequestMutation.mutate(connectionStatus.connectionId)
     }
   }
 
   const handleRemoveConnection = () => {
     if (connectionStatus.connectionId) {
-      removeConnectionMutation.mutate({ connectionId: connectionStatus.connectionId })
+      removeConnectionMutation.mutate(connectionStatus.connectionId)
     }
   }
 
@@ -231,7 +239,7 @@ export function UserProfileHeaderEnhanced({
   }
 
   const handleUnfollow = () => {
-    unfollowMutation.mutate({ targetUserId: profile.id })
+    unfollowMutation.mutate(profile.id)
   }
 
   // Determine connection button state
