@@ -1,4 +1,11 @@
-import { api } from '@scf/core/utils/api';
+import {
+  useWorkLog,
+  useUploadWorkLogPhotoMutation,
+  useUpdateWorkLogPhotoMetadataMutation,
+  useUpdateWorkLogPhotoVisibilityMutation,
+  useDeleteWorkLogPhotoMutation,
+} from '@scf/core/utils/work-logs-sdk-hooks';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@scf/core/utils/supabase/client';
 import { useToast } from '@unicornlove/beyond-ui';
 import { Buffer } from 'buffer';
@@ -305,24 +312,22 @@ export const usePhotoUpload = ({
   maxPhotos = DEFAULT_MAX_PHOTOS,
 }: UsePhotoUploadOptions = {}): UsePhotoUploadReturn => {
   const toast = useToast();
-  const utils = api.useUtils();
+  const queryClient = useQueryClient();
 
   const isReady = Boolean(workLogId);
 
-  const { data: workLogData, isLoading: isLoadingPhotos } = api.workLogs.getById
-    .useQuery(
-      { workLogId: workLogId ?? "" },
-      {
-        enabled: isReady,
-        staleTime: 30_000,
-      },
-    );
+  const { data: workLogData, isLoading: isLoadingPhotos } = useWorkLog(
+    workLogId ?? undefined,
+    {
+      enabled: isReady,
+      staleTime: 30_000,
+    },
+  );
 
-  const uploadMutation = api.workLogs.uploadPhoto.useMutation();
-  const updateMetadataMutation = api.workLogs.updatePhotoMetadata.useMutation();
-  const updateVisibilityMutation = api.workLogs.updatePhotoVisibility
-    .useMutation();
-  const deletePhotoMutation = api.workLogs.deletePhoto.useMutation();
+  const uploadMutation = useUploadWorkLogPhotoMutation();
+  const updateMetadataMutation = useUpdateWorkLogPhotoMetadataMutation();
+  const updateVisibilityMutation = useUpdateWorkLogPhotoVisibilityMutation();
+  const deletePhotoMutation = useDeleteWorkLogPhotoMutation();
 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -361,8 +366,8 @@ export const usePhotoUpload = ({
     if (!workLogId) {
       return;
     }
-    await utils.workLogs.getById.invalidate({ workLogId });
-  }, [utils.workLogs.getById, workLogId]);
+    await queryClient.invalidateQueries({ queryKey: ['workLogs', 'detail', workLogId] });
+  }, [queryClient, workLogId]);
 
   const ensureSignedUrls = useCallback(
     async (currentPhotos: WorkLogPhoto[]) => {

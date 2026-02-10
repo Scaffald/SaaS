@@ -1,3 +1,8 @@
+import {
+  useWorkLogProjectOptions,
+  useCreateWorkLogMutation,
+  useUpdateWorkLogMutation,
+} from '@scf/core/utils/work-logs-sdk-hooks';
 import { api } from '@scf/core/utils/api';
 import { useWorkLogLocation } from '@scf/core/utils/location/useWorkLogLocation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -112,9 +117,7 @@ export interface UseWorkLogFormReturn {
   workLogId: string | null;
   location: ReturnType<typeof useWorkLogLocation>;
   captureLocation: () => Promise<void>;
-  projectOptionsQuery: ReturnType<
-    typeof api.workLogs.getProjectOptions.useQuery
-  >;
+  projectOptionsQuery: ReturnType<typeof useWorkLogProjectOptions>;
   organizationFilter: string | null;
   setOrganizationFilter: (organizationId: string | null) => void;
   skillsQuery: ReturnType<typeof api.profile.skills.getUserSkills.useQuery>;
@@ -204,7 +207,7 @@ export const useWorkLogForm = ({
     return hasTimeEntriesOverlap(sanitizedTimeEntries);
   }, [sanitizedTimeEntries]);
 
-  const projectOptionsQuery = api.workLogs.getProjectOptions.useQuery(
+  const projectOptionsQuery = useWorkLogProjectOptions(
     organizationFilter ? { organizationId: organizationFilter } : undefined,
     {
       staleTime: 30_000,
@@ -245,7 +248,7 @@ export const useWorkLogForm = ({
     return parseResult.data;
   }, [form]);
 
-  const createWorkLogMutation = api.workLogs.create.useMutation({
+  const createWorkLogMutation = useCreateWorkLogMutation({
     onError: (error) => {
       const message = error instanceof Error
         ? error.message
@@ -257,7 +260,7 @@ export const useWorkLogForm = ({
     },
   });
 
-  const updateWorkLogMutation = api.workLogs.update.useMutation({
+  const updateWorkLogMutation = useUpdateWorkLogMutation({
     onError: (error) => {
       const message = error instanceof Error
         ? error.message

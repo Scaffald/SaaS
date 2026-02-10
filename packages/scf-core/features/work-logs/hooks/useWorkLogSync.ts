@@ -1,4 +1,8 @@
-import { api } from '@scf/core/utils/api';
+import {
+  useCreateWorkLogMutation,
+  useUpdateWorkLogMutation,
+  useUploadWorkLogPhotoMutation,
+} from '@scf/core/utils/work-logs-sdk-hooks';
 import { supabase } from '@scf/core/utils/supabase/client';
 import { NetInfoStateType, useNetInfo } from '@react-native-community/netinfo';
 import { Buffer } from 'buffer';
@@ -121,9 +125,9 @@ export const useWorkLogSync = ({
     null,
   );
 
-  const createWorkLogMutation = api.workLogs.create.useMutation();
-  const updateWorkLogMutation = api.workLogs.update.useMutation();
-  const uploadPhotoMutation = api.workLogs.uploadPhoto.useMutation();
+  const createWorkLogMutation = useCreateWorkLogMutation();
+  const updateWorkLogMutation = useUpdateWorkLogMutation();
+  const uploadPhotoMutation = useUploadWorkLogPhotoMutation();
 
   useEffect(() => {
     loadSyncSettings()
